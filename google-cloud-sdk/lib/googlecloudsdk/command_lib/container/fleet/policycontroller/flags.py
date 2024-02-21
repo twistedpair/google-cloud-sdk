@@ -447,6 +447,25 @@ class PocoFlagParser:
   def set_default_cfg(
       self, feature: messages.Message, membership: messages.Message
   ) -> messages.Message:
+    """Sets membership to the default fleet configuration.
+
+    Args:
+      feature: The feature spec for the project.
+      membership: The membership spec being updated.
+
+    Returns:
+      Updated MembershipFeatureSpec.
+    Raises:
+      MissingFleetDefaultMemberConfig: If none exists on the feature.
+    """
+    if feature.fleetDefaultMemberConfig is None:
+      # Use second entity token of the feature's uri path (project name).
+      project = feature.name.split('/')[1]
+      msg = (
+          'No fleet default member config specified for project {}. Use'
+          " '... enable --fleet-default-member-config=config.yaml'."
+      )
+      raise exceptions.MissingFleetDefaultMemberConfig(msg.format(project))
     self.set_origin_fleet(membership)
     membership.policycontroller = (
         feature.fleetDefaultMemberConfig.policycontroller

@@ -477,6 +477,26 @@ whether or not scheduled backups are enabled on the volume.
       type=arg_parsers.ArgDict(spec=backup_config_arg_spec),
       help=backup_config_help)
 
+
+def AddVolumeLargeCapacityArg(parser):
+  """Adds the --large-capacity arg to the arg parser."""
+  parser.add_argument(
+      '--large-capacity',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
+      help="""Boolean flag indicating whether Volume is a large capacity Volume or not"""
+  )
+
+
+def AddVolumeMultipleEndpointsArg(parser):
+  """Adds the --multiple-endpoints arg to the arg parser."""
+  parser.add_argument(
+      '--multiple-endpoints',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
+      help="""Boolean flag indicating whether Volume is a multiple endpoints Volume or not"""
+  )
+
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 
 
@@ -508,6 +528,10 @@ def AddVolumeCreateArgs(parser, release_track):
   if release_track == calliope_base.ReleaseTrack.BETA:
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
+  if (release_track == calliope_base.ReleaseTrack.ALPHA or
+      release_track == calliope_base.ReleaseTrack.BETA):
+    AddVolumeLargeCapacityArg(parser)
+    AddVolumeMultipleEndpointsArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
 

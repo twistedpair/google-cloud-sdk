@@ -72,12 +72,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}',
         http_method='DELETE',
         method_id='bigquery.datasets.delete',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=['deleteContents'],
-        relative_path='projects/{projectId}/datasets/{datasetId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}',
         request_field='',
         request_type_name='BigqueryDatasetsDeleteRequest',
         response_type_name='BigqueryDatasetsDeleteResponse',
@@ -98,12 +99,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}',
         http_method='GET',
         method_id='bigquery.datasets.get',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=['datasetView'],
-        relative_path='projects/{projectId}/datasets/{datasetId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}',
         request_field='',
         request_type_name='BigqueryDatasetsGetRequest',
         response_type_name='Dataset',
@@ -124,12 +126,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets',
         http_method='POST',
         method_id='bigquery.datasets.insert',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets',
+        relative_path='projects/{+projectId}/datasets',
         request_field='dataset',
         request_type_name='BigqueryDatasetsInsertRequest',
         response_type_name='Dataset',
@@ -137,7 +140,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all datasets in the specified project to which you have been granted the READER dataset role.
+      r"""Lists all datasets in the specified project to which the user has been granted the READER dataset role.
 
       Args:
         request: (BigqueryDatasetsListRequest) input message
@@ -150,12 +153,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets',
         http_method='GET',
         method_id='bigquery.datasets.list',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=['all', 'filter', 'maxResults', 'pageToken'],
-        relative_path='projects/{projectId}/datasets',
+        relative_path='projects/{+projectId}/datasets',
         request_field='',
         request_type_name='BigqueryDatasetsListRequest',
         response_type_name='DatasetList',
@@ -163,7 +167,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource. This method supports patch semantics.
+      r"""Updates information in an existing dataset. The update method replaces the entire dataset resource, whereas the patch method only replaces fields that are provided in the submitted dataset resource. This method supports RFC5789 patch semantics.
 
       Args:
         request: (BigqueryDatasetsPatchRequest) input message
@@ -176,14 +180,42 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}',
         http_method='PATCH',
         method_id='bigquery.datasets.patch',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets/{datasetId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}',
         request_field='dataset',
         request_type_name='BigqueryDatasetsPatchRequest',
+        response_type_name='Dataset',
+        supports_download=False,
+    )
+
+    def Undelete(self, request, global_params=None):
+      r"""Undeletes a dataset which is within time travel window based on datasetId. If a time is specified, the dataset version deleted at that time is undeleted, else the last live version is undeleted.
+
+      Args:
+        request: (BigqueryDatasetsUndeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Dataset) The response message.
+      """
+      config = self.GetMethodConfig('Undelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Undelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}:undelete',
+        http_method='POST',
+        method_id='bigquery.datasets.undelete',
+        ordered_params=['projectId', 'datasetId'],
+        path_params=['datasetId', 'projectId'],
+        query_params=[],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}:undelete',
+        request_field='undeleteDatasetRequest',
+        request_type_name='BigqueryDatasetsUndeleteRequest',
         response_type_name='Dataset',
         supports_download=False,
     )
@@ -202,12 +234,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}',
         http_method='PUT',
         method_id='bigquery.datasets.update',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets/{datasetId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}',
         request_field='dataset',
         request_type_name='BigqueryDatasetsUpdateRequest',
         response_type_name='Dataset',
@@ -226,9 +259,9 @@ class BigqueryV2(base_api.BaseApiClient):
               accept=['*/*'],
               max_size=None,
               resumable_multipart=True,
-              resumable_path='/resumable/upload/bigquery/v2/projects/{projectId}/jobs',
+              resumable_path='/resumable/upload/bigquery/v2/projects/{+projectId}/jobs',
               simple_multipart=True,
-              simple_path='/upload/bigquery/v2/projects/{projectId}/jobs',
+              simple_path='/upload/bigquery/v2/projects/{+projectId}/jobs',
           ),
           }
 
@@ -246,12 +279,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/jobs/{jobsId}/cancel',
         http_method='POST',
         method_id='bigquery.jobs.cancel',
         ordered_params=['projectId', 'jobId'],
         path_params=['jobId', 'projectId'],
         query_params=['location'],
-        relative_path='projects/{projectId}/jobs/{jobId}/cancel',
+        relative_path='projects/{+projectId}/jobs/{+jobId}/cancel',
         request_field='',
         request_type_name='BigqueryJobsCancelRequest',
         response_type_name='JobCancelResponse',
@@ -299,12 +333,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/jobs/{jobsId}',
         http_method='GET',
         method_id='bigquery.jobs.get',
         ordered_params=['projectId', 'jobId'],
         path_params=['jobId', 'projectId'],
         query_params=['location'],
-        relative_path='projects/{projectId}/jobs/{jobId}',
+        relative_path='projects/{+projectId}/jobs/{+jobId}',
         request_field='',
         request_type_name='BigqueryJobsGetRequest',
         response_type_name='Job',
@@ -312,7 +347,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def GetQueryResults(self, request, global_params=None):
-      r"""Retrieves the results of a query job.
+      r"""RPC to get the results of a query job.
 
       Args:
         request: (BigqueryJobsGetQueryResultsRequest) input message
@@ -325,12 +360,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetQueryResults.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/queries/{queriesId}',
         http_method='GET',
         method_id='bigquery.jobs.getQueryResults',
         ordered_params=['projectId', 'jobId'],
         path_params=['jobId', 'projectId'],
-        query_params=['location', 'maxResults', 'pageToken', 'startIndex', 'timeoutMs'],
-        relative_path='projects/{projectId}/queries/{jobId}',
+        query_params=['formatOptions_useInt64Timestamp', 'location', 'maxResults', 'pageToken', 'startIndex', 'timeoutMs'],
+        relative_path='projects/{+projectId}/queries/{+jobId}',
         request_field='',
         request_type_name='BigqueryJobsGetQueryResultsRequest',
         response_type_name='GetQueryResultsResponse',
@@ -338,7 +374,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None, upload=None):
-      r"""Starts a new asynchronous job. Requires the Can View project role.
+      r"""Starts a new asynchronous job. This API has two different kinds of endpoint URIs, as this method supports a variety of use cases. * The *Metadata* URI is used for most interactions, as it accepts the job configuration directly. * The *Upload* URI is ONLY for the case when you're sending both a load job configuration and a data stream together. In this case, the Upload URI accepts the job configuration and the data as two distinct multipart MIME parts.
 
       Args:
         request: (BigqueryJobsInsertRequest) input message
@@ -355,12 +391,13 @@ class BigqueryV2(base_api.BaseApiClient):
           upload=upload, upload_config=upload_config)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/jobs',
         http_method='POST',
         method_id='bigquery.jobs.insert',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/jobs',
+        relative_path='projects/{+projectId}/jobs',
         request_field='job',
         request_type_name='BigqueryJobsInsertRequest',
         response_type_name='Job',
@@ -381,12 +418,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/jobs',
         http_method='GET',
         method_id='bigquery.jobs.list',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=['allUsers', 'maxCreationTime', 'maxResults', 'minCreationTime', 'pageToken', 'parentJobId', 'projection', 'stateFilter'],
-        relative_path='projects/{projectId}/jobs',
+        relative_path='projects/{+projectId}/jobs',
         request_field='',
         request_type_name='BigqueryJobsListRequest',
         response_type_name='JobList',
@@ -407,12 +445,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Query.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/queries',
         http_method='POST',
         method_id='bigquery.jobs.query',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/queries',
+        relative_path='projects/{+projectId}/queries',
         request_field='queryRequest',
         request_type_name='BigqueryJobsQueryRequest',
         response_type_name='QueryResponse',
@@ -548,7 +587,7 @@ class BigqueryV2(base_api.BaseApiClient):
           }
 
     def GetServiceAccount(self, request, global_params=None):
-      r"""Returns the email address of the service account for your project used for interactions with Google Cloud KMS.
+      r"""RPC to get the service account for a project used for interactions with Google Cloud KMS.
 
       Args:
         request: (BigqueryProjectsGetServiceAccountRequest) input message
@@ -561,12 +600,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     GetServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/serviceAccount',
         http_method='GET',
         method_id='bigquery.projects.getServiceAccount',
         ordered_params=['projectId'],
         path_params=['projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/serviceAccount',
+        relative_path='projects/{+projectId}/serviceAccount',
         request_field='',
         request_type_name='BigqueryProjectsGetServiceAccountRequest',
         response_type_name='GetServiceAccountResponse',
@@ -574,7 +614,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all projects to which you have been granted any project role.
+      r"""RPC to list projects to which the user has been granted any project role. Users of this method are encouraged to consider the [Resource Manager](https://cloud.google.com/resource-manager/docs/) API, which provides the underlying data for this method and has more capabilities.
 
       Args:
         request: (BigqueryProjectsListRequest) input message
@@ -846,7 +886,7 @@ class BigqueryV2(base_api.BaseApiClient):
           }
 
     def InsertAll(self, request, global_params=None):
-      r"""Streams data into BigQuery one record at a time without needing to run a load job. Requires the WRITER dataset role.
+      r"""Streams data into BigQuery one record at a time without needing to run a load job.
 
       Args:
         request: (BigqueryTabledataInsertAllRequest) input message
@@ -859,12 +899,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     InsertAll.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/insertAll',
         http_method='POST',
         method_id='bigquery.tabledata.insertAll',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}/insertAll',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}/insertAll',
         request_field='tableDataInsertAllRequest',
         request_type_name='BigqueryTabledataInsertAllRequest',
         response_type_name='TableDataInsertAllResponse',
@@ -872,7 +913,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves table data from a specified set of rows. Requires the READER dataset role.
+      r"""List the content of a table in rows.
 
       Args:
         request: (BigqueryTabledataListRequest) input message
@@ -885,12 +926,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}/data',
         http_method='GET',
         method_id='bigquery.tabledata.list',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
-        query_params=['maxResults', 'pageToken', 'selectedFields', 'startIndex'],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}/data',
+        query_params=['formatOptions_useInt64Timestamp', 'maxResults', 'pageToken', 'selectedFields', 'startIndex'],
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}/data',
         request_field='',
         request_type_name='BigqueryTabledataListRequest',
         response_type_name='TableDataList',
@@ -921,12 +963,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}',
         http_method='DELETE',
         method_id='bigquery.tables.delete',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}',
         request_field='',
         request_type_name='BigqueryTablesDeleteRequest',
         response_type_name='BigqueryTablesDeleteResponse',
@@ -947,12 +990,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}',
         http_method='GET',
         method_id='bigquery.tables.get',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
         query_params=['selectedFields', 'view'],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}',
         request_field='',
         request_type_name='BigqueryTablesGetRequest',
         response_type_name='Table',
@@ -1000,12 +1044,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Insert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables',
         http_method='POST',
         method_id='bigquery.tables.insert',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=[],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables',
         request_field='table',
         request_type_name='BigqueryTablesInsertRequest',
         response_type_name='Table',
@@ -1026,12 +1071,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables',
         http_method='GET',
         method_id='bigquery.tables.list',
         ordered_params=['projectId', 'datasetId'],
         path_params=['datasetId', 'projectId'],
         query_params=['maxResults', 'pageToken'],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables',
         request_field='',
         request_type_name='BigqueryTablesListRequest',
         response_type_name='TableList',
@@ -1039,7 +1085,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource. This method supports patch semantics.
+      r"""Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource. This method supports RFC5789 patch semantics.
 
       Args:
         request: (BigqueryTablesPatchRequest) input message
@@ -1052,12 +1098,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}',
         http_method='PATCH',
         method_id='bigquery.tables.patch',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
         query_params=['autodetect_schema'],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}',
         request_field='table',
         request_type_name='BigqueryTablesPatchRequest',
         response_type_name='Table',
@@ -1119,7 +1166,7 @@ class BigqueryV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates information in an existing table. The update method replaces the entire table resource, whereas the patch method only replaces fields that are provided in the submitted table resource.
+      r"""Updates information in an existing table. The update method replaces the entire Table resource, whereas the patch method only replaces fields that are provided in the submitted Table resource.
 
       Args:
         request: (BigqueryTablesUpdateRequest) input message
@@ -1132,12 +1179,13 @@ class BigqueryV2(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/tables/{tablesId}',
         http_method='PUT',
         method_id='bigquery.tables.update',
         ordered_params=['projectId', 'datasetId', 'tableId'],
         path_params=['datasetId', 'projectId', 'tableId'],
         query_params=['autodetect_schema'],
-        relative_path='projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
+        relative_path='projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}',
         request_field='table',
         request_type_name='BigqueryTablesUpdateRequest',
         response_type_name='Table',

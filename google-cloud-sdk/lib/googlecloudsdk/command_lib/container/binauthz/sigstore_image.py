@@ -19,8 +19,9 @@ import binascii
 import collections
 import copy
 import json
-from typing import Optional, Text, List
+from typing import List, Optional, Text
 
+from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_digest
 from containerregistry.client.v2_2 import docker_http
@@ -28,6 +29,7 @@ from containerregistry.client.v2_2 import docker_image
 from containerregistry.client.v2_2 import docker_session
 from containerregistry.transform.v2_2 import metadata
 from googlecloudsdk.api_lib.container.images import util
+from googlecloudsdk.command_lib.container.binauthz import util as binauthz_util
 from googlecloudsdk.core.exceptions import Error
 import httplib2
 
@@ -74,15 +76,24 @@ def AttestationToImageUrl(attestation):
   )
 
 
-def UploadAttestationToRegistry(image_url, attestation):
+def UploadAttestationToRegistry(
+    image_url, attestation, use_docker_creds=None, docker_config_dir=None
+):
   """Uploads a DSSE attestation to the registry.
 
   Args:
     image_url: The image url of the target image.
     attestation: The attestation referencing the target image in JSON DSSE form.
+    use_docker_creds: Whether to use the Docker configuration file for
+      authenticating to the registry.
+    docker_config_dir: Directory where Docker saves authentication settings.
   """
   http_obj = httplib2.Http()
-  target_image = docker_name.Digest(image_url)
+  # The registry name is deduced by splitting on the first '/' char. This will
+  # not work properly if the image url has a scheme.
+  target_image = docker_name.Digest(
+      binauthz_util.ReplaceImageUrlScheme(image_url, scheme='')
+  )
   # Sigstore scheme for tag based discovery.
   attestation_tag = docker_name.Tag(
       '{}/{}:sha256-{}.att'.format(
@@ -92,8 +103,14 @@ def UploadAttestationToRegistry(image_url, attestation):
       )
   )
 
-  # TODO(b/310721968): Add support for passing creds via a flag.
-  creds = util.CredentialProvider()
+  creds = None
+  if use_docker_creds:
+    keychain = docker_creds.DefaultKeychain
+    if docker_config_dir:
+      keychain.setCustomConfigDir(docker_config_dir)
+    creds = keychain.Resolve(docker_name.Registry(target_image.registry))
+  if creds is None or isinstance(creds, docker_creds.Anonymous):
+    creds = util.CredentialProvider()
 
   # Check if attestation image already exists and if so append a new layer.
   # Only check for Image Manifest Version 2, Schema 2 images since that format

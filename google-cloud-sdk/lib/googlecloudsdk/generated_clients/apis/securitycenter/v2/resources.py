@@ -81,58 +81,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  FOLDERS_SOURCES = (
-      'folders.sources',
-      'folders/{foldersId}/sources/{sourcesId}',
-      {},
-      ['foldersId', 'sourcesId'],
-      True
-  )
-  FOLDERS_SOURCES_FINDINGS = (
-      'folders.sources.findings',
-      'folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}',
-      {},
-      ['foldersId', 'sourcesId', 'findingsId'],
-      True
-  )
-  FOLDERS_SOURCES_FINDINGS_EXPLANATIONS = (
-      'folders.sources.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}/'
-              'explanations/{explanationsId}',
-      },
-      ['name'],
-      True
-  )
-  FOLDERS_SOURCES_LOCATIONS = (
-      'folders.sources.locations',
-      'folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}',
-      {},
-      ['foldersId', 'sourcesId', 'locationsId'],
-      True
-  )
-  FOLDERS_SOURCES_LOCATIONS_FINDINGS = (
-      'folders.sources.locations.findings',
-      'folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}/'
-      'findings/{findingsId}',
-      {},
-      ['foldersId', 'sourcesId', 'locationsId', 'findingsId'],
-      True
-  )
-  FOLDERS_SOURCES_LOCATIONS_FINDINGS_EXPLANATIONS = (
-      'folders.sources.locations.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/sources/{sourcesId}/locations/'
-              '{locationsId}/findings/{findingsId}/explanations/'
-              '{explanationsId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
@@ -280,35 +228,12 @@ class Collections(enum.Enum):
       ['organizationsId', 'sourcesId', 'findingId'],
       True
   )
-  ORGANIZATIONS_SOURCES_FINDINGS_EXPLANATIONS = (
-      'organizations.sources.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/sources/{sourcesId}/findings/'
-              '{findingsId}/explanations/{explanationsId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS_SOURCES_LOCATIONS_FINDINGS = (
       'organizations.sources.locations.findings',
       'organizations/{organizationsId}/sources/{sourcesId}/locations/'
       '{locationId}/findings/{findingId}',
       {},
       ['organizationsId', 'sourcesId', 'locationId', 'findingId'],
-      True
-  )
-  ORGANIZATIONS_SOURCES_LOCATIONS_FINDINGS_EXPLANATIONS = (
-      'organizations.sources.locations.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/sources/{sourcesId}/locations/'
-              '{locationsId}/findings/{findingsId}/explanations/'
-              '{explanationsId}',
-      },
-      ['name'],
       True
   )
   PROJECTS = (
@@ -364,58 +289,6 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/muteConfigs/{muteConfigsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_SOURCES = (
-      'projects.sources',
-      'projects/{projectsId}/sources/{sourcesId}',
-      {},
-      ['projectsId', 'sourcesId'],
-      True
-  )
-  PROJECTS_SOURCES_FINDINGS = (
-      'projects.sources.findings',
-      'projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}',
-      {},
-      ['projectsId', 'sourcesId', 'findingsId'],
-      True
-  )
-  PROJECTS_SOURCES_FINDINGS_EXPLANATIONS = (
-      'projects.sources.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/sources/{sourcesId}/findings/'
-              '{findingsId}/explanations/{explanationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_SOURCES_LOCATIONS = (
-      'projects.sources.locations',
-      'projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'sourcesId', 'locationsId'],
-      True
-  )
-  PROJECTS_SOURCES_LOCATIONS_FINDINGS = (
-      'projects.sources.locations.findings',
-      'projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}/'
-      'findings/{findingsId}',
-      {},
-      ['projectsId', 'sourcesId', 'locationsId', 'findingsId'],
-      True
-  )
-  PROJECTS_SOURCES_LOCATIONS_FINDINGS_EXPLANATIONS = (
-      'projects.sources.locations.findings.explanations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/sources/{sourcesId}/locations/'
-              '{locationsId}/findings/{findingsId}/explanations/'
-              '{explanationsId}',
       },
       ['name'],
       True

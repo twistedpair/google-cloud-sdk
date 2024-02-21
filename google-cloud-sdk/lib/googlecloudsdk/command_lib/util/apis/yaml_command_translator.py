@@ -329,7 +329,8 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       methods.append(registry.GetMethod(
           collection,
           method or self.spec.request.method,
-          self.spec.request.api_version))
+          self.spec.request.api_version,
+          disable_pagination=self.spec.request.disable_pagination))
     return methods
 
   def _CommonArgs(self, parser):
@@ -431,8 +432,8 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     response = method.Call(
         request,
-        limit=self.arg_generator.Limit(args, method),
-        page_size=self.arg_generator.PageSize(args, method))
+        limit=self.arg_generator.Limit(args),
+        page_size=self.arg_generator.PageSize(args))
     return ref, response
 
   def _Format(self, format_string, resource_ref, display_type,

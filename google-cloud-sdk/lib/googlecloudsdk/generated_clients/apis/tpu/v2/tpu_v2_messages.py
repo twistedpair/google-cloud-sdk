@@ -836,6 +836,7 @@ class QueuedResource(_messages.Message):
   in a queue and fulfilled when the necessary resources are available.
 
   Fields:
+    createTime: Output only. The time when the QueuedResource was created.
     guaranteed: Optional. The Guaranteed tier
     name: Output only. Immutable. The name of the QueuedResource.
     queueingPolicy: Optional. The queueing policy of the QueuedRequest.
@@ -847,13 +848,14 @@ class QueuedResource(_messages.Message):
     tpu: Optional. Defines a TPU resource.
   """
 
-  guaranteed = _messages.MessageField('Guaranteed', 1)
-  name = _messages.StringField(2)
-  queueingPolicy = _messages.MessageField('QueueingPolicy', 3)
-  reservationName = _messages.StringField(4)
-  spot = _messages.MessageField('Spot', 5)
-  state = _messages.MessageField('QueuedResourceState', 6)
-  tpu = _messages.MessageField('Tpu', 7)
+  createTime = _messages.StringField(1)
+  guaranteed = _messages.MessageField('Guaranteed', 2)
+  name = _messages.StringField(3)
+  queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
+  reservationName = _messages.StringField(5)
+  spot = _messages.MessageField('Spot', 6)
+  state = _messages.MessageField('QueuedResourceState', 7)
+  tpu = _messages.MessageField('Tpu', 8)
 
 
 class QueuedResourceState(_messages.Message):
@@ -861,6 +863,9 @@ class QueuedResourceState(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. State of the QueuedResource request.
+    StateInitiatorValueValuesEnum: Output only. The initiator of the
+      QueuedResources's current state. Used to indicate whether the
+      SUSPENDING/SUSPENDED state was initiated by the user or the service.
 
   Fields:
     acceptedData: Output only. Further data for the accepted state.
@@ -870,9 +875,26 @@ class QueuedResourceState(_messages.Message):
     failedData: Output only. Further data for the failed state.
     provisioningData: Output only. Further data for the provisioning state.
     state: Output only. State of the QueuedResource request.
+    stateInitiator: Output only. The initiator of the QueuedResources's
+      current state. Used to indicate whether the SUSPENDING/SUSPENDED state
+      was initiated by the user or the service.
     suspendedData: Output only. Further data for the suspended state.
     suspendingData: Output only. Further data for the suspending state.
   """
+
+  class StateInitiatorValueValuesEnum(_messages.Enum):
+    r"""Output only. The initiator of the QueuedResources's current state.
+    Used to indicate whether the SUSPENDING/SUSPENDED state was initiated by
+    the user or the service.
+
+    Values:
+      STATE_INITIATOR_UNSPECIFIED: The state initiator is unspecified.
+      USER: The current QueuedResource state was initiated by the user.
+      SERVICE: The current QueuedResource state was initiated by the service.
+    """
+    STATE_INITIATOR_UNSPECIFIED = 0
+    USER = 1
+    SERVICE = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the QueuedResource request.
@@ -927,8 +949,9 @@ class QueuedResourceState(_messages.Message):
   failedData = _messages.MessageField('FailedData', 5)
   provisioningData = _messages.MessageField('ProvisioningData', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  suspendedData = _messages.MessageField('SuspendedData', 8)
-  suspendingData = _messages.MessageField('SuspendingData', 9)
+  stateInitiator = _messages.EnumField('StateInitiatorValueValuesEnum', 8)
+  suspendedData = _messages.MessageField('SuspendedData', 9)
+  suspendingData = _messages.MessageField('SuspendingData', 10)
 
 
 class QueueingPolicy(_messages.Message):

@@ -804,6 +804,47 @@ class ConfigProjectsLocationsPreviewsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ConfigProjectsLocationsTerraformVersionsGetRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsTerraformVersionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the TerraformVersion. Format: 'projects/{proje
+      ct_id}/locations/{location}/terraformVersions/{terraform_version}'
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsTerraformVersionsListRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsTerraformVersionsListRequest object.
+
+  Fields:
+    filter: Optional. Lists the TerraformVersions that match the filter
+      expression. A filter expression filters the resources listed in the
+      response. The expression must be of the form '{field} {operator}
+      {value}' where operators: '<', '>', '<=', '>=', '!=', '=', ':' are
+      supported (colon ':' represents a HAS operator which is roughly
+      synonymous with equality). {field} can refer to a proto or JSON field,
+      or a synthetic field. Field names can be camelCase or snake_case.
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. When requesting a page of resources, 'page_size'
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      'ListTerraformVersions' which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent in whose context the Deployments are listed.
+      The parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DeleteStatefileRequest(_messages.Message):
   r"""A request to delete a state file passed to a 'DeleteStatefile' call.
 
@@ -874,6 +915,11 @@ class Deployment(_messages.Message):
     tfErrors: Output only. Errors encountered when deleting this deployment.
       Errors are truncated to 10 entries, see `delete_results` and
       `error_logs` for full details.
+    tfVersion: Output only. The current Terraform version set on the
+      deployment. It is in the format of "Major.Minor.Patch", for example,
+      "1.3.10".
+    tfVersionConstraint: Optional. The user-specified Terraform version
+      constraint. Example: "=1.3.10".
     updateTime: Output only. Time when the deployment was last modified.
     workerPool: Optional. The user-specified Cloud Build worker pool resource
       in which the Cloud Build job will execute. Format:
@@ -993,8 +1039,10 @@ class Deployment(_messages.Message):
   stateDetail = _messages.StringField(15)
   terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
   tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
-  updateTime = _messages.StringField(18)
-  workerPool = _messages.StringField(19)
+  tfVersion = _messages.StringField(18)
+  tfVersionConstraint = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workerPool = _messages.StringField(21)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -1244,6 +1292,21 @@ class ListRevisionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   revisions = _messages.MessageField('Revision', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListTerraformVersionsResponse(_messages.Message):
+  r"""The response message for the `ListTerraformVersions` method.
+
+  Fields:
+    nextPageToken: Token to be supplied to the next ListTerraformVersions
+      request via `page_token` to obtain the next set of results.
+    terraformVersions: List of TerraformVersions.
+    unreachable: Unreachable resources, if any.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  terraformVersions = _messages.MessageField('TerraformVersion', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -1975,6 +2038,11 @@ class Revision(_messages.Message):
     tfErrors: Output only. Errors encountered when creating or updating this
       deployment. Errors are truncated to 10 entries, see `delete_results` and
       `error_logs` for full details.
+    tfVersion: Output only. The version of Terraform used to create the
+      Revision. It is in the format of "Major.Minor.Patch", for example,
+      "1.3.10".
+    tfVersionConstraint: Output only. The user-specified Terraform version
+      constraint. Example: "=1.3.10".
     updateTime: Output only. Time when the revision was last modified.
     workerPool: Output only. The user-specified Cloud Build worker pool
       resource in which the Cloud Build job will execute. Format:
@@ -2044,8 +2112,10 @@ class Revision(_messages.Message):
   stateDetail = _messages.StringField(12)
   terraformBlueprint = _messages.MessageField('TerraformBlueprint', 13)
   tfErrors = _messages.MessageField('TerraformError', 14, repeated=True)
-  updateTime = _messages.StringField(15)
-  workerPool = _messages.StringField(16)
+  tfVersion = _messages.StringField(15)
+  tfVersionConstraint = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  workerPool = _messages.StringField(18)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2275,6 +2345,46 @@ class TerraformVariable(_messages.Message):
   """
 
   inputValue = _messages.MessageField('extra_types.JsonValue', 1)
+
+
+class TerraformVersion(_messages.Message):
+  r"""A TerraformVersion represents the support state the corresponding
+  Terraform version.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the version, ACTIVE,
+      DEPRECATED or OBSOLETE.
+
+  Fields:
+    deprecateTime: Output only. When the version is deprecated.
+    name: Identifier. The version name, which is the version string, for
+      example "1.3.10".
+    obsoleteTime: Output only. When the version is obsolete.
+    state: Output only. The state of the version, ACTIVE, DEPRECATED or
+      OBSOLETE.
+    supportTime: Output only. When the version is supported .
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the version, ACTIVE, DEPRECATED or OBSOLETE.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: The version is actively supported.
+      DEPRECATED: The version is deprecated.
+      OBSOLETE: The version is obsolete.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DEPRECATED = 2
+    OBSOLETE = 3
+
+  deprecateTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  obsoleteTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  supportTime = _messages.StringField(5)
 
 
 class TestIamPermissionsRequest(_messages.Message):

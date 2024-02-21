@@ -462,13 +462,13 @@ class DeclarativeArgumentGenerator(object):
         api_version=method.collection.api_version,
         params=parent_ref.AsDict())
 
-  def Limit(self, namespace, method):
+  def Limit(self, namespace):
     """Gets the value of the limit flag (if present)."""
-    return arg_utils.Limit(method, namespace)
+    return getattr(namespace, 'limit', None)
 
-  def PageSize(self, namespace, method):
+  def PageSize(self, namespace):
     """Gets the value of the page size flag (if present)."""
-    return arg_utils.PageSize(method, namespace)
+    return getattr(namespace, 'page_size', None)
 
 
 class AutoArgumentGenerator(object):
@@ -500,7 +500,7 @@ class AutoArgumentGenerator(object):
     self.is_atomic = self.method.detailed_params != self.method.params
 
     self.ignored_fields = set()
-    if not raw and self.method.IsPageableList():
+    if not raw and self.method.HasTokenizedRequest():
       self.ignored_fields |= AutoArgumentGenerator.IGNORABLE_LIST_FIELDS
       batch_page_size_field = self.method.BatchPageSizeField()
       if batch_page_size_field:
@@ -561,12 +561,16 @@ class AutoArgumentGenerator(object):
   def Limit(self, namespace):
     """Gets the value of the limit flag (if present)."""
     if not self.raw:
-      return arg_utils.Limit(self.method, namespace)
+      return getattr(namespace, 'limit', None)
+    else:
+      return None
 
   def PageSize(self, namespace):
     """Gets the value of the page size flag (if present)."""
     if not self.raw:
-      return arg_utils.PageSize(self.method, namespace)
+      return getattr(namespace, 'page_size', None)
+    else:
+      return None
 
   def _GenerateListMethodFlags(self):
     """Generates all the CLI flags for a List command.
@@ -578,7 +582,7 @@ class AutoArgumentGenerator(object):
     if not self.raw and self.method.IsList():
       flags.append(base.FILTER_FLAG)
       flags.append(base.SORT_BY_FLAG)
-      if self.method.IsPageableList() and self.method.ListItemField():
+      if self.method.HasTokenizedRequest() and self.method.ListItemField():
         # We can use YieldFromList() with a limit.
         flags.append(base.LIMIT_FLAG)
         if self.method.BatchPageSizeField():

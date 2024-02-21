@@ -187,6 +187,19 @@ def FleetOrgParentName(organization, location='global'):
   return 'organizations/{0}/locations/{1}'.format(organization, location)
 
 
+def ScopeParentName(project, release_track=base.ReleaseTrack.ALPHA):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Parse(
+      line=None,
+      params={
+          'projectsId': project,
+          'locationsId': 'global',
+      },
+      collection='gkehub.projects.locations',
+      api_version=VERSION_MAP[release_track],
+  ).RelativeName()
+
+
 def NamespaceParentName(project, release_track=base.ReleaseTrack.ALPHA):
   # See command_lib/container/fleet/resources.yaml
   return resources.REGISTRY.Parse(

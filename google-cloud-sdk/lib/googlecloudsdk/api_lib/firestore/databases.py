@@ -51,6 +51,7 @@ def CreateDatabase(
     database_type,
     delete_protection_state,
     pitr_state,
+    cmek_config,
 ):
   """Performs a Firestore Admin v1 Database Creation.
 
@@ -61,6 +62,7 @@ def CreateDatabase(
     database_type: the database type, an Enum.
     delete_protection_state: the value for deleteProtectionState, an Enum.
     pitr_state: the value for PitrState, an Enum.
+    cmek_config: the CMEK config used to encrypt the database, an object
 
   Returns:
     an Operation.
@@ -75,6 +77,7 @@ def CreateDatabase(
               locationId=location,
               deleteProtectionState=delete_protection_state,
               pointInTimeRecoveryEnablement=pitr_state,
+              cmekConfig=cmek_config,
           ),
       )
   )

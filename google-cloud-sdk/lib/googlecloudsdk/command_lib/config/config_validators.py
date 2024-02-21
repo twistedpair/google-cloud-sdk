@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import os
 
 from apitools.base.py import exceptions as apitools_exceptions
-
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import base_classes
 from googlecloudsdk.api_lib.compute import lister
@@ -73,20 +72,99 @@ def WarnIfSettingApiEndpointOverrideOutsideOfConfigUniverse(value, prop):
   """Warn if setting 'api_endpoint_overrides/<api>' outside universe_domain."""
   universe_domain = properties.VALUES.core.universe_domain.Get()
   if universe_domain not in value:
-    endpoint_override_domain_mismatch_msg = (
-        'The value set for [{0}] was found to be'
-        ' associated with a universe domain outside of the current config'
-        ' universe [{1}].'
-    )
     log.warning(
-        endpoint_override_domain_mismatch_msg.format(prop, universe_domain)
+        f'The value set for [{prop}] was found to be associated with a universe'
+        f' domain outside of the current config universe [{universe_domain}].'
+        ' Please create a new gcloud configuration for each universe domain'
+        ' you make requests to using `gcloud config configurations create`'
+        ' with the `--universe-domain` flag or switch to a configuration'
+        f' associated with [{value}].'
+    )
+    return True
+  return False
+
+
+def WarnIfSettingAccountOutsideOfConfigUniverse(
+    account: str, account_universe_domain: str
+) -> bool:
+  """Warn if setting an account belonging to a different universe_domain.
+
+  This warning should only be displayed if the user sets their active account
+  to an existing credentialed account which does not match the config
+  universe_domain. If the user sets their active account to an uncredentialed
+  account, there is no way to determine what universe the account belongs to so
+  we do not warn in that case.
+
+  Args:
+    account: The account to set [core/account] property to.
+    account_universe_domain: The respective account universe domain.
+
+  Returns:
+   (Boolean) True if the account is outside of the configuration universe_domain
+   and warning is logged. False otherwise.
+  """
+  config_universe_domain = properties.VALUES.core.universe_domain.Get()
+  if (
+      account_universe_domain
+      and account_universe_domain != config_universe_domain
+  ):
+    log.warning(
+        f'This account [{account}] is from the universe domain'
+        f' [{account_universe_domain}] which does not match the current'
+        f' [core/universe_domain] property [{config_universe_domain}]. Update'
+        ' them to match or create a new gcloud configuration for this universe'
+        ' domain using `gcloud config configurations create` with the'
+        ' `--universe-domain` flag or switch to a configuration associated with'
+        f' [{account_universe_domain}].'
+    )
+    return True
+  return False
+
+
+def WarnIfSettingUniverseDomainOutsideOfConfigAccountUniverse(
+    universe_domain: str,
+) -> bool:
+  """Warn if setting a universe domain mismatched to config account domain.
+
+  This warning should only be displayed if the user sets their universe domain
+  property to a universe domain not associated with the current credentialed
+  account. If the user has their config set to an uncredentialed account, there
+  is no way to determine what universe that account belongs to so we do not warn
+  in that case.
+
+  Args:
+    universe_domain: The universe domain to set [core/universe_domain] property
+      to.
+
+  Returns:
+    (Boolean) True if the provided universe_domain is outside of the
+    configuration universe_domain and warning is logged. False otherwise.
+  """
+  config_account = properties.VALUES.core.account.Get()
+  all_cred_accounts = c_store.AllAccountsWithUniverseDomains()
+
+  for cred_account in all_cred_accounts:
+    if cred_account.account == config_account:
+      cred_universe_domain = cred_account.universe_domain
+      break
+  else:
+    cred_universe_domain = None
+  if cred_universe_domain and cred_universe_domain != universe_domain:
+    log.warning(
+        f'The config account [{config_account}] is from the universe domain'
+        f' [{cred_universe_domain}] which does not match the'
+        f' [core/universe_domain] property [{universe_domain}] provided. Update'
+        ' them to match or create a new gcloud configuration for this universe'
+        ' domain using `gcloud config configurations create` with the'
+        ' `--universe-domain` flag or switch to a configuration associated with'
+        f' [{cred_universe_domain}].'
     )
     return True
   return False
 
 
 def WarnIfSettingProjectWhenAdcExists(project):
-  """Warns to update ADC if ADC file contains a different quota_project.
+  """Warn to update ADC if ADC file contains a different quota_project.
 
   Args:
     project: a new project to compare with quota_project in the ADC file.
@@ -137,7 +215,7 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
 
 
 def WarnIfActivateUseClientCertificate(value):
-  """Warns if setting context_aware/use_client_certificate to truthy."""
+  """Warn if setting context_aware/use_client_certificate to truthy."""
   if value.lower() in ['1', 'true', 'on', 'yes', 'y']:
     mtls_not_supported_msg = (
         'Some services may not support client certificate authorization in '

@@ -34,7 +34,7 @@ class BadImageUrlError(Error):
   """Raised when a container image URL cannot be parsed successfully."""
 
 
-def _ReplaceImageUrlScheme(image_url, scheme):
+def ReplaceImageUrlScheme(image_url, scheme):
   """Returns the passed `image_url` with the scheme replaced.
 
   Args:
@@ -80,7 +80,7 @@ def MakeSignaturePayloadDict(container_image_url):
     Dictionary of nested dictionaries and strings, suitable for passing to
     `json.dumps` or similar.
   """
-  url = _ReplaceImageUrlScheme(image_url=container_image_url, scheme='')
+  url = ReplaceImageUrlScheme(image_url=container_image_url, scheme='')
   try:
     repo_digest = docker_name.Digest(url)
   except docker_name.BadNameException as e:
@@ -137,7 +137,7 @@ def RemoveArtifactUrlScheme(artifact_url):
   Returns:
     The URL with the scheme removed.
   """
-  url_without_scheme = _ReplaceImageUrlScheme(artifact_url, scheme='')
+  url_without_scheme = ReplaceImageUrlScheme(artifact_url, scheme='')
   try:
     # The validation logic in `docker_name` silently produces incorrect results
     # if the passed URL has a scheme.
@@ -156,7 +156,8 @@ def GetImageDigest(artifact_url):
   Returns:
     The image digest. e.g. "sha256:123"
   """
-  url_without_scheme = _ReplaceImageUrlScheme(artifact_url, scheme='')
+  url_without_scheme = ReplaceImageUrlScheme(artifact_url, scheme='')
+
   try:
     # The validation logic in `docker_name` silently produces incorrect results
     # if the passed URL has a scheme.

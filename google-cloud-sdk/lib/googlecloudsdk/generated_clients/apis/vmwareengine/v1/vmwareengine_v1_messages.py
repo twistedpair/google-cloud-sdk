@@ -147,7 +147,8 @@ class AutoscalingSettings(_messages.Message):
       autoscaling policy for compute nodes.
     coolDownPeriod: Optional. The minimum duration between consecutive
       autoscale operations. It starts once addition or removal of nodes is
-      fully completed. Defaults to 0 if not specified.
+      fully completed. Defaults to 30 minutes if not specified. Cool down
+      period must be in whole minutes (for example, 30, 31, 50, 180 minutes).
     maxClusterNodeCount: Optional. Maximum number of nodes of any type in a
       cluster. If not specified the default limits apply.
     minClusterNodeCount: Optional. Minimum number of nodes of any type in a
@@ -268,7 +269,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -401,9 +406,10 @@ class DnsBindPermission(_messages.Message):
     name: Required. Output only. The name of the resource which stores the
       users/service accounts having the permission to bind to the
       corresponding intranet VPC of the consumer project. DnsBindPermission is
-      a global resource. Resource names are schemeless URIs that follow the
-      conventions in https://cloud.google.com/apis/design/resource_names. For
-      example: `projects/my-project/locations/global/dnsBindPermission`
+      a global resource and location can only be global. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
     principals: Output only. Users/Service accounts which have access for
       binding on the intranet VPC project corresponding to the consumer
       project.
@@ -1373,6 +1379,8 @@ class ManagementCluster(_messages.Message):
       (corresponds to the `NodeType`).
 
   Fields:
+    autoscalingSettings: Optional. Configuration of the autoscaling applied to
+      this cluster.
     clusterId: Required. The user-provided identifier of the new `Cluster`.
       The identifier must meet the following requirements: * Only contains
       1-63 alphanumeric characters and hyphens * Begins with an alphabetical
@@ -1419,12 +1427,13 @@ class ManagementCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterId = _messages.StringField(1)
-  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeCustomCoreCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 4)
-  nodeTypeId = _messages.StringField(5)
-  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 6)
+  autoscalingSettings = _messages.MessageField('AutoscalingSettings', 1)
+  clusterId = _messages.StringField(2)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeCustomCoreCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 5)
+  nodeTypeId = _messages.StringField(6)
+  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 7)
 
 
 class ManagementDnsZoneBinding(_messages.Message):
@@ -1568,8 +1577,9 @@ class NetworkPeering(_messages.Message):
       is true. IPv4 special-use ranges
       (https://en.wikipedia.org/wiki/IPv4#Special_addresses) are always
       imported to peers and are not controlled by this field.
-    name: Output only. The resource name of the network peering. Resource
-      names are scheme-less URIs that follow the conventions in
+    name: Output only. The resource name of the network peering.
+      NetworkPeering is a global resource and location can only be global.
+      Resource names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
     peerMtu: Optional. Maximum transmission unit (MTU) in bytes. The default
@@ -1831,6 +1841,8 @@ class NodeType(_messages.Message):
     families: Output only. Families of the node type. For node types to be in
       the same cluster they must share at least one element in the `families`.
     kind: Output only. The type of the resource.
+    maxClusterCapacityPercent: Output only. Maximum capacity of the node type
+      in the cluster.
     memoryGb: Output only. The amount of physical memory available, defined in
       GB.
     name: Output only. The resource name of this node type. Resource names are
@@ -1874,11 +1886,12 @@ class NodeType(_messages.Message):
   displayName = _messages.StringField(4)
   families = _messages.StringField(5, repeated=True)
   kind = _messages.EnumField('KindValueValuesEnum', 6)
-  memoryGb = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  name = _messages.StringField(8)
-  nodeTypeId = _messages.StringField(9)
-  totalCoreCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  virtualCpuCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  maxClusterCapacityPercent = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  name = _messages.StringField(9)
+  nodeTypeId = _messages.StringField(10)
+  totalCoreCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  virtualCpuCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
 
 
 class NodeTypeConfig(_messages.Message):
@@ -2998,6 +3011,57 @@ class VmwareEngineNetwork(_messages.Message):
   vpcNetworks = _messages.MessageField('VpcNetwork', 9, repeated=True)
 
 
+class VmwareengineProjectsLocationsDnsBindPermissionGrantRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDnsBindPermissionGrantRequest object.
+
+  Fields:
+    grantDnsBindPermissionRequest: A GrantDnsBindPermissionRequest resource to
+      be passed as the request body.
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
+  """
+
+  grantDnsBindPermissionRequest = _messages.MessageField('GrantDnsBindPermissionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsDnsBindPermissionRevokeRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsDnsBindPermissionRevokeRequest object.
+
+  Fields:
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
+    revokeDnsBindPermissionRequest: A RevokeDnsBindPermissionRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  revokeDnsBindPermissionRequest = _messages.MessageField('RevokeDnsBindPermissionRequest', 2)
+
+
+class VmwareengineProjectsLocationsGetDnsBindPermissionRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsGetDnsBindPermissionRequest object.
+
+  Fields:
+    name: Required. The name of the resource which stores the users/service
+      accounts having the permission to bind to the corresponding intranet VPC
+      of the consumer project. DnsBindPermission is a global resource.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/global/dnsBindPermission`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class VmwareengineProjectsLocationsGetProjectStateRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsGetProjectStateRequest object.
 
@@ -3019,62 +3083,28 @@ class VmwareengineProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest
-  object.
+class VmwareengineProjectsLocationsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsListRequest object.
 
   Fields:
-    grantDnsBindPermissionRequest: A GrantDnsBindPermissionRequest resource to
-      be passed as the request body.
-    name: Required. The name of the resource which stores the users/service
-      accounts having the permission to bind to the corresponding intranet VPC
-      of the consumer project. DnsBindPermission is a global resource.
-      Resource names are schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/global/dnsBindPermission`
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like `"displayName=tokyo"`, and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
+    name: The resource that owns the locations collection, if applicable.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
-  grantDnsBindPermissionRequest = _messages.MessageField('GrantDnsBindPermissionRequest', 1)
+  filter = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest
-  object.
-
-  Fields:
-    name: Required. The name of the resource which stores the users/service
-      accounts having the permission to bind to the corresponding intranet VPC
-      of the consumer project. DnsBindPermission is a global resource.
-      Resource names are schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/global/dnsBindPermission`
-    revokeDnsBindPermissionRequest: A RevokeDnsBindPermissionRequest resource
-      to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  revokeDnsBindPermissionRequest = _messages.MessageField('RevokeDnsBindPermissionRequest', 2)
-
-
-class VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest object.
-
-  Fields:
-    name: Required. The name of the resource which stores the users/service
-      accounts having the permission to bind to the corresponding intranet VPC
-      of the consumer project. DnsBindPermission is a global resource.
-      Resource names are schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
-      `projects/my-project/locations/global/dnsBindPermission`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest
-  object.
+class VmwareengineProjectsLocationsNetworkPeeringsCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsCreateRequest object.
 
   Fields:
     networkPeering: A NetworkPeering resource to be passed as the request
@@ -3113,9 +3143,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest(_messages.
   requestId = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest
-  object.
+class VmwareengineProjectsLocationsNetworkPeeringsDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsDeleteRequest object.
 
   Fields:
     name: Required. The resource name of the network peering to be deleted.
@@ -3140,8 +3169,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest(_messages.
   requestId = _messages.StringField(2)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest object.
+class VmwareengineProjectsLocationsNetworkPeeringsGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsGetRequest object.
 
   Fields:
     name: Required. The resource name of the network peering to retrieve.
@@ -3153,8 +3182,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest(_messages.Mes
   name = _messages.StringField(1, required=True)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest object.
+class VmwareengineProjectsLocationsNetworkPeeringsListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsListRequest object.
 
   Fields:
     filter: A filter expression that matches resources returned in the
@@ -3195,12 +3224,13 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest object.
+class VmwareengineProjectsLocationsNetworkPeeringsPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the network peering. Resource
-      names are scheme-less URIs that follow the conventions in
+    name: Output only. The resource name of the network peering.
+      NetworkPeering is a global resource and location can only be global.
+      Resource names are scheme-less URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/global/networkPeerings/my-peering`
     networkPeering: A NetworkPeering resource to be passed as the request
@@ -3230,9 +3260,8 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest(_messages.M
   updateMask = _messages.StringField(4)
 
 
-class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
-  r"""A
-  VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
+class VmwareengineProjectsLocationsNetworkPeeringsPeeringRoutesListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPeeringsPeeringRoutesListRequest
   object.
 
   Fields:
@@ -3260,26 +3289,6 @@ class VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
-
-
-class VmwareengineProjectsLocationsListRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsListRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(_messages.Message):

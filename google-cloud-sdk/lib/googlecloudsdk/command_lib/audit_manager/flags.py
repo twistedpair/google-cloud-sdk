@@ -145,7 +145,7 @@ def AddEligibleDestinationsFlags(parser, required=True):
   group = parser.add_group(required=required)
   group.add_argument(
       '--eligible-gcs-buckets',
-      metavar='GCS URI',
+      metavar='BUCKET URI',
       type=arg_parsers.ArgList(min_length=1),
       help=(
           'Eligible cloud storage buckets where report and evidence can be'

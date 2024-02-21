@@ -1151,8 +1151,9 @@ def ValidateDiskBootFlags(args, enable_kms=False):
     boot_disk_specified = True
 
   if args.IsSpecified('boot_disk_provisioned_iops'):
-    if (not args.IsSpecified('boot_disk_type') or
-        not disks_util.IsProvisioingTypeIops(args.boot_disk_type)):
+    if not args.IsSpecified(
+        'boot_disk_type'
+    ) or not disks_util.IsProvisioningTypeIops(args.boot_disk_type):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-provisioned-iops',
           '--boot-disk-provisioned-iops cannot be used with the given disk '

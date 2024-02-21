@@ -60,3 +60,7 @@ class SafetyError(exceptions.Error):
 
 class InvalidConfigYaml(exceptions.Error):
   """For when a membership configuration is invalid or could not be parsed."""
+
+
+class MissingFleetDefaultMemberConfig(exceptions.Error):
+  """For when the fleet default member config is required but missing."""

@@ -1013,6 +1013,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'cloudnumberregistry': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudnumberregistry.v1alpha',
+                    client_classpath='cloudnumberregistry_v1alpha_client.CloudnumberregistryV1alpha',
+                    base_url='https://cloudnumberregistry.googleapis.com/',
+                    messages_modulepath='cloudnumberregistry_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'cloudquotas': {
         'v1':
             APIDef(
@@ -3141,6 +3153,18 @@ MAP = {
                     client_classpath='sddc_v1alpha1_client.SddcV1alpha1',
                     base_url='https://sddc.googleapis.com/',
                     messages_modulepath='sddc_v1alpha1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'seclm': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.seclm.v1alpha',
+                    client_classpath='seclm_v1alpha_client.SeclmV1alpha',
+                    base_url='https://seclm.googleapis.com/',
+                    messages_modulepath='seclm_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

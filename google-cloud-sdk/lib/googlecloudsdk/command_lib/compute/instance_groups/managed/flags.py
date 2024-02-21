@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
+from typing import Any
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -605,3 +607,58 @@ def AddMigResourceManagerTagsFlags(parser):
       Specifies a list of resource manager tags to apply to the managed instance group.
       """,
   )
+
+
+def AddInstanceFlexibilityPolicyArgs(
+    parser: Any,
+) -> None:
+  """Adds instance flexibility policy args."""
+  parser.add_argument(
+      '--instance-selection-machine-types',
+      type=arg_parsers.ArgList(),
+      metavar='MACHINE_TYPE',
+      help=(
+          'Primary machine types to use for the Compute Engine instances that'
+          ' will be created with the managed instance group. If not provided,'
+          ' machine type specified in the instance template will be used.'
+      ),
+  )
+  parser.add_argument(
+      '--instance-selection',
+      help=(
+          'Named selection of machine types with an optional rank. '
+          'eg. --instance-selection="name=instance-selection-1,machine-type=e2-standard-8,machine-type=t2d-standard-8,rank=0"'
+      ),
+      metavar='name=NAME,machine-type=MACHINE_TYPE[,machine-type=MACHINE_TYPE...][,rank=RANK]',
+      type=ArgMultiValueDict(),
+      action=arg_parsers.FlattenAction(),
+  )
+
+
+class ArgMultiValueDict:
+  """Converts argument values into multi-valued mappings.
+
+  Values for the repeated keys are collected in a list.
+  """
+
+  def __init__(self):
+    ops = '='
+    key_op_value_pattern = '([^{ops}]+)([{ops}]?)(.*)'.format(ops=ops)
+    self._key_op_value = re.compile(key_op_value_pattern, re.DOTALL)
+
+  def __call__(self, arg_value):
+    arg_list = [item.strip() for item in arg_value.split(',')]
+    arg_dict = collections.OrderedDict()
+    for arg in arg_list:
+      match = self._key_op_value.match(arg)
+      if not match:
+        raise arg_parsers.ArgumentTypeError(
+            'Invalid flag value [{0}]'.format(arg)
+        )
+      key, _, value = (
+          match.group(1).strip(),
+          match.group(2),
+          match.group(3).strip(),
+      )
+      arg_dict.setdefault(key, []).append(value)
+    return arg_dict

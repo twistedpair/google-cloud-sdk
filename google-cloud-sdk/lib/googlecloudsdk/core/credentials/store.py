@@ -28,6 +28,7 @@ import json
 import os
 import textwrap
 import time
+from typing import Optional
 
 import dateutil
 from google.auth import exceptions as google_auth_exceptions
@@ -357,6 +358,27 @@ def AllAccountsWithUniverseDomains():
   return result
 
 
+def GetCredentialedAccountUniverseDomain(account: str) -> Optional[str]:
+  """Get the universe domain of a credentialed account.
+
+  Args:
+    account: The account to get the universe domain for.
+
+  Returns:
+    The credentialed account's universe domain if exists. None otherwise.
+  """
+  all_cred_accounts = AllAccountsWithUniverseDomains()
+  cred_account = next(
+      (
+          cred_account
+          for cred_account in all_cred_accounts
+          if cred_account.account == account
+      ),
+      None,
+  )
+  return cred_account.universe_domain if cred_account else None
+
+
 def AvailableAccounts():
   """Get all accounts that have credentials stored for the CloudSDK.
 
@@ -365,7 +387,6 @@ def AvailableAccounts():
 
   Returns:
     [str], List of the accounts.
-
   """
   store = c_creds.GetCredentialStore()
   accounts = store.GetAccounts() | STATIC_CREDENTIAL_PROVIDERS.GetAccounts()

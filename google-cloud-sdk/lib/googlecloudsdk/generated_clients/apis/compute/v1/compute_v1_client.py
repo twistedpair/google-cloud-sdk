@@ -65,6 +65,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.instanceGroups = self.InstanceGroupsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
+    self.instantSnapshots = self.InstantSnapshotsService(self)
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
     self.interconnectRemoteLocations = self.InterconnectRemoteLocationsService(self)
@@ -96,6 +97,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
+    self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
@@ -145,7 +147,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of accelerator types.
+      r"""Retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAcceleratorTypesAggregatedListRequest) input message
@@ -233,7 +235,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of addresses.
+      r"""Retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAddressesAggregatedListRequest) input message
@@ -425,7 +427,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of autoscalers.
+      r"""Retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAutoscalersAggregatedListRequest) input message
@@ -965,7 +967,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeBackendServicesAggregatedListRequest) input message
@@ -1365,7 +1367,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of disk types.
+      r"""Retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDiskTypesAggregatedListRequest) input message
@@ -1479,7 +1481,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of persistent disks.
+      r"""Retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDisksAggregatedListRequest) input message
@@ -2741,7 +2743,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of forwarding rules.
+      r"""Retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeForwardingRulesAggregatedListRequest) input message
@@ -3509,7 +3511,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all operations.
+      r"""Retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeGlobalOperationsAggregatedListRequest) input message
@@ -3877,7 +3879,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeHealthChecksAggregatedListRequest) input message
@@ -4759,7 +4761,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups and groups them by zone.
+      r"""Retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupManagersAggregatedListRequest) input message
@@ -5289,7 +5291,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of instance groups and sorts them by zone.
+      r"""Retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupsAggregatedListRequest) input message
@@ -5507,7 +5509,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceTemplatesAggregatedListRequest) input message
@@ -5777,7 +5779,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -6972,6 +6974,250 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class InstantSnapshotsService(base_api.BaseApiService):
+    """Service class for the instantSnapshots resource."""
+
+    _NAME = 'instantSnapshots'
+
+    def __init__(self, client):
+      super(ComputeV1.InstantSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeInstantSnapshotsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshots.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/instantSnapshots',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsAggregatedListRequest',
+        response_type_name='InstantSnapshotAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+
+      Args:
+        request: (ComputeInstantSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.instantSnapshots.delete',
+        ordered_params=['project', 'zone', 'instantSnapshot'],
+        path_params=['instantSnapshot', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InstantSnapshot resource in the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshots.get',
+        ordered_params=['project', 'zone', 'instantSnapshot'],
+        path_params=['instantSnapshot', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsGetRequest',
+        response_type_name='InstantSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeInstantSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshots.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an instant snapshot in the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshots.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots',
+        request_field='instantSnapshot',
+        request_type_name='ComputeInstantSnapshotsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of InstantSnapshot resources contained within the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshots.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsListRequest',
+        response_type_name='InstantSnapshotList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeInstantSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshots.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeInstantSnapshotsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeInstantSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshots.setLabels',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{resource}/setLabels',
+        request_field='zoneSetLabelsRequest',
+        request_type_name='ComputeInstantSnapshotsSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeInstantSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshots.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshots/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeInstantSnapshotsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
   class InterconnectAttachmentsService(base_api.BaseApiService):
     """Service class for the interconnectAttachments resource."""
 
@@ -6983,7 +7229,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of interconnect attachments.
+      r"""Retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
@@ -7963,7 +8209,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of machine types.
+      r"""Retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeMachineTypesAggregatedListRequest) input message
@@ -8051,7 +8297,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkAttachmentsAggregatedListRequest) input message
@@ -8295,7 +8541,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to the specified project.
+      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEdgeSecurityServicesAggregatedListRequest) input message
@@ -8435,7 +8681,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups and sorts them by zone.
+      r"""Retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEndpointGroupsAggregatedListRequest) input message
@@ -9427,7 +9673,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeGroupsAggregatedListRequest) input message
@@ -9775,7 +10021,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node templates.
+      r"""Retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTemplatesAggregatedListRequest) input message
@@ -9993,7 +10239,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node types.
+      r"""Retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTypesAggregatedListRequest) input message
@@ -10081,7 +10327,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of packetMirrorings.
+      r"""Retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePacketMirroringsAggregatedListRequest) input message
@@ -10813,7 +11059,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePublicDelegatedPrefixesAggregatedListRequest) input message
@@ -11519,7 +11765,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of commitments by region.
+      r"""Retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRegionCommitmentsAggregatedListRequest) input message
@@ -13233,6 +13479,224 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='bulkInsertInstanceResource',
         request_type_name='ComputeRegionInstancesBulkInsertRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionInstantSnapshotsService(base_api.BaseApiService):
+    """Service class for the regionInstantSnapshots resource."""
+
+    _NAME = 'regionInstantSnapshots'
+
+    def __init__(self, client):
+      super(ComputeV1.RegionInstantSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstantSnapshots.delete',
+        ordered_params=['project', 'region', 'instantSnapshot'],
+        path_params=['instantSnapshot', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified InstantSnapshot resource in the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshot) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshots.get',
+        ordered_params=['project', 'region', 'instantSnapshot'],
+        path_params=['instantSnapshot', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{instantSnapshot}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotsGetRequest',
+        response_type_name='InstantSnapshot',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshots.getIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an instant snapshot in the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshots.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots',
+        request_field='instantSnapshot',
+        request_type_name='ComputeRegionInstantSnapshotsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of InstantSnapshot resources contained within the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshots.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotsListRequest',
+        response_type_name='InstantSnapshotList',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshots.setIamPolicy',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{resource}/setIamPolicy',
+        request_field='regionSetPolicyRequest',
+        request_type_name='ComputeRegionInstantSnapshotsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetLabels(self, request, global_params=None):
+      r"""Sets the labels on a instantSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsSetLabelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetLabels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshots.setLabels',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{resource}/setLabels',
+        request_field='regionSetLabelsRequest',
+        request_type_name='ComputeRegionInstantSnapshotsSetLabelsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshots.testIamPermissions',
+        ordered_params=['project', 'region', 'resource'],
+        path_params=['project', 'region', 'resource'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshots/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeRegionInstantSnapshotsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -15379,7 +15843,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of reservations.
+      r"""Retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeReservationsAggregatedListRequest) input message
@@ -15649,7 +16113,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of resource policies.
+      r"""Retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeResourcePoliciesAggregatedListRequest) input message
@@ -15893,7 +16357,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of routers.
+      r"""Retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRoutersAggregatedListRequest) input message
@@ -16329,7 +16793,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSecurityPoliciesAggregatedListRequest) input message
@@ -16625,7 +17089,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeServiceAttachmentsAggregatedListRequest) input message
@@ -17149,7 +17613,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslCertificatesAggregatedListRequest) input message
@@ -17289,7 +17753,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslPoliciesAggregatedListRequest) input message
@@ -17481,7 +17945,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of subnetworks.
+      r"""Retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSubnetworksAggregatedListRequest) input message
@@ -17943,7 +18407,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpProxiesAggregatedListRequest) input message
@@ -18135,7 +18599,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpsProxiesAggregatedListRequest) input message
@@ -18431,7 +18895,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target instances.
+      r"""Retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetInstancesAggregatedListRequest) input message
@@ -18649,7 +19113,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target pools.
+      r"""Retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetPoolsAggregatedListRequest) input message
@@ -19163,7 +19627,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetTcpProxiesAggregatedListRequest) input message
@@ -19355,7 +19819,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target VPN gateways.
+      r"""Retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetVpnGatewaysAggregatedListRequest) input message
@@ -19521,7 +19985,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeUrlMapsAggregatedListRequest) input message
@@ -19765,7 +20229,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN gateways.
+      r"""Retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnGatewaysAggregatedListRequest) input message
@@ -19983,7 +20447,7 @@ class ComputeV1(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN tunnels.
+      r"""Retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnTunnelsAggregatedListRequest) input message

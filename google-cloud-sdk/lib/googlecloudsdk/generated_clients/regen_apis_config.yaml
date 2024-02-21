@@ -230,6 +230,9 @@ apis:
     v1alpha:
       discovery_doc: blockchainvalidatormanager_v1alpha.json
       default: true
+      resources:
+        projects.locations.secrets:
+          path: projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}
   config:
     v1alpha2:
       discovery_doc: config_v1alpha2.json
@@ -372,6 +375,10 @@ apis:
       default: true
     v1alpha1:
       discovery_doc: cloudkms_v1alpha1.json
+  cloudnumberregistry:
+    v1alpha:
+      discovery_doc: cloudnumberregistry_v1alpha.json
+      default: true
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
@@ -1058,8 +1065,18 @@ apis:
     v1alpha:
       discovery_doc: parallelstore_v1alpha.json
       default: true
+      resources:
+        projects.networks:
+          path: projects/{projectsId}/locations/global/networks/{networksId}
+        projects.regions.addresses:
+          path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
     v1beta:
       discovery_doc: parallelstore_v1beta.json
+      resources:
+        projects.networks:
+          path: projects/{projectsId}/locations/global/networks/{networksId}
+        projects.regions.addresses:
+          path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
   policytroubleshooter:
     v1beta:
       enable_mtls: false
@@ -1204,6 +1221,10 @@ apis:
   sasportal:
     v1alpha1:
       discovery_doc: sasportal_v1alpha1.json
+  seclm:
+    v1alpha:
+      discovery_doc: seclm_v1alpha.json
+      default: true
   secretmanager:
     v1:
       discovery_doc: secretmanager_v1.json
@@ -1449,8 +1470,14 @@ apis:
       discovery_doc: bigquery_v2.json
       mtls_endpoint_override: https://bigquery.mtls.googleapis.com/bigquery/v2/
       resources:
+        projects:
+          path: projects/{projectId}
         datasets:
           path: projects/{projectId}/datasets/{datasetId}
+        jobs:
+          path: projects/{projectId}/jobs/{jobId}
+        tables:
+          path: projects/{projectId}/datasets/{datasetId}/tables/{tableId}
         tabledata:
           path: projects/{projectId}/datasets/{datasetId}/tables/{tableId}
           enable_uri_parsing: false
@@ -1704,6 +1731,9 @@ canonical_surfaces:
   cloudkms:
     name: cloudkms
     command: kms
+  cloudnumberregistry:
+    name: cloudnumberregistry
+    hidden: true
   cloudresourcemanager:
     name: cloudresourcemanager
     command: projects
@@ -1986,6 +2016,10 @@ canonical_surfaces:
   sddc:
     name: sddc
     command: vmware sddc
+  seclm:
+    name: seclm
+    command: seclm
+    hidden: true
   secrets:
     name: secretmanager
     command: secrets

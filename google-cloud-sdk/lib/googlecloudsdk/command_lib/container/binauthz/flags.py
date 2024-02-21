@@ -249,10 +249,9 @@ def AddEvaluationUnitArg(parser):
       required=False,
       action='append',
       help=(
-          'The image to evaluate. Note, when using this flag the namespace and'
-          ' service account are implicitly assumed to be empty, which may'
-          ' produce unexpected results if the policy being evaluated has scoped'
-          ' checksets.'
+          'The image to evaluate. If the policy being evaluated has scoped'
+          ' checksets, this mode of evaluation will always use the default'
+          ' (unscoped) checkset.'
       ),
   )
 
@@ -271,9 +270,7 @@ def AddNoUploadArg(parser):
   )
 
 
-def AddOutputFileArg(
-    parser,
-):
+def AddOutputFileArg(parser):
   """Adds the output file argument to parser."""
   parser.add_argument(
       '--output-file',
@@ -281,5 +278,33 @@ def AddOutputFileArg(
           'If a resource is provided and deemed to be conformant, attestations'
           ' will be added as annotations on the resource and writen back to'
           ' this file path in the same format as the input file.'
+      ),
+  )
+
+
+def AddDockerCredsArgs(parser):
+  """Adds the docker creds args to parser."""
+  docker_args_group = parser.add_group(mutex=False, required=False)
+  docker_args_group.add_argument(
+      '--use-docker-creds',
+      required=False,
+      action='store_true',
+      default=False,
+      help=(
+          'Whether to use the configuration file where Docker saves'
+          ' authentication credentials when uploading attestations to the'
+          ' registry. If this flag is not passed, or valid credentials are not'
+          ' found, an OAuth2 token for the active gcloud account is used. See'
+          ' https://cloud.google.com/artifact-registry/docs/docker/authentication'
+          ' for more information.'
+      ),
+  )
+  docker_args_group.add_argument(
+      '--docker-config-dir',
+      required=False,
+      help=(
+          'Override the directory where the Docker configuration file is'
+          ' searched for. Credentials are pulled from the config.json file'
+          ' under this directory. Defaults to $HOME/.docker.'
       ),
   )

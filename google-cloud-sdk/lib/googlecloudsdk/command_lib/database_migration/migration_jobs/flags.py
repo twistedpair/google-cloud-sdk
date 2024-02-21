@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.calliope import arg_parsers
+
 
 @enum.unique
 class ApiType(enum.Enum):
@@ -30,8 +32,9 @@ class ApiType(enum.Enum):
 
 def AddNoAsyncFlag(parser):
   """Adds a --no-async flag to the given parser."""
-  help_text = ('Waits for the operation in progress to complete before '
-               'returning.')
+  help_text = (
+      'Waits for the operation in progress to complete before returning.'
+  )
   parser.add_argument('--no-async', action='store_true', help=help_text)
 
 
@@ -49,7 +52,8 @@ def AddTypeFlag(parser, required=False):
   help_text = 'Type of the migration job.'
   choices = ['ONE_TIME', 'CONTINUOUS']
   parser.add_argument(
-      '--type', help=help_text, choices=choices, required=required)
+      '--type', help=help_text, choices=choices, required=required
+  )
 
 
 def AddDumpPathFlag(parser):
@@ -93,19 +97,25 @@ def AddConnectivityGroupFlag(parser, api_type, required=False):
   )
   connectivity_group.add_argument(
       '--peer-vpc',
-      help='Name of the VPC network to peer with the Cloud SQL private network.'
+      help=(
+          'Name of the VPC network to peer with the Cloud SQL private network.'
+      ),
   )
   reverse_ssh_group = connectivity_group.add_group(
-      'Parameters for the reverse-SSH tunnel connectivity method.')
+      'Parameters for the reverse-SSH tunnel connectivity method.'
+  )
   reverse_ssh_group.add_argument(
-      '--vm-ip', help='Bastion Virtual Machine IP.', required=required)
+      '--vm-ip', help='Bastion Virtual Machine IP.', required=required
+  )
   reverse_ssh_group.add_argument(
       '--vm-port',
       help='Forwarding port for the SSH tunnel.',
       type=int,
-      required=required)
+      required=required,
+  )
   reverse_ssh_group.add_argument(
-      '--vm', help='Name of VM that will host the SSH tunnel bastion.')
+      '--vm', help='Name of VM that will host the SSH tunnel bastion.'
+  )
   reverse_ssh_group.add_argument(
       '--vpc',
       help='Name of the VPC network where the VM is hosted.',
@@ -141,3 +151,50 @@ def AddDumpParallelLevelFlag(parser):
   )
   choices = ['MIN', 'OPTIMAL', 'MAX']
   parser.add_argument('--dump-parallel-level', help=help_text, choices=choices)
+
+
+def AddSqlServerHomogeneousMigrationConfigFlag(parser):
+  """Adds SQL Server homogeneous migration flag group to the given parser."""
+  sqlserver_homogeneous_migration_config = parser.add_group(
+      (
+          'The SQL Server homogeneous migration config. This is used only for'
+          ' SQL Server to CloudSQL SQL Server migrations.'
+      ),
+      hidden=True,
+  )
+  AddSqlServerBackupFilePattern(sqlserver_homogeneous_migration_config)
+  AddSqlServerDatabasesFlag(sqlserver_homogeneous_migration_config)
+
+
+def AddSqlServerBackupFilePattern(parser):
+  """Adds a --sqlserver-backup-file-pattern flag to the given parser."""
+  help_text = (
+      'Pattern that describes the default backup naming strategy. The specified'
+      ' pattern should ensure lexicographical order of backups. The pattern'
+      ' must define one of the following capture group sets:\nCapture group set'
+      ' #1\nyy/yyyy - year, 2 or 4 digits mm - month number, 1-12 dd - day of'
+      ' month,1-31 hh - hour of day, 00-23 mi - minutes, 00-59 ss - seconds,'
+      ' 00-59\nExample: For backup file TestDB_backup_20230802_155400.trn, use'
+      ' pattern:(?<database>.*)_backup_(?<yyyy>\\d{4})(?<mm>\\d{2})(?<dd>\\d{2})_(?<hh>\\d{2})(?<mi>\\d{2})(?<ss>\\d{2}).trn'
+      ' \nCapture group set #2\ntimestamp - unix timestamp\nExample: For backup'
+      ' file TestDB_backup_1691448254.trn, use'
+      ' pattern:(?<database>.*)_backup_(?<timestamp>.*).trn'
+  )
+  parser.add_argument(
+      '--sqlserver-backup-file-pattern', help=help_text, required=True
+  )
+
+
+def AddSqlServerDatabasesFlag(parser):
+  """Adds a --sqlserver-databases flag to the given parser."""
+  help_text = """\
+    A list of databases to be migrated to the destination Cloud SQL instance.
+    Provide databases as a comma separated list.
+    """
+  parser.add_argument(
+      '--sqlserver-databases',
+      metavar='DATABASE_NAME',
+      type=arg_parsers.ArgList(min_length=1),
+      help=help_text,
+      required=True,
+  )

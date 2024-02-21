@@ -292,7 +292,9 @@ def AddBuildpackStackFlag(parser):
   parser.add_argument('--buildpack-stack', type=str, help=help_text)
 
 
-def AddGen2Flag(parser, operates_on_existing_function=True, hidden=False):
+def AddGen2Flag(
+    parser, operates_on_existing_function=True, hidden=False, allow_v2=False
+):
   """Add the --gen2 flag."""
   help_text = (
       'If enabled, this command will use Cloud Functions (Second generation).'
@@ -304,6 +306,12 @@ def AddGen2Flag(parser, operates_on_existing_function=True, hidden=False):
     help_text += (
         ' If the `functions/gen2` configuration property is not set, defaults'
         ' to looking up the given function and using its generation.'
+    )
+  if allow_v2:
+    help_text += (
+        ' This command could conflict with `--v2`. If specified `--gen2`'
+        ' with `--no-v2`, or `--no-gen2` with `--v2`, Second generation will be'
+        ' used.'
     )
   parser.add_argument(
       '--gen2',
@@ -334,6 +342,27 @@ def ShouldDenyAllUsersInvoke(args):
   return (
       args.IsSpecified('allow_unauthenticated')
       and not args.allow_unauthenticated
+  )
+
+
+def AddV2Flag(parser):
+  """Add the --v2 flag."""
+  help_text = (
+      'If specified, this command will use Cloud Functions v2 APIs and return'
+      ' the result in the v2 format (See'
+      ' https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#Function).'
+      ' If not specified, 1st gen and 2nd gen functions will use v1 and v2 APIs'
+      ' respectively and return the result in the corresponding format (For v1'
+      ' format, see'
+      ' https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#resource:-cloudfunction).'
+      ' This command conflicts with `--no-gen2`. If specified with this'
+      ' combination, v2 APIs will be used.'
+  )
+  parser.add_argument(
+      '--v2',
+      action='store_true',
+      default=None,
+      help=help_text,
   )
 
 

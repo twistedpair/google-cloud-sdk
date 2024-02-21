@@ -53,7 +53,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   internal_ipv6_address=None,
                                   internal_ipv6_prefix_length=None,
                                   network_attachment=None,
-                                  network_queue_count=None,):
+                                  network_queue_count=None,
+                                  vlan=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -101,6 +102,7 @@ def CreateNetworkInterfaceMessage(resources,
       length of the internal IPv6 address reserved to the interface.
     network_attachment: URL of a network attachment to connect the interface to.
     network_queue_count: the number of queues assigned to the network interface.
+    vlan: the VLAN tag of the network interface.
 
   Returns:
     network_interface: a NetworkInterface message object
@@ -215,6 +217,9 @@ def CreateNetworkInterfaceMessage(resources,
   if network_queue_count is not None:
     network_interface.queueCount = network_queue_count
 
+  if vlan is not None:
+    network_interface.vlan = vlan
+
   return network_interface
 
 
@@ -277,6 +282,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
               ),
               network_attachment=interface.get('network-attachment'),
               network_queue_count=interface.get('queue-count', None),
+              vlan=interface.get('vlan', None),
           )
       )
   return result

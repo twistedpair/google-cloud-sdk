@@ -39,10 +39,9 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.projects_locations_global_dnsBindPermission = self.ProjectsLocationsGlobalDnsBindPermissionService(self)
-    self.projects_locations_global_networkPeerings_peeringRoutes = self.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(self)
-    self.projects_locations_global_networkPeerings = self.ProjectsLocationsGlobalNetworkPeeringsService(self)
-    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
+    self.projects_locations_dnsBindPermission = self.ProjectsLocationsDnsBindPermissionService(self)
+    self.projects_locations_networkPeerings_peeringRoutes = self.ProjectsLocationsNetworkPeeringsPeeringRoutesService(self)
+    self.projects_locations_networkPeerings = self.ProjectsLocationsNetworkPeeringsService(self)
     self.projects_locations_networkPolicies_externalAccessRules = self.ProjectsLocationsNetworkPoliciesExternalAccessRulesService(self)
     self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
@@ -62,21 +61,21 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
-  class ProjectsLocationsGlobalDnsBindPermissionService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_dnsBindPermission resource."""
+  class ProjectsLocationsDnsBindPermissionService(base_api.BaseApiService):
+    """Service class for the projects_locations_dnsBindPermission resource."""
 
-    _NAME = 'projects_locations_global_dnsBindPermission'
+    _NAME = 'projects_locations_dnsBindPermission'
 
     def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalDnsBindPermissionService, self).__init__(client)
+      super(VmwareengineV1.ProjectsLocationsDnsBindPermissionService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Grant(self, request, global_params=None):
-      r"""Grants the bind permission to the customer provided principal(user / service account) to bind their DNS zone with the intranet VPC associated with the project.
+      r"""Grants the bind permission to the customer provided principal(user / service account) to bind their DNS zone with the intranet VPC associated with the project. DnsBindPermission is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest) input message
+        request: (VmwareengineProjectsLocationsDnsBindPermissionGrantRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -86,24 +85,24 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Grant.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission:grant',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsBindPermission:grant',
         http_method='POST',
-        method_id='vmwareengine.projects.locations.global.dnsBindPermission.grant',
+        method_id='vmwareengine.projects.locations.dnsBindPermission.grant',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}:grant',
         request_field='grantDnsBindPermissionRequest',
-        request_type_name='VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest',
+        request_type_name='VmwareengineProjectsLocationsDnsBindPermissionGrantRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Revoke(self, request, global_params=None):
-      r"""Revokes the bind permission from the customer provided principal(user / service account) on the intranet VPC associated with the consumer project.
+      r"""Revokes the bind permission from the customer provided principal(user / service account) on the intranet VPC associated with the consumer project. DnsBindPermission is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest) input message
+        request: (VmwareengineProjectsLocationsDnsBindPermissionRevokeRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -113,34 +112,34 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Revoke.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission:revoke',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsBindPermission:revoke',
         http_method='POST',
-        method_id='vmwareengine.projects.locations.global.dnsBindPermission.revoke',
+        method_id='vmwareengine.projects.locations.dnsBindPermission.revoke',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}:revoke',
         request_field='revokeDnsBindPermissionRequest',
-        request_type_name='VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest',
+        request_type_name='VmwareengineProjectsLocationsDnsBindPermissionRevokeRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_networkPeerings_peeringRoutes resource."""
+  class ProjectsLocationsNetworkPeeringsPeeringRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkPeerings_peeringRoutes resource."""
 
-    _NAME = 'projects_locations_global_networkPeerings_peeringRoutes'
+    _NAME = 'projects_locations_networkPeerings_peeringRoutes'
 
     def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsPeeringRoutesService, self).__init__(client)
+      super(VmwareengineV1.ProjectsLocationsNetworkPeeringsPeeringRoutesService, self).__init__(client)
       self._upload_configs = {
           }
 
     def List(self, request, global_params=None):
-      r"""Lists the network peering routes exchanged over a peering connection.
+      r"""Lists the network peering routes exchanged over a peering connection. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsPeeringRoutesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListPeeringRoutesResponse) The response message.
@@ -150,34 +149,34 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}/peeringRoutes',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}/peeringRoutes',
         http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.peeringRoutes.list',
+        method_id='vmwareengine.projects.locations.networkPeerings.peeringRoutes.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/peeringRoutes',
         request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsPeeringRoutesListRequest',
         response_type_name='ListPeeringRoutesResponse',
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalNetworkPeeringsService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_networkPeerings resource."""
+  class ProjectsLocationsNetworkPeeringsService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkPeerings resource."""
 
-    _NAME = 'projects_locations_global_networkPeerings'
+    _NAME = 'projects_locations_networkPeerings'
 
     def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalNetworkPeeringsService, self).__init__(client)
+      super(VmwareengineV1.ProjectsLocationsNetworkPeeringsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new network peering between the peer network and VMware Engine network provided in a `NetworkPeering` resource.
+      r"""Creates a new network peering between the peer network and VMware Engine network provided in a `NetworkPeering` resource. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -187,24 +186,24 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings',
         http_method='POST',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.create',
+        method_id='vmwareengine.projects.locations.networkPeerings.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['networkPeeringId', 'requestId'],
         relative_path='v1/{+parent}/networkPeerings',
         request_field='networkPeering',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsCreateRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a `NetworkPeering` resource. When a network peering is deleted for a VMware Engine network, the peer network becomes inaccessible to that VMware Engine network.
+      r"""Deletes a `NetworkPeering` resource. When a network peering is deleted for a VMware Engine network, the peer network becomes inaccessible to that VMware Engine network. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -214,24 +213,24 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}',
         http_method='DELETE',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.delete',
+        method_id='vmwareengine.projects.locations.networkPeerings.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId'],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsDeleteRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the network peering, such as peered networks, import and export custom route configurations, and peering state.
+      r"""Retrieves a `NetworkPeering` resource by its resource name. The resource contains details of the network peering, such as peered networks, import and export custom route configurations, and peering state. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (NetworkPeering) The response message.
@@ -241,24 +240,24 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}',
         http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.get',
+        method_id='vmwareengine.projects.locations.networkPeerings.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}',
         request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsGetRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsGetRequest',
         response_type_name='NetworkPeering',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists `NetworkPeering` resources in a given project.
+      r"""Lists `NetworkPeering` resources in a given project. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListNetworkPeeringsResponse) The response message.
@@ -268,24 +267,24 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings',
         http_method='GET',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.list',
+        method_id='vmwareengine.projects.locations.networkPeerings.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/networkPeerings',
         request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsListRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsListRequest',
         response_type_name='ListNetworkPeeringsResponse',
         supports_download=False,
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `NetworkPeering` resource. Only the `description` field can be updated. Only fields specified in `updateMask` are applied.
+      r"""Modifies a `NetworkPeering` resource. Only the `description` field can be updated. Only fields specified in `updateMask` are applied. NetworkPeering is a global resource and location can only be global.
 
       Args:
-        request: (VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest) input message
+        request: (VmwareengineProjectsLocationsNetworkPeeringsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -295,53 +294,16 @@ class VmwareengineV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/networkPeerings/{networkPeeringsId}',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPeerings/{networkPeeringsId}',
         http_method='PATCH',
-        method_id='vmwareengine.projects.locations.global.networkPeerings.patch',
+        method_id='vmwareengine.projects.locations.networkPeerings.patch',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId', 'updateMask'],
         relative_path='v1/{+name}',
         request_field='networkPeering',
-        request_type_name='VmwareengineProjectsLocationsGlobalNetworkPeeringsPatchRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPeeringsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
-
-    _NAME = 'projects_locations_global'
-
-    def __init__(self, client):
-      super(VmwareengineV1.ProjectsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetDnsBindPermission(self, request, global_params=None):
-      r"""Gets all the principals having bind permission on the intranet VPC associated with the consumer project granted by the Grant API.
-
-      Args:
-        request: (VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DnsBindPermission) The response message.
-      """
-      config = self.GetMethodConfig('GetDnsBindPermission')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetDnsBindPermission.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/dnsBindPermission',
-        http_method='GET',
-        method_id='vmwareengine.projects.locations.global.getDnsBindPermission',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest',
-        response_type_name='DnsBindPermission',
         supports_download=False,
     )
 
@@ -2753,6 +2715,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsGetRequest',
         response_type_name='Location',
+        supports_download=False,
+    )
+
+    def GetDnsBindPermission(self, request, global_params=None):
+      r"""Gets all the principals having bind permission on the intranet VPC associated with the consumer project granted by the Grant API. DnsBindPermission is a global resource and location can only be global.
+
+      Args:
+        request: (VmwareengineProjectsLocationsGetDnsBindPermissionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DnsBindPermission) The response message.
+      """
+      config = self.GetMethodConfig('GetDnsBindPermission')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDnsBindPermission.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dnsBindPermission',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.getDnsBindPermission',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsGetDnsBindPermissionRequest',
+        response_type_name='DnsBindPermission',
         supports_download=False,
     )
 

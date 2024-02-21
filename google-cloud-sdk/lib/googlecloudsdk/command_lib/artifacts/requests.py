@@ -248,6 +248,20 @@ def GetIamPolicy(repo_res):
   return get_iam_policy_res
 
 
+def SetIamPolicy(repo_res, policy):
+  """Sets the IAM policy for the specified repository."""
+  client = GetClient()
+
+  ar_messages = GetMessages()
+
+  # pylint: disable=line-too-long
+  set_iam_policy_req = ar_messages.ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest(
+      resource=repo_res,
+      setIamPolicyRequest=ar_messages.SetIamPolicyRequest(policy=policy),
+  )
+  return client.projects_locations_repositories.SetIamPolicy(set_iam_policy_req)
+
+
 def CreateRepository(
     project, location, repository, skip_activation_prompt=False
 ):

@@ -370,3 +370,7 @@ def GetMessagesModule(api_name, api_version):
   # http://stackoverflow.com/questions/2724260/why-does-pythons-import-require-fromlist.
   return __import__(api_def.apitools.messages_full_modulepath,
                     fromlist=['something'])
+
+
+def UniversifyAddress(address):
+  return apis_internal.UniversifyAddress(address)

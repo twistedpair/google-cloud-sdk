@@ -198,7 +198,7 @@ class _ResourceParser(object):
       InvalidResourceException: if relative name doesn't match collection
           template.
     """
-    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
+    base_url = apis_internal.UniversifyAddress(base_url)
     path_template = self.collection_info.GetPathRegEx(subcollection)
     match = re.match(path_template, relative_name)
     if not match:
@@ -258,7 +258,7 @@ class _ResourceParser(object):
       ValueError: if parameter set in kwargs is not subset of the resource
           parameters.
     """
-    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
+    base_url = apis_internal.UniversifyAddress(base_url)
     if resource_id is not None:
       try:
         return self.ParseRelativeName(
@@ -370,7 +370,7 @@ class Resource(object):
     if endpoint_url:
       self._endpoint_url = endpoint_url
     else:
-      self._endpoint_url = apis_internal._UniversifyAddress(
+      self._endpoint_url = apis_internal.UniversifyAddress(
           collection_info.base_url
       )
     self._subcollection = subcollection
@@ -1151,10 +1151,11 @@ class Registry(object):
           ref = self.ParseURL(line)
         except InvalidResourceException as e:
           bucket = None
-          # assume the universe_domain is set before running gcloud command
-          gcs_url = apis_internal._UniversifyAddress(_GCS_URL)  # pylint:disable=protected-access
-          gcs_alt_url = apis_internal._UniversifyAddress(_GCS_ALT_URL)  # pylint:disable=protected-access
-          gcs_alt_url_short = apis_internal._UniversifyAddress(_GCS_ALT_URL_SHORT)  # pylint:disable=protected-access, line-too-long
+
+          gcs_url = apis_internal.UniversifyAddress(_GCS_URL)
+          gcs_alt_url = apis_internal.UniversifyAddress(_GCS_ALT_URL)
+          gcs_alt_url_short = apis_internal.UniversifyAddress(
+              _GCS_ALT_URL_SHORT)
           if line.startswith(gcs_url):
             try:
               bucket_prefix, bucket, object_prefix, objectpath = (
@@ -1241,7 +1242,7 @@ def GetApiBaseUrl(api_name, api_version):
       if url_version is None:
         base_url += api_version + '/'
   if base_url is not None:
-    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
+    base_url = apis_internal.UniversifyAddress(base_url)
   return base_url
 
 

@@ -26,7 +26,7 @@ from googlecloudsdk.core.util import platforms
 
 
 def ArgsForFirestoreEmulator(emulator_args):
-  """Constucts an argument list for calling the Firestore emulator.
+  """Constructs an argument list for calling the Firestore emulator.
 
   Args:
     emulator_args: args for the emulator.
@@ -65,6 +65,7 @@ def StartFirestoreEmulator(args, log_file=None):
   start_args.append('--port={0}'.format(args.host_port.port))
   if args.rules:
     start_args.append('--rules={0}'.format(args.rules))
+  start_args.append('--database-mode={0}'.format(args.database_mode))
   exec_args = ArgsForFirestoreEmulator(start_args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))

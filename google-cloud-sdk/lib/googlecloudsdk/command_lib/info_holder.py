@@ -38,18 +38,17 @@ import sys
 import textwrap
 
 import certifi
-
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.configurations import named_configs
+from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.diagnostics import http_proxy_setup
 from googlecloudsdk.core.updater import update_manager
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
-
 import requests
 import six
 import urllib3
@@ -66,6 +65,9 @@ class NoopAnonymizer(object):
 
   def ProcessProject(self, project):
     return project
+
+  def ProcessUniverseDomain(self, universe_domain):
+    return universe_domain
 
   def ProcessUsername(self, username):
     return username
@@ -133,6 +135,12 @@ class Anonymizer(object):
     if not username:
       return username
     return username[0] + '..' + username[-1]
+
+  def ProcessUniverseDomain(self, universe_domain: str) -> str:
+    """Returns default universe domain if universe_domain is empty."""
+    if not universe_domain:
+      return properties.VALUES.core.universe_domain.default
+    return universe_domain
 
   def ProcessPassword(self, password):
     if not password:
@@ -321,6 +329,9 @@ class ConfigInfo(object):
         properties.VALUES.core.account.Get(validate=False))
     self.project = anonymizer.ProcessProject(
         properties.VALUES.core.project.Get(validate=False))
+    self.universe_domain = anonymizer.ProcessUniverseDomain(
+        properties.VALUES.core.universe_domain.Get(validate=False)
+    )
     self.properties = properties.VALUES.AllPropertyValues()
     if self.properties.get('core', {}).get('account'):
       self.properties['core']['account'].value = anonymizer.ProcessAccount(
@@ -328,6 +339,12 @@ class ConfigInfo(object):
     if self.properties.get('core', {}).get('project'):
       self.properties['core']['project'].value = anonymizer.ProcessProject(
           self.properties['core']['project'].value)
+    if self.properties.get('core', {}).get('universe_domain'):
+      self.properties['core']['universe_domain'].value = (
+          anonymizer.ProcessUniverseDomain(
+              self.properties['core']['universe_domain'].value
+          )
+      )
     if self.properties.get('proxy', {}).get('username'):
       self.properties['proxy']['username'].value = anonymizer.ProcessUsername(
           self.properties['proxy']['username'].value)
@@ -347,7 +364,26 @@ class ConfigInfo(object):
               .format(self.paths['active_config_path']))
 
     out.write('Account: [{0}]\n'.format(self.account))
-    out.write('Project: [{0}]\n\n'.format(self.project))
+    out.write('Project: [{0}]\n'.format(self.project))
+
+    all_cred_accounts = c_store.AllAccountsWithUniverseDomains()
+    for account in all_cred_accounts:
+      if account.account == self.account:
+        cred_universe_domain = account.universe_domain
+        break
+    else:
+      cred_universe_domain = None
+    if cred_universe_domain and cred_universe_domain != self.universe_domain:
+      domain_mismatch_warning = (
+          ' WARNING: Mismatch with universe domain of account'
+      )
+    else:
+      domain_mismatch_warning = ''
+    out.write(
+        'Universe Domain: [{0}]{1}\n\n'.format(
+            self.universe_domain, domain_mismatch_warning
+        )
+    )
 
     out.write('Current Properties:\n')
     for section, props in six.iteritems(self.properties):

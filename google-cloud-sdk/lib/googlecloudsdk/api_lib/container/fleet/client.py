@@ -325,7 +325,7 @@ class FleetClient(object):
         batch_size_attribute=None)
 
   def GetScope(self, scope_path):
-    """Gets a namespace resource from the GKEHub API.
+    """Gets a scope resource from the GKEHub API.
 
     Args:
       scope_path: Full resource path of the scope.
@@ -341,13 +341,59 @@ class FleetClient(object):
     )
     return self.client.projects_locations_scopes.Get(req)
 
+  def ListScopes(self, project):
+    """Lists scopes in a project.
+
+    Args:
+      project: Project containing the scope.
+
+    Returns:
+      A ListScopesResponse (list of scopes and next page token).
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    parent = util.ScopeParentName(project)
+    req = self.messages.GkehubProjectsLocationsScopesListRequest(
+        pageToken='', parent=parent)
+    return list_pager.YieldFromList(
+        self.client.projects_locations_scopes,
+        req,
+        field='scopes',
+        batch_size_attribute=None,
+    )
+
+  def ListPermittedScopes(self, project):
+    """Lists scopes in a project permitted to be viewed by the caller.
+
+    Args:
+      project: Project containing the scope.
+
+    Returns:
+      A ListPermittedScopesResponse (list of permitted scopes and next page
+      token).
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    parent = util.ScopeParentName(project)
+    req = self.messages.GkehubProjectsLocationsScopesListPermittedRequest(
+        pageToken='', parent=parent)
+    return list_pager.YieldFromList(
+        self.client.projects_locations_scopes,
+        req,
+        method='ListPermitted',
+        field='scopes',
+        batch_size_attribute=None,
+    )
+
   def UpdateScope(
       self, scope_path, labels=None, namespace_labels=None, mask=''
   ):
-    """Updates a namespace resource in the fleet.
+    """Updates a scope resource in the fleet.
 
     Args:
-      scope_path: Full resource path of the namespace.
+      scope_path: Full resource path of the scope.
       labels:  Labels for the resource.
       namespace_labels:  Namespace-level labels for the cluster namespace.
       mask: A mask of the fields to update.

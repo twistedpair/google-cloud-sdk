@@ -1178,6 +1178,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudidentity = self._Add('cloudidentity', command='gcloud identity')
     self.cloudiot = self._Add('cloudiot', command='gcloud iot')
     self.cloudkms = self._Add('cloudkms', command='gcloud kms')
+    self.cloudnumberregistry = self._Add(
+        'cloudnumberregistry',
+        command='gcloud cloudnumberregistry', hidden=True)
     self.cloudquotas = self._Add(
         'cloudquotas', command='gcloud quotas', hidden=True)
     self.cloudresourcemanager = self._Add(
@@ -1303,6 +1306,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.sasportal = self._Add('sasportal', hidden=True)
     self.scc = self._Add('securitycenter', command='gcloud scc')
     self.sddc = self._Add('sddc', command='gcloud vmware sddc')
+    self.seclm = self._Add(
+        'seclm', command='gcloud seclm', hidden=True)
     self.secrets = self._Add('secretmanager', command='gcloud secrets')
     self.securedlandingzone = self._Add(
         'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
@@ -4437,6 +4442,14 @@ def GetUniverseDomain():
   """Get the universe domain."""
 
   return VALUES.core.universe_domain.Get()
+
+
+def GetUniverseDocumentDomain():
+  """Get the universe document domain."""
+
+  # Temporary returning universe document domain
+  # this will be updated when Descriptor data is ready.
+  return 'cloud.google.com'
 
 
 def GetMetricsEnvironment():

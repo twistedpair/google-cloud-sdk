@@ -34,6 +34,7 @@ DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 AUTOMATION_KIND = 'Automation'
 CUSTOM_TARGET_TYPE_KIND = 'CustomTargetType'
+DEPLOY_POLICY_KIND = 'DeployPolicy'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 USAGE_CHOICES = ['RENDER', 'DEPLOY']

@@ -181,15 +181,15 @@ def NetworkSrcFirewallPolicyRuleArgument(required=False,
       regional_collection='compute.regionNetworkFirewallPolicies')
 
 
-def AddAction(parser, required=True, support_ips=False):
+def AddAction(parser, required=True):
   """Adds the action argument to the argparse."""
   parser.add_argument(
       '--action',
-      choices=['allow', 'deny', 'goto_next'] +
-      (['apply_security_profile_group'] if support_ips else []),
+      choices=['allow', 'deny', 'goto_next', 'apply_security_profile_group'],
       type=lambda x: x.lower(),
       required=required,
-      help='Action to take if the request matches the match condition.')
+      help='Action to take if the request matches the match condition.',
+  )
 
 
 def AddRulePriority(parser, operation=None):

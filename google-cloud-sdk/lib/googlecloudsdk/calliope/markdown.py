@@ -1034,6 +1034,18 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
       doc = rep + doc[pos:]
     return doc
 
+  def _ReplaceGDULinksWithUniverseLinks(self, doc):
+    """Replace static GDU Links with Universe Links."""
+
+    # Replace links only for other universes and
+    # command is available in the universe.
+    if (not properties.IsDefaultUniverse() and
+        self._command.IsUniverseCompatible()):
+      doc = re.sub(r'cloud.google.com',
+                   properties.GetUniverseDocumentDomain(), doc)
+
+    return doc
+
   def Edit(self, doc=None):
     """Applies edits to a copy of the generated markdown in doc.
 
@@ -1053,6 +1065,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     doc = self._AddCommandLinkMarkdown(doc)
     doc = self._AddManPageLinkMarkdown(doc)
     doc = self._FixAirQuotesMarkdown(doc)
+    doc = self._ReplaceGDULinksWithUniverseLinks(doc)
     return doc
 
   def Generate(self):

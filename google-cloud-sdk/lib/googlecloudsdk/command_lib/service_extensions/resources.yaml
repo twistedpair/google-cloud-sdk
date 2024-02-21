@@ -61,6 +61,19 @@ lbRouteExtension:
     help: |
       The ID of the `LbRouteExtension`.
 
+lbObservabilityExtension:
+  name: LbObservabilityExtension
+  collection: networkservices.projects.locations.lbObservabilityExtensions
+  request_id_field: lbObservabilityExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbObservabilityExtension:
+    parameter_name: lbObservabilityExtensionsId
+    attribute_name: lb_observability_extension
+    help: |
+      The ID of the `LbObservabilityExtension`.
+
 wasmAction:
   name: WasmAction
   collection: networkservices.projects.locations.wasmActions

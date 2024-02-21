@@ -131,42 +131,39 @@ def ConstructAutoscalingSettingsMessage(
     settings_message_class: Top-level autoscaling settings message class.
     policy_message_class: Autoscaling policy message class.
     thresholds_message_class: Autoscaling policy thresholds message class.
-    autoscaling_settings: Dict with autoscaling settings configuration parsed
-      from CLI or loaded from file.
+    autoscaling_settings: Desired autoscaling settings.
 
   Returns:
     The constructed message.
   """
   settings_message = settings_message_class()
-  settings_message.minClusterNodeCount = autoscaling_settings.get(
-      'minClusterNodeCount'
+  settings_message.minClusterNodeCount = (
+      autoscaling_settings.min_cluster_node_count
   )
-  settings_message.maxClusterNodeCount = autoscaling_settings.get(
-      'maxClusterNodeCount'
+  settings_message.maxClusterNodeCount = (
+      autoscaling_settings.max_cluster_node_count
   )
-  settings_message.coolDownPeriod = autoscaling_settings.get('coolDownPeriod')
+  settings_message.coolDownPeriod = autoscaling_settings.cool_down_period
 
   policy_messages = {}
-  for name, policy in autoscaling_settings.get(
-      'autoscalingPolicies', {}
-  ).items():
+  for name, policy in autoscaling_settings.autoscaling_policies.items():
     policy_message = policy_message_class()
-    policy_message.nodeTypeId = policy.get('nodeTypeId')
-    policy_message.scaleOutSize = policy.get('scaleOutSize')
-    policy_message.minNodeCount = policy.get('minNodeCount')
-    policy_message.maxNodeCount = policy.get('maxNodeCount')
+    policy_message.nodeTypeId = policy.node_type_id
+    policy_message.scaleOutSize = policy.scale_out_size
+    policy_message.minNodeCount = policy.min_node_count
+    policy_message.maxNodeCount = policy.max_node_count
 
     policy_message.cpuThresholds = _ConstructThresholdsMessage(
-        policy.get('cpuThresholds', {}), thresholds_message_class
+        policy.cpu_thresholds, thresholds_message_class
     )
     policy_message.grantedMemoryThresholds = _ConstructThresholdsMessage(
-        policy.get('grantedMemoryThresholds', {}), thresholds_message_class
+        policy.granted_memory_thresholds, thresholds_message_class
     )
     policy_message.consumedMemoryThresholds = _ConstructThresholdsMessage(
-        policy.get('consumedMemoryThresholds', {}), thresholds_message_class
+        policy.consumed_memory_thresholds, thresholds_message_class
     )
     policy_message.storageThresholds = _ConstructThresholdsMessage(
-        policy.get('storageThresholds', {}), thresholds_message_class
+        policy.storage_thresholds, thresholds_message_class
     )
 
     policy_messages[name] = policy_message
@@ -183,6 +180,8 @@ def ConstructAutoscalingSettingsMessage(
 
 def _ConstructThresholdsMessage(thresholds, thresholds_message_class):
   thresholds_message = thresholds_message_class()
-  thresholds_message.scaleIn = thresholds.get('scaleIn')
-  thresholds_message.scaleOut = thresholds.get('scaleOut')
+  if thresholds is None:
+    return thresholds_message
+  thresholds_message.scaleIn = thresholds.scale_in
+  thresholds_message.scaleOut = thresholds.scale_out
   return thresholds_message

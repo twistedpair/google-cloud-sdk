@@ -979,7 +979,7 @@ ENABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Enable Cloud Data Lineage integration.
+    Enable Cloud Data Lineage integration, supported for Composer 2 Environments.
     """)
 
 DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
@@ -987,7 +987,7 @@ DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
     default=None,
     action='store_true',
     help="""\
-    Disable Cloud Data Lineage integration.
+    Disable Cloud Data Lineage integration, supported for Composer 2 Environments.
     """)
 
 STORAGE_BUCKET_FLAG = base.Argument(

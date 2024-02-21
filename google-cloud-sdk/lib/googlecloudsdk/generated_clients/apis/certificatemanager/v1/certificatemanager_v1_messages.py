@@ -989,6 +989,11 @@ class DnsAuthorization(_messages.Message):
   r"""A DnsAuthorization resource describes a way to perform domain
   authorization for certificate issuance.
 
+  Enums:
+    TypeValueValuesEnum: Immutable. Type of DnsAuthorization. If unset during
+      resource creation the following default will be used: - in location
+      global: FIXED_RECORD.
+
   Messages:
     LabelsValue: Set of labels associated with a DnsAuthorization.
 
@@ -1006,8 +1011,27 @@ class DnsAuthorization(_messages.Message):
     name: A user-defined name of the dns authorization. DnsAuthorization names
       must be unique globally and match pattern
       `projects/*/locations/*/dnsAuthorizations/*`.
+    type: Immutable. Type of DnsAuthorization. If unset during resource
+      creation the following default will be used: - in location global:
+      FIXED_RECORD.
     updateTime: Output only. The last update timestamp of a DnsAuthorization.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. Type of DnsAuthorization. If unset during resource creation
+    the following default will be used: - in location global: FIXED_RECORD.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      FIXED_RECORD: FIXED_RECORD DNS authorization uses DNS-01 validation
+        method.
+      PER_PROJECT_RECORD: PER_PROJECT_RECORD DNS authorization allows for
+        independent management of Google-managed certificates with DNS
+        authorization across multiple projects.
+    """
+    TYPE_UNSPECIFIED = 0
+    FIXED_RECORD = 1
+    PER_PROJECT_RECORD = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1039,7 +1063,8 @@ class DnsAuthorization(_messages.Message):
   domain = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class DnsResourceRecord(_messages.Message):

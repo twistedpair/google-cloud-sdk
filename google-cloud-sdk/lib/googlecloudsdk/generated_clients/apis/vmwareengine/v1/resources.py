@@ -41,12 +41,12 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_NETWORKPEERINGS = (
-      'projects.locations.global.networkPeerings',
+  PROJECTS_LOCATIONS_NETWORKPEERINGS = (
+      'projects.locations.networkPeerings',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/global/networkPeerings/'
+              'projects/{projectsId}/locations/{locationsId}/networkPeerings/'
               '{networkPeeringsId}',
       },
       ['name'],

@@ -84,6 +84,37 @@ class MigrationJobsClient(object):
             ),
         )
 
+  def _ValidateConversionWorkspaceMessageArgs(self, conversion_workspace, args):
+    """Validate flags for conversion workspace.
+
+    Args:
+      conversion_workspace: str, the internal migration job conversion workspace
+        message.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Raises:
+      BadArgumentException: commit-id or filter field is provided without
+      specifying the conversion workspace
+    """
+    if conversion_workspace.name is None:
+      if args.IsKnownAndSpecified('commit_id'):
+        raise exceptions.BadArgumentException(
+            'commit-id',
+            (
+                'Conversion workspace commit-id can only be specified for'
+                ' migration jobs associated with a conversion workspace.'
+            ),
+        )
+      if args.IsKnownAndSpecified('filter'):
+        raise exceptions.BadArgumentException(
+            'filter',
+            (
+                'Filter can only be specified for migration jobs associated'
+                ' with a conversion workspace.'
+            ),
+        )
+
   def _GetType(self, mj_type, type_value):
     return mj_type.TypeValueValuesEnum.lookup_by_name(type_value)
 
@@ -152,6 +183,50 @@ class MigrationJobsClient(object):
         conversion_workspace_obj.commitId = conversion_workspace.latestCommitId
       return conversion_workspace_obj
 
+  def _ComplementConversionWorkspaceInfo(self, conversion_workspace, args):
+    """Returns the conversion workspace info with the supplied or the latest commit id.
+
+    Args:
+      conversion_workspace: the internal migration job conversion workspace
+        message.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Raises:
+      BadArgumentException: Unable to fetch latest commit for the specified
+      conversion workspace.
+      InvalidArgumentException: Invalid conversion workspace message on the
+      migration job.
+    """
+    if conversion_workspace.name is None:
+      raise exceptions.InvalidArgumentException(
+          'conversion-workspace',
+          (
+              'The supplied migration job does not have a valid conversion'
+              ' workspace attached to it'
+          ),
+      )
+    if args.commit_id is not None:
+      conversion_workspace.commitId = args.commit_id
+      return conversion_workspace
+    # Get conversion workspace's latest commit id.
+    cw_client = conversion_workspaces.ConversionWorkspacesClient(
+        self.release_track
+    )
+    cst_conversion_workspace = cw_client.Describe(
+        conversion_workspace.name,
+    )
+    if cst_conversion_workspace.latestCommitId is None:
+      raise exceptions.BadArgumentException(
+          'conversion-workspace',
+          (
+              'Unable to fetch latest commit for the specified conversion'
+              ' workspace. Conversion Workspace might not be committed.'
+          ),
+      )
+    conversion_workspace.commitId = cst_conversion_workspace.latestCommitId
+    return conversion_workspace
+
   def _GetPerformanceConfig(self, args):
     """Returns the performance config with dump parallel level.
 
@@ -165,6 +240,37 @@ class MigrationJobsClient(object):
             args.dump_parallel_level
         )
     )
+
+  def _GetSqlServerDatabaseBackups(self, sqlserver_databases):
+    """Returns the sqlserver database backups list.
+
+    Args:
+      sqlserver_databases: The list of databases to be migrated.
+    """
+    database_backups = []
+    for database in sqlserver_databases:
+      database_backups.append(
+          self.messages.SqlServerDatabaseBackup(database=database)
+      )
+    return database_backups
+
+  def _GetSqlserverHomogeneousMigrationJobConfig(self, args):
+    """Returns the sqlserver homogeneous migration job config.
+
+    Args:
+      args: argparse.Namespace, the arguments that this command was invoked
+        with.
+    """
+    sqlserver_homogeneous_migration_job_config_obj = (
+        self.messages.SqlServerHomogeneousMigrationJobConfig(
+            backupFilePattern=args.sqlserver_backup_file_pattern
+        )
+    )
+    if args.IsKnownAndSpecified('sqlserver_databases'):
+      sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
+          self._GetSqlServerDatabaseBackups(args.sqlserver_databases)
+      )
+    return sqlserver_homogeneous_migration_job_config_obj
 
   def _GetMigrationJob(
       self,
@@ -215,6 +321,11 @@ class MigrationJobsClient(object):
     if args.IsKnownAndSpecified('dump_parallel_level'):
       migration_job_obj.performanceConfig = self._GetPerformanceConfig(args)
 
+    if args.IsKnownAndSpecified('sqlserver_backup_file_pattern'):
+      migration_job_obj.sqlserverHomogeneousMigrationJobConfig = (
+          self._GetSqlserverHomogeneousMigrationJobConfig(args)
+      )
+
     return migration_job_obj
 
   def _UpdateConnectivity(self, migration_job, args):
@@ -253,6 +364,12 @@ class MigrationJobsClient(object):
       update_fields.append('vpcPeeringConnectivity.vpc')
     if args.IsKnownAndSpecified('dump_parallel_level'):
       update_fields.append('performanceConfig.dumpParallelLevel')
+    if args.IsKnownAndSpecified('filter'):
+      update_fields.append('filter')
+    if args.IsKnownAndSpecified('commit_id') or args.IsKnownAndSpecified(
+        'filter'
+    ):
+      update_fields.append('conversionWorkspace.commitId')
     return  update_fields
 
   def _GetUpdatedMigrationJob(
@@ -271,6 +388,11 @@ class MigrationJobsClient(object):
       migration_job.destination = destination_ref.RelativeName()
     if args.IsKnownAndSpecified('dump_parallel_level'):
       migration_job.performanceConfig = self._GetPerformanceConfig(args)
+    if args.IsKnownAndSpecified('filter'):
+      args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(
+          args.filter
+      )
+      migration_job.filter = server_filter
     self._UpdateConnectivity(migration_job, args)
     self._UpdateLabels(args, migration_job, update_fields)
     return migration_job, update_fields
@@ -355,6 +477,19 @@ class MigrationJobsClient(object):
     self._ValidateArgs(args)
 
     current_mj = self._GetExistingMigrationJob(name)
+
+    # since this property doesn't exist in older api versions
+    if (
+        hasattr(current_mj, 'conversionWorkspace')
+        and current_mj.conversionWorkspace is not None
+    ):
+      self._ValidateConversionWorkspaceMessageArgs(
+          current_mj.conversionWorkspace, args
+      )
+
+      current_mj.conversionWorkspace = self._ComplementConversionWorkspaceInfo(
+          current_mj.conversionWorkspace, args
+      )
 
     migration_job, update_fields = self._GetUpdatedMigrationJob(
         current_mj, source_ref, destination_ref, args)

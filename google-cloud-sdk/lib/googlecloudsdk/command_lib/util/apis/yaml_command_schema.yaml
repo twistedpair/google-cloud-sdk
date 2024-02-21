@@ -556,6 +556,11 @@ properties:
       # The name of the method to call to perform the operation. Optional if
       # your command is one of the supported command types (not Generic).
       method: {type: string}
+      # Used for methods that return paginated results. If set to True, makes a single api
+      # request rather than utilizing YieldFromList method. YieldFromList method makes
+      # continuous api request until the limit is reached or all results are returned.
+      # Defaults to False
+      disable_pagination: {type: boolean}
       # The module path to a function to call to modify the API method
       # to call to perform the operation. The provided or default `method`
       # will be used to parse the arguments, then this function will be called

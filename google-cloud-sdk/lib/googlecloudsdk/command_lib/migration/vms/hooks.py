@@ -33,6 +33,13 @@ def GetDataDiskImageImportTransform(value):
   return data_disk_image_import()
 
 
+def GetEncryptionTransform(value):
+  """Returns empty Encryption entry."""
+  del value
+  encryption = _GetMessageClass('Encryption')
+  return encryption()
+
+
 def SetLocationAsGlobal():
   """Set default location to global."""
   return 'global'
@@ -46,6 +53,19 @@ def FixCreateImageImportRequest(ref, args, req):
 
   if not args.image_name:
     req.imageImport.diskImageTargetDefaults.imageName = ref.Name()
+
+  if args.kms_key:
+    req.imageImport.diskImageTargetDefaults.encryption = (
+        GetEncryptionTransform(
+            req.imageImport.diskImageTargetDefaults.encryption
+            )
+        )
+    req.imageImport.diskImageTargetDefaults.encryption.kmsKey = args.kms_key
+
+    req.imageImport.encryption = (
+        GetEncryptionTransform(req.imageImport.encryption)
+        )
+    req.imageImport.encryption.kmsKey = args.kms_key
 
   if not args.target_project:
     # Handle default target project being the host project.

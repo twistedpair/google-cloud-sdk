@@ -373,7 +373,13 @@ def AddSSHKeyIfNeeded(project, tpu_helper, node, tpu_name, zone, public_key):
       metadata=tpu_helper.UpdateMetadataKey(
           metadata=node.metadata, key=SSH_KEYS_METADATA_KEY, value=ssh_keys))
   try:
-    tpu_helper.UpdateNode(tpu_name, zone, node_for_update, 'metadata')
+    tpu_helper.UpdateNode(
+        tpu_name,
+        zone,
+        node_for_update,
+        'metadata',
+        'Propagating SSH public key to all TPU workers',
+    )
   except HttpConflictError:
     # Do not fail the SSH if there is already an UpdateNode call in flight.
     pass
@@ -461,7 +467,7 @@ def AttemptRunWithRetries(command_name, worker, exit_statuses, cmd, env,
   max_attempts = 10
   sleep_interval = 5
   # Since SSH keys may have recently been set in the instance's metadata by
-  # the UpateNode call, it can take some time before those are propagated
+  # the UpdateNode call, it can take some time before those are propagated
   # correctly and the SSH command's authorization is successful. Therefore,
   # we wrap this in a retry loop. No exponential back-off is needed here, as
   # we're not looking to throttle.

@@ -373,3 +373,45 @@ def AddCustomTargetTypeResourceArg(
       required=required,
       plural=False,
   ).AddToParser(parser)
+
+
+def DeployPolicyAttributeConfig():
+  """Creates the Deploy Policy resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='deploy_policy',
+      help_text='The Deploy Policy associated with the {resource}.',
+  )
+
+
+def GetDeployPolicyResourceSpec():
+  """Constructs and returns the Resource specification for Deploy Policy."""
+  return concepts.ResourceSpec(
+      'clouddeploy.projects.locations.deployPolicies',
+      resource_name='deploy_policy',
+      deployPoliciesId=DeployPolicyAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      disable_auto_completers=False,
+  )
+
+
+def AddDeployPolicyResourceArg(
+    parser, help_text=None, positional=False, required=True
+):
+  """Adds --deploy-policy resource argument to the parser.
+
+  Args:
+    parser: argparse.ArgumentParser, the parser for the command.
+    help_text: help text for this flag.
+    positional: if it is a positional flag.
+    required: if it is required.
+  """
+  help_text = help_text or 'The name of the Deploy Policy.'
+
+  concept_parsers.ConceptParser.ForResource(
+      'deploy_policy' if positional else '--deploy_policy',
+      GetDeployPolicyResourceSpec(),
+      help_text,
+      required=required,
+      plural=False,
+  ).AddToParser(parser)

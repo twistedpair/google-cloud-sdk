@@ -106,3 +106,9 @@ single_region_storage:
   default: false
   help_text: |
     If true, the location of the imported image will be the region of the import job. Otherwise the closest multi-region is selected. Default is false.
+
+kms_key:
+  arg_name: kms-key
+  # api_fields are set in the hook as this sets two different fields.
+  help_text: |
+    Fully qualified identifier for the Cloud KMS (Key Management Service) cryptokey that will be used to protect the image.

@@ -443,39 +443,75 @@ class AuditLogConfig(_messages.Message):
 
 
 class AvroOptions(_messages.Message):
-  r"""A AvroOptions object.
+  r"""Options for external data sources.
 
   Fields:
-    useAvroLogicalTypes: [Optional] If sourceFormat is set to "AVRO",
-      indicates whether to interpret logical types as the corresponding
-      BigQuery data type (for example, TIMESTAMP), instead of using the raw
-      type (for example, INTEGER).
+    useAvroLogicalTypes: Optional. If sourceFormat is set to "AVRO", indicates
+      whether to interpret logical types as the corresponding BigQuery data
+      type (for example, TIMESTAMP), instead of using the raw type (for
+      example, INTEGER).
   """
 
   useAvroLogicalTypes = _messages.BooleanField(1)
 
 
 class BiEngineReason(_messages.Message):
-  r"""A BiEngineReason object.
+  r"""Reason why BI Engine didn't accelerate the query (or sub-query).
+
+  Enums:
+    CodeValueValuesEnum: Output only. High-level BI Engine reason for partial
+      or disabled acceleration
 
   Fields:
-    code: [Output-only] High-level BI Engine reason for partial or disabled
-      acceleration.
-    message: [Output-only] Free form human-readable reason for partial or
+    code: Output only. High-level BI Engine reason for partial or disabled
+      acceleration
+    message: Output only. Free form human-readable reason for partial or
       disabled acceleration.
   """
 
-  code = _messages.StringField(1)
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. High-level BI Engine reason for partial or disabled
+    acceleration
+
+    Values:
+      CODE_UNSPECIFIED: BiEngineReason not specified.
+      NO_RESERVATION: No reservation available for BI Engine acceleration.
+      INSUFFICIENT_RESERVATION: Not enough memory available for BI Engine
+        acceleration.
+      UNSUPPORTED_SQL_TEXT: This particular SQL text is not supported for
+        acceleration by BI Engine.
+      INPUT_TOO_LARGE: Input too large for acceleration by BI Engine.
+      OTHER_REASON: Catch-all code for all other cases for partial or disabled
+        acceleration.
+      TABLE_EXCLUDED: One or more tables were not eligible for BI Engine
+        acceleration.
+    """
+    CODE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    INSUFFICIENT_RESERVATION = 2
+    UNSUPPORTED_SQL_TEXT = 3
+    INPUT_TOO_LARGE = 4
+    OTHER_REASON = 5
+    TABLE_EXCLUDED = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
 
 
 class BiEngineStatistics(_messages.Message):
-  r"""A BiEngineStatistics object.
+  r"""Statistics for a BI Engine specific query. Populated as part of
+  JobStatistics2
+
+  Enums:
+    AccelerationModeValueValuesEnum: Output only. Specifies which mode of BI
+      Engine acceleration was performed (if any).
+    BiEngineModeValueValuesEnum: Output only. Specifies which mode of BI
+      Engine acceleration was performed (if any).
 
   Fields:
-    accelerationMode: [Output-only] Specifies which mode of BI Engine
+    accelerationMode: Output only. Specifies which mode of BI Engine
       acceleration was performed (if any).
-    biEngineMode: [Output-only] Specifies which mode of BI Engine acceleration
+    biEngineMode: Output only. Specifies which mode of BI Engine acceleration
       was performed (if any).
     biEngineReasons: In case of DISABLED or PARTIAL bi_engine_mode, these
       contain the explanatory reasons as to why BI Engine could not
@@ -483,45 +519,103 @@ class BiEngineStatistics(_messages.Message):
       populated.
   """
 
-  accelerationMode = _messages.StringField(1)
-  biEngineMode = _messages.StringField(2)
+  class AccelerationModeValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies which mode of BI Engine acceleration was
+    performed (if any).
+
+    Values:
+      BI_ENGINE_ACCELERATION_MODE_UNSPECIFIED: BiEngineMode type not
+        specified.
+      BI_ENGINE_DISABLED: BI Engine acceleration was attempted but disabled.
+        bi_engine_reasons specifies a more detailed reason.
+      PARTIAL_INPUT: Some inputs were accelerated using BI Engine. See
+        bi_engine_reasons for why parts of the query were not accelerated.
+      FULL_INPUT: All of the query inputs were accelerated using BI Engine.
+      FULL_QUERY: All of the query was accelerated using BI Engine.
+    """
+    BI_ENGINE_ACCELERATION_MODE_UNSPECIFIED = 0
+    BI_ENGINE_DISABLED = 1
+    PARTIAL_INPUT = 2
+    FULL_INPUT = 3
+    FULL_QUERY = 4
+
+  class BiEngineModeValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies which mode of BI Engine acceleration was
+    performed (if any).
+
+    Values:
+      ACCELERATION_MODE_UNSPECIFIED: BiEngineMode type not specified.
+      DISABLED: BI Engine disabled the acceleration. bi_engine_reasons
+        specifies a more detailed reason.
+      PARTIAL: Part of the query was accelerated using BI Engine. See
+        bi_engine_reasons for why parts of the query were not accelerated.
+      FULL: All of the query was accelerated using BI Engine.
+    """
+    ACCELERATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    PARTIAL = 2
+    FULL = 3
+
+  accelerationMode = _messages.EnumField('AccelerationModeValueValuesEnum', 1)
+  biEngineMode = _messages.EnumField('BiEngineModeValueValuesEnum', 2)
   biEngineReasons = _messages.MessageField('BiEngineReason', 3, repeated=True)
 
 
 class BigLakeConfiguration(_messages.Message):
-  r"""A BigLakeConfiguration object.
+  r"""Configuration for BigLake managed tables.
+
+  Enums:
+    FileFormatValueValuesEnum: Required. The file format the table data is
+      stored in.
+    TableFormatValueValuesEnum: Required. The table format the metadata only
+      snapshots are stored in.
 
   Fields:
-    connectionId: [Required] Required and immutable. Credential reference for
-      accessing external storage system. Normalized as
-      project_id.location_id.connection_id.
-    fileFormat: [Required] Required and immutable. Open source file format
-      that the table data is stored in. Currently only PARQUET is supported.
-    storageUri: [Required] Required and immutable. Fully qualified location
-      prefix of the external folder where data is stored. Normalized to
-      standard format: "gs:////". Starts with "gs://" rather than
-      "/bigstore/". Ends with "/". Does not contain "*". See also
-      BigLakeStorageMetadata on how it is used.
-    tableFormat: [Required] Required and immutable. Open source file format
-      that the table data is stored in. Currently only PARQUET is supported.
+    connectionId: Required. The connection specifying the credentials to be
+      used to read and write to external storage, such as Cloud Storage. The
+      connection_id can have the form
+      "<project\_id>.<location\_id>.<connection\_id>" or "projects/<project\_i
+      d>/locations/<location\_id>/connections/<connection\_id>".
+    fileFormat: Required. The file format the table data is stored in.
+    storageUri: Required. The fully qualified location prefix of the external
+      folder where table data is stored. The '*' wildcard character is not
+      allowed. The URI should be in the format "gs://bucket/path_to_table/"
+    tableFormat: Required. The table format the metadata only snapshots are
+      stored in.
   """
 
+  class FileFormatValueValuesEnum(_messages.Enum):
+    r"""Required. The file format the table data is stored in.
+
+    Values:
+      FILE_FORMAT_UNSPECIFIED: Default Value.
+      PARQUET: Apache Parquet format.
+    """
+    FILE_FORMAT_UNSPECIFIED = 0
+    PARQUET = 1
+
+  class TableFormatValueValuesEnum(_messages.Enum):
+    r"""Required. The table format the metadata only snapshots are stored in.
+
+    Values:
+      TABLE_FORMAT_UNSPECIFIED: Default Value.
+      ICEBERG: Apache Iceberg format.
+    """
+    TABLE_FORMAT_UNSPECIFIED = 0
+    ICEBERG = 1
+
   connectionId = _messages.StringField(1)
-  fileFormat = _messages.StringField(2)
+  fileFormat = _messages.EnumField('FileFormatValueValuesEnum', 2)
   storageUri = _messages.StringField(3)
-  tableFormat = _messages.StringField(4)
+  tableFormat = _messages.EnumField('TableFormatValueValuesEnum', 4)
 
 
 class BigQueryModelTraining(_messages.Message):
   r"""A BigQueryModelTraining object.
 
   Fields:
-    currentIteration: [Output-only, Beta] Index of current ML training
-      iteration. Updated during create model query job to show job progress.
-    expectedTotalIterations: [Output-only, Beta] Expected number of iterations
-      for the create model query job specified as num_iterations in the input
-      query. The actual total number of iterations may be less than this
-      number due to early stop.
+    currentIteration: Deprecated.
+    expectedTotalIterations: Deprecated.
   """
 
   currentIteration = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -532,10 +626,10 @@ class BigqueryDatasetsDeleteRequest(_messages.Message):
   r"""A BigqueryDatasetsDeleteRequest object.
 
   Fields:
-    datasetId: Dataset ID of dataset being deleted
+    datasetId: Required. Dataset ID of dataset being deleted
     deleteContents: If True, delete all the tables in the dataset. If False
       and the dataset contains tables, the request will fail. Default is False
-    projectId: Project ID of the dataset being deleted
+    projectId: Required. Project ID of the dataset being deleted
   """
 
   datasetId = _messages.StringField(1, required=True)
@@ -550,16 +644,38 @@ class BigqueryDatasetsDeleteResponse(_messages.Message):
 class BigqueryDatasetsGetRequest(_messages.Message):
   r"""A BigqueryDatasetsGetRequest object.
 
+  Enums:
+    DatasetViewValueValuesEnum: Optional. Specifies the view that determines
+      which dataset information is returned. By default, metadata and ACL
+      information are returned.
+
   Fields:
-    datasetId: Dataset ID of the requested dataset
-    datasetView: Specifies the view that determines which dataset information
-      is returned. By default, metadata and ACL information are returned.
-      Allowed values: METADATA, ACL, FULL.
-    projectId: Project ID of the requested dataset
+    datasetId: Required. Dataset ID of the requested dataset
+    datasetView: Optional. Specifies the view that determines which dataset
+      information is returned. By default, metadata and ACL information are
+      returned.
+    projectId: Required. Project ID of the requested dataset
   """
 
+  class DatasetViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the view that determines which dataset information
+    is returned. By default, metadata and ACL information are returned.
+
+    Values:
+      DATASET_VIEW_UNSPECIFIED: The default value. Default to the FULL view.
+      METADATA: Includes metadata information for the dataset, such as
+        location, etag, lastModifiedTime, etc.
+      ACL: Includes ACL information for the dataset, which defines dataset
+        access for one or more entities.
+      FULL: Includes both dataset metadata and ACL information.
+    """
+    DATASET_VIEW_UNSPECIFIED = 0
+    METADATA = 1
+    ACL = 2
+    FULL = 3
+
   datasetId = _messages.StringField(1, required=True)
-  datasetView = _messages.StringField(2)
+  datasetView = _messages.EnumField('DatasetViewValueValuesEnum', 2)
   projectId = _messages.StringField(3, required=True)
 
 
@@ -568,7 +684,7 @@ class BigqueryDatasetsInsertRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    projectId: Project ID of the new dataset
+    projectId: Required. Project ID of the new dataset
   """
 
   dataset = _messages.MessageField('Dataset', 1)
@@ -581,14 +697,16 @@ class BigqueryDatasetsListRequest(_messages.Message):
   Fields:
     all: Whether to list all datasets, including hidden ones
     filter: An expression for filtering the results of the request by label.
-      The syntax is "labels.<name>[:<value>]". Multiple filters can be ANDed
+      The syntax is \"labels.<name>[:<value>]\". Multiple filters can be ANDed
       together by connecting with a space. Example:
-      "labels.department:receiving labels.active". See Filtering datasets
-      using labels for details.
-    maxResults: The maximum number of results to return
+      \"labels.department:receiving labels.active\". See [Filtering datasets
+      using labels](/bigquery/docs/labeling-
+      datasets#filtering_datasets_using_labels) for details.
+    maxResults: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
     pageToken: Page token, returned by a previous call, to request the next
       page of results
-    projectId: Project ID of the datasets to be listed
+    projectId: Required. Project ID of the datasets to be listed
   """
 
   all = _messages.BooleanField(1)
@@ -603,8 +721,8 @@ class BigqueryDatasetsPatchRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    datasetId: Dataset ID of the dataset being updated
-    projectId: Project ID of the dataset being updated
+    datasetId: Required. Dataset ID of the dataset being updated
+    projectId: Required. Project ID of the dataset being updated
   """
 
   dataset = _messages.MessageField('Dataset', 1)
@@ -612,13 +730,28 @@ class BigqueryDatasetsPatchRequest(_messages.Message):
   projectId = _messages.StringField(3, required=True)
 
 
+class BigqueryDatasetsUndeleteRequest(_messages.Message):
+  r"""A BigqueryDatasetsUndeleteRequest object.
+
+  Fields:
+    datasetId: Required. Dataset ID of dataset being deleted
+    projectId: Required. Project ID of the dataset to be undeleted
+    undeleteDatasetRequest: A UndeleteDatasetRequest resource to be passed as
+      the request body.
+  """
+
+  datasetId = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  undeleteDatasetRequest = _messages.MessageField('UndeleteDatasetRequest', 3)
+
+
 class BigqueryDatasetsUpdateRequest(_messages.Message):
   r"""A BigqueryDatasetsUpdateRequest object.
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    datasetId: Dataset ID of the dataset being updated
-    projectId: Project ID of the dataset being updated
+    datasetId: Required. Dataset ID of the dataset being updated
+    projectId: Required. Project ID of the dataset being updated
   """
 
   dataset = _messages.MessageField('Dataset', 1)
@@ -630,11 +763,14 @@ class BigqueryJobsCancelRequest(_messages.Message):
   r"""A BigqueryJobsCancelRequest object.
 
   Fields:
-    jobId: [Required] Job ID of the job to cancel
-    location: The geographic location of the job. Required except for US and
-      EU. See details at https://cloud.google.com/bigquery/docs/locations#spec
-      ifying_your_location.
-    projectId: [Required] Project ID of the job to cancel
+    jobId: Required. Job ID of the job to cancel
+    location: The geographic location of the job. You must specify the
+      location to run the job for the following scenarios: - If the location
+      to run a job is not in the `us` or the `eu` multi-regional location - If
+      the job's location is in a single region (for example, `us-central1`)
+      For more information, see https://cloud.google.com/bigquery/docs/locatio
+      ns#specifying_your_location.
+    projectId: Required. Project ID of the job to cancel
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -670,38 +806,55 @@ class BigqueryJobsGetQueryResultsRequest(_messages.Message):
   r"""A BigqueryJobsGetQueryResultsRequest object.
 
   Fields:
-    jobId: [Required] Job ID of the query job
-    location: The geographic location where the job should run. Required
-      except for US and EU. See details at https://cloud.google.com/bigquery/d
-      ocs/locations#specifying_your_location.
-    maxResults: Maximum number of results to read
+    formatOptions_useInt64Timestamp: Optional. Output timestamp as usec int64.
+      Default is false.
+    jobId: Required. Job ID of the query job.
+    location: The geographic location of the job. You must specify the
+      location to run the job for the following scenarios: - If the location
+      to run a job is not in the `us` or the `eu` multi-regional location - If
+      the job's location is in a single region (for example, `us-central1`)
+      For more information, see https://cloud.google.com/bigquery/docs/locatio
+      ns#specifying_your_location.
+    maxResults: Maximum number of results to read.
     pageToken: Page token, returned by a previous call, to request the next
-      page of results
-    projectId: [Required] Project ID of the query job
-    startIndex: Zero-based index of the starting row
-    timeoutMs: How long to wait for the query to complete, in milliseconds,
-      before returning. Default is 10 seconds. If the timeout passes before
-      the job completes, the 'jobComplete' field in the response will be false
+      page of results.
+    projectId: Required. Project ID of the query job.
+    startIndex: Zero-based index of the starting row.
+    timeoutMs: Optional: Specifies the maximum amount of time, in
+      milliseconds, that the client is willing to wait for the query to
+      complete. By default, this limit is 10 seconds (10,000 milliseconds). If
+      the query is complete, the jobComplete field in the response is true. If
+      the query has not yet completed, jobComplete is false. You can request a
+      longer timeout period in the timeoutMs field. However, the call is not
+      guaranteed to wait for the specified timeout; it typically returns after
+      around 200 seconds (200,000 milliseconds), even if the query is not
+      complete. If jobComplete is false, you can continue to wait for the
+      query to complete by calling the getQueryResults method until the
+      jobComplete field in the getQueryResults response is true.
   """
 
-  jobId = _messages.StringField(1, required=True)
-  location = _messages.StringField(2)
-  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(4)
-  projectId = _messages.StringField(5, required=True)
-  startIndex = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  timeoutMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  formatOptions_useInt64Timestamp = _messages.BooleanField(1)
+  jobId = _messages.StringField(2, required=True)
+  location = _messages.StringField(3)
+  maxResults = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(5)
+  projectId = _messages.StringField(6, required=True)
+  startIndex = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  timeoutMs = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
 
 
 class BigqueryJobsGetRequest(_messages.Message):
   r"""A BigqueryJobsGetRequest object.
 
   Fields:
-    jobId: [Required] Job ID of the requested job
-    location: The geographic location of the job. Required except for US and
-      EU. See details at https://cloud.google.com/bigquery/docs/locations#spec
-      ifying_your_location.
-    projectId: [Required] Project ID of the requested job
+    jobId: Required. Job ID of the requested job.
+    location: The geographic location of the job. You must specify the
+      location to run the job for the following scenarios: - If the location
+      to run a job is not in the `us` or the `eu` multi-regional location - If
+      the job's location is in a single region (for example, `us-central1`)
+      For more information, see https://cloud.google.com/bigquery/docs/locatio
+      ns#specifying_your_location.
+    projectId: Required. Project ID of the requested job.
   """
 
   jobId = _messages.StringField(1, required=True)
@@ -714,7 +867,7 @@ class BigqueryJobsInsertRequest(_messages.Message):
 
   Fields:
     job: A Job resource to be passed as the request body.
-    projectId: Project ID of the project that will be billed for the job
+    projectId: Project ID of project that will be billed for the job.
   """
 
   job = _messages.MessageField('Job', 1)
@@ -731,19 +884,20 @@ class BigqueryJobsListRequest(_messages.Message):
 
   Fields:
     allUsers: Whether to display jobs owned by all users in the project.
-      Default false
+      Default False.
     maxCreationTime: Max value for job creation time, in milliseconds since
       the POSIX epoch. If set, only jobs created before or at this timestamp
-      are returned
-    maxResults: Maximum number of results to return
+      are returned.
+    maxResults: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
     minCreationTime: Min value for job creation time, in milliseconds since
       the POSIX epoch. If set, only jobs created after or at this timestamp
-      are returned
+      are returned.
     pageToken: Page token, returned by a previous call, to request the next
-      page of results
-    parentJobId: If set, retrieves only jobs whose parent is this job.
-      Otherwise, retrieves only jobs which have no parent
-    projectId: Project ID of the jobs to list
+      page of results.
+    parentJobId: If set, show only child jobs of the specified parent.
+      Otherwise, show all top-level jobs.
+    projectId: Project ID of the jobs to list.
     projection: Restrict information returned to a set of selected fields
     stateFilter: Filter for job state
   """
@@ -785,7 +939,7 @@ class BigqueryJobsQueryRequest(_messages.Message):
   r"""A BigqueryJobsQueryRequest object.
 
   Fields:
-    projectId: Project ID of the project billed for the query
+    projectId: Required. Project ID of the query request.
     queryRequest: A QueryRequest resource to be passed as the request body.
   """
 
@@ -863,7 +1017,7 @@ class BigqueryProjectsGetServiceAccountRequest(_messages.Message):
   r"""A BigqueryProjectsGetServiceAccountRequest object.
 
   Fields:
-    projectId: Project ID for which the service account is requested.
+    projectId: Required. ID of the project.
   """
 
   projectId = _messages.StringField(1, required=True)
@@ -873,9 +1027,12 @@ class BigqueryProjectsListRequest(_messages.Message):
   r"""A BigqueryProjectsListRequest object.
 
   Fields:
-    maxResults: Maximum number of results to return
+    maxResults: `maxResults` unset returns all results, up to 50 per page.
+      Additionally, the number of projects in a page may be fewer than
+      `maxResults` because projects are retrieved and then filtered to only
+      projects with the BigQuery API enabled.
     pageToken: Page token, returned by a previous call, to request the next
-      page of results
+      page of results. If not present, no further pages are present.
   """
 
   maxResults = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -1032,11 +1189,11 @@ class BigqueryTabledataInsertAllRequest(_messages.Message):
   r"""A BigqueryTabledataInsertAllRequest object.
 
   Fields:
-    datasetId: Dataset ID of the destination table.
-    projectId: Project ID of the destination table.
+    datasetId: Required. Dataset ID of the destination.
+    projectId: Required. Project ID of the destination.
     tableDataInsertAllRequest: A TableDataInsertAllRequest resource to be
       passed as the request body.
-    tableId: Table ID of the destination table.
+    tableId: Required. Table ID of the destination.
   """
 
   datasetId = _messages.StringField(1, required=True)
@@ -1049,33 +1206,37 @@ class BigqueryTabledataListRequest(_messages.Message):
   r"""A BigqueryTabledataListRequest object.
 
   Fields:
-    datasetId: Dataset ID of the table to read
-    maxResults: Maximum number of results to return
-    pageToken: Page token, returned by a previous call, identifying the result
-      set
-    projectId: Project ID of the table to read
-    selectedFields: List of fields to return (comma-separated). If
-      unspecified, all fields are returned
-    startIndex: Zero-based index of the starting row to read
-    tableId: Table ID of the table to read
+    datasetId: Required. Dataset id of the table to list.
+    formatOptions_useInt64Timestamp: Optional. Output timestamp as usec int64.
+      Default is false.
+    maxResults: Row limit of the table.
+    pageToken: To retrieve the next page of table data, set this field to the
+      string provided in the pageToken field of the response body from your
+      previous call to tabledata.list.
+    projectId: Required. Project id of the table to list.
+    selectedFields: Subset of fields to return, supports select into sub
+      fields. Example: selected_fields = "a,e.d.f";
+    startIndex: Start row index of the table.
+    tableId: Required. Table id of the table to list.
   """
 
   datasetId = _messages.StringField(1, required=True)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(3)
-  projectId = _messages.StringField(4, required=True)
-  selectedFields = _messages.StringField(5)
-  startIndex = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  tableId = _messages.StringField(7, required=True)
+  formatOptions_useInt64Timestamp = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(4)
+  projectId = _messages.StringField(5, required=True)
+  selectedFields = _messages.StringField(6)
+  startIndex = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  tableId = _messages.StringField(8, required=True)
 
 
 class BigqueryTablesDeleteRequest(_messages.Message):
   r"""A BigqueryTablesDeleteRequest object.
 
   Fields:
-    datasetId: Dataset ID of the table to delete
-    projectId: Project ID of the table to delete
-    tableId: Table ID of the table to delete
+    datasetId: Required. Dataset ID of the table to delete
+    projectId: Required. Project ID of the table to delete
+    tableId: Required. Table ID of the table to delete
   """
 
   datasetId = _messages.StringField(1, required=True)
@@ -1107,44 +1268,47 @@ class BigqueryTablesGetRequest(_messages.Message):
   r"""A BigqueryTablesGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Specifies the view that determines which table
-      information is returned. By default, basic table information and storage
-      statistics (STORAGE_STATS) are returned.
+    ViewValueValuesEnum: Optional. Specifies the view that determines which
+      table information is returned. By default, basic table information and
+      storage statistics (STORAGE_STATS) are returned.
 
   Fields:
-    datasetId: Dataset ID of the requested table
-    projectId: Project ID of the requested table
-    selectedFields: List of fields to return (comma-separated). If
-      unspecified, all fields are returned
-    tableId: Table ID of the requested table
-    view: Specifies the view that determines which table information is
-      returned. By default, basic table information and storage statistics
+    datasetId: Required. Dataset ID of the requested table
+    projectId: Required. Project ID of the requested table
+    selectedFields: List of table schema fields to return (comma-separated).
+      If unspecified, all fields are returned. A fieldMask cannot be used here
+      because the fields will automatically be converted from camelCase to
+      snake_case and the conversion will fail if there are underscores. Since
+      these are fields in BigQuery table schemas, underscores are allowed.
+    tableId: Required. Table ID of the requested table
+    view: Optional. Specifies the view that determines which table information
+      is returned. By default, basic table information and storage statistics
       (STORAGE_STATS) are returned.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Specifies the view that determines which table information is
-    returned. By default, basic table information and storage statistics
+    r"""Optional. Specifies the view that determines which table information
+    is returned. By default, basic table information and storage statistics
     (STORAGE_STATS) are returned.
 
     Values:
+      TABLE_METADATA_VIEW_UNSPECIFIED: The default value. Default to the
+        STORAGE_STATS view.
       BASIC: Includes basic table information including schema and
         partitioning specification. This view does not include storage
         statistics such as numRows or numBytes. This view is significantly
         more efficient and should be used to support high query rates.
-      FULL: Includes all table information, including storage statistics. It
-        returns same information as STORAGE_STATS view, but may contain
-        additional information in the future.
       STORAGE_STATS: Includes all information in the BASIC view as well as
         storage statistics (numBytes, numLongTermBytes, numRows and
         lastModifiedTime).
-      TABLE_METADATA_VIEW_UNSPECIFIED: The default value. Default to the
-        STORAGE_STATS view.
+      FULL: Includes all table information, including storage statistics. It
+        returns same information as STORAGE_STATS view, but may contain
+        additional information in the future.
     """
-    BASIC = 0
-    FULL = 1
+    TABLE_METADATA_VIEW_UNSPECIFIED = 0
+    BASIC = 1
     STORAGE_STATS = 2
-    TABLE_METADATA_VIEW_UNSPECIFIED = 3
+    FULL = 3
 
   datasetId = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2, required=True)
@@ -1157,8 +1321,8 @@ class BigqueryTablesInsertRequest(_messages.Message):
   r"""A BigqueryTablesInsertRequest object.
 
   Fields:
-    datasetId: Dataset ID of the new table
-    projectId: Project ID of the new table
+    datasetId: Required. Dataset ID of the new table
+    projectId: Required. Project ID of the new table
     table: A Table resource to be passed as the request body.
   """
 
@@ -1171,11 +1335,12 @@ class BigqueryTablesListRequest(_messages.Message):
   r"""A BigqueryTablesListRequest object.
 
   Fields:
-    datasetId: Dataset ID of the tables to list
-    maxResults: Maximum number of results to return
+    datasetId: Required. Dataset ID of the tables to list
+    maxResults: The maximum number of results to return in a single response
+      page. Leverage the page tokens to iterate through the entire collection.
     pageToken: Page token, returned by a previous call, to request the next
       page of results
-    projectId: Project ID of the tables to list
+    projectId: Required. Project ID of the tables to list
   """
 
   datasetId = _messages.StringField(1, required=True)
@@ -1188,12 +1353,12 @@ class BigqueryTablesPatchRequest(_messages.Message):
   r"""A BigqueryTablesPatchRequest object.
 
   Fields:
-    autodetect_schema: When true will autodetect schema, else will keep
-      original schema
-    datasetId: Dataset ID of the table to update
-    projectId: Project ID of the table to update
+    autodetect_schema: Optional.  When true will autodetect schema, else will
+      keep original schema
+    datasetId: Required. Dataset ID of the table to update
+    projectId: Required. Project ID of the table to update
     table: A Table resource to be passed as the request body.
-    tableId: Table ID of the table to update
+    tableId: Required. Table ID of the table to update
   """
 
   autodetect_schema = _messages.BooleanField(1)
@@ -1239,12 +1404,12 @@ class BigqueryTablesUpdateRequest(_messages.Message):
   r"""A BigqueryTablesUpdateRequest object.
 
   Fields:
-    autodetect_schema: When true will autodetect schema, else will keep
-      original schema
-    datasetId: Dataset ID of the table to update
-    projectId: Project ID of the table to update
+    autodetect_schema: Optional.  When true will autodetect schema, else will
+      keep original schema
+    datasetId: Required. Dataset ID of the table to update
+    projectId: Required. Project ID of the table to update
     table: A Table resource to be passed as the request body.
-    tableId: Table ID of the table to update
+    tableId: Required. Table ID of the table to update
   """
 
   autodetect_schema = _messages.BooleanField(1)
@@ -1255,39 +1420,38 @@ class BigqueryTablesUpdateRequest(_messages.Message):
 
 
 class BigtableColumn(_messages.Message):
-  r"""A BigtableColumn object.
+  r"""Information related to a Bigtable column.
 
   Fields:
-    encoding: [Optional] The encoding of the values when the type is not
+    encoding: Optional. The encoding of the values when the type is not
       STRING. Acceptable encoding values are: TEXT - indicates values are
       alphanumeric text strings. BINARY - indicates values are encoded using
       HBase Bytes.toBytes family of functions. 'encoding' can also be set at
       the column family level. However, the setting at this level takes
       precedence if 'encoding' is set at both levels.
-    fieldName: [Optional] If the qualifier is not a valid BigQuery field
-      identifier i.e. does not match [a-zA-Z][a-zA-Z0-9_]*, a valid identifier
-      must be provided as the column field name and is used as field name in
-      queries.
-    onlyReadLatest: [Optional] If this is set, only the latest version of
-      value in this column are exposed. 'onlyReadLatest' can also be set at
-      the column family level. However, the setting at this level takes
-      precedence if 'onlyReadLatest' is set at both levels.
+    fieldName: Optional. If the qualifier is not a valid BigQuery field
+      identifier i.e. does not match a-zA-Z*, a valid identifier must be
+      provided as the column field name and is used as field name in queries.
+    onlyReadLatest: Optional. If this is set, only the latest version of value
+      in this column are exposed. 'onlyReadLatest' can also be set at the
+      column family level. However, the setting at this level takes precedence
+      if 'onlyReadLatest' is set at both levels.
     qualifierEncoded: [Required] Qualifier of the column. Columns in the
       parent column family that has this exact qualifier are exposed as .
       field. If the qualifier is valid UTF-8 string, it can be specified in
       the qualifier_string field. Otherwise, a base-64 encoded value must be
       set to qualifier_encoded. The column field name is the same as the
       column qualifier. However, if the qualifier is not a valid BigQuery
-      field identifier i.e. does not match [a-zA-Z][a-zA-Z0-9_]*, a valid
-      identifier must be provided as field_name.
-    qualifierString: A string attribute.
-    type: [Optional] The type to convert the value in cells of this column.
-      The values are expected to be encoded using HBase Bytes.toBytes function
+      field identifier i.e. does not match a-zA-Z*, a valid identifier must be
+      provided as field_name.
+    qualifierString: Qualifier string.
+    type: Optional. The type to convert the value in cells of this column. The
+      values are expected to be encoded using HBase Bytes.toBytes function
       when using the BINARY encoding value. Following BigQuery types are
-      allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN Default
-      type is BYTES. 'type' can also be set at the column family level.
-      However, the setting at this level takes precedence if 'type' is set at
-      both levels.
+      allowed (case-sensitive): * BYTES * STRING * INTEGER * FLOAT * BOOLEAN *
+      JSON Default type is BYTES. 'type' can also be set at the column family
+      level. However, the setting at this level takes precedence if 'type' is
+      set at both levels.
   """
 
   encoding = _messages.StringField(1)
@@ -1299,30 +1463,31 @@ class BigtableColumn(_messages.Message):
 
 
 class BigtableColumnFamily(_messages.Message):
-  r"""A BigtableColumnFamily object.
+  r"""Information related to a Bigtable column family.
 
   Fields:
-    columns: [Optional] Lists of columns that should be exposed as individual
+    columns: Optional. Lists of columns that should be exposed as individual
       fields as opposed to a list of (column name, value) pairs. All columns
       whose qualifier matches a qualifier in this list can be accessed as ..
       Other columns can be accessed as a list through .Column field.
-    encoding: [Optional] The encoding of the values when the type is not
+    encoding: Optional. The encoding of the values when the type is not
       STRING. Acceptable encoding values are: TEXT - indicates values are
       alphanumeric text strings. BINARY - indicates values are encoded using
       HBase Bytes.toBytes family of functions. This can be overridden for a
       specific column by listing that column in 'columns' and specifying an
       encoding for it.
     familyId: Identifier of the column family.
-    onlyReadLatest: [Optional] If this is set only the latest version of value
+    onlyReadLatest: Optional. If this is set only the latest version of value
       are exposed for all columns in this column family. This can be
       overridden for a specific column by listing that column in 'columns' and
       specifying a different setting for that column.
-    type: [Optional] The type to convert the value in cells of this column
+    type: Optional. The type to convert the value in cells of this column
       family. The values are expected to be encoded using HBase Bytes.toBytes
       function when using the BINARY encoding value. Following BigQuery types
-      are allowed (case-sensitive) - BYTES STRING INTEGER FLOAT BOOLEAN
-      Default type is BYTES. This can be overridden for a specific column by
-      listing that column in 'columns' and specifying a type for it.
+      are allowed (case-sensitive): * BYTES * STRING * INTEGER * FLOAT *
+      BOOLEAN * JSON Default type is BYTES. This can be overridden for a
+      specific column by listing that column in 'columns' and specifying a
+      type for it.
   """
 
   columns = _messages.MessageField('BigtableColumn', 1, repeated=True)
@@ -1333,10 +1498,10 @@ class BigtableColumnFamily(_messages.Message):
 
 
 class BigtableOptions(_messages.Message):
-  r"""A BigtableOptions object.
+  r"""Options specific to Google Cloud Bigtable data sources.
 
   Fields:
-    columnFamilies: [Optional] List of column families to expose in the table
+    columnFamilies: Optional. List of column families to expose in the table
       schema along with their types. This list restricts the column families
       that can be referenced in queries and specifies their value types. You
       can use this list to do type conversions - see the 'type' field for more
@@ -1344,11 +1509,15 @@ class BigtableOptions(_messages.Message):
       in the table schema and their values are read as BYTES. During a query
       only the column families referenced in that query are read from
       Bigtable.
-    ignoreUnspecifiedColumnFamilies: [Optional] If field is true, then the
+    ignoreUnspecifiedColumnFamilies: Optional. If field is true, then the
       column families that are not specified in columnFamilies list are not
       exposed in the table schema. Otherwise, they are read with BYTES type
       values. The default value is false.
-    readRowkeyAsString: [Optional] If field is true, then the rowkey column
+    outputColumnFamiliesAsJson: Optional. If field is true, then each column
+      family will be read as a single JSON column. Otherwise they are read as
+      a repeated cell structure containing timestamp/value tuples. The default
+      value is false.
+    readRowkeyAsString: Optional. If field is true, then the rowkey column
       families will be read and converted to string. Otherwise they are read
       with BYTES type values and users need to manually cast them with CAST if
       necessary. The default value is false.
@@ -1356,7 +1525,8 @@ class BigtableOptions(_messages.Message):
 
   columnFamilies = _messages.MessageField('BigtableColumnFamily', 1, repeated=True)
   ignoreUnspecifiedColumnFamilies = _messages.BooleanField(2)
-  readRowkeyAsString = _messages.BooleanField(3)
+  outputColumnFamiliesAsJson = _messages.BooleanField(3)
+  readRowkeyAsString = _messages.BooleanField(4)
 
 
 class BinaryClassificationMetrics(_messages.Message):
@@ -1479,7 +1649,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1491,20 +1665,11 @@ class BqmlIterationResult(_messages.Message):
   r"""A BqmlIterationResult object.
 
   Fields:
-    durationMs: [Output-only, Beta] Time taken to run the training iteration
-      in milliseconds.
-    evalLoss: [Output-only, Beta] Eval loss computed on the eval data at the
-      end of the iteration. The eval loss is used for early stopping to avoid
-      overfitting. No eval loss if eval_split_method option is specified as
-      no_split or auto_split with input data size less than 500 rows.
-    index: [Output-only, Beta] Index of the ML training iteration, starting
-      from zero for each training run.
-    learnRate: [Output-only, Beta] Learning rate used for this iteration, it
-      varies for different training iterations if learn_rate_strategy option
-      is not constant.
-    trainingLoss: [Output-only, Beta] Training loss computed on the training
-      data at the end of the iteration. The training loss function is defined
-      by model type.
+    durationMs: Deprecated.
+    evalLoss: Deprecated.
+    index: Deprecated.
+    learnRate: Deprecated.
+    trainingLoss: Deprecated.
   """
 
   durationMs = _messages.IntegerField(1)
@@ -1518,36 +1683,17 @@ class BqmlTrainingRun(_messages.Message):
   r"""A BqmlTrainingRun object.
 
   Messages:
-    TrainingOptionsValue: [Output-only, Beta] Training options used by this
-      training run. These options are mutable for subsequent training runs.
-      Default values are explicitly stored for options not specified in the
-      input query of the first training run. For subsequent training runs, any
-      option not explicitly specified in the input query will be copied from
-      the previous training run.
+    TrainingOptionsValue: Deprecated.
 
   Fields:
-    iterationResults: [Output-only, Beta] List of each iteration results.
-    startTime: [Output-only, Beta] Training run start time in milliseconds
-      since the epoch.
-    state: [Output-only, Beta] Different state applicable for a training run.
-      IN PROGRESS: Training run is in progress. FAILED: Training run ended due
-      to a non-retryable failure. SUCCEEDED: Training run successfully
-      completed. CANCELLED: Training run cancelled by the user.
-    trainingOptions: [Output-only, Beta] Training options used by this
-      training run. These options are mutable for subsequent training runs.
-      Default values are explicitly stored for options not specified in the
-      input query of the first training run. For subsequent training runs, any
-      option not explicitly specified in the input query will be copied from
-      the previous training run.
+    iterationResults: Deprecated.
+    startTime: Deprecated.
+    state: Deprecated.
+    trainingOptions: Deprecated.
   """
 
   class TrainingOptionsValue(_messages.Message):
-    r"""[Output-only, Beta] Training options used by this training run. These
-    options are mutable for subsequent training runs. Default values are
-    explicitly stored for options not specified in the input query of the
-    first training run. For subsequent training runs, any option not
-    explicitly specified in the input query will be copied from the previous
-    training run.
+    r"""Deprecated.
 
     Fields:
       earlyStop: A boolean attribute.
@@ -1604,12 +1750,12 @@ class CategoryCount(_messages.Message):
 
 
 class CloneDefinition(_messages.Message):
-  r"""A CloneDefinition object.
+  r"""Information about base table and clone time of a table clone.
 
   Fields:
-    baseTableReference: [Required] Reference describing the ID of the table
+    baseTableReference: Required. Reference describing the ID of the table
       that was cloned.
-    cloneTime: [Required] The time at which the base table was cloned. This
+    cloneTime: Required. The time at which the base table was cloned. This
       value is reported in the JSON response using RFC3339 format.
   """
 
@@ -1648,14 +1794,15 @@ class ClusterInfo(_messages.Message):
 
 
 class Clustering(_messages.Message):
-  r"""A Clustering object.
+  r"""Configures table clustering.
 
   Fields:
-    fields: [Repeated] One or more fields on which data should be clustered.
-      Only top-level, non-repeated, simple-type fields are supported. When you
-      cluster a table using multiple columns, the order of columns you specify
-      is important. The order of the specified columns determines the sort
-      order of the data.
+    fields: One or more fields on which data should be clustered. Only top-
+      level, non-repeated, simple-type fields are supported. The ordering of
+      the clustering fields should be prioritized from most to least important
+      for filtering purposes. Additional information on limitations can be
+      found here: https://cloud.google.com/bigquery/docs/creating-clustered-
+      tables#limitations
   """
 
   fields = _messages.StringField(1, repeated=True)
@@ -1690,11 +1837,27 @@ class ConfusionMatrix(_messages.Message):
 
 
 class ConnectionProperty(_messages.Message):
-  r"""A ConnectionProperty object.
+  r"""A connection-level property to customize query behavior. Under JDBC,
+  these correspond directly to connection properties passed to the
+  DriverManager. Under ODBC, these correspond to properties in the connection
+  string. Currently supported connection properties: * **dataset_project_id**:
+  represents the default project for datasets that are used in the query.
+  Setting the system variable `@@dataset_project_id` achieves the same
+  behavior. For more information about system variables, see:
+  https://cloud.google.com/bigquery/docs/reference/system-variables *
+  **time_zone**: represents the default timezone used to run the query. *
+  **session_id**: associates the query with a given session. *
+  **query_label**: associates the query with a given job label. If set, all
+  subsequent queries in a script or session will have this label. For the
+  format in which a you can specify a query label, see labels in the
+  JobConfiguration resource type: https://cloud.google.com/bigquery/docs/refer
+  ence/rest/v2/Job#jobconfiguration Additional properties are allowed, but
+  ignored. Specifying multiple connection properties with the same key returns
+  an error.
 
   Fields:
-    key: [Required] Name of the connection property to set.
-    value: [Required] Value of the connection property.
+    key: The key of the property to set.
+    value: The value of the property to set.
   """
 
   key = _messages.StringField(1)
@@ -1702,41 +1865,49 @@ class ConnectionProperty(_messages.Message):
 
 
 class CsvOptions(_messages.Message):
-  r"""A CsvOptions object.
+  r"""Information related to a CSV data source.
 
   Fields:
-    allowJaggedRows: [Optional] Indicates if BigQuery should accept rows that
+    allowJaggedRows: Optional. Indicates if BigQuery should accept rows that
       are missing trailing optional columns. If true, BigQuery treats missing
       trailing columns as null values. If false, records with missing trailing
       columns are treated as bad records, and if there are too many bad
       records, an invalid error is returned in the job result. The default
       value is false.
-    allowQuotedNewlines: [Optional] Indicates if BigQuery should allow quoted
+    allowQuotedNewlines: Optional. Indicates if BigQuery should allow quoted
       data sections that contain newline characters in a CSV file. The default
       value is false.
-    encoding: [Optional] The character encoding of the data. The supported
-      values are UTF-8 or ISO-8859-1. The default value is UTF-8. BigQuery
-      decodes the data after the raw, binary data has been split using the
-      values of the quote and fieldDelimiter properties.
-    fieldDelimiter: [Optional] The separator for fields in a CSV file.
-      BigQuery converts the string to ISO-8859-1 encoding, and then uses the
-      first byte of the encoded string to split the data in its raw, binary
-      state. BigQuery also supports the escape sequence "\t" to specify a tab
-      separator. The default value is a comma (',').
-    nullMarker: [Optional] An custom string that will represent a NULL value
-      in CSV import data.
-    preserveAsciiControlCharacters: [Optional] Preserves the embedded ASCII
+    encoding: Optional. The character encoding of the data. The supported
+      values are UTF-8, ISO-8859-1, UTF-16BE, UTF-16LE, UTF-32BE, and
+      UTF-32LE. The default value is UTF-8. BigQuery decodes the data after
+      the raw, binary data has been split using the values of the quote and
+      fieldDelimiter properties.
+    fieldDelimiter: Optional. The separator character for fields in a CSV
+      file. The separator is interpreted as a single byte. For files encoded
+      in ISO-8859-1, any single character can be used as a separator. For
+      files encoded in UTF-8, characters represented in decimal range 1-127
+      (U+0001-U+007F) can be used without any modification. UTF-8 characters
+      encoded with multiple bytes (i.e. U+0080 and above) will have only the
+      first byte used for separating fields. The remaining bytes will be
+      treated as a part of the field. BigQuery also supports the escape
+      sequence "\t" (U+0009) to specify a tab separator. The default value is
+      comma (",", U+002C).
+    nullMarker: [Optional] A custom string that will represent a NULL value in
+      CSV import data.
+    preserveAsciiControlCharacters: Optional. Indicates if the embedded ASCII
       control characters (the first 32 characters in the ASCII-table, from
-      '\x00' to '\x1F') when loading from CSV. Only applicable to CSV, ignored
-      for other formats.
-    quote: [Optional] The value that is used to quote data sections in a CSV
+      '\x00' to '\x1F') are preserved.
+    quote: Optional. The value that is used to quote data sections in a CSV
       file. BigQuery converts the string to ISO-8859-1 encoding, and then uses
       the first byte of the encoded string to split the data in its raw,
-      binary state. The default value is a double-quote ('"'). If your data
-      does not contain quoted sections, set the property value to an empty
-      string. If your data contains quoted newline characters, you must also
-      set the allowQuotedNewlines property to true.
-    skipLeadingRows: [Optional] The number of rows at the top of a CSV file
+      binary state. The default value is a double-quote ("). If your data does
+      not contain quoted sections, set the property value to an empty string.
+      If your data contains quoted newline characters, you must also set the
+      allowQuotedNewlines property to true. To include the specific quote
+      character within a quoted value, precede it with an additional matching
+      quote character. For example, if you want to escape the default
+      character ' " ', use ' "" '.
+    skipLeadingRows: Optional. The number of rows at the top of a CSV file
       that BigQuery will skip when reading the data. The default value is 0.
       This property is useful if you have header rows in the file that should
       be skipped. When autodetect is on, the behavior is the following: *
@@ -1760,19 +1931,26 @@ class CsvOptions(_messages.Message):
   skipLeadingRows = _messages.IntegerField(8)
 
 
-class DataMaskingStatistics(_messages.Message):
-  r"""A DataMaskingStatistics object.
+class DataFormatOptions(_messages.Message):
+  r"""Options for data format adjustments.
 
   Fields:
-    dataMaskingApplied: [Output-only] [Preview] Whether any accessed data was
-      protected by data masking. The actual evaluation is done by
-      accessStats.masked_field_count > 0. Since this is only used for the
-      discovery_doc generation purpose, as long as the type (boolean) matches,
-      client library can leverage this. The actual evaluation of the variable
-      is done else-where.
+    useInt64Timestamp: Optional. Output timestamp as usec int64. Default is
+      false.
   """
 
-  dataMaskingApplied = _messages.BooleanField(1, default=False)
+  useInt64Timestamp = _messages.BooleanField(1)
+
+
+class DataMaskingStatistics(_messages.Message):
+  r"""Statistics for data-masking.
+
+  Fields:
+    dataMaskingApplied: Whether any accessed data was protected by the data
+      masking.
+  """
+
+  dataMaskingApplied = _messages.BooleanField(1)
 
 
 class DataSplitResult(_messages.Message):
@@ -1793,16 +1971,29 @@ class DataSplitResult(_messages.Message):
 class Dataset(_messages.Message):
   r"""A Dataset object.
 
+  Enums:
+    DefaultRoundingModeValueValuesEnum: Optional. Defines the default rounding
+      mode specification of new tables created within this dataset. During
+      table creation, if this field is specified, the table within this
+      dataset will inherit the default rounding mode of the dataset. Setting
+      the default rounding mode on a table overrides this option. Existing
+      tables in the dataset are unaffected. If columns are defined during that
+      table creation, they will immediately inherit the table's default
+      rounding mode, unless otherwise specified.
+    StorageBillingModelValueValuesEnum: Optional. Updates
+      storage_billing_model for the dataset.
+
   Messages:
-    AccessValueListEntry: A AccessValueListEntry object.
+    AccessValueListEntry: An object that defines dataset access for an entity.
     LabelsValue: The labels associated with this dataset. You can use these to
       organize and group your datasets. You can set this property when
       inserting or updating a dataset. See Creating and Updating Dataset
       Labels for more information.
-    TagsValueListEntry: A TagsValueListEntry object.
+    TagsValueListEntry: A global tag managed by Resource Manager.
+      https://cloud.google.com/iam/docs/tags-access-control#definitions
 
   Fields:
-    access: [Optional] An array of objects that define dataset access for one
+    access: Optional. An array of objects that define dataset access for one
       or more entities. You can set this property when inserting or updating a
       dataset in order to control who is allowed to access the data. If
       unspecified at dataset creation time, BigQuery adds default dataset
@@ -1810,72 +2001,137 @@ class Dataset(_messages.Message):
       access.role: READER; access.specialGroup: projectWriters; access.role:
       WRITER; access.specialGroup: projectOwners; access.role: OWNER;
       access.userByEmail: [dataset creator email]; access.role: OWNER;
-    creationTime: [Output-only] The time when this dataset was created, in
+    creationTime: Output only. The time when this dataset was created, in
       milliseconds since the epoch.
-    datasetReference: [Required] A reference that identifies the dataset.
-    defaultCollation: [Output-only] The default collation of the dataset.
-    defaultEncryptionConfiguration: A EncryptionConfiguration attribute.
-    defaultPartitionExpirationMs: [Optional] The default partition expiration
-      for all partitioned tables in the dataset, in milliseconds. Once this
-      property is set, all newly-created partitioned tables in the dataset
-      will have an expirationMs property in the timePartitioning settings set
-      to this value, and changing the value will only affect new tables, not
-      existing ones. The storage in a partition will have an expiration time
-      of its partition time plus this value. Setting this property overrides
-      the use of defaultTableExpirationMs for partitioned tables: only one of
-      defaultTableExpirationMs and defaultPartitionExpirationMs will be used
-      for any new partitioned table. If you provide an explicit
-      timePartitioning.expirationMs when creating or updating a partitioned
-      table, that value takes precedence over the default partition expiration
-      time indicated by this property.
-    defaultRoundingMode: [Output-only] The default rounding mode of the
-      dataset.
-    defaultTableExpirationMs: [Optional] The default lifetime of all tables in
-      the dataset, in milliseconds. The minimum value is 3600000 milliseconds
-      (one hour). Once this property is set, all newly-created tables in the
-      dataset will have an expirationTime property set to the creation time
-      plus the value in this property, and changing the value will only affect
-      new tables, not existing ones. When the expirationTime for a given table
-      is reached, that table will be deleted automatically. If a table's
-      expirationTime is modified or removed before the table expires, or if
-      you provide an explicit expirationTime when creating a table, that value
-      takes precedence over the default expiration time indicated by this
-      property.
-    description: [Optional] A user-friendly description of the dataset.
-    etag: [Output-only] A hash of the resource.
-    externalDatasetReference: [Optional] Information about the external
+    datasetReference: Required. A reference that identifies the dataset.
+    defaultCollation: Optional. Defines the default collation specification of
+      future tables created in the dataset. If a table is created in this
+      dataset without table-level default collation, then the table inherits
+      the dataset default collation, which is applied to the string fields
+      that do not have explicit collation specified. A change to this field
+      affects only tables created afterwards, and does not alter the existing
+      tables. The following values are supported: * 'und:ci': undetermined
+      locale, case insensitive. * '': empty string. Default to case-sensitive
+      behavior.
+    defaultEncryptionConfiguration: The default encryption key for all tables
+      in the dataset. Once this property is set, all newly-created partitioned
+      tables in the dataset will have encryption key set to this value, unless
+      table creation request (or query) overrides the key.
+    defaultPartitionExpirationMs: This default partition expiration, expressed
+      in milliseconds. When new time-partitioned tables are created in a
+      dataset where this property is set, the table will inherit this value,
+      propagated as the `TimePartitioning.expirationMs` property on the new
+      table. If you set `TimePartitioning.expirationMs` explicitly when
+      creating a table, the `defaultPartitionExpirationMs` of the containing
+      dataset is ignored. When creating a partitioned table, if
+      `defaultPartitionExpirationMs` is set, the `defaultTableExpirationMs`
+      value is ignored and the table will not be inherit a table expiration
+      deadline.
+    defaultRoundingMode: Optional. Defines the default rounding mode
+      specification of new tables created within this dataset. During table
+      creation, if this field is specified, the table within this dataset will
+      inherit the default rounding mode of the dataset. Setting the default
+      rounding mode on a table overrides this option. Existing tables in the
+      dataset are unaffected. If columns are defined during that table
+      creation, they will immediately inherit the table's default rounding
+      mode, unless otherwise specified.
+    defaultTableExpirationMs: Optional. The default lifetime of all tables in
+      the dataset, in milliseconds. The minimum lifetime value is 3600000
+      milliseconds (one hour). To clear an existing default expiration with a
+      PATCH request, set to 0. Once this property is set, all newly-created
+      tables in the dataset will have an expirationTime property set to the
+      creation time plus the value in this property, and changing the value
+      will only affect new tables, not existing ones. When the expirationTime
+      for a given table is reached, that table will be deleted automatically.
+      If a table's expirationTime is modified or removed before the table
+      expires, or if you provide an explicit expirationTime when creating a
+      table, that value takes precedence over the default expiration time
+      indicated by this property.
+    description: Optional. A user-friendly description of the dataset.
+    etag: Output only. A hash of the resource.
+    externalDatasetReference: Optional. Information about the external
       metadata storage where the dataset is defined. Filled out when the
       dataset type is EXTERNAL.
-    friendlyName: [Optional] A descriptive name for the dataset.
-    id: [Output-only] The fully-qualified unique name of the dataset in the
+    friendlyName: Optional. A descriptive name for the dataset.
+    id: Output only. The fully-qualified unique name of the dataset in the
       format projectId:datasetId. The dataset name without the project name is
       given in the datasetId field. When creating a new dataset, leave this
       field blank, and instead specify the datasetId field.
-    isCaseInsensitive: [Optional] Indicates if table names are case
-      insensitive in the dataset.
-    kind: [Output-only] The resource type.
+    isCaseInsensitive: Optional. TRUE if the dataset and its table names are
+      case-insensitive, otherwise FALSE. By default, this is FALSE, which
+      means the dataset and its table names are case-sensitive. This field
+      does not affect routine references.
+    kind: Output only. The resource type.
     labels: The labels associated with this dataset. You can use these to
       organize and group your datasets. You can set this property when
       inserting or updating a dataset. See Creating and Updating Dataset
       Labels for more information.
-    lastModifiedTime: [Output-only] The date when this dataset or any of its
-      tables was last modified, in milliseconds since the epoch.
-    location: The geographic location where the dataset should reside. The
-      default value is US. See details at
-      https://cloud.google.com/bigquery/docs/locations.
-    maxTimeTravelHours: [Optional] Number of hours for the max time travel for
-      all tables in the dataset.
-    satisfiesPzs: [Output-only] Reserved for future use.
-    selfLink: [Output-only] A URL that can be used to access the resource
+    lastModifiedTime: Output only. The date when this dataset was last
+      modified, in milliseconds since the epoch.
+    linkedDatasetSource: Optional. The source dataset reference when the
+      dataset is of type LINKED. For all other dataset types it is not set.
+      This field cannot be updated once it is set. Any attempt to update this
+      field using Update and Patch API Operations will be ignored.
+    location: The geographic location where the dataset should reside. See
+      https://cloud.google.com/bigquery/docs/locations for supported
+      locations.
+    maxTimeTravelHours: Optional. Defines the time travel window in hours. The
+      value can be from 48 to 168 hours (2 to 7 days). The default value is
+      168 hours if this is not set.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
+    selfLink: Output only. A URL that can be used to access the resource
       again. You can use this URL in Get or Update requests to the resource.
-    storageBillingModel: [Optional] Storage billing model to be used for all
-      tables in the dataset. Can be set to PHYSICAL. Default is LOGICAL.
-    tags: [Optional]The tags associated with this dataset. Tag keys are
-      globally unique.
+    storageBillingModel: Optional. Updates storage_billing_model for the
+      dataset.
+    tags: Output only. Tags for the Dataset.
+    type: Output only. Same as `type` in `ListFormatDataset`. The type of the
+      dataset, one of: * DEFAULT - only accessible by owner and authorized
+      accounts, * PUBLIC - accessible by everyone, * LINKED - linked dataset,
+      * EXTERNAL - dataset with definition in external metadata catalog. --
+      *BIGLAKE_METASTORE - dataset that references a database created in
+      BigLakeMetastore service. --
   """
 
+  class DefaultRoundingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the default rounding mode specification of new
+    tables created within this dataset. During table creation, if this field
+    is specified, the table within this dataset will inherit the default
+    rounding mode of the dataset. Setting the default rounding mode on a table
+    overrides this option. Existing tables in the dataset are unaffected. If
+    columns are defined during that table creation, they will immediately
+    inherit the table's default rounding mode, unless otherwise specified.
+
+    Values:
+      ROUNDING_MODE_UNSPECIFIED: Unspecified will default to using
+        ROUND_HALF_AWAY_FROM_ZERO.
+      ROUND_HALF_AWAY_FROM_ZERO: ROUND_HALF_AWAY_FROM_ZERO rounds half values
+        away from zero when applying precision and scale upon writing of
+        NUMERIC and BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1
+        1.5, 1.6, 1.7, 1.8, 1.9 => 2
+      ROUND_HALF_EVEN: ROUND_HALF_EVEN rounds half values to the nearest even
+        value when applying precision and scale upon writing of NUMERIC and
+        BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1 1.5 => 2 1.6,
+        1.7, 1.8, 1.9 => 2 2.5 => 2
+    """
+    ROUNDING_MODE_UNSPECIFIED = 0
+    ROUND_HALF_AWAY_FROM_ZERO = 1
+    ROUND_HALF_EVEN = 2
+
+  class StorageBillingModelValueValuesEnum(_messages.Enum):
+    r"""Optional. Updates storage_billing_model for the dataset.
+
+    Values:
+      STORAGE_BILLING_MODEL_UNSPECIFIED: Value not set.
+      LOGICAL: Billing for logical bytes.
+      PHYSICAL: Billing for physical bytes.
+    """
+    STORAGE_BILLING_MODEL_UNSPECIFIED = 0
+    LOGICAL = 1
+    PHYSICAL = 2
+
   class AccessValueListEntry(_messages.Message):
-    r"""A AccessValueListEntry object.
+    r"""An object that defines dataset access for an entity.
 
     Fields:
       dataset: [Pick one] A grant authorizing all resources of a particular
@@ -1890,12 +2146,12 @@ class Dataset(_messages.Message):
         access to. Maps to IAM policy member "group:GROUP".
       iamMember: [Pick one] Some other type of member that appears in the IAM
         Policy but isn't a user, group, domain, or special group.
-      role: [Required] An IAM role ID that should be granted to the user,
-        group, or domain specified in this access entry. The following legacy
-        mappings will be applied: OWNER  roles/bigquery.dataOwner WRITER
-        roles/bigquery.dataEditor READER  roles/bigquery.dataViewer This field
-        will accept any of the above formats, but will return only the legacy
-        format. For example, if you set this field to
+      role: An IAM role ID that should be granted to the user, group, or
+        domain specified in this access entry. The following legacy mappings
+        will be applied: OWNER <=> roles/bigquery.dataOwner WRITER <=>
+        roles/bigquery.dataEditor READER <=> roles/bigquery.dataViewer This
+        field will accept any of the above formats, but will return only the
+        legacy format. For example, if you set this field to
         "roles/bigquery.dataOwner", it will be returned back as "OWNER".
       routine: [Pick one] A routine from a different dataset to grant access
         to. Queries executed against that routine will have read access to
@@ -1912,10 +2168,10 @@ class Dataset(_messages.Message):
         For example: fred@example.com. Maps to IAM policy member "user:EMAIL"
         or "serviceAccount:EMAIL".
       view: [Pick one] A view from a different dataset to grant access to.
-        Queries executed against that view will have read access to tables in
-        this dataset. The role field is not required when this field is set.
-        If that view is updated by any user, access to the view needs to be
-        granted again via an update operation.
+        Queries executed against that view will have read access to
+        views/tables/routines in this dataset. The role field is not required
+        when this field is set. If that view is updated by any user, access to
+        the view needs to be granted again via an update operation.
     """
 
     dataset = _messages.MessageField('DatasetAccessEntry', 1)
@@ -1956,12 +2212,13 @@ class Dataset(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class TagsValueListEntry(_messages.Message):
-    r"""A TagsValueListEntry object.
+    r"""A global tag managed by Resource Manager.
+    https://cloud.google.com/iam/docs/tags-access-control#definitions
 
     Fields:
-      tagKey: [Required] The namespaced friendly name of the tag key, e.g.
+      tagKey: Required. The namespaced friendly name of the tag key, e.g.
         "12345/environment" where 12345 is org id.
-      tagValue: [Required] Friendly short name of the tag value, e.g.
+      tagValue: Required. The friendly short name of the tag value, e.g.
         "production".
     """
 
@@ -1974,7 +2231,7 @@ class Dataset(_messages.Message):
   defaultCollation = _messages.StringField(4)
   defaultEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 5)
   defaultPartitionExpirationMs = _messages.IntegerField(6)
-  defaultRoundingMode = _messages.StringField(7)
+  defaultRoundingMode = _messages.EnumField('DefaultRoundingModeValueValuesEnum', 7)
   defaultTableExpirationMs = _messages.IntegerField(8)
   description = _messages.StringField(9)
   etag = _messages.StringField(10)
@@ -1985,23 +2242,32 @@ class Dataset(_messages.Message):
   kind = _messages.StringField(15, default='bigquery#dataset')
   labels = _messages.MessageField('LabelsValue', 16)
   lastModifiedTime = _messages.IntegerField(17)
-  location = _messages.StringField(18)
-  maxTimeTravelHours = _messages.IntegerField(19)
-  satisfiesPzs = _messages.BooleanField(20)
-  selfLink = _messages.StringField(21)
-  storageBillingModel = _messages.StringField(22)
-  tags = _messages.MessageField('TagsValueListEntry', 23, repeated=True)
+  linkedDatasetSource = _messages.MessageField('LinkedDatasetSource', 18)
+  location = _messages.StringField(19)
+  maxTimeTravelHours = _messages.IntegerField(20)
+  satisfiesPzi = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  selfLink = _messages.StringField(23)
+  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 24)
+  tags = _messages.MessageField('TagsValueListEntry', 25, repeated=True)
+  type = _messages.StringField(26)
 
 
 class DatasetAccessEntry(_messages.Message):
-  r"""A DatasetAccessEntry object.
+  r"""Grants all resources of particular types in a particular dataset read
+  access to the current dataset. Similar to how individually authorized views
+  work, updates to any resource granted through its dataset (including
+  creation of new resources) requires read permission to referenced resources,
+  plus write permission to the authorizing dataset.
 
   Enums:
     TargetTypesValueListEntryValuesEnum:
 
   Fields:
-    dataset: [Required] The dataset this entry applies to.
-    targetTypes: A TargetTypesValueListEntryValuesEnum attribute.
+    dataset: The dataset this entry applies to
+    targetTypes: Which resources in the dataset this entry applies to.
+      Currently, only views are supported, but additional target types may be
+      added in the future.
   """
 
   class TargetTypesValueListEntryValuesEnum(_messages.Enum):
@@ -2022,26 +2288,32 @@ class DatasetAccessEntry(_messages.Message):
 
 
 class DatasetList(_messages.Message):
-  r"""A DatasetList object.
+  r"""Response format for a page of results when listing datasets.
 
   Messages:
-    DatasetsValueListEntry: A DatasetsValueListEntry object.
+    DatasetsValueListEntry: A dataset resource with only a subset of fields,
+      to be returned in a list of datasets.
 
   Fields:
     datasets: An array of the dataset resources in the project. Each resource
       contains basic information. For full information about a particular
       dataset resource, use the Datasets: get method. This property is omitted
       when there are no datasets in the project.
-    etag: A hash value of the results page. You can use this property to
-      determine if the page has changed since the last request.
-    kind: The list type. This property always returns the value
-      "bigquery#datasetList".
+    etag: Output only. A hash value of the results page. You can use this
+      property to determine if the page has changed since the last request.
+    kind: Output only. The resource type. This property always returns the
+      value "bigquery#datasetList"
     nextPageToken: A token that can be used to request the next results page.
       This property is omitted on the final results page.
+    unreachable: A list of skipped locations that were unreachable. For more
+      information about BigQuery locations, see:
+      https://cloud.google.com/bigquery/docs/locations. Example: "europe-
+      west5"
   """
 
   class DatasetsValueListEntry(_messages.Message):
-    r"""A DatasetsValueListEntry object.
+    r"""A dataset resource with only a subset of fields, to be returned in a
+    list of datasets.
 
     Messages:
       LabelsValue: The labels associated with this dataset. You can use these
@@ -2050,13 +2322,14 @@ class DatasetList(_messages.Message):
     Fields:
       datasetReference: The dataset reference. Use this property to access
         specific parts of the dataset's ID, such as project ID or dataset ID.
-      friendlyName: A descriptive name for the dataset, if one exists.
+      friendlyName: An alternate name for the dataset. The friendly name is
+        purely decorative in nature.
       id: The fully-qualified, unique, opaque ID of the dataset.
       kind: The resource type. This property always returns the value
-        "bigquery#dataset".
+        "bigquery#dataset"
       labels: The labels associated with this dataset. You can use these to
         organize and group your datasets.
-      location: The geographic location where the data resides.
+      location: The geographic location where the dataset resides.
     """
 
     @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2087,7 +2360,7 @@ class DatasetList(_messages.Message):
     datasetReference = _messages.MessageField('DatasetReference', 1)
     friendlyName = _messages.StringField(2)
     id = _messages.StringField(3)
-    kind = _messages.StringField(4, default='bigquery#dataset')
+    kind = _messages.StringField(4)
     labels = _messages.MessageField('LabelsValue', 5)
     location = _messages.StringField(6)
 
@@ -2095,16 +2368,17 @@ class DatasetList(_messages.Message):
   etag = _messages.StringField(2)
   kind = _messages.StringField(3, default='bigquery#datasetList')
   nextPageToken = _messages.StringField(4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class DatasetReference(_messages.Message):
   r"""A DatasetReference object.
 
   Fields:
-    datasetId: [Required] A unique ID for this dataset, without the project
+    datasetId: Required. A unique ID for this dataset, without the project
       name. The ID must contain only letters (a-z, A-Z), numbers (0-9), or
       underscores (_). The maximum length is 1,024 characters.
-    projectId: [Optional] The ID of the project containing this dataset.
+    projectId: Optional. The ID of the project containing this dataset.
   """
 
   datasetId = _messages.StringField(1)
@@ -2112,27 +2386,25 @@ class DatasetReference(_messages.Message):
 
 
 class DestinationTableProperties(_messages.Message):
-  r"""A DestinationTableProperties object.
+  r"""Properties for the destination table.
 
   Messages:
-    LabelsValue: [Optional] The labels associated with this table. You can use
+    LabelsValue: Optional. The labels associated with this table. You can use
       these to organize and group your tables. This will only be used if the
       destination table is newly created. If the table already exists and
       labels are different than the current labels are provided, the job will
       fail.
 
   Fields:
-    description: [Optional] The description for the destination table. This
+    description: Optional. The description for the destination table. This
       will only be used if the destination table is newly created. If the
       table already exists and a value different than the current description
       is provided, the job will fail.
-    expirationTime: [Internal] This field is for Google internal use only.
-    friendlyName: [Optional] The friendly name for the destination table. This
-      will only be used if the destination table is newly created. If the
-      table already exists and a value different than the current friendly
-      name is provided, the job will fail.
-    labels: [Optional] The labels associated with this table. You can use
-      these to organize and group your tables. This will only be used if the
+    expirationTime: Internal use only.
+    friendlyName: Optional. Friendly name for the destination table. If the
+      table already exists, it should be same as the existing friendly name.
+    labels: Optional. The labels associated with this table. You can use these
+      to organize and group your tables. This will only be used if the
       destination table is newly created. If the table already exists and
       labels are different than the current labels are provided, the job will
       fail.
@@ -2140,7 +2412,7 @@ class DestinationTableProperties(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""[Optional] The labels associated with this table. You can use these to
+    r"""Optional. The labels associated with this table. You can use these to
     organize and group your tables. This will only be used if the destination
     table is newly created. If the table already exists and labels are
     different than the current labels are provided, the job will fail.
@@ -2183,15 +2455,15 @@ class DimensionalityReductionMetrics(_messages.Message):
 
 
 class DmlStatistics(_messages.Message):
-  r"""A DmlStatistics object.
+  r"""Detailed statistics for DML statements
 
   Fields:
-    deletedRowCount: Number of deleted Rows. populated by DML DELETE, MERGE
-      and TRUNCATE statements.
-    insertedRowCount: Number of inserted Rows. Populated by DML INSERT and
-      MERGE statements.
-    updatedRowCount: Number of updated Rows. Populated by DML UPDATE and MERGE
-      statements.
+    deletedRowCount: Output only. Number of deleted Rows. populated by DML
+      DELETE, MERGE and TRUNCATE statements.
+    insertedRowCount: Output only. Number of inserted Rows. Populated by DML
+      INSERT and MERGE statements
+    updatedRowCount: Output only. Number of updated Rows. Populated by DML
+      UPDATE and MERGE statements.
   """
 
   deletedRowCount = _messages.IntegerField(1)
@@ -2260,7 +2532,7 @@ class Entry(_messages.Message):
 
 
 class ErrorProto(_messages.Message):
-  r"""A ErrorProto object.
+  r"""Error details.
 
   Fields:
     debugInfo: Debugging information. This property is internal to Google and
@@ -2306,21 +2578,25 @@ class EvaluationMetrics(_messages.Message):
 
 
 class ExplainQueryStage(_messages.Message):
-  r"""A ExplainQueryStage object.
+  r"""A single stage of query execution.
+
+  Enums:
+    ComputeModeValueValuesEnum: Output only. Compute mode for this stage.
 
   Fields:
     completedParallelInputs: Number of parallel input segments completed.
+    computeMode: Output only. Compute mode for this stage.
     computeMsAvg: Milliseconds the average shard spent on CPU-bound tasks.
     computeMsMax: Milliseconds the slowest shard spent on CPU-bound tasks.
     computeRatioAvg: Relative amount of time the average shard spent on CPU-
       bound tasks.
     computeRatioMax: Relative amount of time the slowest shard spent on CPU-
       bound tasks.
-    endMs: Stage end time represented as milliseconds since epoch.
-    id: Unique ID for stage within plan.
+    endMs: Stage end time represented as milliseconds since the epoch.
+    id: Unique ID for the stage within the plan.
     inputStages: IDs for stages that are inputs to this stage.
-    name: Human-readable name for stage.
-    parallelInputs: Number of parallel input segments to be processed.
+    name: Human-readable name for the stage.
+    parallelInputs: Number of parallel input segments to be processed
     readMsAvg: Milliseconds the average shard spent reading input.
     readMsMax: Milliseconds the slowest shard spent reading input.
     readRatioAvg: Relative amount of time the average shard spent reading
@@ -2333,8 +2609,8 @@ class ExplainQueryStage(_messages.Message):
     shuffleOutputBytesSpilled: Total number of bytes written to shuffle and
       spilled to disk.
     slotMs: Slot-milliseconds used by the stage.
-    startMs: Stage start time represented as milliseconds since epoch.
-    status: Current status for the stage.
+    startMs: Stage start time represented as milliseconds since the epoch.
+    status: Current status for this stage.
     steps: List of operations within the stage in dependency order
       (approximately chronological).
     waitMsAvg: Milliseconds the average shard spent waiting to be scheduled.
@@ -2351,44 +2627,57 @@ class ExplainQueryStage(_messages.Message):
       output.
   """
 
+  class ComputeModeValueValuesEnum(_messages.Enum):
+    r"""Output only. Compute mode for this stage.
+
+    Values:
+      COMPUTE_MODE_UNSPECIFIED: ComputeMode type not specified.
+      BIGQUERY: This stage was processed using BigQuery slots.
+      BI_ENGINE: This stage was processed using BI Engine compute.
+    """
+    COMPUTE_MODE_UNSPECIFIED = 0
+    BIGQUERY = 1
+    BI_ENGINE = 2
+
   completedParallelInputs = _messages.IntegerField(1)
-  computeMsAvg = _messages.IntegerField(2)
-  computeMsMax = _messages.IntegerField(3)
-  computeRatioAvg = _messages.FloatField(4)
-  computeRatioMax = _messages.FloatField(5)
-  endMs = _messages.IntegerField(6)
-  id = _messages.IntegerField(7)
-  inputStages = _messages.IntegerField(8, repeated=True)
-  name = _messages.StringField(9)
-  parallelInputs = _messages.IntegerField(10)
-  readMsAvg = _messages.IntegerField(11)
-  readMsMax = _messages.IntegerField(12)
-  readRatioAvg = _messages.FloatField(13)
-  readRatioMax = _messages.FloatField(14)
-  recordsRead = _messages.IntegerField(15)
-  recordsWritten = _messages.IntegerField(16)
-  shuffleOutputBytes = _messages.IntegerField(17)
-  shuffleOutputBytesSpilled = _messages.IntegerField(18)
-  slotMs = _messages.IntegerField(19)
-  startMs = _messages.IntegerField(20)
-  status = _messages.StringField(21)
-  steps = _messages.MessageField('ExplainQueryStep', 22, repeated=True)
-  waitMsAvg = _messages.IntegerField(23)
-  waitMsMax = _messages.IntegerField(24)
-  waitRatioAvg = _messages.FloatField(25)
-  waitRatioMax = _messages.FloatField(26)
-  writeMsAvg = _messages.IntegerField(27)
-  writeMsMax = _messages.IntegerField(28)
-  writeRatioAvg = _messages.FloatField(29)
-  writeRatioMax = _messages.FloatField(30)
+  computeMode = _messages.EnumField('ComputeModeValueValuesEnum', 2)
+  computeMsAvg = _messages.IntegerField(3)
+  computeMsMax = _messages.IntegerField(4)
+  computeRatioAvg = _messages.FloatField(5)
+  computeRatioMax = _messages.FloatField(6)
+  endMs = _messages.IntegerField(7)
+  id = _messages.IntegerField(8)
+  inputStages = _messages.IntegerField(9, repeated=True)
+  name = _messages.StringField(10)
+  parallelInputs = _messages.IntegerField(11)
+  readMsAvg = _messages.IntegerField(12)
+  readMsMax = _messages.IntegerField(13)
+  readRatioAvg = _messages.FloatField(14)
+  readRatioMax = _messages.FloatField(15)
+  recordsRead = _messages.IntegerField(16)
+  recordsWritten = _messages.IntegerField(17)
+  shuffleOutputBytes = _messages.IntegerField(18)
+  shuffleOutputBytesSpilled = _messages.IntegerField(19)
+  slotMs = _messages.IntegerField(20)
+  startMs = _messages.IntegerField(21)
+  status = _messages.StringField(22)
+  steps = _messages.MessageField('ExplainQueryStep', 23, repeated=True)
+  waitMsAvg = _messages.IntegerField(24)
+  waitMsMax = _messages.IntegerField(25)
+  waitRatioAvg = _messages.FloatField(26)
+  waitRatioMax = _messages.FloatField(27)
+  writeMsAvg = _messages.IntegerField(28)
+  writeMsMax = _messages.IntegerField(29)
+  writeRatioAvg = _messages.FloatField(30)
+  writeRatioMax = _messages.FloatField(31)
 
 
 class ExplainQueryStep(_messages.Message):
-  r"""A ExplainQueryStep object.
+  r"""An operation within a stage.
 
   Fields:
     kind: Machine-readable operation type.
-    substeps: Human-readable stage descriptions.
+    substeps: Human-readable description of the step(s).
   """
 
   kind = _messages.StringField(1)
@@ -2407,6 +2696,21 @@ class Explanation(_messages.Message):
 
   attribution = _messages.FloatField(1)
   featureName = _messages.StringField(2)
+
+
+class ExportDataStatistics(_messages.Message):
+  r"""Statistics for the EXPORT DATA statement as part of Query Job. EXTRACT
+  JOB statistics are populated in JobStatistics4.
+
+  Fields:
+    fileCount: Number of destination files generated in case of EXPORT DATA
+      statement only.
+    rowCount: [Alpha] Number of destination rows generated in case of EXPORT
+      DATA statement only.
+  """
+
+  fileCount = _messages.IntegerField(1)
+  rowCount = _messages.IntegerField(2)
 
 
 class Expr(_messages.Message):
@@ -2448,47 +2752,72 @@ class Expr(_messages.Message):
 class ExternalDataConfiguration(_messages.Message):
   r"""A ExternalDataConfiguration object.
 
+  Enums:
+    DecimalTargetTypesValueListEntryValuesEnum:
+    FileSetSpecTypeValueValuesEnum: Optional. Specifies how source URIs are
+      interpreted for constructing the file set to load. By default source
+      URIs are expanded against the underlying storage. Other options include
+      specifying manifest files. Only applicable to object storage systems.
+    JsonExtensionValueValuesEnum: Optional. Load option to be used together
+      with source_format newline-delimited JSON to indicate that a variant of
+      JSON is being loaded. To load newline-delimited GeoJSON, specify GEOJSON
+      (and source_format must be set to NEWLINE_DELIMITED_JSON).
+    MetadataCacheModeValueValuesEnum: Optional. Metadata Cache Mode for the
+      table. Set this to enable caching of metadata from external data source.
+    ObjectMetadataValueValuesEnum: Optional. ObjectMetadata is used to create
+      Object Tables. Object Tables contain a listing of objects (with their
+      metadata) found at the source_uris. If ObjectMetadata is set,
+      source_format should be omitted. Currently SIMPLE is the only supported
+      Object Metadata type.
+
   Fields:
     autodetect: Try to detect schema and format options automatically. Any
       option specified explicitly will be honored.
-    avroOptions: Additional properties to set if sourceFormat is set to Avro.
-    bigtableOptions: [Optional] Additional options if sourceFormat is set to
+    avroOptions: Optional. Additional properties to set if sourceFormat is set
+      to AVRO.
+    bigtableOptions: Optional. Additional options if sourceFormat is set to
       BIGTABLE.
-    compression: [Optional] The compression type of the data source. Possible
+    compression: Optional. The compression type of the data source. Possible
       values include GZIP and NONE. The default value is NONE. This setting is
-      ignored for Google Cloud Bigtable, Google Cloud Datastore backups and
-      Avro formats.
-    connectionId: [Optional, Trusted Tester] Connection for external data
-      source.
-    csvOptions: Additional properties to set if sourceFormat is set to CSV.
-    decimalTargetTypes: [Optional] Defines the list of possible SQL data types
-      to which the source decimal values are converted. This list and the
-      precision and the scale parameters of the decimal field determine the
-      target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
-      picked if it is in the specified list and if it supports the precision
-      and the scale. STRING supports all precision and scale values. If none
-      of the listed types supports the precision and the scale, the type
-      supporting the widest range in the specified list is picked, and if a
-      value exceeds the supported range when reading the data, an error will
-      be thrown. Example: Suppose the value of this field is ["NUMERIC",
-      "BIGNUMERIC"]. If (precision,scale) is: (38,9) -> NUMERIC; (39,9) ->
-      BIGNUMERIC (NUMERIC cannot hold 30 integer digits); (38,10) ->
-      BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); (76,38) ->
-      BIGNUMERIC; (77,38) -> BIGNUMERIC (error if value exeeds supported
-      range). This field cannot contain duplicate types. The order of the
-      types in this field is ignored. For example, ["BIGNUMERIC", "NUMERIC"]
-      is the same as ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes
-      precedence over BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC
-      and ["NUMERIC"] for the other file formats.
-    fileSetSpecType: [Optional] Specifies how source URIs are interpreted for
+      ignored for Google Cloud Bigtable, Google Cloud Datastore backups, Avro,
+      ORC and Parquet formats. An empty string is an invalid value.
+    connectionId: Optional. The connection specifying the credentials to be
+      used to read external storage, such as Azure Blob, Cloud Storage, or S3.
+      The connection_id can have the form
+      "<project\_id>.<location\_id>.<connection\_id>" or "projects/<project\_i
+      d>/locations/<location\_id>/connections/<connection\_id>".
+    csvOptions: Optional. Additional properties to set if sourceFormat is set
+      to CSV.
+    decimalTargetTypes: Defines the list of possible SQL data types to which
+      the source decimal values are converted. This list and the precision and
+      the scale parameters of the decimal field determine the target type. In
+      the order of NUMERIC, BIGNUMERIC, and STRING, a type is picked if it is
+      in the specified list and if it supports the precision and the scale.
+      STRING supports all precision and scale values. If none of the listed
+      types supports the precision and the scale, the type supporting the
+      widest range in the specified list is picked, and if a value exceeds the
+      supported range when reading the data, an error will be thrown. Example:
+      Suppose the value of this field is ["NUMERIC", "BIGNUMERIC"]. If
+      (precision,scale) is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC
+      (NUMERIC cannot hold 30 integer digits); * (38,10) -> BIGNUMERIC
+      (NUMERIC cannot hold 10 fractional digits); * (76,38) -> BIGNUMERIC; *
+      (77,38) -> BIGNUMERIC (error if value exeeds supported range). This
+      field cannot contain duplicate types. The order of the types in this
+      field is ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
+      ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
+      BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC and ["NUMERIC"]
+      for the other file formats.
+    fileSetSpecType: Optional. Specifies how source URIs are interpreted for
       constructing the file set to load. By default source URIs are expanded
       against the underlying storage. Other options include specifying
       manifest files. Only applicable to object storage systems.
-    googleSheetsOptions: [Optional] Additional options if sourceFormat is set
+    googleSheetsOptions: Optional. Additional options if sourceFormat is set
       to GOOGLE_SHEETS.
-    hivePartitioningOptions: [Optional] Options to configure hive partitioning
-      support.
-    ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
+    hivePartitioningOptions: Optional. When set, configures hive partitioning
+      support. Not all storage formats support hive partitioning -- requesting
+      hive partitioning on an unsupported format will lead to an error, as
+      will providing an invalid specification.
+    ignoreUnknownValues: Optional. Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as
       bad records, and if there are too many bad records, an invalid error is
@@ -2496,33 +2825,41 @@ class ExternalDataConfiguration(_messages.Message):
       property determines what BigQuery treats as an extra value: CSV:
       Trailing columns JSON: Named values that don't match any column names
       Google Cloud Bigtable: This setting is ignored. Google Cloud Datastore
-      backups: This setting is ignored. Avro: This setting is ignored.
-    jsonOptions: Additional properties to set if `sourceFormat` is set to
-      `NEWLINE_DELIMITED_JSON`.
-    maxBadRecords: [Optional] The maximum number of bad records that BigQuery
+      backups: This setting is ignored. Avro: This setting is ignored. ORC:
+      This setting is ignored. Parquet: This setting is ignored.
+    jsonExtension: Optional. Load option to be used together with
+      source_format newline-delimited JSON to indicate that a variant of JSON
+      is being loaded. To load newline-delimited GeoJSON, specify GEOJSON (and
+      source_format must be set to NEWLINE_DELIMITED_JSON).
+    jsonOptions: Optional. Additional properties to set if sourceFormat is set
+      to JSON.
+    maxBadRecords: Optional. The maximum number of bad records that BigQuery
       can ignore when reading data. If the number of bad records exceeds this
-      value, an invalid error is returned in the job result. This is only
-      valid for CSV, JSON, and Google Sheets. The default value is 0, which
-      requires that all records are valid. This setting is ignored for Google
-      Cloud Bigtable, Google Cloud Datastore backups and Avro formats.
-    metadataCacheMode: [Optional] Metadata Cache Mode for the table. Set this
+      value, an invalid error is returned in the job result. The default value
+      is 0, which requires that all records are valid. This setting is ignored
+      for Google Cloud Bigtable, Google Cloud Datastore backups, Avro, ORC and
+      Parquet formats.
+    metadataCacheMode: Optional. Metadata Cache Mode for the table. Set this
       to enable caching of metadata from external data source.
-    objectMetadata: ObjectMetadata is used to create Object Tables. Object
-      Tables contain a listing of objects (with their metadata) found at the
-      source_uris. If ObjectMetadata is set, source_format should be omitted.
-      Currently SIMPLE is the only supported Object Metadata type.
-    parquetOptions: Additional properties to set if sourceFormat is set to
-      Parquet.
-    referenceFileSchemaUri: [Optional] Provide a referencing file with the
-      expected table schema. Enabled for the format: AVRO, PARQUET, ORC.
-    schema: [Optional] The schema for the data. Schema is required for CSV and
-      JSON formats. Schema is disallowed for Google Cloud Bigtable, Cloud
-      Datastore backups, and Avro formats.
+    objectMetadata: Optional. ObjectMetadata is used to create Object Tables.
+      Object Tables contain a listing of objects (with their metadata) found
+      at the source_uris. If ObjectMetadata is set, source_format should be
+      omitted. Currently SIMPLE is the only supported Object Metadata type.
+    parquetOptions: Optional. Additional properties to set if sourceFormat is
+      set to PARQUET.
+    referenceFileSchemaUri: Optional. When creating an external table, the
+      user can provide a reference file with the table schema. This is enabled
+      for the following formats: AVRO, PARQUET, ORC.
+    schema: Optional. The schema for the data. Schema is required for CSV and
+      JSON formats if autodetect is not on. Schema is disallowed for Google
+      Cloud Bigtable, Cloud Datastore backups, Avro, ORC and Parquet formats.
     sourceFormat: [Required] The data format. For CSV files, specify "CSV".
       For Google sheets, specify "GOOGLE_SHEETS". For newline-delimited JSON,
       specify "NEWLINE_DELIMITED_JSON". For Avro files, specify "AVRO". For
-      Google Cloud Datastore backups, specify "DATASTORE_BACKUP". [Beta] For
-      Google Cloud Bigtable, specify "BIGTABLE".
+      Google Cloud Datastore backups, specify "DATASTORE_BACKUP". For Apache
+      Iceberg tables, specify "ICEBERG". For ORC files, specify "ORC". For
+      Parquet files, specify "PARQUET". [Beta] For Google Cloud Bigtable,
+      specify "BIGTABLE".
     sourceUris: [Required] The fully-qualified URIs that point to your data in
       Google Cloud. For Google Cloud Storage URIs: Each URI can contain one
       '*' wildcard character and it must come after the 'bucket' name. Size
@@ -2533,40 +2870,151 @@ class ExternalDataConfiguration(_messages.Message):
       Also, the '*' wildcard character is not allowed.
   """
 
+  class DecimalTargetTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""DecimalTargetTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      DECIMAL_TARGET_TYPE_UNSPECIFIED: Invalid type.
+      NUMERIC: Decimal values could be converted to NUMERIC type.
+      BIGNUMERIC: Decimal values could be converted to BIGNUMERIC type.
+      STRING: Decimal values could be converted to STRING type.
+    """
+    DECIMAL_TARGET_TYPE_UNSPECIFIED = 0
+    NUMERIC = 1
+    BIGNUMERIC = 2
+    STRING = 3
+
+  class FileSetSpecTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how source URIs are interpreted for constructing
+    the file set to load. By default source URIs are expanded against the
+    underlying storage. Other options include specifying manifest files. Only
+    applicable to object storage systems.
+
+    Values:
+      FILE_SET_SPEC_TYPE_FILE_SYSTEM_MATCH: This option expands source URIs by
+        listing files from the object store. It is the default behavior if
+        FileSetSpecType is not set.
+      FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST: This option indicates
+        that the provided URIs are newline-delimited manifest files, with one
+        URI per line. Wildcard URIs are not supported.
+    """
+    FILE_SET_SPEC_TYPE_FILE_SYSTEM_MATCH = 0
+    FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST = 1
+
+  class JsonExtensionValueValuesEnum(_messages.Enum):
+    r"""Optional. Load option to be used together with source_format newline-
+    delimited JSON to indicate that a variant of JSON is being loaded. To load
+    newline-delimited GeoJSON, specify GEOJSON (and source_format must be set
+    to NEWLINE_DELIMITED_JSON).
+
+    Values:
+      JSON_EXTENSION_UNSPECIFIED: The default if provided value is not one
+        included in the enum, or the value is not specified. The source
+        formate is parsed without any modification.
+      GEOJSON: Use GeoJSON variant of JSON. See
+        https://tools.ietf.org/html/rfc7946.
+    """
+    JSON_EXTENSION_UNSPECIFIED = 0
+    GEOJSON = 1
+
+  class MetadataCacheModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Metadata Cache Mode for the table. Set this to enable
+    caching of metadata from external data source.
+
+    Values:
+      METADATA_CACHE_MODE_UNSPECIFIED: Unspecified metadata cache mode.
+      AUTOMATIC: Set this mode to trigger automatic background refresh of
+        metadata cache from the external source. Queries will use the latest
+        available cache version within the table's maxStaleness interval.
+      MANUAL: Set this mode to enable triggering manual refresh of the
+        metadata cache from external source. Queries will use the latest
+        manually triggered cache version within the table's maxStaleness
+        interval.
+    """
+    METADATA_CACHE_MODE_UNSPECIFIED = 0
+    AUTOMATIC = 1
+    MANUAL = 2
+
+  class ObjectMetadataValueValuesEnum(_messages.Enum):
+    r"""Optional. ObjectMetadata is used to create Object Tables. Object
+    Tables contain a listing of objects (with their metadata) found at the
+    source_uris. If ObjectMetadata is set, source_format should be omitted.
+    Currently SIMPLE is the only supported Object Metadata type.
+
+    Values:
+      OBJECT_METADATA_UNSPECIFIED: Unspecified by default.
+      DIRECTORY: A synonym for `SIMPLE`.
+      SIMPLE: Directory listing of objects.
+    """
+    OBJECT_METADATA_UNSPECIFIED = 0
+    DIRECTORY = 1
+    SIMPLE = 2
+
   autodetect = _messages.BooleanField(1)
   avroOptions = _messages.MessageField('AvroOptions', 2)
   bigtableOptions = _messages.MessageField('BigtableOptions', 3)
   compression = _messages.StringField(4)
   connectionId = _messages.StringField(5)
   csvOptions = _messages.MessageField('CsvOptions', 6)
-  decimalTargetTypes = _messages.StringField(7, repeated=True)
-  fileSetSpecType = _messages.StringField(8)
+  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 7, repeated=True)
+  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 8)
   googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 9)
   hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 10)
   ignoreUnknownValues = _messages.BooleanField(11)
-  jsonOptions = _messages.MessageField('JsonOptions', 12)
-  maxBadRecords = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  metadataCacheMode = _messages.StringField(14)
-  objectMetadata = _messages.StringField(15)
-  parquetOptions = _messages.MessageField('ParquetOptions', 16)
-  referenceFileSchemaUri = _messages.StringField(17)
-  schema = _messages.MessageField('TableSchema', 18)
-  sourceFormat = _messages.StringField(19)
-  sourceUris = _messages.StringField(20, repeated=True)
+  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 12)
+  jsonOptions = _messages.MessageField('JsonOptions', 13)
+  maxBadRecords = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  metadataCacheMode = _messages.EnumField('MetadataCacheModeValueValuesEnum', 15)
+  objectMetadata = _messages.EnumField('ObjectMetadataValueValuesEnum', 16)
+  parquetOptions = _messages.MessageField('ParquetOptions', 17)
+  referenceFileSchemaUri = _messages.StringField(18)
+  schema = _messages.MessageField('TableSchema', 19)
+  sourceFormat = _messages.StringField(20)
+  sourceUris = _messages.StringField(21, repeated=True)
 
 
 class ExternalDatasetReference(_messages.Message):
-  r"""A ExternalDatasetReference object.
+  r"""Configures the access a dataset defined in an external metadata storage.
 
   Fields:
-    connection: [Required] The connection id that is used to access the
+    connection: Required. The connection id that is used to access the
       external_source. Format: projects/{project_id}/locations/{location_id}/c
       onnections/{connection_id}
-    externalSource: [Required] External source that backs this dataset.
+    externalSource: Required. External source that backs this dataset.
   """
 
   connection = _messages.StringField(1)
   externalSource = _messages.StringField(2)
+
+
+class ExternalServiceCost(_messages.Message):
+  r"""The external service cost is a portion of the total cost, these costs
+  are not additive with total_bytes_billed. Moreover, this field only track
+  external service costs that will show up as BigQuery costs (e.g. training
+  BigQuery ML job with google cloud CAIP or Automl Tables services), not other
+  costs which may be accrued by running the query (e.g. reading from Bigtable
+  or Cloud Storage). The external service costs with different billing sku
+  (e.g. CAIP job is charged based on VM usage) are converted to BigQuery
+  billed_bytes and slot_ms with equivalent amount of US dollars. Services may
+  not directly correlate to these metrics, but these are the equivalents for
+  billing purposes. Output only.
+
+  Fields:
+    bytesBilled: External service cost in terms of bigquery bytes billed.
+    bytesProcessed: External service cost in terms of bigquery bytes
+      processed.
+    externalService: External service name.
+    reservedSlotCount: Non-preemptable reserved slots used for external job.
+      For example, reserved slots for Cloua AI Platform job are the VM usages
+      converted to BigQuery slot with equivalent mount of price.
+    slotMs: External service cost in terms of bigquery slot milliseconds.
+  """
+
+  bytesBilled = _messages.IntegerField(1)
+  bytesProcessed = _messages.IntegerField(2)
+  externalService = _messages.StringField(3)
+  reservedSlotCount = _messages.IntegerField(4)
+  slotMs = _messages.IntegerField(5)
 
 
 class FeatureValue(_messages.Message):
@@ -2617,14 +3065,16 @@ class GetPolicyOptions(_messages.Message):
 
 
 class GetQueryResultsResponse(_messages.Message):
-  r"""A GetQueryResultsResponse object.
+  r"""Response object of GetQueryResults.
 
   Fields:
     cacheHit: Whether the query result was fetched from the query cache.
-    errors: [Output-only] The first errors or warnings encountered during the
+    errors: Output only. The first errors or warnings encountered during the
       running of the job. The final message includes the number of errors that
       caused the process to stop. Errors here do not necessarily mean that the
-      job has completed or was unsuccessful.
+      job has completed or was unsuccessful. For more information about error
+      messages, see [Error
+      messages](https://cloud.google.com/bigquery/docs/error-messages).
     etag: A hash of this response.
     jobComplete: Whether the query has completed or not. If rows or totalRows
       are present, this will always be true. If this is false, totalRows will
@@ -2636,13 +3086,16 @@ class GetQueryResultsResponse(_messages.Message):
       results, subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type of the response.
-    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+    numDmlAffectedRows: Output only. The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
-    pageToken: A token used for paging results.
+    pageToken: A token used for paging results. When this token is non-empty,
+      it indicates additional results are available.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
       GetQueryResults and specify the jobReference returned above. Present
-      only when the query completes successfully.
+      only when the query completes successfully. The REST-based
+      representation of this data leverages a series of JSON f,v objects for
+      indicating fields and values.
     schema: The schema of the results. Present only when the query completes
       successfully.
     totalBytesProcessed: The total number of bytes processed for this query.
@@ -2666,7 +3119,7 @@ class GetQueryResultsResponse(_messages.Message):
 
 
 class GetServiceAccountResponse(_messages.Message):
-  r"""A GetServiceAccountResponse object.
+  r"""Response object of GetServiceAccount
 
   Fields:
     email: The service account email address.
@@ -2694,16 +3147,16 @@ class GlobalExplanation(_messages.Message):
 
 
 class GoogleSheetsOptions(_messages.Message):
-  r"""A GoogleSheetsOptions object.
+  r"""Options specific to Google Sheets data sources.
 
   Fields:
-    range: [Optional] Range of a sheet to query from. Only used when non-
-      empty. Typical format: sheet_name!top_left_cell_id:bottom_right_cell_id
-      For example: sheet1!A1:B20
-    skipLeadingRows: [Optional] The number of rows at the top of a sheet that
+    range: Optional. Range of a sheet to query from. Only used when non-empty.
+      Typical format: sheet_name!top_left_cell_id:bottom_right_cell_id For
+      example: sheet1!A1:B20
+    skipLeadingRows: Optional. The number of rows at the top of a sheet that
       BigQuery will skip when reading the data. The default value is 0. This
       property is useful if you have header rows that should be skipped. When
-      autodetect is on, behavior is the following: * skipLeadingRows
+      autodetect is on, the behavior is the following: * skipLeadingRows
       unspecified - Autodetect tries to detect headers in the first row. If
       they are not detected, the row is read as data. Otherwise data is read
       starting from the second row. * skipLeadingRows is 0 - Instructs
@@ -2718,44 +3171,66 @@ class GoogleSheetsOptions(_messages.Message):
   skipLeadingRows = _messages.IntegerField(2)
 
 
-class HivePartitioningOptions(_messages.Message):
-  r"""A HivePartitioningOptions object.
+class HighCardinalityJoin(_messages.Message):
+  r"""High cardinality join detailed information.
 
   Fields:
-    fields: [Output-only] For permanent external tables, this field is
+    leftRows: Output only. Count of left input rows.
+    outputRows: Output only. Count of the output rows.
+    rightRows: Output only. Count of right input rows.
+    stepIndex: Output only. The index of the join operator in the
+      ExplainQueryStep lists.
+  """
+
+  leftRows = _messages.IntegerField(1)
+  outputRows = _messages.IntegerField(2)
+  rightRows = _messages.IntegerField(3)
+  stepIndex = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class HivePartitioningOptions(_messages.Message):
+  r"""Options for configuring hive partitioning detect.
+
+  Fields:
+    fields: Output only. For permanent external tables, this field is
       populated with the hive partition keys in the order they were inferred.
       The types of the partition keys can be deduced by checking the table
       schema (which will include the partition keys). Not every API will
       populate this field in the output. For example, Tables.Get will populate
       it, but Tables.List will not contain this field.
-    mode: [Optional] When set, what mode of hive partitioning to use when
-      reading data. The following modes are supported. (1) AUTO: automatically
-      infer partition key name(s) and type(s). (2) STRINGS: automatically
-      infer partition key name(s). All types are interpreted as strings. (3)
-      CUSTOM: partition key schema is encoded in the source URI prefix. Not
-      all storage formats support hive partitioning. Requesting hive
-      partitioning on an unsupported format will lead to an error. Currently
-      supported types include: AVRO, CSV, JSON, ORC and Parquet.
-    requirePartitionFilter: [Optional] If set to true, queries over this table
+    mode: Optional. When set, what mode of hive partitioning to use when
+      reading data. The following modes are supported: * AUTO: automatically
+      infer partition key name(s) and type(s). * STRINGS: automatically infer
+      partition key name(s). All types are strings. * CUSTOM: partition key
+      schema is encoded in the source URI prefix. Not all storage formats
+      support hive partitioning. Requesting hive partitioning on an
+      unsupported format will lead to an error. Currently supported formats
+      are: JSON, CSV, ORC, Avro and Parquet.
+    requirePartitionFilter: Optional. If set to true, queries over this table
       require a partition filter that can be used for partition elimination to
       be specified. Note that this field should only be true when creating a
       permanent external table or querying a temporary external table. Hive-
-      partitioned loads with requirePartitionFilter explicitly set to true
+      partitioned loads with require_partition_filter explicitly set to true
       will fail.
-    sourceUriPrefix: [Optional] When hive partition detection is requested, a
-      common prefix for all source uris should be supplied. The prefix must
-      end immediately before the partition key encoding begins. For example,
-      consider files following this data layout.
-      gs://bucket/path_to_table/dt=2019-01-01/country=BR/id=7/file.avro
-      gs://bucket/path_to_table/dt=2018-12-31/country=CA/id=3/file.avro When
+    sourceUriPrefix: Optional. When hive partition detection is requested, a
+      common prefix for all source uris must be required. The prefix must end
+      immediately before the partition key encoding begins. For example,
+      consider files following this data layout:
+      gs://bucket/path_to_table/dt=2019-06-01/country=USA/id=7/file.avro
+      gs://bucket/path_to_table/dt=2019-05-31/country=CA/id=3/file.avro When
       hive partitioning is requested with either AUTO or STRINGS detection,
       the common prefix can be either of gs://bucket/path_to_table or
-      gs://bucket/path_to_table/ (trailing slash does not matter).
+      gs://bucket/path_to_table/. CUSTOM detection requires encoding the
+      partitioning schema immediately after the common prefix. For CUSTOM, any
+      of * gs://bucket/path_to_table/{dt:DATE}/{country:STRING}/{id:INTEGER} *
+      gs://bucket/path_to_table/{dt:STRING}/{country:STRING}/{id:INTEGER} *
+      gs://bucket/path_to_table/{dt:DATE}/{country:STRING}/{id:STRING} would
+      all be valid source URI prefixes.
   """
 
   fields = _messages.StringField(1, repeated=True)
   mode = _messages.StringField(2)
-  requirePartitionFilter = _messages.BooleanField(3)
+  requirePartitionFilter = _messages.BooleanField(3, default=False)
   sourceUriPrefix = _messages.StringField(4)
 
 
@@ -2875,23 +3350,112 @@ class HparamTuningTrial(_messages.Message):
 
 
 class IndexUnusedReason(_messages.Message):
-  r"""A IndexUnusedReason object.
+  r"""Reason about why no search index was used in the search query (or sub-
+  query).
+
+  Enums:
+    CodeValueValuesEnum: Specifies the high-level reason for the scenario when
+      no search index was used.
 
   Fields:
-    baseTable: [Output-only] Specifies the base table involved in the reason
-      that no search index was used.
-    code: [Output-only] Specifies the high-level reason for the scenario when
-      no search index was used.
-    indexName: [Output-only] Specifies the name of the unused search index, if
-      available.
-    message: [Output-only] Free form human-readable reason for the scenario
-      when no search index was used.
+    baseTable: Specifies the base table involved in the reason that no search
+      index was used.
+    code: Specifies the high-level reason for the scenario when no search
+      index was used.
+    indexName: Specifies the name of the unused search index, if available.
+    message: Free form human-readable reason for the scenario when no search
+      index was used.
   """
 
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Specifies the high-level reason for the scenario when no search index
+    was used.
+
+    Values:
+      CODE_UNSPECIFIED: Code not specified.
+      INDEX_CONFIG_NOT_AVAILABLE: Indicates the search index configuration has
+        not been created.
+      PENDING_INDEX_CREATION: Indicates the search index creation has not been
+        completed.
+      BASE_TABLE_TRUNCATED: Indicates the base table has been truncated (rows
+        have been removed from table with TRUNCATE TABLE statement) since the
+        last time the search index was refreshed.
+      INDEX_CONFIG_MODIFIED: Indicates the search index configuration has been
+        changed since the last time the search index was refreshed.
+      TIME_TRAVEL_QUERY: Indicates the search query accesses data at a
+        timestamp before the last time the search index was refreshed.
+      NO_PRUNING_POWER: Indicates the usage of search index will not
+        contribute to any pruning improvement for the search function, e.g.
+        when the search predicate is in a disjunction with other non-search
+        predicates.
+      UNINDEXED_SEARCH_FIELDS: Indicates the search index does not cover all
+        fields in the search function.
+      UNSUPPORTED_SEARCH_PATTERN: Indicates the search index does not support
+        the given search query pattern.
+      OPTIMIZED_WITH_MATERIALIZED_VIEW: Indicates the query has been optimized
+        by using a materialized view.
+      SECURED_BY_DATA_MASKING: Indicates the query has been secured by data
+        masking, and thus search indexes are not applicable.
+      MISMATCHED_TEXT_ANALYZER: Indicates that the search index and the search
+        function call do not have the same text analyzer.
+      BASE_TABLE_TOO_SMALL: Indicates the base table is too small (below a
+        certain threshold). The index does not provide noticeable search
+        performance gains when the base table is too small.
+      BASE_TABLE_TOO_LARGE: Indicates that the total size of indexed base
+        tables in your organization exceeds your region's limit and the index
+        is not used in the query. To index larger base tables, you can use
+        your own reservation for index-management jobs.
+      ESTIMATED_PERFORMANCE_GAIN_TOO_LOW: Indicates that the estimated
+        performance gain from using the search index is too low for the given
+        search query.
+      NOT_SUPPORTED_IN_STANDARD_EDITION: Indicates that search indexes can not
+        be used for search query with STANDARD edition.
+      INDEX_SUPPRESSED_BY_FUNCTION_OPTION: Indicates that an option in the
+        search function that cannot make use of the index has been selected.
+      QUERY_CACHE_HIT: Indicates that the query was cached, and thus the
+        search index was not used.
+      INTERNAL_ERROR: Indicates an internal error that causes the search index
+        to be unused.
+      OTHER_REASON: Indicates that the reason search indexes cannot be used in
+        the query is not covered by any of the other IndexUnusedReason
+        options.
+    """
+    CODE_UNSPECIFIED = 0
+    INDEX_CONFIG_NOT_AVAILABLE = 1
+    PENDING_INDEX_CREATION = 2
+    BASE_TABLE_TRUNCATED = 3
+    INDEX_CONFIG_MODIFIED = 4
+    TIME_TRAVEL_QUERY = 5
+    NO_PRUNING_POWER = 6
+    UNINDEXED_SEARCH_FIELDS = 7
+    UNSUPPORTED_SEARCH_PATTERN = 8
+    OPTIMIZED_WITH_MATERIALIZED_VIEW = 9
+    SECURED_BY_DATA_MASKING = 10
+    MISMATCHED_TEXT_ANALYZER = 11
+    BASE_TABLE_TOO_SMALL = 12
+    BASE_TABLE_TOO_LARGE = 13
+    ESTIMATED_PERFORMANCE_GAIN_TOO_LOW = 14
+    NOT_SUPPORTED_IN_STANDARD_EDITION = 15
+    INDEX_SUPPRESSED_BY_FUNCTION_OPTION = 16
+    QUERY_CACHE_HIT = 17
+    INTERNAL_ERROR = 18
+    OTHER_REASON = 19
+
   baseTable = _messages.MessageField('TableReference', 1)
-  code = _messages.StringField(2, default='$(reason.code)')
-  indexName = _messages.StringField(3, default='$(reason.index_name)')
-  message = _messages.StringField(4, default='$(reason.message)')
+  code = _messages.EnumField('CodeValueValuesEnum', 2)
+  indexName = _messages.StringField(3)
+  message = _messages.StringField(4)
+
+
+class InputDataChange(_messages.Message):
+  r"""Details about the input data change insight.
+
+  Fields:
+    recordsReadDiffPercentage: Output only. Records read difference percentage
+      compared to a previous run.
+  """
+
+  recordsReadDiffPercentage = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
 
 
 class IntArray(_messages.Message):
@@ -2949,59 +3513,70 @@ class IntRange(_messages.Message):
 
 
 class IterationResult(_messages.Message):
-  r"""A IterationResult object.
+  r"""Information about a single iteration of the training run.
 
   Fields:
+    arimaResult: Arima result.
+    clusterInfos: Information about top clusters for clustering models.
     durationMs: Time taken to run the iteration in milliseconds.
     evalLoss: Loss computed on the eval data at the end of iteration.
     index: Index of the iteration, 0 based.
     learnRate: Learn rate used for this iteration.
+    principalComponentInfos: The information of the principal components.
     trainingLoss: Loss computed on the training data at the end of iteration.
   """
 
-  durationMs = _messages.IntegerField(1)
-  evalLoss = _messages.FloatField(2)
-  index = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  learnRate = _messages.FloatField(4)
-  trainingLoss = _messages.FloatField(5)
+  arimaResult = _messages.MessageField('ArimaResult', 1)
+  clusterInfos = _messages.MessageField('ClusterInfo', 2, repeated=True)
+  durationMs = _messages.IntegerField(3)
+  evalLoss = _messages.FloatField(4)
+  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  learnRate = _messages.FloatField(6)
+  principalComponentInfos = _messages.MessageField('PrincipalComponentInfo', 7, repeated=True)
+  trainingLoss = _messages.FloatField(8)
 
 
 class Job(_messages.Message):
   r"""A Job object.
 
   Fields:
-    configuration: [Required] Describes the job configuration.
-    etag: [Output-only] A hash of this resource.
-    id: [Output-only] Opaque ID field of the job
-    jobCreationReason: [Output-only] If set, it provides the reason why a Job
+    configuration: Required. Describes the job configuration.
+    etag: Output only. A hash of this resource.
+    id: Output only. Opaque ID field of the job.
+    jobCreationReason: Output only. If set, it provides the reason why a Job
       was created. If not set, it should be treated as the default: REQUESTED.
       This feature is not yet available. Jobs will always be created.
-    jobReference: [Optional] Reference describing the unique-per-user name of
+    jobReference: Optional. Reference describing the unique-per-user name of
       the job.
-    kind: [Output-only] The type of the resource.
-    selfLink: [Output-only] A URL that can be used to access this resource
+    kind: Output only. The type of the resource.
+    principal_subject: Output only. [Full-projection-only] String
+      representation of identity of requesting party. Populated for both
+      first- and third-party identities. Only present for APIs that support
+      third-party identities.
+    selfLink: Output only. A URL that can be used to access the resource
       again.
-    statistics: [Output-only] Information about the job, including starting
+    statistics: Output only. Information about the job, including starting
       time and ending time of the job.
-    status: [Output-only] The status of this job. Examine this value when
+    status: Output only. The status of this job. Examine this value when
       polling an asynchronous job to see if the job is complete.
-    user_email: [Output-only] Email address of the user who ran the job.
+    user_email: Output only. Email address of the user who ran the job.
   """
 
   configuration = _messages.MessageField('JobConfiguration', 1)
   etag = _messages.StringField(2)
   id = _messages.StringField(3)
-  jobCreationReason = _messages.MessageField('extra_types.JsonValue', 4)
+  jobCreationReason = _messages.MessageField('JobCreationReason', 4)
   jobReference = _messages.MessageField('JobReference', 5)
   kind = _messages.StringField(6, default='bigquery#job')
-  selfLink = _messages.StringField(7)
-  statistics = _messages.MessageField('JobStatistics', 8)
-  status = _messages.MessageField('JobStatus', 9)
-  user_email = _messages.StringField(10)
+  principal_subject = _messages.StringField(7)
+  selfLink = _messages.StringField(8)
+  statistics = _messages.MessageField('JobStatistics', 9)
+  status = _messages.MessageField('JobStatus', 10)
+  user_email = _messages.StringField(11)
 
 
 class JobCancelResponse(_messages.Message):
-  r"""A JobCancelResponse object.
+  r"""Describes format of a jobs cancellation response.
 
   Fields:
     job: The final state of the job.
@@ -3025,14 +3600,14 @@ class JobConfiguration(_messages.Message):
 
   Fields:
     copy: [Pick one] Copies a table.
-    dryRun: [Optional] If set, don't actually run this job. A valid query will
+    dryRun: Optional. If set, don't actually run this job. A valid query will
       return a mostly empty response with some processing statistics, while an
       invalid query will return the same error it would if it wasn't a dry
       run. Behavior of non-query jobs is undefined.
     extract: [Pick one] Configures an extract job.
-    jobTimeoutMs: [Optional] Job timeout in milliseconds. If this time limit
-      is exceeded, BigQuery may attempt to terminate the job.
-    jobType: [Output-only] The type of the job. Can be QUERY, LOAD, EXTRACT,
+    jobTimeoutMs: Optional. Job timeout in milliseconds. If this time limit is
+      exceeded, BigQuery might attempt to stop the job.
+    jobType: Output only. The type of the job. Can be QUERY, LOAD, EXTRACT,
       COPY or UNKNOWN.
     labels: The labels associated with this job. You can use these to organize
       and group your jobs. Label keys and values can be no longer than 63
@@ -3084,15 +3659,17 @@ class JobConfiguration(_messages.Message):
 
 
 class JobConfigurationExtract(_messages.Message):
-  r"""A JobConfigurationExtract object.
+  r"""JobConfigurationExtract configures a job that exports data from a
+  BigQuery table into Google Cloud Storage.
 
   Fields:
-    compression: [Optional] The compression type to use for exported files.
-      Possible values include GZIP, DEFLATE, SNAPPY, and NONE. The default
-      value is NONE. DEFLATE and SNAPPY are only supported for Avro. Not
-      applicable when extracting models.
-    destinationFormat: [Optional] The exported file format. Possible values
-      include CSV, NEWLINE_DELIMITED_JSON, PARQUET or AVRO for tables and
+    compression: Optional. The compression type to use for exported files.
+      Possible values include DEFLATE, GZIP, NONE, SNAPPY, and ZSTD. The
+      default value is NONE. Not all compression formats are support for all
+      file formats. DEFLATE is only supported for Avro. ZSTD is only supported
+      for Parquet. Not applicable when extracting models.
+    destinationFormat: Optional. The exported file format. Possible values
+      include CSV, NEWLINE_DELIMITED_JSON, PARQUET, or AVRO for tables and
       ML_TF_SAVED_MODEL or ML_XGBOOST_BOOSTER for models. The default value
       for tables is CSV. Tables with nested or repeated fields cannot be
       exported as CSV. The default value for models is ML_TF_SAVED_MODEL.
@@ -3101,17 +3678,17 @@ class JobConfigurationExtract(_messages.Message):
       Storage URI where the extracted table should be written.
     destinationUris: [Pick one] A list of fully-qualified Google Cloud Storage
       URIs where the extracted table should be written.
-    fieldDelimiter: [Optional] Delimiter to use between fields in the exported
-      data. Default is ','. Not applicable when extracting models.
-    printHeader: [Optional] Whether to print out a header row in the results.
+    fieldDelimiter: Optional. When extracting data in CSV format, this defines
+      the delimiter to use between fields in the exported data. Default is
+      ','. Not applicable when extracting models.
+    modelExtractOptions: Optional. Model extract options only applicable when
+      extracting models.
+    printHeader: Optional. Whether to print out a header row in the results.
       Default is true. Not applicable when extracting models.
     sourceModel: A reference to the model being exported.
     sourceTable: A reference to the table being exported.
-    useAvroLogicalTypes: [Optional] If destinationFormat is set to "AVRO",
-      this flag indicates whether to enable extracting applicable column types
-      (such as TIMESTAMP) to their corresponding AVRO logical types
-      (timestamp-micros), instead of only using their raw types (avro-long).
-      Not applicable when extracting models.
+    useAvroLogicalTypes: Whether to use logical types when extracting to AVRO
+      format. Not applicable when extracting models.
   """
 
   compression = _messages.StringField(1)
@@ -3119,17 +3696,31 @@ class JobConfigurationExtract(_messages.Message):
   destinationUri = _messages.StringField(3)
   destinationUris = _messages.StringField(4, repeated=True)
   fieldDelimiter = _messages.StringField(5)
-  printHeader = _messages.BooleanField(6, default=True)
-  sourceModel = _messages.MessageField('ModelReference', 7)
-  sourceTable = _messages.MessageField('TableReference', 8)
-  useAvroLogicalTypes = _messages.BooleanField(9)
+  modelExtractOptions = _messages.MessageField('ModelExtractOptions', 6)
+  printHeader = _messages.BooleanField(7, default=True)
+  sourceModel = _messages.MessageField('ModelReference', 8)
+  sourceTable = _messages.MessageField('TableReference', 9)
+  useAvroLogicalTypes = _messages.BooleanField(10)
 
 
 class JobConfigurationLoad(_messages.Message):
-  r"""A JobConfigurationLoad object.
+  r"""JobConfigurationLoad contains the configuration properties for loading
+  data into a destination table.
+
+  Enums:
+    DecimalTargetTypesValueListEntryValuesEnum:
+    FileSetSpecTypeValueValuesEnum: Optional. Specifies how source URIs are
+      interpreted for constructing the file set to load. By default, source
+      URIs are expanded against the underlying storage. You can also specify
+      manifest files to control how the file set is constructed. This option
+      is only applicable to object storage systems.
+    JsonExtensionValueValuesEnum: Optional. Load option to be used together
+      with source_format newline-delimited JSON to indicate that a variant of
+      JSON is being loaded. To load newline-delimited GeoJSON, specify GEOJSON
+      (and source_format must be set to NEWLINE_DELIMITED_JSON).
 
   Fields:
-    allowJaggedRows: [Optional] Accept rows that are missing trailing optional
+    allowJaggedRows: Optional. Accept rows that are missing trailing optional
       columns. The missing values are treated as nulls. If false, records with
       missing trailing columns are treated as bad records, and if there are
       too many bad records, an invalid error is returned in the job result.
@@ -3138,112 +3729,148 @@ class JobConfigurationLoad(_messages.Message):
     allowQuotedNewlines: Indicates if BigQuery should allow quoted data
       sections that contain newline characters in a CSV file. The default
       value is false.
-    autodetect: [Optional] Indicates if we should automatically infer the
+    autodetect: Optional. Indicates if we should automatically infer the
       options and schema for CSV and JSON sources.
-    clustering: [Beta] Clustering specification for the destination table.
-      Must be specified with time-based partitioning, data in the table will
-      be first partitioned and subsequently clustered.
-    connectionProperties: Connection properties.
-    createDisposition: [Optional] Specifies whether the job is allowed to
-      create new tables. The following values are supported: CREATE_IF_NEEDED:
-      If the table does not exist, BigQuery creates the table. CREATE_NEVER:
-      The table must already exist. If it does not, a 'notFound' error is
-      returned in the job result. The default value is CREATE_IF_NEEDED.
-      Creation, truncation and append actions occur as one atomic update upon
-      job completion.
-    createSession: If true, creates a new session, where session id will be a
-      server generated random id. If false, runs query with an existing
-      session_id passed in ConnectionProperty, otherwise runs the load job in
-      non-session mode.
-    decimalTargetTypes: [Optional] Defines the list of possible SQL data types
-      to which the source decimal values are converted. This list and the
-      precision and the scale parameters of the decimal field determine the
-      target type. In the order of NUMERIC, BIGNUMERIC, and STRING, a type is
-      picked if it is in the specified list and if it supports the precision
-      and the scale. STRING supports all precision and scale values. If none
-      of the listed types supports the precision and the scale, the type
-      supporting the widest range in the specified list is picked, and if a
-      value exceeds the supported range when reading the data, an error will
-      be thrown. Example: Suppose the value of this field is ["NUMERIC",
-      "BIGNUMERIC"]. If (precision,scale) is: (38,9) -> NUMERIC; (39,9) ->
-      BIGNUMERIC (NUMERIC cannot hold 30 integer digits); (38,10) ->
-      BIGNUMERIC (NUMERIC cannot hold 10 fractional digits); (76,38) ->
-      BIGNUMERIC; (77,38) -> BIGNUMERIC (error if value exeeds supported
-      range). This field cannot contain duplicate types. The order of the
-      types in this field is ignored. For example, ["BIGNUMERIC", "NUMERIC"]
-      is the same as ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes
-      precedence over BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC
-      and ["NUMERIC"] for the other file formats.
+    clustering: Clustering specification for the destination table.
+    connectionProperties: Optional. Connection properties which can modify the
+      load job behavior. Currently, only the 'session_id' connection property
+      is supported, and is used to resolve _SESSION appearing as the dataset
+      id.
+    copyFilesOnly: Optional. [Experimental] Configures the load job to only
+      copy files to the destination BigLake managed table with an external
+      storage_uri, without reading file content and writing them to new files.
+      Copying files only is supported when: * source_uris are in the same
+      external storage system as the destination table but they do not overlap
+      with storage_uri of the destination table. * source_format is the same
+      file format as the destination table. * destination_table is an existing
+      BigLake managed table. Its schema does not have default value
+      expression. It schema does not have type parameters other than precision
+      and scale. * No options other than the above are specified.
+    createDisposition: Optional. Specifies whether the job is allowed to
+      create new tables. The following values are supported: *
+      CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the
+      table. * CREATE_NEVER: The table must already exist. If it does not, a
+      'notFound' error is returned in the job result. The default value is
+      CREATE_IF_NEEDED. Creation, truncation and append actions occur as one
+      atomic update upon job completion.
+    createSession: Optional. If this property is true, the job creates a new
+      session using a randomly generated session_id. To continue using a
+      created session with subsequent queries, pass the existing session
+      identifier as a `ConnectionProperty` value. The session identifier is
+      returned as part of the `SessionInfo` message within the query
+      statistics. The new session's location will be set to
+      `Job.JobReference.location` if it is present, otherwise it's set to the
+      default location based on existing routing logic.
+    decimalTargetTypes: Defines the list of possible SQL data types to which
+      the source decimal values are converted. This list and the precision and
+      the scale parameters of the decimal field determine the target type. In
+      the order of NUMERIC, BIGNUMERIC, and STRING, a type is picked if it is
+      in the specified list and if it supports the precision and the scale.
+      STRING supports all precision and scale values. If none of the listed
+      types supports the precision and the scale, the type supporting the
+      widest range in the specified list is picked, and if a value exceeds the
+      supported range when reading the data, an error will be thrown. Example:
+      Suppose the value of this field is ["NUMERIC", "BIGNUMERIC"]. If
+      (precision,scale) is: * (38,9) -> NUMERIC; * (39,9) -> BIGNUMERIC
+      (NUMERIC cannot hold 30 integer digits); * (38,10) -> BIGNUMERIC
+      (NUMERIC cannot hold 10 fractional digits); * (76,38) -> BIGNUMERIC; *
+      (77,38) -> BIGNUMERIC (error if value exeeds supported range). This
+      field cannot contain duplicate types. The order of the types in this
+      field is ignored. For example, ["BIGNUMERIC", "NUMERIC"] is the same as
+      ["NUMERIC", "BIGNUMERIC"] and NUMERIC always takes precedence over
+      BIGNUMERIC. Defaults to ["NUMERIC", "STRING"] for ORC and ["NUMERIC"]
+      for the other file formats.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
-      Cloud KMS keys).
+      Cloud KMS keys)
     destinationTable: [Required] The destination table to load the data into.
-    destinationTableProperties: [Beta] [Optional] Properties with which to
-      create the destination table if it is new.
-    encoding: [Optional] The character encoding of the data. The supported
-      values are UTF-8 or ISO-8859-1. The default value is UTF-8. BigQuery
-      decodes the data after the raw, binary data has been split using the
-      values of the quote and fieldDelimiter properties.
-    fieldDelimiter: [Optional] The separator for fields in a CSV file. The
-      separator can be any ISO-8859-1 single-byte character. To use a
-      character in the range 128-255, you must encode the character as UTF8.
-      BigQuery converts the string to ISO-8859-1 encoding, and then uses the
-      first byte of the encoded string to split the data in its raw, binary
-      state. BigQuery also supports the escape sequence "\t" to specify a tab
-      separator. The default value is a comma (',').
-    fileSetSpecType: [Optional] Specifies how source URIs are interpreted for
-      constructing the file set to load. By default source URIs are expanded
-      against the underlying storage. Other options include specifying
-      manifest files. Only applicable to object storage systems.
-    hivePartitioningOptions: [Optional] Options to configure hive partitioning
-      support.
-    ignoreUnknownValues: [Optional] Indicates if BigQuery should allow extra
+    destinationTableProperties: Optional. [Experimental] Properties with which
+      to create the destination table if it is new.
+    encoding: Optional. The character encoding of the data. The supported
+      values are UTF-8, ISO-8859-1, UTF-16BE, UTF-16LE, UTF-32BE, and
+      UTF-32LE. The default value is UTF-8. BigQuery decodes the data after
+      the raw, binary data has been split using the values of the `quote` and
+      `fieldDelimiter` properties. If you don't specify an encoding, or if you
+      specify a UTF-8 encoding when the CSV file is not UTF-8 encoded,
+      BigQuery attempts to convert the data to UTF-8. Generally, your data
+      loads successfully, but it may not match byte-for-byte what you expect.
+      To avoid this, specify the correct encoding by using the `--encoding`
+      flag. If BigQuery can't convert a character other than the ASCII `0`
+      character, BigQuery converts the character to the standard Unicode
+      replacement character: \ufffd.
+    fieldDelimiter: Optional. The separator character for fields in a CSV
+      file. The separator is interpreted as a single byte. For files encoded
+      in ISO-8859-1, any single character can be used as a separator. For
+      files encoded in UTF-8, characters represented in decimal range 1-127
+      (U+0001-U+007F) can be used without any modification. UTF-8 characters
+      encoded with multiple bytes (i.e. U+0080 and above) will have only the
+      first byte used for separating fields. The remaining bytes will be
+      treated as a part of the field. BigQuery also supports the escape
+      sequence "\t" (U+0009) to specify a tab separator. The default value is
+      comma (",", U+002C).
+    fileSetSpecType: Optional. Specifies how source URIs are interpreted for
+      constructing the file set to load. By default, source URIs are expanded
+      against the underlying storage. You can also specify manifest files to
+      control how the file set is constructed. This option is only applicable
+      to object storage systems.
+    hivePartitioningOptions: Optional. When set, configures hive partitioning
+      support. Not all storage formats support hive partitioning -- requesting
+      hive partitioning on an unsupported format will lead to an error, as
+      will providing an invalid specification.
+    ignoreUnknownValues: Optional. Indicates if BigQuery should allow extra
       values that are not represented in the table schema. If true, the extra
       values are ignored. If false, records with extra columns are treated as
       bad records, and if there are too many bad records, an invalid error is
       returned in the job result. The default value is false. The sourceFormat
       property determines what BigQuery treats as an extra value: CSV:
-      Trailing columns JSON: Named values that don't match any column names
-    jsonExtension: [Optional] If sourceFormat is set to newline-delimited
-      JSON, indicates whether it should be processed as a JSON variant such as
-      GeoJSON. For a sourceFormat other than JSON, omit this field. If the
-      sourceFormat is newline-delimited JSON: - for newline-delimited GeoJSON:
-      set to GEOJSON.
-    maxBadRecords: [Optional] The maximum number of bad records that BigQuery
+      Trailing columns JSON: Named values that don't match any column names in
+      the table schema Avro, Parquet, ORC: Fields in the file schema that
+      don't exist in the table schema.
+    jsonExtension: Optional. Load option to be used together with
+      source_format newline-delimited JSON to indicate that a variant of JSON
+      is being loaded. To load newline-delimited GeoJSON, specify GEOJSON (and
+      source_format must be set to NEWLINE_DELIMITED_JSON).
+    maxBadRecords: Optional. The maximum number of bad records that BigQuery
       can ignore when running the job. If the number of bad records exceeds
-      this value, an invalid error is returned in the job result. This is only
-      valid for CSV and JSON. The default value is 0, which requires that all
-      records are valid.
-    nullMarker: [Optional] Specifies a string that represents a null value in
-      a CSV file. For example, if you specify "\\N", BigQuery interprets "\\N"
+      this value, an invalid error is returned in the job result. The default
+      value is 0, which requires that all records are valid. This is only
+      supported for CSV and NEWLINE_DELIMITED_JSON file formats.
+    nullMarker: Optional. Specifies a string that represents a null value in a
+      CSV file. For example, if you specify "\\N", BigQuery interprets "\\N"
       as a null value when loading a CSV file. The default value is the empty
       string. If you set this property to a custom value, BigQuery throws an
       error if an empty string is present for all data types except for STRING
       and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
       string as an empty value.
-    parquetOptions: [Optional] Options to configure parquet support.
-    preserveAsciiControlCharacters: [Optional] Preserves the embedded ASCII
-      control characters (the first 32 characters in the ASCII-table, from
-      '\x00' to '\x1F') when loading from CSV. Only applicable to CSV, ignored
-      for other formats.
+    parquetOptions: Optional. Additional properties to set if sourceFormat is
+      set to PARQUET.
+    preserveAsciiControlCharacters: Optional. When sourceFormat is set to
+      "CSV", this indicates whether the embedded ASCII control characters (the
+      first 32 characters in the ASCII-table, from '\x00' to '\x1F') are
+      preserved.
     projectionFields: If sourceFormat is set to "DATASTORE_BACKUP", indicates
       which entity properties to load into BigQuery from a Cloud Datastore
       backup. Property names are case sensitive and must be top-level
       properties. If no properties are specified, BigQuery loads all
       properties. If any named property isn't found in the Cloud Datastore
       backup, an invalid error is returned in the job result.
-    quote: [Optional] The value that is used to quote data sections in a CSV
+    quote: Optional. The value that is used to quote data sections in a CSV
       file. BigQuery converts the string to ISO-8859-1 encoding, and then uses
       the first byte of the encoded string to split the data in its raw,
       binary state. The default value is a double-quote ('"'). If your data
       does not contain quoted sections, set the property value to an empty
       string. If your data contains quoted newline characters, you must also
-      set the allowQuotedNewlines property to true.
-    rangePartitioning: [TrustedTester] Range partitioning specification for
-      this table. Only one of timePartitioning and rangePartitioning should be
+      set the allowQuotedNewlines property to true. To include the specific
+      quote character within a quoted value, precede it with an additional
+      matching quote character. For example, if you want to escape the default
+      character ' " ', use ' "" '. @default "
+    rangePartitioning: Range partitioning specification for the destination
+      table. Only one of timePartitioning and rangePartitioning should be
       specified.
-    referenceFileSchemaUri: User provided referencing file with the expected
-      reader schema, Available for the format: AVRO, PARQUET, ORC.
-    schema: [Optional] The schema for the destination table. The schema can be
+    referenceFileSchemaUri: Optional. The user can provide a reference file
+      with the reader schema. This file is only loaded if it is part of source
+      URIs, but is not loaded otherwise. It is enabled for the following
+      formats: AVRO, PARQUET, ORC.
+    schema: Optional. The schema for the destination table. The schema can be
       omitted if the destination table already exists, or if you're loading
       data from Google Cloud Datastore.
     schemaInline: [Deprecated] The inline schema. For CSV schemas, specify as
@@ -3257,14 +3884,22 @@ class JobConfigurationLoad(_messages.Message):
       writeDisposition is WRITE_TRUNCATE and the destination table is a
       partition of a table, specified by partition decorators. For normal
       tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
-      the following values are specified: ALLOW_FIELD_ADDITION: allow adding a
-      nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a
-      required field in the original schema to nullable.
-    skipLeadingRows: [Optional] The number of rows at the top of a CSV file
+      the following values are specified: * ALLOW_FIELD_ADDITION: allow adding
+      a nullable field to the schema. * ALLOW_FIELD_RELAXATION: allow relaxing
+      a required field in the original schema to nullable.
+    skipLeadingRows: Optional. The number of rows at the top of a CSV file
       that BigQuery will skip when loading the data. The default value is 0.
       This property is useful if you have header rows in the file that should
-      be skipped.
-    sourceFormat: [Optional] The format of the data files. For CSV files,
+      be skipped. When autodetect is on, the behavior is the following: *
+      skipLeadingRows unspecified - Autodetect tries to detect headers in the
+      first row. If they are not detected, the row is read as data. Otherwise
+      data is read starting from the second row. * skipLeadingRows is 0 -
+      Instructs autodetect that there are no headers and data should be read
+      starting from the first row. * skipLeadingRows = N > 0 - Autodetect
+      skips N-1 rows and tries to detect headers in row N. If headers are not
+      detected, row N is just skipped. Otherwise row N is used to extract
+      column names for the detected schema.
+    sourceFormat: Optional. The format of the data files. For CSV files,
       specify "CSV". For datastore backups, specify "DATASTORE_BACKUP". For
       newline-delimited JSON, specify "NEWLINE_DELIMITED_JSON". For Avro,
       specify "AVRO". For parquet, specify "PARQUET". For orc, specify "ORC".
@@ -3280,123 +3915,185 @@ class JobConfigurationLoad(_messages.Message):
     timePartitioning: Time-based partitioning specification for the
       destination table. Only one of timePartitioning and rangePartitioning
       should be specified.
-    useAvroLogicalTypes: [Optional] If sourceFormat is set to "AVRO",
-      indicates whether to interpret logical types as the corresponding
-      BigQuery data type (for example, TIMESTAMP), instead of using the raw
-      type (for example, INTEGER).
-    writeDisposition: [Optional] Specifies the action that occurs if the
-      destination table already exists. The following values are supported:
+    useAvroLogicalTypes: Optional. If sourceFormat is set to "AVRO", indicates
+      whether to interpret logical types as the corresponding BigQuery data
+      type (for example, TIMESTAMP), instead of using the raw type (for
+      example, INTEGER).
+    writeDisposition: Optional. Specifies the action that occurs if the
+      destination table already exists. The following values are supported: *
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
-      table data. WRITE_APPEND: If the table already exists, BigQuery appends
-      the data to the table. WRITE_EMPTY: If the table already exists and
-      contains data, a 'duplicate' error is returned in the job result. The
-      default value is WRITE_APPEND. Each action is atomic and only occurs if
-      BigQuery is able to complete the job successfully. Creation, truncation
-      and append actions occur as one atomic update upon job completion.
+      data, removes the constraints and uses the schema from the load job. *
+      WRITE_APPEND: If the table already exists, BigQuery appends the data to
+      the table. * WRITE_EMPTY: If the table already exists and contains data,
+      a 'duplicate' error is returned in the job result. The default value is
+      WRITE_APPEND. Each action is atomic and only occurs if BigQuery is able
+      to complete the job successfully. Creation, truncation and append
+      actions occur as one atomic update upon job completion.
   """
+
+  class DecimalTargetTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""DecimalTargetTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      DECIMAL_TARGET_TYPE_UNSPECIFIED: Invalid type.
+      NUMERIC: Decimal values could be converted to NUMERIC type.
+      BIGNUMERIC: Decimal values could be converted to BIGNUMERIC type.
+      STRING: Decimal values could be converted to STRING type.
+    """
+    DECIMAL_TARGET_TYPE_UNSPECIFIED = 0
+    NUMERIC = 1
+    BIGNUMERIC = 2
+    STRING = 3
+
+  class FileSetSpecTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies how source URIs are interpreted for constructing
+    the file set to load. By default, source URIs are expanded against the
+    underlying storage. You can also specify manifest files to control how the
+    file set is constructed. This option is only applicable to object storage
+    systems.
+
+    Values:
+      FILE_SET_SPEC_TYPE_FILE_SYSTEM_MATCH: This option expands source URIs by
+        listing files from the object store. It is the default behavior if
+        FileSetSpecType is not set.
+      FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST: This option indicates
+        that the provided URIs are newline-delimited manifest files, with one
+        URI per line. Wildcard URIs are not supported.
+    """
+    FILE_SET_SPEC_TYPE_FILE_SYSTEM_MATCH = 0
+    FILE_SET_SPEC_TYPE_NEW_LINE_DELIMITED_MANIFEST = 1
+
+  class JsonExtensionValueValuesEnum(_messages.Enum):
+    r"""Optional. Load option to be used together with source_format newline-
+    delimited JSON to indicate that a variant of JSON is being loaded. To load
+    newline-delimited GeoJSON, specify GEOJSON (and source_format must be set
+    to NEWLINE_DELIMITED_JSON).
+
+    Values:
+      JSON_EXTENSION_UNSPECIFIED: The default if provided value is not one
+        included in the enum, or the value is not specified. The source
+        formate is parsed without any modification.
+      GEOJSON: Use GeoJSON variant of JSON. See
+        https://tools.ietf.org/html/rfc7946.
+    """
+    JSON_EXTENSION_UNSPECIFIED = 0
+    GEOJSON = 1
 
   allowJaggedRows = _messages.BooleanField(1)
   allowQuotedNewlines = _messages.BooleanField(2)
   autodetect = _messages.BooleanField(3)
   clustering = _messages.MessageField('Clustering', 4)
   connectionProperties = _messages.MessageField('ConnectionProperty', 5, repeated=True)
-  createDisposition = _messages.StringField(6)
-  createSession = _messages.BooleanField(7)
-  decimalTargetTypes = _messages.StringField(8, repeated=True)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 9)
-  destinationTable = _messages.MessageField('TableReference', 10)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 11)
-  encoding = _messages.StringField(12)
-  fieldDelimiter = _messages.StringField(13)
-  fileSetSpecType = _messages.StringField(14)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 15)
-  ignoreUnknownValues = _messages.BooleanField(16)
-  jsonExtension = _messages.StringField(17)
-  maxBadRecords = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(19)
-  parquetOptions = _messages.MessageField('ParquetOptions', 20)
-  preserveAsciiControlCharacters = _messages.BooleanField(21)
-  projectionFields = _messages.StringField(22, repeated=True)
-  quote = _messages.StringField(23, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 24)
-  referenceFileSchemaUri = _messages.StringField(25)
-  schema = _messages.MessageField('TableSchema', 26)
-  schemaInline = _messages.StringField(27)
-  schemaInlineFormat = _messages.StringField(28)
-  schemaUpdateOptions = _messages.StringField(29, repeated=True)
-  skipLeadingRows = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(31)
-  sourceUris = _messages.StringField(32, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 33)
-  useAvroLogicalTypes = _messages.BooleanField(34)
-  writeDisposition = _messages.StringField(35)
+  copyFilesOnly = _messages.BooleanField(6)
+  createDisposition = _messages.StringField(7)
+  createSession = _messages.BooleanField(8)
+  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 9, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 10)
+  destinationTable = _messages.MessageField('TableReference', 11)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 12)
+  encoding = _messages.StringField(13)
+  fieldDelimiter = _messages.StringField(14)
+  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 15)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 16)
+  ignoreUnknownValues = _messages.BooleanField(17)
+  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 18)
+  maxBadRecords = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(20)
+  parquetOptions = _messages.MessageField('ParquetOptions', 21)
+  preserveAsciiControlCharacters = _messages.BooleanField(22)
+  projectionFields = _messages.StringField(23, repeated=True)
+  quote = _messages.StringField(24, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 25)
+  referenceFileSchemaUri = _messages.StringField(26)
+  schema = _messages.MessageField('TableSchema', 27)
+  schemaInline = _messages.StringField(28)
+  schemaInlineFormat = _messages.StringField(29)
+  schemaUpdateOptions = _messages.StringField(30, repeated=True)
+  skipLeadingRows = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(32)
+  sourceUris = _messages.StringField(33, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 34)
+  useAvroLogicalTypes = _messages.BooleanField(35)
+  writeDisposition = _messages.StringField(36)
 
 
 class JobConfigurationQuery(_messages.Message):
-  r"""A JobConfigurationQuery object.
+  r"""JobConfigurationQuery configures a BigQuery query job.
 
   Messages:
-    TableDefinitionsValue: [Optional] If querying an external data source
-      outside of BigQuery, describes the data format, location and other
-      properties of the data source. By defining these properties, the data
-      source can then be queried as if it were a standard BigQuery table.
+    TableDefinitionsValue: Optional. You can specify external table
+      definitions, which operate as ephemeral tables that can be queried.
+      These definitions are configured using a JSON map, where the string key
+      represents the table identifier, and the value is the corresponding
+      external data configuration object.
 
   Fields:
-    allowLargeResults: [Optional] If true and query uses legacy SQL dialect,
+    allowLargeResults: Optional. If true and query uses legacy SQL dialect,
       allows the query to produce arbitrarily large result tables at a slight
-      cost in performance. Requires destinationTable to be set. For standard
-      SQL queries, this flag is ignored and large results are always allowed.
+      cost in performance. Requires destinationTable to be set. For GoogleSQL
+      queries, this flag is ignored and large results are always allowed.
       However, you must still set destinationTable when result size exceeds
       the allowed maximum response size.
-    clustering: [Beta] Clustering specification for the destination table.
-      Must be specified with time-based partitioning, data in the table will
-      be first partitioned and subsequently clustered.
-    connectionProperties: Connection properties.
+    clustering: Clustering specification for the destination table.
+    connectionProperties: Connection properties which can modify the query
+      behavior.
     continuous: [Optional] Specifies whether the query should be executed as a
       continuous query. The default value is false.
-    createDisposition: [Optional] Specifies whether the job is allowed to
-      create new tables. The following values are supported: CREATE_IF_NEEDED:
-      If the table does not exist, BigQuery creates the table. CREATE_NEVER:
-      The table must already exist. If it does not, a 'notFound' error is
-      returned in the job result. The default value is CREATE_IF_NEEDED.
-      Creation, truncation and append actions occur as one atomic update upon
-      job completion.
-    createSession: If true, creates a new session, where session id will be a
-      server generated random id. If false, runs query with an existing
-      session_id passed in ConnectionProperty, otherwise runs query in non-
-      session mode.
-    defaultDataset: [Optional] Specifies the default dataset to use for
-      unqualified table names in the query. Note that this does not alter
-      behavior of unqualified dataset names.
+    createDisposition: Optional. Specifies whether the job is allowed to
+      create new tables. The following values are supported: *
+      CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the
+      table. * CREATE_NEVER: The table must already exist. If it does not, a
+      'notFound' error is returned in the job result. The default value is
+      CREATE_IF_NEEDED. Creation, truncation and append actions occur as one
+      atomic update upon job completion.
+    createSession: If this property is true, the job creates a new session
+      using a randomly generated session_id. To continue using a created
+      session with subsequent queries, pass the existing session identifier as
+      a `ConnectionProperty` value. The session identifier is returned as part
+      of the `SessionInfo` message within the query statistics. The new
+      session's location will be set to `Job.JobReference.location` if it is
+      present, otherwise it's set to the default location based on existing
+      routing logic.
+    defaultDataset: Optional. Specifies the default dataset to use for
+      unqualified table names in the query. This setting does not alter
+      behavior of unqualified dataset names. Setting the system variable
+      `@@dataset_id` achieves the same behavior. See
+      https://cloud.google.com/bigquery/docs/reference/system-variables for
+      more information on system variables.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
-      Cloud KMS keys).
-    destinationTable: [Optional] Describes the table where the query results
-      should be stored. If not present, a new table will be created to store
-      the results. This property must be set for large results that exceed the
-      maximum response size.
-    flattenResults: [Optional] If true and query uses legacy SQL dialect,
+      Cloud KMS keys)
+    destinationTable: Optional. Describes the table where the query results
+      should be stored. This property must be set for large results that
+      exceed the maximum response size. For queries that produce anonymous
+      (cached) results, this field will be populated by BigQuery.
+    flattenResults: Optional. If true and query uses legacy SQL dialect,
       flattens all nested and repeated fields in the query results.
-      allowLargeResults must be true if this is set to false. For standard SQL
+      allowLargeResults must be true if this is set to false. For GoogleSQL
       queries, this flag is ignored and results are never flattened.
-    maximumBillingTier: [Optional] Limits the billing tier for this job.
-      Queries that have resource usage beyond this tier will fail (without
-      incurring a charge). If unspecified, this will be set to your project
-      default.
-    maximumBytesBilled: [Optional] Limits the bytes billed for this job.
-      Queries that will have bytes billed beyond this limit will fail (without
-      incurring a charge). If unspecified, this will be set to your project
-      default.
-    parameterMode: Standard SQL only. Set to POSITIONAL to use positional (?)
+    maximumBillingTier: Optional. [Deprecated] Maximum billing tier allowed
+      for this query. The billing tier controls the amount of compute
+      resources allotted to the query, and multiplies the on-demand cost of
+      the query accordingly. A query that runs within its allotted resources
+      will succeed and indicate its billing tier in
+      statistics.query.billingTier, but if the query exceeds its allotted
+      resources, it will fail with billingTierLimitExceeded. WARNING: The
+      billed byte amount can be multiplied by an amount up to this number!
+      Most users should not need to alter this setting, and we recommend that
+      you avoid introducing new uses of it.
+    maximumBytesBilled: Limits the bytes billed for this job. Queries that
+      will have bytes billed beyond this limit will fail (without incurring a
+      charge). If unspecified, this will be set to your project default.
+    parameterMode: GoogleSQL only. Set to POSITIONAL to use positional (?)
       query parameters or to NAMED to use named (@myparam) query parameters in
       this query.
     preserveNulls: [Deprecated] This property is deprecated.
-    priority: [Optional] Specifies a priority for the query. Possible values
+    priority: Optional. Specifies a priority for the query. Possible values
       include INTERACTIVE and BATCH. The default value is INTERACTIVE.
     query: [Required] SQL query text to execute. The useLegacySql field can be
-      used to indicate whether the query uses legacy SQL or standard SQL.
-    queryParameters: Query parameters for standard SQL queries.
-    rangePartitioning: [TrustedTester] Range partitioning specification for
-      this table. Only one of timePartitioning and rangePartitioning should be
+      used to indicate whether the query uses legacy SQL or GoogleSQL.
+    queryParameters: Query parameters for GoogleSQL queries.
+    rangePartitioning: Range partitioning specification for the destination
+      table. Only one of timePartitioning and rangePartitioning should be
       specified.
     schemaUpdateOptions: Allows the schema of the destination table to be
       updated as a side effect of the query job. Schema update options are
@@ -3404,47 +4101,53 @@ class JobConfigurationQuery(_messages.Message):
       writeDisposition is WRITE_TRUNCATE and the destination table is a
       partition of a table, specified by partition decorators. For normal
       tables, WRITE_TRUNCATE will always overwrite the schema. One or more of
-      the following values are specified: ALLOW_FIELD_ADDITION: allow adding a
-      nullable field to the schema. ALLOW_FIELD_RELAXATION: allow relaxing a
-      required field in the original schema to nullable.
-    tableDefinitions: [Optional] If querying an external data source outside
-      of BigQuery, describes the data format, location and other properties of
-      the data source. By defining these properties, the data source can then
-      be queried as if it were a standard BigQuery table.
+      the following values are specified: * ALLOW_FIELD_ADDITION: allow adding
+      a nullable field to the schema. * ALLOW_FIELD_RELAXATION: allow relaxing
+      a required field in the original schema to nullable.
+    scriptOptions: Options controlling the execution of scripts.
+    systemVariables: Output only. System variables for GoogleSQL queries. A
+      system variable is output if the variable is settable and its value
+      differs from the system default. "@@" prefix is not included in the name
+      of the System variables.
+    tableDefinitions: Optional. You can specify external table definitions,
+      which operate as ephemeral tables that can be queried. These definitions
+      are configured using a JSON map, where the string key represents the
+      table identifier, and the value is the corresponding external data
+      configuration object.
     timePartitioning: Time-based partitioning specification for the
       destination table. Only one of timePartitioning and rangePartitioning
       should be specified.
-    useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
-      this query. The default value is true. If set to false, the query will
-      use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
-      reference/ When useLegacySql is set to false, the value of
-      flattenResults is ignored; query will be run as if flattenResults is
-      false.
-    useQueryCache: [Optional] Whether to look for the result in the query
+    useLegacySql: Optional. Specifies whether to use BigQuery's legacy SQL
+      dialect for this query. The default value is true. If set to false, the
+      query will use BigQuery's GoogleSQL:
+      https://cloud.google.com/bigquery/sql-reference/ When useLegacySql is
+      set to false, the value of flattenResults is ignored; query will be run
+      as if flattenResults is false.
+    useQueryCache: Optional. Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. Moreover, the query cache is
       only available when a query does not have a destination table specified.
       The default value is true.
     userDefinedFunctionResources: Describes user-defined function resources
       used in the query.
-    writeDisposition: [Optional] Specifies the action that occurs if the
-      destination table already exists. The following values are supported:
+    writeDisposition: Optional. Specifies the action that occurs if the
+      destination table already exists. The following values are supported: *
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
-      table data and uses the schema from the query result. WRITE_APPEND: If
-      the table already exists, BigQuery appends the data to the table.
-      WRITE_EMPTY: If the table already exists and contains data, a
-      'duplicate' error is returned in the job result. The default value is
-      WRITE_EMPTY. Each action is atomic and only occurs if BigQuery is able
-      to complete the job successfully. Creation, truncation and append
-      actions occur as one atomic update upon job completion.
+      data, removes the constraints, and uses the schema from the query
+      result. * WRITE_APPEND: If the table already exists, BigQuery appends
+      the data to the table. * WRITE_EMPTY: If the table already exists and
+      contains data, a 'duplicate' error is returned in the job result. The
+      default value is WRITE_EMPTY. Each action is atomic and only occurs if
+      BigQuery is able to complete the job successfully. Creation, truncation
+      and append actions occur as one atomic update upon job completion.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TableDefinitionsValue(_messages.Message):
-    r"""[Optional] If querying an external data source outside of BigQuery,
-    describes the data format, location and other properties of the data
-    source. By defining these properties, the data source can then be queried
-    as if it were a standard BigQuery table.
+    r"""Optional. You can specify external table definitions, which operate as
+    ephemeral tables that can be queried. These definitions are configured
+    using a JSON map, where the string key represents the table identifier,
+    and the value is the corresponding external data configuration object.
 
     Messages:
       AdditionalProperty: An additional property for a TableDefinitionsValue
@@ -3487,49 +4190,77 @@ class JobConfigurationQuery(_messages.Message):
   queryParameters = _messages.MessageField('QueryParameter', 17, repeated=True)
   rangePartitioning = _messages.MessageField('RangePartitioning', 18)
   schemaUpdateOptions = _messages.StringField(19, repeated=True)
-  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 20)
-  timePartitioning = _messages.MessageField('TimePartitioning', 21)
-  useLegacySql = _messages.BooleanField(22, default=True)
-  useQueryCache = _messages.BooleanField(23, default=True)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 24, repeated=True)
-  writeDisposition = _messages.StringField(25)
+  scriptOptions = _messages.MessageField('ScriptOptions', 20)
+  systemVariables = _messages.MessageField('SystemVariables', 21)
+  tableDefinitions = _messages.MessageField('TableDefinitionsValue', 22)
+  timePartitioning = _messages.MessageField('TimePartitioning', 23)
+  useLegacySql = _messages.BooleanField(24, default=True)
+  useQueryCache = _messages.BooleanField(25, default=True)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 26, repeated=True)
+  writeDisposition = _messages.StringField(27)
 
 
 class JobConfigurationTableCopy(_messages.Message):
-  r"""A JobConfigurationTableCopy object.
+  r"""JobConfigurationTableCopy configures a job that copies data from one
+  table to another. For more information on copying tables, see [Copy a
+  table](https://cloud.google.com/bigquery/docs/managing-tables#copy-table).
+
+  Enums:
+    OperationTypeValueValuesEnum: Optional. Supported operation types in table
+      copy job.
 
   Fields:
-    createDisposition: [Optional] Specifies whether the job is allowed to
-      create new tables. The following values are supported: CREATE_IF_NEEDED:
-      If the table does not exist, BigQuery creates the table. CREATE_NEVER:
-      The table must already exist. If it does not, a 'notFound' error is
-      returned in the job result. The default value is CREATE_IF_NEEDED.
-      Creation, truncation and append actions occur as one atomic update upon
-      job completion.
+    createDisposition: Optional. Specifies whether the job is allowed to
+      create new tables. The following values are supported: *
+      CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the
+      table. * CREATE_NEVER: The table must already exist. If it does not, a
+      'notFound' error is returned in the job result. The default value is
+      CREATE_IF_NEEDED. Creation, truncation and append actions occur as one
+      atomic update upon job completion.
     destinationEncryptionConfiguration: Custom encryption configuration (e.g.,
       Cloud KMS keys).
-    destinationExpirationTime: [Optional] The time when the destination table
+    destinationExpirationTime: Optional. The time when the destination table
       expires. Expired tables will be deleted and their storage reclaimed.
-    destinationTable: [Required] The destination table
-    operationType: [Optional] Supported operation types in table copy job.
+    destinationTable: [Required] The destination table.
+    operationType: Optional. Supported operation types in table copy job.
     sourceTable: [Pick one] Source table to copy.
     sourceTables: [Pick one] Source tables to copy.
-    writeDisposition: [Optional] Specifies the action that occurs if the
-      destination table already exists. The following values are supported:
+    writeDisposition: Optional. Specifies the action that occurs if the
+      destination table already exists. The following values are supported: *
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the
-      table data. WRITE_APPEND: If the table already exists, BigQuery appends
-      the data to the table. WRITE_EMPTY: If the table already exists and
+      table data and uses the schema and table constraints from the source
+      table. * WRITE_APPEND: If the table already exists, BigQuery appends the
+      data to the table. * WRITE_EMPTY: If the table already exists and
       contains data, a 'duplicate' error is returned in the job result. The
       default value is WRITE_EMPTY. Each action is atomic and only occurs if
       BigQuery is able to complete the job successfully. Creation, truncation
       and append actions occur as one atomic update upon job completion.
   """
 
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Supported operation types in table copy job.
+
+    Values:
+      OPERATION_TYPE_UNSPECIFIED: Unspecified operation type.
+      COPY: The source and destination table have the same table type.
+      SNAPSHOT: The source table type is TABLE and the destination table type
+        is SNAPSHOT.
+      RESTORE: The source table type is SNAPSHOT and the destination table
+        type is TABLE.
+      CLONE: The source and destination table have the same table type, but
+        only bill for unique data.
+    """
+    OPERATION_TYPE_UNSPECIFIED = 0
+    COPY = 1
+    SNAPSHOT = 2
+    RESTORE = 3
+    CLONE = 4
+
   createDisposition = _messages.StringField(1)
   destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 2)
-  destinationExpirationTime = _messages.MessageField('extra_types.JsonValue', 3)
+  destinationExpirationTime = _messages.StringField(3)
   destinationTable = _messages.MessageField('TableReference', 4)
-  operationType = _messages.StringField(5)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
   sourceTable = _messages.MessageField('TableReference', 6)
   sourceTables = _messages.MessageField('TableReference', 7, repeated=True)
   writeDisposition = _messages.StringField(8)
@@ -3576,33 +4307,43 @@ class JobCreationReason(_messages.Message):
 
 
 class JobList(_messages.Message):
-  r"""A JobList object.
+  r"""JobList is the response format for a jobs.list call.
 
   Messages:
-    JobsValueListEntry: A JobsValueListEntry object.
+    JobsValueListEntry: ListFormatJob is a partial projection of job
+      information returned as part of a jobs.list response.
 
   Fields:
     etag: A hash of this page of results.
     jobs: List of jobs that were requested.
     kind: The resource type of the response.
     nextPageToken: A token to request the next page of results.
+    unreachable: A list of skipped locations that were unreachable. For more
+      information about BigQuery locations, see:
+      https://cloud.google.com/bigquery/docs/locations. Example: "europe-
+      west5"
   """
 
   class JobsValueListEntry(_messages.Message):
-    r"""A JobsValueListEntry object.
+    r"""ListFormatJob is a partial projection of job information returned as
+    part of a jobs.list response.
 
     Fields:
-      configuration: [Full-projection-only] Specifies the job configuration.
+      configuration: Required. Describes the job configuration.
       errorResult: A result object that will be present only if the job has
         failed.
       id: Unique opaque ID of the job.
-      jobReference: Job reference uniquely identifying the job.
+      jobReference: Unique opaque ID of the job.
       kind: The resource type.
+      principal_subject: [Full-projection-only] String representation of
+        identity of requesting party. Populated for both first- and third-
+        party identities. Only present for APIs that support third-party
+        identities.
       state: Running state of the job. When the state is DONE, errorResult can
         be checked to determine whether the job succeeded or failed.
-      statistics: [Output-only] Information about the job, including starting
+      statistics: Output only. Information about the job, including starting
         time and ending time of the job.
-      status: [Full-projection-only] Describes the state of the job.
+      status: [Full-projection-only] Describes the status of this job.
       user_email: [Full-projection-only] Email address of the user who ran the
         job.
     """
@@ -3611,29 +4352,31 @@ class JobList(_messages.Message):
     errorResult = _messages.MessageField('ErrorProto', 2)
     id = _messages.StringField(3)
     jobReference = _messages.MessageField('JobReference', 4)
-    kind = _messages.StringField(5, default='bigquery#job')
-    state = _messages.StringField(6)
-    statistics = _messages.MessageField('JobStatistics', 7)
-    status = _messages.MessageField('JobStatus', 8)
-    user_email = _messages.StringField(9)
+    kind = _messages.StringField(5)
+    principal_subject = _messages.StringField(6)
+    state = _messages.StringField(7)
+    statistics = _messages.MessageField('JobStatistics', 8)
+    status = _messages.MessageField('JobStatus', 9)
+    user_email = _messages.StringField(10)
 
   etag = _messages.StringField(1)
   jobs = _messages.MessageField('JobsValueListEntry', 2, repeated=True)
   kind = _messages.StringField(3, default='bigquery#jobList')
   nextPageToken = _messages.StringField(4)
+  unreachable = _messages.StringField(5, repeated=True)
 
 
 class JobReference(_messages.Message):
-  r"""A JobReference object.
+  r"""A job reference is a fully qualified identifier for referring to a job.
 
   Fields:
-    jobId: [Required] The ID of the job. The ID must contain only letters
-      (a-z, A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum
-      length is 1,024 characters.
-    location: The geographic location of the job. See details at
-      https://cloud.google.com/bigquery/docs/locations#specifying_your_locatio
-      n.
-    projectId: [Required] The ID of the project containing this job.
+    jobId: Required. The ID of the job. The ID must contain only letters (a-z,
+      A-Z), numbers (0-9), underscores (_), or dashes (-). The maximum length
+      is 1,024 characters.
+    location: Optional. The geographic location of the job. The default value
+      is US. For more information about BigQuery locations, see:
+      https://cloud.google.com/bigquery/docs/locations
+    projectId: Required. The ID of the project containing this job.
   """
 
   jobId = _messages.StringField(1)
@@ -3642,56 +4385,63 @@ class JobReference(_messages.Message):
 
 
 class JobStatistics(_messages.Message):
-  r"""A JobStatistics object.
+  r"""Statistics for a single job execution.
 
   Messages:
-    ReservationUsageValueListEntry: A ReservationUsageValueListEntry object.
+    ReservationUsageValueListEntry: Job resource usage breakdown by
+      reservation.
 
   Fields:
-    completionRatio: [TrustedTester] [Output-only] Job progress (0.0 -> 1.0)
+    completionRatio: Output only. [TrustedTester] Job progress (0.0 -> 1.0)
       for LOAD and EXTRACT jobs.
-    copy: [Output-only] Statistics for a copy job.
-    creationTime: [Output-only] Creation time of this job, in milliseconds
+    copy: Output only. Statistics for a copy job.
+    creationTime: Output only. Creation time of this job, in milliseconds
       since the epoch. This field will be present on all jobs.
-    dataMaskingStatistics: [Output-only] Statistics for data masking. Present
+    dataMaskingStatistics: Output only. Statistics for data-masking. Present
       only for query and extract jobs.
-    endTime: [Output-only] End time of this job, in milliseconds since the
+    endTime: Output only. End time of this job, in milliseconds since the
       epoch. This field will be present whenever a job is in the DONE state.
-    extract: [Output-only] Statistics for an extract job.
-    load: [Output-only] Statistics for a load job.
-    numChildJobs: [Output-only] Number of child jobs executed.
-    parentJobId: [Output-only] If this is a child job, the id of the parent.
-    query: [Output-only] Statistics for a query job.
-    quotaDeferments: [Output-only] Quotas which delayed this job's start time.
-    reservationUsage: [Output-only] Job resource usage breakdown by
-      reservation.
-    reservation_id: [Output-only] Name of the primary reservation assigned to
+    extract: Output only. Statistics for an extract job.
+    finalExecutionDurationMs: Output only. The duration in milliseconds of the
+      execution of the final attempt of this job, as BigQuery may internally
+      re-attempt to execute the job.
+    load: Output only. Statistics for a load job.
+    numChildJobs: Output only. Number of child jobs executed.
+    parentJobId: Output only. If this is a child job, specifies the job ID of
+      the parent.
+    query: Output only. Statistics for a query job.
+    quotaDeferments: Output only. Quotas which delayed this job's start time.
+    reservationUsage: Output only. Job resource usage breakdown by
+      reservation. This field reported misleading information and will no
+      longer be populated.
+    reservation_id: Output only. Name of the primary reservation assigned to
       this job. Note that this could be different than reservations reported
       in the reservation usage field if parent reservations were used to
       execute this job.
-    rowLevelSecurityStatistics: [Output-only] [Preview] Statistics for row-
-      level security. Present only for query and extract jobs.
-    scriptStatistics: [Output-only] Statistics for a child job of a script.
-    sessionInfo: [Output-only] [Preview] Information of the session if this
-      job is part of one.
-    startTime: [Output-only] Start time of this job, in milliseconds since the
+    rowLevelSecurityStatistics: Output only. Statistics for row-level
+      security. Present only for query and extract jobs.
+    scriptStatistics: Output only. If this a child job of a script, specifies
+      information about the context of this job within the script.
+    sessionInfo: Output only. Information of the session if this job is part
+      of one.
+    startTime: Output only. Start time of this job, in milliseconds since the
       epoch. This field will be present when the job transitions from the
       PENDING state to either RUNNING or DONE.
-    totalBytesProcessed: [Output-only] [Deprecated] Use the bytes processed in
-      the query statistics instead.
-    totalSlotMs: [Output-only] Slot-milliseconds for the job.
-    transactionInfo: [Output-only] [Alpha] Information of the multi-statement
-      transaction if this job is part of one.
+    totalBytesProcessed: Output only. Total bytes processed for the job.
+    totalSlotMs: Output only. Slot-milliseconds for the job.
+    transactionInfo: Output only. [Alpha] Information of the multi-statement
+      transaction if this job is part of one. This property is only expected
+      on a child job or a job that is in a session. A script parent job is not
+      part of the transaction started in the script.
   """
 
   class ReservationUsageValueListEntry(_messages.Message):
-    r"""A ReservationUsageValueListEntry object.
+    r"""Job resource usage breakdown by reservation.
 
     Fields:
-      name: [Output-only] Reservation name or "unreserved" for on-demand
-        resources usage.
-      slotMs: [Output-only] Slot-milliseconds the job spent in the given
-        reservation.
+      name: Reservation name or "unreserved" for on-demand resources usage.
+      slotMs: Total slot milliseconds used by the reservation for a particular
+        job.
     """
 
     name = _messages.StringField(1)
@@ -3703,124 +4453,213 @@ class JobStatistics(_messages.Message):
   dataMaskingStatistics = _messages.MessageField('DataMaskingStatistics', 4)
   endTime = _messages.IntegerField(5)
   extract = _messages.MessageField('JobStatistics4', 6)
-  load = _messages.MessageField('JobStatistics3', 7)
-  numChildJobs = _messages.IntegerField(8)
-  parentJobId = _messages.StringField(9)
-  query = _messages.MessageField('JobStatistics2', 10)
-  quotaDeferments = _messages.StringField(11, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 12, repeated=True)
-  reservation_id = _messages.StringField(13)
-  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 14)
-  scriptStatistics = _messages.MessageField('ScriptStatistics', 15)
-  sessionInfo = _messages.MessageField('SessionInfo', 16)
-  startTime = _messages.IntegerField(17)
-  totalBytesProcessed = _messages.IntegerField(18)
-  totalSlotMs = _messages.IntegerField(19)
-  transactionInfo = _messages.MessageField('TransactionInfo', 20)
+  finalExecutionDurationMs = _messages.IntegerField(7)
+  load = _messages.MessageField('JobStatistics3', 8)
+  numChildJobs = _messages.IntegerField(9)
+  parentJobId = _messages.StringField(10)
+  query = _messages.MessageField('JobStatistics2', 11)
+  quotaDeferments = _messages.StringField(12, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 13, repeated=True)
+  reservation_id = _messages.StringField(14)
+  rowLevelSecurityStatistics = _messages.MessageField('RowLevelSecurityStatistics', 15)
+  scriptStatistics = _messages.MessageField('ScriptStatistics', 16)
+  sessionInfo = _messages.MessageField('SessionInfo', 17)
+  startTime = _messages.IntegerField(18)
+  totalBytesProcessed = _messages.IntegerField(19)
+  totalSlotMs = _messages.IntegerField(20)
+  transactionInfo = _messages.MessageField('TransactionInfo', 21)
 
 
 class JobStatistics2(_messages.Message):
-  r"""A JobStatistics2 object.
+  r"""Statistics for a query job.
 
   Messages:
-    ReservationUsageValueListEntry: A ReservationUsageValueListEntry object.
+    ReservationUsageValueListEntry: Job resource usage breakdown by
+      reservation.
 
   Fields:
-    biEngineStatistics: BI Engine specific Statistics. [Output only] BI Engine
-      specific Statistics.
-    billingTier: [Output only] Billing tier for the job.
-    cacheHit: [Output only] Whether the query result was fetched from the
-      query cache.
-    ddlAffectedRowAccessPolicyCount: [Output only] [Preview] The number of row
-      access policies affected by a DDL statement. Present only for DROP ALL
-      ROW ACCESS POLICIES queries.
-    ddlDestinationTable: [Output only] The DDL destination table. Present only
-      for ALTER TABLE RENAME TO queries. Note that ddl_target_table is used
-      just for its type information.
-    ddlOperationPerformed: The DDL operation performed, possibly dependent on
-      the pre-existence of the DDL target. Possible values (new values might
-      be added in the future): "CREATE": The query created the DDL target.
-      "SKIP": No-op. Example cases: the query is CREATE TABLE IF NOT EXISTS
-      while the table already exists, or the query is DROP TABLE IF EXISTS
-      while the table does not exist. "REPLACE": The query replaced the DDL
-      target. Example case: the query is CREATE OR REPLACE TABLE, and the
-      table already exists. "DROP": The query deleted the DDL target.
-    ddlTargetDataset: [Output only] The DDL target dataset. Present only for
-      CREATE/ALTER/DROP/UNDROP SCHEMA queries.
-    ddlTargetRoutine: The DDL target routine. Present only for CREATE/DROP
-      FUNCTION/PROCEDURE queries.
-    ddlTargetRowAccessPolicy: [Output only] [Preview] The DDL target row
-      access policy. Present only for CREATE/DROP ROW ACCESS POLICY queries.
-    ddlTargetTable: [Output only] The DDL target table. Present only for
+    biEngineStatistics: Output only. BI Engine specific Statistics.
+    billingTier: Output only. Billing tier for the job. This is a BigQuery-
+      specific concept which is not related to the Google Cloud notion of
+      "free tier". The value here is a measure of the query's resource
+      consumption relative to the amount of data scanned. For on-demand
+      queries, the limit is 100, and all queries within this limit are billed
+      at the standard on-demand rates. On-demand queries that exceed this
+      limit will fail with a billingTierLimitExceeded error.
+    cacheHit: Output only. Whether the query result was fetched from the query
+      cache.
+    dclTargetDataset: Output only. Referenced dataset for DCL statement.
+    dclTargetTable: Output only. Referenced table for DCL statement.
+    dclTargetView: Output only. Referenced view for DCL statement.
+    ddlAffectedRowAccessPolicyCount: Output only. The number of row access
+      policies affected by a DDL statement. Present only for DROP ALL ROW
+      ACCESS POLICIES queries.
+    ddlDestinationTable: Output only. The table after rename. Present only for
+      ALTER TABLE RENAME TO query.
+    ddlOperationPerformed: Output only. The DDL operation performed, possibly
+      dependent on the pre-existence of the DDL target.
+    ddlTargetDataset: Output only. The DDL target dataset. Present only for
+      CREATE/ALTER/DROP SCHEMA(dataset) queries.
+    ddlTargetRoutine: Output only. [Beta] The DDL target routine. Present only
+      for CREATE/DROP FUNCTION/PROCEDURE queries.
+    ddlTargetRowAccessPolicy: Output only. The DDL target row access policy.
+      Present only for CREATE/DROP ROW ACCESS POLICY queries.
+    ddlTargetTable: Output only. The DDL target table. Present only for
       CREATE/DROP TABLE/VIEW and DROP ALL ROW ACCESS POLICIES queries.
-    dmlStats: [Output only] Detailed statistics for DML statements Present
-      only for DML statements INSERT, UPDATE, DELETE or TRUNCATE.
-    estimatedBytesProcessed: [Output only] The original estimate of bytes
+    dmlStats: Output only. Detailed statistics for DML statements INSERT,
+      UPDATE, DELETE, MERGE or TRUNCATE.
+    estimatedBytesProcessed: Output only. The original estimate of bytes
       processed for the job.
-    mlStatistics: [Output only] Statistics of a BigQuery ML training job.
-    modelTraining: [Output only, Beta] Information about create model query
-      job progress.
-    modelTrainingCurrentIteration: [Output only, Beta] Deprecated; do not use.
-    modelTrainingExpectedTotalIteration: [Output only, Beta] Deprecated; do
-      not use.
-    numDmlAffectedRows: [Output only] The number of rows affected by a DML
+    exportDataStatistics: Output only. Stats for EXPORT DATA statement.
+    externalServiceCosts: Output only. Job cost breakdown as bigquery internal
+      cost and external service costs.
+    loadQueryStatistics: Output only. Statistics for a LOAD query.
+    materializedViewStatistics: Output only. Statistics of materialized views
+      of a query job.
+    metadataCacheStatistics: Output only. Statistics of metadata cache usage
+      in a query for BigLake tables.
+    mlStatistics: Output only. Statistics of a BigQuery ML training job.
+    modelTraining: Deprecated.
+    modelTrainingCurrentIteration: Deprecated.
+    modelTrainingExpectedTotalIteration: Deprecated.
+    numDmlAffectedRows: Output only. The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
-    queryPlan: [Output only] Describes execution plan for the query.
-    referencedRoutines: [Output only] Referenced routines (persistent user-
-      defined functions and stored procedures) for the job.
-    referencedTables: [Output only] Referenced tables for the job. Queries
-      that reference more than 50 tables will not have a complete list.
-    reservationUsage: [Output only] Job resource usage breakdown by
-      reservation.
-    schema: [Output only] The schema of the results. Present only for
+    performanceInsights: Output only. Performance insights.
+    queryInfo: Output only. Query optimization information for a QUERY job.
+    queryPlan: Output only. Describes execution plan for the query.
+    referencedRoutines: Output only. Referenced routines for the job.
+    referencedTables: Output only. Referenced tables for the job. Queries that
+      reference more than 50 tables will not have a complete list.
+    reservationUsage: Output only. Job resource usage breakdown by
+      reservation. This field reported misleading information and will no
+      longer be populated.
+    schema: Output only. The schema of the results. Present only for
       successful dry run of non-legacy SQL queries.
-    searchStatistics: [Output only] Search query specific statistics.
-    sparkStatistics: [Output only] Statistics of a Spark procedure job.
-    statementType: The type of query statement, if valid. Possible values (new
-      values might be added in the future): "SELECT": SELECT query. "INSERT":
-      INSERT query; see
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language. "UPDATE": UPDATE query; see
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language. "DELETE": DELETE query; see
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language. "MERGE": MERGE query; see
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      manipulation-language. "ALTER_TABLE": ALTER TABLE query. "ALTER_VIEW":
-      ALTER VIEW query. "ASSERT": ASSERT condition AS 'description'.
-      "CREATE_FUNCTION": CREATE FUNCTION query. "CREATE_MODEL": CREATE [OR
-      REPLACE] MODEL ... AS SELECT ... . "CREATE_PROCEDURE": CREATE PROCEDURE
-      query. "CREATE_TABLE": CREATE [OR REPLACE] TABLE without AS SELECT.
-      "CREATE_TABLE_AS_SELECT": CREATE [OR REPLACE] TABLE ... AS SELECT ... .
-      "CREATE_VIEW": CREATE [OR REPLACE] VIEW ... AS SELECT ... .
-      "DROP_FUNCTION" : DROP FUNCTION query. "DROP_PROCEDURE": DROP PROCEDURE
-      query. "DROP_TABLE": DROP TABLE query. "DROP_VIEW": DROP VIEW query.
-    timeline: [Output only] [Beta] Describes a timeline of job execution.
-    totalBytesBilled: [Output only] Total bytes billed for the job.
-    totalBytesProcessed: [Output only] Total bytes processed for the job.
-    totalBytesProcessedAccuracy: [Output only] For dry-run jobs,
+    searchStatistics: Output only. Search query specific statistics.
+    sparkStatistics: Output only. Statistics of a Spark procedure job.
+    statementType: Output only. The type of query statement, if valid.
+      Possible values: * `SELECT`:
+      [`SELECT`](/bigquery/docs/reference/standard-sql/query-
+      syntax#select_list) statement. * `ASSERT`:
+      [`ASSERT`](/bigquery/docs/reference/standard-sql/debugging-
+      statements#assert) statement. * `INSERT`:
+      [`INSERT`](/bigquery/docs/reference/standard-sql/dml-
+      syntax#insert_statement) statement. * `UPDATE`:
+      [`UPDATE`](/bigquery/docs/reference/standard-sql/query-
+      syntax#update_statement) statement. * `DELETE`:
+      [`DELETE`](/bigquery/docs/reference/standard-sql/data-manipulation-
+      language) statement. * `MERGE`:
+      [`MERGE`](/bigquery/docs/reference/standard-sql/data-manipulation-
+      language) statement. * `CREATE_TABLE`: [`CREATE
+      TABLE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_table_statement) statement, without `AS SELECT`. *
+      `CREATE_TABLE_AS_SELECT`: [`CREATE TABLE AS
+      SELECT`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#query_statement) statement. * `CREATE_VIEW`: [`CREATE
+      VIEW`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_view_statement) statement. * `CREATE_MODEL`: [`CREATE
+      MODEL`](/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-
+      create#create_model_statement) statement. * `CREATE_MATERIALIZED_VIEW`:
+      [`CREATE MATERIALIZED VIEW`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#create_materialized_view_statement) statement. *
+      `CREATE_FUNCTION`: [`CREATE
+      FUNCTION`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_function_statement) statement. *
+      `CREATE_TABLE_FUNCTION`: [`CREATE TABLE
+      FUNCTION`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_table_function_statement) statement. *
+      `CREATE_PROCEDURE`: [`CREATE
+      PROCEDURE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_procedure) statement. * `CREATE_ROW_ACCESS_POLICY`:
+      [`CREATE ROW ACCESS POLICY`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#create_row_access_policy_statement) statement. *
+      `CREATE_SCHEMA`: [`CREATE SCHEMA`](/bigquery/docs/reference/standard-
+      sql/data-definition-language#create_schema_statement) statement. *
+      `CREATE_SNAPSHOT_TABLE`: [`CREATE SNAPSHOT
+      TABLE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_snapshot_table_statement) statement. *
+      `CREATE_SEARCH_INDEX`: [`CREATE SEARCH
+      INDEX`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#create_search_index_statement) statement. * `DROP_TABLE`:
+      [`DROP TABLE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#drop_table_statement) statement. * `DROP_EXTERNAL_TABLE`:
+      [`DROP EXTERNAL TABLE`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#drop_external_table_statement) statement. *
+      `DROP_VIEW`: [`DROP VIEW`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#drop_view_statement) statement. * `DROP_MODEL`:
+      [`DROP MODEL`](/bigquery-ml/docs/reference/standard-sql/bigqueryml-
+      syntax-drop-model) statement. * `DROP_MATERIALIZED_VIEW`: [`DROP
+      MATERIALIZED VIEW`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#drop_materialized_view_statement) statement. *
+      `DROP_FUNCTION` : [`DROP FUNCTION`](/bigquery/docs/reference/standard-
+      sql/data-definition-language#drop_function_statement) statement. *
+      `DROP_TABLE_FUNCTION` : [`DROP TABLE
+      FUNCTION`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#drop_table_function) statement. * `DROP_PROCEDURE`: [`DROP
+      PROCEDURE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#drop_procedure_statement) statement. * `DROP_SEARCH_INDEX`:
+      [`DROP SEARCH INDEX`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#drop_search_index) statement. * `DROP_SCHEMA`:
+      [`DROP SCHEMA`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#drop_schema_statement) statement. * `DROP_SNAPSHOT_TABLE`:
+      [`DROP SNAPSHOT TABLE`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#drop_snapshot_table_statement) statement. *
+      `DROP_ROW_ACCESS_POLICY`: [`DROP [ALL] ROW ACCESS
+      POLICY|POLICIES`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#drop_row_access_policy_statement) statement. * `ALTER_TABLE`:
+      [`ALTER TABLE`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#alter_table_set_options_statement) statement. * `ALTER_VIEW`:
+      [`ALTER VIEW`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#alter_view_set_options_statement) statement. *
+      `ALTER_MATERIALIZED_VIEW`: [`ALTER MATERIALIZED
+      VIEW`](/bigquery/docs/reference/standard-sql/data-definition-
+      language#alter_materialized_view_set_options_statement) statement. *
+      `ALTER_SCHEMA`: [`ALTER SCHEMA`](/bigquery/docs/reference/standard-
+      sql/data-definition-language#aalter_schema_set_options_statement)
+      statement. * `SCRIPT`: [`SCRIPT`](/bigquery/docs/reference/standard-
+      sql/procedural-language). * `TRUNCATE_TABLE`: [`TRUNCATE
+      TABLE`](/bigquery/docs/reference/standard-sql/dml-
+      syntax#truncate_table_statement) statement. * `CREATE_EXTERNAL_TABLE`:
+      [`CREATE EXTERNAL TABLE`](/bigquery/docs/reference/standard-sql/data-
+      definition-language#create_external_table_statement) statement. *
+      `EXPORT_DATA`: [`EXPORT DATA`](/bigquery/docs/reference/standard-
+      sql/other-statements#export_data_statement) statement. * `EXPORT_MODEL`:
+      [`EXPORT MODEL`](/bigquery-ml/docs/reference/standard-sql/bigqueryml-
+      syntax-export-model) statement. * `LOAD_DATA`: [`LOAD
+      DATA`](/bigquery/docs/reference/standard-sql/other-
+      statements#load_data_statement) statement. * `CALL`:
+      [`CALL`](/bigquery/docs/reference/standard-sql/procedural-language#call)
+      statement.
+    timeline: Output only. Describes a timeline of job execution.
+    totalBytesBilled: Output only. If the project is configured to use on-
+      demand pricing, then this field contains the total bytes billed for the
+      job. If the project is configured to use flat-rate pricing, then you are
+      not billed for bytes and this field is informational only.
+    totalBytesProcessed: Output only. Total bytes processed for the job.
+    totalBytesProcessedAccuracy: Output only. For dry-run jobs,
       totalBytesProcessed is an estimate and this field specifies the accuracy
       of the estimate. Possible values can be: UNKNOWN: accuracy of the
       estimate is unknown. PRECISE: estimate is precise. LOWER_BOUND: estimate
       is lower bound of what the query would cost. UPPER_BOUND: estimate is
       upper bound of what the query would cost.
-    totalPartitionsProcessed: [Output only] Total number of partitions
+    totalPartitionsProcessed: Output only. Total number of partitions
       processed from all partitioned tables referenced in the job.
-    totalSlotMs: [Output only] Slot-milliseconds for the job.
-    transferredBytes: [Output-only] Total bytes transferred for cross-cloud
+    totalSlotMs: Output only. Slot-milliseconds for the job.
+    transferredBytes: Output only. Total bytes transferred for cross-cloud
       queries such as Cross Cloud Transfer and CREATE TABLE AS SELECT (CTAS).
-    undeclaredQueryParameters: Standard SQL only: list of undeclared query
-      parameters detected during a dry run validation.
+    undeclaredQueryParameters: Output only. GoogleSQL only: list of undeclared
+      query parameters detected during a dry run validation.
+    vectorSearchStatistics: Output only. Vector Search query specific
+      statistics.
   """
 
   class ReservationUsageValueListEntry(_messages.Message):
-    r"""A ReservationUsageValueListEntry object.
+    r"""Job resource usage breakdown by reservation.
 
     Fields:
-      name: [Output only] Reservation name or "unreserved" for on-demand
-        resources usage.
-      slotMs: [Output only] Slot-milliseconds the job spent in the given
-        reservation.
+      name: Reservation name or "unreserved" for on-demand resources usage.
+      slotMs: Total slot milliseconds used by the reservation for a particular
+        job.
     """
 
     name = _messages.StringField(1)
@@ -3829,53 +4668,64 @@ class JobStatistics2(_messages.Message):
   biEngineStatistics = _messages.MessageField('BiEngineStatistics', 1)
   billingTier = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   cacheHit = _messages.BooleanField(3)
-  ddlAffectedRowAccessPolicyCount = _messages.IntegerField(4)
-  ddlDestinationTable = _messages.MessageField('TableReference', 5)
-  ddlOperationPerformed = _messages.StringField(6)
-  ddlTargetDataset = _messages.MessageField('DatasetReference', 7)
-  ddlTargetRoutine = _messages.MessageField('RoutineReference', 8)
-  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 9)
-  ddlTargetTable = _messages.MessageField('TableReference', 10)
-  dmlStats = _messages.MessageField('DmlStatistics', 11)
-  estimatedBytesProcessed = _messages.IntegerField(12)
-  mlStatistics = _messages.MessageField('MlStatistics', 13)
-  modelTraining = _messages.MessageField('BigQueryModelTraining', 14)
-  modelTrainingCurrentIteration = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  modelTrainingExpectedTotalIteration = _messages.IntegerField(16)
-  numDmlAffectedRows = _messages.IntegerField(17)
-  queryPlan = _messages.MessageField('ExplainQueryStage', 18, repeated=True)
-  referencedRoutines = _messages.MessageField('RoutineReference', 19, repeated=True)
-  referencedTables = _messages.MessageField('TableReference', 20, repeated=True)
-  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 21, repeated=True)
-  schema = _messages.MessageField('TableSchema', 22)
-  searchStatistics = _messages.MessageField('SearchStatistics', 23)
-  sparkStatistics = _messages.MessageField('SparkStatistics', 24)
-  statementType = _messages.StringField(25)
-  timeline = _messages.MessageField('QueryTimelineSample', 26, repeated=True)
-  totalBytesBilled = _messages.IntegerField(27)
-  totalBytesProcessed = _messages.IntegerField(28)
-  totalBytesProcessedAccuracy = _messages.StringField(29)
-  totalPartitionsProcessed = _messages.IntegerField(30)
-  totalSlotMs = _messages.IntegerField(31)
-  transferredBytes = _messages.IntegerField(32)
-  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 33, repeated=True)
+  dclTargetDataset = _messages.MessageField('DatasetReference', 4)
+  dclTargetTable = _messages.MessageField('TableReference', 5)
+  dclTargetView = _messages.MessageField('TableReference', 6)
+  ddlAffectedRowAccessPolicyCount = _messages.IntegerField(7)
+  ddlDestinationTable = _messages.MessageField('TableReference', 8)
+  ddlOperationPerformed = _messages.StringField(9)
+  ddlTargetDataset = _messages.MessageField('DatasetReference', 10)
+  ddlTargetRoutine = _messages.MessageField('RoutineReference', 11)
+  ddlTargetRowAccessPolicy = _messages.MessageField('RowAccessPolicyReference', 12)
+  ddlTargetTable = _messages.MessageField('TableReference', 13)
+  dmlStats = _messages.MessageField('DmlStatistics', 14)
+  estimatedBytesProcessed = _messages.IntegerField(15)
+  exportDataStatistics = _messages.MessageField('ExportDataStatistics', 16)
+  externalServiceCosts = _messages.MessageField('ExternalServiceCost', 17, repeated=True)
+  loadQueryStatistics = _messages.MessageField('LoadQueryStatistics', 18)
+  materializedViewStatistics = _messages.MessageField('MaterializedViewStatistics', 19)
+  metadataCacheStatistics = _messages.MessageField('MetadataCacheStatistics', 20)
+  mlStatistics = _messages.MessageField('MlStatistics', 21)
+  modelTraining = _messages.MessageField('BigQueryModelTraining', 22)
+  modelTrainingCurrentIteration = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  modelTrainingExpectedTotalIteration = _messages.IntegerField(24)
+  numDmlAffectedRows = _messages.IntegerField(25)
+  performanceInsights = _messages.MessageField('PerformanceInsights', 26)
+  queryInfo = _messages.MessageField('QueryInfo', 27)
+  queryPlan = _messages.MessageField('ExplainQueryStage', 28, repeated=True)
+  referencedRoutines = _messages.MessageField('RoutineReference', 29, repeated=True)
+  referencedTables = _messages.MessageField('TableReference', 30, repeated=True)
+  reservationUsage = _messages.MessageField('ReservationUsageValueListEntry', 31, repeated=True)
+  schema = _messages.MessageField('TableSchema', 32)
+  searchStatistics = _messages.MessageField('SearchStatistics', 33)
+  sparkStatistics = _messages.MessageField('SparkStatistics', 34)
+  statementType = _messages.StringField(35)
+  timeline = _messages.MessageField('QueryTimelineSample', 36, repeated=True)
+  totalBytesBilled = _messages.IntegerField(37)
+  totalBytesProcessed = _messages.IntegerField(38)
+  totalBytesProcessedAccuracy = _messages.StringField(39)
+  totalPartitionsProcessed = _messages.IntegerField(40)
+  totalSlotMs = _messages.IntegerField(41)
+  transferredBytes = _messages.IntegerField(42)
+  undeclaredQueryParameters = _messages.MessageField('QueryParameter', 43, repeated=True)
+  vectorSearchStatistics = _messages.MessageField('VectorSearchStatistics', 44)
 
 
 class JobStatistics3(_messages.Message):
-  r"""A JobStatistics3 object.
+  r"""Statistics for a load job.
 
   Fields:
-    badRecords: [Output-only] The number of bad records encountered. Note that
+    badRecords: Output only. The number of bad records encountered. Note that
       if the job has failed because of more bad records encountered than the
       maximum allowed in the load job configuration, then this number can be
       less than the total number of bad records present in the input data.
-    inputFileBytes: [Output-only] Number of bytes of source data in a load
-      job.
-    inputFiles: [Output-only] Number of source files in a load job.
-    outputBytes: [Output-only] Size of the loaded data in bytes. Note that
+    inputFileBytes: Output only. Number of bytes of source data in a load job.
+    inputFiles: Output only. Number of source files in a load job.
+    outputBytes: Output only. Size of the loaded data in bytes. Note that
       while a load job is in the running state, this value may change.
-    outputRows: [Output-only] Number of rows imported in a load job. Note that
+    outputRows: Output only. Number of rows imported in a load job. Note that
       while an import job is in the running state, this value may change.
+    timeline: Output only. Describes a timeline of job execution.
   """
 
   badRecords = _messages.IntegerField(1)
@@ -3883,31 +4733,36 @@ class JobStatistics3(_messages.Message):
   inputFiles = _messages.IntegerField(3)
   outputBytes = _messages.IntegerField(4)
   outputRows = _messages.IntegerField(5)
+  timeline = _messages.MessageField('QueryTimelineSample', 6, repeated=True)
 
 
 class JobStatistics4(_messages.Message):
-  r"""A JobStatistics4 object.
+  r"""Statistics for an extract job.
 
   Fields:
-    destinationUriFileCounts: [Output-only] Number of files per destination
-      URI or URI pattern specified in the extract configuration. These values
-      will be in the same order as the URIs specified in the 'destinationUris'
+    destinationUriFileCounts: Output only. Number of files per destination URI
+      or URI pattern specified in the extract configuration. These values will
+      be in the same order as the URIs specified in the 'destinationUris'
       field.
-    inputBytes: [Output-only] Number of user bytes extracted into the result.
-      This is the byte count as computed by BigQuery for billing purposes.
+    inputBytes: Output only. Number of user bytes extracted into the result.
+      This is the byte count as computed by BigQuery for billing purposes and
+      doesn't have any relationship with the number of actual result bytes
+      extracted in the desired format.
+    timeline: Output only. Describes a timeline of job execution.
   """
 
   destinationUriFileCounts = _messages.IntegerField(1, repeated=True)
   inputBytes = _messages.IntegerField(2)
+  timeline = _messages.MessageField('QueryTimelineSample', 3, repeated=True)
 
 
 class JobStatistics5(_messages.Message):
-  r"""A JobStatistics5 object.
+  r"""Statistics for a copy job.
 
   Fields:
-    copiedLogicalBytes: [Output-only] Number of logical bytes copied to the
+    copiedLogicalBytes: Output only. Number of logical bytes copied to the
       destination table.
-    copiedRows: [Output-only] Number of rows copied to the destination table.
+    copiedRows: Output only. Number of rows copied to the destination table.
   """
 
   copiedLogicalBytes = _messages.IntegerField(1)
@@ -3918,13 +4773,14 @@ class JobStatus(_messages.Message):
   r"""A JobStatus object.
 
   Fields:
-    errorResult: [Output-only] Final error result of the job. If present,
+    errorResult: Output only. Final error result of the job. If present,
       indicates that the job has completed and was unsuccessful.
-    errors: [Output-only] The first errors encountered during the running of
+    errors: Output only. The first errors encountered during the running of
       the job. The final message includes the number of errors that caused the
       process to stop. Errors here do not necessarily mean that the job has
-      completed or was unsuccessful.
-    state: [Output-only] Running state of the job.
+      not completed or was unsuccessful.
+    state: Output only. Running state of the job. Valid states include
+      'PENDING', 'RUNNING', and 'DONE'.
   """
 
   errorResult = _messages.MessageField('ErrorProto', 1)
@@ -3958,10 +4814,10 @@ class JsonObject(_messages.Message):
 
 
 class JsonOptions(_messages.Message):
-  r"""A JsonOptions object.
+  r"""Json Options for load and make external tables.
 
   Fields:
-    encoding: [Optional] The character encoding of the data. The supported
+    encoding: Optional. The character encoding of the data. The supported
       values are UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, and UTF-32LE. The
       default value is UTF-8.
   """
@@ -3970,6 +4826,17 @@ class JsonOptions(_messages.Message):
 
 
 JsonValue = extra_types.JsonValue
+
+
+class LinkedDatasetSource(_messages.Message):
+  r"""A dataset source type which refers to another BigQuery dataset.
+
+  Fields:
+    sourceDataset: The source dataset reference contains project numbers and
+      not project ids.
+  """
+
+  sourceDataset = _messages.MessageField('DatasetReference', 1)
 
 
 class ListModelsResponse(_messages.Message):
@@ -4013,6 +4880,36 @@ class ListRowAccessPoliciesResponse(_messages.Message):
   rowAccessPolicies = _messages.MessageField('RowAccessPolicy', 2, repeated=True)
 
 
+class LoadQueryStatistics(_messages.Message):
+  r"""Statistics for a LOAD query.
+
+  Fields:
+    badRecords: Output only. The number of bad records encountered while
+      processing a LOAD query. Note that if the job has failed because of more
+      bad records encountered than the maximum allowed in the load job
+      configuration, then this number can be less than the total number of bad
+      records present in the input data.
+    bytesTransferred: Output only. This field is deprecated. The number of
+      bytes of source data copied over the network for a `LOAD` query.
+      `transferred_bytes` has the canonical value for physical transferred
+      bytes, which is used for BigQuery Omni billing.
+    inputFileBytes: Output only. Number of bytes of source data in a LOAD
+      query.
+    inputFiles: Output only. Number of source files in a LOAD query.
+    outputBytes: Output only. Size of the loaded data in bytes. Note that
+      while a LOAD query is in the running state, this value may change.
+    outputRows: Output only. Number of rows imported in a LOAD query. Note
+      that while a LOAD query is in the running state, this value may change.
+  """
+
+  badRecords = _messages.IntegerField(1)
+  bytesTransferred = _messages.IntegerField(2)
+  inputFileBytes = _messages.IntegerField(3)
+  inputFiles = _messages.IntegerField(4)
+  outputBytes = _messages.IntegerField(5)
+  outputRows = _messages.IntegerField(6)
+
+
 class LocationMetadata(_messages.Message):
   r"""BigQuery-specific metadata about a location. This will be set on
   google.cloud.location.Location.metadata in Cloud Location API responses.
@@ -4026,23 +4923,94 @@ class LocationMetadata(_messages.Message):
   legacyLocationId = _messages.StringField(1)
 
 
-class MaterializedViewDefinition(_messages.Message):
-  r"""A MaterializedViewDefinition object.
+class MaterializedView(_messages.Message):
+  r"""A materialized view considered for a query job.
+
+  Enums:
+    RejectedReasonValueValuesEnum: If present, specifies the reason why the
+      materialized view was not chosen for the query.
 
   Fields:
-    allowNonIncrementalDefinition: [Optional] Allow non incremental
-      materialized view definition. The default value is "false".
-    enableRefresh: [Optional] [TrustedTester] Enable automatic refresh of the
-      materialized view when the base table is updated. The default value is
-      "true".
-    lastRefreshTime: [Output-only] [TrustedTester] The time when this
-      materialized view was last modified, in milliseconds since the epoch.
+    chosen: Whether the materialized view is chosen for the query. A
+      materialized view can be chosen to rewrite multiple parts of the same
+      query. If a materialized view is chosen to rewrite any part of the
+      query, then this field is true, even if the materialized view was not
+      chosen to rewrite others parts.
+    estimatedBytesSaved: If present, specifies a best-effort estimation of the
+      bytes saved by using the materialized view rather than its base tables.
+    rejectedReason: If present, specifies the reason why the materialized view
+      was not chosen for the query.
+    tableReference: The candidate materialized view.
+  """
+
+  class RejectedReasonValueValuesEnum(_messages.Enum):
+    r"""If present, specifies the reason why the materialized view was not
+    chosen for the query.
+
+    Values:
+      REJECTED_REASON_UNSPECIFIED: Default unspecified value.
+      NO_DATA: View has no cached data because it has not refreshed yet.
+      COST: The estimated cost of the view is more expensive than another view
+        or the base table. Note: The estimate cost might not match the billed
+        cost.
+      BASE_TABLE_TRUNCATED: View has no cached data because a base table is
+        truncated.
+      BASE_TABLE_DATA_CHANGE: View is invalidated because of a data change in
+        one or more base tables. It could be any recent change if the
+        [`max_staleness`](https://cloud.google.com/bigquery/docs/materialized-
+        views-create#max_staleness) option is not set for the view, or
+        otherwise any change outside of the staleness window.
+      BASE_TABLE_PARTITION_EXPIRATION_CHANGE: View is invalidated because a
+        base table's partition expiration has changed.
+      BASE_TABLE_EXPIRED_PARTITION: View is invalidated because a base table's
+        partition has expired.
+      BASE_TABLE_INCOMPATIBLE_METADATA_CHANGE: View is invalidated because a
+        base table has an incompatible metadata change.
+      TIME_ZONE: View is invalidated because it was refreshed with a time zone
+        other than that of the current job.
+      OUT_OF_TIME_TRAVEL_WINDOW: View is outside the time travel window.
+      BASE_TABLE_FINE_GRAINED_SECURITY_POLICY: View is inaccessible to the
+        user because of a fine-grained security policy on one of its base
+        tables.
+      BASE_TABLE_TOO_STALE: One of the view's base tables is too stale. For
+        example, the cached metadata of a biglake table needs to be updated.
+    """
+    REJECTED_REASON_UNSPECIFIED = 0
+    NO_DATA = 1
+    COST = 2
+    BASE_TABLE_TRUNCATED = 3
+    BASE_TABLE_DATA_CHANGE = 4
+    BASE_TABLE_PARTITION_EXPIRATION_CHANGE = 5
+    BASE_TABLE_EXPIRED_PARTITION = 6
+    BASE_TABLE_INCOMPATIBLE_METADATA_CHANGE = 7
+    TIME_ZONE = 8
+    OUT_OF_TIME_TRAVEL_WINDOW = 9
+    BASE_TABLE_FINE_GRAINED_SECURITY_POLICY = 10
+    BASE_TABLE_TOO_STALE = 11
+
+  chosen = _messages.BooleanField(1)
+  estimatedBytesSaved = _messages.IntegerField(2)
+  rejectedReason = _messages.EnumField('RejectedReasonValueValuesEnum', 3)
+  tableReference = _messages.MessageField('TableReference', 4)
+
+
+class MaterializedViewDefinition(_messages.Message):
+  r"""Definition and configuration of a materialized view.
+
+  Fields:
+    allowNonIncrementalDefinition: Optional. This option declares authors
+      intention to construct a materialized view that will not be refreshed
+      incrementally.
+    enableRefresh: Optional. Enable automatic refresh of the materialized view
+      when the base table is updated. The default value is "true".
+    lastRefreshTime: Output only. The time when this materialized view was
+      last refreshed, in milliseconds since the epoch.
     maxStaleness: [Optional] Max staleness of data that could be returned when
       materizlized view is queried (formatted as Google SQL Interval type).
-    query: [Required] A query whose result is persisted.
-    refreshIntervalMs: [Optional] [TrustedTester] The maximum frequency at
-      which this materialized view will be refreshed. The default value is
-      "1800000" (30 minutes).
+    query: Required. A query whose results are persisted.
+    refreshIntervalMs: Optional. The maximum frequency at which this
+      materialized view will be refreshed. The default value is "1800000" (30
+      minutes).
   """
 
   allowNonIncrementalDefinition = _messages.BooleanField(1)
@@ -4053,18 +5021,141 @@ class MaterializedViewDefinition(_messages.Message):
   refreshIntervalMs = _messages.IntegerField(6)
 
 
-class MlStatistics(_messages.Message):
-  r"""A MlStatistics object.
+class MaterializedViewStatistics(_messages.Message):
+  r"""Statistics of materialized views considered in a query job.
 
   Fields:
-    iterationResults: Results for all completed iterations.
-    maxIterations: Maximum number of iterations specified as max_iterations in
-      the 'CREATE MODEL' query. The actual number of iterations may be less
-      than this number due to early stop.
+    materializedView: Materialized views considered for the query job. Only
+      certain materialized views are used. For a detailed list, see the child
+      message. If many materialized views are considered, then the list might
+      be incomplete.
   """
 
-  iterationResults = _messages.MessageField('IterationResult', 1, repeated=True)
-  maxIterations = _messages.IntegerField(2)
+  materializedView = _messages.MessageField('MaterializedView', 1, repeated=True)
+
+
+class MaterializedViewStatus(_messages.Message):
+  r"""Status of a materialized view. The last refresh timestamp status is
+  omitted here, but is present in the MaterializedViewDefinition message.
+
+  Fields:
+    lastRefreshStatus: Output only. Error result of the last automatic
+      refresh. If present, indicates that the last automatic refresh was
+      unsuccessful.
+    refreshWatermark: Output only. Refresh watermark of materialized view. The
+      base tables' data were collected into the materialized view cache until
+      this time.
+  """
+
+  lastRefreshStatus = _messages.MessageField('ErrorProto', 1)
+  refreshWatermark = _messages.StringField(2)
+
+
+class MetadataCacheStatistics(_messages.Message):
+  r"""Statistics for metadata caching in BigLake tables.
+
+  Fields:
+    tableMetadataCacheUsage: Set for the Metadata caching eligible tables
+      referenced in the query.
+  """
+
+  tableMetadataCacheUsage = _messages.MessageField('TableMetadataCacheUsage', 1, repeated=True)
+
+
+class MlStatistics(_messages.Message):
+  r"""Job statistics specific to a BigQuery ML training job.
+
+  Enums:
+    ModelTypeValueValuesEnum: Output only. The type of the model that is being
+      trained.
+    TrainingTypeValueValuesEnum: Output only. Training type of the job.
+
+  Fields:
+    hparamTrials: Output only. Trials of a [hyperparameter tuning
+      job](/bigquery-ml/docs/reference/standard-sql/bigqueryml-syntax-hp-
+      tuning-overview) sorted by trial_id.
+    iterationResults: Results for all completed iterations. Empty for
+      [hyperparameter tuning jobs](/bigquery-ml/docs/reference/standard-
+      sql/bigqueryml-syntax-hp-tuning-overview).
+    maxIterations: Output only. Maximum number of iterations specified as
+      max_iterations in the 'CREATE MODEL' query. The actual number of
+      iterations may be less than this number due to early stop.
+    modelType: Output only. The type of the model that is being trained.
+    trainingType: Output only. Training type of the job.
+  """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the model that is being trained.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: Default value.
+      LINEAR_REGRESSION: Linear regression model.
+      LOGISTIC_REGRESSION: Logistic regression based classification model.
+      KMEANS: K-means clustering model.
+      MATRIX_FACTORIZATION: Matrix factorization model.
+      DNN_CLASSIFIER: DNN classifier model.
+      TENSORFLOW: An imported TensorFlow model.
+      DNN_REGRESSOR: DNN regressor model.
+      XGBOOST: An imported XGBoost model.
+      BOOSTED_TREE_REGRESSOR: Boosted tree regressor model.
+      BOOSTED_TREE_CLASSIFIER: Boosted tree classifier model.
+      ARIMA: ARIMA model.
+      AUTOML_REGRESSOR: AutoML Tables regression model.
+      AUTOML_CLASSIFIER: AutoML Tables classification model.
+      PCA: Prinpical Component Analysis model.
+      DNN_LINEAR_COMBINED_CLASSIFIER: Wide-and-deep classifier model.
+      DNN_LINEAR_COMBINED_REGRESSOR: Wide-and-deep regressor model.
+      AUTOENCODER: Autoencoder model.
+      ARIMA_PLUS: New name for the ARIMA model.
+      ARIMA_PLUS_XREG: ARIMA with external regressors.
+      RANDOM_FOREST_REGRESSOR: Random forest regressor model.
+      RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
+      TENSORFLOW_LITE: An imported TensorFlow Lite model.
+      ONNX: An imported ONNX model.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    LINEAR_REGRESSION = 1
+    LOGISTIC_REGRESSION = 2
+    KMEANS = 3
+    MATRIX_FACTORIZATION = 4
+    DNN_CLASSIFIER = 5
+    TENSORFLOW = 6
+    DNN_REGRESSOR = 7
+    XGBOOST = 8
+    BOOSTED_TREE_REGRESSOR = 9
+    BOOSTED_TREE_CLASSIFIER = 10
+    ARIMA = 11
+    AUTOML_REGRESSOR = 12
+    AUTOML_CLASSIFIER = 13
+    PCA = 14
+    DNN_LINEAR_COMBINED_CLASSIFIER = 15
+    DNN_LINEAR_COMBINED_REGRESSOR = 16
+    AUTOENCODER = 17
+    ARIMA_PLUS = 18
+    ARIMA_PLUS_XREG = 19
+    RANDOM_FOREST_REGRESSOR = 20
+    RANDOM_FOREST_CLASSIFIER = 21
+    TENSORFLOW_LITE = 22
+    ONNX = 23
+
+  class TrainingTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Training type of the job.
+
+    Values:
+      TRAINING_TYPE_UNSPECIFIED: Unspecified training type.
+      SINGLE_TRAINING: Single training with fixed parameter space.
+      HPARAM_TUNING: [Hyperparameter tuning training](/bigquery-
+        ml/docs/reference/standard-sql/bigqueryml-syntax-hp-tuning-overview).
+    """
+    TRAINING_TYPE_UNSPECIFIED = 0
+    SINGLE_TRAINING = 1
+    HPARAM_TUNING = 2
+
+  hparamTrials = _messages.MessageField('HparamTuningTrial', 1, repeated=True)
+  iterationResults = _messages.MessageField('IterationResult', 2, repeated=True)
+  maxIterations = _messages.IntegerField(3)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
+  trainingType = _messages.EnumField('TrainingTypeValueValuesEnum', 5)
 
 
 class Model(_messages.Message):
@@ -4253,26 +5344,15 @@ class ModelDefinition(_messages.Message):
   r"""A ModelDefinition object.
 
   Messages:
-    ModelOptionsValue: [Output-only, Beta] Model options used for the first
-      training run. These options are immutable for subsequent training runs.
-      Default values are used for any options not specified in the input
-      query.
+    ModelOptionsValue: Deprecated.
 
   Fields:
-    modelOptions: [Output-only, Beta] Model options used for the first
-      training run. These options are immutable for subsequent training runs.
-      Default values are used for any options not specified in the input
-      query.
-    trainingRuns: [Output-only, Beta] Information about ml training runs, each
-      training run comprises of multiple iterations and there may be multiple
-      training runs for the model if warm start is used or if a user decides
-      to continue a previously cancelled query.
+    modelOptions: Deprecated.
+    trainingRuns: Deprecated.
   """
 
   class ModelOptionsValue(_messages.Message):
-    r"""[Output-only, Beta] Model options used for the first training run.
-    These options are immutable for subsequent training runs. Default values
-    are used for any options not specified in the input query.
+    r"""Deprecated.
 
     Fields:
       labels: A string attribute.
@@ -4288,8 +5368,21 @@ class ModelDefinition(_messages.Message):
   trainingRuns = _messages.MessageField('BqmlTrainingRun', 2, repeated=True)
 
 
+class ModelExtractOptions(_messages.Message):
+  r"""Options related to model extraction.
+
+  Fields:
+    trialId: The 1-based ID of the trial to be exported from a hyperparameter
+      tuning model. If not specified, the trial with id = [Model](/bigquery/do
+      cs/reference/rest/v2/models#resource:-model).defaultTrialId is exported.
+      This field is ignored for models not trained with hyperparameter tuning.
+  """
+
+  trialId = _messages.IntegerField(1)
+
+
 class ModelReference(_messages.Message):
-  r"""A ModelReference object.
+  r"""Id path of a model.
 
   Fields:
     datasetId: Required. The ID of the dataset containing this model.
@@ -4317,17 +5410,37 @@ class MultiClassClassificationMetrics(_messages.Message):
 
 
 class ParquetOptions(_messages.Message):
-  r"""A ParquetOptions object.
+  r"""Parquet Options for load and make external tables.
 
   Fields:
-    enableListInference: [Optional] Indicates whether to use schema inference
+    enableListInference: Optional. Indicates whether to use schema inference
       specifically for Parquet LIST logical type.
-    enumAsString: [Optional] Indicates whether to infer Parquet ENUM logical
+    enumAsString: Optional. Indicates whether to infer Parquet ENUM logical
       type as STRING instead of BYTES by default.
   """
 
   enableListInference = _messages.BooleanField(1)
   enumAsString = _messages.BooleanField(2)
+
+
+class PerformanceInsights(_messages.Message):
+  r"""Performance insights for the job.
+
+  Fields:
+    avgPreviousExecutionMs: Output only. Average execution ms of previous
+      runs. Indicates the job ran slow compared to previous executions. To
+      find previous executions, use INFORMATION_SCHEMA tables and filter jobs
+      with same query hash.
+    stagePerformanceChangeInsights: Output only. Query stage performance
+      insights compared to previous runs, for diagnosing performance
+      regression.
+    stagePerformanceStandaloneInsights: Output only. Standalone query stage
+      performance insights, for exploring potential improvements.
+  """
+
+  avgPreviousExecutionMs = _messages.IntegerField(1)
+  stagePerformanceChangeInsights = _messages.MessageField('StagePerformanceChangeInsight', 2, repeated=True)
+  stagePerformanceStandaloneInsights = _messages.MessageField('StagePerformanceStandaloneInsight', 3, repeated=True)
 
 
 class Policy(_messages.Message):
@@ -4441,24 +5554,27 @@ class PrivacyPolicy(_messages.Message):
 
 
 class ProjectList(_messages.Message):
-  r"""A ProjectList object.
+  r"""Response object of ListProjects
 
   Messages:
-    ProjectsValueListEntry: A ProjectsValueListEntry object.
+    ProjectsValueListEntry: Information about a single project.
 
   Fields:
-    etag: A hash of the page of results
-    kind: The type of list.
-    nextPageToken: A token to request the next page of results.
-    projects: Projects to which you have at least READ access.
-    totalItems: The total number of projects in the list.
+    etag: A hash of the page of results.
+    kind: The resource type of the response.
+    nextPageToken: Use this token to request the next page of results.
+    projects: Projects to which the user has at least READ access.
+    totalItems: The total number of projects in the page. A wrapper is used
+      here because the field should still be in the response when the value is
+      0.
   """
 
   class ProjectsValueListEntry(_messages.Message):
-    r"""A ProjectsValueListEntry object.
+    r"""Information about a single project.
 
     Fields:
-      friendlyName: A descriptive name for this project.
+      friendlyName: A descriptive name for this project. A wrapper is used
+        here because friendlyName can be set to the empty string.
       id: An opaque ID of this project.
       kind: The resource type.
       numericId: The numeric ID of this project.
@@ -4467,7 +5583,7 @@ class ProjectList(_messages.Message):
 
     friendlyName = _messages.StringField(1)
     id = _messages.StringField(2)
-    kind = _messages.StringField(3, default='bigquery#project')
+    kind = _messages.StringField(3)
     numericId = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
     projectReference = _messages.MessageField('ProjectReference', 5)
 
@@ -4479,24 +5595,63 @@ class ProjectList(_messages.Message):
 
 
 class ProjectReference(_messages.Message):
-  r"""A ProjectReference object.
+  r"""A unique reference to a project.
 
   Fields:
-    projectId: [Required] ID of the project. Can be either the numeric ID or
+    projectId: Required. ID of the project. Can be either the numeric ID or
       the assigned ID of the project.
   """
 
   projectId = _messages.StringField(1)
 
 
-class QueryParameter(_messages.Message):
-  r"""A QueryParameter object.
+class QueryInfo(_messages.Message):
+  r"""Query optimization information for a QUERY job.
+
+  Messages:
+    OptimizationDetailsValue: Output only. Information about query
+      optimizations.
 
   Fields:
-    name: [Optional] If unset, this is a positional parameter. Otherwise,
+    optimizationDetails: Output only. Information about query optimizations.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OptimizationDetailsValue(_messages.Message):
+    r"""Output only. Information about query optimizations.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        OptimizationDetailsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OptimizationDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  optimizationDetails = _messages.MessageField('OptimizationDetailsValue', 1)
+
+
+class QueryParameter(_messages.Message):
+  r"""A parameter given to a query.
+
+  Fields:
+    name: Optional. If unset, this is a positional parameter. Otherwise,
       should be unique within a query.
-    parameterType: [Required] The type of this parameter.
-    parameterValue: [Required] The value of this parameter.
+    parameterType: Required. The type of this parameter.
+    parameterValue: Required. The value of this parameter.
   """
 
   name = _messages.StringField(1)
@@ -4505,28 +5660,28 @@ class QueryParameter(_messages.Message):
 
 
 class QueryParameterType(_messages.Message):
-  r"""A QueryParameterType object.
+  r"""The type of a query parameter.
 
   Messages:
-    StructTypesValueListEntry: A StructTypesValueListEntry object.
+    StructTypesValueListEntry: The type of a struct parameter.
 
   Fields:
-    arrayType: [Optional] The type of the array's elements, if this is an
+    arrayType: Optional. The type of the array's elements, if this is an
       array.
-    rangeElementType: [Optional] The element type of the range, if this is a
+    rangeElementType: Optional. The element type of the range, if this is a
       range.
-    structTypes: [Optional] The types of the fields of this struct, in order,
+    structTypes: Optional. The types of the fields of this struct, in order,
       if this is a struct.
-    type: [Required] The top level type of this field.
+    type: Required. The top level type of this field.
   """
 
   class StructTypesValueListEntry(_messages.Message):
-    r"""A StructTypesValueListEntry object.
+    r"""The type of a struct parameter.
 
     Fields:
-      description: [Optional] Human-oriented description of the field.
-      name: [Optional] The name of this field.
-      type: [Required] The type of this field.
+      description: Optional. Human-oriented description of the field.
+      name: Optional. The name of this field.
+      type: Required. The type of this field.
     """
 
     description = _messages.StringField(1)
@@ -4540,36 +5695,21 @@ class QueryParameterType(_messages.Message):
 
 
 class QueryParameterValue(_messages.Message):
-  r"""A QueryParameterValue object.
+  r"""The value of a query parameter.
 
   Messages:
-    RangeValueValue: [Optional] The range value, if this is a range type.
-    StructValuesValue: [Optional] The struct field values, in order of the
-      struct type's declaration.
+    StructValuesValue: The struct field values.
 
   Fields:
-    arrayValues: [Optional] The array values, if this is an array type.
-    rangeValue: [Optional] The range value, if this is a range type.
-    structValues: [Optional] The struct field values, in order of the struct
-      type's declaration.
-    value: [Optional] The value of this value, if a simple scalar type.
+    arrayValues: Optional. The array values, if this is an array type.
+    rangeValue: Optional. The range value, if this is a range type.
+    structValues: The struct field values.
+    value: Optional. The value of this value, if a simple scalar type.
   """
-
-  class RangeValueValue(_messages.Message):
-    r"""[Optional] The range value, if this is a range type.
-
-    Fields:
-      end: A QueryParameterValue attribute.
-      start: A QueryParameterValue attribute.
-    """
-
-    end = _messages.MessageField('QueryParameterValue', 1)
-    start = _messages.MessageField('QueryParameterValue', 2)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StructValuesValue(_messages.Message):
-    r"""[Optional] The struct field values, in order of the struct type's
-    declaration.
+    r"""The struct field values.
 
     Messages:
       AdditionalProperty: An additional property for a StructValuesValue
@@ -4593,115 +5733,148 @@ class QueryParameterValue(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   arrayValues = _messages.MessageField('QueryParameterValue', 1, repeated=True)
-  rangeValue = _messages.MessageField('RangeValueValue', 2)
+  rangeValue = _messages.MessageField('RangeValue', 2)
   structValues = _messages.MessageField('StructValuesValue', 3)
   value = _messages.StringField(4)
 
 
 class QueryRequest(_messages.Message):
-  r"""A QueryRequest object.
+  r"""Describes the format of the jobs.query request.
+
+  Enums:
+    JobCreationModeValueValuesEnum: Optional. If not set, jobs are always
+      required. If set, the query request will follow the behavior described
+      JobCreationMode. This feature is not yet available. Jobs will always be
+      created.
 
   Messages:
-    LabelsValue: The labels associated with this job. You can use these to
-      organize and group your jobs. Label keys and values can be no longer
-      than 63 characters, can only contain lowercase letters, numeric
-      characters, underscores and dashes. International characters are
-      allowed. Label values are optional. Label keys must start with a letter
-      and each label in the list must have a different key.
+    LabelsValue: Optional. The labels associated with this query. Labels can
+      be used to organize and group query jobs. Label keys and values can be
+      no longer than 63 characters, can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. Label keys must start with a letter and each label in the list
+      must have a different key.
 
   Fields:
-    connectionProperties: Connection properties.
+    connectionProperties: Optional. Connection properties which can modify the
+      query behavior.
     continuous: [Optional] Specifies whether the query should be executed as a
       continuous query. The default value is false.
-    createSession: If true, creates a new session, where session id will be a
-      server generated random id. If false, runs query with an existing
-      session_id passed in ConnectionProperty, otherwise runs query in non-
-      session mode.
-    defaultDataset: [Optional] Specifies the default datasetId and projectId
-      to assume for any unqualified table names in the query. If not set, all
+    createSession: Optional. If true, creates a new session using a randomly
+      generated session_id. If false, runs query with an existing session_id
+      passed in ConnectionProperty, otherwise runs query in non-session mode.
+      The session location will be set to QueryRequest.location if it is
+      present, otherwise it's set to the default location based on existing
+      routing logic.
+    defaultDataset: Optional. Specifies the default datasetId and projectId to
+      assume for any unqualified table names in the query. If not set, all
       table names in the query string must be qualified in the format
       'datasetId.tableId'.
-    dryRun: [Optional] If set to true, BigQuery doesn't run the job. Instead,
+    dryRun: Optional. If set to true, BigQuery doesn't run the job. Instead,
       if the query is valid, BigQuery returns statistics about the job such as
       how many bytes would be processed. If the query is invalid, an error
       returns. The default value is false.
+    formatOptions: Optional. Output format adjustments.
     jobCreationMode: Optional. If not set, jobs are always required. If set,
       the query request will follow the behavior described JobCreationMode.
       This feature is not yet available. Jobs will always be created.
     kind: The resource type of the request.
-    labels: The labels associated with this job. You can use these to organize
-      and group your jobs. Label keys and values can be no longer than 63
-      characters, can only contain lowercase letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
-      values are optional. Label keys must start with a letter and each label
-      in the list must have a different key.
+    labels: Optional. The labels associated with this query. Labels can be
+      used to organize and group query jobs. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label keys must start with a letter and each label in the list
+      must have a different key.
     location: The geographic location where the job should run. See details at
       https://cloud.google.com/bigquery/docs/locations#specifying_your_locatio
       n.
-    maxResults: [Optional] The maximum number of rows of data to return per
+    maxResults: Optional. The maximum number of rows of data to return per
       page of results. Setting this flag to a small value such as 1000 and
       then paging through results might improve reliability when the query
       result set is large. In addition to this limit, responses are also
       limited to 10 MB. By default, there is no maximum row count, and only
       the byte limit applies.
-    maximumBytesBilled: [Optional] Limits the bytes billed for this job.
-      Queries that will have bytes billed beyond this limit will fail (without
-      incurring a charge). If unspecified, this will be set to your project
-      default.
-    parameterMode: Standard SQL only. Set to POSITIONAL to use positional (?)
+    maximumBytesBilled: Optional. Limits the bytes billed for this query.
+      Queries with bytes billed above this limit will fail (without incurring
+      a charge). If unspecified, the project default is used.
+    parameterMode: GoogleSQL only. Set to POSITIONAL to use positional (?)
       query parameters or to NAMED to use named (@myparam) query parameters in
       this query.
-    preserveNulls: [Deprecated] This property is deprecated.
-    query: [Required] A query string, following the BigQuery query syntax, of
-      the query to execute. Example: "SELECT count(f1) FROM
-      [myProjectId:myDatasetId.myTableId]".
-    queryParameters: Query parameters for Standard SQL queries.
-    requestId: A unique user provided identifier to ensure idempotent behavior
-      for queries. Note that this is different from the job_id. It has the
-      following properties: 1. It is case-sensitive, limited to up to 36 ASCII
-      characters. A UUID is recommended. 2. Read only queries can ignore this
-      token since they are nullipotent by definition. 3. For the purposes of
-      idempotency ensured by the request_id, a request is considered duplicate
-      of another only if they have the same request_id and are actually
-      duplicates. When determining whether a request is a duplicate of the
-      previous request, all parameters in the request that may affect the
-      behavior are considered. For example, query, connection_properties,
-      query_parameters, use_legacy_sql are parameters that affect the result
-      and are considered when determining whether a request is a duplicate,
-      but properties like timeout_ms don't affect the result and are thus not
-      considered. Dry run query requests are never considered duplicate of
-      another request. 4. When a duplicate mutating query request is detected,
-      it returns: a. the results of the mutation if it completes successfully
-      within the timeout. b. the running operation if it is still in progress
-      at the end of the timeout. 5. Its lifetime is limited to 15 minutes. In
-      other words, if two requests are sent with the same request_id, but more
-      than 15 minutes apart, idempotency is not guaranteed.
-    timeoutMs: [Optional] How long to wait for the query to complete, in
-      milliseconds, before the request times out and returns. Note that this
-      is only a timeout for the request, not the query. If the query takes
-      longer to run than the timeout value, the call returns without any
-      results and with the 'jobComplete' flag set to false. You can call
-      GetQueryResults() to wait for the query to complete and read the
-      results. The default value is 10000 milliseconds (10 seconds).
+    preserveNulls: This property is deprecated.
+    query: Required. A query string to execute, using Google Standard SQL or
+      legacy SQL syntax. Example: "SELECT COUNT(f1) FROM
+      myProjectId.myDatasetId.myTableId".
+    queryParameters: Query parameters for GoogleSQL queries.
+    requestId: Optional. A unique user provided identifier to ensure
+      idempotent behavior for queries. Note that this is different from the
+      job_id. It has the following properties: 1. It is case-sensitive,
+      limited to up to 36 ASCII characters. A UUID is recommended. 2. Read
+      only queries can ignore this token since they are nullipotent by
+      definition. 3. For the purposes of idempotency ensured by the
+      request_id, a request is considered duplicate of another only if they
+      have the same request_id and are actually duplicates. When determining
+      whether a request is a duplicate of another request, all parameters in
+      the request that may affect the result are considered. For example,
+      query, connection_properties, query_parameters, use_legacy_sql are
+      parameters that affect the result and are considered when determining
+      whether a request is a duplicate, but properties like timeout_ms don't
+      affect the result and are thus not considered. Dry run query requests
+      are never considered duplicate of another request. 4. When a duplicate
+      mutating query request is detected, it returns: a. the results of the
+      mutation if it completes successfully within the timeout. b. the running
+      operation if it is still in progress at the end of the timeout. 5. Its
+      lifetime is limited to 15 minutes. In other words, if two requests are
+      sent with the same request_id, but more than 15 minutes apart,
+      idempotency is not guaranteed.
+    timeoutMs: Optional. Optional: Specifies the maximum amount of time, in
+      milliseconds, that the client is willing to wait for the query to
+      complete. By default, this limit is 10 seconds (10,000 milliseconds). If
+      the query is complete, the jobComplete field in the response is true. If
+      the query has not yet completed, jobComplete is false. You can request a
+      longer timeout period in the timeoutMs field. However, the call is not
+      guaranteed to wait for the specified timeout; it typically returns after
+      around 200 seconds (200,000 milliseconds), even if the query is not
+      complete. If jobComplete is false, you can continue to wait for the
+      query to complete by calling the getQueryResults method until the
+      jobComplete field in the getQueryResults response is true.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL dialect for
       this query. The default value is true. If set to false, the query will
-      use BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
+      use BigQuery's GoogleSQL: https://cloud.google.com/bigquery/sql-
       reference/ When useLegacySql is set to false, the value of
       flattenResults is ignored; query will be run as if flattenResults is
       false.
-    useQueryCache: [Optional] Whether to look for the result in the query
+    useQueryCache: Optional. Whether to look for the result in the query
       cache. The query cache is a best-effort cache that will be flushed
       whenever tables in the query are modified. The default value is true.
   """
 
+  class JobCreationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. If not set, jobs are always required. If set, the query
+    request will follow the behavior described JobCreationMode. This feature
+    is not yet available. Jobs will always be created.
+
+    Values:
+      JOB_CREATION_MODE_UNSPECIFIED: If unspecified JOB_CREATION_REQUIRED is
+        the default.
+      JOB_CREATION_REQUIRED: Default. Job creation is always required.
+      JOB_CREATION_OPTIONAL: Job creation is optional. Returning immediate
+        results is prioritized. BigQuery will automatically determine if a Job
+        needs to be created. The conditions under which BigQuery can decide to
+        not create a Job are subject to change. If Job creation is required,
+        JOB_CREATION_REQUIRED mode should be used, which is the default.
+    """
+    JOB_CREATION_MODE_UNSPECIFIED = 0
+    JOB_CREATION_REQUIRED = 1
+    JOB_CREATION_OPTIONAL = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""The labels associated with this job. You can use these to organize and
-    group your jobs. Label keys and values can be no longer than 63
-    characters, can only contain lowercase letters, numeric characters,
-    underscores and dashes. International characters are allowed. Label values
-    are optional. Label keys must start with a letter and each label in the
-    list must have a different key.
+    r"""Optional. The labels associated with this query. Labels can be used to
+    organize and group query jobs. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. Label keys
+    must start with a letter and each label in the list must have a different
+    key.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -4728,20 +5901,21 @@ class QueryRequest(_messages.Message):
   createSession = _messages.BooleanField(3)
   defaultDataset = _messages.MessageField('DatasetReference', 4)
   dryRun = _messages.BooleanField(5)
-  jobCreationMode = _messages.StringField(6)
-  kind = _messages.StringField(7, default='bigquery#queryRequest')
-  labels = _messages.MessageField('LabelsValue', 8)
-  location = _messages.StringField(9)
-  maxResults = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
-  maximumBytesBilled = _messages.IntegerField(11)
-  parameterMode = _messages.StringField(12)
-  preserveNulls = _messages.BooleanField(13)
-  query = _messages.StringField(14)
-  queryParameters = _messages.MessageField('QueryParameter', 15, repeated=True)
-  requestId = _messages.StringField(16)
-  timeoutMs = _messages.IntegerField(17, variant=_messages.Variant.UINT32)
-  useLegacySql = _messages.BooleanField(18, default=True)
-  useQueryCache = _messages.BooleanField(19, default=True)
+  formatOptions = _messages.MessageField('DataFormatOptions', 6)
+  jobCreationMode = _messages.EnumField('JobCreationModeValueValuesEnum', 7)
+  kind = _messages.StringField(8, default='bigquery#queryRequest')
+  labels = _messages.MessageField('LabelsValue', 9)
+  location = _messages.StringField(10)
+  maxResults = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  maximumBytesBilled = _messages.IntegerField(12)
+  parameterMode = _messages.StringField(13)
+  preserveNulls = _messages.BooleanField(14)
+  query = _messages.StringField(15)
+  queryParameters = _messages.MessageField('QueryParameter', 16, repeated=True)
+  requestId = _messages.StringField(17)
+  timeoutMs = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
+  useLegacySql = _messages.BooleanField(19, default=True)
+  useQueryCache = _messages.BooleanField(20, default=True)
 
 
 class QueryResponse(_messages.Message):
@@ -4749,12 +5923,14 @@ class QueryResponse(_messages.Message):
 
   Fields:
     cacheHit: Whether the query result was fetched from the query cache.
-    dmlStats: [Output-only] Detailed statistics for DML statements Present
-      only for DML statements INSERT, UPDATE, DELETE or TRUNCATE.
-    errors: [Output-only] The first errors or warnings encountered during the
+    dmlStats: Output only. Detailed statistics for DML statements INSERT,
+      UPDATE, DELETE, MERGE or TRUNCATE.
+    errors: Output only. The first errors or warnings encountered during the
       running of the job. The final message includes the number of errors that
       caused the process to stop. Errors here do not necessarily mean that the
-      job has completed or was unsuccessful.
+      job has completed or was unsuccessful. For more information about error
+      messages, see [Error
+      messages](https://cloud.google.com/bigquery/docs/error-messages).
     jobComplete: Whether the query has completed or not. If rows or totalRows
       are present, this will always be true. If this is false, totalRows will
       not be available.
@@ -4771,9 +5947,14 @@ class QueryResponse(_messages.Message):
       subsequent pages can be fetched via the same mechanism
       (GetQueryResults).
     kind: The resource type.
-    numDmlAffectedRows: [Output-only] The number of rows affected by a DML
+    numDmlAffectedRows: Output only. The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
-    pageToken: A token used for paging results.
+    pageToken: A token used for paging results. A non-empty token indicates
+      that additional results are available. To see additional results, query
+      the [`jobs.getQueryResults`](https://cloud.google.com/bigquery/docs/refe
+      rence/rest/v2/jobs/getQueryResults) method. For more information, see
+      [Paging through table
+      data](https://cloud.google.com/bigquery/docs/paging-results).
     queryId: Query ID for the completed query. This ID will be auto-generated.
       This field is not yet available and it is currently not guaranteed to be
       populated.
@@ -4782,8 +5963,8 @@ class QueryResponse(_messages.Message):
       GetQueryResults and specify the jobReference returned above.
     schema: The schema of the results. Present only when the query completes
       successfully.
-    sessionInfo: [Output-only] [Preview] Information of the session if this
-      job is part of one.
+    sessionInfo: Output only. Information of the session if this job is part
+      of one.
     totalBytesProcessed: The total number of bytes processed for this query.
       If this query was a dry run, this is the number of bytes that would be
       processed if the query were run.
@@ -4796,7 +5977,7 @@ class QueryResponse(_messages.Message):
   dmlStats = _messages.MessageField('DmlStatistics', 2)
   errors = _messages.MessageField('ErrorProto', 3, repeated=True)
   jobComplete = _messages.BooleanField(4)
-  jobCreationReason = _messages.MessageField('extra_types.JsonValue', 5)
+  jobCreationReason = _messages.MessageField('JobCreationReason', 5)
   jobReference = _messages.MessageField('JobReference', 6)
   kind = _messages.StringField(7, default='bigquery#queryResponse')
   numDmlAffectedRows = _messages.IntegerField(8)
@@ -4810,18 +5991,17 @@ class QueryResponse(_messages.Message):
 
 
 class QueryTimelineSample(_messages.Message):
-  r"""A QueryTimelineSample object.
+  r"""Summary of the state of query execution at a given time.
 
   Fields:
-    activeUnits: Total number of units currently being processed by workers.
-      This does not correspond directly to slot usage. This is the largest
-      value observed since the last sample.
+    activeUnits: Total number of active workers. This does not correspond
+      directly to slot usage. This is the largest value observed since the
+      last sample.
     completedUnits: Total parallel units of work completed by this query.
     elapsedMs: Milliseconds elapsed since the start of query execution.
     estimatedRunnableUnits: Units of work that can be scheduled immediately.
-      Providing additional slots for these units of work will speed up the
-      query, provided no other query in the reservation needs additional
-      slots.
+      Providing additional slots for these units of work will accelerate the
+      query, if no other query in the reservation needs additional slots.
     pendingUnits: Total units of work remaining for the query. This number can
       be revised (increased or decreased) while the query is running.
     totalSlotMs: Cumulative slot-ms consumed by the query.
@@ -4839,26 +6019,22 @@ class RangePartitioning(_messages.Message):
   r"""A RangePartitioning object.
 
   Messages:
-    RangeValue: [TrustedTester] [Required] Defines the ranges for range
-      partitioning.
+    RangeValue: [Experimental] Defines the ranges for range partitioning.
 
   Fields:
-    field: [TrustedTester] [Required] The table is partitioned by this field.
+    field: Required. [Experimental] The table is partitioned by this field.
       The field must be a top-level NULLABLE/REQUIRED field. The only
       supported type is INTEGER/INT64.
-    range: [TrustedTester] [Required] Defines the ranges for range
-      partitioning.
+    range: [Experimental] Defines the ranges for range partitioning.
   """
 
   class RangeValue(_messages.Message):
-    r"""[TrustedTester] [Required] Defines the ranges for range partitioning.
+    r"""[Experimental] Defines the ranges for range partitioning.
 
     Fields:
-      end: [TrustedTester] [Required] The end of range partitioning,
-        exclusive.
-      interval: [TrustedTester] [Required] The width of each interval.
-      start: [TrustedTester] [Required] The start of range partitioning,
-        inclusive.
+      end: [Experimental] The end of range partitioning, exclusive.
+      interval: [Experimental] The width of each interval.
+      start: [Experimental] The start of range partitioning, inclusive.
     """
 
     end = _messages.IntegerField(1)
@@ -5236,7 +6412,7 @@ class Routine(_messages.Message):
 
 
 class RoutineReference(_messages.Message):
-  r"""A RoutineReference object.
+  r"""Id path of a routine.
 
   Fields:
     datasetId: Required. The ID of the dataset containing this routine.
@@ -5292,7 +6468,7 @@ class RowAccessPolicy(_messages.Message):
 
 
 class RowAccessPolicyReference(_messages.Message):
-  r"""A RowAccessPolicyReference object.
+  r"""Id path of a row access policy.
 
   Fields:
     datasetId: Required. The ID of the dataset containing this row access
@@ -5312,27 +6488,75 @@ class RowAccessPolicyReference(_messages.Message):
 
 
 class RowLevelSecurityStatistics(_messages.Message):
-  r"""A RowLevelSecurityStatistics object.
+  r"""Statistics for row-level security.
 
   Fields:
-    rowLevelSecurityApplied: [Output-only] [Preview] Whether any accessed data
-      was protected by row access policies.
+    rowLevelSecurityApplied: Whether any accessed data was protected by row
+      access policies.
   """
 
   rowLevelSecurityApplied = _messages.BooleanField(1)
 
 
-class ScriptStackFrame(_messages.Message):
-  r"""A ScriptStackFrame object.
+class ScriptOptions(_messages.Message):
+  r"""Options related to script execution.
+
+  Enums:
+    KeyResultStatementValueValuesEnum: Determines which statement in the
+      script represents the "key result", used to populate the schema and
+      query results of the script job. Default is LAST.
 
   Fields:
-    endColumn: [Output-only] One-based end column.
-    endLine: [Output-only] One-based end line.
-    procedureId: [Output-only] Name of the active procedure, empty if in a
-      top-level script.
-    startColumn: [Output-only] One-based start column.
-    startLine: [Output-only] One-based start line.
-    text: [Output-only] Text of the current statement/expression.
+    keyResultStatement: Determines which statement in the script represents
+      the "key result", used to populate the schema and query results of the
+      script job. Default is LAST.
+    statementByteBudget: Limit on the number of bytes billed per statement.
+      Exceeding this budget results in an error.
+    statementTimeoutMs: Timeout period for each statement in a script.
+  """
+
+  class KeyResultStatementValueValuesEnum(_messages.Enum):
+    r"""Determines which statement in the script represents the "key result",
+    used to populate the schema and query results of the script job. Default
+    is LAST.
+
+    Values:
+      KEY_RESULT_STATEMENT_KIND_UNSPECIFIED: Default value.
+      LAST: The last result determines the key result.
+      FIRST_SELECT: The first SELECT statement determines the key result.
+    """
+    KEY_RESULT_STATEMENT_KIND_UNSPECIFIED = 0
+    LAST = 1
+    FIRST_SELECT = 2
+
+  keyResultStatement = _messages.EnumField('KeyResultStatementValueValuesEnum', 1)
+  statementByteBudget = _messages.IntegerField(2)
+  statementTimeoutMs = _messages.IntegerField(3)
+
+
+class ScriptStackFrame(_messages.Message):
+  r"""Represents the location of the statement/expression being evaluated.
+  Line and column numbers are defined as follows: - Line and column numbers
+  start with one. That is, line 1 column 1 denotes the start of the script. -
+  When inside a stored procedure, all line/column numbers are relative to the
+  procedure body, not the script in which the procedure was defined. -
+  Start/end positions exclude leading/trailing comments and whitespace. The
+  end position always ends with a ";", when present. - Multi-byte Unicode
+  characters are treated as just one column. - If the original script (or
+  procedure definition) contains TAB characters, a tab "snaps" the indentation
+  forward to the nearest multiple of 8 characters, plus 1. For example, a TAB
+  on column 1, 2, 3, 4, 5, 6 , or 8 will advance the next character to column
+  9. A TAB on column 9, 10, 11, 12, 13, 14, 15, or 16 will advance the next
+  character to column 17.
+
+  Fields:
+    endColumn: Output only. One-based end column.
+    endLine: Output only. One-based end line.
+    procedureId: Output only. Name of the active procedure, empty if in a top-
+      level script.
+    startColumn: Output only. One-based start column.
+    startLine: Output only. One-based start line.
+    text: Output only. Text of the current statement/expression.
   """
 
   endColumn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5344,39 +6568,80 @@ class ScriptStackFrame(_messages.Message):
 
 
 class ScriptStatistics(_messages.Message):
-  r"""A ScriptStatistics object.
+  r"""Job statistics specific to the child job of a script.
+
+  Enums:
+    EvaluationKindValueValuesEnum: Whether this child job was a statement or
+      expression.
 
   Fields:
-    evaluationKind: [Output-only] Whether this child job was a statement or
-      expression.
+    evaluationKind: Whether this child job was a statement or expression.
     stackFrames: Stack trace showing the line/column/procedure name of each
       frame on the stack at the point where the current evaluation happened.
       The leaf frame is first, the primary script is last. Never empty.
   """
 
-  evaluationKind = _messages.StringField(1)
+  class EvaluationKindValueValuesEnum(_messages.Enum):
+    r"""Whether this child job was a statement or expression.
+
+    Values:
+      EVALUATION_KIND_UNSPECIFIED: Default value.
+      STATEMENT: The statement appears directly in the script.
+      EXPRESSION: The statement evaluates an expression that appears in the
+        script.
+    """
+    EVALUATION_KIND_UNSPECIFIED = 0
+    STATEMENT = 1
+    EXPRESSION = 2
+
+  evaluationKind = _messages.EnumField('EvaluationKindValueValuesEnum', 1)
   stackFrames = _messages.MessageField('ScriptStackFrame', 2, repeated=True)
 
 
 class SearchStatistics(_messages.Message):
-  r"""A SearchStatistics object.
+  r"""Statistics for a search query. Populated as part of JobStatistics2.
+
+  Enums:
+    IndexUsageModeValueValuesEnum: Specifies the index usage mode for the
+      query.
 
   Fields:
-    indexUnusedReasons: When index_usage_mode is UNUSED or PARTIALLY_USED,
-      this field explains why index was not used in all or part of the search
-      query. If index_usage_mode is FULLLY_USED, this field is not populated.
-    indexUsageMode: Specifies index usage mode for the query.
+    indexUnusedReasons: When `indexUsageMode` is `UNUSED` or `PARTIALLY_USED`,
+      this field explains why indexes were not used in all or part of the
+      search query. If `indexUsageMode` is `FULLY_USED`, this field is not
+      populated.
+    indexUsageMode: Specifies the index usage mode for the query.
   """
 
+  class IndexUsageModeValueValuesEnum(_messages.Enum):
+    r"""Specifies the index usage mode for the query.
+
+    Values:
+      INDEX_USAGE_MODE_UNSPECIFIED: Index usage mode not specified.
+      UNUSED: No search indexes were used in the search query. See
+        [`indexUnusedReasons`]
+        (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for detailed
+        reasons.
+      PARTIALLY_USED: Part of the search query used search indexes. See
+        [`indexUnusedReasons`]
+        (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for why other
+        parts of the query did not use search indexes.
+      FULLY_USED: The entire search query used search indexes.
+    """
+    INDEX_USAGE_MODE_UNSPECIFIED = 0
+    UNUSED = 1
+    PARTIALLY_USED = 2
+    FULLY_USED = 3
+
   indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
-  indexUsageMode = _messages.StringField(2)
+  indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 2)
 
 
 class SessionInfo(_messages.Message):
-  r"""A SessionInfo object.
+  r"""[Preview] Information related to sessions.
 
   Fields:
-    sessionId: [Output-only] // [Preview] Id of the session.
+    sessionId: Output only. The id of the session.
   """
 
   sessionId = _messages.StringField(1)
@@ -5400,12 +6665,12 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SnapshotDefinition(_messages.Message):
-  r"""A SnapshotDefinition object.
+  r"""Information about base table and snapshot time of the snapshot.
 
   Fields:
-    baseTableReference: [Required] Reference describing the ID of the table
+    baseTableReference: Required. Reference describing the ID of the table
       that was snapshot.
-    snapshotTime: [Required] The time at which the base table was snapshot.
+    snapshotTime: Required. The time at which the base table was snapshot.
       This value is reported in the JSON response using RFC3339 format.
   """
 
@@ -5414,11 +6679,11 @@ class SnapshotDefinition(_messages.Message):
 
 
 class SparkLoggingInfo(_messages.Message):
-  r"""A SparkLoggingInfo object.
+  r"""Spark job logs can be filtered by these fields in Cloud Logging.
 
   Fields:
-    projectId: [Output-only] Project ID used for logging
-    resourceType: [Output-only] Resource type used for logging
+    projectId: Output only. Project ID where the Spark logs were written.
+    resourceType: Output only. Resource type used for logging.
   """
 
   projectId = _messages.StringField(1)
@@ -5512,23 +6777,47 @@ class SparkOptions(_messages.Message):
 
 
 class SparkStatistics(_messages.Message):
-  r"""A SparkStatistics object.
+  r"""Statistics for a BigSpark query. Populated as part of JobStatistics2
 
   Messages:
-    EndpointsValue: [Output-only] Endpoints generated for the Spark job.
+    EndpointsValue: Output only. Endpoints returned from Dataproc. Key list: -
+      history_server_endpoint: A link to Spark job UI.
 
   Fields:
-    endpoints: [Output-only] Endpoints generated for the Spark job.
-    loggingInfo: [Output-only] Logging info is used to generate a link to
-      Cloud Logging.
-    sparkJobId: [Output-only] Spark job id if a Spark job is created
+    endpoints: Output only. Endpoints returned from Dataproc. Key list: -
+      history_server_endpoint: A link to Spark job UI.
+    gcsStagingBucket: Output only. The Google Cloud Storage bucket that is
+      used as the default filesystem by the Spark application. This fields is
+      only filled when the Spark procedure uses the INVOKER security mode. It
+      is inferred from the system variable
+      @@spark_proc_properties.staging_bucket if it is provided. Otherwise,
+      BigQuery creates a default staging bucket for the job and returns the
+      bucket name in this field. Example: * `gs://[bucket_name]`
+    kmsKeyName: Output only. The Cloud KMS encryption key that is used to
+      protect the resources created by the Spark job. If the Spark procedure
+      uses DEFINER security mode, the Cloud KMS key is inferred from the Spark
+      connection associated with the procedure if it is provided. Otherwise
+      the key is inferred from the default key of the Spark connection's
+      project if the CMEK organization policy is enforced. If the Spark
+      procedure uses INVOKER security mode, the Cloud KMS encryption key is
+      inferred from the system variable @@spark_proc_properties.kms_key_name
+      if it is provided. Otherwise, the key is inferred fromt he default key
+      of the BigQuery job's project if the CMEK organization policy is
+      enforced. Example: * `projects/[kms_project_id]/locations/[region]/keyRi
+      ngs/[key_region]/cryptoKeys/[key]`
+    loggingInfo: Output only. Logging info is used to generate a link to Cloud
+      Logging.
+    sparkJobId: Output only. Spark job ID if a Spark job is created
       successfully.
-    sparkJobLocation: [Output-only] Location where the Spark job is executed.
+    sparkJobLocation: Output only. Location where the Spark job is executed. A
+      location is selected by BigQueury for jobs configured to run in a multi-
+      region.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class EndpointsValue(_messages.Message):
-    r"""[Output-only] Endpoints generated for the Spark job.
+    r"""Output only. Endpoints returned from Dataproc. Key list: -
+    history_server_endpoint: A link to Spark job UI.
 
     Messages:
       AdditionalProperty: An additional property for a EndpointsValue object.
@@ -5551,48 +6840,109 @@ class SparkStatistics(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   endpoints = _messages.MessageField('EndpointsValue', 1)
-  loggingInfo = _messages.MessageField('SparkLoggingInfo', 2)
-  sparkJobId = _messages.StringField(3)
-  sparkJobLocation = _messages.StringField(4)
+  gcsStagingBucket = _messages.StringField(2)
+  kmsKeyName = _messages.StringField(3)
+  loggingInfo = _messages.MessageField('SparkLoggingInfo', 4)
+  sparkJobId = _messages.StringField(5)
+  sparkJobLocation = _messages.StringField(6)
+
+
+class StagePerformanceChangeInsight(_messages.Message):
+  r"""Performance insights compared to the previous executions for a specific
+  stage.
+
+  Fields:
+    inputDataChange: Output only. Input data change insight of the query
+      stage.
+    stageId: Output only. The stage id that the insight mapped to.
+  """
+
+  inputDataChange = _messages.MessageField('InputDataChange', 1)
+  stageId = _messages.IntegerField(2)
+
+
+class StagePerformanceStandaloneInsight(_messages.Message):
+  r"""Standalone performance insights for a specific stage.
+
+  Fields:
+    biEngineReasons: Output only. If present, the stage had the following
+      reasons for being disqualified from BI Engine execution.
+    highCardinalityJoins: Output only. High cardinality joins in the stage.
+    insufficientShuffleQuota: Output only. True if the stage has insufficient
+      shuffle quota.
+    slotContention: Output only. True if the stage has a slot contention
+      issue.
+    stageId: Output only. The stage id that the insight mapped to.
+  """
+
+  biEngineReasons = _messages.MessageField('BiEngineReason', 1, repeated=True)
+  highCardinalityJoins = _messages.MessageField('HighCardinalityJoin', 2, repeated=True)
+  insufficientShuffleQuota = _messages.BooleanField(3)
+  slotContention = _messages.BooleanField(4)
+  stageId = _messages.IntegerField(5)
 
 
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
   Enums:
-    AltValueValuesEnum: Data format for the response.
+    FXgafvValueValuesEnum: V1 error format.
+    AltValueValuesEnum: Data format for response.
 
   Fields:
-    alt: Data format for the response.
+    f__xgafv: V1 error format.
+    access_token: OAuth access token.
+    alt: Data format for response.
+    callback: JSONP
     fields: Selector specifying which fields to include in a partial response.
     key: API key. Your API key identifies your project and provides you with
       API access, quota, and reports. Required unless you provide an OAuth 2.0
       token.
     oauth_token: OAuth 2.0 token for the current user.
     prettyPrint: Returns response with indentations and line breaks.
-    quotaUser: An opaque string that represents a user for quota purposes.
-      Must not exceed 40 characters.
+    quotaUser: Available to use for quota purposes for server-side
+      applications. Can be any arbitrary string assigned to a user, but should
+      not exceed 40 characters.
     trace: A tracing token of the form "token:<tokenid>" to include in api
       requests.
-    userIp: Deprecated. Please use quotaUser instead.
+    uploadType: Legacy upload protocol for media (e.g. "media", "multipart").
+    upload_protocol: Upload protocol for media (e.g. "raw", "multipart").
   """
 
   class AltValueValuesEnum(_messages.Enum):
-    r"""Data format for the response.
+    r"""Data format for response.
 
     Values:
       json: Responses with Content-Type of application/json
+      media: Media download with context-dependent Content-Type
+      proto: Responses with Content-Type of application/x-protobuf
     """
     json = 0
+    media = 1
+    proto = 2
 
-  alt = _messages.EnumField('AltValueValuesEnum', 1, default='json')
-  fields = _messages.StringField(2)
-  key = _messages.StringField(3)
-  oauth_token = _messages.StringField(4)
-  prettyPrint = _messages.BooleanField(5, default=True)
-  quotaUser = _messages.StringField(6)
-  trace = _messages.StringField(7)
-  userIp = _messages.StringField(8)
+  class FXgafvValueValuesEnum(_messages.Enum):
+    r"""V1 error format.
+
+    Values:
+      _1: v1 error format
+      _2: v2 error format
+    """
+    _1 = 0
+    _2 = 1
+
+  f__xgafv = _messages.EnumField('FXgafvValueValuesEnum', 1)
+  access_token = _messages.StringField(2)
+  alt = _messages.EnumField('AltValueValuesEnum', 3, default='json')
+  callback = _messages.StringField(4)
+  fields = _messages.StringField(5)
+  key = _messages.StringField(6)
+  oauth_token = _messages.StringField(7)
+  prettyPrint = _messages.BooleanField(8, default=True)
+  quotaUser = _messages.StringField(9)
+  trace = _messages.StringField(10)
+  uploadType = _messages.StringField(11)
+  upload_protocol = _messages.StringField(12)
 
 
 class StandardSqlDataType(_messages.Message):
@@ -5709,11 +7059,11 @@ class Streamingbuffer(_messages.Message):
   r"""A Streamingbuffer object.
 
   Fields:
-    estimatedBytes: [Output-only] A lower-bound estimate of the number of
-      bytes currently in the streaming buffer.
-    estimatedRows: [Output-only] A lower-bound estimate of the number of rows
+    estimatedBytes: Output only. A lower-bound estimate of the number of bytes
       currently in the streaming buffer.
-    oldestEntryTime: [Output-only] Contains the timestamp of the oldest entry
+    estimatedRows: Output only. A lower-bound estimate of the number of rows
+      currently in the streaming buffer.
+    oldestEntryTime: Output only. Contains the timestamp of the oldest entry
       in the streaming buffer, in milliseconds since the epoch, if the
       streaming buffer is available.
   """
@@ -5733,8 +7083,80 @@ class StringHparamSearchSpace(_messages.Message):
   candidates = _messages.StringField(1, repeated=True)
 
 
+class SystemVariables(_messages.Message):
+  r"""System variables given to a query.
+
+  Messages:
+    TypesValue: Output only. Data type for each system variable.
+    ValuesValue: Output only. Value for each system variable.
+
+  Fields:
+    types: Output only. Data type for each system variable.
+    values: Output only. Value for each system variable.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TypesValue(_messages.Message):
+    r"""Output only. Data type for each system variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a TypesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TypesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TypesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A StandardSqlDataType attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('StandardSqlDataType', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValuesValue(_messages.Message):
+    r"""Output only. Value for each system variable.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValuesValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  types = _messages.MessageField('TypesValue', 1)
+  values = _messages.MessageField('ValuesValue', 2)
+
+
 class Table(_messages.Message):
   r"""A Table object.
+
+  Enums:
+    DefaultRoundingModeValueValuesEnum: Optional. Defines the default rounding
+      mode specification of new decimal fields (NUMERIC OR BIGNUMERIC) in the
+      table. During table creation or update, if a decimal field is added to
+      this table without an explicit rounding mode specified, then the field
+      inherits the table default rounding mode. Changing this field doesn't
+      affect existing fields.
 
   Messages:
     LabelsValue: The labels associated with this table. You can use these to
@@ -5752,88 +7174,97 @@ class Table(_messages.Message):
       short name of the tag value, e.g. "production".
 
   Fields:
-    biglakeConfiguration: [Optional] Specifies the configuration of a BigLake
+    biglakeConfiguration: Optional. Specifies the configuration of a BigLake
       managed table.
-    cloneDefinition: [Output-only] Clone definition.
-    clustering: [Beta] Clustering specification for the table. Must be
-      specified with partitioning, data in the table will be first partitioned
-      and subsequently clustered.
-    creationTime: [Output-only] The time when this table was created, in
+    cloneDefinition: Output only. Contains information about the clone. This
+      value is set via the clone operation.
+    clustering: Clustering specification for the table. Must be specified with
+      time-based partitioning, data in the table will be first partitioned and
+      subsequently clustered.
+    creationTime: Output only. The time when this table was created, in
       milliseconds since the epoch.
-    defaultCollation: [Output-only] The default collation of the table.
-    defaultRoundingMode: [Output-only] The default rounding mode of the table.
-    description: [Optional] A user-friendly description of this table.
+    defaultCollation: Optional. Defines the default collation specification of
+      new STRING fields in the table. During table creation or update, if a
+      STRING field is added to this table without explicit collation
+      specified, then the table inherits the table default collation. A change
+      to this field affects only fields added afterwards, and does not alter
+      the existing fields. The following values are supported: * 'und:ci':
+      undetermined locale, case insensitive. * '': empty string. Default to
+      case-sensitive behavior.
+    defaultRoundingMode: Optional. Defines the default rounding mode
+      specification of new decimal fields (NUMERIC OR BIGNUMERIC) in the
+      table. During table creation or update, if a decimal field is added to
+      this table without an explicit rounding mode specified, then the field
+      inherits the table default rounding mode. Changing this field doesn't
+      affect existing fields.
+    description: Optional. A user-friendly description of this table.
     encryptionConfiguration: Custom encryption configuration (e.g., Cloud KMS
       keys).
-    etag: [Output-only] A hash of the table metadata. Used to ensure there
-      were no concurrent modifications to the resource when attempting an
-      update. Not guaranteed to change when the table contents or the fields
-      numRows, numBytes, numLongTermBytes or lastModifiedTime change.
-    expirationTime: [Optional] The time when this table expires, in
+    etag: Output only. A hash of this resource.
+    expirationTime: Optional. The time when this table expires, in
       milliseconds since the epoch. If not present, the table will persist
       indefinitely. Expired tables will be deleted and their storage
       reclaimed. The defaultTableExpirationMs property of the encapsulating
       dataset can be used to set a default expirationTime on newly created
       tables.
-    externalDataConfiguration: [Optional] Describes the data format, location,
+    externalDataConfiguration: Optional. Describes the data format, location,
       and other properties of a table stored outside of BigQuery. By defining
       these properties, the data source can then be queried as if it were a
       standard BigQuery table.
-    friendlyName: [Optional] A descriptive name for this table.
-    id: [Output-only] An opaque ID uniquely identifying the table.
-    kind: [Output-only] The type of the resource.
+    friendlyName: Optional. A descriptive name for this table.
+    id: Output only. An opaque ID uniquely identifying the table.
+    kind: The type of resource ID.
     labels: The labels associated with this table. You can use these to
       organize and group your tables. Label keys and values can be no longer
       than 63 characters, can only contain lowercase letters, numeric
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
       and each label in the list must have a different key.
-    lastModifiedTime: [Output-only] The time when this table was last
-      modified, in milliseconds since the epoch.
-    location: [Output-only] The geographic location where the table resides.
+    lastModifiedTime: Output only. The time when this table was last modified,
+      in milliseconds since the epoch.
+    location: Output only. The geographic location where the table resides.
       This value is inherited from the dataset.
-    materializedView: [Optional] Materialized view definition.
-    maxStaleness: [Optional] Max staleness of data that could be returned when
-      table or materialized view is queried (formatted as Google SQL Interval
-      type).
-    model: [Output-only, Beta] Present iff this table represents a ML model.
-      Describes the training information for the model, and it is required to
-      run 'PREDICT' queries.
-    numActiveLogicalBytes: [Output-only] Number of logical bytes that are less
+    materializedView: Optional. The materialized view definition.
+    materializedViewStatus: Output only. The materialized view status.
+    maxStaleness: Optional. The maximum staleness of data that could be
+      returned when the table (or stale MV) is queried. Staleness encoded as a
+      string encoding of sql IntervalValue type.
+    model: Deprecated.
+    numActiveLogicalBytes: Output only. Number of logical bytes that are less
       than 90 days old.
-    numActivePhysicalBytes: [Output-only] Number of physical bytes less than
-      90 days old. This data is not kept in real time, and might be delayed by
-      a few seconds to a few minutes.
-    numBytes: [Output-only] The size of this table in bytes, excluding any
-      data in the streaming buffer.
-    numLongTermBytes: [Output-only] The number of bytes in the table that are
-      considered "long-term storage".
-    numLongTermLogicalBytes: [Output-only] Number of logical bytes that are
+    numActivePhysicalBytes: Output only. Number of physical bytes less than 90
+      days old. This data is not kept in real time, and might be delayed by a
+      few seconds to a few minutes.
+    numBytes: Output only. The size of this table in logical bytes, excluding
+      any data in the streaming buffer.
+    numLongTermBytes: Output only. The number of logical bytes in the table
+      that are considered "long-term storage".
+    numLongTermLogicalBytes: Output only. Number of logical bytes that are
       more than 90 days old.
-    numLongTermPhysicalBytes: [Output-only] Number of physical bytes more than
+    numLongTermPhysicalBytes: Output only. Number of physical bytes more than
       90 days old. This data is not kept in real time, and might be delayed by
       a few seconds to a few minutes.
-    numPartitions: [Output-only] The number of partitions present in the table
+    numPartitions: Output only. The number of partitions present in the table
       or materialized view. This data is not kept in real time, and might be
       delayed by a few seconds to a few minutes.
-    numPhysicalBytes: [Output-only] [TrustedTester] The physical size of this
-      table in bytes, excluding any data in the streaming buffer. This
-      includes compression and storage used for time travel.
-    numRows: [Output-only] The number of rows of data in this table, excluding
+    numPhysicalBytes: Output only. The physical size of this table in bytes.
+      This includes storage used for time travel.
+    numRows: Output only. The number of rows of data in this table, excluding
       any data in the streaming buffer.
-    numTimeTravelPhysicalBytes: [Output-only] Number of physical bytes used by
+    numTimeTravelPhysicalBytes: Output only. Number of physical bytes used by
       time travel storage (deleted or changed data). This data is not kept in
       real time, and might be delayed by a few seconds to a few minutes.
-    numTotalLogicalBytes: [Output-only] Total number of logical bytes in the
+    numTotalLogicalBytes: Output only. Total number of logical bytes in the
       table or materialized view.
-    numTotalPhysicalBytes: [Output-only] The physical size of this table in
+    numTotalPhysicalBytes: Output only. The physical size of this table in
       bytes. This also includes storage used for time travel. This data is not
       kept in real time, and might be delayed by a few seconds to a few
       minutes.
-    rangePartitioning: [TrustedTester] Range partitioning specification for
-      this table. Only one of timePartitioning and rangePartitioning should be
-      specified.
-    requirePartitionFilter: [Optional] If set to true, queries over this table
+    rangePartitioning: If specified, configures range partitioning for this
+      table.
+    replicas: Optional. Output only. Table references of all replicas
+      currently active on the table.
+    requirePartitionFilter: Optional. If set to true, queries over this table
       require a partition filter that can be used for partition elimination to
       be specified.
     resourceTags: [Optional] The tags associated with this table. Tag keys are
@@ -5843,27 +7274,56 @@ class Table(_messages.Message):
       The key is the namespaced friendly name of the tag key, e.g.
       "12345/environment" where 12345 is parent id. The value is the friendly
       short name of the tag value, e.g. "production".
-    schema: [Optional] Describes the schema of this table.
-    selfLink: [Output-only] A URL that can be used to access this resource
+    schema: Optional. Describes the schema of this table.
+    selfLink: Output only. A URL that can be used to access this resource
       again.
-    snapshotDefinition: [Output-only] Snapshot definition.
-    streamingBuffer: [Output-only] Contains information regarding this table's
+    snapshotDefinition: Output only. Contains information about the snapshot.
+      This value is set via snapshot creation.
+    streamingBuffer: Output only. Contains information regarding this table's
       streaming buffer, if one is present. This field will be absent if the
       table is not being streamed to or if there is no data in the streaming
       buffer.
-    tableConstraints: [Optional] The table constraints on the table.
-    tableReference: [Required] Reference describing the ID of this table.
-    timePartitioning: Time-based partitioning specification for this table.
-      Only one of timePartitioning and rangePartitioning should be specified.
-    type: [Output-only] Describes the table type. The following values are
-      supported: TABLE: A normal BigQuery table. VIEW: A virtual table defined
-      by a SQL query. SNAPSHOT: An immutable, read-only table that is a copy
-      of another table. [TrustedTester] MATERIALIZED_VIEW: SQL query whose
-      result is persisted. EXTERNAL: A table that references data stored in an
-      external storage system, such as Google Cloud Storage. The default value
-      is TABLE.
-    view: [Optional] The view definition.
+    tableConstraints: Optional. Tables Primary Key and Foreign Key information
+    tableReference: Required. Reference describing the ID of this table.
+    tableReplicationInfo: Optional. Table replication info for table created
+      `AS REPLICA` DDL like: `CREATE MATERIALIZED VIEW mv1 AS REPLICA OF
+      src_mv`
+    timePartitioning: If specified, configures time-based partitioning for
+      this table.
+    type: Output only. Describes the table type. The following values are
+      supported: * `TABLE`: A normal BigQuery table. * `VIEW`: A virtual table
+      defined by a SQL query. * `EXTERNAL`: A table that references data
+      stored in an external storage system, such as Google Cloud Storage. *
+      `MATERIALIZED_VIEW`: A precomputed view defined by a SQL query. *
+      `SNAPSHOT`: An immutable BigQuery table that preserves the contents of a
+      base table at a particular time. See additional information on [table
+      snapshots](/bigquery/docs/table-snapshots-intro). The default value is
+      `TABLE`.
+    view: Optional. The view definition.
   """
+
+  class DefaultRoundingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the default rounding mode specification of new
+    decimal fields (NUMERIC OR BIGNUMERIC) in the table. During table creation
+    or update, if a decimal field is added to this table without an explicit
+    rounding mode specified, then the field inherits the table default
+    rounding mode. Changing this field doesn't affect existing fields.
+
+    Values:
+      ROUNDING_MODE_UNSPECIFIED: Unspecified will default to using
+        ROUND_HALF_AWAY_FROM_ZERO.
+      ROUND_HALF_AWAY_FROM_ZERO: ROUND_HALF_AWAY_FROM_ZERO rounds half values
+        away from zero when applying precision and scale upon writing of
+        NUMERIC and BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1
+        1.5, 1.6, 1.7, 1.8, 1.9 => 2
+      ROUND_HALF_EVEN: ROUND_HALF_EVEN rounds half values to the nearest even
+        value when applying precision and scale upon writing of NUMERIC and
+        BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1 1.5 => 2 1.6,
+        1.7, 1.8, 1.9 => 2 2.5 => 2
+    """
+    ROUNDING_MODE_UNSPECIFIED = 0
+    ROUND_HALF_AWAY_FROM_ZERO = 1
+    ROUND_HALF_EVEN = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5930,7 +7390,7 @@ class Table(_messages.Message):
   clustering = _messages.MessageField('Clustering', 3)
   creationTime = _messages.IntegerField(4)
   defaultCollation = _messages.StringField(5)
-  defaultRoundingMode = _messages.StringField(6)
+  defaultRoundingMode = _messages.EnumField('DefaultRoundingModeValueValuesEnum', 6)
   description = _messages.StringField(7)
   encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
   etag = _messages.StringField(9)
@@ -5943,32 +7403,35 @@ class Table(_messages.Message):
   lastModifiedTime = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
   location = _messages.StringField(17)
   materializedView = _messages.MessageField('MaterializedViewDefinition', 18)
-  maxStaleness = _messages.BytesField(19)
-  model = _messages.MessageField('ModelDefinition', 20)
-  numActiveLogicalBytes = _messages.IntegerField(21)
-  numActivePhysicalBytes = _messages.IntegerField(22)
-  numBytes = _messages.IntegerField(23)
-  numLongTermBytes = _messages.IntegerField(24)
-  numLongTermLogicalBytes = _messages.IntegerField(25)
-  numLongTermPhysicalBytes = _messages.IntegerField(26)
-  numPartitions = _messages.IntegerField(27)
-  numPhysicalBytes = _messages.IntegerField(28)
-  numRows = _messages.IntegerField(29, variant=_messages.Variant.UINT64)
-  numTimeTravelPhysicalBytes = _messages.IntegerField(30)
-  numTotalLogicalBytes = _messages.IntegerField(31)
-  numTotalPhysicalBytes = _messages.IntegerField(32)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 33)
-  requirePartitionFilter = _messages.BooleanField(34, default=False)
-  resourceTags = _messages.MessageField('ResourceTagsValue', 35)
-  schema = _messages.MessageField('TableSchema', 36)
-  selfLink = _messages.StringField(37)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 38)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 39)
-  tableConstraints = _messages.MessageField('TableConstraints', 40)
-  tableReference = _messages.MessageField('TableReference', 41)
-  timePartitioning = _messages.MessageField('TimePartitioning', 42)
-  type = _messages.StringField(43)
-  view = _messages.MessageField('ViewDefinition', 44)
+  materializedViewStatus = _messages.MessageField('MaterializedViewStatus', 19)
+  maxStaleness = _messages.StringField(20)
+  model = _messages.MessageField('ModelDefinition', 21)
+  numActiveLogicalBytes = _messages.IntegerField(22)
+  numActivePhysicalBytes = _messages.IntegerField(23)
+  numBytes = _messages.IntegerField(24)
+  numLongTermBytes = _messages.IntegerField(25)
+  numLongTermLogicalBytes = _messages.IntegerField(26)
+  numLongTermPhysicalBytes = _messages.IntegerField(27)
+  numPartitions = _messages.IntegerField(28)
+  numPhysicalBytes = _messages.IntegerField(29)
+  numRows = _messages.IntegerField(30, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(31)
+  numTotalLogicalBytes = _messages.IntegerField(32)
+  numTotalPhysicalBytes = _messages.IntegerField(33)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 34)
+  replicas = _messages.MessageField('TableReference', 35, repeated=True)
+  requirePartitionFilter = _messages.BooleanField(36, default=False)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 37)
+  schema = _messages.MessageField('TableSchema', 38)
+  selfLink = _messages.StringField(39)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 40)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 41)
+  tableConstraints = _messages.MessageField('TableConstraints', 42)
+  tableReference = _messages.MessageField('TableReference', 43)
+  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 44)
+  timePartitioning = _messages.MessageField('TimePartitioning', 45)
+  type = _messages.StringField(46)
+  view = _messages.MessageField('ViewDefinition', 47)
 
 
 class TableCell(_messages.Message):
@@ -5982,36 +7445,41 @@ class TableCell(_messages.Message):
 
 
 class TableConstraints(_messages.Message):
-  r"""A TableConstraints object.
+  r"""The TableConstraints defines the primary key and foreign key.
 
   Messages:
-    ForeignKeysValueListEntry: A ForeignKeysValueListEntry object.
-    PrimaryKeyValue: [Optional] The primary key of the table.
+    ForeignKeysValueListEntry: Represents a foreign key constraint on a
+      table's columns.
+    PrimaryKeyValue: Represents the primary key constraint on a table's
+      columns.
 
   Fields:
-    foreignKeys: [Optional] The foreign keys of the tables.
-    primaryKey: [Optional] The primary key of the table.
+    foreignKeys: Optional. Present only if the table has a foreign key. The
+      foreign key is not enforced.
+    primaryKey: Represents the primary key constraint on a table's columns.
   """
 
   class ForeignKeysValueListEntry(_messages.Message):
-    r"""A ForeignKeysValueListEntry object.
+    r"""Represents a foreign key constraint on a table's columns.
 
     Messages:
-      ColumnReferencesValueListEntry: A ColumnReferencesValueListEntry object.
+      ColumnReferencesValueListEntry: The pair of the foreign key column and
+        primary key column.
       ReferencedTableValue: A ReferencedTableValue object.
 
     Fields:
-      columnReferences: A ColumnReferencesValueListEntry attribute.
-      name: A string attribute.
+      columnReferences: Required. The columns that compose the foreign key.
+      name: Optional. Set only if the foreign key constraint is named.
       referencedTable: A ReferencedTableValue attribute.
     """
 
     class ColumnReferencesValueListEntry(_messages.Message):
-      r"""A ColumnReferencesValueListEntry object.
+      r"""The pair of the foreign key column and primary key column.
 
       Fields:
-        referencedColumn: A string attribute.
-        referencingColumn: A string attribute.
+        referencedColumn: Required. The column in the primary key that are
+          referenced by the referencing_column.
+        referencingColumn: Required. The column that composes the foreign key.
       """
 
       referencedColumn = _messages.StringField(1)
@@ -6035,10 +7503,11 @@ class TableConstraints(_messages.Message):
     referencedTable = _messages.MessageField('ReferencedTableValue', 3)
 
   class PrimaryKeyValue(_messages.Message):
-    r"""[Optional] The primary key of the table.
+    r"""Represents the primary key constraint on a table's columns.
 
     Fields:
-      columns: A string attribute.
+      columns: Required. The columns that are composed of the primary key
+        constraint.
     """
 
     columns = _messages.StringField(1, repeated=True)
@@ -6048,37 +7517,41 @@ class TableConstraints(_messages.Message):
 
 
 class TableDataInsertAllRequest(_messages.Message):
-  r"""A TableDataInsertAllRequest object.
+  r"""Request for sending a single streaming insert.
 
   Messages:
-    RowsValueListEntry: A RowsValueListEntry object.
+    RowsValueListEntry: Data for a single insertion row.
 
   Fields:
-    ignoreUnknownValues: [Optional] Accept rows that contain values that do
-      not match the schema. The unknown values are ignored. Default is false,
+    ignoreUnknownValues: Optional. Accept rows that contain values that do not
+      match the schema. The unknown values are ignored. Default is false,
       which treats unknown values as errors.
-    kind: The resource type of the response.
-    rows: The rows to insert.
-    skipInvalidRows: [Optional] Insert all valid rows of a request, even if
+    kind: Optional. The resource type of the response. The value is not
+      checked at the backend. Historically, it has been set to
+      "bigquery#tableDataInsertAllRequest" but you are not required to set it.
+    rows: A RowsValueListEntry attribute.
+    skipInvalidRows: Optional. Insert all valid rows of a request, even if
       invalid rows exist. The default value is false, which causes the entire
       request to fail if any invalid rows exist.
-    templateSuffix: If specified, treats the destination table as a base
-      template, and inserts the rows into an instance table named
+    templateSuffix: Optional. If specified, treats the destination table as a
+      base template, and inserts the rows into an instance table named
       "{destination}{templateSuffix}". BigQuery will manage creation of the
       instance table, using the schema of the base template table. See
       https://cloud.google.com/bigquery/streaming-data-into-bigquery#template-
       tables for considerations when working with templates tables.
+    traceId: Optional. Unique request trace id. Used for debugging purposes
+      only. It is case-sensitive, limited to up to 36 ASCII characters. A UUID
+      is recommended.
   """
 
   class RowsValueListEntry(_messages.Message):
-    r"""A RowsValueListEntry object.
+    r"""Data for a single insertion row.
 
     Fields:
-      insertId: [Optional] A unique ID for each row. BigQuery uses this
-        property to detect duplicate insertion requests on a best-effort
-        basis.
-      json: [Required] A JSON object that contains a row of data. The object's
-        properties and values must match the destination table's schema.
+      insertId: Insertion ID for best-effort deduplication. This feature is
+        not recommended, and users seeking stronger insertion semantics are
+        encouraged to use other mechanisms such as the BigQuery Write API.
+      json: Data for a single row.
     """
 
     insertId = _messages.StringField(1)
@@ -6089,21 +7562,23 @@ class TableDataInsertAllRequest(_messages.Message):
   rows = _messages.MessageField('RowsValueListEntry', 3, repeated=True)
   skipInvalidRows = _messages.BooleanField(4)
   templateSuffix = _messages.StringField(5)
+  traceId = _messages.StringField(6)
 
 
 class TableDataInsertAllResponse(_messages.Message):
-  r"""A TableDataInsertAllResponse object.
+  r"""Describes the format of a streaming insert response.
 
   Messages:
-    InsertErrorsValueListEntry: A InsertErrorsValueListEntry object.
+    InsertErrorsValueListEntry: Error details about a single row's insertion.
 
   Fields:
-    insertErrors: An array of errors for rows that were not inserted.
-    kind: The resource type of the response.
+    insertErrors: Describes specific errors encountered while processing the
+      request.
+    kind: Returns "bigquery#tableDataInsertAllResponse".
   """
 
   class InsertErrorsValueListEntry(_messages.Message):
-    r"""A InsertErrorsValueListEntry object.
+    r"""Error details about a single row's insertion.
 
     Fields:
       errors: Error information for the row indicated by the index property.
@@ -6127,7 +7602,8 @@ class TableDataList(_messages.Message):
       of the startIndex parameter can help you retrieve stable results when an
       underlying table is changing.
     rows: Rows of results.
-    totalRows: The total number of rows in the complete table.
+    totalRows: Total rows of the entire table. In order to show default value
+      0 we have to present it as string.
   """
 
   etag = _messages.StringField(1)
@@ -6138,109 +7614,120 @@ class TableDataList(_messages.Message):
 
 
 class TableFieldSchema(_messages.Message):
-  r"""A TableFieldSchema object.
+  r"""A field in TableSchema
+
+  Enums:
+    RoundingModeValueValuesEnum: Optional. Specifies the rounding mode to be
+      used when storing values of NUMERIC and BIGNUMERIC type.
 
   Messages:
-    CategoriesValue: [Optional] The categories attached to this field, used
-      for field-level access control.
-    PolicyTagsValue: A PolicyTagsValue object.
-    RangeElementTypeValue: Optional. The subtype of the RANGE, if the type of
-      this field is RANGE. If the type is RANGE, this field is required.
-      Possible values for the field element type of a RANGE include: - DATE -
-      DATETIME - TIMESTAMP
+    CategoriesValue: Deprecated.
+    PolicyTagsValue: Optional. The policy tags attached to this field, used
+      for field-level access control. If not set, defaults to empty
+      policy_tags.
+    RangeElementTypeValue: Represents the type of a field element.
 
   Fields:
-    categories: [Optional] The categories attached to this field, used for
-      field-level access control.
-    collation: Optional. Collation specification of the field. It only can be
-      set on string type field.
-    defaultValueExpression: Optional. A SQL expression to specify the default
-      value for this field. It can only be set for top level fields (columns).
-      You can use struct or array expression to specify default value for the
-      entire struct or array. The valid SQL expressions are: - Literals for
-      all data types, including STRUCT and ARRAY. - Following functions: -
-      CURRENT_TIMESTAMP - CURRENT_TIME - CURRENT_DATE - CURRENT_DATETIME -
-      GENERATE_UUID - RAND - SESSION_USER - ST_GEOGPOINT - Struct or array
-      composed with the above allowed functions, for example, [CURRENT_DATE(),
-      DATE '2020-01-01']
-    description: [Optional] The field description. The maximum length is 1,024
+    categories: Deprecated.
+    collation: Optional. Field collation can be set only when the type of
+      field is STRING. The following values are supported: * 'und:ci':
+      undetermined locale, case insensitive. * '': empty string. Default to
+      case-sensitive behavior.
+    defaultValueExpression: Optional. A SQL expression to specify the [default
+      value] (https://cloud.google.com/bigquery/docs/default-values) for this
+      field.
+    description: Optional. The field description. The maximum length is 1,024
       characters.
-    fields: [Optional] Describes the nested schema fields if the type property
+    fields: Optional. Describes the nested schema fields if the type property
       is set to RECORD.
-    maxLength: [Optional] Maximum length of values of this field for STRINGS
-      or BYTES. If max_length is not specified, no maximum length constraint
-      is imposed on this field. If type = "STRING", then max_length represents
+    maxLength: Optional. Maximum length of values of this field for STRINGS or
+      BYTES. If max_length is not specified, no maximum length constraint is
+      imposed on this field. If type = "STRING", then max_length represents
       the maximum UTF-8 length of strings in this field. If type = "BYTES",
       then max_length represents the maximum number of bytes in this field. It
       is invalid to set this field if type \u2260 "STRING" and \u2260 "BYTES".
-    mode: [Optional] The field mode. Possible values include NULLABLE,
-      REQUIRED and REPEATED. The default value is NULLABLE.
-    name: [Required] The field name. The name must contain only letters (a-z,
+    mode: Optional. The field mode. Possible values include NULLABLE, REQUIRED
+      and REPEATED. The default value is NULLABLE.
+    name: Required. The field name. The name must contain only letters (a-z,
       A-Z), numbers (0-9), or underscores (_), and must start with a letter or
       underscore. The maximum length is 300 characters.
-    policyTags: A PolicyTagsValue attribute.
-    precision: [Optional] Precision (maximum number of total digits in base
-      10) and scale (maximum number of digits in the fractional part in base
-      10) constraints for values of this field for NUMERIC or BIGNUMERIC. It
-      is invalid to set precision or scale if type \u2260 "NUMERIC" and \u2260
+    policyTags: Optional. The policy tags attached to this field, used for
+      field-level access control. If not set, defaults to empty policy_tags.
+    precision: Optional. Precision (maximum number of total digits in base 10)
+      and scale (maximum number of digits in the fractional part in base 10)
+      constraints for values of this field for NUMERIC or BIGNUMERIC. It is
+      invalid to set precision or scale if type \u2260 "NUMERIC" and \u2260
       "BIGNUMERIC". If precision and scale are not specified, no value range
       constraint is imposed on this field insofar as values are permitted by
       the type. Values of this NUMERIC or BIGNUMERIC field must be in this
-      range when: - Precision (P) and scale (S) are specified: [-10P-S + 10-S,
-      10P-S - 10-S] - Precision (P) is specified but not scale (and thus scale
+      range when: * Precision (P) and scale (S) are specified: [-10P-S + 10-S,
+      10P-S - 10-S] * Precision (P) is specified but not scale (and thus scale
       is interpreted to be equal to zero): [-10P + 1, 10P - 1]. Acceptable
-      values for precision and scale if both are specified: - If type =
+      values for precision and scale if both are specified: * If type =
       "NUMERIC": 1 \u2264 precision - scale \u2264 29 and 0 \u2264 scale
-      \u2264 9. - If type = "BIGNUMERIC": 1 \u2264 precision - scale \u2264 38
+      \u2264 9. * If type = "BIGNUMERIC": 1 \u2264 precision - scale \u2264 38
       and 0 \u2264 scale \u2264 38. Acceptable values for precision if only
       precision is specified but not scale (and thus scale is interpreted to
-      be equal to zero): - If type = "NUMERIC": 1 \u2264 precision \u2264 29.
-      - If type = "BIGNUMERIC": 1 \u2264 precision \u2264 38. If scale is
+      be equal to zero): * If type = "NUMERIC": 1 \u2264 precision \u2264 29.
+      * If type = "BIGNUMERIC": 1 \u2264 precision \u2264 38. If scale is
       specified but not precision, then it is invalid.
-    rangeElementType: Optional. The subtype of the RANGE, if the type of this
-      field is RANGE. If the type is RANGE, this field is required. Possible
-      values for the field element type of a RANGE include: - DATE - DATETIME
-      - TIMESTAMP
-    roundingMode: Optional. Rounding Mode specification of the field. It only
-      can be set on NUMERIC or BIGNUMERIC type fields.
-    scale: [Optional] See documentation for precision.
-    type: [Required] The field data type. Possible values include STRING,
-      BYTES, INTEGER, INT64 (same as INTEGER), FLOAT, FLOAT64 (same as FLOAT),
-      NUMERIC, BIGNUMERIC, BOOLEAN, BOOL (same as BOOLEAN), TIMESTAMP, DATE,
-      TIME, DATETIME, INTERVAL, RECORD (where RECORD indicates that the field
-      contains a nested schema) or STRUCT (same as RECORD).
+    rangeElementType: Represents the type of a field element.
+    roundingMode: Optional. Specifies the rounding mode to be used when
+      storing values of NUMERIC and BIGNUMERIC type.
+    scale: Optional. See documentation for precision.
+    type: Required. The field data type. Possible values include: * STRING *
+      BYTES * INTEGER (or INT64) * FLOAT (or FLOAT64) * BOOLEAN (or BOOL) *
+      TIMESTAMP * DATE * TIME * DATETIME * GEOGRAPHY * NUMERIC * BIGNUMERIC *
+      JSON * RECORD (or STRUCT) Use of RECORD/STRUCT indicates that the field
+      contains a nested schema.
   """
 
+  class RoundingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the rounding mode to be used when storing values
+    of NUMERIC and BIGNUMERIC type.
+
+    Values:
+      ROUNDING_MODE_UNSPECIFIED: Unspecified will default to using
+        ROUND_HALF_AWAY_FROM_ZERO.
+      ROUND_HALF_AWAY_FROM_ZERO: ROUND_HALF_AWAY_FROM_ZERO rounds half values
+        away from zero when applying precision and scale upon writing of
+        NUMERIC and BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1
+        1.5, 1.6, 1.7, 1.8, 1.9 => 2
+      ROUND_HALF_EVEN: ROUND_HALF_EVEN rounds half values to the nearest even
+        value when applying precision and scale upon writing of NUMERIC and
+        BIGNUMERIC values. For Scale: 0 1.1, 1.2, 1.3, 1.4 => 1 1.5 => 2 1.6,
+        1.7, 1.8, 1.9 => 2 2.5 => 2
+    """
+    ROUNDING_MODE_UNSPECIFIED = 0
+    ROUND_HALF_AWAY_FROM_ZERO = 1
+    ROUND_HALF_EVEN = 2
+
   class CategoriesValue(_messages.Message):
-    r"""[Optional] The categories attached to this field, used for field-level
-    access control.
+    r"""Deprecated.
 
     Fields:
-      names: A list of category resource names. For example,
-        "projects/1/taxonomies/2/categories/3". At most 5 categories are
-        allowed.
+      names: Deprecated.
     """
 
     names = _messages.StringField(1, repeated=True)
 
   class PolicyTagsValue(_messages.Message):
-    r"""A PolicyTagsValue object.
+    r"""Optional. The policy tags attached to this field, used for field-level
+    access control. If not set, defaults to empty policy_tags.
 
     Fields:
-      names: A list of category resource names. For example,
-        "projects/1/location/eu/taxonomies/2/policyTags/3". At most 1 policy
-        tag is allowed.
+      names: A list of policy tag resource names. For example,
+        "projects/1/locations/eu/taxonomies/2/policyTags/3". At most 1 policy
+        tag is currently allowed.
     """
 
     names = _messages.StringField(1, repeated=True)
 
   class RangeElementTypeValue(_messages.Message):
-    r"""Optional. The subtype of the RANGE, if the type of this field is
-    RANGE. If the type is RANGE, this field is required. Possible values for
-    the field element type of a RANGE include: - DATE - DATETIME - TIMESTAMP
+    r"""Represents the type of a field element.
 
     Fields:
-      type: The field element type of a RANGE
+      type: Required. The type of a field element. See TableFieldSchema.type.
     """
 
     type = _messages.StringField(1)
@@ -6256,13 +7743,13 @@ class TableFieldSchema(_messages.Message):
   policyTags = _messages.MessageField('PolicyTagsValue', 9)
   precision = _messages.IntegerField(10)
   rangeElementType = _messages.MessageField('RangeElementTypeValue', 11)
-  roundingMode = _messages.StringField(12)
+  roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 12)
   scale = _messages.IntegerField(13)
   type = _messages.StringField(14)
 
 
 class TableList(_messages.Message):
-  r"""A TableList object.
+  r"""Partial projection of the metadata for a given table in a list response.
 
   Messages:
     TablesValueListEntry: A TablesValueListEntry object.
@@ -6281,29 +7768,28 @@ class TableList(_messages.Message):
     Messages:
       LabelsValue: The labels associated with this table. You can use these to
         organize and group your tables.
-      ViewValue: Additional details for a view.
+      ViewValue: Information about a logical view.
 
     Fields:
-      clustering: [Beta] Clustering specification for this table, if
-        configured.
-      creationTime: The time when this table was created, in milliseconds
-        since the epoch.
-      expirationTime: [Optional] The time when this table expires, in
-        milliseconds since the epoch. If not present, the table will persist
-        indefinitely. Expired tables will be deleted and their storage
-        reclaimed.
+      clustering: Clustering specification for this table, if configured.
+      creationTime: Output only. The time when this table was created, in
+        milliseconds since the epoch.
+      expirationTime: The time when this table expires, in milliseconds since
+        the epoch. If not present, the table will persist indefinitely.
+        Expired tables will be deleted and their storage reclaimed.
       friendlyName: The user-friendly name for this table.
-      id: An opaque ID of the table
+      id: An opaque ID of the table.
       kind: The resource type.
       labels: The labels associated with this table. You can use these to
         organize and group your tables.
-      rangePartitioning: The range partitioning specification for this table,
-        if configured.
-      tableReference: A reference uniquely identifying the table.
-      timePartitioning: The time-based partitioning specification for this
-        table, if configured.
-      type: The type of table. Possible values are: TABLE, VIEW.
-      view: Additional details for a view.
+      rangePartitioning: The range partitioning for this table.
+      requirePartitionFilter: Optional. If set to true, queries including this
+        table must specify a partition filter. This filter is used for
+        partition elimination.
+      tableReference: A reference uniquely identifying table.
+      timePartitioning: The time-based partitioning for this table.
+      type: The type of table.
+      view: Information about a logical view.
     """
 
     @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6332,27 +7818,30 @@ class TableList(_messages.Message):
       additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
     class ViewValue(_messages.Message):
-      r"""Additional details for a view.
+      r"""Information about a logical view.
 
       Fields:
+        privacyPolicy: Specifices the privacy policy for the view.
         useLegacySql: True if view is defined in legacy SQL dialect, false if
-          in standard SQL.
+          in GoogleSQL.
       """
 
-      useLegacySql = _messages.BooleanField(1)
+      privacyPolicy = _messages.MessageField('PrivacyPolicy', 1)
+      useLegacySql = _messages.BooleanField(2)
 
     clustering = _messages.MessageField('Clustering', 1)
     creationTime = _messages.IntegerField(2)
     expirationTime = _messages.IntegerField(3)
     friendlyName = _messages.StringField(4)
     id = _messages.StringField(5)
-    kind = _messages.StringField(6, default='bigquery#table')
+    kind = _messages.StringField(6)
     labels = _messages.MessageField('LabelsValue', 7)
     rangePartitioning = _messages.MessageField('RangePartitioning', 8)
-    tableReference = _messages.MessageField('TableReference', 9)
-    timePartitioning = _messages.MessageField('TimePartitioning', 10)
-    type = _messages.StringField(11)
-    view = _messages.MessageField('ViewValue', 12)
+    requirePartitionFilter = _messages.BooleanField(9, default=False)
+    tableReference = _messages.MessageField('TableReference', 10)
+    timePartitioning = _messages.MessageField('TimePartitioning', 11)
+    type = _messages.StringField(12)
+    view = _messages.MessageField('ViewValue', 13)
 
   etag = _messages.StringField(1)
   kind = _messages.StringField(2, default='bigquery#tableList')
@@ -6361,20 +7850,109 @@ class TableList(_messages.Message):
   totalItems = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class TableMetadataCacheUsage(_messages.Message):
+  r"""Table level detail on the usage of metadata caching. Only set for
+  Metadata caching eligible tables referenced in the query.
+
+  Enums:
+    UnusedReasonValueValuesEnum: Reason for not using metadata caching for the
+      table.
+
+  Fields:
+    explanation: Free form human-readable reason metadata caching was unused
+      for the job.
+    tableReference: Metadata caching eligible table referenced in the query.
+    tableType: [Table
+      type](/bigquery/docs/reference/rest/v2/tables#Table.FIELDS.type).
+    unusedReason: Reason for not using metadata caching for the table.
+  """
+
+  class UnusedReasonValueValuesEnum(_messages.Enum):
+    r"""Reason for not using metadata caching for the table.
+
+    Values:
+      UNUSED_REASON_UNSPECIFIED: Unused reasons not specified.
+      EXCEEDED_MAX_STALENESS: Metadata cache was outside the table's
+        maxStaleness.
+      METADATA_CACHING_NOT_ENABLED: Metadata caching feature is not enabled.
+        [Update BigLake tables] (/bigquery/docs/create-cloud-storage-table-
+        biglake#update-biglake-tables) to enable the metadata caching.
+      OTHER_REASON: Other unknown reason.
+    """
+    UNUSED_REASON_UNSPECIFIED = 0
+    EXCEEDED_MAX_STALENESS = 1
+    METADATA_CACHING_NOT_ENABLED = 2
+    OTHER_REASON = 3
+
+  explanation = _messages.StringField(1)
+  tableReference = _messages.MessageField('TableReference', 2)
+  tableType = _messages.StringField(3)
+  unusedReason = _messages.EnumField('UnusedReasonValueValuesEnum', 4)
+
+
 class TableReference(_messages.Message):
   r"""A TableReference object.
 
   Fields:
-    datasetId: [Required] The ID of the dataset containing this table.
-    projectId: [Required] The ID of the project containing this table.
-    tableId: [Required] The ID of the table. The ID must contain only letters
-      (a-z, A-Z), numbers (0-9), or underscores (_). The maximum length is
-      1,024 characters.
+    datasetId: Required. The ID of the dataset containing this table.
+    projectId: Required. The ID of the project containing this table.
+    tableId: Required. The ID of the table. The ID can contain Unicode
+      characters in category L (letter), M (mark), N (number), Pc (connector,
+      including underscore), Pd (dash), and Zs (space). For more information,
+      see [General Category](https://wikipedia.org/wiki/Unicode_character_prop
+      erty#General_Category). The maximum length is 1,024 characters. Certain
+      operations allow suffixing of the table ID with a partition decorator,
+      such as `sample_table$20190123`.
   """
 
   datasetId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   tableId = _messages.StringField(3)
+
+
+class TableReplicationInfo(_messages.Message):
+  r"""Replication info of a table created using `AS REPLICA` DDL like: `CREATE
+  MATERIALIZED VIEW mv1 AS REPLICA OF src_mv`
+
+  Enums:
+    ReplicationStatusValueValuesEnum: Optional. Output only. Replication
+      status of configured replication.
+
+  Fields:
+    replicatedSourceLastRefreshTime: Optional. Output only. If source is a
+      materialized view, this field signifies the last refresh time of the
+      source.
+    replicationError: Optional. Output only. Replication error that will
+      permanently stopped table replication.
+    replicationIntervalMs: Required. Specifies the interval at which the
+      source table is polled for updates.
+    replicationStatus: Optional. Output only. Replication status of configured
+      replication.
+    sourceTable: Required. Source table reference that is replicated.
+  """
+
+  class ReplicationStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. Replication status of configured replication.
+
+    Values:
+      REPLICATION_STATUS_UNSPECIFIED: Default value.
+      ACTIVE: Replication is Active with no errors.
+      SOURCE_DELETED: Source object is deleted.
+      PERMISSION_DENIED: Source revoked replication permissions.
+      UNSUPPORTED_CONFIGURATION: Source configuration doesn't allow
+        replication.
+    """
+    REPLICATION_STATUS_UNSPECIFIED = 0
+    ACTIVE = 1
+    SOURCE_DELETED = 2
+    PERMISSION_DENIED = 3
+    UNSUPPORTED_CONFIGURATION = 4
+
+  replicatedSourceLastRefreshTime = _messages.IntegerField(1)
+  replicationError = _messages.MessageField('ErrorProto', 2)
+  replicationIntervalMs = _messages.IntegerField(3)
+  replicationStatus = _messages.EnumField('ReplicationStatusValueValuesEnum', 4)
+  sourceTable = _messages.MessageField('TableReference', 5)
 
 
 class TableRow(_messages.Message):
@@ -6389,7 +7967,7 @@ class TableRow(_messages.Message):
 
 
 class TableSchema(_messages.Message):
-  r"""A TableSchema object.
+  r"""Schema of a table
 
   Fields:
     fields: Describes the fields in a table.
@@ -6426,24 +8004,27 @@ class TimePartitioning(_messages.Message):
   r"""A TimePartitioning object.
 
   Fields:
-    expirationMs: [Optional] Number of milliseconds for which to keep the
-      storage for partitions in the table. The storage in a partition will
-      have an expiration time of its partition time plus this value.
-    field: [Beta] [Optional] If not set, the table is partitioned by pseudo
-      column, referenced via either '_PARTITIONTIME' as TIMESTAMP type, or
-      '_PARTITIONDATE' as DATE type. If field is specified, the table is
-      instead partitioned by this field. The field must be a top-level
-      TIMESTAMP or DATE field. Its mode must be NULLABLE or REQUIRED.
-    requirePartitionFilter: A boolean attribute.
-    type: [Required] The supported types are DAY, HOUR, MONTH, and YEAR, which
+    expirationMs: Optional. Number of milliseconds for which to keep the
+      storage for a partition. A wrapper is used here because 0 is an invalid
+      value.
+    field: Optional. If not set, the table is partitioned by pseudo column
+      '_PARTITIONTIME'; if set, the table is partitioned by this field. The
+      field must be a top-level TIMESTAMP or DATE field. Its mode must be
+      NULLABLE or REQUIRED. A wrapper is used here because an empty string is
+      an invalid value.
+    requirePartitionFilter: If set to true, queries over this table require a
+      partition filter that can be used for partition elimination to be
+      specified. This field is deprecated; please set the field with the same
+      name on the table itself instead. This field needs a wrapper because we
+      want to output the default value, false, if the user explicitly set it.
+    type: Required. The supported types are DAY, HOUR, MONTH, and YEAR, which
       will generate one partition per day, hour, month, and year,
-      respectively. When the type is not specified, the default behavior is
-      DAY.
+      respectively.
   """
 
   expirationMs = _messages.IntegerField(1)
   field = _messages.StringField(2)
-  requirePartitionFilter = _messages.BooleanField(3)
+  requirePartitionFilter = _messages.BooleanField(3, default=False)
   type = _messages.StringField(4)
 
 
@@ -7386,10 +8967,10 @@ class TrainingRun(_messages.Message):
 
 
 class TransactionInfo(_messages.Message):
-  r"""A TransactionInfo object.
+  r"""[Alpha] Information of a multi-statement transaction.
 
   Fields:
-    transactionId: [Output-only] // [Alpha] Id of the transaction.
+    transactionId: Output only. [Alpha] Id of the transaction.
   """
 
   transactionId = _messages.StringField(1)
@@ -7410,10 +8991,21 @@ class TransformColumn(_messages.Message):
   type = _messages.MessageField('StandardSqlDataType', 3)
 
 
+class UndeleteDatasetRequest(_messages.Message):
+  r"""Request format for undeleting a dataset.
+
+  Fields:
+    deletionTime: Optional. The exact time when the dataset was deleted. If
+      not specified, it will undelete the most recently deleted version.
+  """
+
+  deletionTime = _messages.StringField(1)
+
+
 class UserDefinedFunctionResource(_messages.Message):
-  r"""This is used for defining User Defined Function (UDF) resources only
-  when using legacy SQL. Users of Standard SQL should leverage either DDL
-  (e.g. CREATE [TEMPORARY] FUNCTION ... ) or the Routines API to define UDF
+  r""" This is used for defining User Defined Function (UDF) resources only
+  when using legacy SQL. Users of GoogleSQL should leverage either DDL (e.g.
+  CREATE [TEMPORARY] FUNCTION ... ) or the Routines API to define UDF
   resources. For additional information on migrating, see:
   https://cloud.google.com/bigquery/docs/reference/standard-sql/migrating-
   from-legacy-sql#differences_in_user-defined_javascript_functions
@@ -7471,27 +9063,34 @@ class VectorSearchStatistics(_messages.Message):
 
 
 class ViewDefinition(_messages.Message):
-  r"""A ViewDefinition object.
+  r"""Describes the definition of a logical view.
 
   Fields:
-    query: [Required] A query that BigQuery executes when the view is
+    privacyPolicy: Optional. Specifices the privacy policy for the view.
+    query: Required. A query that BigQuery executes when the view is
       referenced.
     useExplicitColumnNames: True if the column names are explicitly specified.
       For example by using the 'CREATE VIEW v(c1, c2) AS ...' syntax. Can only
-      be set using BigQuery's standard SQL:
-      https://cloud.google.com/bigquery/sql-reference/
+      be set for GoogleSQL views.
     useLegacySql: Specifies whether to use BigQuery's legacy SQL for this
       view. The default value is true. If set to false, the view will use
-      BigQuery's standard SQL: https://cloud.google.com/bigquery/sql-
-      reference/ Queries and views that reference this view must use the same
-      flag value.
+      BigQuery's GoogleSQL: https://cloud.google.com/bigquery/sql-reference/
+      Queries and views that reference this view must use the same flag value.
+      A wrapper is used here because the default value is True.
     userDefinedFunctionResources: Describes user-defined function resources
       used in the query.
   """
 
-  query = _messages.StringField(1)
-  useExplicitColumnNames = _messages.BooleanField(2)
-  useLegacySql = _messages.BooleanField(3)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 4, repeated=True)
+  privacyPolicy = _messages.MessageField('PrivacyPolicy', 1)
+  query = _messages.StringField(2)
+  useExplicitColumnNames = _messages.BooleanField(3)
+  useLegacySql = _messages.BooleanField(4)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 5, repeated=True)
 
 
+encoding.AddCustomJsonFieldMapping(
+    StandardQueryParameters, 'f__xgafv', '$.xgafv')
+encoding.AddCustomJsonEnumMapping(
+    StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
+encoding.AddCustomJsonEnumMapping(
+    StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')

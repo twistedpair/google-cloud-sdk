@@ -26,8 +26,8 @@ class DNSBindPermissionClient(util.VmwareClientBase):
 
   def __init__(self):
     super(DNSBindPermissionClient, self).__init__()
-    self.service = self.client.projects_locations_global_dnsBindPermission
-    self.describe_service = self.client.projects_locations_global
+    self.service = self.client.projects_locations_dnsBindPermission
+    self.describe_service = self.client.projects_locations
 
   def GetPrincipal(self, dns_bind_permission, user=None, service_account=None):
     if user is not None:
@@ -47,7 +47,7 @@ class DNSBindPermissionClient(util.VmwareClientBase):
             project=project_resource.RelativeName()
         )
     )
-    request = self.messages.VmwareengineProjectsLocationsGlobalDnsBindPermissionGrantRequest(
+    request = self.messages.VmwareengineProjectsLocationsDnsBindPermissionGrantRequest(
         grantDnsBindPermissionRequest=dns_bind_permission,
         name=dns_bind_permission_name,
     )
@@ -63,7 +63,7 @@ class DNSBindPermissionClient(util.VmwareClientBase):
             project=project_resource.RelativeName()
         )
     )
-    request = self.messages.VmwareengineProjectsLocationsGlobalDnsBindPermissionRevokeRequest(
+    request = self.messages.VmwareengineProjectsLocationsDnsBindPermissionRevokeRequest(
         revokeDnsBindPermissionRequest=dns_bind_permission,
         name=dns_bind_permission_name,
     )
@@ -75,7 +75,9 @@ class DNSBindPermissionClient(util.VmwareClientBase):
             project=project_resource.RelativeName()
         )
     )
-    request = self.messages.VmwareengineProjectsLocationsGlobalGetDnsBindPermissionRequest(
-        name=dns_bind_permission_name
+    request = (
+        self.messages.VmwareengineProjectsLocationsGetDnsBindPermissionRequest(
+            name=dns_bind_permission_name
+        )
     )
     return self.describe_service.GetDnsBindPermission(request)

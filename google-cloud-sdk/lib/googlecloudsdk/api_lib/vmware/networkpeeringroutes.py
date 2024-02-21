@@ -27,11 +27,11 @@ class NetworkPeeringRoutesClient(util.VmwareClientBase):
 
   def __init__(self):
     super(NetworkPeeringRoutesClient, self).__init__()
-    self.service = self.client.projects_locations_global_networkPeerings_peeringRoutes
+    self.service = self.client.projects_locations_networkPeerings_peeringRoutes
 
   def List(self, network_peering):
     networkpeering = network_peering.RelativeName()
-    request = self.messages.VmwareengineProjectsLocationsGlobalNetworkPeeringsPeeringRoutesListRequest(
+    request = self.messages.VmwareengineProjectsLocationsNetworkPeeringsPeeringRoutesListRequest(
         parent=networkpeering
     )
     return list_pager.YieldFromList(

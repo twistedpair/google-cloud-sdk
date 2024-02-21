@@ -269,12 +269,16 @@ class IndexesClient(object):
             datapoint_json,
             self.messages.GoogleCloudAiplatformV1beta1IndexDatapoint)
         datapoints.append(datapoint)
+    update_mask = None
+    if args.update_mask:
+      update_mask = ','.join(args.update_mask)
 
     req = self.messages.AiplatformProjectsLocationsIndexesUpsertDatapointsRequest(
         index=index_ref.RelativeName(),
         googleCloudAiplatformV1beta1UpsertDatapointsRequest=self.messages
         .GoogleCloudAiplatformV1beta1UpsertDatapointsRequest(
-            datapoints=datapoints))
+            datapoints=datapoints,
+            updateMask=update_mask))
     return self._service.UpsertDatapoints(req)
 
   def UpsertDatapoints(self, index_ref, args):
@@ -287,10 +291,14 @@ class IndexesClient(object):
             datapoint_json,
             self.messages.GoogleCloudAiplatformV1IndexDatapoint)
         datapoints.append(datapoint)
+    update_mask = None
+    if args.update_mask:
+      update_mask = ','.join(args.update_mask)
 
     req = self.messages.AiplatformProjectsLocationsIndexesUpsertDatapointsRequest(
         index=index_ref.RelativeName(),
         googleCloudAiplatformV1UpsertDatapointsRequest=self.messages
         .GoogleCloudAiplatformV1UpsertDatapointsRequest(
-            datapoints=datapoints))
+            datapoints=datapoints,
+            updateMask=update_mask))
     return self._service.UpsertDatapoints(req)

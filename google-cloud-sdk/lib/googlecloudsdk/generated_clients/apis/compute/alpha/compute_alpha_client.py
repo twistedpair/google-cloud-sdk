@@ -158,7 +158,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of accelerator types.
+      r"""Retrieves an aggregated list of accelerator types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAcceleratorTypesAggregatedListRequest) input message
@@ -246,7 +246,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of addresses.
+      r"""Retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAddressesAggregatedListRequest) input message
@@ -464,7 +464,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of autoscalers.
+      r"""Retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeAutoscalersAggregatedListRequest) input message
@@ -1030,7 +1030,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeBackendServicesAggregatedListRequest) input message
@@ -1492,7 +1492,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of disk types.
+      r"""Retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDiskTypesAggregatedListRequest) input message
@@ -1606,7 +1606,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of persistent disks.
+      r"""Retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeDisksAggregatedListRequest) input message
@@ -2894,7 +2894,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of forwarding rules.
+      r"""Retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeForwardingRulesAggregatedListRequest) input message
@@ -3138,7 +3138,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of future reservations.
+      r"""Retrieves an aggregated list of future reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeFutureReservationsAggregatedListRequest) input message
@@ -3958,7 +3958,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all operations.
+      r"""Retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeGlobalOperationsAggregatedListRequest) input message
@@ -4326,7 +4326,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all HealthCheck resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeHealthChecksAggregatedListRequest) input message
@@ -5426,7 +5426,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of managed instance groups and groups them by zone.
+      r"""Retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupManagersAggregatedListRequest) input message
@@ -6164,7 +6164,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of instance groups and sorts them by zone.
+      r"""Retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceGroupsAggregatedListRequest) input message
@@ -6470,7 +6470,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstanceTemplatesAggregatedListRequest) input message
@@ -6766,7 +6766,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -8128,7 +8128,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of instantSnapshots.
+      r"""Retrieves an aggregated list of instantSnapshots. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInstantSnapshotsAggregatedListRequest) input message
@@ -8372,7 +8372,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of interconnect attachments.
+      r"""Retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeInterconnectAttachmentsAggregatedListRequest) input message
@@ -9612,7 +9612,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of machine types.
+      r"""Retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeMachineTypesAggregatedListRequest) input message
@@ -9700,7 +9700,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all NetworkAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkAttachmentsAggregatedListRequest) input message
@@ -9944,7 +9944,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to the specified project.
+      r"""Retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEdgeSecurityServicesAggregatedListRequest) input message
@@ -10084,7 +10084,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of network endpoint groups and sorts them by zone.
+      r"""Retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNetworkEndpointGroupsAggregatedListRequest) input message
@@ -11180,7 +11180,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+      r"""Retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeGroupsAggregatedListRequest) input message
@@ -11554,7 +11554,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node templates.
+      r"""Retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTemplatesAggregatedListRequest) input message
@@ -11772,7 +11772,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of node types.
+      r"""Retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeNodeTypesAggregatedListRequest) input message
@@ -12260,7 +12260,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of packetMirrorings.
+      r"""Retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePacketMirroringsAggregatedListRequest) input message
@@ -13044,7 +13044,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+      r"""Lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputePublicDelegatedPrefixesAggregatedListRequest) input message
@@ -13776,7 +13776,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of commitments by region.
+      r"""Retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRegionCommitmentsAggregatedListRequest) input message
@@ -14596,7 +14596,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all HealthCheckService resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all HealthCheckService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRegionHealthCheckServicesAggregatedListRequest) input message
@@ -18872,7 +18872,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of reservations.
+      r"""Retrieves an aggregated list of reservations. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeReservationsAggregatedListRequest) input message
@@ -19142,7 +19142,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of resource policies.
+      r"""Retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeResourcePoliciesAggregatedListRequest) input message
@@ -19386,7 +19386,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of routers.
+      r"""Retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeRoutersAggregatedListRequest) input message
@@ -20108,7 +20108,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSecurityPoliciesAggregatedListRequest) input message
@@ -20430,7 +20430,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeServiceAttachmentsAggregatedListRequest) input message
@@ -20736,7 +20736,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all of the snapshots in your project across all regions and global scope.
+      r"""Retrieves an aggregated list of all of the snapshots in your project across all regions and global scope. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSnapshotsAggregatedListRequest) input message
@@ -20980,7 +20980,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslCertificatesAggregatedListRequest) input message
@@ -21146,7 +21146,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all SslPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSslPoliciesAggregatedListRequest) input message
@@ -21364,7 +21364,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of storage pool types.
+      r"""Retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeStoragePoolTypesAggregatedListRequest) input message
@@ -21452,7 +21452,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of storage pools.
+      r"""Retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeStoragePoolsAggregatedListRequest) input message
@@ -21748,7 +21748,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of subnetworks.
+      r"""Retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeSubnetworksAggregatedListRequest) input message
@@ -22236,7 +22236,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetHttpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpProxiesAggregatedListRequest) input message
@@ -22454,7 +22454,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetHttpsProxiesAggregatedListRequest) input message
@@ -22776,7 +22776,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target instances.
+      r"""Retrieves an aggregated list of target instances. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetInstancesAggregatedListRequest) input message
@@ -23020,7 +23020,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target pools.
+      r"""Retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetPoolsAggregatedListRequest) input message
@@ -23586,7 +23586,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all TargetTcpProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetTcpProxiesAggregatedListRequest) input message
@@ -23804,7 +23804,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of target VPN gateways.
+      r"""Retrieves an aggregated list of target VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeTargetVpnGatewaysAggregatedListRequest) input message
@@ -23996,7 +23996,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+      r"""Retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeUrlMapsAggregatedListRequest) input message
@@ -24266,7 +24266,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN gateways.
+      r"""Retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnGatewaysAggregatedListRequest) input message
@@ -24484,7 +24484,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of VPN tunnels.
+      r"""Retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeVpnTunnelsAggregatedListRequest) input message
@@ -24790,7 +24790,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves an aggregated list of all of the queued resources in a project across all zones.
+      r"""Retrieves an aggregated list of all of the queued resources in a project across all zones. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
 
       Args:
         request: (ComputeZoneQueuedResourcesAggregatedListRequest) input message

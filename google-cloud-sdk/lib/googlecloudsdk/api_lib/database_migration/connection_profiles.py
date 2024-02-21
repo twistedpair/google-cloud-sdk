@@ -82,6 +82,8 @@ class ConnectionProfilesClient(object):
         return ''
       if profile.oracle:
         return 'ORACLE'
+      if profile.sqlserver:
+        return 'SQLSERVER'
       # TODO(b/178304949): Add SQL Server case once supported.
       return ''
     except AttributeError as _:
@@ -532,6 +534,30 @@ class ConnectionProfilesClient(object):
       connection_profile_obj.staticServiceIpConnectivity = {}
     return connection_profile_obj
 
+  def _GetSqlServerBackups(self, args):
+    backups_obj = self.messages.SqlServerBackups(gcsBucket=args.gcs_bucket)
+    if args.IsKnownAndSpecified('gcs_prefix'):
+      backups_obj.gcsPrefix = args.gcs_prefix
+    return backups_obj
+
+  def _GetSqlServerConnectionProfile(self, args):
+    """Creates an SQL Server connection profile according to the given args.
+
+    Args:
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      SqlServerConnectionProfile, to use when creating the connection profile.
+    """
+    connection_profile_obj = self.messages.SqlServerConnectionProfile()
+    if args.IsKnownAndSpecified('cloudsql_instance'):
+      connection_profile_obj.cloudSqlId = args.GetValue(self._InstanceArgName())
+    else:
+      connection_profile_obj.backups = self._GetSqlServerBackups(args)
+
+    return connection_profile_obj
+
   def _GetConnectionProfile(self, cp_type, args, connection_profile_id):
     """Returns a connection profile according to type."""
     connection_profile_type = self.messages.ConnectionProfile
@@ -558,6 +584,9 @@ class ConnectionProfilesClient(object):
     elif cp_type == 'ORACLE':
       oracle_connection_profile = self._GetOracleConnectionProfile(args)
       params['oracle'] = oracle_connection_profile
+    elif cp_type == 'SQLSERVER':
+      sqlserver_connection_profile = self._GetSqlServerConnectionProfile(args)
+      params['sqlserver'] = sqlserver_connection_profile
     return connection_profile_type(
         labels=labels,
         state=connection_profile_type.StateValueValuesEnum.CREATING,

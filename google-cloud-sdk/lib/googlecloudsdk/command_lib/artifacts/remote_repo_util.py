@@ -95,6 +95,10 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
       creds.usernamePasswordCredentials.passwordSecretVersion = secret
     remote_cfg.upstreamCredentials = creds
 
+  # Disable Remote Validation
+  if repo_args.disable_remote_validation:
+    remote_cfg.disableUpstreamValidation = True
+
   # MAVEN
   if repo_args.remote_mvn_repo:
     remote_cfg.mavenRepository = messages.MavenRepository()

@@ -2045,7 +2045,7 @@ class AttachedDiskInitializeParams(_messages.Message):
       Extreme persistent disk documentation.
     provisionedThroughput: Indicates how much throughput to provision for the
       disk. This sets the number of throughput mb per second that the disk can
-      handle. Values must be between 1 and 7,124.
+      handle. Values must greater than or equal to 1.
     replicaZones: Required for each regional disk associated with the
       instance. Specify the URLs of the zones where the disk should be
       replicated to. You must provide exactly two replica zones, and one zone
@@ -6261,7 +6261,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -6686,6 +6690,7 @@ class Commitment(_messages.Message):
       GRAPHICS_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED: <no description>
       MEMORY_OPTIMIZED_M3: <no description>
+      STORAGE_OPTIMIZED_Z3: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
     ACCELERATOR_OPTIMIZED = 0
@@ -6703,7 +6708,8 @@ class Commitment(_messages.Message):
     GRAPHICS_OPTIMIZED = 12
     MEMORY_OPTIMIZED = 13
     MEMORY_OPTIMIZED_M3 = 14
-    TYPE_UNSPECIFIED = 15
+    STORAGE_OPTIMIZED_Z3 = 15
+    TYPE_UNSPECIFIED = 16
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -7296,7 +7302,10 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -7381,7 +7390,10 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -7456,7 +7468,10 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -7592,7 +7607,10 @@ class ComputeAddressesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -7739,7 +7757,10 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -7874,7 +7895,10 @@ class ComputeAutoscalersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: Name of the zone for this request.
   """
 
@@ -8139,7 +8163,10 @@ class ComputeBackendBucketsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -8347,7 +8374,10 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -8533,7 +8563,10 @@ class ComputeBackendServicesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -8599,7 +8632,10 @@ class ComputeBackendServicesListUsableRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -8808,7 +8844,10 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -8893,7 +8932,10 @@ class ComputeDiskTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -8996,7 +9038,10 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -9205,7 +9250,10 @@ class ComputeDisksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -9563,7 +9611,10 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -9843,7 +9894,10 @@ class ComputeFirewallPoliciesListRequest(_messages.Message):
       "folders/[FOLDER_ID]" if the parent is a folder or
       "organizations/[ORGANIZATION_ID]" if the parent is an organization.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -10114,7 +10168,10 @@ class ComputeFirewallsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -10252,7 +10309,10 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -10389,7 +10449,10 @@ class ComputeForwardingRulesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -10565,7 +10628,10 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -10729,7 +10795,10 @@ class ComputeFutureReservationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: Name of the zone for this request. Name should conform to RFC1035.
   """
 
@@ -10889,7 +10958,10 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11070,7 +11142,10 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11341,7 +11416,10 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11408,7 +11486,10 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11481,7 +11562,10 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -11580,7 +11664,10 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11686,7 +11773,10 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
       of results.
     parentId: Parent ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11813,7 +11903,10 @@ class ComputeGlobalPublicDelegatedPrefixesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -11913,7 +12006,10 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -12042,7 +12138,10 @@ class ComputeHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -12234,7 +12333,10 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -12426,7 +12528,10 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -12686,7 +12791,10 @@ class ComputeImagesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -12935,7 +13043,10 @@ class ComputeInstanceGroupManagerResizeRequestsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the managed instance group is located.
       The name should conform to RFC1035.
   """
@@ -13041,7 +13152,10 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -13281,7 +13395,10 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -13352,7 +13469,10 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -13423,7 +13543,10 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the managed instance group is located. It
       should conform to RFC1035.
   """
@@ -13493,7 +13616,10 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the managed instance group is located.
   """
 
@@ -14025,7 +14151,10 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -14164,7 +14293,10 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -14234,7 +14366,10 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the instance group is located.
   """
 
@@ -14426,7 +14561,10 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -14570,7 +14708,10 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -14731,7 +14872,10 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -15120,7 +15264,10 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -15189,7 +15336,10 @@ class ComputeInstancesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -16184,7 +16334,10 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -16336,7 +16489,10 @@ class ComputeInstantSnapshotsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -16473,7 +16629,10 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -16612,7 +16771,10 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -16764,7 +16926,10 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -16843,7 +17008,10 @@ class ComputeInterconnectRemoteLocationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -16991,7 +17159,10 @@ class ComputeInterconnectsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -17212,7 +17383,10 @@ class ComputeLicensesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -17383,7 +17557,10 @@ class ComputeMachineImagesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -17486,7 +17663,10 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -17571,7 +17751,10 @@ class ComputeMachineTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -17646,7 +17829,10 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -17801,7 +17987,10 @@ class ComputeNetworkAttachmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region of this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -17938,7 +18127,10 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -18118,7 +18310,10 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -18327,7 +18522,10 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -18398,7 +18596,10 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone where the network endpoint group is located. It
       should comply with RFC1035.
   """
@@ -18677,7 +18878,10 @@ class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -18982,7 +19186,10 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
     region: The region of the request. The response will include all subnet
       routes, static routes and dynamic routes in the region.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -19062,7 +19269,10 @@ class ComputeNetworksListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -19279,7 +19489,10 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -19461,7 +19674,10 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -19530,7 +19746,10 @@ class ComputeNodeGroupsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -19752,7 +19971,10 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -19904,7 +20126,10 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -20012,7 +20237,10 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -20097,7 +20325,10 @@ class ComputeNodeTypesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: The name of the zone for this request.
   """
 
@@ -20335,7 +20566,10 @@ class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
       of results.
     parentId: Parent ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -20527,7 +20761,10 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -20664,7 +20901,10 @@ class ComputePacketMirroringsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -20886,7 +21126,10 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -20954,7 +21197,10 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
     projectsListXpnHostsRequest: A ProjectsListXpnHostsRequest resource to be
       passed as the request body.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -21251,7 +21497,10 @@ class ComputePublicAdvertisedPrefixesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -21375,7 +21624,10 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -21541,7 +21793,10 @@ class ComputePublicDelegatedPrefixesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region of this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -21729,7 +21984,10 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -21969,7 +22227,10 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -22038,7 +22299,10 @@ class ComputeRegionBackendServicesListUsableRequest(_messages.Message):
     region: Name of the region scoping this request. It must be a string that
       meets the requirements in RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -22231,7 +22495,10 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -22342,7 +22609,10 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -22504,7 +22774,10 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -22736,7 +23009,10 @@ class ComputeRegionDisksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23104,7 +23380,10 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23282,7 +23561,10 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23623,7 +23905,10 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
     region: Name of the region scoping this request. This should conform to
       RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23693,7 +23978,10 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23766,7 +24054,10 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
     region: Name of the region scoping this request, should conform to
       RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -23835,7 +24126,10 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -24351,7 +24645,10 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
       RegionInstanceGroupsListInstancesRequest resource to be passed as the
       request body.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -24421,7 +24718,10 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -24601,7 +24901,10 @@ class ComputeRegionInstanceTemplatesListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the regions for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -24776,7 +25079,10 @@ class ComputeRegionInstantSnapshotsListRequest(_messages.Message):
     project: Project ID for this request.
     region: The name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25045,7 +25351,10 @@ class ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
     region: The name of the region where the network endpoint group is
       located. It should comply with RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25115,7 +25424,10 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
     region: The name of the region where the network endpoint group is
       located. It should comply with RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25408,7 +25720,10 @@ class ComputeRegionNetworkFirewallPoliciesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25687,7 +26002,10 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25804,7 +26122,10 @@ class ComputeRegionOperationsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -25989,7 +26310,10 @@ class ComputeRegionSecurityPoliciesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -26191,7 +26515,10 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -26342,7 +26669,10 @@ class ComputeRegionSslPoliciesListAvailableFeaturesRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -26410,7 +26740,10 @@ class ComputeRegionSslPoliciesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -26588,7 +26921,10 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -26766,7 +27102,10 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -27002,7 +27341,10 @@ class ComputeRegionTargetTcpProxiesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -27155,7 +27497,10 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -27295,7 +27640,10 @@ class ComputeRegionZonesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -27374,7 +27722,10 @@ class ComputeRegionsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -27447,7 +27798,10 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -27598,7 +27952,10 @@ class ComputeReservationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: Name of the zone for this request.
   """
 
@@ -27768,7 +28125,10 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -27921,7 +28281,10 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -28060,7 +28423,10 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -28179,7 +28545,10 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     router: Name of the Router resource to query for Nat Mapping information
       of VM endpoints.
   """
@@ -28304,7 +28673,10 @@ class ComputeRoutersListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -28516,7 +28888,10 @@ class ComputeRoutesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -28621,7 +28996,10 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -28768,7 +29146,10 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -28834,7 +29215,10 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -29000,7 +29384,10 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -29153,7 +29540,10 @@ class ComputeServiceAttachmentsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region of this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -29393,7 +29783,10 @@ class ComputeSnapshotsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -29511,7 +29904,10 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -29641,7 +30037,10 @@ class ComputeSslCertificatesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -29729,7 +30128,10 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -29860,7 +30262,10 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -29926,7 +30331,10 @@ class ComputeSslPoliciesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -30040,7 +30448,10 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -30220,7 +30631,10 @@ class ComputeSubnetworksListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -30287,7 +30701,10 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProject: The project id or project number in which the subnetwork
       is intended to be used. Only applied for Shared VPC. See [Shared VPC
       documentation](https://cloud.google.com/vpc/docs/shared-vpc/)
@@ -30516,7 +30933,10 @@ class ComputeTargetGrpcProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -30630,7 +31050,10 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -30760,7 +31183,10 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -30900,7 +31326,10 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -31030,7 +31459,10 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -31284,7 +31716,10 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -31420,7 +31855,10 @@ class ComputeTargetInstancesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: Name of the zone scoping this request.
   """
 
@@ -31597,7 +32035,10 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -31751,7 +32192,10 @@ class ComputeTargetPoolsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -32009,7 +32453,10 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -32237,7 +32684,10 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -32367,7 +32817,10 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -32511,7 +32964,10 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -32648,7 +33104,10 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -32767,7 +33226,10 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
       of results.
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -32922,7 +33384,10 @@ class ComputeUrlMapsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -33075,7 +33540,10 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -33225,7 +33693,10 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -33344,7 +33815,10 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     serviceProjectNumber: The Shared VPC service project id or service project
       number for which aggregated list request is invoked for subnetworks
       list-usable api.
@@ -33480,7 +33954,10 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
     project: Project ID for this request.
     region: Name of the region for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -33624,7 +34101,10 @@ class ComputeZoneOperationsListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
     zone: Name of the zone for request.
   """
 
@@ -33718,7 +34198,10 @@ class ComputeZonesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
+      partial results in case of failure. The default value is false. For
+      example, when partial success behavior is enabled, aggregatedList for a
+      single zone scope either returns all resources in the zone or no
+      resources, with an error code.
   """
 
   filter = _messages.StringField(1)
@@ -34254,7 +34737,7 @@ class Disk(_messages.Message):
       Extreme persistent disk documentation.
     provisionedThroughput: Indicates how much throughput to provision for the
       disk. This sets the number of throughput mb per second that the disk can
-      handle. Values must be between 1 and 7,124.
+      handle. Values must be greater than or equal to 1.
     region: [Output Only] URL of the region where the disk resides. Only
       applicable for regional resources. You must specify this field as part
       of the HTTP request URL. It is not settable as a field in the request
@@ -44546,24 +45029,97 @@ class InstanceGroupManagerResizeRequestStatus(_messages.Message):
   Messages:
     ErrorValue: [Output only] Fatal errors encountered during the queueing or
       provisioning phases of the ResizeRequest that caused the transition to
-      the FAILED state. As a contrary to the last_attempt errors, this field
-      is final and errors are never removed from here, as the RR is not going
-      to retry.
+      the FAILED state. Contrary to the last_attempt errors, this field is
+      final and errors are never removed from here, as the ResizeRequest is
+      not going to retry.
 
   Fields:
     error: [Output only] Fatal errors encountered during the queueing or
       provisioning phases of the ResizeRequest that caused the transition to
-      the FAILED state. As a contrary to the last_attempt errors, this field
-      is final and errors are never removed from here, as the RR is not going
-      to retry.
+      the FAILED state. Contrary to the last_attempt errors, this field is
+      final and errors are never removed from here, as the ResizeRequest is
+      not going to retry.
+    lastAttempt: [Output only] Information about the last attempt to fulfill
+      the request. The value is temporary since the ResizeRequest can retry,
+      as long as it's still active and the last attempt value can either be
+      cleared or replaced with a different error. Since ResizeRequest retries
+      infrequently, the value may be stale and no longer show an active
+      problem. The value is cleared when ResizeRequest transitions to the
+      final state (becomes inactive). If the final state is FAILED the error
+      describing it will be storred in the "error" field only.
   """
 
   class ErrorValue(_messages.Message):
     r"""[Output only] Fatal errors encountered during the queueing or
     provisioning phases of the ResizeRequest that caused the transition to the
-    FAILED state. As a contrary to the last_attempt errors, this field is
-    final and errors are never removed from here, as the RR is not going to
+    FAILED state. Contrary to the last_attempt errors, this field is final and
+    errors are never removed from here, as the ResizeRequest is not going to
     retry.
+
+    Messages:
+      ErrorsValueListEntry: A ErrorsValueListEntry object.
+
+    Fields:
+      errors: [Output Only] The array of errors encountered while processing
+        this operation.
+    """
+
+    class ErrorsValueListEntry(_messages.Message):
+      r"""A ErrorsValueListEntry object.
+
+      Messages:
+        ErrorDetailsValueListEntry: A ErrorDetailsValueListEntry object.
+
+      Fields:
+        code: [Output Only] The error type identifier for this error.
+        errorDetails: [Output Only] An optional list of messages that contain
+          the error details. There is a set of defined message types to use
+          for providing details.The syntax depends on the error code. For
+          example, QuotaExceededInfo will have details when the error code is
+          QUOTA_EXCEEDED.
+        location: [Output Only] Indicates the field in the request that caused
+          the error. This property is optional.
+        message: [Output Only] An optional, human-readable error message.
+      """
+
+      class ErrorDetailsValueListEntry(_messages.Message):
+        r"""A ErrorDetailsValueListEntry object.
+
+        Fields:
+          errorInfo: A ErrorInfo attribute.
+          help: A Help attribute.
+          localizedMessage: A LocalizedMessage attribute.
+          quotaInfo: A QuotaExceededInfo attribute.
+        """
+
+        errorInfo = _messages.MessageField('ErrorInfo', 1)
+        help = _messages.MessageField('Help', 2)
+        localizedMessage = _messages.MessageField('LocalizedMessage', 3)
+        quotaInfo = _messages.MessageField('QuotaExceededInfo', 4)
+
+      code = _messages.StringField(1)
+      errorDetails = _messages.MessageField('ErrorDetailsValueListEntry', 2, repeated=True)
+      location = _messages.StringField(3)
+      message = _messages.StringField(4)
+
+    errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
+
+  error = _messages.MessageField('ErrorValue', 1)
+  lastAttempt = _messages.MessageField('InstanceGroupManagerResizeRequestStatusLastAttempt', 2)
+
+
+class InstanceGroupManagerResizeRequestStatusLastAttempt(_messages.Message):
+  r"""A InstanceGroupManagerResizeRequestStatusLastAttempt object.
+
+  Messages:
+    ErrorValue: Errors that prevented the ResizeRequest to be fulfilled.
+
+  Fields:
+    error: Errors that prevented the ResizeRequest to be fulfilled.
+  """
+
+  class ErrorValue(_messages.Message):
+    r"""Errors that prevented the ResizeRequest to be fulfilled.
 
     Messages:
       ErrorsValueListEntry: A ErrorsValueListEntry object.
@@ -54616,23 +55172,33 @@ class NetworkEndpoint(_messages.Message):
 
   Fields:
     annotations: Metadata defined as annotations on the network endpoint.
+    clientPort: Represents the port number to which PSC consumer sends
+      packets. Only valid for network endpoint groups created with
+      CLIENT_PORT_PER_ENDPOINT mapping mode.
     fqdn: Optional fully qualified domain name of network endpoint. This can
       only be specified when NetworkEndpointGroup.network_endpoint_type is
       NON_GCP_FQDN_PORT.
-    instance: The name or a URL of a specific VM instance that the IP address
-      belongs to. This is required for network endpoints of type
+    instance: The name or a URL of VM instance of this network endpoint. This
+      field is required for network endpoints of type GCE_VM_IP and
       GCE_VM_IP_PORT. The instance must be in the same zone of network
       endpoint group (for zonal NEGs) or in the zone within the region of the
-      NEG (for regional NEGs). The name must be 1-63 characters long, and
-      comply with RFC1035 or be a valid URL pointing to an existing instance.
+      NEG (for regional NEGs). If the ipAddress is specified, it must belongs
+      to the VM instance. The name must be 1-63 characters long, and comply
+      with RFC1035 or be a valid URL pointing to an existing instance.
     ipAddress: Optional IPv4 address of network endpoint. The IP address must
       belong to a VM in Compute Engine (either the primary IP or as part of an
       aliased IP range). If the IP address is not specified, then the primary
       IP address for the VM instance in the network that the network endpoint
-      group belongs to will be used.
+      group belongs to will be used. This field is redundant and need not be
+      set for network endpoints of type GCE_VM_IP. If set, it must be set to
+      the primary internal IP address of the attached VM instance that matches
+      the subnetwork of the NEG. The primary internal IP address from any NIC
+      of a multi-NIC VM instance can be added to a NEG as long as it matches
+      the NEG subnetwork.
     ipv6Address: Optional IPv6 address of network endpoint.
     port: Optional port number of network endpoint. If not specified, the
-      defaultPort for the network endpoint group will be used.
+      defaultPort for the network endpoint group will be used. This field can
+      not be set for network endpoints of type GCE_VM_IP.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -54661,11 +55227,12 @@ class NetworkEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  fqdn = _messages.StringField(2)
-  instance = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  ipv6Address = _messages.StringField(5)
-  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  clientPort = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  fqdn = _messages.StringField(3)
+  instance = _messages.StringField(4)
+  ipAddress = _messages.StringField(5)
+  ipv6Address = _messages.StringField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class NetworkEndpointGroup(_messages.Message):
@@ -54675,6 +55242,8 @@ class NetworkEndpointGroup(_messages.Message):
   for different use cases, see Network endpoint groups overview.
 
   Enums:
+    ClientPortMappingModeValueValuesEnum: Only valid when networkEndpointType
+      is GCE_VM_IP_PORT and the NEG is regional.
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
       network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT,
       NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT,
@@ -54687,16 +55256,19 @@ class NetworkEndpointGroup(_messages.Message):
   Fields:
     annotations: Metadata defined as annotations on the network endpoint
       group.
-    appEngine: Only valid when networkEndpointType is "SERVERLESS". Only one
+    appEngine: Only valid when networkEndpointType is SERVERLESS. Only one of
+      cloudRun, appEngine or cloudFunction may be set.
+    clientPortMappingMode: Only valid when networkEndpointType is
+      GCE_VM_IP_PORT and the NEG is regional.
+    cloudFunction: Only valid when networkEndpointType is SERVERLESS. Only one
       of cloudRun, appEngine or cloudFunction may be set.
-    cloudFunction: Only valid when networkEndpointType is "SERVERLESS". Only
-      one of cloudRun, appEngine or cloudFunction may be set.
-    cloudRun: Only valid when networkEndpointType is "SERVERLESS". Only one of
+    cloudRun: Only valid when networkEndpointType is SERVERLESS. Only one of
       cloudRun, appEngine or cloudFunction may be set.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     defaultPort: The default port used if the port number is not specified in
-      the network endpoint.
+      the network endpoint. If the network endpoint type is either GCE_VM_IP,
+      SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier
@@ -54713,7 +55285,7 @@ class NetworkEndpointGroup(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     network: The URL of the network to which all network endpoints in the NEG
-      belong. Uses "default" project network if unspecified.
+      belong. Uses default project network if unspecified.
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
@@ -54721,11 +55293,11 @@ class NetworkEndpointGroup(_messages.Message):
     pscData: A NetworkEndpointGroupPscData attribute.
     pscTargetService: The target service url used to set up private service
       connection to a Google API or a PSC Producer Service Attachment. An
-      example value is: "asia-northeast3-cloudkms.googleapis.com"
+      example value is: asia-northeast3-cloudkms.googleapis.com
     region: [Output Only] The URL of the region where the network endpoint
       group is located.
     selfLink: [Output Only] Server-defined URL for the resource.
-    serverlessDeployment: Only valid when networkEndpointType is "SERVERLESS".
+    serverlessDeployment: Only valid when networkEndpointType is SERVERLESS.
       Only one of cloudRun, appEngine, cloudFunction or serverlessDeployment
       may be set.
     size: [Output only] Number of network endpoints in the network endpoint
@@ -54735,6 +55307,19 @@ class NetworkEndpointGroup(_messages.Message):
     zone: [Output Only] The URL of the zone where the network endpoint group
       is located.
   """
+
+  class ClientPortMappingModeValueValuesEnum(_messages.Enum):
+    r"""Only valid when networkEndpointType is GCE_VM_IP_PORT and the NEG is
+    regional.
+
+    Values:
+      CLIENT_PORT_PER_ENDPOINT: For each endpoint there is exactly one client
+        port.
+      PORT_MAPPING_DISABLED: NEG should not be used for mapping client port to
+        destination.
+    """
+    CLIENT_PORT_PER_ENDPOINT = 0
+    PORT_MAPPING_DISABLED = 1
 
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
@@ -54793,25 +55378,26 @@ class NetworkEndpointGroup(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   appEngine = _messages.MessageField('NetworkEndpointGroupAppEngine', 2)
-  cloudFunction = _messages.MessageField('NetworkEndpointGroupCloudFunction', 3)
-  cloudRun = _messages.MessageField('NetworkEndpointGroupCloudRun', 4)
-  creationTimestamp = _messages.StringField(5)
-  defaultPort = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  description = _messages.StringField(7)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#networkEndpointGroup')
-  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 10)
-  name = _messages.StringField(11)
-  network = _messages.StringField(12)
-  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 13)
-  pscData = _messages.MessageField('NetworkEndpointGroupPscData', 14)
-  pscTargetService = _messages.StringField(15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 18)
-  size = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  subnetwork = _messages.StringField(20)
-  zone = _messages.StringField(21)
+  clientPortMappingMode = _messages.EnumField('ClientPortMappingModeValueValuesEnum', 3)
+  cloudFunction = _messages.MessageField('NetworkEndpointGroupCloudFunction', 4)
+  cloudRun = _messages.MessageField('NetworkEndpointGroupCloudRun', 5)
+  creationTimestamp = _messages.StringField(6)
+  defaultPort = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  description = _messages.StringField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#networkEndpointGroup')
+  loadBalancer = _messages.MessageField('NetworkEndpointGroupLbNetworkEndpointGroup', 11)
+  name = _messages.StringField(12)
+  network = _messages.StringField(13)
+  networkEndpointType = _messages.EnumField('NetworkEndpointTypeValueValuesEnum', 14)
+  pscData = _messages.MessageField('NetworkEndpointGroupPscData', 15)
+  pscTargetService = _messages.StringField(16)
+  region = _messages.StringField(17)
+  selfLink = _messages.StringField(18)
+  serverlessDeployment = _messages.MessageField('NetworkEndpointGroupServerlessDeployment', 19)
+  size = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class NetworkEndpointGroupAggregatedList(_messages.Message):
@@ -55015,17 +55601,18 @@ class NetworkEndpointGroupAppEngine(_messages.Message):
 
   Fields:
     service: Optional serving service. The service name is case-sensitive and
-      must be 1-63 characters long. Example value: "default", "my-service".
-    urlMask: A template to parse service and version fields from a request
-      URL. URL mask allows for routing to multiple App Engine services without
-      having to create multiple Network Endpoint Groups and backend services.
-      For example, the request URLs "foo1-dot-appname.appspot.com/v1" and
-      "foo1-dot-appname.appspot.com/v2" can be backed by the same Serverless
-      NEG with URL mask "<service>-dot-appname.appspot.com/<version>". The URL
-      mask will parse them to { service = "foo1", version = "v1" } and {
-      service = "foo1", version = "v2" } respectively.
+      must be 1-63 characters long. Example value: default, my-service.
+    urlMask: An URL mask is one of the main components of the Cloud Function.
+      A template to parse service and version fields from a request URL. URL
+      mask allows for routing to multiple App Engine services without having
+      to create multiple Network Endpoint Groups and backend services. For
+      example, the request URLs foo1-dot-appname.appspot.com/v1 and foo1-dot-
+      appname.appspot.com/v2 can be backed by the same Serverless NEG with URL
+      mask <service>-dot-appname.appspot.com/<version>. The URL mask will
+      parse them to { service = "foo1", version = "v1" } and { service =
+      "foo1", version = "v2" } respectively.
     version: Optional serving version. The version name is case-sensitive and
-      must be 1-100 characters long. Example value: "v1", "v2".
+      must be 1-100 characters long. Example value: v1, v2.
   """
 
   service = _messages.StringField(1)
@@ -55041,13 +55628,14 @@ class NetworkEndpointGroupCloudFunction(_messages.Message):
 
   Fields:
     function: A user-defined name of the Cloud Function. The function name is
-      case-sensitive and must be 1-63 characters long. Example value: "func1".
-    urlMask: A template to parse function field from a request URL. URL mask
-      allows for routing to multiple Cloud Functions without having to create
+      case-sensitive and must be 1-63 characters long. Example value: func1.
+    urlMask: An URL mask is one of the main components of the Cloud Function.
+      A template to parse function field from a request URL. URL mask allows
+      for routing to multiple Cloud Functions without having to create
       multiple Network Endpoint Groups and backend services. For example,
-      request URLs " mydomain.com/function1" and "mydomain.com/function2" can
-      be backed by the same Serverless NEG with URL mask "/<function>". The
-      URL mask will parse them to { function = "function1" } and { function =
+      request URLs mydomain.com/function1 and mydomain.com/function2 can be
+      backed by the same Serverless NEG with URL mask /<function>. The URL
+      mask will parse them to { function = "function1" } and { function =
       "function2" } respectively.
   """
 
@@ -55069,12 +55657,13 @@ class NetworkEndpointGroupCloudRun(_messages.Message):
       additional fine-grained traffic routing information. The tag must be
       1-63 characters long, and comply with RFC1035. Example value:
       "revision-0010".
-    urlMask: A template to parse <service> and <tag> fields from a request
-      URL. URL mask allows for routing to multiple Run services without having
-      to create multiple network endpoint groups and backend services. For
-      example, request URLs "foo1.domain.com/bar1" and "foo1.domain.com/bar2"
-      can be backed by the same Serverless Network Endpoint Group (NEG) with
-      URL mask "<tag>.domain.com/<service>". The URL mask will parse them to {
+    urlMask: An URL mask is one of the main components of the Cloud Function.
+      A template to parse <service> and <tag> fields from a request URL. URL
+      mask allows for routing to multiple Run services without having to
+      create multiple network endpoint groups and backend services. For
+      example, request URLs foo1.domain.com/bar1 and foo1.domain.com/bar2 can
+      be backed by the same Serverless Network Endpoint Group (NEG) with URL
+      mask <tag>.domain.com/<service>. The URL mask will parse them to {
       service="bar1", tag="foo1" } and { service="bar2", tag="foo2" }
       respectively.
   """
@@ -55089,9 +55678,11 @@ class NetworkEndpointGroupLbNetworkEndpointGroup(_messages.Message):
 
   Fields:
     defaultPort: The default port used if the port number is not specified in
-      the network endpoint. [Deprecated] This field is deprecated.
+      the network endpoint. If the network endpoint type is either GCE_VM_IP,
+      SERVERLESS or PRIVATE_SERVICE_CONNECT, this field must not be specified.
+      [Deprecated] This field is deprecated.
     network: The URL of the network to which all network endpoints in the NEG
-      belong. Uses "default" project network if unspecified. [Deprecated] This
+      belong. Uses default project network if unspecified. [Deprecated] This
       field is deprecated.
     subnetwork: Optional URL of the subnetwork to which all network endpoints
       in the NEG belong. [Deprecated] This field is deprecated.
@@ -55325,8 +55916,9 @@ class NetworkEndpointGroupServerlessDeployment(_messages.Message):
       this value is platform-specific and is as follows: 1. API Gateway: The
       gateway ID 2. App Engine: The service name 3. Cloud Functions: The
       function name 4. Cloud Run: The service name
-    urlMask: A template to parse platform-specific fields from a request URL.
-      URL mask allows for routing to multiple resources on the same serverless
+    urlMask: An URL mask is one of the main components of the Cloud Function.
+      A template to parse platform-specific fields from a request URL. URL
+      mask allows for routing to multiple resources on the same serverless
       platform without having to create multiple Network Endpoint Groups and
       backend resources. The fields parsed by this template are platform-
       specific and are as follows: 1. API Gateway: The gateway ID 2. App
@@ -64436,9 +65028,10 @@ class Reservation(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     deleteAfterDuration: Duration time relative to reservation creation when
-      GCE will automatically delete this resource.
+      Compute Engine will automatically delete this resource.
     deleteAtTime: Absolute time in future when the reservation will be auto-
-      deleted by GCE. Timestamp is represented in RFC3339 text format.
+      deleted by Compute Engine. Timestamp is represented in RFC3339 text
+      format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     id: [Output Only] The unique identifier for the resource. This identifier

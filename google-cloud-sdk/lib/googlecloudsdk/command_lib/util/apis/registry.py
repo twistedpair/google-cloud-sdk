@@ -122,9 +122,11 @@ class APICollection(object):
 class APIMethod(object):
   """A data holder for method information for an API collection."""
 
-  def __init__(self, service, name, api_collection, method_config):
+  def __init__(self, service, name, api_collection, method_config,
+               disable_pagination=False):
     self._service = service
     self._method_name = name
+    self._disable_pagination = disable_pagination
 
     self.collection = api_collection
 
@@ -203,12 +205,11 @@ class APIMethod(object):
     Returns:
       The apitools Message object.
     """
-    response_type = self.GetResponseType()
-    item_field = self.ListItemField()
-    if item_field:
-      response_type = arg_utils.GetFieldFromMessage(
-          response_type, item_field).type
-    return response_type
+    if (item_field := self.ListItemField()) and self.HasTokenizedRequest():
+      return arg_utils.GetFieldFromMessage(
+          self.GetResponseType(), item_field).type
+    else:
+      return self.GetResponseType()
 
   def GetMessageByName(self, name):
     """Gets a arbitrary apitools message class by name.
@@ -231,13 +232,11 @@ class APIMethod(object):
     """Determines whether this is a List method."""
     return self._method_name == 'List'
 
-  def IsPageableList(self):
-    """Determines whether this is a List method that supports paging."""
-    if (self.IsList() and
-        'pageToken' in self._RequestFieldNames() and
-        'nextPageToken' in self._ResponseFieldNames()):
-      return True
-    return False
+  def HasTokenizedRequest(self):
+    """Determines whether this is a method that supports paging."""
+    return (not self._disable_pagination
+            and 'pageToken' in self._RequestFieldNames()
+            and 'nextPageToken' in self._ResponseFieldNames())
 
   def BatchPageSizeField(self):
     """Gets the name of the page size field in the request if it exists."""
@@ -249,21 +248,24 @@ class APIMethod(object):
     return None
 
   def ListItemField(self):
-    """Gets the name of the field that contains the items for a List response.
+    """Gets the name of the field that contains the items in paginated response.
 
-    This will return None if the method is not a List method or if a single
+    This will return None if the method is not a paginated or if a single
     repeated field of items could not be found in the response type.
 
     Returns:
       str, The name of the field or None.
     """
-    if self.IsList():
-      response = self.GetResponseType()
-      found = [f for f in response.all_fields()
-               if f.variant == messages.Variant.MESSAGE and f.repeated]
-      if len(found) == 1:
-        return found[0].name
-    return None
+    if self._disable_pagination:
+      return None
+
+    response = self.GetResponseType()
+    found = [f for f in response.all_fields()
+             if f.variant == messages.Variant.MESSAGE and f.repeated]
+    if len(found) == 1:
+      return found[0].name
+    else:
+      return None
 
   def _RequestCollection(self):
     """Gets the collection that matches the API parameters of this method.
@@ -340,8 +342,8 @@ class APIMethod(object):
                       limit=None, page_size=None):
     """Gets a request function to call and process the results.
 
-    If this is a List method, it may flatten the response depending on if the
-    List Pager can be used.
+    If this is a method with paginated response, it may flatten the response
+    depending on if the List Pager can be used.
 
     Args:
       service: The apitools service that will be making the request.
@@ -355,22 +357,26 @@ class APIMethod(object):
     Returns:
       A function to make the request.
     """
-    if raw or not self.IsList():
+    if raw or self._disable_pagination:
       return self._NormalRequest(service, request)
 
     item_field = self.ListItemField()
     if not item_field:
-      log.debug(
-          'Unable to flatten list response, raw results being returned.')
+      if self.IsList():
+        log.debug(
+            'Unable to flatten list response, raw results being returned.')
       return self._NormalRequest(service, request)
 
-    if not self.IsPageableList():
+    if not self.HasTokenizedRequest():
       # API doesn't do paging.
-      return self._FlatNonPagedRequest(service, request, item_field)
+      if self.IsList():
+        return self._FlatNonPagedRequest(service, request, item_field)
+      else:
+        return self._NormalRequest(service, request)
 
     def RequestFunc(global_params=None):
       return list_pager.YieldFromList(
-          service, request, field=item_field,
+          service, request, method=self._method_name, field=item_field,
           global_params=global_params, limit=limit,
           current_token_attribute='pageToken',
           next_token_attribute='nextPageToken',
@@ -541,7 +547,8 @@ def GetAPICollection(full_collection_name, api_version=None):
   raise UnknownCollectionError(api_name, api_version, collection)
 
 
-def GetMethod(full_collection_name, method, api_version=None):
+def GetMethod(full_collection_name, method, api_version=None,
+              disable_pagination=False):
   """Gets the specification for the given API method.
 
   Args:
@@ -549,6 +556,7 @@ def GetMethod(full_collection_name, method, api_version=None):
     method: str, The name of the method.
     api_version: str, The version string of the API or None to use the default
       for this API.
+    disable_pagination: bool, Boolean for whether pagination should be disabled
 
   Returns:
     APIMethod, The method specification.
@@ -556,7 +564,9 @@ def GetMethod(full_collection_name, method, api_version=None):
   Raises:
     UnknownMethodError: If the method does not exist on the collection.
   """
-  methods = GetMethods(full_collection_name, api_version=api_version)
+  methods = GetMethods(
+      full_collection_name, api_version=api_version,
+      disable_pagination=disable_pagination)
   for m in methods:
     if m.name == method:
       return m
@@ -577,13 +587,15 @@ def _GetApiClient(api_name, api_version):
   return client
 
 
-def GetMethods(full_collection_name, api_version=None):
+def GetMethods(
+    full_collection_name, api_version=None, disable_pagination=False):
   """Gets all the methods available on the given collection.
 
   Args:
     full_collection_name: str, The collection including the api name.
     api_version: str, The version string of the API or None to use the default
       for this API.
+    disable_pagination: bool, Boolean for whether pagination should be disabled
 
   Returns:
     [APIMethod], The method specifications.
@@ -600,5 +612,5 @@ def GetMethods(full_collection_name, api_version=None):
   method_names = service.GetMethodsList()
   method_configs = [(name, service.GetMethodConfig(name))
                     for name in method_names]
-  return [APIMethod(service, name, api_collection, config)
+  return [APIMethod(service, name, api_collection, config, disable_pagination)
           for name, config in method_configs]

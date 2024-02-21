@@ -375,6 +375,28 @@ def _ApplyBuildpackStackArgsToFunction(function, args, track):
   return updated_fields
 
 
+def _ApplyBuildServiceAccountToFunction(function, args, track):
+  """Populates the `build_service_account` field of a Cloud Function message.
+
+  Args:
+    function: Cloud function message to be populated.
+    args: All CLI arguments.
+    track: release track.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+  """
+  if track is base.ReleaseTrack.GA:
+    return []
+
+  updated_fields = []
+  if args.IsSpecified('build_service_account'):
+    function.buildServiceAccount = args.build_service_account
+    updated_fields.append('build_service_account')
+
+  return updated_fields
+
+
 def _CreateBindPolicyCommand(function_ref):
   template = (
       'gcloud functions add-iam-policy-binding %s --region=%s '
@@ -655,6 +677,10 @@ def Run(args, track=None):
   # TODO(b/287538740): Can be cleaned up after a full transition to the AR.
   updated_fields.extend(
       _DefaultDockerRegistryIfUnspecified(function, updated_fields)
+  )
+
+  updated_fields.extend(
+      _ApplyBuildServiceAccountToFunction(function, args, track)
   )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')

@@ -842,6 +842,33 @@ class DataprocV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Analyze(self, request, global_params=None):
+      r"""Analyze a Batch for possible recommendations and insights.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesAnalyzeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Analyze')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Analyze.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}:analyze',
+        http_method='POST',
+        method_id='dataproc.projects.locations.batches.analyze',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:analyze',
+        request_field='analyzeBatchRequest',
+        request_type_name='DataprocProjectsLocationsBatchesAnalyzeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a batch workload that executes asynchronously.
 

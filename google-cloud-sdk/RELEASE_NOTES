@@ -5,6 +5,126 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 465.0.0 (2024-02-21)
+
+### AI
+
+* Added `update-mask` to `gcloud ai indexes upsert-datapoints` command for
+dynamic metadata update.
+
+### App Engine
+
+* Enable devappserver support for Go 1.22 runtime.
+
+### Certificate Manager
+
+* Added `--type` flag to `gcloud certificate-manager dns-authorizations create`.
+
+### Cloud Build
+
+* Promoted `gcloud builds connections create bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds connections update bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds triggers create bitbucket-cloud`, `gcloud builds triggers update bitbucket-cloud`, `gcloud builds triggers create bitbucket-data-center`, `gcloud builds triggers update bitbucket-data-center` command to beta and GA.
+
+### Cloud Composer
+
+* Add `--enable-cloud-data-lineage-integration` and `--disable-cloud-data-lineage-integration` to `gcloud composer environments create` to explicitly enable or disable the integration on creations.
+* Add `--enable-cloud-data-lineage-integration` and `--disable-cloud-data-lineage-integration` to `gcloud composer environments update` to explicitly enable or disable the integration on updates.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.1
+  * Adds support for Datastore Mode to the Firstore Emulator. Adds
+`--database-mode` flag to `gcloud emulator firestore start` command. Note
+that this is a preview feature and if you find any bugs, please file them
+here: <https://github.com/firebase/firebase-tools/issues>.
+
+### Cloud Functions
+
+* Added `--v2` flag to `gcloud functions list` to allow using Cloud Functions v2
+  APIs and return both 1st Gen and 2nd Gen functions in the v2 format <https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#Function>.
+* Added `--v2` flag to `gcloud functions describe` to allow using Cloud
+  Functions v2 APIs and return both 1st Gen and 2nd Gen functions in the v2 format <https://cloud.google.com/functions/docs/reference/rest/v2/projects.locations.functions#Function>.
+* In an upcoming release, `gcloud functions deploy` will create 2nd gen
+  functions by default.  A warning has been added for all
+  `gcloud functions deploy` calls that operate on 1st gen functions.  To
+  continue to create 1st gen functions, use the flag `--no-gen2`.
+
+### Cloud Infrastructure Manager
+
+*   Added `--file` flag to `gcloud infra-manager previews export` to download
+    export artifacts to a custom file name or by default to files named
+    `preview` if one is not provided.
+
+### Cloud NetApp
+
+* Added `--large-capacity` and `--multiple-endpoints` flag to `gcloud beta netapp volumes {create}`.
+
+### Cloud Run
+
+* Added `firestore` integration type to `gcloud alpha/beta run integrations`
+  command groups.
+
+### Cloud TPU
+
+* Fixed race condition bug in SSH and SCP commands that may affect large TPUs.
+
+### Compute Engine
+
+* Promoted `--security-profile-group` and `--[no-]tls-inspect` flags for `gcloud compute [network-]firewall-policies rules [create|update]` to v1.
+
+### Database Migration
+
+* Added heterogeneous migration job update filter and commit id support via `gcloud database-migration migration-jobs update`.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.27.9 to 1.26.13.
+* Additional kubectl versions:
+  * kubectl.1.26 (1.26.13)
+  * kubectl.1.27 (1.27.10)
+  * kubectl.1.28 (1.28.6)
+  * kubectl.1.28 (1.29.1)
+*  Added `--enable-queued-provisioning` flag to `gcloud container node-pools update`
+  for enabling queued provisioning on existing node pools. For more information see
+  <https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest>.
+* Made `--enable-queued-provisioning` GA in `gcloud container node-pools create`.
+  For more information see <https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest>.
+* Added `--enable-cilium-clusterwide-network-policy` flag to `gcloud
+  container clusters create` and `gcloud container clusters update`.
+* Promoted `gcloud container binauthz policy evaluate` to beta.
+* Updated help text for `--services-ipv4-cidr`, `--create-subnetwork`,
+`--cluster-secondary-range-name`, `--services-secondary-range-name` options to
+have consistent text noting the requirement of `--enable-ip-alias` option
+for `gcloud container create`.
+* Updated help text for `--services-ipv4-cidr`, `--create-subnetwork`,
+`--cluster-secondary-range-name`, `--services-secondary-range-name` options to
+remove the note requiring `--enable-ip-alias` option for `gcloud container
+create-auto`. Autopilot clusters always use alias IPs for pods, so
+`--enable-ip-alias` option is always set for create-auto and cannot be specified
+by the user.
+
+### Security Command Center
+
+* Fixed issue that caused `gcloud scc muteconfigs update` to crash when an `--update-mask` is provided.
+* Promoted management api `gcloud scc manage ...` commands to GA.
+
+### Service Extensions
+
+* Promoted `gcloud service-extensions lb-route-extensions` and `gcloud
+  service-extensions lb-traffic-extensions` to GA.
+
+### Vmware Engine
+
+* Added `--vmware-engine-network-project` flag to `gcloud vmware network-peerings create` to allow peering with VMware Engine network of different project.
+* Expanded logging server `gcloud vmware private-clouds logging-servers` capabilities with TLS, RELP, and SSL protocol support.
+
+### Workbench
+
+* Added `gcloud workbench instances resize-disk` to update workbench instances disk size.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 464.0.0 (2024-02-13)
 
 ### Google Cloud CLI

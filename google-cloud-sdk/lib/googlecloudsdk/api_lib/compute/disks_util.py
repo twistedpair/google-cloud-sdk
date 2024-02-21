@@ -22,6 +22,14 @@ from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.core.exceptions import Error
 
 
+_THROUGHPUT_PROVISIONING_SUPPORTED_DISK_TYPES = (
+    'cs-throughput',
+    'hyperdisk-throughput',
+    'hyperdisk-balanced',
+    'hyperdisk-ml',
+)
+
+
 class UnknownDiskResourceError(Error):
   """Raised when a disk resource argument is neither regional nor zonal."""
 
@@ -197,7 +205,7 @@ def GetDiskInfo(disk_ref, client, messages):
     return _RegionalDisk(client, disk_ref, messages)
 
 
-def IsProvisioingTypeIops(disk_type):
+def IsProvisioningTypeIops(disk_type):
   """Check if the given disk type (name or URI) supports IOPS provisioning.
 
   Args:
@@ -226,8 +234,10 @@ def IsProvisioningTypeThroughput(disk_type):
     otherwise.
   """
 
-  return (disk_type.endswith('/cs-throughput') or
-          disk_type in ['cs-throughput'] or
-          disk_type.endswith('/hyperdisk-throughput') or
-          disk_type.endswith('/hyperdisk-balanced') or
-          disk_type in ['hyperdisk-throughput', 'hyperdisk-balanced'])
+  return (
+      disk_type.endswith('/cs-throughput')
+      or disk_type.endswith('/hyperdisk-throughput')
+      or disk_type.endswith('/hyperdisk-balanced')
+      or disk_type.endswith('/hyperdisk-ml')
+      or disk_type in _THROUGHPUT_PROVISIONING_SUPPORTED_DISK_TYPES
+  )

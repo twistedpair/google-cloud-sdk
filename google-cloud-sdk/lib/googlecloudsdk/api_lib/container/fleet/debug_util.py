@@ -95,15 +95,15 @@ def MeshInfoGenerator(args):
     )
     if matcher is None:
       continue
-    if (
-        matcher.group(2) == args.location
-        and matcher.group(3) == args.membership
-    ):
+    if matcher.group(2) != args.location or matcher.group(3) != args.membership:
+      continue
+    else:
       matcher_new = re.match(r'.+/meshes/(.*)', mesh_info.name)
       if matcher_new is None: continue
       target_mesh_name = matcher_new.group(1)
       target_project_number = matcher.group(1)
-    break
+      break
+
   # it's possible the targetMeshName does not exist.
   # Return '' as meshName if meshName not exists.
   return target_mesh_name, target_project_number

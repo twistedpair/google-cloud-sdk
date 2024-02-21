@@ -288,20 +288,6 @@ def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
   return value
 
 
-def Limit(method, namespace):
-  """Gets the value of the limit flag (if present)."""
-  if (hasattr(namespace, 'limit') and method.IsPageableList() and
-      method.ListItemField()):
-    return getattr(namespace, 'limit')
-
-
-def PageSize(method, namespace):
-  """Gets the value of the page size flag (if present)."""
-  if (hasattr(namespace, 'page_size') and method.IsPageableList() and
-      method.ListItemField() and method.BatchPageSizeField()):
-    return getattr(namespace, 'page_size')
-
-
 class ArgObjectType(object):
   """An interface for custom type generators that bind directly to a message.
 

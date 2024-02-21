@@ -422,6 +422,26 @@ def CreateInstanceDiagnoseRequest(args, messages):
           diagnosticConfig=diagnostic_config))
 
 
+def CreateInstanceResizeDisk(args, messages):
+  """Create and return ResizeDisk request."""
+  instance = GetInstanceResource(args).RelativeName()
+  request = None
+  if args.IsSpecified('boot_disk_size'):
+    request = messages.ResizeDiskRequest(
+        bootDisk=messages.BootDisk(
+            diskSizeGb=args.boot_disk_size,
+        )
+    )
+  elif args.IsSpecified('data_disk_size'):
+    request = messages.ResizeDiskRequest(
+        dataDisk=messages.DataDisk(
+            diskSizeGb=args.data_disk_size,
+        )
+    )
+  return messages.NotebooksProjectsLocationsInstancesResizeDiskRequest(
+      notebookInstance=instance, resizeDiskRequest=request)
+
+
 def CreateInstanceUpgradeRequest(args, messages):
   instance = GetInstanceResource(args).RelativeName()
   upgrade_request = messages.UpgradeInstanceRequest()

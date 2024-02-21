@@ -15,13 +15,14 @@ package = 'blockchainvalidatormanager'
 
 class BlockchainValidatorConfig(_messages.Message):
   r"""Represents the configuration of a blockchain validator, as it would be
+
   configured on a validator client.
 
   Enums:
     BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
       validator.
-    KeySourceTypeValueValuesEnum: Immutable. The source of the voting key for
-      the blockchain validator.
+    KeySourceValueValuesEnum: Immutable. The source of the voting key for the
+      blockchain validator.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -35,9 +36,11 @@ class BlockchainValidatorConfig(_messages.Message):
       offline.
     blockchainType: Immutable. The blockchain type of the validator.
     createTime: Output only. [Output only] Create time stamp
+    eip2334SeedPhraseReference: Optional. Location in Secret Manager to
+      read/write seed phrase, encryption passphrase, etc.
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
-    keySourceType: Immutable. The source of the voting key for the blockchain
+    keySource: Immutable. The source of the voting key for the blockchain
       validator.
     labels: Optional. Labels as key value pairs
     name: Identifier. The fully qualified name of the validator, based on its
@@ -66,7 +69,7 @@ class BlockchainValidatorConfig(_messages.Message):
     BLOCKCHAIN_TYPE_UNSPECIFIED = 0
     ETHEREUM = 1
 
-  class KeySourceTypeValueValuesEnum(_messages.Enum):
+  class KeySourceValueValuesEnum(_messages.Enum):
     r"""Immutable. The source of the voting key for the blockchain validator.
 
     Values:
@@ -108,24 +111,28 @@ class BlockchainValidatorConfig(_messages.Message):
   blockchainNodeId = _messages.StringField(1)
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
-  ethereumProtocolDetails = _messages.MessageField('EthereumDetails', 4)
-  keySourceType = _messages.EnumField('KeySourceTypeValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 8)
-  updateTime = _messages.StringField(9)
-  validationWorkEnabled = _messages.BooleanField(10)
+  eip2334SeedPhraseReference = _messages.MessageField(
+      'Eip2334SeedPhraseReference', 4
+  )
+  ethereumProtocolDetails = _messages.MessageField('EthereumDetails', 5)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 9)
+  updateTime = _messages.StringField(10)
+  validationWorkEnabled = _messages.BooleanField(11)
 
 
 class BlockchainValidatorConfigTemplate(_messages.Message):
   r"""A templatised set of blockchain validator configs, from which multiple
+
   configurations can be generated.
 
   Enums:
     BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
       validator.
-    KeySourceTypeValueValuesEnum: Immutable. The source of the voting key for
-      the blockchain validator.
+    KeySourceValueValuesEnum: Immutable. The source of the voting key for the
+      blockchain validator.
 
   Fields:
     blockchainType: Immutable. The blockchain type of the validator.
@@ -133,7 +140,7 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
       phrase, encryption passphrase, etc.
     ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
       validator.
-    keySourceType: Immutable. The source of the voting key for the blockchain
+    keySource: Immutable. The source of the voting key for the blockchain
       validator.
     remoteWeb3Signer: Connection details of a remote Web3Signer service to use
       for signing attestations and blocks.
@@ -155,7 +162,7 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
     BLOCKCHAIN_TYPE_UNSPECIFIED = 0
     ETHEREUM = 1
 
-  class KeySourceTypeValueValuesEnum(_messages.Enum):
+  class KeySourceValueValuesEnum(_messages.Enum):
     r"""Immutable. The source of the voting key for the blockchain validator.
 
     Values:
@@ -173,7 +180,7 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 1)
   eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseTemplate', 2)
   ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 3)
-  keySourceType = _messages.EnumField('KeySourceTypeValueValuesEnum', 4)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 4)
   remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 5)
   validationWorkEnabled = _messages.BooleanField(6)
 
@@ -423,6 +430,49 @@ class ClientIdentity(_messages.Message):
   clientCertificateFingerprint = _messages.StringField(2)
 
 
+class Eip2334SeedPhraseReference(_messages.Message):
+  r"""Location of the seed material, and derivation path used to generate the
+
+  voting key.
+
+  Enums:
+    SeedPhraseSourceValueValuesEnum: Immutable. Origin of the seed phrase.
+
+  Fields:
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key.
+    derivationIndex: Immutable. The index to derive the voting key at, used as
+      part of a derivation path. The derivation path is built from this as
+      "m/12381/3600//0/0" See also
+      https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+    seedPhraseSource: Immutable. Origin of the seed phrase.
+  """
+
+  class SeedPhraseSourceValueValuesEnum(_messages.Enum):
+    r"""Immutable. Origin of the seed phrase.
+
+    Values:
+      SEED_PHRASE_SOURCE_UNSPECIFIED: Seed phrase source is not specified.
+      CREATE_NO_EXPORT: The seed phrase was generated inside GCP and never
+        exported.
+      CREATE_AND_EXPORT: The seed phrase was generated inside GCP and
+        exported.
+      IMPORTED: The seed phrase was imported from outside GCP.
+    """
+
+    SEED_PHRASE_SOURCE_UNSPECIFIED = 0
+    CREATE_NO_EXPORT = 1
+    CREATE_AND_EXPORT = 2
+    IMPORTED = 3
+
+  depositTxData = _messages.StringField(1)
+  derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  seedPhraseSecret = _messages.StringField(3)
+  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 4)
+
+
 class Eip2334SeedPhraseTemplate(_messages.Message):
   r"""Location of the seed material, and derivation path used to generate the
   voting key.
@@ -474,7 +524,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EthereumDetails(_messages.Message):

@@ -50,6 +50,8 @@ from googlecloudsdk.command_lib.eventarc import types as trigger_types
 
 GEN_1 = '1st gen'
 GEN_2 = '2nd gen'
+CLOUD_FUNCTION = 'CloudFunction'
+FUNCTION = 'Function'
 
 
 def _TransformState(data, undefined=''):
@@ -81,8 +83,8 @@ def _TransformTrigger(data, undefined=''):
   Returns:
     str containing information about functions trigger.
   """
-  generation = _TransformGeneration(data)
-  if generation == GEN_1:
+  data_type = _InferFunctionMessageFormat(data)
+  if data_type == CLOUD_FUNCTION:
     if 'httpsTrigger' in data:
       return 'HTTP Trigger'
     if 'gcsTrigger' in data:
@@ -93,7 +95,7 @@ def _TransformTrigger(data, undefined=''):
       return 'Event Trigger'
     return undefined
 
-  elif generation == GEN_2:
+  elif data_type == FUNCTION:
     if 'eventTrigger' in data:
       event_trigger = data['eventTrigger']
       event_type = event_trigger.get('eventType')
@@ -124,8 +126,13 @@ def _TransformTrigger(data, undefined=''):
   return undefined
 
 
-def _TransformGeneration(data, undefined='-'):
+def _InferFunctionMessageFormat(data, undefined='-'):
   """Returns Cloud Functions product version.
+
+  Infers data type by checking whether the object contains particular fields of
+  CloudFunction (1st Gen Function message type) or Function (2nd Gen Function
+  message type). Notes that Function can be used for both 1st Gen and 2nd Gen
+  functions.
 
   Args:
     data: JSON-serializable 1st and 2nd gen Functions objects.
@@ -140,19 +147,47 @@ def _TransformGeneration(data, undefined='-'):
   build_id = data.get('buildId')
   runtime = data.get('runtime')
   if any([entry_point, build_id, runtime]):
-    return GEN_1
+    return CLOUD_FUNCTION
 
   build_config = data.get('buildConfig')
   service_config = data.get('serviceConfig')
 
   if any([build_config, service_config]):
+    return FUNCTION
+
+  return undefined
+
+
+def _TransformGeneration(data, undefined='-'):
+  """Returns Cloud Functions product version.
+
+  Args:
+    data: JSON-serializable 1st and 2nd gen Functions objects.
+    undefined: Returns this value if the resource cannot be formatted.
+
+  Returns:
+    str containing inferred product version.
+  """
+
+  # data.get returns None if entry doesn't exist
+  environment = data.get('environment')
+  if environment == 'GEN_1':
+    return GEN_1
+  if environment == 'GEN_2':
+    return GEN_2
+
+  # If there is no `environment` field, infers generation from data type.
+  data_type = _InferFunctionMessageFormat(data, undefined)
+  if data_type == CLOUD_FUNCTION:
+    return GEN_1
+  elif data_type == FUNCTION:
     return GEN_2
 
   return undefined
 
 
 def _TransformEnvironments(data):
-  """Returns Cloud Functions product version.
+  """Returns the supported environments for a runtime.
 
   Args:
     data: JSON-serializable Runtimes object.

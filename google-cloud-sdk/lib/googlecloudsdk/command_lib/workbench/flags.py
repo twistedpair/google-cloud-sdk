@@ -600,3 +600,32 @@ def AddDiagnoseInstanceFlags(parser):
   """Construct groups and arguments specific to the instance diagnosing."""
   AddInstanceResource(parser)
   AddDiagnosticConfigFlags(parser, 'instance')
+
+
+def AddResizeDiskFlags(parser):
+  """Construct groups and arguments specific to the disk resizing."""
+  AddInstanceResource(parser)
+  disk_group = parser.add_group(
+      help=(
+          'Disk resizing configurations Amount needs to be greater than the'
+          ' existing size.'
+      ),
+      mutex=True,
+      required=True,
+  )
+  disk_group.add_argument(
+      '--boot-disk-size',
+      type=int,
+      help=(
+          'Size of boot disk in GB attached to this instance, up to '
+          'a maximum of 64000 GB (64 TB).'
+      ),
+  )
+  disk_group.add_argument(
+      '--data-disk-size',
+      type=int,
+      help=(
+          'Size of data disk in GB attached to this instance, up to '
+          'a maximum of 64000 GB (64 TB). '
+      ),
+  )

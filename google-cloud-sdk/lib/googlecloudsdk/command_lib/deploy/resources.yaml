@@ -153,3 +153,18 @@ custom_target_type:
     help: |
       The name of the Cloud Deploy custom target type.
   disable_auto_completers: false
+
+deploy_policy:
+  name: deploy policy
+  collection: clouddeploy.projects.locations.deployPolicies
+  # The field in the create request that holds the name of the Deploy Policy being created.
+  request_id_field: deployPolicyId
+  attributes:
+  - *project
+  - *location
+  - &deploy_policy
+    parameter_name: deployPoliciesId
+    attribute_name: deploy_policy
+    help: |
+      The name of the Cloud Deploy Deploy Policy.
+  disable_auto_completers: false

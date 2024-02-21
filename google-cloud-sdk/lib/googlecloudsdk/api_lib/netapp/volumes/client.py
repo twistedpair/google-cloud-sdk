@@ -128,6 +128,8 @@ class VolumesClient(object):
       backup=None,
       restricted_actions=None,
       backup_config=None,
+      large_capacity=None,
+      multiple_endpoints=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
@@ -150,6 +152,8 @@ class VolumesClient(object):
         backup=backup,
         restricted_actions=restricted_actions,
         backup_config=backup_config,
+        large_capacity=large_capacity,
+        multiple_endpoints=multiple_endpoints,
         labels=labels,
     )
 
@@ -391,6 +395,8 @@ class VolumesAdapter(object):
       backup=None,
       restricted_actions=None,
       backup_config=None,
+      large_capacity=None,
+      multiple_endpoints=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -414,6 +420,8 @@ class VolumesAdapter(object):
       backup: the backup to create the Volume from.
       restricted_actions: the actions to be restricted on a Volume
       backup_config: the Backup Config attached to the Volume
+      large_capacity: Bool on whether to use large capacity for Volume
+      multiple_endpoints: Bool on whether to use multiple endpoints for Volume
       labels: the parsed labels value.
 
     Returns:
@@ -447,6 +455,10 @@ class VolumesAdapter(object):
     volume.restrictedActions = restricted_actions
     if backup_config is not None:
       self.ParseBackupConfig(volume, backup_config)
+    if large_capacity is not None:
+      volume.largeCapacity = large_capacity
+    if multiple_endpoints is not None:
+      volume.multipleEndpoints = multiple_endpoints
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -471,6 +483,8 @@ class VolumesAdapter(object):
       backup=None,
       restricted_actions=None,
       backup_config=None,
+      large_capacity=None,
+      multiple_endpoints=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -509,6 +523,10 @@ class VolumesAdapter(object):
       volume_config.restrictedActions = restricted_actions
     if backup_config is not None:
       self.ParseBackupConfig(volume_config, backup_config)
+    if large_capacity is not None:
+      volume_config.largeCapacity = large_capacity
+    if multiple_endpoints is not None:
+      volume_config.multipleEndpoints = multiple_endpoints
     return volume_config
 
   def ParseBackupConfig(self, volume, backup_config):

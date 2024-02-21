@@ -249,7 +249,7 @@ def _GetGapicClientInstance(api_name,
     if endpoint_override is not None:
       return address
 
-    return _UniversifyAddress(address)
+    return UniversifyAddress(address)
 
   client_class = _GetGapicClientClass(
       api_name, api_version, transport_choice=transport_choice)
@@ -260,12 +260,12 @@ def _GetGapicClientInstance(api_name,
       mtls_enabled=_MtlsEnabled(api_name, api_version))
 
 
-def _UniversifyAddress(address):
-  """Take universe into account."""
+def UniversifyAddress(address):
+  """Update a URL based on the current universe domain."""
   universe_domain_property = properties.VALUES.core.universe_domain
   if address is not None and universe_domain_property.IsExplicitlySet():
     address = address.replace(universe_domain_property.default,
-                              universe_domain_property.Get())
+                              universe_domain_property.Get(), 1)
   return address
 
 
@@ -335,7 +335,7 @@ def _GetBaseUrlFromApi(api_name, api_version):
       client_base_url = 'https://{}.googleapis.com/{}'.format(
           api_name, api_version
       )
-  return _UniversifyAddress(client_base_url)
+  return UniversifyAddress(client_base_url)
 
 
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
@@ -355,7 +355,7 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   if endpoint_override:
     address = _BuildEndpointOverride(endpoint_override, client_base_url)
   elif _MtlsEnabled(api_name, api_version):
-    address = _UniversifyAddress(
+    address = UniversifyAddress(
         _GetMtlsEndpoint(api_name, api_version, client_class)
     )
   else:

@@ -1076,6 +1076,23 @@ def GetDatapointsFilePathArg(noun, required=False):
       .format(noun=noun))
 
 
+def GetDynamicMetadataUpdateMaskArg(required=False):
+  return base.Argument(
+      '--update-mask',
+      required=required,
+      metavar='UPDATE_MASK_PATH',
+      type=arg_parsers.ArgList(),
+      help="""\
+Update mask is used to specify the fields to be
+overwritten in the datapoints by the update. The fields specified in the
+update_mask are relative to each IndexDatapoint inside datapoints, not
+the full request.
+
+Updatable fields:
+* Use --update-mask=`all_restricts` to update both `restricts` and `numeric_restricts`.
+""")
+
+
 def GetIndexDatapointIdsArg(noun, required=False):
   return base.Argument(
       '--datapoint-ids',

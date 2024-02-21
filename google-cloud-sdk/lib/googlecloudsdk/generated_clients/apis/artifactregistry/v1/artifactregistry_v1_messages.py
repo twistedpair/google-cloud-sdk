@@ -2159,7 +2159,11 @@ class OperationMetadata(_messages.Message):
 class Package(_messages.Message):
   r"""Packages are named collections of versions.
 
+  Messages:
+    AnnotationsValue: Optional. Client specified annotations.
+
   Fields:
+    annotations: Optional. Client specified annotations.
     createTime: The time when the package was created.
     displayName: The display name of the package.
     name: The name of the package, for example: `projects/p1/locations/us-
@@ -2169,10 +2173,36 @@ class Package(_messages.Message):
       publishing a new version of the package.
   """
 
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Client specified annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class Policy(_messages.Message):
@@ -2264,6 +2294,7 @@ class ProjectSettings(_messages.Message):
     name: The name of the project's settings. Always of the form:
       projects/{project-id}/projectSettings In update request: never set In
       response: always set
+    pullPercent: A integer attribute.
   """
 
   class LegacyRedirectionStateValueValuesEnum(_messages.Enum):
@@ -2291,6 +2322,7 @@ class ProjectSettings(_messages.Message):
 
   legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
   name = _messages.StringField(2)
+  pullPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class PythonPackage(_messages.Message):
@@ -2367,8 +2399,8 @@ class RemoteRepositoryConfig(_messages.Message):
       host, should they also be removed from the Artifact Registry repository
       when requested? Only supported for docker, maven, and python
     description: The description of the remote source.
-    disableUpstreamValidation: Optional. A create/update remote repo option to
-      avoid making a HEAD/GET request to validate a remote repo and any
+    disableUpstreamValidation: Input only. A create/update remote repo option
+      to avoid making a HEAD/GET request to validate a remote repo and any
       supplied upstream credentials.
     dockerRepository: Specific settings for a Docker remote repository.
     goRepository: Specific settings for a Go remote repository.

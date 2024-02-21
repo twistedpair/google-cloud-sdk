@@ -95,12 +95,13 @@ class IstioctlWrapper(binary_operations.StreamingBinaryBackedOperation):
     exec_args = [
         'experimental',
         'proxy-status',
+        '--xds-via-agents'
     ]
     if pod_name:
       exec_args.extend([pod_name])
     exec_args.extend(['--context', context])
     if mesh_name:
-      exec_args.extend(['--meshName', mesh_name])
+      exec_args.extend(['--meshName', 'mesh:' + mesh_name])
     if project_number:
       exec_args.extend(['--projectNumber', project_number])
     return exec_args

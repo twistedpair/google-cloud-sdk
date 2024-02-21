@@ -31,29 +31,36 @@ class GCLLogTailer(v1_logs_util.TailerBase):
   CLOUDBUILD_BUCKET = 'cloudbuild'
   ALL_LOGS_VIEW = '_AllLogs'
 
-  def __init__(self, project, location, log_filter, out=log.status):
+  def __init__(
+      self, project, location, log_filter, has_worker_pool, out=log.status
+  ):
     self.tailer = v1_logs_util.GetGCLLogTailer()
     self.log_filter = log_filter
     self.project = project
     self.location = location
-    self.hybrid_pool_default_log_view = 'projects/{project_id}/locations/global/buckets/_Default/views/{view}'.format(
-        project_id=self.project, view=self.ALL_LOGS_VIEW)
-    self.cloud_build_log_view = 'projects/{project_id}/locations/{location}/buckets/{bucket}/views/{view}'.format(
+    self.default_log_view = (
+        'projects/{project_id}/locations/global/buckets/_Default/views/{view}'
+    ).format(project_id=self.project, view=self.ALL_LOGS_VIEW)
+    self.workerpool_log_view = 'projects/{project_id}/locations/{location}/buckets/{bucket}/views/{view}'.format(
         project_id=self.project,
         location=self.location,
         bucket=self.CLOUDBUILD_BUCKET,
         view=self.ALL_LOGS_VIEW)
+    self.has_worker_pool = has_worker_pool
 
     self.out = out
     self.buffer_window_seconds = 2
 
   @classmethod
-  def FromFilter(cls, project, location, log_filter, out=log.out):
+  def FromFilter(
+      cls, project, location, log_filter, has_worker_pool, out=log.out
+  ):
     """Build a GCLLogTailer from a log filter."""
     return cls(
         project=project,
         log_filter=log_filter,
         location=location,
+        has_worker_pool=has_worker_pool,
         out=out,
     )
 
@@ -63,13 +70,16 @@ class GCLLogTailer(v1_logs_util.TailerBase):
     if not self.tailer:
       return
 
+    if self.has_worker_pool:
+      resource_names = [self.workerpool_log_view]
+    else:
+      resource_names = [self.default_log_view]
+
     output_logs = self.tailer.TailLogs(
-        [
-            self.cloud_build_log_view,
-            self.hybrid_pool_default_log_view,
-        ],
+        resource_names,
         self.log_filter,
-        buffer_window_seconds=self.buffer_window_seconds)
+        buffer_window_seconds=self.buffer_window_seconds,
+    )
 
     self._PrintFirstLine(' REMOTE RUN OUTPUT ')
 
@@ -90,12 +100,16 @@ class GCLLogTailer(v1_logs_util.TailerBase):
 
   def Print(self):
     """Print GCL logs to the console."""
+    if self.has_worker_pool:
+      resource_names = [self.workerpool_log_view]
+    else:
+      resource_names = [self.default_log_view]
+
     output_logs = common.FetchLogs(
         log_filter=self.log_filter,
         order_by='asc',
-        resource_names=[
-            self.cloud_build_log_view, self.hybrid_pool_default_log_view
-        ])
+        resource_names=resource_names,
+    )
 
     self._PrintFirstLine(' REMOTE RUN OUTPUT ')
 
@@ -112,16 +126,29 @@ class CloudBuildLogClient(object):
   def __init__(self):
     self.v2_client = v2_client_util.GetClientInstance()
 
-  def _GetLogFilter(self, create_time, run_id, run_type, region):
+  def _GetLogFilter(
+      self, region, run_id, run_type, has_worker_pool, create_time
+  ):
+    if has_worker_pool:
+      return self._GetWorkerPoolLogFilter(create_time, run_id, run_type, region)
+    else:
+      return self._GetNonWorkerPoolLogFilter(create_time, run_id, region)
+
+  def _GetNonWorkerPoolLogFilter(self, create_time, run_id, region):
+    return (
+        'timestamp>="{timestamp}" AND labels.location="{region}" AND'
+        ' labels.run_name={run_id}'
+    ).format(timestamp=create_time, region=region, run_id=run_id)
+
+  def _GetWorkerPoolLogFilter(self, create_time, run_id, run_type, region):
     run_label = 'taskRun' if run_type == 'taskrun' else 'pipelineRun'
-    return ('(labels."k8s-pod/tekton.dev/{run_label}"="{run_id}" OR '
-            'labels."k8s-pod/tekton_dev/{run_label}"="{run_id}") AND '
-            'timestamp>="{timestamp}" AND resource.labels.location="{region}"'
-           ).format(
-               run_label=run_label,
-               run_id=run_id,
-               timestamp=create_time,
-               region=region)
+    return (
+        '(labels."k8s-pod/tekton.dev/{run_label}"="{run_id}" OR '
+        'labels."k8s-pod/tekton_dev/{run_label}"="{run_id}") AND '
+        'timestamp>="{timestamp}" AND resource.labels.location="{region}"'
+    ).format(
+        run_label=run_label, run_id=run_id, timestamp=create_time, region=region
+    )
 
   def ShouldStopTailer(self, log_tailer, run, project, region, run_id,
                        run_type):
@@ -141,8 +168,13 @@ class CloudBuildLogClient(object):
   def Stream(self, project, region, run_id, run_type, out=log.out):
     """Streams the logs for a run if available."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
-    log_tailer = GCLLogTailer.FromFilter(project, region, log_filter, out=out)
+    has_worker_pool = bool(run.workerPool)
+    log_filter = self._GetLogFilter(
+        region, run_id, run_type, has_worker_pool, run.createTime
+    )
+    log_tailer = GCLLogTailer.FromFilter(
+        project, region, log_filter, has_worker_pool, out=out
+    )
 
     t = None
     if log_tailer:
@@ -166,8 +198,13 @@ class CloudBuildLogClient(object):
   ):
     """Print the logs for a run."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    log_filter = self._GetLogFilter(run.createTime, run_id, run_type, region)
-    log_tailer = GCLLogTailer.FromFilter(project, region, log_filter)
+    has_worker_pool = bool(run.workerPool)
+    log_filter = self._GetLogFilter(
+        region, run_id, run_type, has_worker_pool, run.createTime
+    )
+    log_tailer = GCLLogTailer.FromFilter(
+        project, region, log_filter, has_worker_pool
+    )
 
     if log_tailer:
       log_tailer.Print()

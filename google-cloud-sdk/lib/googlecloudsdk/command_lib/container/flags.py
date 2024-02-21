@@ -1850,11 +1850,12 @@ def AddQueuedProvisioningFlag(parser, hidden=False):
       '--enable-queued-provisioning',
       default=None,
       help=textwrap.dedent("""\
-        Mark the newly created nodepool as Queued only. This means that all
-        new nodes can be obtained only through queuing via Cluster Autoscaler
-        ProvisioningRequest API.
+        Mark the nodepool as Queued only. This means that all new nodes can
+        be obtained only through queuing via ProvisioningRequest API.
 
           $ {command} node-pool-1 --cluster=example-cluster --enable-queued-provisioning
+          ... and other required parameters, for more details see:
+          https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest
         """),
       hidden=hidden,
       action='store_true',
@@ -2977,12 +2978,28 @@ services range.
   )
 
 
-def AddIPAliasRelatedFlags(parser):
+def AddIPAliasRelatedFlags(parser, autopilot=False):
   """Adds flags related to IP aliases to the parser.
 
   Args:
     parser: A given parser.
+    autopilot: True if the cluster is in autopilot mode.
   """
+
+  if autopilot:
+    must_specify_enable_ip_alias = ''
+    must_specify_enable_ip_alias_new_block = ''
+  else:
+    must_specify_enable_ip_alias = """\
+
+Cannot be specified unless '--enable-ip-alias' option is also specified.
+"""
+    must_specify_enable_ip_alias_new_block = """\
+
+
+Cannot be specified unless '--enable-ip-alias' option is also specified.
+"""
+
   parser.add_argument(
       '--services-ipv4-cidr',
       metavar='CIDR',
@@ -2994,10 +3011,8 @@ Can be specified as a netmask size (e.g. '/20') or as in CIDR notion
 be chosen automatically from the available space in the network.
 
 If unspecified, the services CIDR range will be chosen with a default
-mask size.
-
-Can not be specified unless '--enable-ip-alias' is also specified.
-""",
+mask size.{}
+""".format(must_specify_enable_ip_alias_new_block),
   )
   parser.add_argument(
       '--create-subnetwork',
@@ -3019,24 +3034,23 @@ Examples:
 
 Create a new subnetwork with a default name and size.
 
-  $ {command} --create-subnetwork ""
+  $ {{command}} --create-subnetwork ""
 
 Create a new subnetwork named "my-subnet" with netmask of size 21.
 
-  $ {command} --create-subnetwork name=my-subnet,range=/21
+  $ {{command}} --create-subnetwork name=my-subnet,range=/21
 
 Create a new subnetwork with a default name with the primary range of
 10.100.0.0/16.
 
-  $ {command} --create-subnetwork range=10.100.0.0/16
+  $ {{command}} --create-subnetwork range=10.100.0.0/16
 
 Create a new subnetwork with the name "my-subnet" with a default range.
 
-  $ {command} --create-subnetwork name=my-subnet
+  $ {{command}} --create-subnetwork name=my-subnet
 
-Can not be specified unless '--enable-ip-alias' is also specified. Can
-not be used in conjunction with the '--subnetwork' option.
-""",
+{}Cannot be used in conjunction with '--subnetwork' option.
+""".format(must_specify_enable_ip_alias),
   )
   parser.add_argument(
       '--cluster-secondary-range-name',
@@ -3046,9 +3060,8 @@ Set the secondary range to be used as the source for pod IPs. Alias
 ranges will be allocated from this secondary range.  NAME must be the
 name of an existing secondary range in the cluster subnetwork.
 
-Must be used in conjunction with '--enable-ip-alias'. Cannot be used
-with --create-subnetwork.
-""",
+{}Cannot be used with '--create-subnetwork' option.
+""".format(must_specify_enable_ip_alias),
   )
   parser.add_argument(
       '--services-secondary-range-name',
@@ -3058,9 +3071,8 @@ Set the secondary range to be used for services (e.g. ClusterIPs).
 NAME must be the name of an existing secondary range in the cluster
 subnetwork.
 
-Must be used in conjunction with '--enable-ip-alias'. Cannot be used
-with --create-subnetwork.
-""",
+{}Cannot be used with '--create-subnetwork' option.
+""".format(must_specify_enable_ip_alias),
   )
 
 
@@ -6194,7 +6206,6 @@ def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
         '--enable-cilium-clusterwide-network-policy',
         action=arg_parsers.StoreTrueFalseAction,
         help=help_text,
-        hidden=True,
     )
   else:
     help_text += ' Disabled by default.'
@@ -6203,7 +6214,6 @@ def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
         action='store_true',
         default=None,
         help=help_text,
-        hidden=True,
     )
 
 

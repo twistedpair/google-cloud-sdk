@@ -479,7 +479,7 @@ class TPUNode(object):
         getGuestAttributesRequest=get_guest_attributes_request)
     return self.client.projects_locations_nodes.GetGuestAttributes(request)
 
-  def UpdateNode(self, name, zone, node, update_mask):
+  def UpdateNode(self, name, zone, node, update_mask, poller_message):
     """Updates the TPU node in the given zone."""
     project = properties.VALUES.core.project.Get(required=True)
     fully_qualified_node_name_ref = resources.REGISTRY.Parse(
@@ -494,7 +494,14 @@ class TPUNode(object):
         name=fully_qualified_node_name_ref.RelativeName(),
         node=node,
         updateMask=update_mask)
-    return self.client.projects_locations_nodes.Patch(request)
+
+    # Call UpdateNode to start the LRO.
+    operation = self.client.projects_locations_nodes.Patch(request)
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        operation.name, collection='tpu.projects.locations.operations'
+    )
+    # Wait for the UpdateNode LRO to complete.
+    return self.WaitForOperation(operation_ref, poller_message)
 
   def UpdateMetadataKey(self, metadata, key, value):
     """Updates a key in the TPU metadata object.

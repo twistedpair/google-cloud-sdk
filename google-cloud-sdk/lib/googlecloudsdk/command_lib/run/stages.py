@@ -61,7 +61,8 @@ def UpdateTrafficStages():
 def ServiceStages(include_iam_policy_set=False,
                   include_route=True,
                   include_build=False,
-                  include_create_repo=False):
+                  include_create_repo=False,
+                  include_create_revision=True):
   """Return the progress tracker Stages for conditions of a Service."""
   stages = []
   if include_create_repo:
@@ -69,9 +70,10 @@ def ServiceStages(include_iam_policy_set=False,
   if include_build:
     stages.append(_UploadSourceStage())
     stages.append(_BuildContainerStage())
-  stages.append(
-      progress_tracker.Stage(
-          'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
+  if include_create_revision:
+    stages.append(
+        progress_tracker.Stage(
+            'Creating Revision...', key=SERVICE_CONFIGURATIONS_READY))
   if include_route:
     stages.append(_NewRoutingTrafficStage())
   if include_iam_policy_set:

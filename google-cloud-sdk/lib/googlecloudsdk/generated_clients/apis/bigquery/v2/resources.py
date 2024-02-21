@@ -26,7 +26,7 @@ class Collections(enum.Enum):
 
   DATASETS = (
       'datasets',
-      'projects/{projectId}/datasets/{datasetId}',
+      'projects/{+projectId}/datasets/{+datasetId}',
       {
           '':
               'projects/{projectId}/datasets/{datasetId}',
@@ -36,8 +36,11 @@ class Collections(enum.Enum):
   )
   JOBS = (
       'jobs',
-      'projects/{projectId}/jobs/{jobId}',
-      {},
+      'projects/{+projectId}/jobs/{+jobId}',
+      {
+          '':
+              'projects/{projectId}/jobs/{jobId}',
+      },
       ['projectId', 'jobId'],
       True
   )
@@ -78,8 +81,11 @@ class Collections(enum.Enum):
   )
   TABLES = (
       'tables',
-      'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
-      {},
+      'projects/{+projectId}/datasets/{+datasetId}/tables/{+tableId}',
+      {
+          '':
+              'projects/{projectId}/datasets/{datasetId}/tables/{tableId}',
+      },
       ['projectId', 'datasetId', 'tableId'],
       True
   )
