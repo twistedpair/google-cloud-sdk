@@ -32,6 +32,9 @@ from googlecloudsdk.core.util import pkg_resources
 from ruamel import yaml
 import six
 
+PARTIALS_ATTRIBUTE = '_PARTIALS_'
+PARTIALS_DIR = '_partials'
+
 
 class CommandLoadFailure(Exception):
   """An exception for when a command or group module cannot be imported."""
@@ -223,7 +226,10 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
         raise CommandLoadFailure(
             '.'.join(path),
             Exception('Command groups cannot be implemented in yaml'))
-      data = _CustomLoadYamlFile(impl_file)
+      if _IsCommandWithPartials(impl_file, path):
+        data = _LoadCommandWithPartials(impl_file, path)
+      else:
+        data = _CustomLoadYamlFile(impl_file)
       implementations.extend((_ImplementationsFromYaml(
           path, data, yaml_command_translator)))
     else:
@@ -232,6 +238,106 @@ def _GetAllImplementations(impl_paths, path, construction_id, is_command,
           module.__file__, list(module.__dict__.values()),
           is_command=is_command))
   return implementations
+
+
+def _IsCommandWithPartials(impl_file, path):
+  """Checks if the YAML file is a command with partials.
+
+  Args:
+    impl_file: file path to the main YAML command implementation.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and should not be loaded.
+
+  Returns:
+    Whether or not it is a valid command with partials to load.
+  """
+  found_partial_token = False
+  with pkg_resources.GetFileTextReaderByLine(impl_file) as file:
+    for line in file:
+      line = line.strip()
+      if not line or line.startswith('#'):
+        continue
+      if line == f'{PARTIALS_ATTRIBUTE}: true':
+        found_partial_token = True
+      elif found_partial_token:
+        raise CommandLoadFailure(
+            '.'.join(path),
+            Exception(
+                f'Command with {PARTIALS_ATTRIBUTE} attribute cannot have'
+                ' extra content'
+            ),
+        )
+      else:
+        break
+
+  return found_partial_token
+
+
+def _LoadCommandWithPartials(impl_file, path):
+  """Loads all YAML partials for a command with partials based on conventions.
+
+  Partial files are loaded using _CustomLoadYamlFile as normal YAML commands.
+
+  Conventions:
+  - Partials should be placed in subfolder `_partials`.
+  - File names of partials should match the main command name and follow this
+  format: _[command_name]_[version|release_track].yaml
+  - Release tracks should not be duplicatd across all partials.
+
+  Args:
+    impl_file: file path to the main YAML command implementation.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
+
+  Returns:
+    List with data loaded from partial YAML files for the main command.
+  """
+  file_name = os.path.basename(impl_file)
+  command_name = file_name[:-5]  # strip .yaml
+  partials_dir = os.path.join(os.path.dirname(impl_file), PARTIALS_DIR)
+  partial_files = pkg_resources.GetFilesFromDirectory(
+      partials_dir, f'_{command_name}_*.yaml'
+  )
+  command_data_list = []
+  for partial_file in partial_files:
+    command_data_list.extend(_CustomLoadYamlFile(partial_file))
+
+  _ValidateCommandWithPartials(command_data_list, path)
+  return command_data_list
+
+
+def _ValidateCommandWithPartials(command_data_list, path):
+  """Validates that the command with partials do not have duplicated tracks.
+
+  Args:
+    command_data_list: List with data loaded from all YAML partials.
+    path: [str], A list of group names that got us down to this command group
+      with respect to the CLI itself.  This path should be used for things
+      like error reporting when a specific element in the tree needs to be
+      referenced.
+
+  Raises:
+    CommandLoadFailure: If the command is invalid and should not be loaded.
+  """
+  release_tracks = set()
+  for command_data in command_data_list:
+    for release_track in command_data['release_tracks']:
+      if release_track in release_tracks:
+        raise CommandLoadFailure(
+            '.'.join(path),
+            Exception(
+                'Command with partials cannot have duplicated release tracks.'
+                f' Found multiple [{release_track}s]'
+            ))
+      else:
+        release_tracks.add(release_track)
 
 
 def CreateYamlLoader(impl_path):

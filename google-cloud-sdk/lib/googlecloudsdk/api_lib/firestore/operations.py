@@ -89,6 +89,15 @@ def DeleteOperation(name):
   )
 
 
+def WaitForOperationWithName(operation_name):
+  """Waits for the given Operation to complete."""
+  operation = api_utils.GetMessages().GoogleLongrunningOperation(
+      name=operation_name
+  )
+
+  return WaitForOperation(operation)
+
+
 def WaitForOperation(operation):
   """Waits for the given Operation to complete."""
   operation_ref = resources.REGISTRY.Parse(

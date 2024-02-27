@@ -471,3 +471,32 @@ def AddSubnetLength(parser):
       The default value is recommended when there's no requirement on the subnet
       length.
       """)
+
+
+def AddEnableMulticast(parser, update=False):
+  """Adds enableMulticast flag to the argparse.ArgumentParser.
+
+  Args:
+    parser: The argparse parser.
+    update: A boolean indicates whether the incoming request is an update.
+  """
+  if update:
+    # Update command.
+    help_text = """\
+      When enabled, the attachment will be able to carry multicast traffic.
+      Use --no-enable-multicast to disable it.
+      """
+  else:
+    # Create command for partner attachments, backend default behavior is to
+    # disabled if not specified.
+    help_text = """\
+      If supplied, the attachment will be able to carry multicast traffic.
+      If not provided on creation, defaults to disabled. Use
+      --no-enable-multicast to disable it.
+      """
+  parser.add_argument(
+      '--enable-multicast',
+      default=None,
+      action='store_true',
+      help=help_text,
+  )

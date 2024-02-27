@@ -272,12 +272,11 @@ def process_retention_period(retention_period_string):
 
 def process_soft_delete_duration(soft_delete_duration):
   """Converts retention_period int to Apitools object."""
-  if soft_delete_duration == user_request_args_factory.CLEAR:
-    return None
-
   messages = apis.GetMessagesModule('storage', 'v1')
   return messages.Bucket.SoftDeletePolicyValue(
-      retentionDurationSeconds=soft_delete_duration
+      retentionDurationSeconds=0
+      if soft_delete_duration == user_request_args_factory.CLEAR
+      else soft_delete_duration
   )
 
 

@@ -393,6 +393,19 @@ def AddFinalbackupDescription(parser):
   )
 
 
+def AddFinalBackupExpiryTimeArgument(parser):
+  parser.add_argument(
+      '--final-backup-expiry-time',
+      type=arg_parsers.Datetime.Parse,
+      required=False,
+      hidden=True,
+      help=(
+          'Specifies the time at which the final backup will expire. Maximum'
+          ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
+      ),
+  )
+
+
 # Currently, MAX_BACKUP_RETENTION_COUNT=365, and MIN_BACKUP_RETENTION_COUNT=1.
 def AddRetainedBackupsCount(parser, hidden=False):
   help_text = (

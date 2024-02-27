@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.apphub import utils as apphub_utils
@@ -207,11 +208,13 @@ def AddServiceProjectFlags(parser):
   )
 
 
-def CreateApplicationFlags(parser):
+def CreateApplicationFlags(parser, release_track=base.ReleaseTrack.ALPHA):
   """Adds flags required to create an application."""
 
   GetApplicationResourceArg().AddToParser(parser)
-  AddAttributesFlags(parser)
+  AddAttributesFlags(
+      parser, resource_name='application', release_track=release_track
+  )
   parser.add_argument(
       '--scope-type',
       choices={'REGIONAL': 'Represents a regional application'},
@@ -232,62 +235,14 @@ def CreateApplicationFlags(parser):
   )
 
 
-def UpdateApplicationFlags(parser):
+def UpdateApplicationFlags(parser, release_track=base.ReleaseTrack.ALPHA):
   """Adds flags required to create an application."""
 
   GetApplicationResourceArg().AddToParser(parser)
   parser.add_argument('--display-name', help='Human-friendly display name')
   parser.add_argument('--description', help='Description of the Application')
-  parser.add_argument(
-      '--criticality',
-      type=arg_parsers.ArgDict(
-          spec={
-              'level': str,
-              'mission-critical': arg_parsers.ArgBoolean(),
-          },
-          required_keys=['level', 'mission-critical'],
-      ),
-      help='Criticality of the Application',
-  )
-  parser.add_argument('--environment', help='Environment of the Application')
-  parser.add_argument(
-      '--business-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Business owners of the Application',
-  )
-  parser.add_argument(
-      '--developer-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Developer owners of the Application',
-  )
-  parser.add_argument(
-      '--operator-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Operator owners of the Application',
+  AddAttributesFlags(
+      parser, resource_name='application', release_track=release_track
   )
   parser.add_argument(
       '--async',
@@ -591,7 +546,9 @@ def AddDeleteApplicationWorkloadFlags(parser):
   )
 
 
-def AddCreateApplicationWorkloadFlags(parser):
+def AddCreateApplicationWorkloadFlags(
+    parser, release_track=base.ReleaseTrack.ALPHA
+):
   """Adds flags required to create an application workload."""
   concept_parsers.ConceptParser(
       [
@@ -626,7 +583,9 @@ def AddCreateApplicationWorkloadFlags(parser):
           '--discovered-workload.location': ['WORKLOAD.location'],
       },
   ).AddToParser(parser)
-  AddAttributesFlags(parser, resource_name='workload')
+  AddAttributesFlags(
+      parser, resource_name='workload', release_track=release_track
+  )
 
   parser.add_argument('--display-name', help='Human-friendly display name')
   parser.add_argument('--description', help='Description of the Workload')
@@ -643,11 +602,15 @@ def AddCreateApplicationWorkloadFlags(parser):
   )
 
 
-def AddUpdateApplicationWorkloadFlags(parser):
+def AddUpdateApplicationWorkloadFlags(
+    parser, release_track=base.ReleaseTrack.ALPHA
+):
   """Adds flags required to update an application workload."""
 
   GetApplicationWorkloadResourceArg().AddToParser(parser)
-  AddAttributesFlags(parser, resource_name='workload')
+  AddAttributesFlags(
+      parser, resource_name='workload', release_track=release_track
+  )
 
   parser.add_argument('--display-name', help='Human-friendly display name')
   parser.add_argument('--description', help='Description of the Workload')
@@ -664,61 +627,110 @@ def AddUpdateApplicationWorkloadFlags(parser):
   )
 
 
-def AddAttributesFlags(parser, resource_name='application'):
+def AddAttributesFlags(
+    parser, resource_name='application', release_track=base.ReleaseTrack.ALPHA
+):
   """Adds flags required for attributes fields."""
   parser.add_argument(
-      '--criticality',
-      type=arg_parsers.ArgDict(
-          spec={
-              'level': str,
-              'mission-critical': arg_parsers.ArgBoolean(),
-          },
-          required_keys=['level', 'mission-critical'],
-      ),
-      help='Criticality of the {}'.format(resource_name),
+      '--criticality-type',
+      choices={
+          'TYPE_UNSPECIFIED': 'Unspecified criticality type',
+          'MISSION_CRITICAL': (
+              'Mission critical service, application or workload'
+          ),
+          'HIGH': 'High impact',
+          'MEDIUM': 'Medium impact',
+          'LOW': 'Low impact',
+      },
+      help='Criticality Type of the {}'.format(resource_name),
   )
   parser.add_argument(
-      '--environment', help='Environment of the {}'.format(resource_name)
+      '--environment-type',
+      choices={
+          'TYPE_UNSPECIFIED': 'Unspecified environment type',
+          'PRODUCTION': 'Production environment',
+          'STAGING': 'Staging environment',
+          'TEST': 'Test environment',
+          'DEVELOPMENT': 'Development environment'},
+      help='Environment Type of the {}'.format(resource_name)
   )
-  parser.add_argument(
-      '--business-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Business owners of the {}'.format(resource_name),
-  )
-  parser.add_argument(
-      '--developer-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Developer owners of the {}'.format(resource_name),
-  )
-  parser.add_argument(
-      '--operator-owners',
-      type=arg_parsers.ArgDict(
-          spec={
-              'display-name': str,
-              'email': str,
-              'channel-uri': str,
-          },
-          required_keys=['email'],
-      ),
-      action='append',
-      help='Operator owners of the {}'.format(resource_name),
-  )
+  if release_track == base.ReleaseTrack.ALPHA:
+    parser.add_argument(
+        '--business-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+                'channel-uri': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Business owners of the {}'.format(resource_name),
+    )
+    parser.add_argument(
+        '--developer-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+                'channel-uri': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Developer owners of the {}'.format(resource_name),
+    )
+    parser.add_argument(
+        '--operator-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+                'channel-uri': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Operator owners of the {}'.format(resource_name),
+    )
+  elif release_track == base.ReleaseTrack.GA:
+    parser.add_argument(
+        '--business-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Business owners of the {}'.format(resource_name),
+    )
+    parser.add_argument(
+        '--developer-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Developer owners of the {}'.format(resource_name),
+    )
+    parser.add_argument(
+        '--operator-owners',
+        type=arg_parsers.ArgDict(
+            spec={
+                'display-name': str,
+                'email': str,
+            },
+            required_keys=['email'],
+        ),
+        action='append',
+        help='Operator owners of the {}'.format(resource_name),
+    )
 
 
 def AddListApplicationServiceFlags(parser):
@@ -743,7 +755,9 @@ def AddDeleteApplicationServiceFlags(parser):
   )
 
 
-def AddCreateApplicationServiceFlags(parser):
+def AddCreateApplicationServiceFlags(
+    parser, release_track=base.ReleaseTrack.ALPHA
+):
   """Adds flags required to create an application service."""
   concept_parsers.ConceptParser(
       [
@@ -778,7 +792,9 @@ def AddCreateApplicationServiceFlags(parser):
           '--discovered-service.location': ['SERVICE.location'],
       },
   ).AddToParser(parser)
-  AddAttributesFlags(parser, resource_name='service')
+  AddAttributesFlags(
+      parser, resource_name='service', release_track=release_track
+  )
 
   parser.add_argument('--display-name', help='Human-friendly display name')
   parser.add_argument('--description', help='Description of the service')
@@ -795,11 +811,15 @@ def AddCreateApplicationServiceFlags(parser):
   )
 
 
-def AddUpdateApplicationServiceFlags(parser):
+def AddUpdateApplicationServiceFlags(
+    parser, release_track=base.ReleaseTrack.ALPHA
+):
   """Adds flags required to update an application service."""
 
   GetApplicationServiceResourceArg().AddToParser(parser)
-  AddAttributesFlags(parser, resource_name='service')
+  AddAttributesFlags(
+      parser, resource_name='service', release_track=release_track
+  )
 
   parser.add_argument('--display-name', help='Human-friendly display name')
   parser.add_argument('--description', help='Description of the service')

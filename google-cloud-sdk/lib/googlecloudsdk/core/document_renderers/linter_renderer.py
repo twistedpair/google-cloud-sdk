@@ -148,7 +148,7 @@ class LinterRenderer(text_renderer.TextRenderer):
   def check_for_personal_pronouns(self, heading, section):
     """Raise violation if the section contains personal pronouns."""
     check_name = self._check_name(heading, 'PRONOUN')
-    words_in_section = set(re.compile(r'[-\w]+').findall(section.lower()))
+    words_in_section = set(re.compile(r'[\w/\-_]+').findall(section.lower()))
     found_pronouns = words_in_section.intersection(self._PERSONAL_PRONOUNS)
     if found_pronouns:
       found_pronouns_list = sorted(list(found_pronouns))

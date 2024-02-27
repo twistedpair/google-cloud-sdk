@@ -72,6 +72,16 @@ class AuditmanagerFoldersLocationsEnrollResourceRequest(_messages.Message):
   scope = _messages.StringField(2, required=True)
 
 
+class AuditmanagerFoldersLocationsOperationDetailsGetRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsOperationDetailsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AuditmanagerFoldersLocationsOperationIdsGetRequest(_messages.Message):
   r"""A AuditmanagerFoldersLocationsOperationIdsGetRequest object.
 
@@ -156,6 +166,16 @@ class AuditmanagerProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class AuditmanagerProjectsLocationsOperationDetailsGetRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsOperationDetailsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class AuditmanagerProjectsLocationsOperationIdsGetRequest(_messages.Message):

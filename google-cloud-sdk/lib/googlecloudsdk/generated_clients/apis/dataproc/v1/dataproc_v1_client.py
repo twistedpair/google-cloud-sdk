@@ -44,6 +44,7 @@ class DataprocV1(base_api.BaseApiClient):
     self.projects_locations_batches = self.ProjectsLocationsBatchesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sessionTemplates = self.ProjectsLocationsSessionTemplatesService(self)
+    self.projects_locations_sessions_sessionSparkApplications = self.ProjectsLocationsSessionsSessionSparkApplicationsService(self)
     self.projects_locations_sessions = self.ProjectsLocationsSessionsService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1237,6 +1238,556 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='SessionTemplate',
         response_type_name='SessionTemplate',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSessionsSessionSparkApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sessions_sessionSparkApplications resource."""
+
+    _NAME = 'projects_locations_sessions_sessionSparkApplications'
+
+    def __init__(self, client):
+      super(DataprocV1.ProjectsLocationsSessionsSessionSparkApplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Access(self, request, global_params=None):
+      r"""Obtain high level information corresponding to a single Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationResponse) The response message.
+      """
+      config = self.GetMethodConfig('Access')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Access.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:access',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.access',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:access',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest',
+        response_type_name='AccessSessionSparkApplicationResponse',
+        supports_download=False,
+    )
+
+    def AccessEnvironmentInfo(self, request, global_params=None):
+      r"""Obtain environment details for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationEnvironmentInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessEnvironmentInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessEnvironmentInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessEnvironmentInfo',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessEnvironmentInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:accessEnvironmentInfo',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest',
+        response_type_name='AccessSessionSparkApplicationEnvironmentInfoResponse',
+        supports_download=False,
+    )
+
+    def AccessJob(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark job for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationJobResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessJob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessJob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessJob',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessJob',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['jobId', 'parent'],
+        relative_path='v1/{+name}:accessJob',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest',
+        response_type_name='AccessSessionSparkApplicationJobResponse',
+        supports_download=False,
+    )
+
+    def AccessSqlPlan(self, request, global_params=None):
+      r"""Obtain Spark Plan Graph for a Spark Application SQL execution. Limits the number of clusters returned as part of the graph to 10000.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationSqlSparkPlanGraphResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessSqlPlan')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessSqlPlan.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessSqlPlan',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessSqlPlan',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['executionId', 'parent'],
+        relative_path='v1/{+name}:accessSqlPlan',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest',
+        response_type_name='AccessSessionSparkApplicationSqlSparkPlanGraphResponse',
+        supports_download=False,
+    )
+
+    def AccessSqlQuery(self, request, global_params=None):
+      r"""Obtain data corresponding to a particular SQL Query for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationSqlQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessSqlQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessSqlQuery.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessSqlQuery',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessSqlQuery',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['details', 'executionId', 'parent', 'planDescription'],
+        relative_path='v1/{+name}:accessSqlQuery',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest',
+        response_type_name='AccessSessionSparkApplicationSqlQueryResponse',
+        supports_download=False,
+    )
+
+    def AccessStageAttempt(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark stage attempt for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationStageAttemptResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessStageAttempt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessStageAttempt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessStageAttempt',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessStageAttempt',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'stageAttemptId', 'stageId'],
+        relative_path='v1/{+name}:accessStageAttempt',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest',
+        response_type_name='AccessSessionSparkApplicationStageAttemptResponse',
+        supports_download=False,
+    )
+
+    def AccessStageRddGraph(self, request, global_params=None):
+      r"""Obtain RDD operation graph for a Spark Application Stage. Limits the number of clusters returned as part of the graph to 10000.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSessionSparkApplicationStageRddOperationGraphResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessStageRddGraph')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessStageRddGraph.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessStageRddGraph',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessStageRddGraph',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'stageId'],
+        relative_path='v1/{+name}:accessStageRddGraph',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest',
+        response_type_name='AccessSessionSparkApplicationStageRddOperationGraphResponse',
+        supports_download=False,
+    )
+
+    def Search(self, request, global_params=None):
+      r"""Obtain high level information and list of Spark Applications corresponding to a batch.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications:search',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.search',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['applicationStatus', 'maxEndTime', 'maxTime', 'minEndTime', 'minTime', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sessionSparkApplications:search',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest',
+        response_type_name='SearchSessionSparkApplicationsResponse',
+        supports_download=False,
+    )
+
+    def SearchExecutorStageSummary(self, request, global_params=None):
+      r"""Obtain executor summary with respect to a spark stage attempt.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationExecutorStageSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchExecutorStageSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchExecutorStageSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchExecutorStageSummary',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchExecutorStageSummary',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'stageAttemptId', 'stageId'],
+        relative_path='v1/{+name}:searchExecutorStageSummary',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest',
+        response_type_name='SearchSessionSparkApplicationExecutorStageSummaryResponse',
+        supports_download=False,
+    )
+
+    def SearchExecutors(self, request, global_params=None):
+      r"""Obtain data corresponding to executors for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationExecutorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchExecutors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchExecutors.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchExecutors',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchExecutors',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['executorStatus', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchExecutors',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest',
+        response_type_name='SearchSessionSparkApplicationExecutorsResponse',
+        supports_download=False,
+    )
+
+    def SearchJobs(self, request, global_params=None):
+      r"""Obtain list of spark jobs corresponding to a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchJobs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchJobs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchJobs',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchJobs',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['jobStatus', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchJobs',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest',
+        response_type_name='SearchSessionSparkApplicationJobsResponse',
+        supports_download=False,
+    )
+
+    def SearchSqlQueries(self, request, global_params=None):
+      r"""Obtain data corresponding to SQL Queries for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationSqlQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchSqlQueries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchSqlQueries',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchSqlQueries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['details', 'pageSize', 'pageToken', 'parent', 'planDescription'],
+        relative_path='v1/{+name}:searchSqlQueries',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest',
+        response_type_name='SearchSessionSparkApplicationSqlQueriesResponse',
+        supports_download=False,
+    )
+
+    def SearchStageAttemptTasks(self, request, global_params=None):
+      r"""Obtain data corresponding to tasks for a spark stage attempt for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationStageAttemptTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStageAttemptTasks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStageAttemptTasks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStageAttemptTasks',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStageAttemptTasks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'sortRuntime', 'stageAttemptId', 'stageId', 'taskStatus'],
+        relative_path='v1/{+name}:searchStageAttemptTasks',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest',
+        response_type_name='SearchSessionSparkApplicationStageAttemptTasksResponse',
+        supports_download=False,
+    )
+
+    def SearchStageAttempts(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark stage attempts for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationStageAttemptsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStageAttempts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStageAttempts.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStageAttempts',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStageAttempts',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'stageId'],
+        relative_path='v1/{+name}:searchStageAttempts',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest',
+        response_type_name='SearchSessionSparkApplicationStageAttemptsResponse',
+        supports_download=False,
+    )
+
+    def SearchStages(self, request, global_params=None):
+      r"""Obtain data corresponding to stages for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSessionSparkApplicationStagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStages')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStages.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStages',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStages',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'stageStatus'],
+        relative_path='v1/{+name}:searchStages',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest',
+        response_type_name='SearchSessionSparkApplicationStagesResponse',
+        supports_download=False,
+    )
+
+    def SummarizeExecutors(self, request, global_params=None):
+      r"""Obtain summary of Executor Summary for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeSessionSparkApplicationExecutorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SummarizeExecutors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SummarizeExecutors.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeExecutors',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeExecutors',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:summarizeExecutors',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest',
+        response_type_name='SummarizeSessionSparkApplicationExecutorsResponse',
+        supports_download=False,
+    )
+
+    def SummarizeJobs(self, request, global_params=None):
+      r"""Obtain summary of Jobs for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeSessionSparkApplicationJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SummarizeJobs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SummarizeJobs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeJobs',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeJobs',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:summarizeJobs',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest',
+        response_type_name='SummarizeSessionSparkApplicationJobsResponse',
+        supports_download=False,
+    )
+
+    def SummarizeStageAttemptTasks(self, request, global_params=None):
+      r"""Obtain summary of Tasks for a Spark Application Stage Attempt.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeSessionSparkApplicationStageAttemptTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('SummarizeStageAttemptTasks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SummarizeStageAttemptTasks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeStageAttemptTasks',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeStageAttemptTasks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'stageAttemptId', 'stageId'],
+        relative_path='v1/{+name}:summarizeStageAttemptTasks',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest',
+        response_type_name='SummarizeSessionSparkApplicationStageAttemptTasksResponse',
+        supports_download=False,
+    )
+
+    def SummarizeStages(self, request, global_params=None):
+      r"""Obtain summary of Stages for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SummarizeSessionSparkApplicationStagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SummarizeStages')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SummarizeStages.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeStages',
+        http_method='GET',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeStages',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:summarizeStages',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest',
+        response_type_name='SummarizeSessionSparkApplicationStagesResponse',
+        supports_download=False,
+    )
+
+    def Write(self, request, global_params=None):
+      r"""Write wrapper objects from dataplane to spanner.
+
+      Args:
+        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WriteSessionSparkApplicationContextResponse) The response message.
+      """
+      config = self.GetMethodConfig('Write')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Write.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:write',
+        http_method='POST',
+        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.write',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:write',
+        request_field='writeSessionSparkApplicationContextRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest',
+        response_type_name='WriteSessionSparkApplicationContextResponse',
         supports_download=False,
     )
 

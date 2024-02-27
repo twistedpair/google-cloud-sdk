@@ -92,6 +92,7 @@ class InterconnectAttachment(object):
       cloud_router_ipv6_interface_id,
       customer_router_ipv6_interface_id,
       subnet_length,
+      multicast_enabled,
   ):
     """Make an interconnect attachment insert request."""
     interconnect_self_link = None
@@ -134,6 +135,8 @@ class InterconnectAttachment(object):
       attachment.customerRouterIpv6InterfaceId = customer_router_ipv6_interface_id
     if subnet_length is not None:
       attachment.subnetLength = subnet_length
+    if multicast_enabled is not None:
+      attachment.multicastEnabled = multicast_enabled
 
     if validate_only is not None:
       return (self._client.interconnectAttachments, 'Insert',
@@ -161,6 +164,7 @@ class InterconnectAttachment(object):
       customer_router_ipv6_interface_id=None,
       labels=None,
       label_fingerprint=None,
+      multicast_enabled=None,
   ):
     """Make an interconnect attachment patch request."""
     interconnect_attachment = self._messages.InterconnectAttachment(
@@ -191,6 +195,8 @@ class InterconnectAttachment(object):
       interconnect_attachment.customerRouterIpv6InterfaceId = (
           customer_router_ipv6_interface_id
       )
+    if multicast_enabled is not None:
+      interconnect_attachment.multicastEnabled = multicast_enabled
     return (self._client.interconnectAttachments, 'Patch',
             self._messages.ComputeInterconnectAttachmentsPatchRequest(
                 project=self.ref.project,
@@ -236,6 +242,7 @@ class InterconnectAttachment(object):
       cloud_router_ipv6_interface_id=None,
       customer_router_ipv6_interface_id=None,
       subnet_length=None,
+      multicast_enabled=None,
       only_generate_request=False,
       validate_only=None,
   ):
@@ -287,6 +294,7 @@ class InterconnectAttachment(object):
             cloud_router_ipv6_interface_id,
             customer_router_ipv6_interface_id,
             subnet_length,
+            multicast_enabled,
         )
     ]
     if not only_generate_request:
@@ -312,6 +320,7 @@ class InterconnectAttachment(object):
       customer_router_ipv6_interface_id=None,
       only_generate_request=False,
       mtu=None,
+      multicast_enabled=None,
   ):
     """Patch an interconnectAttachment."""
     if bandwidth:
@@ -339,6 +348,7 @@ class InterconnectAttachment(object):
             customer_router_ipv6_interface_id,
             labels,
             label_fingerprint,
+            multicast_enabled,
         )
     ]
     if not only_generate_request:

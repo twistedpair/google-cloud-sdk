@@ -1094,6 +1094,33 @@ class NetappV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Switch(self, request, global_params=None):
+      r"""This operation will switch the active/replica zone for a regional storagePool.
+
+      Args:
+        request: (NetappProjectsLocationsStoragePoolsSwitchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Switch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Switch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/storagePools/{storagePoolsId}:switch',
+        http_method='POST',
+        method_id='netapp.projects.locations.storagePools.switch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:switch',
+        request_field='switchActiveReplicaZoneRequest',
+        request_type_name='NetappProjectsLocationsStoragePoolsSwitchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsVolumesReplicationsService(base_api.BaseApiService):
     """Service class for the projects_locations_volumes_replications resource."""
 

@@ -321,6 +321,19 @@ def AddVersionEtag(parser):
       ))
 
 
+def AddRegionalKmsKeyName(parser, positional=False, **kwargs):
+  """Add flag for specifying the regional KMS key name."""
+  parser.add_argument(
+      _ArgOrFlag('regional-kms-key-name', positional),
+      metavar='KMS-KEY-NAME',
+      help=(
+          'Regional KMS key with which to encrypt and decrypt the secret. Only '
+          'valid for regional secrets.'
+      ),
+      **kwargs
+  )
+
+
 def _ArgOrFlag(name, positional):
   """Returns the argument name in resource argument format or flag format.
 

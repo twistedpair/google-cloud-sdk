@@ -4187,6 +4187,37 @@ def AddStackTypeFlag(parser, hidden=False):
   )
 
 
+def AddStoragePoolsFlag(
+    parser, for_node_pool=False, for_create=True, hidden=False):
+  """Adds a --storage-pools flag to the given parser."""
+  target = 'node pool' if for_node_pool else 'cluster'
+  if for_create:
+    help_text = """
+A list of storage pools where the {}'s boot disks will be provisioned.
+
+STORAGE_POOL must be in the format
+projects/project/zones/zone/storagePools/storagePool
+""".format(target)
+  else:
+    help_text = """\
+A list of storage pools where the {arg1}'s boot disks will be provisioned. Replaces
+all the current storage pools of an existing {arg2}, with the specified storage
+pools.
+
+STORAGE_POOL must be in the format
+projects/project/zones/zone/storagePools/storagePool
+""".format(arg1=target, arg2=target)
+
+  parser.add_argument(
+      '--storage-pools',
+      help=help_text,
+      default=None,
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='STORAGE_POOL',
+      hidden=hidden,
+  )
+
+
 def AddIpv6AccessTypeFlag(parser, hidden=False):
   """Adds --ipv6-access-type flag to the given parser.
 
@@ -5213,12 +5244,12 @@ Examples:
       action=actions.DeprecationAction(
           '--dataplane-v2-observability-mode',
           warn=(
-              'The --dataplane-v2-observability-mode flag is deprecated and '
-              'will be removed in an upcoming release. '
+              'The --dataplane-v2-observability-mode flag is '
+              'no longer supported. '
               'Please use `--enable-dataplane-v2-flow-observability` or '
               '`--disable-dataplane-v2-flow-observability`.'
           ),
-          removed=False,
+          removed=True,
       ),
   )
 

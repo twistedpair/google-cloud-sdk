@@ -1461,6 +1461,19 @@ class NetappProjectsLocationsStoragePoolsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetappProjectsLocationsStoragePoolsSwitchRequest(_messages.Message):
+  r"""A NetappProjectsLocationsStoragePoolsSwitchRequest object.
+
+  Fields:
+    name: Required. Name of the storage pool
+    switchActiveReplicaZoneRequest: A SwitchActiveReplicaZoneRequest resource
+      to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchActiveReplicaZoneRequest = _messages.MessageField('SwitchActiveReplicaZoneRequest', 2)
+
+
 class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesCreateRequest object.
 
@@ -2484,6 +2497,13 @@ class StoragePool(_messages.Message):
   stateDetails = _messages.StringField(15)
   volumeCapacityGib = _messages.IntegerField(16)
   volumeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+
+
+class SwitchActiveReplicaZoneRequest(_messages.Message):
+  r"""SwitchActiveReplicaZoneRequest switch the active/replica zone for a
+  regional storagePool.
+  """
+
 
 
 class TransferStats(_messages.Message):

@@ -20,14 +20,15 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
+from googlecloudsdk.calliope import base
 
 
 class DiscoveredServicesClient(object):
   """Client for services in apphub API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or api_lib_utils.GetClientInstance()
-    self.messages = messages or api_lib_utils.GetMessagesModule()
+  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+    self.client = api_lib_utils.GetClientInstance(release_track)
+    self.messages = api_lib_utils.GetMessagesModule(release_track)
     self._dis_services_client = (
         self.client.projects_locations_discoveredServices
     )
@@ -55,7 +56,7 @@ class DiscoveredServicesClient(object):
       limit=None,
       page_size=100,
   ):
-    """List discovered services in the Projects/Location.
+    """List discovered services that could be added to an application.
 
     Args:
       parent: str, projects/{projectId}/locations/{location}

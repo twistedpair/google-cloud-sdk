@@ -37,9 +37,9 @@ def OperationAttributeConfig():
 
 def GetOperationResourceSpecByProject():
   return concepts.ResourceSpec(
-      'auditmanager.projects.locations.operationIds',
+      'auditmanager.projects.locations.operationDetails',
       resource_name='operation',
-      operationIdsId=OperationAttributeConfig(),
+      operationDetailsId=OperationAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
@@ -47,9 +47,9 @@ def GetOperationResourceSpecByProject():
 
 def GetOperationResourceSpecByFolder():
   return concepts.ResourceSpec(
-      'auditmanager.folders.locations.operationIds',
+      'auditmanager.folders.locations.operationDetails',
       resource_name='operation',
-      operationIdsId=OperationAttributeConfig(),
+      operationDetailsId=OperationAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       foldersId=FolderAttributeConfig(),
   )

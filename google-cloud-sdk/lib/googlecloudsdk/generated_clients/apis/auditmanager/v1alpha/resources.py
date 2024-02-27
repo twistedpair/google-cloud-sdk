@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['foldersId', 'locationsId'],
       True
   )
+  FOLDERS_LOCATIONS_OPERATIONDETAILS = (
+      'folders.locations.operationDetails',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/operationDetails/'
+              '{operationDetailsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_OPERATIONIDS = (
       'folders.locations.operationIds',
       '{+name}',
@@ -62,6 +73,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONDETAILS = (
+      'projects.locations.operationDetails',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'operationDetails/{operationDetailsId}',
       },
       ['name'],
       True

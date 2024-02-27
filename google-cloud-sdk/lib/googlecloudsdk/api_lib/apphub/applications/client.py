@@ -22,15 +22,16 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.apphub import consts as api_lib_consts
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 
 
 class ApplicationsClient(object):
   """Client for Applications in apphub API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or api_lib_utils.GetClientInstance()
-    self.messages = messages or api_lib_utils.GetMessagesModule()
+  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+    self.client = api_lib_utils.GetClientInstance(release_track)
+    self.messages = api_lib_utils.GetMessagesModule(release_track)
     self._app_client = self.client.projects_locations_applications
     self._lookup_client = self.client.projects_locations
     self._poller = waiter.CloudOperationPoller(
@@ -140,11 +141,12 @@ class ApplicationsClient(object):
 
     return create_response
 
-  def Update(self, args):
+  def Update(self, args, release_track=base.ReleaseTrack.ALPHA):
     """Updates an Apphub application.
 
     Args:
       args: args, Arguments provided by the client
+      release_track: release_track provided by the client
 
     Returns:
       Application or Operation based on async flag value.
@@ -153,37 +155,47 @@ class ApplicationsClient(object):
     update_mask = ''
     app_ref = args.CONCEPTS.application.Parse()
 
-    attributes = api_lib_utils.GetMessagesModule().Attributes()
+    attributes = api_lib_utils.GetMessagesModule(release_track).Attributes()
     application = self.messages.Application(attributes=attributes)
 
-    if args.environment is not None:
-      attributes.environment = api_lib_utils.GetMessagesModule().Environment(
-          environment=args.environment
+    if args.environment_type is not None:
+      attributes.environment = api_lib_utils.GetMessagesModule(
+          release_track
+      ).Environment(
+          type=api_lib_utils.GetMessagesModule(
+              release_track
+          ).Environment.TypeValueValuesEnum(args.environment_type)
       )
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
           api_lib_consts.UpdateApplication.UPDATE_MASK_ENVIRONMENT_FIELD_NAME,
       )
 
-    if args.criticality:
-      criticality = api_lib_utils.GetMessagesModule().Criticality()
-      criticality.level = args.criticality.get('level')
-      criticality.missionCritical = args.criticality.get('mission-critical')
-      attributes.criticality = criticality
+    if args.criticality_type:
+      attributes.criticality = api_lib_utils.GetMessagesModule(
+          release_track
+      ).Criticality(
+          type=api_lib_utils.GetMessagesModule(
+              release_track
+          ).Criticality.TypeValueValuesEnum(args.criticality_type)
+      )
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
           api_lib_consts.UpdateApplication.UPDATE_MASK_CRITICALITY_FIELD_NAME,
       )
 
     for b_owner in args.business_owners or []:
-      business_owner = api_lib_utils.GetMessagesModule().ContactInfo()
+      business_owner = api_lib_utils.GetMessagesModule(
+          release_track
+      ).ContactInfo()
       business_owner.email = b_owner.get('email', None)
       if b_owner.get('display-name', None):
         business_owner.displayName = b_owner.get('display-name', None)
-      if b_owner.get('channel-uri', None):
-        business_owner.channel = api_lib_utils.GetMessagesModule().Channel(
-            uri=b_owner.get('channel-uri')
-        )
+      if release_track == base.ReleaseTrack.ALPHA:
+        if b_owner.get('channel-uri', None):
+          business_owner.channel = api_lib_utils.GetMessagesModule(
+              release_track
+          ).Channel(uri=b_owner.get('channel-uri'))
       attributes.businessOwners.append(business_owner)
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
@@ -191,14 +203,17 @@ class ApplicationsClient(object):
       )
 
     for d_owner in args.developer_owners or []:
-      developer_owner = api_lib_utils.GetMessagesModule().ContactInfo()
+      developer_owner = api_lib_utils.GetMessagesModule(
+          release_track
+      ).ContactInfo()
       developer_owner.email = d_owner.get('email', None)
       if d_owner.get('display-name', None):
         developer_owner.displayName = d_owner.get('display-name', None)
-      if d_owner.get('channel-uri', None):
-        developer_owner.channel = api_lib_utils.GetMessagesModule().Channel(
-            uri=d_owner.get('channel-uri')
-        )
+      if release_track == base.ReleaseTrack.ALPHA:
+        if d_owner.get('channel-uri', None):
+          developer_owner.channel = api_lib_utils.GetMessagesModule(
+              release_track
+          ).Channel(uri=d_owner.get('channel-uri'))
       attributes.developerOwners.append(developer_owner)
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
@@ -206,14 +221,17 @@ class ApplicationsClient(object):
       )
 
     for o_owner in args.operator_owners or []:
-      operator_owner = api_lib_utils.GetMessagesModule().ContactInfo()
+      operator_owner = api_lib_utils.GetMessagesModule(
+          release_track
+      ).ContactInfo()
       operator_owner.email = o_owner.get('email', None)
       if o_owner.get('display-name'):
         operator_owner.displayName = o_owner.get('display-name')
-      if o_owner.get('channel-uri'):
-        operator_owner.channel = api_lib_utils.GetMessagesModule().Channel(
-            uri=o_owner.get('channel-uri')
-        )
+      if release_track == base.ReleaseTrack.ALPHA:
+        if o_owner.get('channel-uri'):
+          operator_owner.channel = api_lib_utils.GetMessagesModule(
+              release_track
+          ).Channel(uri=o_owner.get('channel-uri'))
       attributes.operatorOwners.append(operator_owner)
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,

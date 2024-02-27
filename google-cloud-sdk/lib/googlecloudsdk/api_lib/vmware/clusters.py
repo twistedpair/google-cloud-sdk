@@ -34,7 +34,7 @@ class ClustersClient(util.VmwareClientBase):
         name=resource.RelativeName())
     return self.service.Get(request)
 
-  def Create(self, resource, nodes_configs):
+  def Create(self, resource, nodes_configs, autoscaling_settings=None):
     parent = resource.Parent().RelativeName()
     cluster_id = resource.Name()
 
@@ -42,6 +42,12 @@ class ClustersClient(util.VmwareClientBase):
         self.messages.Cluster.NodeTypeConfigsValue,
         self.messages.NodeTypeConfig, nodes_configs)
     cluster = self.messages.Cluster(nodeTypeConfigs=node_type_configs)
+    cluster.autoscalingSettings = util.ConstructAutoscalingSettingsMessage(
+        self.messages.AutoscalingSettings,
+        self.messages.AutoscalingPolicy,
+        self.messages.Thresholds,
+        autoscaling_settings,
+    )
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(
         parent=parent,
         cluster=cluster,
@@ -75,17 +81,26 @@ class ClustersClient(util.VmwareClientBase):
       )
       node_type_configs_update_mask = ['node_type_configs.*.node_count']
 
-    autoscaling_settings_message, autoscaling_settings_update_mask = None, []
     if autoscaling_settings is not None:
-      autoscaling_settings_message = (
-          util.ConstructAutoscalingSettingsMessage(
-              self.messages.AutoscalingSettings,
-              self.messages.AutoscalingPolicy,
-              self.messages.Thresholds,
-              autoscaling_settings,
-          )
-      )
       autoscaling_settings_update_mask = ['autoscaling_settings']
+    else:
+      autoscaling_settings_update_mask = []
+
+    # If a customer removes the last policy from the settings, the settings do
+    # not provide any additional value. So, in this case, we are removing the
+    # entire setting.
+    if (
+        autoscaling_settings is not None
+        and autoscaling_settings.autoscaling_policies
+    ):
+      autoscaling_settings_message = util.ConstructAutoscalingSettingsMessage(
+          self.messages.AutoscalingSettings,
+          self.messages.AutoscalingPolicy,
+          self.messages.Thresholds,
+          autoscaling_settings,
+      )
+    else:
+      autoscaling_settings_message = None
 
     cluster = self.messages.Cluster(
         nodeTypeConfigs=node_type_configs,

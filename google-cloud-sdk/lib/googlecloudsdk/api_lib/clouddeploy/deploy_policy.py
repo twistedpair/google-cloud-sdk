@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
 
+DEPLOY_POLICY_UPDATE_MASK = '*'
+
 
 class DeployPoliciesClient(object):
   """Client for deploy policy service in the Cloud Deploy API."""
@@ -50,3 +52,36 @@ class DeployPoliciesClient(object):
         )
     )
     return self._service.Get(request)
+
+  def Patch(self, obj):
+    """Patches a deploy policy resource.
+
+    Args:
+      obj: apitools.base.protorpclite.messages.Message, deploy policy message.
+
+    Returns:
+      The operation message.
+    """
+    return self._service.Patch(
+        self.messages.ClouddeployProjectsLocationsDeployPoliciesPatchRequest(
+            deployPolicy=obj,
+            allowMissing=True,
+            name=obj.name,
+            updateMask=DEPLOY_POLICY_UPDATE_MASK,
+        )
+    )
+
+  def Delete(self, name):
+    """Deletes a deploy policy resource.
+
+    Args:
+      name: str, deploy policy name.
+
+    Returns:
+      The operation message.
+    """
+    return self._service.Delete(
+        self.messages.ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(
+            name=name, allowMissing=True
+        )
+    )

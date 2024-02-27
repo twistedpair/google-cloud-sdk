@@ -62,8 +62,10 @@ def Create(instance_ref,
     else:
       req_args[
           'databaseDialect'] = msgs.CreateDatabaseRequest.DatabaseDialectValueValuesEnum.GOOGLE_STANDARD_SQL
-  if kms_key:
+  if isinstance(kms_key, str):
     req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyName=kms_key)
+  elif isinstance(kms_key, list):
+    req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyNames=kms_key)
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(
       parent=instance_ref.RelativeName(),
       createDatabaseRequest=msgs.CreateDatabaseRequest(**req_args))

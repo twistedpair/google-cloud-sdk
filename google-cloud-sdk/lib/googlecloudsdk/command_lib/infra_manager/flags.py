@@ -310,12 +310,24 @@ def AddFileFlag(parser, hidden=False):
   """Add --file flag."""
   parser.add_argument(
       '--file',
-      default='preview',
       hidden=hidden,
       help=(
           'File name for preview export artifacts. It is optional and if '
           '--file is specified with a name or complete path, the artifacts '
           'will be downloaded to either the current directory with files named '
           'as the name provided or to the complete path.'
+      ),
+  )
+
+
+# TODO: b/326133845 - Remove `hidden` annotation to make multi-tf commands
+# public.
+def AddTFVersionConstraintFlag(parser, hidden=True):
+  """Add --tf-version-constraint flag."""
+  parser.add_argument(
+      '--tf-version-constraint',
+      hidden=hidden,
+      help=(
+          'User-specified Terraform version constraint, for example "=1.3.10".'
       ),
   )

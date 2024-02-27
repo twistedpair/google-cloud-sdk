@@ -25,6 +25,7 @@ from googlecloudsdk.core import resources
 
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
+    base.ReleaseTrack.GA: 'v1',
 }
 
 
@@ -64,52 +65,58 @@ def WaitForOperation(poller, operation, message, max_wait_sec):
   )
 
 
-def PopulateAttributes(args):
+def PopulateAttributes(args, release_track=base.ReleaseTrack.ALPHA):
   """Populate attirbutes from args."""
 
-  attributes = GetMessagesModule().Attributes()
-  if args.environment:
-    attributes.environment = GetMessagesModule().Environment(
-        environment=args.environment
+  attributes = GetMessagesModule(release_track).Attributes()
+  if args.environment_type:
+    attributes.environment = GetMessagesModule(release_track).Environment(
+        type=GetMessagesModule(release_track).Environment.TypeValueValuesEnum(
+            args.environment_type
+        )
     )
 
-  if args.criticality:
-    criticality = GetMessagesModule().Criticality()
-    criticality.level = args.criticality.get('level')
-    criticality.missionCritical = args.criticality.get('mission-critical')
-    attributes.criticality = criticality
+  if args.criticality_type:
+    attributes.criticality = GetMessagesModule(release_track).Criticality(
+        type=GetMessagesModule(release_track).Criticality.TypeValueValuesEnum(
+            args.criticality_type
+        )
+    )
 
   for b_owner in args.business_owners or []:
-    business_owner = GetMessagesModule().ContactInfo()
+    business_owner = GetMessagesModule(release_track).ContactInfo()
     business_owner.email = b_owner.get('email', None)
     if b_owner.get('display-name', None):
       business_owner.displayName = b_owner.get('display-name', None)
-    if b_owner.get('channel-uri', None):
-      business_owner.channel = GetMessagesModule().Channel(
-          uri=b_owner.get('channel-uri')
-      )
+    if release_track == base.ReleaseTrack.ALPHA:
+      if b_owner.get('channel-uri', None):
+        business_owner.channel = GetMessagesModule(release_track).Channel(
+            uri=b_owner.get('channel-uri')
+        )
     attributes.businessOwners.append(business_owner)
 
   for d_owner in args.developer_owners or []:
-    developer_owner = GetMessagesModule().ContactInfo()
+    developer_owner = GetMessagesModule(release_track).ContactInfo()
     developer_owner.email = d_owner.get('email', None)
     if d_owner.get('display-name', None):
       developer_owner.displayName = d_owner.get('display-name', None)
-    if d_owner.get('channel-uri', None):
-      developer_owner.channel = GetMessagesModule().Channel(
-          uri=d_owner.get('channel-uri')
-      )
+    if release_track == base.ReleaseTrack.ALPHA:
+      if d_owner.get('channel-uri', None):
+        developer_owner.channel = GetMessagesModule(release_track).Channel(
+            uri=d_owner.get('channel-uri')
+        )
     attributes.developerOwners.append(developer_owner)
 
   for o_owner in args.operator_owners or []:
-    operator_owner = GetMessagesModule().ContactInfo()
+    operator_owner = GetMessagesModule(release_track).ContactInfo()
     operator_owner.email = o_owner.get('email', None)
     if o_owner.get('display-name'):
       operator_owner.displayName = o_owner.get('display-name')
-    if o_owner.get('channel-uri'):
-      operator_owner.channel = GetMessagesModule().Channel(
-          uri=o_owner.get('channel-uri')
-      )
+    if release_track == base.ReleaseTrack.ALPHA:
+      if o_owner.get('channel-uri'):
+        operator_owner.channel = GetMessagesModule(release_track).Channel(
+            uri=o_owner.get('channel-uri')
+        )
     attributes.operatorOwners.append(operator_owner)
 
   return attributes

@@ -726,6 +726,9 @@ class RemoteLoginWithAuthProxyFlow(InstalledAppFlow):
     """
 
     kwargs.setdefault('prompt', 'consent')
+    # when the parameter token_usage=remote is present, the DUSI of the token is
+    # not attached to the local device whose browser is used to provide consent.
+    kwargs.setdefault('token_usage', 'remote')
     auth_url, _ = self.authorization_url(**kwargs)
 
     authorization_prompt_message = (

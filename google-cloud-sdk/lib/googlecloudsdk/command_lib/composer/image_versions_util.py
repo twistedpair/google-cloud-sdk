@@ -90,7 +90,6 @@ def IsValidImageVersionUpgrade(cur_image_version_str,
   # been requested.
   cur_image_ver = _ImageVersionItem(
       image_ver=cur_image_version_str)
-  cand_image_ver = _ImageVersionItem(image_ver=image_version_id)
 
   is_composer3 = IsVersionComposer3Compatible(
       cur_image_version_str
@@ -102,8 +101,8 @@ def IsValidImageVersionUpgrade(cur_image_version_str,
     raise InvalidImageVersionError(
         'This environment does not support upgrades.')
   return _ValidateCandidateImageVersionId(
-      cur_image_ver.GetImageVersionString(),
-      cand_image_ver.GetImageVersionString())
+      cur_image_version_str,
+      image_version_id)
 
 
 def ImageVersionFromAirflowVersion(new_airflow_version, cur_image_version=None):
@@ -253,6 +252,9 @@ def IsVersionTriggererCompatible(image_version):
 
   if image_version:
     version_item = _ImageVersionItem(image_version)
+    # Triggerer is supported in Composer 3.
+    if IsVersionComposer3Compatible(image_version):
+      return True
     if version_item and version_item.airflow_ver and version_item.composer_ver:
       airflow_version = version_item.airflow_ver
       composer_version = version_item.composer_ver

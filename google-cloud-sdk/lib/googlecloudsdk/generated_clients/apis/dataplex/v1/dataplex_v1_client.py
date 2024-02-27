@@ -45,6 +45,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_dataScans = self.ProjectsLocationsDataScansService(self)
     self.projects_locations_dataTaxonomies_attributes = self.ProjectsLocationsDataTaxonomiesAttributesService(self)
     self.projects_locations_dataTaxonomies = self.ProjectsLocationsDataTaxonomiesService(self)
+    self.projects_locations_entryGroups_entries = self.ProjectsLocationsEntryGroupsEntriesService(self)
     self.projects_locations_entryGroups = self.ProjectsLocationsEntryGroupsService(self)
     self.projects_locations_entryTypes = self.ProjectsLocationsEntryTypesService(self)
     self.projects_locations_governanceRules = self.ProjectsLocationsGovernanceRulesService(self)
@@ -62,7 +63,6 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_lakes_zones_entities = self.ProjectsLocationsLakesZonesEntitiesService(self)
     self.projects_locations_lakes_zones = self.ProjectsLocationsLakesZonesService(self)
     self.projects_locations_lakes = self.ProjectsLocationsLakesService(self)
-    self.projects_locations_managedEntries = self.ProjectsLocationsManagedEntriesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -76,6 +76,87 @@ class DataplexV1(base_api.BaseApiClient):
       super(DataplexV1.ProjectsLocationsAspectTypesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an AspectType.
+
+      Args:
+        request: (DataplexProjectsLocationsAspectTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/aspectTypes',
+        http_method='POST',
+        method_id='dataplex.projects.locations.aspectTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['aspectTypeId', 'validateOnly'],
+        relative_path='v1/{+parent}/aspectTypes',
+        request_field='googleCloudDataplexV1AspectType',
+        request_type_name='DataplexProjectsLocationsAspectTypesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a AspectType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsAspectTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/aspectTypes/{aspectTypesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.aspectTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsAspectTypesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a AspectType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsAspectTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1AspectType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/aspectTypes/{aspectTypesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.aspectTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsAspectTypesGetRequest',
+        response_type_name='GoogleCloudDataplexV1AspectType',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -101,6 +182,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsAspectTypesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists AspectType resources in a project and location.
+
+      Args:
+        request: (DataplexProjectsLocationsAspectTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListAspectTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/aspectTypes',
+        http_method='GET',
+        method_id='dataplex.projects.locations.aspectTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/aspectTypes',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsAspectTypesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListAspectTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a AspectType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsAspectTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/aspectTypes/{aspectTypesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.aspectTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1AspectType',
+        request_type_name='DataplexProjectsLocationsAspectTypesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1153,6 +1288,232 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsEntryGroupsEntriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_entryGroups_entries resource."""
+
+    _NAME = 'projects_locations_entryGroups_entries'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsEntryGroupsEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryGroups.entries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryId'],
+        relative_path='v1/{+parent}/entries',
+        request_field='googleCloudDataplexV1Entry',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesCreateRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.entryGroups.entries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesDeleteRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a single entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aspectTypes', 'paths', 'view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesGetRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists entries within an entry group.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}/entries',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListEntriesResponse',
+        supports_download=False,
+    )
+
+    def Lookup(self, request, global_params=None):
+      r"""Looks up a single entry. Deprecated: Do not use. Use LookupEntry instead.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:lookup',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entries.lookup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aspectTypes', 'entry', 'paths', 'view'],
+        relative_path='v1/{+name}:lookup',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesLookupRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def LookupAspects(self, request, global_params=None):
+      r"""Lists the aspects within an entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesLookupAspectsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1LookupAspectsResponse) The response message.
+      """
+      config = self.GetMethodConfig('LookupAspects')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupAspects.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:lookupAspects',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entries.lookupAspects',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}:lookupAspects',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesLookupAspectsRequest',
+        response_type_name='GoogleCloudDataplexV1LookupAspectsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an Entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.entryGroups.entries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'aspectKeys', 'deleteMissingAspects', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Entry',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesPatchRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def RetrieveAspects(self, request, global_params=None):
+      r"""Lists the aspects within an entry.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsEntriesRetrieveAspectsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1RetrieveAspectsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveAspects')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveAspects.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:retrieveAspects',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.entries.retrieveAspects',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}:retrieveAspects',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesRetrieveAspectsRequest',
+        response_type_name='GoogleCloudDataplexV1RetrieveAspectsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEntryGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_entryGroups resource."""
 
@@ -1162,6 +1523,87 @@ class DataplexV1(base_api.BaseApiClient):
       super(DataplexV1.ProjectsLocationsEntryGroupsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an EntryGroup.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryGroupId', 'validateOnly'],
+        relative_path='v1/{+parent}/entryGroups',
+        request_field='googleCloudDataplexV1EntryGroup',
+        request_type_name='DataplexProjectsLocationsEntryGroupsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a EntryGroup resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.entryGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a EntryGroup resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsGetRequest',
+        response_type_name='GoogleCloudDataplexV1EntryGroup',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -1187,6 +1629,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsEntryGroupsGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists EntryGroup resources in a project and location.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListEntryGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/entryGroups',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryGroupsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListEntryGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a EntryGroup resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.entryGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1EntryGroup',
+        request_type_name='DataplexProjectsLocationsEntryGroupsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1254,6 +1750,87 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates an EntryType.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryTypesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryTypes',
+        http_method='POST',
+        method_id='dataplex.projects.locations.entryTypes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['entryTypeId', 'validateOnly'],
+        relative_path='v1/{+parent}/entryTypes',
+        request_field='googleCloudDataplexV1EntryType',
+        request_type_name='DataplexProjectsLocationsEntryTypesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a EntryType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryTypesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryTypes/{entryTypesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.entryTypes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryTypesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a EntryType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1EntryType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryTypes/{entryTypesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryTypes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryTypesGetRequest',
+        response_type_name='GoogleCloudDataplexV1EntryType',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1278,6 +1855,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsEntryTypesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists EntryType resources in a project and location.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListEntryTypesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryTypes',
+        http_method='GET',
+        method_id='dataplex.projects.locations.entryTypes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/entryTypes',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsEntryTypesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListEntryTypesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a EntryType resource.
+
+      Args:
+        request: (DataplexProjectsLocationsEntryTypesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryTypes/{entryTypesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.entryTypes.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1EntryType',
+        request_type_name='DataplexProjectsLocationsEntryTypesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -1345,6 +1976,87 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a GovernanceRule resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGovernanceRulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/governanceRules',
+        http_method='POST',
+        method_id='dataplex.projects.locations.governanceRules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['governanceRuleId', 'validateOnly'],
+        relative_path='v1/{+parent}/governanceRules',
+        request_field='googleCloudDataplexV1GovernanceRule',
+        request_type_name='DataplexProjectsLocationsGovernanceRulesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a GovernanceRule resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGovernanceRulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/governanceRules/{governanceRulesId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.governanceRules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGovernanceRulesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a GovernanceRule resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGovernanceRulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GovernanceRule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/governanceRules/{governanceRulesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.governanceRules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGovernanceRulesGetRequest',
+        response_type_name='GoogleCloudDataplexV1GovernanceRule',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1369,6 +2081,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List GovernanceRule resources.
+
+      Args:
+        request: (DataplexProjectsLocationsGovernanceRulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListGovernanceRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/governanceRules',
+        http_method='GET',
+        method_id='dataplex.projects.locations.governanceRules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/governanceRules',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsGovernanceRulesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListGovernanceRulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a GovernanceRule resource.
+
+      Args:
+        request: (DataplexProjectsLocationsGovernanceRulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/governanceRules/{governanceRulesId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.governanceRules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1GovernanceRule',
+        request_type_name='DataplexProjectsLocationsGovernanceRulesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 
@@ -3537,70 +4303,6 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsManagedEntriesService(base_api.BaseApiService):
-    """Service class for the projects_locations_managedEntries resource."""
-
-    _NAME = 'projects_locations_managedEntries'
-
-    def __init__(self, client):
-      super(DataplexV1.ProjectsLocationsManagedEntriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Retrieves a managed entry by the resource ID.
-
-      Args:
-        request: (DataplexProjectsLocationsManagedEntriesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDataplexV1ManagedEntry) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managedEntries/{managedEntriesId}',
-        http_method='GET',
-        method_id='dataplex.projects.locations.managedEntries.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='DataplexProjectsLocationsManagedEntriesGetRequest',
-        response_type_name='GoogleCloudDataplexV1ManagedEntry',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Update a managed entry.
-
-      Args:
-        request: (DataplexProjectsLocationsManagedEntriesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDataplexV1ManagedEntry) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/managedEntries/{managedEntriesId}',
-        http_method='PATCH',
-        method_id='dataplex.projects.locations.managedEntries.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='googleCloudDataplexV1ManagedEntry',
-        request_type_name='DataplexProjectsLocationsManagedEntriesPatchRequest',
-        response_type_name='GoogleCloudDataplexV1ManagedEntry',
-        supports_download=False,
-    )
-
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -3780,6 +4482,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsListRequest',
         response_type_name='GoogleCloudLocationListLocationsResponse',
+        supports_download=False,
+    )
+
+    def LookupEntry(self, request, global_params=None):
+      r"""Looks up a single entry.
+
+      Args:
+        request: (DataplexProjectsLocationsLookupEntryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entry) The response message.
+      """
+      config = self.GetMethodConfig('LookupEntry')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupEntry.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:lookupEntry',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lookupEntry',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['aspectTypes', 'entry', 'paths', 'view'],
+        relative_path='v1/{+name}:lookupEntry',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLookupEntryRequest',
+        response_type_name='GoogleCloudDataplexV1Entry',
+        supports_download=False,
+    )
+
+    def SearchEntries(self, request, global_params=None):
+      r"""Searches for entries matching given query and scope.
+
+      Args:
+        request: (DataplexProjectsLocationsSearchEntriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1SearchEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchEntries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchEntries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:searchEntries',
+        http_method='POST',
+        method_id='dataplex.projects.locations.searchEntries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['adminSearch', 'orderBy', 'pageSize', 'pageToken', 'query', 'scope'],
+        relative_path='v1/{+name}:searchEntries',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsSearchEntriesRequest',
+        response_type_name='GoogleCloudDataplexV1SearchEntriesResponse',
         supports_download=False,
     )
 

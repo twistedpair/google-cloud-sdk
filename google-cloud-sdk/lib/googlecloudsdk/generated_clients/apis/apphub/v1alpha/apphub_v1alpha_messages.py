@@ -18,7 +18,9 @@ class ApphubProjectsLocationsApplicationsCreateRequest(_messages.Message):
 
   Fields:
     application: A Application resource to be passed as the request body.
-    applicationId: Required. The Application identifier.
+    applicationId: Required. The Application identifier. Must contain only
+      lowercase letters, numbers or hyphens, with the first character a
+      letter, the last a letter or a number, and a 63 character maximum.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -169,7 +171,9 @@ class ApphubProjectsLocationsApplicationsServicesCreateRequest(_messages.Message
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     service: A Service resource to be passed as the request body.
-    serviceId: Required. The Service identifier.
+    serviceId: Required. The Service identifier. Must contain only lowercase
+      letters, numbers or hyphens, with the first character a letter, the last
+      a letter or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -314,7 +318,9 @@ class ApphubProjectsLocationsApplicationsWorkloadsCreateRequest(_messages.Messag
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     workload: A Workload resource to be passed as the request body.
-    workloadId: Required. The Workload identifier.
+    workloadId: Required. The Workload identifier. Must contain only lowercase
+      letters, numbers or hyphens, with the first character a letter, the last
+      a letter or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -425,26 +431,6 @@ class ApphubProjectsLocationsDetachServiceProjectAttachmentRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
 
 
-class ApphubProjectsLocationsDiscoveredServicesFindRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDiscoveredServicesFindRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Value for parent.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest
   object.
@@ -478,26 +464,6 @@ class ApphubProjectsLocationsDiscoveredServicesGetRequest(_messages.Message):
 
 class ApphubProjectsLocationsDiscoveredServicesListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Value for parent.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class ApphubProjectsLocationsDiscoveredWorkloadsFindRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDiscoveredWorkloadsFindRequest object.
 
   Fields:
     filter: Optional. Filtering results
@@ -749,8 +715,10 @@ class Application(_messages.Message):
   Fields:
     attributes: Optional. Consumer provided attributes.
     createTime: Output only. Create time.
-    description: Optional. User-defined description of an Application.
-    displayName: Optional. User-defined name for the Application.
+    description: Optional. User-defined description of an Application. Can
+      have a maximum length of 2048 characters.
+    displayName: Optional. User-defined name for the Application. Can have a
+      maximum length of 63 characters.
     name: Identifier. The resource name of an Application. Format:
       "projects/{host-project-
       id}/locations/{location}/applications/{application-id}"
@@ -977,7 +945,8 @@ class ContactInfo(_messages.Message):
 
   Fields:
     channel: Optional. Communication channel of the contacts.
-    displayName: Optional. Contact's name.
+    displayName: Optional. Contact's name. Can have a maximum length of 63
+      characters.
     email: Required. Email address of the contacts.
   """
 
@@ -989,14 +958,37 @@ class ContactInfo(_messages.Message):
 class Criticality(_messages.Message):
   r"""Criticality of the Application, Service, or Workload
 
+  Enums:
+    TypeValueValuesEnum: Required. Criticality Type.
+
   Fields:
-    level: Required. Criticality level.
-    missionCritical: Required. Indicates mission-critical Application,
+    level: Optional. Criticality level. Can contain only lowercase letters,
+      numeric characters, underscores, and dashes. Can have a maximum length
+      of 63 characters.
+    missionCritical: Optional. Indicates mission-critical Application,
       Service, or Workload.
+    type: Required. Criticality Type.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Criticality Type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      MISSION_CRITICAL: Mission critical service, application or workload.
+      HIGH: High impact.
+      MEDIUM: Medium impact.
+      LOW: Low impact.
+    """
+    TYPE_UNSPECIFIED = 0
+    MISSION_CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
 
   level = _messages.StringField(1)
   missionCritical = _messages.BooleanField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class DetachServiceProjectAttachmentRequest(_messages.Message):
@@ -1060,11 +1052,34 @@ class Empty(_messages.Message):
 class Environment(_messages.Message):
   r"""Environment of the Application, Service, or Workload
 
+  Enums:
+    TypeValueValuesEnum: Required. Environment Type.
+
   Fields:
-    environment: Required. Environment name.
+    environment: Optional. Environment name. Can contain only lowercase
+      letters, numeric characters, underscores, and dashes. Can have a maximum
+      length of 63 characters.
+    type: Required. Environment Type.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Environment Type.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type.
+      PRODUCTION: Production environment.
+      STAGING: Staging environment.
+      TEST: Test environment.
+      DEVELOPMENT: Development environment.
+    """
+    TYPE_UNSPECIFIED = 0
+    PRODUCTION = 1
+    STAGING = 2
+    TEST = 3
+    DEVELOPMENT = 4
+
   environment = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class Expr(_messages.Message):
@@ -1101,36 +1116,6 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
-
-
-class FindDiscoveredServicesResponse(_messages.Message):
-  r"""Response for FindDiscoveredServices.
-
-  Fields:
-    discoveredServices: List of discovered services.
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  discoveredServices = _messages.MessageField('DiscoveredService', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
-class FindDiscoveredWorkloadsResponse(_messages.Message):
-  r"""Response for FindDiscoveredWorkloads.
-
-  Fields:
-    discoveredWorkloads: List of discovered workloads.
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  discoveredWorkloads = _messages.MessageField('DiscoveredWorkload', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class FindUnregisteredServicesResponse(_messages.Message):
@@ -1617,10 +1602,12 @@ class Service(_messages.Message):
   Fields:
     attributes: Optional. Consumer provided attributes.
     createTime: Output only. Create time.
-    description: Optional. User-defined description of a Service.
+    description: Optional. User-defined description of a Service. Can have a
+      maximum length of 2048 characters.
     discoveredService: Required. Immutable. The resource name of the original
       discovered service.
-    displayName: Optional. User-defined name for the Service.
+    displayName: Optional. User-defined name for the Service. Can have a
+      maximum length of 63 characters.
     name: Identifier. The resource name of a Service. Format: "projects/{host-
       project-id}/locations/{location}/applications/{application-
       id}/services/{service-id}"
@@ -1910,10 +1897,12 @@ class Workload(_messages.Message):
   Fields:
     attributes: Optional. Consumer provided attributes.
     createTime: Output only. Create time.
-    description: Optional. User-defined description of a Workload.
+    description: Optional. User-defined description of a Workload. Can have a
+      maximum length of 2048 characters.
     discoveredWorkload: Required. Immutable. The resource name of the original
       discovered workload.
-    displayName: Optional. User-defined name for the Workload.
+    displayName: Optional. User-defined name for the Workload. Can have a
+      maximum length of 63 characters.
     name: Identifier. The resource name of the Workload. Format:
       "projects/{host-project-
       id}/locations/{location}/applications/{application-

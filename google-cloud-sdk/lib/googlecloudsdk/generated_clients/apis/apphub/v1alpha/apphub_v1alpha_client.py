@@ -575,33 +575,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Find(self, request, global_params=None):
-      r"""Finds discovered services that could be added to an application in a host project and location.
-
-      Args:
-        request: (ApphubProjectsLocationsDiscoveredServicesFindRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FindDiscoveredServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('Find')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Find.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredServices:find',
-        http_method='GET',
-        method_id='apphub.projects.locations.discoveredServices.find',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/discoveredServices:find',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsDiscoveredServicesFindRequest',
-        response_type_name='FindDiscoveredServicesResponse',
-        supports_download=False,
-    )
-
     def FindUnregistered(self, request, global_params=None):
       r"""Finds unregistered services in a host project and location.
 
@@ -657,7 +630,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists discovered services in a host project and location.
+      r"""Lists discovered services that can be added to an application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesListRequest) input message
@@ -692,33 +665,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
       super(ApphubV1alpha.ProjectsLocationsDiscoveredWorkloadsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Find(self, request, global_params=None):
-      r"""Finds discovered workloads that could be added to an application in a host project and location.
-
-      Args:
-        request: (ApphubProjectsLocationsDiscoveredWorkloadsFindRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FindDiscoveredWorkloadsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Find')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Find.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads:find',
-        http_method='GET',
-        method_id='apphub.projects.locations.discoveredWorkloads.find',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/discoveredWorkloads:find',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsFindRequest',
-        response_type_name='FindDiscoveredWorkloadsResponse',
-        supports_download=False,
-    )
 
     def FindUnregistered(self, request, global_params=None):
       r"""Finds unregistered workloads in a host project and location.
@@ -775,7 +721,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists discovered workloads in a host project and location.
+      r"""Lists discovered workloads that can be added to an application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsListRequest) input message

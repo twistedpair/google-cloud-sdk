@@ -30,6 +30,7 @@ class ResourceType(enum.Enum):
   ROLLOUT = 'Rollout'
   AUTOMATION = 'Automation'
   CUSTOM_TARGET_TYPE = 'CustomTargetType'
+  DEPLOY_POLICY = 'DeployPolicy'
   TARGET_ATTRIBUTE = 'TargetAttribute'
 
 

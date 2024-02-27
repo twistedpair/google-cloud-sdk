@@ -1,3 +1,7 @@
+@rem                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ( IF NOT _%OLD_CP%_==__ CHCP %OLD_CP% >NUL ) & ( IF _%INTERACTIVE%_==_0_ IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ echo Google Cloud CLI installer will now exit. & PAUSE ) & "%COMSPEC%" /c "exit %ERRORLEVEL%" & goto lastline
+@rem The weird-looking comment above is to workaround a bug when installing from older gcloud releases; see b/317793973#comment6 for details.
+@rem DO NOT EDIT ABOVE THIS LINE.
+
 @echo off
 rem Copyright 2013 Google Inc. All Rights Reserved.
 
@@ -167,39 +171,51 @@ IF "%CLOUDSDK_COMPONENT_MANAGER_SNAPSHOT_URL%"=="" (
 :SETENABLEDELAYED
 SETLOCAL EnableDelayedExpansion
 
-rem temporarily set code page to utf-8 support
-for /F "tokens=4" %%G in ('chcp') do (set OLD_CP=%%G)
-set PYTHONIOENCODING=utf-8
-chcp 65001 >NUL
-
 IF %NO_WORKING_PYTHON_FOUND%=="true" (
   echo.
   echo To use the Google Cloud CLI, you must have Python installed and on your PATH.
   echo As an alternative, you may also set the CLOUDSDK_PYTHON environment variable
   echo to the location of your Python executable.
+  IF _%INTERACTIVE%_==_0_ (
+    IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ (
+      echo Google Cloud CLI installer will now exit.
+      PAUSE
+    )
+  )
   "%COMSPEC%" /C exit 1
-) ELSE (
-  rem copy_bundled_python.py will make a copy of the Python interpreter if it's
-  rem bundled in the Google Cloud CLI installation and report the location of the new
-  rem interpreter. We want to use this copy to install the Google Cloud CLI, since the
-  rem bundled copy can't modify itself.
-  FOR /F "delims=" %%i in (
-    '""%COMSPEC%" /U /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\lib\gcloud.py""" components copy-bundled-python'
-  ) DO (
-    SET CLOUDSDK_PYTHON=%%i
-  )
+  goto lastline
+)
+
+rem temporarily set code page to utf-8 support
+for /F "tokens=4" %%G in ('chcp') do (set OLD_CP=%%G)
+set PYTHONIOENCODING=utf-8
+chcp 65001 >NUL
+
+rem copy_bundled_python.py will make a copy of the Python interpreter if it's
+rem bundled in the Google Cloud CLI installation and report the location of the new
+rem interpreter. We want to use this copy to install the Google Cloud CLI, since the
+rem bundled copy can't modify itself.
+FOR /F "delims=" %%i in (
+  '""%COMSPEC%" /U /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\lib\gcloud.py""" components copy-bundled-python'
+) DO (
+  SET CLOUDSDK_PYTHON=%%i
+)
+
+rem Important: the call to Python and any subsequent instructions up to and including the goto ending the batch script must take place in the same line/block in case the script updates itself (see b/317793973).
+(
   "%COMSPEC%" /U /C ""!CLOUDSDK_PYTHON!" "!CLOUDSDK_ROOT_DIR!\bin\bootstrapping\install.py" %*"
-)
-
-set EXIT_CODE=%ERRORLEVEL%
-
-chcp %OLD_CP% >NUL
-
-IF _%INTERACTIVE%_==_0_ (
-  IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ (
-    echo Google Cloud CLI installer will now exit.
-    PAUSE
+  set EXIT_CODE=!ERRORLEVEL!
+  chcp %OLD_CP% >NUL
+  IF _%INTERACTIVE%_==_0_ (
+    IF _%CLOUDSDK_CORE_DISABLE_PROMPTS%_==__ (
+      echo Google Cloud CLI installer will now exit.
+      PAUSE
+    )
   )
+  "%COMSPEC%" /C exit !EXIT_CODE!
+  goto lastline 2>NUL || "%COMSPEC%" /C exit 0
 )
 
-"%COMSPEC%" /C exit %EXIT_CODE%
+rem DO NOT EDIT BELOW THIS LINE.
+:lastline
+"%COMSPEC%" /C exit %ERRORLEVEL%

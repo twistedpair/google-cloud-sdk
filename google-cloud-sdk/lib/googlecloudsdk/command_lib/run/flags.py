@@ -2706,6 +2706,9 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   if getattr(args, 'allow_unauthenticated', None) is not None:
     return args.allow_unauthenticated
 
+  if FlagIsExplicitlySet(args, 'default_url') and not args.default_url:
+    return None
+
   if prompt:
     # Need to check if the user has permissions before we prompt
     assert client is not None and service_ref is not None

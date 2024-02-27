@@ -126,9 +126,10 @@ SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     name='--source-instant-snapshot',
     completer=compute_completers.InstantSnapshotsCompleter,
     short_help="""
-    Source instant snapshot used to create the snapshot. To create a snapshot from a source
-    instant snapshot in a different project, specify the full path to the source instant snapshot.
-    For example:
+    The name or URL of the source instant snapshot. If the name is provided, the instant snapshot's zone
+or region must be specified with --source-instant-snapshot-zone or --source-instant-snapshot-region accordingly.
+    To create a snapshot from an instant snapshot in a different project, specify the full path to the instant snapshot.
+    If the URL is provided, format should be:
     https://www.googleapis.com/compute/v1/projects/MY-PROJECT/zones/MY-ZONE/instantSnapshots/MY-INSTANT-SNAPSHOT
     """,
     zonal_collection='compute.instantSnapshots',

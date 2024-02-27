@@ -63,6 +63,7 @@ class Client:
   """
 
   def __init__(self, release_track):
+    self._release_track = release_track
     self._client = GetClientInstance(release_track)
     self._association_client = (
         self._client.projects_locations_firewallEndpointAssociations
@@ -120,32 +121,30 @@ class Client:
       name,
       update_fields,
   ):
-    """Calls the UpdateAssociation API to update labels or TLS inspection policy.
+    """Calls the UpdateAssociation API to modify an existing association.
 
     Args:
       name: The resource name of the association.
       update_fields: A dictionary mapping from field names to update, to their
-        new values. Only 'labels' and 'tls_inspection_policy' fields are
-        supported.
+        new values. Supported values: 'labels', 'tls_inspection_policy',
+        'disabled' (ALPHA).
 
     Returns:
       NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchResponse
     """
-    # TLS inspection policy is part of the FirewallEndpointAssociation message
-    # in ALPHA but not BETA version. Therefore, we need to separate the two
-    # cases to avoid runtime errors.
-    #
     # Only keys that exist in the dictionary are updated. This is done via the
     # updateMask request parameter. Values for keys that do not exist in the
     # dictionary can be anything and will not be updated.
-    if 'tls_inspection_policy' in update_fields:
+    if self._release_track == base.ReleaseTrack.ALPHA:
       association = self.messages.FirewallEndpointAssociation(
+          disabled=update_fields.get('disabled', None),
           labels=update_fields.get('labels', None),
-          tlsInspectionPolicy=update_fields['tls_inspection_policy'],
+          tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
       )
-    else:
+    else:  # BETA and GA
       association = self.messages.FirewallEndpointAssociation(
           labels=update_fields.get('labels', None),
+          tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
       )
 
     update_request = self.messages.NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(

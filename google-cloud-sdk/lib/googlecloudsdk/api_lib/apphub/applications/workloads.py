@@ -22,15 +22,16 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.apphub import consts as api_lib_consts
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.core import log
 
 
 class WorkloadsClient(object):
   """Client for Application workloads in apphub API."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or api_lib_utils.GetClientInstance()
-    self.messages = messages or api_lib_utils.GetMessagesModule()
+  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+    self.client = api_lib_utils.GetClientInstance(release_track)
+    self.messages = api_lib_utils.GetMessagesModule(release_track)
     self._app_workloads_client = (
         self.client.projects_locations_applications_workloads
     )

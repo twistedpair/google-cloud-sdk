@@ -215,3 +215,32 @@ data_attribute_binding:
     attribute_name: data_attribute_binding
     help: |
       Identifier of the Dataplex Data Attribute Binding
+
+entry_group:
+  name: entry group
+  collection: dataplex.projects.locations.entryGroups
+  request_id_field: entryGroupId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &entry_group
+    parameter_name: entryGroupsId
+    attribute_name: entry_group
+    help: |
+      Entry group containing Dataplex Entries.
+
+entry:
+  name: entry
+  collection: dataplex.projects.locations.entryGroups.entries
+  request_id_field: entryId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *entry_group
+  - &entry
+    parameter_name: entriesId
+    attribute_name: entry
+    help: |
+      Entry containing metadata about some resource.

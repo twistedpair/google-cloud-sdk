@@ -107,6 +107,7 @@ class _UserBucketArgs(_UserResourceArgs):
       default_storage_class=None,
       enable_autoclass=None,
       enable_per_object_retention=None,
+      enable_hierarchical_namespace=None,
       labels_file_path=None,
       labels_to_append=None,
       labels_to_remove=None,
@@ -142,6 +143,7 @@ class _UserBucketArgs(_UserResourceArgs):
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.enable_per_object_retention = enable_per_object_retention
+    self.enable_hierarchical_namespace = enable_hierarchical_namespace
     self.labels_file_path = labels_file_path
     self.labels_to_append = labels_to_append
     self.labels_to_remove = labels_to_remove
@@ -181,6 +183,8 @@ class _UserBucketArgs(_UserResourceArgs):
         and self.enable_autoclass == other.enable_autoclass
         and self.enable_per_object_retention
         == other.enable_per_object_retention
+        and self.enable_hierarchical_namespace
+        == other.enable_hierarchical_namespace
         and self.labels_file_path == other.labels_file_path
         and self.labels_to_append == other.labels_to_append
         and self.labels_to_remove == other.labels_to_remove

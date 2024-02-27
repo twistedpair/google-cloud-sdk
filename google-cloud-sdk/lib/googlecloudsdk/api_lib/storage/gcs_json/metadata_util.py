@@ -623,9 +623,6 @@ def get_cleared_bucket_fields(request_config):
   if resource_args.retention_period == user_request_args_factory.CLEAR:
     cleared_fields.append('retentionPolicy')
 
-  if resource_args.soft_delete_duration == user_request_args_factory.CLEAR:
-    cleared_fields.append('softDeletePolicy')
-
   if (
       resource_args.web_error_page
       == resource_args.web_main_page_suffix

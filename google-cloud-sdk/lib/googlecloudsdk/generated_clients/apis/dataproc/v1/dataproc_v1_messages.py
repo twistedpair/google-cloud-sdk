@@ -40,6 +40,80 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class AccessSessionSparkApplicationEnvironmentInfoResponse(_messages.Message):
+  r"""Environment details of a Saprk Application.
+
+  Fields:
+    applicationEnvironmentInfo: Details about the Environment that the
+      application is running in.
+  """
+
+  applicationEnvironmentInfo = _messages.MessageField('ApplicationEnvironmentInfo', 1)
+
+
+class AccessSessionSparkApplicationJobResponse(_messages.Message):
+  r"""Details of a particular job associated with Spark Application
+
+  Fields:
+    jobData: Output only. Data corresponding to a spark job.
+  """
+
+  jobData = _messages.MessageField('JobData', 1)
+
+
+class AccessSessionSparkApplicationResponse(_messages.Message):
+  r"""A summary of Spark Application
+
+  Fields:
+    application: Output only. High level information corresponding to an
+      application.
+  """
+
+  application = _messages.MessageField('ApplicationInfo', 1)
+
+
+class AccessSessionSparkApplicationSqlQueryResponse(_messages.Message):
+  r"""Details of a query for a Spark Application
+
+  Fields:
+    executionData: SQL Execution Data
+  """
+
+  executionData = _messages.MessageField('SqlExecutionUiData', 1)
+
+
+class AccessSessionSparkApplicationSqlSparkPlanGraphResponse(_messages.Message):
+  r"""SparkPlanGraph for a Spark Application execution limited to maximum
+  10000 clusters.
+
+  Fields:
+    sparkPlanGraph: SparkPlanGraph for a Spark Application execution.
+  """
+
+  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 1)
+
+
+class AccessSessionSparkApplicationStageAttemptResponse(_messages.Message):
+  r"""Stage Attempt for a Stage of a Spark Application
+
+  Fields:
+    stageData: Output only. Data corresponding to a stage.
+  """
+
+  stageData = _messages.MessageField('StageData', 1)
+
+
+class AccessSessionSparkApplicationStageRddOperationGraphResponse(_messages.Message):
+  r"""RDD operation graph for a Spark Application Stage limited to maximum
+  10000 clusters.
+
+  Fields:
+    rddOperationGraph: RDD operation graph for a Spark Application Stage.
+  """
+
+  rddOperationGraph = _messages.MessageField('RddOperationGraph', 1)
+
+
 class AccessSparkApplicationEnvironmentInfoResponse(_messages.Message):
   r"""Environment details of a Saprk Application.
 
@@ -2419,6 +2493,527 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnviron
+  mentInfoRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest
+  object.
+
+  Fields:
+    jobId: Required. Job ID to fetch data for.
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  jobId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlan
+  Request object.
+
+  Fields:
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  executionId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQuer
+  yRequest object.
+
+  Fields:
+    details: Optional. Lists/ hides details of Spark plan nodes. True is set
+      to list and false to hide.
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+    planDescription: Optional. Enables/ disables physical plan description on
+      demand
+  """
+
+  details = _messages.BooleanField(1)
+  executionId = _messages.IntegerField(2)
+  name = _messages.StringField(3, required=True)
+  parent = _messages.StringField(4)
+  planDescription = _messages.BooleanField(5)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAt
+  temptRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(4)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRd
+  dGraphRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageId = _messages.IntegerField(3)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecuto
+  rStageSummaryRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of executors to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationExecutorStageSummary call. Provide this
+      token to retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageAttemptId = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(6)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecuto
+  rsRequest object.
+
+  Enums:
+    ExecutorStatusValueValuesEnum: Optional. Filter to select whether active/
+      dead or all executors should be selected.
+
+  Fields:
+    executorStatus: Optional. Filter to select whether active/ dead or all
+      executors should be selected.
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of executors to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationExecutors call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  class ExecutorStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Filter to select whether active/ dead or all executors
+    should be selected.
+
+    Values:
+      EXECUTOR_STATUS_UNSPECIFIED: <no description>
+      EXECUTOR_STATUS_ACTIVE: <no description>
+      EXECUTOR_STATUS_DEAD: <no description>
+    """
+    EXECUTOR_STATUS_UNSPECIFIED = 0
+    EXECUTOR_STATUS_ACTIVE = 1
+    EXECUTOR_STATUS_DEAD = 2
+
+  executorStatus = _messages.EnumField('ExecutorStatusValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest
+  object.
+
+  Enums:
+    JobStatusValueValuesEnum: Optional. List only jobs in the specific state.
+
+  Fields:
+    jobStatus: Optional. List only jobs in the specific state.
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of jobs to return in each response. The
+      service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationJobs call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  class JobStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only jobs in the specific state.
+
+    Values:
+      JOB_EXECUTION_STATUS_UNSPECIFIED: <no description>
+      JOB_EXECUTION_STATUS_RUNNING: <no description>
+      JOB_EXECUTION_STATUS_SUCCEEDED: <no description>
+      JOB_EXECUTION_STATUS_FAILED: <no description>
+      JOB_EXECUTION_STATUS_UNKNOWN: <no description>
+    """
+    JOB_EXECUTION_STATUS_UNSPECIFIED = 0
+    JOB_EXECUTION_STATUS_RUNNING = 1
+    JOB_EXECUTION_STATUS_SUCCEEDED = 2
+    JOB_EXECUTION_STATUS_FAILED = 3
+    JOB_EXECUTION_STATUS_UNKNOWN = 4
+
+  jobStatus = _messages.EnumField('JobStatusValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest
+  object.
+
+  Enums:
+    ApplicationStatusValueValuesEnum: Optional. Search only applications in
+      the chosen state.
+
+  Fields:
+    applicationStatus: Optional. Search only applications in the chosen state.
+    maxEndTime: Optional. Latest end timestamp to list.
+    maxTime: Optional. Latest start timestamp to list.
+    minEndTime: Optional. Earliest end timestamp to list.
+    minTime: Optional. Earliest start timestamp to list.
+    pageSize: Optional. Maximum number of applications to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplications call. Provide this token to retrieve the
+      subsequent page.
+    parent: Required. The fully qualified name of the session to retrieve in
+      the format
+      "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_ID"
+  """
+
+  class ApplicationStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Search only applications in the chosen state.
+
+    Values:
+      APPLICATION_STATUS_UNSPECIFIED: <no description>
+      APPLICATION_STATUS_RUNNING: <no description>
+      APPLICATION_STATUS_COMPLETED: <no description>
+    """
+    APPLICATION_STATUS_UNSPECIFIED = 0
+    APPLICATION_STATUS_RUNNING = 1
+    APPLICATION_STATUS_COMPLETED = 2
+
+  applicationStatus = _messages.EnumField('ApplicationStatusValueValuesEnum', 1)
+  maxEndTime = _messages.StringField(2)
+  maxTime = _messages.StringField(3)
+  minEndTime = _messages.StringField(4)
+  minTime = _messages.StringField(5)
+  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(7)
+  parent = _messages.StringField(8, required=True)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQuer
+  iesRequest object.
+
+  Fields:
+    details: Optional. Lists/ hides details of Spark plan nodes. True is set
+      to list and false to hide.
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of queries to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationSqlQueries call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    planDescription: Optional. Enables/ disables physical plan description on
+      demand
+  """
+
+  details = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  planDescription = _messages.BooleanField(6)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAt
+  temptTasksRequest object.
+
+  Enums:
+    TaskStatusValueValuesEnum: Optional. List only tasks in the state.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of tasks to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationStageAttemptTasks call. Provide this token
+      to retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    sortRuntime: Optional. Sort the tasks by runtime.
+    stageAttemptId: Optional. Stage Attempt ID
+    stageId: Optional. Stage ID
+    taskStatus: Optional. List only tasks in the state.
+  """
+
+  class TaskStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only tasks in the state.
+
+    Values:
+      TASK_STATUS_UNSPECIFIED: <no description>
+      TASK_STATUS_RUNNING: <no description>
+      TASK_STATUS_SUCCESS: <no description>
+      TASK_STATUS_FAILED: <no description>
+      TASK_STATUS_KILLED: <no description>
+      TASK_STATUS_PENDING: <no description>
+    """
+    TASK_STATUS_UNSPECIFIED = 0
+    TASK_STATUS_RUNNING = 1
+    TASK_STATUS_SUCCESS = 2
+    TASK_STATUS_FAILED = 3
+    TASK_STATUS_KILLED = 4
+    TASK_STATUS_PENDING = 5
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  sortRuntime = _messages.BooleanField(5)
+  stageAttemptId = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(7)
+  taskStatus = _messages.EnumField('TaskStatusValueValuesEnum', 8)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAt
+  temptsRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of stage attempts (paging based on
+      stage_attempt_id) to return in each response. The service may return
+      fewer than this. The default page size is 10; the maximum page size is
+      100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationStageAttempts call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    stageId: Required. Stage ID for which attempts are to be fetched
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageId = _messages.IntegerField(5)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest
+  object.
+
+  Enums:
+    StageStatusValueValuesEnum: Optional. List only stages in the given state.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of stages (paging based on stage_id) to
+      return in each response. The service may return fewer than this. The
+      default page size is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSessionSparkApplicationStages call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Session) resource reference.
+    stageStatus: Optional. List only stages in the given state.
+  """
+
+  class StageStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only stages in the given state.
+
+    Values:
+      STAGE_STATUS_UNSPECIFIED: <no description>
+      STAGE_STATUS_ACTIVE: <no description>
+      STAGE_STATUS_COMPLETE: <no description>
+      STAGE_STATUS_FAILED: <no description>
+      STAGE_STATUS_PENDING: <no description>
+      STAGE_STATUS_SKIPPED: <no description>
+    """
+    STAGE_STATUS_UNSPECIFIED = 0
+    STAGE_STATUS_ACTIVE = 1
+    STAGE_STATUS_COMPLETE = 2
+    STAGE_STATUS_FAILED = 3
+    STAGE_STATUS_PENDING = 4
+    STAGE_STATUS_SKIPPED = 5
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExec
+  utorsRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobs
+  Request object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStag
+  eAttemptTasksRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(4)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStag
+  esRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the session to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
+      D/sessionSparkApplications/APPLICATION_ID"
+    parent: Required. Parent (Session) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the spark application to write
+      data about in the format "projects/PROJECT_ID/locations/DATAPROC_REGION/
+      sessions/SESSION_ID/sessionSparkApplications/APPLICATION_ID"
+    writeSessionSparkApplicationContextRequest: A
+      WriteSessionSparkApplicationContextRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  writeSessionSparkApplicationContextRequest = _messages.MessageField('WriteSessionSparkApplicationContextRequest', 2)
 
 
 class DataprocProjectsLocationsSessionsTerminateRequest(_messages.Message):
@@ -7873,6 +8468,8 @@ class RuntimeConfig(_messages.Message):
 
   Fields:
     autotuningConfig: Optional. Autotuning configuration of the workload.
+    cohort: Optional. Cohort identifier. Identifies families of the workloads
+      having the same shape, e.g. daily ETL jobs.
     containerImage: Optional. Optional custom container image for the job
       runtime environment. If not specified, a default container image will be
       used.
@@ -7908,10 +8505,11 @@ class RuntimeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   autotuningConfig = _messages.MessageField('AutotuningConfig', 1)
-  containerImage = _messages.StringField(2)
-  properties = _messages.MessageField('PropertiesValue', 3)
-  repositoryConfig = _messages.MessageField('RepositoryConfig', 4)
-  version = _messages.StringField(5)
+  cohort = _messages.StringField(2)
+  containerImage = _messages.StringField(3)
+  properties = _messages.MessageField('PropertiesValue', 4)
+  repositoryConfig = _messages.MessageField('RepositoryConfig', 5)
+  version = _messages.StringField(6)
 
 
 class RuntimeInfo(_messages.Message):
@@ -7974,6 +8572,128 @@ class RuntimeInfo(_messages.Message):
   outputUri = _messages.StringField(5)
   propertiesInfo = _messages.MessageField('PropertiesInfo', 6)
   publicKeys = _messages.MessageField('PublicKeys', 7)
+
+
+class SearchSessionSparkApplicationExecutorStageSummaryResponse(_messages.Message):
+  r"""List of Executors associated with a Spark Application Stage.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationExecutorStageSummaryRequest.
+    sparkApplicationStageExecutors: Details about executors used by the
+      application stage.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageExecutors = _messages.MessageField('ExecutorStageSummary', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationExecutorsResponse(_messages.Message):
+  r"""List of Executors associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationExecutorsRequest.
+    sparkApplicationExecutors: Details about executors used by the
+      application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationExecutors = _messages.MessageField('ExecutorSummary', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationJobsResponse(_messages.Message):
+  r"""A list of Jobs associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSessionSparkApplicationJobsRequest.
+    sparkApplicationJobs: Output only. Data corresponding to a spark job.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationJobs = _messages.MessageField('JobData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationSqlQueriesResponse(_messages.Message):
+  r"""List of all queries for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationSqlQueriesRequest.
+    sparkApplicationSqlQueries: Output only. SQL Execution Data
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationSqlQueries = _messages.MessageField('SqlExecutionUiData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationStageAttemptTasksResponse(_messages.Message):
+  r"""List of tasks for a stage of a Spark Application
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationStageAttemptTasksRequest.
+    sparkApplicationStageAttemptTasks: Output only. Data corresponding to
+      tasks created by spark.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageAttemptTasks = _messages.MessageField('TaskData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationStageAttemptsResponse(_messages.Message):
+  r"""A list of Stage Attempts for a Stage of a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent
+      SearchSessionSparkApplicationStageAttemptsRequest.
+    sparkApplicationStageAttempts: Output only. Data corresponding to a stage
+      attempts
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageAttempts = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationStagesResponse(_messages.Message):
+  r"""A list of stages associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSessionSparkApplicationStages.
+    sparkApplicationStages: Output only. Data corresponding to a stage.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStages = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSessionSparkApplicationsResponse(_messages.Message):
+  r"""A list of summary of Spark Applications
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSessionSparkApplicationsRequest.
+    sparkApplications: Output only. High level information corresponding to an
+      application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplications = _messages.MessageField('SessionSparkApplication', 2, repeated=True)
 
 
 class SearchSparkApplicationExecutorStageSummaryResponse(_messages.Message):
@@ -8287,6 +9007,19 @@ class SessionOperationMetadata(_messages.Message):
   session = _messages.StringField(6)
   sessionUuid = _messages.StringField(7)
   warnings = _messages.StringField(8, repeated=True)
+
+
+class SessionSparkApplication(_messages.Message):
+  r"""A summary of Spark Application
+
+  Fields:
+    application: Output only. High level information corresponding to an
+      application.
+    name: Identifier. Name of the spark application
+  """
+
+  application = _messages.MessageField('ApplicationInfo', 1)
+  name = _messages.StringField(2)
 
 
 class SessionStateHistory(_messages.Message):
@@ -10325,6 +11058,53 @@ class SubmitJobRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class SummarizeSessionSparkApplicationExecutorsResponse(_messages.Message):
+  r"""Consolidated summary of executors for a Spark Application.
+
+  Fields:
+    activeExecutorSummary: Consolidated summary for active executors.
+    applicationId: Spark Application Id
+    deadExecutorSummary: Consolidated summary for dead executors.
+    totalExecutorSummary: Overall consolidated summary for all executors.
+  """
+
+  activeExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 1)
+  applicationId = _messages.StringField(2)
+  deadExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 3)
+  totalExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 4)
+
+
+class SummarizeSessionSparkApplicationJobsResponse(_messages.Message):
+  r"""Summary of a Spark Application jobs.
+
+  Fields:
+    jobsSummary: Summary of a Spark Application Jobs
+  """
+
+  jobsSummary = _messages.MessageField('JobsSummary', 1)
+
+
+class SummarizeSessionSparkApplicationStageAttemptTasksResponse(_messages.Message):
+  r"""Summary of tasks for a Spark Application stage attempt.
+
+  Fields:
+    stageAttemptTasksSummary: Summary of tasks for a Spark Application Stage
+      Attempt
+  """
+
+  stageAttemptTasksSummary = _messages.MessageField('StageAttemptTasksSummary', 1)
+
+
+class SummarizeSessionSparkApplicationStagesResponse(_messages.Message):
+  r"""Summary of a Spark Application stages.
+
+  Fields:
+    stagesSummary: Summary of a Spark Application Stages
+  """
+
+  stagesSummary = _messages.MessageField('StagesSummary', 1)
+
+
 class SummarizeSparkApplicationExecutorsResponse(_messages.Message):
   r"""Consolidated summary of executors for a Spark Application.
 
@@ -11124,6 +11904,23 @@ class WorkflowTemplatePlacement(_messages.Message):
 
   clusterSelector = _messages.MessageField('ClusterSelector', 1)
   managedCluster = _messages.MessageField('ManagedCluster', 2)
+
+
+class WriteSessionSparkApplicationContextRequest(_messages.Message):
+  r"""Write Spark Application data to internal storage systems
+
+  Fields:
+    parent: Required. Parent (Batch) resource reference.
+    sparkWrapperObjects: Required. The batch of spark application context
+      objects sent for ingestion.
+  """
+
+  parent = _messages.StringField(1)
+  sparkWrapperObjects = _messages.MessageField('SparkWrapperObject', 2, repeated=True)
+
+
+class WriteSessionSparkApplicationContextResponse(_messages.Message):
+  r"""Response returned as an acknowledgement of receipt of data."""
 
 
 class WriteSparkApplicationContextRequest(_messages.Message):

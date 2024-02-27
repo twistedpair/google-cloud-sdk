@@ -15,7 +15,6 @@ package = 'blockchainvalidatormanager'
 
 class BlockchainValidatorConfig(_messages.Message):
   r"""Represents the configuration of a blockchain validator, as it would be
-
   configured on a validator client.
 
   Enums:
@@ -43,9 +42,12 @@ class BlockchainValidatorConfig(_messages.Message):
     keySource: Immutable. The source of the voting key for the blockchain
       validator.
     labels: Optional. Labels as key value pairs
-    name: Identifier. The fully qualified name of the validator, based on its
-      public key. e.g. `projects/my-project/locations/us-
-      central1/blockchainValidatorConfigs/0x...`.
+    name: Identifier. The name of the validator. It must have the format `"pro
+      jects/{project}/locations/{location}/blockchainValidatorConfigs/{validat
+      or}"`. `{validator}` must contain only letters (`[A-Za-z]`), numbers
+      (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
+      plus (`+`) or percent signs (`%`). It must be between 3 and 255
+      characters in length, and it must not start with `"goog"`.
     remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
       service to use for signing attestations and blocks.
     updateTime: Output only. [Output only] Update time stamp
@@ -56,6 +58,11 @@ class BlockchainValidatorConfig(_messages.Message):
       tasks. This should be enabled under normal conditions, but may be useful
       when migrating validators to/from Blockchain Node Engine, where the
       validator may be paused during the migration.
+    votingPublicKey: Output only. Immutable. The public key identifier of the
+      validator, as a hexadecimal string prefixed with "0x". Note content of
+      this field varies depending on the blockchain. This is provided by the
+      server when creating or importing keys, and copied from the remote key
+      signer configuration when configuring an external signing service.
   """
 
   class BlockchainTypeValueValuesEnum(_messages.Enum):
@@ -111,9 +118,7 @@ class BlockchainValidatorConfig(_messages.Message):
   blockchainNodeId = _messages.StringField(1)
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
-  eip2334SeedPhraseReference = _messages.MessageField(
-      'Eip2334SeedPhraseReference', 4
-  )
+  eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseReference', 4)
   ethereumProtocolDetails = _messages.MessageField('EthereumDetails', 5)
   keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
   labels = _messages.MessageField('LabelsValue', 7)
@@ -121,11 +126,11 @@ class BlockchainValidatorConfig(_messages.Message):
   remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 9)
   updateTime = _messages.StringField(10)
   validationWorkEnabled = _messages.BooleanField(11)
+  votingPublicKey = _messages.StringField(12)
 
 
 class BlockchainValidatorConfigTemplate(_messages.Message):
   r"""A templatised set of blockchain validator configs, from which multiple
-
   configurations can be generated.
 
   Enums:
@@ -299,9 +304,12 @@ class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsPatch
   Fields:
     blockchainValidatorConfig: A BlockchainValidatorConfig resource to be
       passed as the request body.
-    name: Identifier. The fully qualified name of the validator, based on its
-      public key. e.g. `projects/my-project/locations/us-
-      central1/blockchainValidatorConfigs/0x...`.
+    name: Identifier. The name of the validator. It must have the format `"pro
+      jects/{project}/locations/{location}/blockchainValidatorConfigs/{validat
+      or}"`. `{validator}` must contain only letters (`[A-Za-z]`), numbers
+      (`[0-9]`), dashes (`-`), underscores (`_`), periods (`.`), tildes (`~`),
+      plus (`+`) or percent signs (`%`). It must be between 3 and 255
+      characters in length, and it must not start with `"goog"`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -432,7 +440,6 @@ class ClientIdentity(_messages.Message):
 
 class Eip2334SeedPhraseReference(_messages.Message):
   r"""Location of the seed material, and derivation path used to generate the
-
   voting key.
 
   Enums:
@@ -461,7 +468,6 @@ class Eip2334SeedPhraseReference(_messages.Message):
         exported.
       IMPORTED: The seed phrase was imported from outside GCP.
     """
-
     SEED_PHRASE_SOURCE_UNSPECIFIED = 0
     CREATE_NO_EXPORT = 1
     CREATE_AND_EXPORT = 2
@@ -526,13 +532,19 @@ class Empty(_messages.Message):
   """
 
 
+
 class EthereumDetails(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
   Fields:
-    graffiti: Input only. Graffiti is a custom string published in blocks
-      proposed by the validator. This can only be written, as the current
-      value cannot be read back from the validator client API. See
+    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
+      gas per block. This is sent to the block builder service, however
+      whether it is followed depends on the service. This field is only read
+      if the field use_block_builder_proposals is set to true. If not
+      specified, the validator client will use a default value.
+    graffiti: Optional. Input only. Graffiti is a custom string published in
+      blocks proposed by the validator. This can only be written, as the
+      current value cannot be read back from the validator client API. See
       https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
       how this is used. If not set, the validator client's default is used. If
       no blockchain node is specified, this has no effect as no validator
@@ -543,19 +555,23 @@ class EthereumDetails(_messages.Message):
       has no effect as no validator client is run. See also
       https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
       more context.
+    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
+      block building services (MEV).
   """
 
-  graffiti = _messages.StringField(1)
-  suggestedFeeRecipient = _messages.StringField(2)
+  gasLimit = _messages.IntegerField(1)
+  graffiti = _messages.StringField(2)
+  suggestedFeeRecipient = _messages.StringField(3)
+  useBlockBuilderProposals = _messages.BooleanField(4)
 
 
 class EthereumDetailsTemplate(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
   Fields:
-    graffiti: Input only. Graffiti is a custom string published in blocks
-      proposed by the validator. This can only be written, as the current
-      value cannot be read back from the validator client API. See
+    graffiti: Optional. Input only. Graffiti is a custom string published in
+      blocks proposed by the validator. This can only be written, as the
+      current value cannot be read back from the validator client API. See
       https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
       how this is used. If not set, the validator client's default is used. If
       no blockchain node is specified, this has no effect as no validator
@@ -852,16 +868,16 @@ class RemoteWeb3Signer(_messages.Message):
       blockchain validator configuration is created, which the user can
       allowlist on their Web3Signer. Example:
       https://gist.github.com/usmansaleem/337de49d978b52138ad2cdfdf13c3a1f
-    rootCertificate: Optional. PEM-format X.509 certificate corresponding to
-      the URI of the Web3Signer. An example of this can be found on
-      https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-and-
-      conversions/ When not set, the validator client will only accept TLS
+    rootCertificate: Optional. Immutable. PEM-format X.509 certificate
+      corresponding to the URI of the Web3Signer. An example of this can be
+      found on https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-
+      and-conversions/ When not set, the validator client will only accept TLS
       certificates signed by well known certificate authorities (as in, the
       set configured by default in the OS Docker image).
     timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
-    votingPublicKey: Required. The hash of the public key of the validator,
-      prefixed with "0x". This is used as the identifier for the key when
-      sending requests to the Web3Signer.
+    votingPublicKey: Required. Immutable. The public key of the validator, as
+      a hexadecimal string prefixed with "0x". This is used as the identifier
+      for the key when sending requests to the Web3Signer service.
     web3signerUri: Required. URI of the Web3Signer service the validator
       client connects to, to request signing of attestations, blocks, etc.
   """
@@ -882,16 +898,16 @@ class RemoteWeb3SignerTemplate(_messages.Message):
   exposed by the external service.
 
   Fields:
-    rootCertificate: Optional. PEM-format X.509 certificate corresponding to
-      the URI of the Web3Signer. An example of this can be found on
-      https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-and-
-      conversions/ When not set, the validator client will only accept TLS
+    rootCertificate: Optional. Immutable. PEM-format X.509 certificate
+      corresponding to the URI of the Web3Signer. An example of this can be
+      found on https://www.ssl.com/guide/pem-der-crt-and-cer-x-509-encodings-
+      and-conversions/ When not set, the validator client will only accept TLS
       certificates signed by well known certificate authorities (as in, the
       set configured by default in the OS Docker image).
     timeoutDuration: Optional. Timeout for requests to the Web3Signer service.
-    votingPublicKeys: Required. The hash of the public keys of the validator,
-      prefixed with "0x". These are used as the identifier for the key when
-      sending requests to the Web3Signer.
+    votingPublicKeys: Required. The public key of the validator, as a
+      hexadecimal string prefixed with "0x". This is used as the identifier
+      for the key when sending requests to the Web3Signer service.
     web3signerUri: Required. URI of the Web3Signer service the validator
       client connects to, to request signing of attestations, blocks, etc.
   """

@@ -74,6 +74,7 @@ class PrivateCloudsClient(util.VmwareClientBase):
       description=None,
       secondary_zone=None,
       preferred_zone=None,
+      autoscaling_settings=None,
   ):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
@@ -106,6 +107,14 @@ class PrivateCloudsClient(util.VmwareClientBase):
               preferredLocation=preferred_zone, secondaryLocation=secondary_zone
           )
       )
+    management_cluster.autoscalingSettings = (
+        util.ConstructAutoscalingSettingsMessage(
+            self.messages.AutoscalingSettings,
+            self.messages.AutoscalingPolicy,
+            self.messages.Thresholds,
+            autoscaling_settings,
+        )
+    )
 
     private_cloud.managementCluster = management_cluster
     private_cloud.networkConfig = network_config

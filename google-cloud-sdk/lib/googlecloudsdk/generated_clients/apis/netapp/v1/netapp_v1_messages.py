@@ -27,10 +27,12 @@ class ActiveDirectory(_messages.Message):
     LabelsValue: Labels for the active directory.
 
   Fields:
+    administrators: Optional. Users to be added to the Built-in
+      Admininstrators group.
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
-    backupOperators: Users to be added to the Built-in Backup Operator active
-      directory group.
+    backupOperators: Optional. Users to be added to the Built-in Backup
+      Operator active directory group.
     createTime: Output only. Create time of the active directory.
     description: Description of the active directory.
     dns: Required. Comma separated list of DNS server IP addresses for the
@@ -43,9 +45,9 @@ class ActiveDirectory(_messages.Message):
     kdcIp: KDC server IP address for the active directory machine.
     labels: Labels for the active directory.
     ldapSigning: Specifies whether or not the LDAP traffic needs to be signed.
-    name: Output only. The resource name of the active directory. Format: `pro
-      jects/{project_number}/locations/{location_id}/activeDirectories/{active
-      _directory_id}`.
+    name: Identifier. The resource name of the active directory. Format: `proj
+      ects/{project_number}/locations/{location_id}/activeDirectories/{active_
+      directory_id}`.
     netBiosPrefix: Required. NetBIOSPrefix is used as a prefix for SMB server
       name.
     nfsUsersWithLdap: If enabled, will allow access to local users and LDAP
@@ -53,7 +55,8 @@ class ActiveDirectory(_messages.Message):
     organizationalUnit: The Organizational Unit (OU) within the Windows Active
       Directory the user belongs to.
     password: Required. Password of the Active Directory domain administrator.
-    securityOperators: Domain users to be given the SeSecurityPrivilege.
+    securityOperators: Optional. Domain users to be given the
+      SeSecurityPrivilege.
     site: The Active Directory site the service will limit Domain Controller
       discovery too.
     state: Output only. The state of the AD.
@@ -105,27 +108,28 @@ class ActiveDirectory(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  aesEncryption = _messages.BooleanField(1)
-  backupOperators = _messages.StringField(2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  dns = _messages.StringField(5)
-  domain = _messages.StringField(6)
-  encryptDcConnections = _messages.BooleanField(7)
-  kdcHostname = _messages.StringField(8)
-  kdcIp = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapSigning = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  netBiosPrefix = _messages.StringField(13)
-  nfsUsersWithLdap = _messages.BooleanField(14)
-  organizationalUnit = _messages.StringField(15)
-  password = _messages.StringField(16)
-  securityOperators = _messages.StringField(17, repeated=True)
-  site = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateDetails = _messages.StringField(20)
-  username = _messages.StringField(21)
+  administrators = _messages.StringField(1, repeated=True)
+  aesEncryption = _messages.BooleanField(2)
+  backupOperators = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  dns = _messages.StringField(6)
+  domain = _messages.StringField(7)
+  encryptDcConnections = _messages.BooleanField(8)
+  kdcHostname = _messages.StringField(9)
+  kdcIp = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  ldapSigning = _messages.BooleanField(12)
+  name = _messages.StringField(13)
+  netBiosPrefix = _messages.StringField(14)
+  nfsUsersWithLdap = _messages.BooleanField(15)
+  organizationalUnit = _messages.StringField(16)
+  password = _messages.StringField(17)
+  securityOperators = _messages.StringField(18, repeated=True)
+  site = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateDetails = _messages.StringField(21)
+  username = _messages.StringField(22)
 
 
 class Backup(_messages.Message):
@@ -142,13 +146,15 @@ class Backup(_messages.Message):
   Fields:
     backupType: Output only. Type of backup, manually created or created by a
       backup policy.
+    chainStorageBytes: Output only. Total size of all backups in a chain in
+      bytes = baseline backup size + sum(incremental backup size)
     createTime: Output only. The time when the backup was created.
     description: A description of the backup with 2048 characters or less.
       Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
-    name: Output only. The resource name of the backup. Format: `projects/{pro
-      ject_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{ba
-      ckup_id}`.
+    name: Identifier. The resource name of the backup. Format: `projects/{proj
+      ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
+      kup_id}`.
     sourceSnapshot: If specified, backup will be created from the given
       snapshot. If not specified, there will be a new snapshot taken to
       initiate the backup creation. Format: `projects/{project_id}/locations/{
@@ -223,14 +229,15 @@ class Backup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupType = _messages.EnumField('BackupTypeValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  sourceSnapshot = _messages.StringField(6)
-  sourceVolume = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  volumeUsageBytes = _messages.IntegerField(9)
+  chainStorageBytes = _messages.IntegerField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  sourceSnapshot = _messages.StringField(7)
+  sourceVolume = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  volumeUsageBytes = _messages.IntegerField(10)
 
 
 class BackupConfig(_messages.Message):
@@ -243,7 +250,8 @@ class BackupConfig(_messages.Message):
       projects/{project_id}/locations/{location}/backupVaults/{backup_vault_id
       }
     scheduledBackupEnabled: Optional. When set to true, scheduled backup is
-      enabled on the volume.
+      enabled on the volume. This field should be nil when there's no backup
+      policy attached.
   """
 
   backupPolicies = _messages.StringField(1, repeated=True)
@@ -274,8 +282,8 @@ class BackupPolicy(_messages.Message):
     labels: Resource labels to represent user provided metadata.
     monthlyBackupLimit: Number of monthly backups to keep. Note that the sum
       of daily, weekly and monthly backups should be greater than 1.
-    name: Output only. The resource name of the backup policy. Format: `projec
-      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+    name: Identifier. The resource name of the backup policy. Format: `project
+      s/{project_id}/locations/{location}/backupPolicies/{backup_policy_id}`.
     state: Output only. The backup policy state.
     weeklyBackupLimit: Number of weekly backups to keep. Note that the sum of
       daily, weekly and monthly backups should be greater than 1.
@@ -348,8 +356,8 @@ class BackupVault(_messages.Message):
     createTime: Output only. Create time of the backup vault.
     description: Description of the backup vault.
     labels: Resource labels to represent user provided metadata.
-    name: Output only. The resource name of the backup vault. Format: `project
-      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+    name: Identifier. The resource name of the backup vault. Format: `projects
+      /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
     state: Output only. The backup vault state.
   """
 
@@ -501,7 +509,7 @@ class KmsConfig(_messages.Message):
     instructions: Output only. Instructions to provide the access to the
       customer provided encryption key.
     labels: Labels as key value pairs
-    name: Output only. Name of the KmsConfig.
+    name: Identifier. Name of the KmsConfig.
     serviceAccount: Output only. The Service account which will have access to
       the customer provided encryption key.
     state: Output only. State of the KmsConfig.
@@ -932,9 +940,9 @@ class NetappProjectsLocationsActiveDirectoriesPatchRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
-    name: Output only. The resource name of the active directory. Format: `pro
-      jects/{project_number}/locations/{location_id}/activeDirectories/{active
-      _directory_id}`.
+    name: Identifier. The resource name of the active directory. Format: `proj
+      ects/{project_number}/locations/{location_id}/activeDirectories/{active_
+      directory_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Active Directory resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -1011,8 +1019,8 @@ class NetappProjectsLocationsBackupPoliciesPatchRequest(_messages.Message):
 
   Fields:
     backupPolicy: A BackupPolicy resource to be passed as the request body.
-    name: Output only. The resource name of the backup policy. Format: `projec
-      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+    name: Identifier. The resource name of the backup policy. Format: `project
+      s/{project_id}/locations/{location}/backupPolicies/{backup_policy_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Backup Policy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -1103,9 +1111,9 @@ class NetappProjectsLocationsBackupVaultsBackupsPatchRequest(_messages.Message):
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: Output only. The resource name of the backup. Format: `projects/{pro
-      ject_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{ba
-      ckup_id}`.
+    name: Identifier. The resource name of the backup. Format: `projects/{proj
+      ect_id}/locations/{location}/backupVaults/{backup_vault_id}/backups/{bac
+      kup_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Backup resource to be updated. The fields specified
       in the update_mask are relative to the resource, not the full request. A
@@ -1153,9 +1161,8 @@ class NetappProjectsLocationsBackupVaultsGetRequest(_messages.Message):
   r"""A NetappProjectsLocationsBackupVaultsGetRequest object.
 
   Fields:
-    name: Required. The backupVault resource name, in the format
-      `projects/{project_id}/locations/{location}/backupVaults/{backupVault_id
-      }`
+    name: Required. The backupVault resource name, in the format `projects/{pr
+      oject_id}/locations/{location}/backupVaults/{backup_vault_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1187,8 +1194,8 @@ class NetappProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
 
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
-    name: Output only. The resource name of the backup vault. Format: `project
-      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+    name: Identifier. The resource name of the backup vault. Format: `projects
+      /{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Backup resource to be updated. The fields specified
       in the update_mask are relative to the resource, not the full request. A
@@ -1285,7 +1292,7 @@ class NetappProjectsLocationsKmsConfigsPatchRequest(_messages.Message):
 
   Fields:
     kmsConfig: A KmsConfig resource to be passed as the request body.
-    name: Output only. Name of the KmsConfig.
+    name: Identifier. Name of the KmsConfig.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the KmsConfig resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -1440,7 +1447,7 @@ class NetappProjectsLocationsStoragePoolsPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragePoolsPatchRequest object.
 
   Fields:
-    name: Output only. Name of the storage pool
+    name: Identifier. Name of the storage pool
     storagePool: A StoragePool resource to be passed as the request body.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the StoragePool resource by the update. The fields
@@ -1517,7 +1524,7 @@ class NetappProjectsLocationsVolumesPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesPatchRequest object.
 
   Fields:
-    name: Output only. Name of the volume
+    name: Identifier. Name of the volume
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Volume resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
@@ -1597,9 +1604,9 @@ class NetappProjectsLocationsVolumesReplicationsPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesReplicationsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the Replication. Format: `projects
-      /{project_id}/locations/{location}/volumes/{volume_id}/replications/{rep
-      lication_id}`.
+    name: Identifier. The resource name of the Replication. Format: `projects/
+      {project_id}/locations/{location}/volumes/{volume_id}/replications/{repl
+      ication_id}`.
     replication: A Replication resource to be passed as the request body.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
@@ -1735,9 +1742,9 @@ class NetappProjectsLocationsVolumesSnapshotsPatchRequest(_messages.Message):
   r"""A NetappProjectsLocationsVolumesSnapshotsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the snapshot. Format: `projects/{p
-      roject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_
-      id}`.
+    name: Identifier. The resource name of the snapshot. Format: `projects/{pr
+      oject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_i
+      d}`.
     snapshot: A Snapshot resource to be passed as the request body.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
@@ -1912,9 +1919,9 @@ class Replication(_messages.Message):
       transfer.
     labels: Resource labels to represent user provided metadata.
     mirrorState: Output only. Indicates the state of mirroring.
-    name: Output only. The resource name of the Replication. Format: `projects
-      /{project_id}/locations/{location}/volumes/{volume_id}/replications/{rep
-      lication_id}`.
+    name: Identifier. The resource name of the Replication. Format: `projects/
+      {project_id}/locations/{location}/volumes/{volume_id}/replications/{repl
+      ication_id}`.
     replicationSchedule: Required. Indicates the schedule for replication.
     role: Output only. Indicates whether this points to source or destination.
     sourceVolume: Output only. Full name of source volume resource. Example :
@@ -2139,9 +2146,9 @@ class Snapshot(_messages.Message):
     description: A description of the snapshot with 2048 characters or less.
       Requests with longer descriptions will be rejected.
     labels: Resource labels to represent user provided metadata.
-    name: Output only. The resource name of the snapshot. Format: `projects/{p
-      roject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_
-      id}`.
+    name: Identifier. The resource name of the snapshot. Format: `projects/{pr
+      oject_id}/locations/{location}/volumes/{volume_id}/snapshots/{snapshot_i
+      d}`.
     state: Output only. The snapshot state.
     stateDetails: Output only. State details of the storage pool
     usedBytes: Output only. Current storage usage for the snapshot in bytes.
@@ -2369,12 +2376,12 @@ class StoragePool(_messages.Message):
     description: Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
-    globalAccessAllowed: Optional. Allows SO pool to access AD or DNS server
-      from other regions.
+    globalAccessAllowed: Deprecated. Used to allow SO pool to access AD or DNS
+      server from other regions.
     kmsConfig: Specifies the KMS config to be used for volume encryption.
     labels: Labels as key value pairs
     ldapEnabled: Flag indicating if the pool is NFS LDAP enabled or not.
-    name: Output only. Name of the storage pool
+    name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
     psaRange: Name of the Private Service Access allocated range. If not
@@ -2404,9 +2411,9 @@ class StoragePool(_messages.Message):
     r"""Required. Service level of the storage pool
 
     Values:
-      SERVICE_LEVEL_UNSPECIFIED: <no description>
-      PREMIUM: <no description>
-      EXTREME: <no description>
+      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
+      PREMIUM: Premium service level.
+      EXTREME: Extreme service level.
       STANDARD: Standard (Software offering)
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
@@ -2563,7 +2570,7 @@ class Volume(_messages.Message):
     ldapEnabled: Output only. Flag indicating if the volume is NFS LDAP
       enabled or not.
     mountOptions: Output only. Mount options of this volume
-    name: Output only. Name of the volume
+    name: Identifier. Name of the volume
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
@@ -2646,9 +2653,9 @@ class Volume(_messages.Message):
     r"""Output only. Service level of the volume
 
     Values:
-      SERVICE_LEVEL_UNSPECIFIED: <no description>
-      PREMIUM: <no description>
-      EXTREME: <no description>
+      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
+      PREMIUM: Premium service level.
+      EXTREME: Extreme service level.
       STANDARD: Standard (Software offering)
     """
     SERVICE_LEVEL_UNSPECIFIED = 0

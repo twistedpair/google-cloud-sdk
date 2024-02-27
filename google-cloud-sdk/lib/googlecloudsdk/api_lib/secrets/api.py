@@ -116,7 +116,8 @@ class Secrets(Client):
              next_rotation_time=None,
              rotation_period=None,
              topics=None,
-             annotations=None):
+             annotations=None,
+             regional_kms_key_name=None):
     """Create a secret."""
     keys = keys or []
     replication = _MakeReplicationMessage(self.messages, policy, locations,
@@ -134,7 +135,17 @@ class Secrets(Client):
     rotation = None
     if next_rotation_time or rotation_period:
       rotation = self.messages.Rotation(
-          nextRotationTime=next_rotation_time, rotationPeriod=rotation_period)
+          nextRotationTime=next_rotation_time, rotationPeriod=rotation_period
+      )
+
+    customer_managed_encryption = None
+    if regional_kms_key_name:
+      customer_managed_encryption = self.messages.CustomerManagedEncryption(
+          kmsKeyName=regional_kms_key_name
+      )
+
+      # For regional requests, replication should not be there.
+      replication = None
 
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
@@ -147,7 +158,8 @@ class Secrets(Client):
                 ttl=ttl,
                 topics=topics_message_list,
                 annotations=new_annotations,
-                rotation=rotation)))
+                rotation=rotation,
+                customerManagedEncryption=customer_managed_encryption)))
 
   def Delete(self, secret_ref, etag=None):
     """Delete a secret."""

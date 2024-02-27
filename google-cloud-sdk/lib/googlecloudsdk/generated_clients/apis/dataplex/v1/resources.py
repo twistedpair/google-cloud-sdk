@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ASPECTTYPES = (
+      'projects.locations.aspectTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/aspectTypes/'
+              '{aspectTypesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATAATTRIBUTEBINDINGS = (
       'projects.locations.dataAttributeBindings',
       '{+name}',
@@ -92,6 +103,50 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/dataTaxonomies/'
               '{dataTaxonomiesId}/attributes/{attributesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENTRYGROUPS = (
+      'projects.locations.entryGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/entryGroups/'
+              '{entryGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENTRYGROUPS_ENTRIES = (
+      'projects.locations.entryGroups.entries',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/entryGroups/'
+              '{entryGroupsId}/entries/{entriesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENTRYTYPES = (
+      'projects.locations.entryTypes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/entryTypes/'
+              '{entryTypesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GOVERNANCERULES = (
+      'projects.locations.governanceRules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/governanceRules/'
+              '{governanceRulesId}',
       },
       ['name'],
       True
@@ -234,17 +289,6 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
               'zones/{zonesId}/entities/{entitiesId}/partitions/'
               '{partitionsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_MANAGEDENTRIES = (
-      'projects.locations.managedEntries',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/managedEntries/'
-              '{managedEntriesId}',
       },
       ['name'],
       True

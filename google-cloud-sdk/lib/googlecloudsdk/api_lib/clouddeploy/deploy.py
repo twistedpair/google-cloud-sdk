@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.command_lib.deploy import automation_util
 from googlecloudsdk.command_lib.deploy import custom_target_type_util
+from googlecloudsdk.command_lib.deploy import deploy_policy_util
 from googlecloudsdk.command_lib.deploy import manifest_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
@@ -85,6 +86,14 @@ class DeployClient(object):
           custom_target_type_util.PatchCustomTargetType(resource)
       )
     self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+    # Create deploy policy resource.
+    deploy_policies = resource_dict[manifest_util.DEPLOY_POLICY_KIND]
+    operation_dict = {}
+    for resource in deploy_policies:
+      operation_dict[resource.name] = deploy_policy_util.PatchDeployPolicy(
+          resource
+      )
+    self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def DeleteResources(self, manifests, region, force):
     """Delete Cloud Deploy resources.
@@ -131,6 +140,17 @@ class DeployClient(object):
       for resource in pipelines:
         operation_dict[resource.name] = self.DeleteDeliveryPipeline(
             resource, force)
+      self.operation_client.CheckOperationStatus(operation_dict, msg_template)
+
+    deploy_policies = resource_dict[manifest_util.DEPLOY_POLICY_KIND]
+    if deploy_policies:
+      operation_dict = {}
+      # Create dictionary of deploy policy name to operation msg after the
+      # policy is deleted.
+      for resource in deploy_policies:
+        operation_dict[resource.name] = deploy_policy_util.DeleteDeployPolicy(
+            resource.name
+        )
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
 
   def CreateDeliveryPipeline(self, pipeline_config):

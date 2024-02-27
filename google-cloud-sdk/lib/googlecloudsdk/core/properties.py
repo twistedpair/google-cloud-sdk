@@ -1140,6 +1140,10 @@ class _SectionApiEndpointOverrides(_Section):
         command='gcloud container fleet policycontroller')
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
+    self.apigeeregistry = self._Add(
+        'apigeeregistry', command='gcloud apigee-registry', hidden=True)
+    self.appconfigmanager = self._Add(
+        'appconfigmanager', command='gcloud app-config-manager', hidden=True)
     self.appengine = self._Add('appengine', command='gcloud app')
     self.apphub = self._Add('apphub', command='gcloud apphub')
     self.artifactregistry = self._Add(
@@ -1288,6 +1292,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.policysimulator = self._Add('policysimulator', hidden=True)
     self.policytroubleshooter = self._Add('policytroubleshooter', hidden=True)
     self.privateca = self._Add('privateca', command='gcloud privateca')
+    self.privilegedaccessmanager = self._Add('pam', command='gcloud pam')
     self.publicca = self._Add('publicca', command='gcloud publicca')
     self.pubsub = self._Add('pubsub', command='gcloud pubsub')
     self.pubsublite = self._Add('pubsublite', hidden=True)
@@ -3621,6 +3626,16 @@ class _SectionStorage(_Section):
         ' the gRPC API will be used if the operations is supported by'
         ' `gcloud storage`, else it will fallback to using the JSON API.',
         choices=([api.value for api in StoragePreferredApi]))
+
+    self.use_grpc_if_available = self._AddBool(
+        'use_grpc_if_available',
+        default=False,
+        hidden=True,
+        help_text=(
+            'If True, uses gRPC when possible. If False, uses existing'
+            ' implementation.'
+        ),
+    )
 
 
 class _SectionSurvey(_Section):

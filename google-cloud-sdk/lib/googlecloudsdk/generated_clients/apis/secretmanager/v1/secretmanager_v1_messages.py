@@ -655,6 +655,11 @@ class Secret(_messages.Message):
       (.), and alphanumerics in between these symbols. The total size of
       annotation keys and values must be less than 16KiB.
     createTime: Output only. The time at which the Secret was created.
+    customerManagedEncryption: Optional. The customer-managed encryption
+      configuration of the Regionalised Secrets. If no configuration is
+      provided, Google-managed default encryption is used. Updates to the
+      Secret encryption configuration only apply to SecretVersions added
+      afterwards. They do not apply retroactively to existing SecretVersions.
     etag: Optional. Etag of the currently stored Secret.
     expireTime: Optional. Timestamp in UTC when the Secret is scheduled to
       expire. This is always provided on output, regardless of what was sent
@@ -685,6 +690,11 @@ class Secret(_messages.Message):
       aliases can be assigned to a given secret. Version-Alias pairs will be
       viewable via GetSecret and modifiable via UpdateSecret. Access by alias
       is only be supported on GetSecretVersion and AccessSecretVersion.
+    versionDestroyTtl: Optional. Secret Version TTL after destruction request
+      This is a part of the Delayed secret version destroy feature. For secret
+      with TTL>0, version destruction doesn't happen immediately on calling
+      destroy instead the version goes to a disabled state and destruction
+      happens after the TTL expires.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -783,15 +793,17 @@ class Secret(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  expireTime = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  replication = _messages.MessageField('Replication', 7)
-  rotation = _messages.MessageField('Rotation', 8)
-  topics = _messages.MessageField('Topic', 9, repeated=True)
-  ttl = _messages.StringField(10)
-  versionAliases = _messages.MessageField('VersionAliasesValue', 11)
+  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryption', 3)
+  etag = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  replication = _messages.MessageField('Replication', 8)
+  rotation = _messages.MessageField('Rotation', 9)
+  topics = _messages.MessageField('Topic', 10, repeated=True)
+  ttl = _messages.StringField(11)
+  versionAliases = _messages.MessageField('VersionAliasesValue', 12)
+  versionDestroyTtl = _messages.StringField(13)
 
 
 class SecretPayload(_messages.Message):
@@ -826,6 +838,9 @@ class SecretVersion(_messages.Message):
       specified in SecretPayload object has been received by
       SecretManagerService on SecretManagerService.AddSecretVersion.
     createTime: Output only. The time at which the SecretVersion was created.
+    customerManagedEncryption: Output only. The customer-managed encryption
+      status of the SecretVersion. Only populated if customer-managed
+      encryption is used and Secret is a Regionalised Secret.
     destroyTime: Output only. The time this SecretVersion was destroyed. Only
       present if state is DESTROYED.
     etag: Output only. Etag of the currently stored SecretVersion.
@@ -833,6 +848,12 @@ class SecretVersion(_messages.Message):
       `projects/*/secrets/*/versions/*`. SecretVersion IDs in a Secret start
       at 1 and are incremented for each subsequent version of the secret.
     replicationStatus: The replication status of the SecretVersion.
+    scheduledDestroyTime: Optional. Output only. Scheduled destroy time for
+      secret version. This is a part of the Delayed secret version destroy
+      feature. For a Secret with a valid version destroy TTL, when a secert
+      version is destroyed, version is moved to disabled state and it is
+      scheduled for destruction Version is destroyed only after the
+      scheduled_destroy_time.
     state: Output only. The current state of the SecretVersion.
   """
 
@@ -854,11 +875,13 @@ class SecretVersion(_messages.Message):
 
   clientSpecifiedPayloadChecksum = _messages.BooleanField(1)
   createTime = _messages.StringField(2)
-  destroyTime = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  replicationStatus = _messages.MessageField('ReplicationStatus', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  customerManagedEncryption = _messages.MessageField('CustomerManagedEncryptionStatus', 3)
+  destroyTime = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  replicationStatus = _messages.MessageField('ReplicationStatus', 7)
+  scheduledDestroyTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class SecretmanagerProjectsLocationsGetRequest(_messages.Message):

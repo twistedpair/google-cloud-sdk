@@ -5,6 +5,54 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 466.0.0 (2024-02-27)
+
+### Google Cloud CLI
+
+* Updated `gcloud auth application-default login --no-launch-browser` to work with Context Aware Access.
+
+### Cloud Build
+
+* Hided`gcloud builds connections create bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds connections update bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds triggers create bitbucket-cloud`, `gcloud builds triggers update bitbucket-cloud`, `gcloud builds triggers create bitbucket-data-center`, `gcloud builds triggers update bitbucket-data-center`.
+
+### Cloud Infrastructure Manager
+
+*   Fixed issue where `gcloud infra-manager previews export` directly downloads
+    files when `--file` flag is not provided.
+
+### Compute Engine
+
+* Promoted `delete` command of `gcloud compute instance-groups managed all-instances-config` to GA.
+* Promoted `update` command of `gcloud compute instance-groups managed all-instances-config` to GA.
+* Promoted `--default-action-on-vm-failure` flag of `gcloud compute instance-groups managed <create | update>` to GA.
+* Promoted `gcloud compute instant-snapshots create` to GA.
+* Promoted `gcloud compute instant-snapshots delete` to GA.
+* Promoted `gcloud compute instant-snapshots describe` to GA.
+* Promoted `gcloud compute instant-snapshots list` to GA.
+* Promoted `gcloud compute instant-snapshots add-labels` to GA.
+* Promoted `--source-instant-snapshot` flag of `gcloud compute disks create` to GA.
+* Promoted `--source-instant-snapshot`, `--source-instant-snapshot-zone`, `--source-instant-snapshot-region` and `--source-instant-snapshot-key-file` flags of `gcloud compute snapshots create` to GA.
+
+### Kubernetes Engine
+
+* Removed `--dataplane-v2-observability-mode` flag of `gcloud container clusters create|update|create-auto` command. Users are expected to use `--enable-dataplane-v2-flow-observability` and `--disable-dataplane-v2-flow-observability` flags now.
+
+### Network Security
+
+* Added `--[no-]disabled` flag to `gcloud <alpha> network-security firewall-endpoint-associations update` command to enable/disable a firewall endpoint association without removing it.
+
+### Security Command Center
+
+* Added `--location` flag to `gcloud scc findings`, `gcloud scc muteconfigs`, `gcloud scc bqexports` and `gcloud scc notifications` commands to provide data residency for scc resources.
+
+### Workbench
+
+* Fixed `gcloud workbench instances` commands failing when all three `--shielded-secure-boot`, `--shielded-integrity-monitoring`, `--shielded-vtpm` flags are not passed.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 465.0.0 (2024-02-21)
 
 ### AI

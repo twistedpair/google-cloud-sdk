@@ -40,7 +40,7 @@ _DETAILED_SOURCE_SNAPSHOT_HELP = """\
 """
 
 _DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP = """\
-      Source instant snapshot used to create the disks.
+      Name of the source instant snapshot used to create the disks.
 """
 
 _SOURCE_DISK_DETAILED_HELP = """\
@@ -332,7 +332,7 @@ SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.regionInstantSnapshots',
     plural=False,
     required=False,
-    short_help='Source instant snapshot used to create the disks.',
+    short_help='Name of the source instant snapshot used to create the disks.',
     detailed_help=_DETAILED_SOURCE_INSTANT_SNAPSHOT_HELP,
     scope_flags_usage=compute_flags.ScopeFlagsUsage.USE_EXISTING_SCOPE_FLAGS)
 

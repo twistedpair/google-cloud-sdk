@@ -134,6 +134,14 @@ apis:
   apigee:
     v1:
       discovery_doc: apigee_v1.json
+  apigeeregistry:
+    v1:
+      discovery_doc: apigeeregistry_v1.json
+      default: true
+  appconfigmanager:
+    v1alpha:
+      discovery_doc: appconfigmanager_v1alpha.json
+      default: true
   appengine:
     v1alpha:
       discovery_doc: appengine_v1alpha.json
@@ -1067,14 +1075,14 @@ apis:
       default: true
       resources:
         projects.networks:
-          path: projects/{projectsId}/locations/global/networks/{networksId}
+          path: projects/{projectsId}/global/networks/{networksId}
         projects.regions.addresses:
           path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
     v1beta:
       discovery_doc: parallelstore_v1beta.json
       resources:
         projects.networks:
-          path: projects/{projectsId}/locations/global/networks/{networksId}
+          path: projects/{projectsId}/global/networks/{networksId}
         projects.regions.addresses:
           path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
   policytroubleshooter:
@@ -1142,6 +1150,10 @@ apis:
     v1:
       default: true
       discovery_doc: privateca_v1.json
+  privilegedaccessmanager:
+    v1alpha:
+      discovery_doc: privilegedaccessmanager_v1alpha.json
+      default: true
   publicca:
     v1:
       default: true
@@ -1611,6 +1623,8 @@ apis:
   apphub:
     v1alpha:
       discovery_doc: apphub_v1alpha.json
+    v1:
+      discovery_doc: apphub_v1.json
       default: true
   faultinjectiontesting:
     v1alpha1:
@@ -1647,9 +1661,17 @@ canonical_surfaces:
   apigateway:
     name: apigateway
     command: api-gateway
+  appconfigmanager:
+    name: appconfigmanager
+    command: app-config-manager
+    hidden: true
   apigee:
     name: apigee
     command: apigee
+  apigeeregistry:
+    name: apigeeregistry
+    command: apigee-registry
+    hidden: true
   appengine:
     name: appengine
     command: app
@@ -1964,6 +1986,9 @@ canonical_surfaces:
   privateca:
     name: privateca
     command: privateca
+  privilegedaccessmanager:
+    name: privilegedaccessmanager
+    command: pam
   connectors:
     name: connectors
     command: connectors

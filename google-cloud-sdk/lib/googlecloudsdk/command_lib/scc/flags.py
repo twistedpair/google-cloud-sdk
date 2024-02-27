@@ -57,8 +57,14 @@ API_VERSION_FLAG = base.ChoiceArgument(
 LOCATION_FLAG = base.Argument(
     "--location",
     help="""
-      Location corresponding to the specified resource.""",
-    hidden=True,
+      When data residency controls are enabled, this attribute specifies the location in which
+      the resource is located and applicable. The `location` attribute can be
+      provided as part of the fully specified resource name or with the `--location`
+      argument on the command line. The default location is `global`.
+
+      The default location on this command is unrelated to the default location
+      that is specified when data residency controls are enabled
+      for Security Command Center.""",
     default="global",
 )
 

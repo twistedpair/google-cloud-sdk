@@ -94,6 +94,7 @@ def ParseDeployConfig(messages, manifests, region):
       TARGET_KIND_V1BETA1: [],
       AUTOMATION_KIND: [],
       CUSTOM_TARGET_TYPE_KIND: [],
+      DEPLOY_POLICY_KIND: [],
   }
   project = properties.VALUES.core.project.GetOrFail()
   _ValidateConfig(manifests)
@@ -207,6 +208,11 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
     resource, resource_ref = _CreateCustomTargetTypeResource(
         messages, metadata[NAME_FIELD], project, region
     )
+  elif kind == DEPLOY_POLICY_KIND:
+    resource_type = deploy_util.ResourceType.DEPLOY_POLICY
+    resource, resource_ref = _CreateDeployPolicyResource(
+        messages, metadata[NAME_FIELD], project, region
+    )
   else:
     raise exceptions.CloudDeployConfigError(
         'kind {} not supported'.format(kind)
@@ -252,6 +258,22 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
       if field == RULES_FIELD and kind == AUTOMATION_KIND:
         SetAutomationRules(messages, resource, resource_ref, value)
         continue
+      if field == RULES_FIELD and kind == DEPLOY_POLICY_KIND:
+        rules = manifest.get('rules')
+        _EnsureIsType(
+            rules,
+            list,
+            'failed to parse deploy policy {}, rules are defined incorrectly'
+            .format(resource_ref.Name()),
+        )
+      if field == 'selectors' and kind == DEPLOY_POLICY_KIND:
+        selectors = manifest.get('selectors')
+        _EnsureIsType(
+            selectors,
+            list,
+            'failed to parse deploy policy {}, selectors are defined'
+            ' incorrectly'.format(resource_ref.Name()),
+        )
       setattr(resource, field, value)
 
   # Sets the properties in metadata.
@@ -315,6 +337,23 @@ def _CreateCustomTargetTypeResource(messages, name, project, region):
           'projectsId': project,
           'locationsId': region,
           'customTargetTypesId': name,
+      },
+  )
+  resource.name = resource_ref.RelativeName()
+
+  return resource, resource_ref
+
+
+def _CreateDeployPolicyResource(messages, name, project, region):
+  """Creates deploy policy resource with full name and the resource reference."""
+  resource = messages.DeployPolicy()
+  resource_ref = resources.REGISTRY.Parse(
+      name,
+      collection='clouddeploy.projects.locations.deployPolicies',
+      params={
+          'projectsId': project,
+          'locationsId': region,
+          'deployPoliciesId': name,
       },
   )
   resource.name = resource_ref.RelativeName()

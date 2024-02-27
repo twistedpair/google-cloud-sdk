@@ -65,7 +65,7 @@ class Collections(enum.Enum):
   )
   PROJECTS_NETWORKS = (
       'projects.networks',
-      'projects/{projectsId}/locations/global/networks/{networksId}',
+      'projects/{projectsId}/global/networks/{networksId}',
       {},
       ['projectsId', 'networksId'],
       True

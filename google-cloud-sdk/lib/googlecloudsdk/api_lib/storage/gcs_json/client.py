@@ -85,7 +85,7 @@ def _get_download_link(object_resource):
   if custom_endpoint:
     base = custom_endpoint.replace('storage/v1/', '')
   else:
-    base = 'https://storage.googleapis.com/'
+    base = core_apis.UniversifyAddress('https://storage.googleapis.com/')
   url_string = '{}download/storage/{}/b/{}/o/{}?alt=media'.format(
       base,
       properties.VALUES.storage.json_api_version.Get(),

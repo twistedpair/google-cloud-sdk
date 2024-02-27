@@ -278,6 +278,7 @@ def Apply(
     async_,
     deployment_full_name,
     service_account,
+    tf_version_constraint=None,
     local_source=None,
     stage_bucket=None,
     ignore_file=None,
@@ -305,6 +306,8 @@ def Apply(
       credential to manage resources. e.g.
       `projects/{projectID}/serviceAccounts/{serviceAccount}` The default Cloud
       Build SA will be used initially if this field is not set.
+    tf_version_constraint: User-specified Terraform version constraint, for
+      example, "=1.3.10".
     local_source: Local storage path where config files are stored.
     stage_bucket: optional string. Destination for storing local config files
       specified by local source flag. e.g. "gs://bucket-name/".
@@ -433,6 +436,7 @@ def Apply(
       workerPool=worker_pool,
       terraformBlueprint=tf_blueprint,
       labels=labels_message,
+      tfVersionConstraint=tf_version_constraint,
   )
 
   if artifacts_gcs_bucket is not None:

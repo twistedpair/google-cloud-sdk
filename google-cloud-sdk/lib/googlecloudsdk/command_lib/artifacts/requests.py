@@ -420,15 +420,22 @@ def FinalizeUpgradeRedirection(project_id):
       .REDIRECTION_FROM_GCR_IO_FINALIZED)
 
 
-def SetUpgradeRedirectionState(project_id, redirection_state):
+def SetUpgradeRedirectionState(
+    project_id, redirection_state, pull_percent=None
+):
   """Sets the upgrade redirection state for the supplied project."""
   client = GetClient()
   messages = GetMessages()
   project_settings = messages.ProjectSettings(
       legacyRedirectionState=redirection_state)
   update_mask = "legacy_redirection_state"
-  update_settings_req = messages.ArtifactregistryProjectsUpdateProjectSettingsRequest(
-      name="projects/" + project_id + "/projectSettings",
-      projectSettings=project_settings,
-      updateMask=update_mask)
+  if pull_percent:
+    project_settings.pullPercent = pull_percent
+  update_settings_req = (
+      messages.ArtifactregistryProjectsUpdateProjectSettingsRequest(
+          name="projects/" + project_id + "/projectSettings",
+          projectSettings=project_settings,
+          updateMask=update_mask,
+      )
+  )
   return client.projects.UpdateProjectSettings(update_settings_req)

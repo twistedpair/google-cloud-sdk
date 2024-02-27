@@ -82,8 +82,9 @@ def AddBigQueryPositionalArgument(parser):
       'BIG_QUERY_EXPORT',
       metavar='BIG_QUERY_EXPORT',
       help="""\
-        ID of the BigQuery export or the full resource name of the BigQuery
-        export.
+        ID of the BigQuery export e.g. `my-bq-export` or the full
+        resource name of the BigQuery export e.g.
+        `organizations/123/bigQueryExports/my-bq-export`.
         """,
   )
   return parser

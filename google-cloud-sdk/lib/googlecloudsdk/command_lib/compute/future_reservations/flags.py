@@ -221,6 +221,23 @@ def GetPlanningStatusFlag():
   )
 
 
+def GetRequireSpecificReservationFlag():
+  """--require-specific-reservation flag."""
+  help_text = """\
+  Indicate whether the auto-created reservations can be consumed by VMs with
+  "any reservation" defined. If enabled, then only VMs that target the
+  auto-created reservation by name using `--reservation-affinity=specific` can
+  consume from this reservation. Auto-created reservations delivered with this
+  flag enabled will inherit the name of the future reservation.
+  """
+  return base.Argument(
+      '--require-specific-reservation',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddCreateFlags(
     parser,
     support_location_hint=False,
@@ -230,10 +247,13 @@ def AddCreateFlags(
     support_planning_status=False,
     support_local_ssd_count=False,
     support_auto_delete=False,
+    support_require_specific_reservation=False,
 ):
   """Adds all flags needed for the create command."""
   GetNamePrefixFlag().AddToParser(parser)
   GetTotalCountFlag().AddToParser(parser)
+  if support_require_specific_reservation:
+    GetRequireSpecificReservationFlag().AddToParser(parser)
   reservation_flags.GetDescriptionFlag(is_fr=True).AddToParser(parser)
   if support_planning_status:
     GetPlanningStatusFlag().AddToParser(parser)
@@ -297,7 +317,8 @@ def AddUpdateFlags(
     support_planning_status=False,
     support_local_ssd_count=False,
     support_share_setting=False,
-    support_auto_delete=False
+    support_auto_delete=False,
+    support_require_specific_reservation=False,
 ):
   """Adds all flags needed for the update command."""
 
@@ -368,6 +389,9 @@ def AddUpdateFlags(
 
   if support_auto_delete:
     AddAutoDeleteFlags(parser, is_update=True)
+
+  if support_require_specific_reservation:
+    GetRequireSpecificReservationFlag().AddToParser(parser)
 
 
 def AddAutoDeleteFlags(parser, is_update=False):

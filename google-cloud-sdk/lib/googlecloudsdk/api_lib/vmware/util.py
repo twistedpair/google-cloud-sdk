@@ -136,6 +136,9 @@ def ConstructAutoscalingSettingsMessage(
   Returns:
     The constructed message.
   """
+  if not autoscaling_settings:
+    return None
+
   settings_message = settings_message_class()
   settings_message.minClusterNodeCount = (
       autoscaling_settings.min_cluster_node_count
@@ -181,7 +184,7 @@ def ConstructAutoscalingSettingsMessage(
 def _ConstructThresholdsMessage(thresholds, thresholds_message_class):
   thresholds_message = thresholds_message_class()
   if thresholds is None:
-    return thresholds_message
+    return None
   thresholds_message.scaleIn = thresholds.scale_in
   thresholds_message.scaleOut = thresholds.scale_out
   return thresholds_message

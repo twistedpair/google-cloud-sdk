@@ -41,11 +41,13 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.folders_locations_auditReports = self.FoldersLocationsAuditReportsService(self)
     self.folders_locations_auditScopeReports = self.FoldersLocationsAuditScopeReportsService(self)
+    self.folders_locations_operationDetails = self.FoldersLocationsOperationDetailsService(self)
     self.folders_locations_operationIds = self.FoldersLocationsOperationIdsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.projects_locations_auditReports = self.ProjectsLocationsAuditReportsService(self)
     self.projects_locations_auditScopeReports = self.ProjectsLocationsAuditScopeReportsService(self)
+    self.projects_locations_operationDetails = self.ProjectsLocationsOperationDetailsService(self)
     self.projects_locations_operationIds = self.ProjectsLocationsOperationIdsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -122,6 +124,43 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         request_field='generateAuditScopeReportRequest',
         request_type_name='AuditmanagerFoldersLocationsAuditScopeReportsGenerateRequest',
         response_type_name='AuditScopeReport',
+        supports_download=False,
+    )
+
+  class FoldersLocationsOperationDetailsService(base_api.BaseApiService):
+    """Service class for the folders_locations_operationDetails resource."""
+
+    _NAME = 'folders_locations_operationDetails'
+
+    def __init__(self, client):
+      super(AuditmanagerV1alpha.FoldersLocationsOperationDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about generate audit report operation.
+
+      Args:
+        request: (AuditmanagerFoldersLocationsOperationDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/operationDetails/{operationDetailsId}',
+        http_method='GET',
+        method_id='auditmanager.folders.locations.operationDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuditmanagerFoldersLocationsOperationDetailsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -280,6 +319,43 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         request_field='generateAuditScopeReportRequest',
         request_type_name='AuditmanagerProjectsLocationsAuditScopeReportsGenerateRequest',
         response_type_name='AuditScopeReport',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationDetailsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operationDetails resource."""
+
+    _NAME = 'projects_locations_operationDetails'
+
+    def __init__(self, client):
+      super(AuditmanagerV1alpha.ProjectsLocationsOperationDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about generate audit report operation.
+
+      Args:
+        request: (AuditmanagerProjectsLocationsOperationDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operationDetails/{operationDetailsId}',
+        http_method='GET',
+        method_id='auditmanager.projects.locations.operationDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuditmanagerProjectsLocationsOperationDetailsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

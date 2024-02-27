@@ -718,6 +718,7 @@ class CreateClusterOptions(object):
       autoprovisioning_resource_manager_tags=None,
       enable_secret_manager=None,
       enable_cilium_clusterwide_network_policy=None,
+      storage_pools=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -876,6 +877,7 @@ class CreateClusterOptions(object):
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.enable_confidential_nodes = enable_confidential_nodes
     self.enable_confidential_storage = enable_confidential_storage
+    self.storage_pools = storage_pools
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
@@ -1355,6 +1357,7 @@ class CreateNodePoolOptions(object):
       resource_manager_tags=None,
       containerd_config_from_file=None,
       secondary_boot_disks=None,
+      storage_pools=None,
   ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
@@ -1442,6 +1445,7 @@ class CreateNodePoolOptions(object):
     self.resource_manager_tags = resource_manager_tags
     self.containerd_config_from_file = containerd_config_from_file
     self.secondary_boot_disks = secondary_boot_disks
+    self.storage_pools = storage_pools
 
 
 class UpdateNodePoolOptions(object):
@@ -2441,6 +2445,7 @@ class APIAdapter(object):
     self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
     self._AddEnableConfidentialStorageToNodeConfig(node_config, options)
+    self._AddStoragePoolsToNodeConfig(node_config, options)
 
     if options.tags:
       node_config.tags = options.tags
@@ -4026,6 +4031,11 @@ class APIAdapter(object):
       return
     node_config.enableConfidentialStorage = options.enable_confidential_storage
 
+  def _AddStoragePoolsToNodeConfig(self, node_config, options):
+    if not options.storage_pools:
+      return
+    node_config.storagePools = options.storage_pools
+
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
     if options.node_taints is None:
@@ -4261,6 +4271,7 @@ class APIAdapter(object):
     self._AddEphemeralStorageToNodeConfig(node_config, options)
     self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
+    self._AddStoragePoolsToNodeConfig(node_config, options)
     if options.enable_confidential_storage:
       node_config.enableConfidentialStorage = (
           options.enable_confidential_storage

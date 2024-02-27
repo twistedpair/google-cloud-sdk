@@ -188,6 +188,11 @@ class InvalidComponentError(Error):
   pass
 
 
+class GcloudNotFoundError(Error):
+  """Error for when gcloud cannot be found on the path."""
+  pass
+
+
 class NoBackupError(Error):
   """Error for when you try to restore a backup but one does not exist."""
   pass
@@ -1675,6 +1680,20 @@ prompt, or run:
   def _RestartIfUsingBundledPython(self, args=None, command=None):
     RestartIfUsingBundledPython(self.__sdk_root, args, command)
 
+  def _GetGcloudPath(self):
+    """Determines the path to the gcloud binary."""
+    sdk_bin_path = config.Paths().sdk_bin_path
+    if not sdk_bin_path:
+      # Check if gcloud is located on the PATH.
+      gcloud_path = file_utils.FindExecutableOnPath('gcloud')
+      if gcloud_path:
+        log.debug('Using gcloud found at [{path}]'.format(path=gcloud_path))
+        return gcloud_path
+      else:
+        raise GcloudNotFoundError('A path to `gcloud` could not be found. '
+                                  'Please check your SDK installation.')
+    return os.path.join(sdk_bin_path, 'gcloud')
+
   def _PostProcess(self, snapshot=None):
     """Runs the gcloud command to post process the update.
 
@@ -1690,8 +1709,59 @@ prompt, or run:
         have that information so we fall back to a best effort default.
     """
     command = None
-    gcloud_path = None
+    if snapshot:
+      if snapshot.sdk_definition.post_processing_command:
+        command = snapshot.sdk_definition.post_processing_command.split(' ')
+    command = command or ['components', 'post-process']
 
+    if self.__skip_compile_python:
+      command.append('--no-compile-python')
+    gcloud_path = self._GetGcloudPath()
+    if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+      gcloud_args = execution_utils.ArgsForCMDTool(
+          gcloud_path + '.cmd', *command)
+    else:
+      gcloud_args = execution_utils.ArgsForExecutableTool(gcloud_path, *command)
+
+    self.__Write(log.status)
+    try:
+      with progress_tracker.ProgressTracker(
+          message='Performing post processing steps', tick_delay=.25):
+        # Raise PostProcessingError for all failures so the progress tracker
+        # will report the failure.
+        try:
+          ret_val = execution_utils.Exec(gcloud_args, no_exit=True,
+                                         out_func=log.file_only_logger.debug,
+                                         err_func=log.file_only_logger.debug)
+        except (OSError, execution_utils.InvalidCommandError,
+                execution_utils.PermissionError):
+          log.debug('Failed to execute post-processing command', exc_info=True)
+          raise PostProcessingError()
+        if ret_val:
+          log.debug('Post-processing command exited non-zero')
+          raise PostProcessingError()
+    except PostProcessingError:
+      log.warning('Post processing failed.  Run `gcloud info --show-log` '
+                  'to view the failures.')
+      self._LegacyPostProcess(snapshot)
+
+  def _LegacyPostProcess(self, snapshot=None):
+    """Runs the gcloud command to post process the update.
+
+    This runs gcloud as a subprocess so that the new version of gcloud (the one
+    we just updated to) is run instead of the old code (which is running here).
+    We do this so the new code can say how to correctly post process itself.
+
+    Args:
+      snapshot: ComponentSnapshot, The component snapshot for the version
+        we are updating do. The location of gcloud and the command to run can
+        change from version to version, which is why we try to pull this
+        information from the latest snapshot.  For a restore operation, we don't
+        have that information so we fall back to a best effort default.
+    """
+    log.debug('Legacy post-processing...')
+    command = None
+    gcloud_path = None
     if snapshot:
       if snapshot.sdk_definition.post_processing_command:
         command = snapshot.sdk_definition.post_processing_command.split(' ')
@@ -1704,7 +1774,6 @@ prompt, or run:
     gcloud_path = gcloud_path or config.GcloudPath()
 
     args = execution_utils.ArgsForPythonTool(gcloud_path, *command)
-    self.__Write(log.status)
     try:
       with progress_tracker.ProgressTracker(
           message='Performing post processing steps', tick_delay=.25):

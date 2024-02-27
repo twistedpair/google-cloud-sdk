@@ -71,6 +71,10 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
         args, 'auto_created_reservations_duration'
     )
 
+  require_specific_reservation = getattr(
+      args, 'require_specific_reservation', None
+  )
+
   return MakeFutureReservationMessage(
       messages,
       future_reservation_ref.Name(),
@@ -81,6 +85,7 @@ def MakeFutureReservationMessageFromArgs(messages, resources, args,
       enable_auto_delete_reservations,
       auto_created_reservations_delete_time,
       auto_created_reservations_duration,
+      require_specific_reservation
   )
 
 
@@ -183,6 +188,7 @@ def MakeFutureReservationMessage(
     enable_auto_delete_reservations=None,
     auto_created_reservations_delete_time=None,
     auto_created_reservations_duration=None,
+    require_specific_reservation=None,
 ):
   """Constructs a future reservation message object."""
   future_reservation_message = messages.FutureReservation(
@@ -206,5 +212,8 @@ def MakeFutureReservationMessage(
     future_reservation_message.autoCreatedReservationsDuration = (
         messages.Duration(seconds=auto_created_reservations_duration)
     )
-
+  if require_specific_reservation is not None:
+    future_reservation_message.specificReservationRequired = (
+        require_specific_reservation
+    )
   return future_reservation_message

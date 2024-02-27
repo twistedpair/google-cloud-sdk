@@ -880,12 +880,14 @@ class ConnectionProfile(_messages.Message):
       RDS: RDS runs the database.
       AURORA: Amazon Aurora.
       ALLOYDB: AlloyDB.
+      AZURE: Microsoft Azure SQL Managed Instance.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
     ALLOYDB = 4
+    AZURE = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current connection profile state (e.g. DRAFT, READY, or FAILED).
@@ -1381,12 +1383,14 @@ class DatabaseType(_messages.Message):
       RDS: RDS runs the database.
       AURORA: Amazon Aurora.
       ALLOYDB: AlloyDB.
+      AZURE: Microsoft Azure SQL Managed Instance.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
     RDS = 2
     AURORA = 3
     ALLOYDB = 4
+    AZURE = 5
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   provider = _messages.EnumField('ProviderValueValuesEnum', 2)
@@ -3674,6 +3678,8 @@ class MigrationJob(_messages.Message):
   r"""Represents a Database Migration Service migration job object.
 
   Enums:
+    DumpTypeValueValuesEnum: Optional. The type of the data dump. Supported
+      for MySQL to CloudSQL for MySQL migrations only.
     PhaseValueValuesEnum: Output only. The current migration job phase.
     StateValueValuesEnum: The current migration job state.
     TypeValueValuesEnum: Required. The migration job type.
@@ -3707,6 +3713,8 @@ class MigrationJob(_messages.Message):
     dumpPath: The path to the dump file in Google Cloud Storage, in the
       format: (gs://[BUCKET_NAME]/[OBJECT_NAME]). This field and the
       "dump_flags" field are mutually exclusive.
+    dumpType: Optional. The type of the data dump. Supported for MySQL to
+      CloudSQL for MySQL migrations only.
     duration: Output only. The duration of the migration job (in seconds). A
       duration in seconds with up to nine fractional digits, terminated by
       's'. Example: "3.5s".
@@ -3745,6 +3753,20 @@ class MigrationJob(_messages.Message):
     vpcPeeringConnectivity: The details of the VPC network that the source
       database is located in.
   """
+
+  class DumpTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the data dump. Supported for MySQL to CloudSQL
+    for MySQL migrations only.
+
+    Values:
+      DUMP_TYPE_UNSPECIFIED: If not specified, defaults to LOGICAL
+      LOGICAL: Logical dump.
+      PHYSICAL: Physical file-based dump. Supported for MySQL to CloudSQL for
+        MySQL migrations only.
+    """
+    DUMP_TYPE_UNSPECIFIED = 0
+    LOGICAL = 1
+    PHYSICAL = 2
 
   class PhaseValueValuesEnum(_messages.Enum):
     r"""Output only. The current migration job phase.
@@ -3851,23 +3873,24 @@ class MigrationJob(_messages.Message):
   displayName = _messages.StringField(6)
   dumpFlags = _messages.MessageField('DumpFlags', 7)
   dumpPath = _messages.StringField(8)
-  duration = _messages.StringField(9)
-  endTime = _messages.StringField(10)
-  error = _messages.MessageField('Status', 11)
-  filter = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  performanceConfig = _messages.MessageField('PerformanceConfig', 15)
-  phase = _messages.EnumField('PhaseValueValuesEnum', 16)
-  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 17)
-  source = _messages.StringField(18)
-  sourceDatabase = _messages.MessageField('DatabaseType', 19)
-  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 22)
-  type = _messages.EnumField('TypeValueValuesEnum', 23)
-  updateTime = _messages.StringField(24)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 25)
+  dumpType = _messages.EnumField('DumpTypeValueValuesEnum', 9)
+  duration = _messages.StringField(10)
+  endTime = _messages.StringField(11)
+  error = _messages.MessageField('Status', 12)
+  filter = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 16)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 17)
+  reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 18)
+  source = _messages.StringField(19)
+  sourceDatabase = _messages.MessageField('DatabaseType', 20)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 23)
+  type = _messages.EnumField('TypeValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 26)
 
 
 class MigrationJobVerificationError(_messages.Message):
@@ -3945,6 +3968,9 @@ class MigrationJobVerificationError(_messages.Message):
         defined entities (for example databases, tables, or functions). You
         can only migrate to empty instances. Clear your destination instance
         and retry the migration job.
+      SOURCE_MAX_SUBSCRIPTIONS: The migration job is configured to use max
+        number of subscriptions to migrate data from the source to the
+        destination.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3975,6 +4001,7 @@ class MigrationJobVerificationError(_messages.Message):
     EXISTING_CONFLICTING_DATABASES = 26
     PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 27
     EXISTING_DATA = 28
+    SOURCE_MAX_SUBSCRIPTIONS = 29
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)
@@ -5246,14 +5273,33 @@ class SqlServerDatabaseBackup(_messages.Message):
   Fields:
     database: Required. Name of a SQL Server database for which to define
       backup configuration.
+    encryptionOptions: Optional. Encryption settings for the database.
+      Required if provided database backups are encrypted. Encryption settings
+      include path to certificate, path to certificate private key, and key
+      password.
     encryptionOptionsOverride: Optional. Encryption settings for the database.
+      Required if provided database backups are encrypted. Encryption settings
+      include path to certificate, path to certificate private key, and key
+      password. To be deprecated.
+  """
+
+  database = _messages.StringField(1)
+  encryptionOptions = _messages.MessageField('SqlServerEncryptionOptions', 2)
+  encryptionOptionsOverride = _messages.MessageField('SqlServerEncryptionOptions', 3)
+
+
+class SqlServerDatabaseDetails(_messages.Message):
+  r"""Specifies the backup details for a single database in Cloud Storage for
+  homogeneous migration to Cloud SQL for SQL Server.
+
+  Fields:
+    encryptionOptions: Optional. Encryption settings for the database.
       Required if provided database backups are encrypted. Encryption settings
       include path to certificate, path to certificate private key, and key
       password.
   """
 
-  database = _messages.StringField(1)
-  encryptionOptionsOverride = _messages.MessageField('SqlServerEncryptionOptions', 2)
+  encryptionOptions = _messages.MessageField('SqlServerEncryptionOptions', 1)
 
 
 class SqlServerEncryptionOptions(_messages.Message):
@@ -5261,17 +5307,27 @@ class SqlServerEncryptionOptions(_messages.Message):
 
   Fields:
     certPath: Required. Path to certificate.
-    pkvPassword: Required. Input only. Private key password.
-    pkvPath: Required. Path to certificate private key.
+    pkvPassword: Required. Input only. Private key password. To be deprecated
+    pkvPath: Required. Path to certificate private key. To be deprecated
+    pvkPassword: Optional. Input only. Private key password. Enable REQUIRED
+      options when other fields are deprecated.
+    pvkPath: Optional. Path to certificate private key. Enable REQUIRED
+      options when other fields are deprecated.
   """
 
   certPath = _messages.StringField(1)
   pkvPassword = _messages.StringField(2)
   pkvPath = _messages.StringField(3)
+  pvkPassword = _messages.StringField(4)
+  pvkPath = _messages.StringField(5)
 
 
 class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
   r"""Configuration for homogeneous migration to Cloud SQL for SQL Server.
+
+  Messages:
+    DatabaseDetailsValue: Required. Backup details per database in Cloud
+      Storage.
 
   Fields:
     backupFilePattern: Required. Pattern that describes the default backup
@@ -5284,13 +5340,39 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
       (?.*)_backup_(?\d{4})(?\d{2})(?\d{2})_(?\d{2})(?\d{2})(?\d{2}).trn
       Capture group set #2 timestamp - unix timestamp Example: For backup file
       TestDB_backup_1691448254.trn, use pattern: (?.*)_backup_(?.*).trn
-    databaseBackups: Backup details per database in Cloud Storage. If the
-      details are not provided for a database, the backup details provided in
-      the connection profile are used by default.
+    databaseBackups: Backup details per database in Cloud Storage. To be
+      deprecated. database_details to be used instead.
+    databaseDetails: Required. Backup details per database in Cloud Storage.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DatabaseDetailsValue(_messages.Message):
+    r"""Required. Backup details per database in Cloud Storage.
+
+    Messages:
+      AdditionalProperty: An additional property for a DatabaseDetailsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DatabaseDetailsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DatabaseDetailsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SqlServerDatabaseDetails attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SqlServerDatabaseDetails', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupFilePattern = _messages.StringField(1)
   databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 2, repeated=True)
+  databaseDetails = _messages.MessageField('DatabaseDetailsValue', 3)
 
 
 class SshScript(_messages.Message):

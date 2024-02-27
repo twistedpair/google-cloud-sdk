@@ -281,12 +281,33 @@ def AddKmsKeyResourceArg(parser, verb, positional=False):
     positional: bool, optional. True if the resource arg is postional rather
       than a flag.
   """
-  name = 'kms-key' if positional else '--kms-key'
-  concept_parsers.ConceptParser.ForResource(
-      name,
-      GetKmsKeyResourceSpec(),
-      'Cloud KMS key to be used {}.'.format(verb),
-      required=False).AddToParser(parser)
+  kms_key_name = 'kms-key' if positional else '--kms-key'
+  kms_key_names = 'kms-keys' if positional else '--kms-keys'
+  group = parser.add_group('KMS key name group', mutex=True)
+  concept_parsers.ConceptParser([
+      presentation_specs.ResourcePresentationSpec(
+          kms_key_name,
+          GetKmsKeyResourceSpec(),
+          'Cloud KMS key to be used {}.'.format(verb),
+          required=False,
+          group=group,
+      ),
+      presentation_specs.ResourcePresentationSpec(
+          kms_key_names,
+          GetKmsKeyResourceSpec(),
+          'Cloud KMS key(s) to be used {}.'.format(verb),
+          required=False,
+          prefixes=True,
+          hidden=True,
+          plural=True,
+          group=group,
+          flag_name_overrides={
+              'kms-location': '',
+              'kms-keyring': '',
+              'kms-project': '',
+          },
+      ),
+  ]).AddToParser(parser)
 
 
 def AddSessionResourceArg(parser, verb, positional=True):
@@ -408,19 +429,39 @@ def GetRestoreDbEncryptionType(args):
 
 
 def GetAndValidateKmsKeyName(args):
-  """Parse the KMS key resource arg, make sure the key format is correct."""
-  kms_ref = args.CONCEPTS.kms_key.Parse()
-  if kms_ref:
-    return kms_ref.RelativeName()
+  """Parse the KMS key resource arg, make sure the key format is correct.
+
+  Returns:
+    str: when --kms-key is used.
+    list: when --kms-keys is used.
+
+  TODO(b/247020647): Rename this function to GetAndValidateKmsKeyNameOrNames.
+  """
+  kms_key_name = args.CONCEPTS.kms_key.Parse()
+  kms_key_names = args.CONCEPTS.kms_keys.Parse()
+  if kms_key_name:
+    return kms_key_name.RelativeName()
+  elif kms_key_names:
+    return [kms_key_name.RelativeName() for kms_key_name in kms_key_names]
   else:
     # If parsing failed but args were specified, raise error
-    for keyword in ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']:
+    for keyword in [
+        'kms-key',
+        'kms-keyring',
+        'kms-location',
+        'kms-project',
+        'kms-keys',
+    ]:
       if getattr(args, keyword.replace('-', '_'), None):
         raise exceptions.InvalidArgumentException(
-            '--kms-project --kms-location --kms-keyring --kms-key',
-            'Specify fully qualified KMS key ID with --kms-key, or use ' +
-            'combination of --kms-project, --kms-location, --kms-keyring and ' +
-            '--kms-key to specify the key ID in pieces.')
+            '--kms-project --kms-location --kms-keyring --kms-key or'
+            ' --kms-keys',
+            'For a single KMS key, specify fully qualified KMS key ID with'
+            ' --kms-key, or use combination of --kms-project, --kms-location,'
+            ' --kms-keyring and '
+            + '--kms-key to specify the key ID in pieces. Or specify fully'
+            ' qualified KMS key ID with --kms-keys.',
+        )
     return None  # User didn't specify KMS key
 
 

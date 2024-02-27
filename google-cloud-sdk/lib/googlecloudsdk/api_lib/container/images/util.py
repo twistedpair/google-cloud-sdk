@@ -498,14 +498,17 @@ def WrapExpectedDockerlessErrors(optional_image_name=None):
     raise TokenRefreshError(six.text_type(err))
 
 
-def Http():
+def Http(timeout='unset'):
   """Gets an transport client for use with containerregistry.
 
   For now, this just calls into GetApitoolsTransport, but if we find that
   implementation does not satisfy our needs, we may need to fork it. This
   small amount of indirection will make that change a bit cleaner.
 
+  Args:
+    timeout: the http timeout in seconds
+
   Returns:
     1. A httplib2.Http-like object backed by httplib2 or requests.
   """
-  return transports.GetApitoolsTransport()
+  return transports.GetApitoolsTransport(timeout=timeout)
