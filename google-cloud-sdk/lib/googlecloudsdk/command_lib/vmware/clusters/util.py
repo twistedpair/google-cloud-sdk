@@ -283,27 +283,33 @@ def ParseAutoscalingSettingsFromInlinedFormat(
         scale_out_size=policy.get('scale-out-size'),
         min_node_count=policy.get('min-node-count'),
         max_node_count=policy.get('max-node-count'),
-        cpu_thresholds=ScalingThresholds(
-            scale_in=policy.get('cpu-thresholds-scale-in'),
-            scale_out=policy.get('cpu-thresholds-scale-out'),
+        cpu_thresholds=_AutoscalingThresholdsFromPolicy(
+            policy, 'cpu-thresholds'
         ),
-        granted_memory_thresholds=ScalingThresholds(
-            scale_in=policy.get('granted-memory-thresholds-scale-in'),
-            scale_out=policy.get('granted-memory-thresholds-scale-out'),
+        granted_memory_thresholds=_AutoscalingThresholdsFromPolicy(
+            policy, 'granted-memory-thresholds'
         ),
-        consumed_memory_thresholds=ScalingThresholds(
-            scale_in=policy.get('consumed-memory-thresholds-scale-in'),
-            scale_out=policy.get('consumed-memory-thresholds-scale-out'),
+        consumed_memory_thresholds=_AutoscalingThresholdsFromPolicy(
+            policy, 'consumed-memory-thresholds'
         ),
-        storage_thresholds=ScalingThresholds(
-            scale_in=policy.get('storage-thresholds-scale-in'),
-            scale_out=policy.get('storage-thresholds-scale-out'),
+        storage_thresholds=_AutoscalingThresholdsFromPolicy(
+            policy, 'storage-thresholds'
         ),
     )
 
     parsed_settings.autoscaling_policies[policy['name']] = parsed_policy
 
   return parsed_settings
+
+
+def _AutoscalingThresholdsFromPolicy(
+    policy: Dict[str, Union[str, int]], threshold: str
+) -> ScalingThresholds:
+  scale_in = policy.get(f'{threshold}-scale-in')
+  scale_out = policy.get(f'{threshold}-scale-out')
+  if scale_in is None and scale_out is None:
+    return None
+  return ScalingThresholds(scale_in=scale_in, scale_out=scale_out)
 
 
 def _ValidateIfOnlySupportedKeysArePassed(

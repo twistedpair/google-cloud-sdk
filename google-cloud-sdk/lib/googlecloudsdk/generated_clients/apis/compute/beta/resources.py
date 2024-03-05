@@ -660,6 +660,20 @@ class Collections(enum.Enum):
       ['project', 'sslPolicy'],
       True
   )
+  STORAGEPOOLTYPES = (
+      'storagePoolTypes',
+      'projects/{project}/zones/{zone}/storagePoolTypes/{storagePoolType}',
+      {},
+      ['project', 'zone', 'storagePoolType'],
+      True
+  )
+  STORAGEPOOLS = (
+      'storagePools',
+      'projects/{project}/zones/{zone}/storagePools/{storagePool}',
+      {},
+      ['project', 'zone', 'storagePool'],
+      True
+  )
   SUBNETWORKS = (
       'subnetworks',
       'projects/{project}/regions/{region}/subnetworks/{subnetwork}',

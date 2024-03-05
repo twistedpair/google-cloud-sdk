@@ -549,6 +549,8 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
     issuerUri: Required. The OIDC identity provider's issuer URI. Must be a
       valid URI using the 'https' scheme. Required to get the OIDC discovery
       document.
+    queryParameters: Optional. Represents the parameters to control which
+      claims are fetched from an IdP.
   """
 
   class AttributesTypeValueValuesEnum(_messages.Enum):
@@ -573,6 +575,23 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
   clientId = _messages.StringField(2)
   clientSecret = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcClientSecret', 3)
   issuerUri = _messages.StringField(4)
+  queryParameters = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParameters', 5)
+
+
+class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParameters(_messages.Message):
+  r"""Represents the parameters to control which claims are fetched from an
+  IdP.
+
+  Fields:
+    filter: Optional. The filter used to request specific records from IdP. In
+      case of attributes type as AZURE_AD_GROUPS_MAIL, it represents the OData
+      filter used to request specific groups for users from IdP. By default
+      all the groups associated with the user are fetched. See
+      https://learn.microsoft.com/en-us/graph/filter-query-parameter for more
+      details.
+  """
+
+  filter = _messages.StringField(1)
 
 
 class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):

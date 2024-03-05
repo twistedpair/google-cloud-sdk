@@ -134,13 +134,19 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   configurations can be generated.
 
   Enums:
+    BlockchainNodeSourceValueValuesEnum: Immutable. The source of the
+      blockchain node for the validator configurations to be deployed to.
     BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
       validator.
     KeySourceValueValuesEnum: Immutable. The source of the voting key for the
       blockchain validator.
 
   Fields:
+    blockchainNodeSource: Immutable. The source of the blockchain node for the
+      validator configurations to be deployed to.
     blockchainType: Immutable. The blockchain type of the validator.
+    createBlockchainNodeSource: Configuration for creating a new blockchain
+      node to deploy the blockchain validator(s) to.
     eip2334SeedPhraseReference: Location in Secret Manager to read/write seed
       phrase, encryption passphrase, etc.
     ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
@@ -149,12 +155,30 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
       validator.
     remoteWeb3Signer: Connection details of a remote Web3Signer service to use
       for signing attestations and blocks.
+    useExistingBlockchainNodeSource: Configuration for deploying blockchain
+      validators to an existing blockchain node.
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
       This does NOT define whether the blockchain expects work to occur, only
       whether the blockchain node specified above is carrying out validation
       tasks.
   """
+
+  class BlockchainNodeSourceValueValuesEnum(_messages.Enum):
+    r"""Immutable. The source of the blockchain node for the validator
+    configurations to be deployed to.
+
+    Values:
+      BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED: Blockchain node source has not been
+        specified, but should be.
+      CREATE_NEW_NODE: Create a new blockchain node to deploy the validators
+        to.
+      USE_EXISTING_NODE: Deploying blockchain validators to an existing
+        blockchain node, or to no node.
+    """
+    BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED = 0
+    CREATE_NEW_NODE = 1
+    USE_EXISTING_NODE = 2
 
   class BlockchainTypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The blockchain type of the validator.
@@ -182,12 +206,15 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
     REMOTE_WEB3_SIGNER = 1
     EIP2334_SEED_PHRASE_REFERENCE = 2
 
-  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 1)
-  eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseTemplate', 2)
-  ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 3)
-  keySource = _messages.EnumField('KeySourceValueValuesEnum', 4)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 5)
-  validationWorkEnabled = _messages.BooleanField(6)
+  blockchainNodeSource = _messages.EnumField('BlockchainNodeSourceValueValuesEnum', 1)
+  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
+  createBlockchainNodeSource = _messages.MessageField('CreateBlockchainNodeSource', 3)
+  eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseTemplate', 4)
+  ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 5)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 7)
+  useExistingBlockchainNodeSource = _messages.MessageField('UseExistingBlockchainNodeSource', 8)
+  validationWorkEnabled = _messages.BooleanField(9)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
@@ -438,6 +465,18 @@ class ClientIdentity(_messages.Message):
   clientCertificateFingerprint = _messages.StringField(2)
 
 
+class CreateBlockchainNodeSource(_messages.Message):
+  r"""Configuration for creating a new blockchain node to deploy the
+  blockchain validator(s) to.
+
+  Fields:
+    ethereumNodeDetails: Additional configuration specific to Ethereum
+      blockchain nodes.
+  """
+
+  ethereumNodeDetails = _messages.MessageField('EthereumNodeDetails', 1)
+
+
 class Eip2334SeedPhraseReference(_messages.Message):
   r"""Location of the seed material, and derivation path used to generate the
   voting key.
@@ -494,8 +533,6 @@ class Eip2334SeedPhraseTemplate(_messages.Message):
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
     keyCount: Required. Number of keys (and therefore validators) to derive
       from the seed phrase. Must be between 1 and 1,000.
-    passwordSecret: Required. Immutable. Reference into Secret Manager of
-      where the passphrase is stored.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
     seedPhraseSource: Immutable. Origin of the seed phrase.
@@ -519,9 +556,8 @@ class Eip2334SeedPhraseTemplate(_messages.Message):
 
   derivationBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  passwordSecret = _messages.StringField(3)
-  seedPhraseSecret = _messages.StringField(4)
-  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 5)
+  seedPhraseSecret = _messages.StringField(3)
+  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 4)
 
 
 class Empty(_messages.Message):
@@ -569,6 +605,11 @@ class EthereumDetailsTemplate(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
   Fields:
+    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
+      gas per block. This is sent to the block builder service, however
+      whether it is followed depends on the service. This field is only read
+      if the field use_block_builder_proposals is set to true. If not
+      specified, the validator client will use a default value.
     graffiti: Optional. Input only. Graffiti is a custom string published in
       blocks proposed by the validator. This can only be written, as the
       current value cannot be read back from the validator client API. See
@@ -582,10 +623,81 @@ class EthereumDetailsTemplate(_messages.Message):
       has no effect as no validator client is run. See also
       https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
       more context.
+    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
+      block building services (MEV).
   """
 
-  graffiti = _messages.StringField(1)
-  suggestedFeeRecipient = _messages.StringField(2)
+  gasLimit = _messages.IntegerField(1)
+  graffiti = _messages.StringField(2)
+  suggestedFeeRecipient = _messages.StringField(3)
+  useBlockBuilderProposals = _messages.BooleanField(4)
+
+
+class EthereumNodeDetails(_messages.Message):
+  r"""Ethereum-specific blockchain node details.
+
+  Enums:
+    ConsensusClientValueValuesEnum: Required. The consensus client.
+    ExecutionClientValueValuesEnum: Required. The execution client
+    NetworkValueValuesEnum: Immutable. The Ethereum environment being
+      accessed.
+
+  Fields:
+    consensusClient: Required. The consensus client.
+    executionClient: Required. The execution client
+    mevRelayUrls: Optional. URLs for MEV-relay services to use for block
+      building. When set, a GCP-managed MEV-boost service is configured on the
+      beacon client.
+    network: Immutable. The Ethereum environment being accessed.
+  """
+
+  class ConsensusClientValueValuesEnum(_messages.Enum):
+    r"""Required. The consensus client.
+
+    Values:
+      CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
+        but should be.
+      LIGHTHOUSE: Consensus client implementation written in Rust, maintained
+        by Sigma Prime. See [Lighthouse - Sigma
+        Prime](https://lighthouse.sigmaprime.io/) for details.
+    """
+    CONSENSUS_CLIENT_UNSPECIFIED = 0
+    LIGHTHOUSE = 1
+
+  class ExecutionClientValueValuesEnum(_messages.Enum):
+    r"""Required. The execution client
+
+    Values:
+      EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
+        but should be.
+      GETH: Official Go implementation of the Ethereum protocol. See [go-
+        ethereum](https://geth.ethereum.org/) for details.
+    """
+    EXECUTION_CLIENT_UNSPECIFIED = 0
+    GETH = 1
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Immutable. The Ethereum environment being accessed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: The Ethereum Testnet based on Goerli protocol.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
+
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 1)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 2)
+  mevRelayUrls = _messages.StringField(3, repeated=True)
+  network = _messages.EnumField('NetworkValueValuesEnum', 4)
 
 
 class GenerateBlockchainValidatorConfigsRequest(_messages.Message):
@@ -1030,6 +1142,18 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class UseExistingBlockchainNodeSource(_messages.Message):
+  r"""Configuration for deploying blockchain validators to an existing
+  blockchain node.
+
+  Fields:
+    blockchainNodeId: Optional. Name of the blockchain node to deploy the
+      validators to. If not set, the validators are not deployed.
+  """
+
+  blockchainNodeId = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

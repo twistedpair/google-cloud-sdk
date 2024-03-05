@@ -93,7 +93,10 @@ def CheckGCRUsage(repo: docker_name.Repository) -> GCRUsage:
         transport=util.Http(),
     ) as r:
       return GCRUsage(str(repo), r.check_usage_only())
-  except docker_http.V2DiagnosticException as e:
+  except (
+      docker_http.V2DiagnosticException,
+      docker_http.TokenRefreshException,
+  ) as e:
     return GCRUsage(str(repo), str(e))
 
 

@@ -96,17 +96,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_LBSERVICESTEERINGEXTENSIONS = (
-      'projects.locations.lbServiceSteeringExtensions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_LBTRAFFICEXTENSIONS = (
       'projects.locations.lbTrafficExtensions',
       '{+name}',
@@ -125,6 +114,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/meshes/'
               '{meshesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MESSAGEPUBLISHINGROUTES = (
+      'projects.locations.messagePublishingRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'messagePublishingRoutes/{messagePublishingRoutesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MESSAGESUBSCRIPTIONS = (
+      'projects.locations.messageSubscriptions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'messageSubscriptions/{messageSubscriptionsId}',
       },
       ['name'],
       True

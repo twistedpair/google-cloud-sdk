@@ -41,6 +41,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BLOCKCHAINNODES = (
+      'projects.locations.blockchainNodes',
+      'projects/{projectsId}/locations/{locationsId}/blockchainNodes/'
+      '{blockchainNodeId}',
+      {},
+      ['projectsId', 'locationsId', 'blockchainNodeId'],
+      True
+  )
   PROJECTS_LOCATIONS_BLOCKCHAINVALIDATORCONFIGS = (
       'projects.locations.blockchainValidatorConfigs',
       '{+name}',

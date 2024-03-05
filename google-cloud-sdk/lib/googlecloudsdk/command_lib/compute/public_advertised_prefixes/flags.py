@@ -28,7 +28,7 @@ def MakePublicAdvertisedPrefixesArg():
       global_collection='compute.publicAdvertisedPrefixes')
 
 
-def AddCreatePapArgsToParser(parser, support_pdp_scope_input):
+def AddCreatePapArgsToParser(parser):
   """Adds public advertised prefixes create related flags to parser."""
 
   parser.add_argument(
@@ -48,34 +48,26 @@ def AddCreatePapArgsToParser(parser, support_pdp_scope_input):
   )
   parser.add_argument(
       '--description', help='Description of this public advertised prefix.')
-  if support_pdp_scope_input:
-    choices = ['GLOBAL', 'REGIONAL']
-    parser.add_argument(
-        '--pdp-scope',
-        choices=choices,
-        help='Specifies how child public delegated prefix will be scoped.')
+  choices = ['GLOBAL', 'REGIONAL']
+  parser.add_argument(
+      '--pdp-scope',
+      choices=choices,
+      help='Specifies how child public delegated prefix will be scoped.')
 
 
-def AddUpdatePapArgsToParser(parser, support_pap_announce_withdraw):
+def AddUpdatePapArgsToParser(parser):
   """Adds public advertised prefixes update related flags to parser."""
-  if support_pap_announce_withdraw:
-    base.ChoiceArgument(
-        '--status',
-        choices=['ptr-configured'],
-        help_str='The status of public advertised prefix.').AddToParser(parser)
-    parser.add_argument(
-        '--announce-prefix',
-        action='store_true',
-        default=False,
-        help='Specify if the prefix will be announced. Default is false.')
-    parser.add_argument(
-        '--withdraw-prefix',
-        action='store_true',
-        default=False,
-        help='Specify if the prefix will be withdrawn. Default is false.')
-  else:
-    base.ChoiceArgument(
-        '--status',
-        required=True,
-        choices=['ptr-configured'],
-        help_str='The status of public advertised prefix.').AddToParser(parser)
+  base.ChoiceArgument(
+      '--status',
+      choices=['ptr-configured'],
+      help_str='The status of public advertised prefix.').AddToParser(parser)
+  parser.add_argument(
+      '--announce-prefix',
+      action='store_true',
+      default=False,
+      help='Specify if the prefix will be announced. Default is false.')
+  parser.add_argument(
+      '--withdraw-prefix',
+      action='store_true',
+      default=False,
+      help='Specify if the prefix will be withdrawn. Default is false.')

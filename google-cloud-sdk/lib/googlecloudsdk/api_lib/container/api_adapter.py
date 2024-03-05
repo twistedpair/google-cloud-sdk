@@ -4845,12 +4845,13 @@ class APIAdapter(object):
                 node_pool_ref.clusterId, node_pool_ref.nodePoolId)))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
-  def RollbackUpgrade(self, node_pool_ref):
+  def RollbackUpgrade(self, node_pool_ref, respect_pdb=None):
     operation = self.client.projects_locations_clusters_nodePools.Rollback(
         self.messages.RollbackNodePoolUpgradeRequest(
             name=ProjectLocationClusterNodePool(
                 node_pool_ref.projectId, node_pool_ref.zone,
-                node_pool_ref.clusterId, node_pool_ref.nodePoolId)))
+                node_pool_ref.clusterId, node_pool_ref.nodePoolId),
+            respectPdb=respect_pdb))
     return self.ParseOperation(operation.name, node_pool_ref.zone)
 
   def CompleteNodePoolUpgrade(self, node_pool_ref):
@@ -7080,29 +7081,18 @@ def _GetMonitoringConfig(options, messages):
           relayMode=relay_mode)
 
   if options.enable_dataplane_v2_flow_observability:
-    # relayMode value does not need to be explicitly set here since it's
-    # ignored in GKE public API code when enableRelay is true
     if adv_obs:
       adv_obs = messages.AdvancedDatapathObservabilityConfig(
-          enableMetrics=adv_obs.enableMetrics, enableRelay=True,
-          relayMode=adv_obs.relayMode)
+          enableMetrics=adv_obs.enableMetrics, enableRelay=True)
     else:
       adv_obs = messages.AdvancedDatapathObservabilityConfig(enableRelay=True)
 
   if options.disable_dataplane_v2_flow_observability:
-    # relayMode value needs to be explicitly set to DISABLED since
-    # GKE public API code cannot differentiate on update between
-    # "enableRelay is not set" and "enableRelay is false"
     if adv_obs:
       adv_obs = messages.AdvancedDatapathObservabilityConfig(
-          enableMetrics=adv_obs.enableMetrics, enableRelay=False,
-          relayMode=(messages.AdvancedDatapathObservabilityConfig
-                     .RelayModeValueValuesEnum.DISABLED))
+          enableMetrics=adv_obs.enableMetrics, enableRelay=False)
     else:
-      adv_obs = messages.AdvancedDatapathObservabilityConfig(
-          enableRelay=False,
-          relayMode=(messages.AdvancedDatapathObservabilityConfig
-                     .RelayModeValueValuesEnum.DISABLED))
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(enableRelay=False)
 
   if comp is None and prom is None and adv_obs is None:
     return None

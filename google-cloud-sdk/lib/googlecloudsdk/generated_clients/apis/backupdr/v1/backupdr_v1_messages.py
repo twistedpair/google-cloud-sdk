@@ -76,6 +76,406 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BackupPlan(_messages.Message):
+  r"""A `BackupPlan` specifies some common fields, such as `display_name` as
+  well as one or more `BackupRule` messages. Each `BackupRule` has a retention
+  policy and defines a schedule by which the system is to perform backup
+  workloads.
+
+  Enums:
+    StateValueValuesEnum: Output only. The `State` for the `BackupPlan`.
+
+  Messages:
+    LabelsValue: Optional. This collection of key/value pairs allows for
+      custom labels to be supplied by the user. Example, {"tag": "Weekly"}.
+
+  Fields:
+    adminScope: Optional. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. The resource name of AdminScope
+      with which this `BackupPlan` is associated. Format :
+      projects/{project}/locations/{region}/adminScopes/{admin_scope}
+    backupRules: Required. The backup rules for this `BackupPlan`. There must
+      be at least one `BackupRule` message.
+    createTime: Output only. When the `BackupPlan` was created.
+    description: Optional. The description of the `BackupPlan` resource. The
+      description allows for additional details about `BackupPlan` and its use
+      cases to be provided. An example description is the following: "This is
+      a backup plan that performs a daily backup at 6pm and retains data for 3
+      months". The description must be at most 2048 characters.
+    displayName: Required. The display name of the `BackupPlan`. This human-
+      readable name must start with a lowercase letter followed by up to 62
+      lowercase letters, numbers, or hyphens. Pattern, /a-z{,62}/.
+    etag: Optional. `etag` is returned from the service in the response. As a
+      user of the service, you may provide an etag value in this field to
+      prevent stale resources.
+    labels: Optional. This collection of key/value pairs allows for custom
+      labels to be supplied by the user. Example, {"tag": "Weekly"}.
+    name: Output only. The resource name of the `BackupPlan`. Format:
+      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+    resourceType: Required. The resource type to which the `BackupPlan` will
+      be applied. Examples include, "compute.googleapis.com/Instance" and
+      "storage.googleapis.com/Bucket".
+    state: Output only. The `State` for the `BackupPlan`.
+    updateTime: Output only. When the `BackupPlan` was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The `State` for the `BackupPlan`.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: The resource is being created.
+      ACTIVE: The resource has been created and is fully usable.
+      DELETING: The resource is being deleted.
+      READY: TODO b/325560313: Deprecated and field will be removed after UI
+        integration change. The resource has been created.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    READY = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. This collection of key/value pairs allows for custom labels
+    to be supplied by the user. Example, {"tag": "Weekly"}.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  adminScope = _messages.StringField(1)
+  backupRules = _messages.MessageField('BackupRule', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  resourceType = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
+class BackupPlanAssociation(_messages.Message):
+  r"""A BackupPlanAssociation represents a single BackupPlanAssociation which
+  contains details like workload, backup plan etc
+
+  Enums:
+    StateValueValuesEnum: Output only. The BackupPlanAssociation resource
+      state.
+
+  Fields:
+    backupCollectionId: Output only. TODO b/325560313: Deprecated and field
+      will be removed after UI integration change. Output only. This will
+      return the relative url of the AGM application object which will be used
+      to redirect to AGM UI from the pantheon to show a list of backups.
+    backupPlan: Required. Resource name of backup plan which needs to be
+      applied on workload. Format:
+      projects/{project}/locations/{region}/backupPlans/{backupPlanId}
+    createTime: Output only. The time when the instance was created.
+    name: Output only. The resource name of BackupPlanAssociation in below
+      format Format : projects/{project}/locations/{region}/backupPlanAssociat
+      ions/{backupPlanAssociationId}
+    resource: Required. Immutable. Resource name of workload on which
+      backupplan is applied
+    resourceType: Required. Immutable. Resource type of workload on which
+      backupplan is applied
+    rulesConfigInfo: Output only. The config info related to backup rules.
+    scopeId: Output only. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. This will return the scope with
+      which this backup plan association is associated with.
+    state: Output only. The BackupPlanAssociation resource state.
+    updateTime: Output only. The time when the instance was updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The BackupPlanAssociation resource state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: The resource is being created.
+      ACTIVE: The resource has been created and is fully usable.
+      DELETING: The resource is being deleted.
+      READY: TODO b/325560313: Deprecated and field will be removed after UI
+        integration change. The resource has been created and is fully usable.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    READY = 4
+
+  backupCollectionId = _messages.StringField(1)
+  backupPlan = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  resource = _messages.StringField(5)
+  resourceType = _messages.StringField(6)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 7, repeated=True)
+  scopeId = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+
+
+class BackupRule(_messages.Message):
+  r"""`BackupRule` binds the backup schedule to a retention policy.
+
+  Fields:
+    backupRetentionDays: Required. Configures the duration for which backup
+      data will be kept. It is defined in "days". The value should be greater
+      than or equal to minimum enforced retention of the backup vault.
+    backupVault: Required. Resource name of backup vault which will be used as
+      storage location for backups. Format:
+      projects/{project}/locations/{location}/backupVaults/{backupvault}
+    backupVaultServiceAccount: Output only. The Google Cloud Platform Service
+      Account to be used by the BackupVault for taking backups. Specify the
+      email address of the Backup Vault Service Account. (precedent: https://s
+      ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
+      service.proto;l=1014-1019)
+    displayName: Optional. The display name of the `BackupRule`.
+    ruleId: Output only. The unique id of this `BackupRule`. The `rule_id` is
+      unique per `BackupPlan`.
+    standardSchedule: Required. Defines a schedule that runs within the
+      confines of a defined window of time.
+  """
+
+  backupRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  backupVault = _messages.StringField(2)
+  backupVaultServiceAccount = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  ruleId = _messages.StringField(5)
+  standardSchedule = _messages.MessageField('StandardSchedule', 6)
+
+
+class BackupWindow(_messages.Message):
+  r"""`BackupWindow` defines a window of the day during which backup jobs will
+  run.
+
+  Fields:
+    endHourOfDay: Required. The hour of day (1-24) when the window end for
+      e.g. if value of end hour of day is 10 that mean backup window end time
+      is 10:00. End hour of day should be greater than start hour of day. 0 <=
+      start_hour_of_day < end_ hour_of_day <= 24 End hour of day is not
+      include in backup window that mean if end_hour_of_day= 10 jobs should
+      start before 10:00.
+    endTime: Optional. TODO b/325560313: Deprecated and field will be removed
+      after UI integration change. The end time of the window in which to pick
+      backup jobs to run.
+    startHourOfDay: Required. The hour of day (0-23) when the window starts
+      for e.g. if value of start hour of day is 6 that mean backup window
+      start at 6:00.
+    startTime: Optional. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. The start time of the window in
+      which to pick backup jobs to run.
+  """
+
+  endHourOfDay = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  endTime = _messages.MessageField('TimeOfDay', 2)
+  startHourOfDay = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.MessageField('TimeOfDay', 4)
+
+
+class BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest object.
+
+  Fields:
+    backupPlanAssociation: A BackupPlanAssociation resource to be passed as
+      the request body.
+    backupPlanAssociationId: Required. The name of the backup plan association
+      to create. The name must be unique for the specified project and
+      location.
+    parent: Required. The backup plan association project and location in the
+      format `projects/{project_id}/locations/{location}`. In Cloud BackupDR
+      locations map to GCP regions, for example **us-central1**.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backupPlanAssociation = _messages.MessageField('BackupPlanAssociation', 1)
+  backupPlanAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class BackupdrProjectsLocationsBackupPlanAssociationsGetRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsGetRequest object.
+
+  Fields:
+    name: Required. Name of the backup plan association resource, in the
+      format `projects/{project_id}/locations/{location}/backupPlanAssociation
+      s/{resource_name}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlanAssociationsListRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The project and location for which to retrieve backup
+      Plan Associations information, in the format
+      `projects/{project_id}/locations/{location}`. In Cloud BackupDR,
+      locations map to GCP regions, for example **us-central1**. To retrieve
+      backup plan associations for all locations, use "-" for the `{location}`
+      value.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlansCreateRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansCreateRequest object.
+
+  Fields:
+    backupPlan: A BackupPlan resource to be passed as the request body.
+    backupPlanId: Required. The name of the `BackupPlan` to create. The name
+      must be unique for the specified project and location.The name must
+      start with a lowercase letter followed by up to 62 lowercase letters,
+      numbers, or hyphens. Pattern, /a-z{,62}/.
+    parent: Required. The `BackupPlan` project and location in the format
+      `projects/{project}/locations/{location}`. In Cloud BackupDR locations
+      map to GCP regions, for example **us-central1**.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backupPlan = _messages.MessageField('BackupPlan', 1)
+  backupPlanId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class BackupdrProjectsLocationsBackupPlansDeleteRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the `BackupPlan` to delete. Format:
+      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class BackupdrProjectsLocationsBackupPlansGetRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the `BackupPlan` to retrieve. Format:
+      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlansListRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlansListRequest object.
+
+  Fields:
+    filter: Optional. Field match expression used to filter the results.
+    orderBy: Optional. Field by which to sort the results.
+    pageSize: Optional. The maximum number of `BackupPlans` to return in a
+      single response. If not specified, a default value will be chosen by the
+      service. Note that the response may include a partial list and a caller
+      should only rely on the response's next_page_token to determine if there
+      are more instances left to be queried.
+    pageToken: Optional. The value of next_page_token received from a previous
+      `ListBackupPlans` call. Provide this to retrieve the subsequent page in
+      a multi-page list of results. When paginating, all other parameters
+      provided to `ListBackupPlans` must match the call that provided the page
+      token.
+    parent: Required. The project and location for which to retrieve
+      `BackupPlans` information. Format:
+      `projects/{project}/locations/{region}`. In Cloud BackupDR, locations
+      map to GCP regions, for e.g. **us-central1**. To retrieve backup plans
+      for all locations, use "-" for the `{region}` value.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest object.
 
@@ -455,6 +855,48 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ListBackupPlanAssociationsResponse(_messages.Message):
+  r"""Response message for List BackupPlanAssociation
+
+  Fields:
+    backupPlanAssociations: The list of Backup Plan Associations in the
+      project for the specified location. If the `{location}` value in the
+      request is "-", the response contains a list of instances from all
+      locations. In case any location is unreachable, the response will only
+      return backup plan associations in reachable locations and the
+      'unreachable' field will be populated with a list of unreachable
+      locations.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPlanAssociations = _messages.MessageField('BackupPlanAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBackupPlansResponse(_messages.Message):
+  r"""The response message for getting a list of `BackupPlan`.
+
+  Fields:
+    backupPlans: The list of `BackupPlans` in the project for the specified
+      location. If the `{location}` value in the request is "-", the response
+      contains a list of resources from all locations. In case any location is
+      unreachable, the response will only return backup plans in reachable
+      locations and the 'unreachable' field will be populated with a list of
+      unreachable locations. BackupPlan
+    nextPageToken: A token which may be sent as page_token in a subsequent
+      `ListBackupPlans` call to retrieve the next page of results. If this
+      field is omitted or empty, then there are no more results to return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupPlans = _messages.MessageField('BackupPlan', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -605,7 +1047,7 @@ class ManagementServer(_messages.Message):
     managementUri: Output only. The hostname or ip address of the exposed AGM
       endpoints, used by clients to connect to AGM/RD graphical user interface
       and APIs.
-    name: Output only. The resource name.
+    name: Output only. Identifier. The resource name.
     networks: Required. VPC networks to which the ManagementServer instance is
       connected. For this version, only a single network is supported.
     oauth2ClientId: Output only. The OAuth 2.0 client id is required to make
@@ -990,6 +1432,52 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RuleConfigInfo(_messages.Message):
+  r"""Message for rules config info.
+
+  Enums:
+    StateValueValuesEnum: Output only. The config state for rule.
+
+  Fields:
+    dataSource: Output only. Output Only. Resource name of data source which
+      will be used as storage location for backups taken by specified rule.
+      Format : projects/{project}/locations/{location}/backupVaults/{backupvau
+      lt}/dataSources/{datasource}
+    lastSuccessfulBackupConsistencyTime: Output only. The point in time when
+      the last successful backup was captured from the source.
+    ruleDisplayName: Output only. Output Only. Backup Rule id fetched from
+      backup plan.
+    ruleId: Output only. Output Only. Backup Rule id fetched from backup plan.
+    state: Output only. The config state for rule.
+    stateDetails: Output only. Output Only. Additional details for current
+      config state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The config state for rule.
+
+    Values:
+      CONFIG_STATE_UNSPECIFIED: State not set.
+      FIRST_BACKUP_PENDING: The first backup is pending.
+      PERMISSIONS_MISSING: Required permissions are missing to perform backup
+        operation.
+      LAST_BACKUP_SUCCEEDED: The last backup operation succeeded.
+      LAST_BACKUP_FAILED: The last backup operation failed.
+    """
+    CONFIG_STATE_UNSPECIFIED = 0
+    FIRST_BACKUP_PENDING = 1
+    PERMISSIONS_MISSING = 2
+    LAST_BACKUP_SUCCEEDED = 3
+    LAST_BACKUP_FAILED = 4
+
+  dataSource = _messages.StringField(1)
+  lastSuccessfulBackupConsistencyTime = _messages.StringField(2)
+  ruleDisplayName = _messages.StringField(3)
+  ruleId = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateDetails = _messages.StringField(6)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -1070,6 +1558,146 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StandardSchedule(_messages.Message):
+  r"""`StandardSchedule` defines a schedule that run within the confines of a
+  defined window of days. We can define recurrence type for schedule as
+  HOURLY, DAILY, WEEKLY, MONTHLY or YEARLY.
+
+  Enums:
+    DaysOfWeekValueListEntryValuesEnum:
+    MonthsValueListEntryValuesEnum:
+    RecurrenceTypeValueValuesEnum: Required. Specifies the `RecurrenceType`
+      for the schedule.
+
+  Fields:
+    backupWindow: Required. A BackupWindow defines the window of day during
+      which backup jobs will run. Jobs are queued at the beginning of the
+      window and will be marked as `NOT_RUN` if they do not start by the end
+      of the window. Note: running jobs will not be cancelled at the end of
+      the window.
+    daysOfMonth: Optional. Specifies days of months like 1, 5, or 14 on which
+      jobs will run. Values for `days_of_month` are only applicable for
+      `recurrence_type`, `MONTHLY` and `YEARLY`. A validation error will occur
+      if other values are supplied.
+    daysOfWeek: Optional. Specifies days of week like, MONDAY or TUESDAY, on
+      which jobs will run. This is required for `recurrence_type`, `WEEKLY`
+      and is not applicable otherwise. A validation error will occur if a
+      value is supplied and `recurrence_type` is not `WEEKLY`.
+    hourlyFrequency: Optional. Specifies frequency for hourly backups. A
+      hourly frequency of 2 means jobs will run every 2 hours from start time
+      till end time defined. This is required for `recurrence_type`, `HOURLY`
+      and is not applicable otherwise. A validation error will occur if a
+      value is supplied and `recurrence_type` is not `HOURLY`. Value of hourly
+      frequency should be between 6 and 23. Reason for limit : We found that
+      there is bandwidth limitation of 3GB/S for GMI while taking a backup and
+      5GB/S while doing a restore. Given the amount of parallel backups and
+      restore we are targeting, this will potentially take the backup time to
+      mins and hours (in worst case scenario).
+    months: Optional. Specifies the months of year, like `FEBRUARY` and/or
+      `MAY`, on which jobs will run. This field is only applicable when
+      `recurrence_type` is `YEARLY`. A validation error will occur if other
+      values are supplied.
+    recurrenceType: Required. Specifies the `RecurrenceType` for the schedule.
+    repeatInterval: Required. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. Repeat interval
+    timeZone: Optional. This will be supported in GA not in PP. The time zone
+      to be used when interpreting the schedule. The value of this field must
+      be a time zone name from the IANA tz database. See
+      https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the
+      list of valid timezone names. The default value is UTC. For e.g.,
+      Europe/Paris.
+    weekDayOfMonth: Optional. This will be supported in GA not in PP.
+      Specifies a week day of the month like, FIRST SUNDAY or LAST MONDAY, on
+      which jobs will run. This will be specified by two fields in
+      `WeekDayOfMonth`, one for the day, e.g. `MONDAY`, and one for the week,
+      e.g. `LAST`. This field is only applicable for `recurrence_type`,
+      `MONTHLY` and `YEARLY`. A validation error will occur if other values
+      are supplied.
+  """
+
+  class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):
+    r"""DaysOfWeekValueListEntryValuesEnum enum type.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  class MonthsValueListEntryValuesEnum(_messages.Enum):
+    r"""MonthsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONTH_UNSPECIFIED: The unspecified month.
+      JANUARY: The month of January.
+      FEBRUARY: The month of February.
+      MARCH: The month of March.
+      APRIL: The month of April.
+      MAY: The month of May.
+      JUNE: The month of June.
+      JULY: The month of July.
+      AUGUST: The month of August.
+      SEPTEMBER: The month of September.
+      OCTOBER: The month of October.
+      NOVEMBER: The month of November.
+      DECEMBER: The month of December.
+    """
+    MONTH_UNSPECIFIED = 0
+    JANUARY = 1
+    FEBRUARY = 2
+    MARCH = 3
+    APRIL = 4
+    MAY = 5
+    JUNE = 6
+    JULY = 7
+    AUGUST = 8
+    SEPTEMBER = 9
+    OCTOBER = 10
+    NOVEMBER = 11
+    DECEMBER = 12
+
+  class RecurrenceTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the `RecurrenceType` for the schedule.
+
+    Values:
+      RECURRENCE_TYPE_UNSPECIFIED: recurrence type not set
+      HOURLY: The `BackupRule` is to be applied hourly.
+      DAILY: The `BackupRule` is to be applied daily.
+      WEEKLY: The `BackupRule` is to be applied weekly.
+      MONTHLY: The `BackupRule` is to be applied monthly.
+      YEARLY: The `BackupRule` is to be applied yearly.
+    """
+    RECURRENCE_TYPE_UNSPECIFIED = 0
+    HOURLY = 1
+    DAILY = 2
+    WEEKLY = 3
+    MONTHLY = 4
+    YEARLY = 5
+
+  backupWindow = _messages.MessageField('BackupWindow', 1)
+  daysOfMonth = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.INT32)
+  daysOfWeek = _messages.EnumField('DaysOfWeekValueListEntryValuesEnum', 3, repeated=True)
+  hourlyFrequency = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  months = _messages.EnumField('MonthsValueListEntryValuesEnum', 5, repeated=True)
+  recurrenceType = _messages.EnumField('RecurrenceTypeValueValuesEnum', 6)
+  repeatInterval = _messages.IntegerField(7)
+  timeZone = _messages.StringField(8)
+  weekDayOfMonth = _messages.MessageField('WeekDayOfMonth', 9)
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -1143,6 +1771,85 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class WeekDayOfMonth(_messages.Message):
+  r"""`WeekDayOfMonth` defines the week day of the month on which the backups
+  will run. The message combines a `WeekOfMonth` and `DayOfWeek` to produce
+  values like `FIRST`/`MONDAY` or `LAST`/`FRIDAY`.
+
+  Enums:
+    DayOfWeekValueValuesEnum: Required. Specifies the day of the week.
+    WeekOfMonthValueValuesEnum: Required. Specifies the week of the month.
+
+  Fields:
+    dayOfWeek: Required. Specifies the day of the week.
+    weekOfMonth: Required. Specifies the week of the month.
+  """
+
+  class DayOfWeekValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  class WeekOfMonthValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the week of the month.
+
+    Values:
+      WEEK_OF_MONTH_UNSPECIFIED: The zero value. Do not use.
+      FIRST: The first week of the month.
+      SECOND: The second week of the month.
+      THIRD: The third week of the month.
+      FOURTH: The fourth week of the month.
+      LAST: The last week of the month.
+    """
+    WEEK_OF_MONTH_UNSPECIFIED = 0
+    FIRST = 1
+    SECOND = 2
+    THIRD = 3
+    FOURTH = 4
+    LAST = 5
+
+  dayOfWeek = _messages.EnumField('DayOfWeekValueValuesEnum', 1)
+  weekOfMonth = _messages.EnumField('WeekOfMonthValueValuesEnum', 2)
 
 
 class WorkforceIdentityBasedManagementURI(_messages.Message):

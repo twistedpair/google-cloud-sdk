@@ -313,9 +313,9 @@ cluster_resource_restore_scope:
   api_field: restorePlan.restoreConfig.clusterResourceRestoreScope
   action:
     deprecated:
-      removed: false
-      warn: |
-        Flag cluster-resource-restore-scope is deprecated and will be removed in release 460.0.0
+      removed: true
+      error: |
+        Flag cluster-resource-restore-scope has been removed.
           Please use --cluster-resource-scope-selected-group-kinds instead.
   hidden: true
   type: arg_list

@@ -24,6 +24,14 @@ from googlecloudsdk.api_lib.cloudbuild.v2 import input_util
 from googlecloudsdk.core import yaml
 
 
+_WORKFLOW_OPTIONS_ENUMS = [
+    "options.security.privilegeMode",
+    "options.provenance.enabled",
+    "options.provenance.storage",
+    "options.provenance.region",
+]
+
+
 def CloudBuildYamlDataToWorkflow(workflow):
   """Convert cloudbuild.yaml file into Workflow message."""
   _WorkflowTransform(workflow)
@@ -65,6 +73,9 @@ def _WorkflowTransform(workflow):
   if "options" in workflow and "status" in workflow["options"]:
     popped_status = workflow["options"].pop("status")
     workflow["options"]["statusUpdateOptions"] = popped_status
+
+  for option in _WORKFLOW_OPTIONS_ENUMS:
+    input_util.SetDictDottedKeyUpperCase(workflow, option)
 
 
 def _ResourcesTransform(workflow):

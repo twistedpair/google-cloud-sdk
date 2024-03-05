@@ -141,11 +141,12 @@ class ApplicationsClient(object):
 
     return create_response
 
-  def Update(self, args, release_track=base.ReleaseTrack.ALPHA):
+  def Update(self, args, app_ref, release_track=base.ReleaseTrack.ALPHA):
     """Updates an Apphub application.
 
     Args:
       args: args, Arguments provided by the client
+      app_ref: Application reference
       release_track: release_track provided by the client
 
     Returns:
@@ -153,7 +154,6 @@ class ApplicationsClient(object):
     """
 
     update_mask = ''
-    app_ref = args.CONCEPTS.application.Parse()
 
     attributes = api_lib_utils.GetMessagesModule(release_track).Attributes()
     application = self.messages.Application(attributes=attributes)

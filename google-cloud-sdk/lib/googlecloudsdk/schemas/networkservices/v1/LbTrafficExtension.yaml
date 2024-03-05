@@ -56,8 +56,9 @@ properties:
   labels:
     description: |-
       Set of labels associated with the `LbTrafficExtension` resource.
-      The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google
+      Cloud resources.
     $ref: LabelsValue.yaml
   loadBalancingScheme:
     description: |-

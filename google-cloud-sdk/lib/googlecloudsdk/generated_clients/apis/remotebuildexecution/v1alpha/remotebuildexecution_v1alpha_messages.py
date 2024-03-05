@@ -1904,6 +1904,14 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       [Preemptible VMs](https://cloud.google.com/preemptible-vms/) for more
       details.
     soleTenantNodeType: The node type name to be used for sole-tenant nodes.
+    userServiceAccounts: Optional. List of user service accounts. The last
+      service account in the list is what the user code will run as. The rest
+      of the service accounts constitute the impersonation chain. For example,
+      if len(user_service_accounts) == 2 and if the VM's service account is
+      RBE's P4SA, then RBE'S P4SA should be granted the Service Account Token
+      Creator role on user_service_accounts[0] and user_service_accounts[0]
+      should be granted the Service Account Token Creator role on
+      user_service_accounts[1].
     vmImage: The name of the image used by each VM.
     zones: Optional. Zones in the region where the pool VMs should be. Leave
       empty for no restrictions.
@@ -1948,8 +1956,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   networkAccess = _messages.StringField(9)
   reserved = _messages.BooleanField(10)
   soleTenantNodeType = _messages.StringField(11)
-  vmImage = _messages.StringField(12)
-  zones = _messages.StringField(13, repeated=True)
+  userServiceAccounts = _messages.StringField(12, repeated=True)
+  vmImage = _messages.StringField(13)
+  zones = _messages.StringField(14, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

@@ -237,3 +237,22 @@ integrations:
     required: false
   required_apis:
   - run.googleapis.com
+
+- integration_type: vertex-genai
+  resource_type: vertex-genai
+  label: Vertex AI - Generative AI
+  product: Vertex AI - Generative AI
+  description: Configure access to Gemini, PaLM, Codey and more of Google's large generative models from your Cloud Run workloads
+  example_command: |-
+    $ gcloud {track} run integrations create --service=[SERVICE] --type=vertex-genai
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: vertex-genai/gemini
+  service_type: backing
+  visible: false
+  eta_in_min: 5
+  parameters: []
+  required_apis:
+  - aiplatform.googleapis.com

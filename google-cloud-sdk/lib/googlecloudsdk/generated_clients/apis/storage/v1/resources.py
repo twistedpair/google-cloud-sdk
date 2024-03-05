@@ -59,6 +59,13 @@ class Collections(enum.Enum):
       ['bucket', 'entity'],
       True
   )
+  FOLDERS = (
+      'folders',
+      'b/{bucket}/folders/{folder}',
+      {},
+      ['bucket', 'folder'],
+      True
+  )
   MANAGEDFOLDERS = (
       'managedFolders',
       'b/{bucket}/managedFolders/{managedFolder}',

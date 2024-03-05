@@ -506,7 +506,11 @@ class RunAppsOperations(object):
     services = [service] if service else []
     services.extend(services_in_params)
     for svc in services:
-      match_type_names.append({'type': types_utils.SERVICE_TYPE, 'name': svc})
+      match_type_names.append({
+          'type': types_utils.SERVICE_TYPE,
+          'name': svc,
+          'ignoreResourceConfig': True,
+      })
 
     for svc in services:
       self.EnsureWorkloadResources(app.config, svc, types_utils.SERVICE_TYPE)
@@ -603,7 +607,10 @@ class RunAppsOperations(object):
       )
       # Specified services are always added to selector.
       self._AppendTypeMatcher(
-          match_type_names, types_utils.SERVICE_TYPE, service
+          match_type_names,
+          types_utils.SERVICE_TYPE,
+          service,
+          True,
       )
 
     if add_service:
@@ -654,7 +661,7 @@ class RunAppsOperations(object):
         ):
           # Non-specified services are only added to selector if it exists.
           self._AppendTypeMatcher(
-              match_type_names, types_utils.SERVICE_TYPE, service
+              match_type_names, types_utils.SERVICE_TYPE, service, True
           )
 
     deploy_message = typekit.GetDeployMessage()
@@ -716,9 +723,11 @@ class RunAppsOperations(object):
       if rid.type == types_utils.SERVICE_TYPE:
         if self.GetCloudRunService(rid.name):
           # Only configure service to unbind if it exists
-          unbind_match_type_names.append(
-              {'type': types_utils.SERVICE_TYPE, 'name': rid.name}
-          )
+          unbind_match_type_names.append({
+              'type': types_utils.SERVICE_TYPE,
+              'name': rid.name,
+              'ignoreResourceConfig': True,
+          })
     if typekit:
       delete_match_type_names = typekit.GetDeleteSelectors(name)
       resource_stages = typekit.GetDeleteComponentTypes(
@@ -1205,12 +1214,20 @@ class RunAppsOperations(object):
       )
 
   def _AppendTypeMatcher(
-      self, type_matchers: MutableSequence[base.Selector], res_type, res_name
+      self,
+      type_matchers: MutableSequence[base.Selector],
+      res_type: str,
+      res_name: str,
+      ignore_resource_config: Optional[bool] = None,
   ):
     for matcher in type_matchers:
       if matcher['type'] == res_type and matcher['name'] == res_name:
         return
-    type_matchers.append({'type': res_type, 'name': res_name})
+    type_matchers.append({
+        'type': res_type,
+        'name': res_name,
+        'ignoreResourceConfig': ignore_resource_config,
+    })
 
   def VerifyLocation(self):
     app_ref = self.GetAppRef(_DEFAULT_APP_NAME)

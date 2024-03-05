@@ -118,6 +118,9 @@ class MigrationJobsClient(object):
   def _GetType(self, mj_type, type_value):
     return mj_type.TypeValueValuesEnum.lookup_by_name(type_value)
 
+  def _GetDumpType(self, dump_type, type_value):
+    return dump_type.DumpTypeValueValuesEnum.lookup_by_name(type_value)
+
   def _GetVpcPeeringConnectivity(self, args):
     return self.messages.VpcPeeringConnectivity(vpc=args.peer_vpc)
 
@@ -321,7 +324,7 @@ class MigrationJobsClient(object):
     if args.IsKnownAndSpecified('dump_parallel_level'):
       migration_job_obj.performanceConfig = self._GetPerformanceConfig(args)
 
-    if args.IsKnownAndSpecified('sqlserver_backup_file_pattern'):
+    if args.IsKnownAndSpecified('sqlserver_databases'):
       migration_job_obj.sqlserverHomogeneousMigrationJobConfig = (
           self._GetSqlserverHomogeneousMigrationJobConfig(args)
       )
@@ -380,6 +383,10 @@ class MigrationJobsClient(object):
       migration_job.displayName = args.display_name
     if args.IsSpecified('type'):
       migration_job.type = self._GetType(self.messages.MigrationJob, args.type)
+    if args.IsKnownAndSpecified('dump_type'):
+      migration_job.dumpType = self._GetDumpType(
+          self.messages.MigrationJob, args.dump_type
+      )
     if args.IsSpecified('dump_path'):
       migration_job.dumpPath = args.dump_path
     if args.IsSpecified('source'):

@@ -292,6 +292,7 @@ def Apply(
     input_values=None,
     inputs_file=None,
     labels=None,
+    quota_validation=None,
 ):
   """Updates the deployment if one exists, otherwise creates a deployment.
 
@@ -334,6 +335,8 @@ def Apply(
       accepts (key, value) pairs where value is a scalar value.
     inputs_file: Accepts .tfvars file.
     labels: User-defined metadata for the deployment.
+    quota_validation: Input to control quota checks for resources in terraform'
+      configuration files.
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
@@ -437,6 +440,7 @@ def Apply(
       terraformBlueprint=tf_blueprint,
       labels=labels_message,
       tfVersionConstraint=tf_version_constraint,
+      quotaValidation=quota_validation,
   )
 
   if artifacts_gcs_bucket is not None:

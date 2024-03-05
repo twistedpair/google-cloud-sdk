@@ -1140,7 +1140,5 @@ def AddBuildServiceAccountFlag(parser, track):
 
             If not provided, the function will use the project's default
             service account for Cloud Build.
-
-            Only applicable when the `--gen2` flag is provided.
         """,
     )

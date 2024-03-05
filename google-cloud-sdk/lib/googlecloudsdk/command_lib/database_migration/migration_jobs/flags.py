@@ -153,6 +153,18 @@ def AddDumpParallelLevelFlag(parser):
   parser.add_argument('--dump-parallel-level', help=help_text, choices=choices)
 
 
+def AddDumpTypeFlag(parser):
+  """Adds a --dump-type flag to the given parser."""
+  help_text = (
+      'The type of the data dump. Currently applicable for MySQL to MySQL '
+      'migrations only.'
+  )
+  choices = ['LOGICAL', 'PHYSICAL']
+  parser.add_argument(
+      '--dump-type', help=help_text, choices=choices, hidden=True
+  )
+
+
 def AddSqlServerHomogeneousMigrationConfigFlag(parser):
   """Adds SQL Server homogeneous migration flag group to the given parser."""
   sqlserver_homogeneous_migration_config = parser.add_group(
@@ -181,7 +193,9 @@ def AddSqlServerBackupFilePattern(parser):
       ' pattern:(?<database>.*)_backup_(?<timestamp>.*).trn'
   )
   parser.add_argument(
-      '--sqlserver-backup-file-pattern', help=help_text, required=True
+      '--sqlserver-backup-file-pattern',
+      help=help_text,
+      default='.*\\.(?<epoch>\\d*)\\.trn',
   )
 
 

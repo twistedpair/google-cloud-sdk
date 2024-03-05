@@ -153,6 +153,13 @@ def CreateCLI(surfaces, translator=None):
       'container.hub',
       os.path.join(pkg_root, 'surface', 'container', 'fleet'))
 
+  # Make 'bigtable.tables' an alias for 'bigtable.instances.tables' to be
+  # consistent with other bigtable commands while avoiding a breaking change.
+  loader.AddModule(
+      'bigtable.tables',
+      os.path.join(pkg_root, 'surface', 'bigtable', 'instances', 'tables'),
+  )
+
   # Check for updates on shutdown but not for any of the updater commands.
   # Skip update checks for 'gcloud version' command as it does that manually.
   exclude_commands = r'gcloud\.components\..*|gcloud\.version'

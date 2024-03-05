@@ -482,6 +482,19 @@ class ApphubProjectsLocationsDiscoveredServicesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class ApphubProjectsLocationsDiscoveredServicesLookupRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDiscoveredServicesLookupRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    uri: Required. GCP resource URI to find service for Accepts both project
+      number and project id and does translation when needed.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uri = _messages.StringField(2)
+
+
 class ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest
   object.
@@ -531,6 +544,19 @@ class ApphubProjectsLocationsDiscoveredWorkloadsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    uri: Required. GCP resource URI to find workload for. Accepts both project
+      number and project id and does translation when needed.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uri = _messages.StringField(2)
 
 
 class ApphubProjectsLocationsGetRequest(_messages.Message):
@@ -959,7 +985,7 @@ class Criticality(_messages.Message):
   r"""Criticality of the Application, Service, or Workload
 
   Enums:
-    TypeValueValuesEnum: Required. Criticality Type.
+    TypeValueValuesEnum: Optional. Criticality Type.
 
   Fields:
     level: Optional. Criticality level. Can contain only lowercase letters,
@@ -967,11 +993,11 @@ class Criticality(_messages.Message):
       of 63 characters.
     missionCritical: Optional. Indicates mission-critical Application,
       Service, or Workload.
-    type: Required. Criticality Type.
+    type: Optional. Criticality Type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Criticality Type.
+    r"""Optional. Criticality Type.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified type.
@@ -1053,17 +1079,17 @@ class Environment(_messages.Message):
   r"""Environment of the Application, Service, or Workload
 
   Enums:
-    TypeValueValuesEnum: Required. Environment Type.
+    TypeValueValuesEnum: Optional. Environment Type.
 
   Fields:
     environment: Optional. Environment name. Can contain only lowercase
       letters, numeric characters, underscores, and dashes. Can have a maximum
       length of 63 characters.
-    type: Required. Environment Type.
+    type: Optional. Environment Type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Environment Type.
+    r"""Optional. Environment Type.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified type.
@@ -1342,6 +1368,26 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LookupDiscoveredServiceResponse(_messages.Message):
+  r"""Response for LookupDiscoveredService.
+
+  Fields:
+    discoveredService: Discovered service if exists, empty otherwise.
+  """
+
+  discoveredService = _messages.MessageField('DiscoveredService', 1)
+
+
+class LookupDiscoveredWorkloadResponse(_messages.Message):
+  r"""Response for LookupDiscoveredWorkload.
+
+  Fields:
+    discoveredWorkload: Discovered workload if exists, empty otherwise.
+  """
+
+  discoveredWorkload = _messages.MessageField('DiscoveredWorkload', 1)
 
 
 class LookupServiceProjectAttachmentResponse(_messages.Message):

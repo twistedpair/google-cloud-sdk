@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import k8s_object
 
-
 # Label names as to be stored in k8s object metadata
 SERVICE_LABEL = 'serving.knative.dev/service'
 # Used to force a new revision, and also to tie a particular request for changes
@@ -29,8 +28,16 @@ SERVICE_LABEL = 'serving.knative.dev/service'
 NONCE_LABEL = 'client.knative.dev/nonce'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
+# gcloud-disable-gdu-domain
 SESSION_AFFINITY_ANNOTATION = 'run.googleapis.com/sessionAffinity'
+# gcloud-disable-gdu-domain
 MESH_ANNOTATION = 'run.googleapis.com/mesh'
+# gcloud-disable-gdu-domain
+BASE_IMAGES_ANNOTATION = 'run.googleapis.com/base-images'
+# gcloud-disable-gdu-domain
+BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME = (
+    'run.googleapis.com/linux-base-image-update'
+)
 
 
 class Revision(container_resource.ContainerResource):

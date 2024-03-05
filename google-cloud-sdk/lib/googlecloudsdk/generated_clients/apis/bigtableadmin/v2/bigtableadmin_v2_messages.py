@@ -918,6 +918,8 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest(_messages.
   Fields:
     authorizedView: A AuthorizedView resource to be passed as the request
       body.
+    ignoreWarnings: Optional. If true, ignore the safety checks when updating
+      the AuthorizedView.
     name: Identifier. The name of this AuthorizedView. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/
       {authorized_view}`
@@ -930,8 +932,9 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest(_messages.
   """
 
   authorizedView = _messages.MessageField('AuthorizedView', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  ignoreWarnings = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class BigtableadminProjectsInstancesTablesCheckConsistencyRequest(_messages.Message):
@@ -1344,6 +1347,8 @@ class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesViewsPatchRequest object.
 
   Fields:
+    ignoreWarnings: Optional. If true, ignore the safety checks when updating
+      the view.
     name: The name of the view. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
     updateMask: Optional. The list of fields to update. A mask specifying
@@ -1355,9 +1360,10 @@ class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
     view: A View resource to be passed as the request body.
   """
 
-  name = _messages.StringField(1, required=True)
-  updateMask = _messages.StringField(2)
-  view = _messages.MessageField('View', 3)
+  ignoreWarnings = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  view = _messages.MessageField('View', 4)
 
 
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):
@@ -2036,7 +2042,6 @@ class CreateViewRequest(_messages.Message):
 
 class DataBoostIsolationReadOnly(_messages.Message):
   r"""Data Boost allows a customer to bypass Bigtable nodes when it comes to
-
   fetching their data. The data is instead read directly from the filesystem,
   which enables the customer to isolate specific read-only workflows. Data
   Boost reads are only guaranteed to see the results of writes that were
@@ -2065,20 +2070,18 @@ class DataBoostIsolationReadOnly(_messages.Message):
       REQUESTER_PAYS: The requester Cloud Project targeting the Bigtable
         Instance / Table with Data Boost pays for compute.
     """
-
     COMPUTE_BILLING_OWNER_UNSPECIFIED = 0
     HOST_PAYS = 1
     REQUESTER_PAYS = 2
 
-  computeBillingOwner = _messages.EnumField(
-      'ComputeBillingOwnerValueValuesEnum', 1
-  )
+  computeBillingOwner = _messages.EnumField('ComputeBillingOwnerValueValuesEnum', 1)
 
 
 class DataBoostReadLocalWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated in the
   same cluster is readable by Databoost.
   """
+
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -2102,6 +2105,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -2224,6 +2228,7 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
+
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2796,12 +2801,17 @@ class Modification(_messages.Message):
     id: The ID of the column family to be modified.
     update: Update an existing column family to the specified schema, or fail
       if no column family exists with the given ID.
+    updateMask: Optional. A mask specifying which fields (e.g. `gc_rule`) in
+      the `update` mod should be updated, ignored for other modification
+      types. If unset or empty, we treat it as updating `gc_rule` to be
+      backward compatible.
   """
 
   create = _messages.MessageField('ColumnFamily', 1)
   drop = _messages.BooleanField(2)
   id = _messages.StringField(3)
   update = _messages.MessageField('ColumnFamily', 4)
+  updateMask = _messages.StringField(5)
 
 
 class ModifyColumnFamiliesRequest(_messages.Message):
@@ -3249,6 +3259,7 @@ class RowAffinity(_messages.Message):
   """
 
 
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3392,6 +3403,7 @@ class StandardReadRemoteWrites(_messages.Message):
   """
 
 
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3444,9 +3456,8 @@ class Status(_messages.Message):
 
 
 class Table(_messages.Message):
-  r"""A collection of user data indexed by row, column, and timestamp.
-
-  Each table is served using the resources of its parent cluster.
+  r"""A collection of user data indexed by row, column, and timestamp. Each
+  table is served using the resources of its parent cluster.
 
   Enums:
     GranularityValueValuesEnum: Immutable. The granularity (i.e. `MILLIS`) at
@@ -3696,6 +3707,7 @@ class UndeleteTableRequest(_messages.Message):
   """
 
 
+
 class Union(_messages.Message):
   r"""A GcRule which deletes cells matching any of the given rules.
 
@@ -3734,6 +3746,8 @@ class UpdateAuthorizedViewRequest(_messages.Message):
     authorizedView: Required. The AuthorizedView to update. The `name` in
       `authorized_view` is used to identify the AuthorizedView. AuthorizedView
       name must in this format projects//instances//tables//authorizedViews/
+    ignoreWarnings: Optional. If true, ignore the safety checks when updating
+      the AuthorizedView.
     updateMask: Optional. The list of fields to update. A mask specifying
       which fields in the AuthorizedView resource should be updated. This mask
       is relative to the AuthorizedView resource, not to the request message.
@@ -3743,7 +3757,8 @@ class UpdateAuthorizedViewRequest(_messages.Message):
   """
 
   authorizedView = _messages.MessageField('AuthorizedView', 1)
-  updateMask = _messages.StringField(2)
+  ignoreWarnings = _messages.BooleanField(2)
+  updateMask = _messages.StringField(3)
 
 
 class UpdateClusterMetadata(_messages.Message):
@@ -3813,6 +3828,8 @@ class UpdateViewRequest(_messages.Message):
   r"""The request for UpdateView.
 
   Fields:
+    ignoreWarnings: Optional. If true, ignore the safety checks when updating
+      the view.
     updateMask: Optional. The list of fields to update. A mask specifying
       which fields in the View resource should be updated. This mask is
       relative to the View resource, not to the request message. A field will
@@ -3824,8 +3841,9 @@ class UpdateViewRequest(_messages.Message):
       projects//instances//tables//views/
   """
 
-  updateMask = _messages.StringField(1)
-  view = _messages.MessageField('View', 2)
+  ignoreWarnings = _messages.BooleanField(1)
+  updateMask = _messages.StringField(2)
+  view = _messages.MessageField('View', 3)
 
 
 class View(_messages.Message):

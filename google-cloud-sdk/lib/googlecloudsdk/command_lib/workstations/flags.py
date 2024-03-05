@@ -302,7 +302,7 @@ def AddDisableTcpConnections(parser, use_default=True):
   """Adds a --disable-tcp-connections flag to the given parser."""
   help_text = """\
   Default value is false.
-  If set, workstations will not allow plain TCP connections."""
+  If set, workstations don't allow plain TCP connections."""
   parser.add_argument(
       '--disable-tcp-connections',
       action='store_true',
@@ -311,22 +311,23 @@ def AddDisableTcpConnections(parser, use_default=True):
   )
 
 
-def AddEnableTcpConnections(parser, use_default=True):
+def AddEnableTcpConnections(parser):
   """Adds a --enable-tcp-connections flag to the given parser."""
   help_text = """\
-  Default value is false.
-  If set, workstations will allow plain TCP connections."""
+  If set, workstations allow plain TCP connections."""
+
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--enable-tcp-connections',
       action='store_true',
-      default=False if use_default else None,
       help=help_text,
   )
+
+  help_text = """\
+  If set, workstations don't allow plain TCP connections."""
   group.add_argument(
       '--disable-tcp-connections',
       action='store_true',
-      default=False if use_default else None,
       help=help_text,
   )
 
@@ -683,7 +684,7 @@ def AddDisableSSHToVM(parser, use_default=True):
   """Adds a --disable-ssh-to-vm flag to the given parser."""
   help_text = """\
   Default value is False.
-  If set, workstations will disable SSH connections to the root VM."""
+  If set, workstations disable SSH connections to the root VM."""
   parser.add_argument(
       '--disable-ssh-to-vm',
       action='store_true',
@@ -692,21 +693,20 @@ def AddDisableSSHToVM(parser, use_default=True):
   )
 
 
-def AddEnableSSHToVM(parser, use_default=True):
+def AddEnableSSHToVM(parser):
   """Adds a --enable-ssh-to-vm flag to the given parser."""
   help_text = """\
-  Default value is False.
-  If set, workstations will enable SSH connections to the root VM."""
+  If set, workstations disable SSH connections to the root VM."""
   group = parser.add_mutually_exclusive_group()
   group.add_argument(
       '--disable-ssh-to-vm',
       action='store_true',
-      default=False if use_default else False,
       help=help_text,
   )
+  help_text = """\
+  If set, workstations enable SSH connections to the root VM."""
   group.add_argument(
       '--enable-ssh-to-vm',
       action='store_true',
-      default=False if use_default else False,
       help=help_text,
   )

@@ -328,7 +328,7 @@ $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
 
 GKE_GCLOUD_AUTH_INSTALL_HINT = """\
 Install gke-gcloud-auth-plugin for use with kubectl by following \
-https://cloud.google.com/blog/products/containers-kubernetes/kubectl-auth-changes-in-gke"""
+https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl#install_plugin"""
 
 GKE_GCLOUD_AUTH_PLUGIN_NOT_FOUND = """\
 ACTION REQUIRED: gke-gcloud-auth-plugin, \

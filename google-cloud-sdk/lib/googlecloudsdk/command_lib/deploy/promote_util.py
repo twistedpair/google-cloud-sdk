@@ -44,6 +44,7 @@ def Promote(
     labels=None,
     description=None,
     starting_phase_id=None,
+    override_deploy_policies=None,
 ):
   """Creates a rollout for the given release in the destination target.
 
@@ -66,6 +67,7 @@ def Promote(
       resources that satisfy certain conditions.
     description: str, rollout description.
     starting_phase_id: str, the starting phase for the rollout.
+    override_deploy_policies: List of Deploy Policies to override.
 
   Raises:
     googlecloudsdk.command_lib.deploy.exceptions.RolloutIdExhausted
@@ -85,6 +87,7 @@ def Promote(
       labels,
       description,
       starting_phase_id,
+      override_deploy_policies,
   )
 
   # Check if it requires approval.

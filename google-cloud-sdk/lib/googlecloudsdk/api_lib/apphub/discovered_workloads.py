@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2023 Google LLC. All Rights Reserved.
+# Copyright 2024 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -112,3 +112,23 @@ class DiscoveredWorkloadsClient(object):
         limit=limit,
         batch_size_attribute='pageSize',
     )
+
+  def Lookup(self, parent, uri):
+    """Lookup a discovered workload in the Project/location with a given uri.
+
+    Args:
+      parent: str, projects/{projectId_or_projectNumber}/locations/{location}
+      uri: str, GCP resource URI to find workload for Accepts both project
+        number and project id and does translation when needed.
+
+    Returns:
+       discoveredWorkload: Discovered workload
+    """
+    lookup_req = (
+        self.messages.ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest(
+            parent=parent,
+            uri=uri,
+        )
+    )
+
+    return self._dis_workloads_client.Lookup(lookup_req)

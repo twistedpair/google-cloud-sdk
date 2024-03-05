@@ -2702,24 +2702,6 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyV
   parent = _messages.StringField(3, required=True)
 
 
-class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest(_messages.Message):
-  r"""A
-  PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest
-  object.
-
-  Fields:
-    googleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview: A
-      GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview resource to
-      be passed as the request body.
-    parent: Required. The organization under which this
-      OrgPolicyViolationsPreview will be created. Example: `organizations/my-
-      example-org/locations/global`
-  """
-
-  googleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class PolicysimulatorOrganizationsLocationsReplaysCreateRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsReplaysCreateRequest object.
 

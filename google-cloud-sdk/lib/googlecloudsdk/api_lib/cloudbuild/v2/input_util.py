@@ -24,6 +24,16 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.core import yaml
 
 
+def SetDictDottedKeyUpperCase(input_dict, dotted_key):
+  *key, last = dotted_key.split(".")
+  for bit in key:
+    if bit not in input_dict:
+      return
+    input_dict = input_dict.get(bit)
+  if last in input_dict:
+    input_dict[last] = input_dict[last].upper()
+
+
 def LoadYamlFromPath(path):
   try:
     data = yaml.load_path(path, round_trip=True, preserve_quotes=True)

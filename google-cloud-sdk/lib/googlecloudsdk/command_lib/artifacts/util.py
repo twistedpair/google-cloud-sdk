@@ -53,6 +53,7 @@ from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import edit
 from googlecloudsdk.core.util import parallel
+import requests
 
 _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
@@ -1079,7 +1080,7 @@ def RecommendAuthChange(
     else:
       options.append(
           "Do not change permissions for this repo"
-          f" (users may lose access to {project}/{repo})"
+          f" (users may lose access to {repo}/{project})"
       )
       options.append(
           "Skip permission updates for all remaining repos (users may"
@@ -1411,7 +1412,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
   if len(enabled_projects) == len(projects):
     log.status.Print(
         "Artifact Registry is already handling all requests for *gcr.io repos"
-        " for the provided projects"
+        " for the provided projects. If there are images you still need to"
+        " copy, use the --copy_only flag."
     )
     return None
 
@@ -1519,7 +1521,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
         f"\nThe next step will redirect {canary_reads}% of *gcr.io read"
         " traffic to Artifact Registry. All pushes will still write to"
         " Container Registry. While canarying, Artifact Registry will attempt"
-        " to copy missing images from Container Registry at request time."
+        " to copy missing images from Container Registry at request time.\n"
     )
     update = console_io.PromptContinue(
         "Projects to redirect: {}".format(projects_to_redirect),
@@ -1554,12 +1556,18 @@ def MigrateToArtifactRegistry(unused_ref, args):
       )
     log.status.Print(
         "\nThe next step will redirect all *gcr.io traffic to"
-        f" Artifact Registry. All remaining Container Registry images{caveat}"
-        " will be copied. During migration, Artifact Registry"
+        f" Artifact Registry. Remaining Container Registry images{caveat} will"
+        " be copied. During migration, Artifact Registry"
         " will serve *gcr.io requests for images it doesn't have yet by"
         " copying them from Container Registry at request time. Deleting"
         " images from *gcr.io repos in the middle of migration might not be"
-        " effective.\n"
+        " effective.\n\n"
+        "IMPORTANT: Make sure to update any relevant VPC-SC policies before"
+        " migrating. Once *gcr.io is redirected to Artifact Registry, the"
+        # gcloud-disable-gdu-domain
+        " artifactregistry.googleapis.com service will be checked for VPC-SC"
+        # gcloud-disable-gdu-domain
+        " instead of containerregistry.googleapis.com.\n"
     )
     update = console_io.PromptContinue(
         "Projects to redirect: {}".format(projects_to_redirect),
@@ -1772,22 +1780,32 @@ def CopyImagesFromGCR(
     thread_futures, executor, repo_path, recent_only, copy_from, results
 ):
   """Recursively copies images from GCR."""
-  # AR timeout is an hour. Go a little longer so we can still show results if AR
-  # times out
-  http_obj = util.Http(timeout=61 * 60)
+  # TODO: b/327023681 - Use 5 minute timeout until AR can handle longer requests
+  http_obj = util.Http(timeout=5 * 60)
   repository = docker_name.Repository(repo_path)
-  with docker_image.FromRegistry(
-      basic_creds=util.CredentialProvider(),
-      name=repository,
-      transport=http_obj,
-  ) as image:
-    query = f"?CopyFromGCR={copy_from}"
-    if recent_only:
-      query += f"&PullDays={recent_only}"
-    tags_payload = json.loads(
-        # pylint:disable-next=protected-access
-        image._content(f"tags/list{query}").decode("utf8")
-    )
+  next_page = ""
+  while True:
+    try:
+      with docker_image.FromRegistry(
+          basic_creds=util.CredentialProvider(),
+          name=repository,
+          transport=http_obj,
+      ) as image:
+        query = f"?CopyFromGCR={copy_from}"
+        if recent_only:
+          query += f"&PullDays={recent_only}"
+        if next_page:
+          query += f"&NextPage={next_page}"
+        tags_payload = json.loads(
+            # pylint:disable-next=protected-access
+            image._content(f"tags/list{query}").decode("utf8")
+        )
+        if tags_payload.get("nextPage"):
+          next_page = tags_payload["nextPage"]
+        else:
+          break
+    except requests.exceptions.ReadTimeout:
+      continue
   results["manifestsCopied"] += tags_payload.get("manifestsCopied", 0)
   results["tagsCopied"] += tags_payload.get("tagsCopied", 0)
   results["manifestsFailed"] += tags_payload.get("manifestsFailed", 0)

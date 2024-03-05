@@ -237,6 +237,22 @@ def AddWorkflowLoggingArg(parser):
   log_level.AddToParser(parser)
 
 
+def SetWorkflowLoggingArg(loglevel, workflow, updated_fields):
+  """Sets --call-log-level for the workflow based on the arguments.
+
+  Also updates updated_fields accordingly.
+
+  Args:
+    loglevel: Parsed callLogLevel to be set on the workflow.
+    workflow: The workflow in which to set the call-log-level.
+    updated_fields: A list to which the call-log-level field will be added if
+      needed.
+  """
+  if loglevel is not None:
+    workflow.callLogLevel = loglevel
+    updated_fields.append('callLogLevel')
+
+
 # Flags for CMEK
 def AddKmsKeyFlags(parser):
   """Adds flags for configuring the CMEK key.
@@ -269,13 +285,30 @@ def AddKmsKeyFlags(parser):
   )
 
 
+def SetKmsKey(args, workflow, updated_fields):
+  """Sets KMS key for the workflow based on the arguments.
+
+  Also update updated_fields accordingly.
+
+  Args:
+    args: Args passed to the command.
+    workflow: The workflow in which to set the KMS key.
+    updated_fields: A list to which the KMS key field will be added if needed.
+  """
+  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+    workflow.cryptoKeyName = None if args.clear_kms_key else args.kms_key
+    updated_fields.append('cryptoKeyName')
+
+
 def AddUserEnvVarsFlags(parser):
   """Adds flags for configuring user-defined environment variables."""
   userenvvars_group = parser.add_group(mutex=True, hidden=True)
   userenvvars_group.add_argument(
       '--set-env-vars',
       type=arg_parsers.ArgDict(
-          key_type=str, value_type=str, max_length=USER_ENV_VARS_LIMIT,
+          key_type=str,
+          value_type=str,
+          max_length=USER_ENV_VARS_LIMIT,
       ),
       action=arg_parsers.UpdateAction,
       metavar='KEY=VALUE',
@@ -468,18 +501,3 @@ def UpdateUserEnvVars(env_vars, workflow, updated_fields):
       ]
   )
   updated_fields.append('userEnvVars')
-
-
-def SetKmsKey(args, workflow, updated_fields):
-  """Sets KMS key for the workflow based on the arguments.
-
-  Also update updated_fields accordingly.
-
-  Args:
-    args: Args passed to the command.
-    workflow: The workflow in which to set the KMS key.
-    updated_fields: A list to which the KMS key field will be added if needed.
-  """
-  if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
-    workflow.cryptoKeyName = None if args.clear_kms_key else args.kms_key
-    updated_fields.append('cryptoKeyName')

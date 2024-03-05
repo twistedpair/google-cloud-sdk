@@ -39,11 +39,249 @@ class BackupdrV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_backupPlanAssociations = self.ProjectsLocationsBackupPlanAssociationsService(self)
+    self.projects_locations_backupPlans = self.ProjectsLocationsBackupPlansService(self)
     self.projects_locations_backupVaults = self.ProjectsLocationsBackupVaultsService(self)
     self.projects_locations_managementServers = self.ProjectsLocationsManagementServersService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsBackupPlanAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupPlanAssociations resource."""
+
+    _NAME = 'projects_locations_backupPlanAssociations'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsBackupPlanAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a BackupPlanAssociation.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupPlanAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupPlanAssociationId', 'requestId'],
+        relative_path='v1/{+parent}/backupPlanAssociations',
+        request_field='backupPlanAssociation',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single BackupPlanAssociation.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations/{backupPlanAssociationsId}',
+        http_method='DELETE',
+        method_id='backupdr.projects.locations.backupPlanAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single BackupPlanAssociation.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPlanAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations/{backupPlanAssociationsId}',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlanAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsGetRequest',
+        response_type_name='BackupPlanAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BackupPlanAssociations in a given project and location.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPlanAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlanAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupPlanAssociations',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsListRequest',
+        response_type_name='ListBackupPlanAssociationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsBackupPlansService(base_api.BaseApiService):
+    """Service class for the projects_locations_backupPlans resource."""
+
+    _NAME = 'projects_locations_backupPlans'
+
+    def __init__(self, client):
+      super(BackupdrV1.ProjectsLocationsBackupPlansService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a BackupPlan.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupPlans.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupPlanId', 'requestId'],
+        relative_path='v1/{+parent}/backupPlans',
+        request_field='backupPlan',
+        request_type_name='BackupdrProjectsLocationsBackupPlansCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single BackupPlan.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}',
+        http_method='DELETE',
+        method_id='backupdr.projects.locations.backupPlans.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlansDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single BackupPlan.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupPlan) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans/{backupPlansId}',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlans.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlansGetRequest',
+        response_type_name='BackupPlan',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists BackupPlans in a given project and location.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlansListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupPlansResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlans',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupPlans.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupPlans',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupPlansListRequest',
+        response_type_name='ListBackupPlansResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsBackupVaultsService(base_api.BaseApiService):
     """Service class for the projects_locations_backupVaults resource."""

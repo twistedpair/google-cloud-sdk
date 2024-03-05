@@ -1523,11 +1523,13 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
       CA: Cloud Armor
       FASTLY: Fastly
       CLOUDFLARE: Cloudflare
+      AKAMAI: Akamai
     """
     WAF_SERVICE_UNSPECIFIED = 0
     CA = 1
     FASTLY = 2
     CLOUDFLARE = 3
+    AKAMAI = 4
 
   wafFeature = _messages.EnumField('WafFeatureValueValuesEnum', 1)
   wafService = _messages.EnumField('WafServiceValueValuesEnum', 2)

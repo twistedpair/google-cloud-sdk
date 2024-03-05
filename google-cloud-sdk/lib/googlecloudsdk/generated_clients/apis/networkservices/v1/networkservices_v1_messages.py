@@ -1284,16 +1284,17 @@ class ExtensionChainExtension(_messages.Message):
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
-      Envoy to the extension service.
+      Envoy to the extension service. Required for Callout extensions.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
-      extension chain are also executed. When set to `FALSE`: * If response
+      extension chain are also executed. When set to `FALSE` or the default
+      setting of `FALSE` is used, one of the following happens: * If response
       headers have not been delivered to the downstream client, a generic 500
       error is returned to the client. The error response can be tailored by
       configuring a custom error response in the load balancer. * If response
       headers have been delivered, then the HTTP stream to the downstream
-      client is reset. Default is `FALSE`.
+      client is reset.
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
@@ -1303,8 +1304,8 @@ class ExtensionChainExtension(_messages.Message):
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
     service: Required. The reference to the service that runs the extension.
-      Currently only Callout extensions are supported here. To configure a
-      Callout extension, `service` must be a fully-qualified reference to a
+      Currently only callout extensions are supported here. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
       [backend service](https://cloud.google.com/compute/docs/reference/rest/v
       1/backendServices) in the format: `https://www.googleapis.com/compute/v1
       /projects/{project}/regions/{region}/backendServices/{backendService}`
@@ -1314,8 +1315,9 @@ class ExtensionChainExtension(_messages.Message):
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It's not relevant for the
       `LbRouteExtension` resource.
-    timeout: Required. Specifies the timeout for each individual message on
-      the stream. The timeout must be between 10-1000 milliseconds.
+    timeout: Optional. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-1000 milliseconds. Required
+      for Callout extensions.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -1331,12 +1333,18 @@ class ExtensionChainExtension(_messages.Message):
         called when the HTTP response headers arrive.
       RESPONSE_BODY: If included in `supported_events`, the extension is
         called when the HTTP response body arrives.
+      REQUEST_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP request trailers arrives.
+      RESPONSE_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP response trailers arrives.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     REQUEST_HEADERS = 1
     REQUEST_BODY = 2
     RESPONSE_HEADERS = 3
     RESPONSE_BODY = 4
+    REQUEST_TRAILERS = 5
+    RESPONSE_TRAILERS = 6
 
   authority = _messages.StringField(1)
   failOpen = _messages.BooleanField(2)
@@ -1354,8 +1362,7 @@ class ExtensionChainMatchCondition(_messages.Message):
     celExpression: Required. A Common Expression Language (CEL) expression
       that is used to match requests for which the extension chain is
       executed. For more information, see [CEL matcher language
-      reference](https://cloud.google.com/service-extensions/docs/cel-matcher-
-      language-reference).
+      reference](/service-extensions/docs/cel-matcher-language-reference).
   """
 
   celExpression = _messages.StringField(1)
@@ -1366,7 +1373,7 @@ class Gateway(_messages.Message):
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
   Gateways to dictate how requests should be routed by this Gateway. Next id:
-  31
+  32
 
   Enums:
     EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
@@ -2647,8 +2654,9 @@ class LbRouteExtension(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
-      `LbRouteExtension` resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      `LbRouteExtension` resource. The format must comply with [the
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2664,8 +2672,9 @@ class LbRouteExtension(_messages.Message):
       rule is required. There can be only one `LbRouteExtension` resource per
       forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
-      resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2698,8 +2707,9 @@ class LbRouteExtension(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbRouteExtension`
-    resource. The format must comply with [the following
-    requirements](/compute/docs/labeling-resources#requirements).
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2747,7 +2757,8 @@ class LbTrafficExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbTrafficExtension` resource. The format must comply with [the
-      following requirements](/compute/docs/labeling-resources#requirements).
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2763,8 +2774,9 @@ class LbTrafficExtension(_messages.Message):
       rule is required. There can be only one `LBTrafficExtension` resource
       per forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
-      resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2797,8 +2809,9 @@ class LbTrafficExtension(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbTrafficExtension`
-    resource. The format must comply with [the following
-    requirements](/compute/docs/labeling-resources#requirements).
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3114,6 +3127,21 @@ class ListServiceBindingsResponse(_messages.Message):
   serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
 
 
+class ListServiceLbPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListServiceLbPolicies method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceLbPolicies: List of ServiceLbPolicy resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceLbPolicies = _messages.MessageField('ServiceLbPolicy', 2, repeated=True)
+
+
 class ListTcpRoutesResponse(_messages.Message):
   r"""Response returned by the ListTcpRoutes method.
 
@@ -3424,8 +3452,11 @@ class MulticastConsumerAssociation(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     domainActivation: Reference to the domain activation in the same zone as
-      the consumer association.
+      the consumer association. [Deprecated] Use multicast_domain_activation
+      instead.
     labels: Labels as key value pairs
+    multicastDomainActivation: Optional. Reference to the multicast domain
+      activation in the same zone.
     name: name of resource
     network: Reference to the network
     updateTime: Output only. [Output only] Update time stamp
@@ -3458,9 +3489,10 @@ class MulticastConsumerAssociation(_messages.Message):
   createTime = _messages.StringField(1)
   domainActivation = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  multicastDomainActivation = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastDomain(_messages.Message):
@@ -3528,8 +3560,11 @@ class MulticastDomainActivation(_messages.Message):
   Fields:
     adminNetwork: Output only. [Output only] URL of the admin network.
     createTime: Output only. [Output only] Create time stamp
-    domain: Reference to the domain that is being activated.
+    domain: Reference to the domain that is being activated. [Deprecated] Use
+      multicast_domain instead.
     labels: Labels as key value pairs
+    multicastDomain: Optional. Reference to the multicast domain that is being
+      activated.
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -3562,8 +3597,9 @@ class MulticastDomainActivation(_messages.Message):
   createTime = _messages.StringField(2)
   domain = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  multicastDomain = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroup(_messages.Message):
@@ -3575,11 +3611,15 @@ class MulticastGroup(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     domainActivation: Reference to the domain activation in the same zone as
-      the group.
+      the group. [Deprecated] Use multicast_domain_activation instead.
     groupDefinition: Optional. Reference to the global group definition for
-      the group.
+      the group. [Deprecated] Use multicast_group_definition instead.
     ipCidrRange: Output only. [Output only] Multicast group IP range.
     labels: Labels as key value pairs
+    multicastDomainActivation: Optional. Reference to the multicast domain
+      activation in the same zone.
+    multicastGroupDefinition: Optional. Reference to the global multicast
+      group definition.
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -3613,8 +3653,10 @@ class MulticastGroup(_messages.Message):
   groupDefinition = _messages.StringField(3)
   ipCidrRange = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  multicastDomainActivation = _messages.StringField(6)
+  multicastGroupDefinition = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
@@ -5854,6 +5896,148 @@ class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceLbPolicy. Must be in
+      the format `projects/{project}/locations/{location}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    serviceLbPolicyId: Required. Short name of the ServiceLbPolicy resource to
+      be created. E.g. for resource name `projects/{project}/locations/{locati
+      on}/serviceLbPolicies/{service_lb_policy_name}`. the id is value of
+      {service_lb_policy_name}
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  serviceLbPolicyId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to delete. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceLbPolicy to get. Must be in the
+      format `projects/{project}/locations/{location}/serviceLbPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceLbPolicies to return per call.
+    pageToken: The value returned by the last `ListServiceLbPoliciesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the
+      ServiceLbPolicies should be listed, specified in the format
+      `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    serviceLbPolicy: A ServiceLbPolicy resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceLbPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceLbPolicy = _messages.MessageField('ServiceLbPolicy', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceLbPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceLbPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsTcpRoutesCreateRequest object.
 
@@ -6739,6 +6923,129 @@ class ServiceBinding(_messages.Message):
   service = _messages.StringField(5)
   serviceId = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class ServiceLbPolicy(_messages.Message):
+  r"""ServiceLbPolicy holds global load balancing and traffic distribution
+  configuration that can be applied to a BackendService.
+
+  Enums:
+    LoadBalancingAlgorithmValueValuesEnum: Optional. The type of load
+      balancing algorithm to be used. The default behavior is
+      WATERFALL_BY_REGION.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      ServiceLbPolicy resource.
+
+  Fields:
+    autoCapacityDrain: Optional. Configuration to automatically move traffic
+      away for unhealthy IG/NEG for the associated Backend Service.
+    createTime: Output only. The timestamp when this resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    failoverConfig: Optional. Configuration related to health based failover.
+    labels: Optional. Set of label tags associated with the ServiceLbPolicy
+      resource.
+    loadBalancingAlgorithm: Optional. The type of load balancing algorithm to
+      be used. The default behavior is WATERFALL_BY_REGION.
+    name: Required. Name of the ServiceLbPolicy resource. It matches pattern `
+      projects/{project}/locations/{location}/serviceLbPolicies/{service_lb_po
+      licy_name}`.
+    updateTime: Output only. The timestamp when this resource was last
+      updated.
+  """
+
+  class LoadBalancingAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of load balancing algorithm to be used. The default
+    behavior is WATERFALL_BY_REGION.
+
+    Values:
+      LOAD_BALANCING_ALGORITHM_UNSPECIFIED: The type of the loadbalancing
+        algorithm is unspecified.
+      SPRAY_TO_WORLD: Balance traffic across all backends across the world
+        proportionally based on capacity.
+      SPRAY_TO_REGION: Direct traffic to the nearest region with endpoints and
+        capacity before spilling over to other regions and spread the traffic
+        from each client to all the MIGs/NEGs in a region.
+      WATERFALL_BY_REGION: Direct traffic to the nearest region with endpoints
+        and capacity before spilling over to other regions. All MIGs/NEGs
+        within a region are evenly loaded but each client might not spread the
+        traffic to all the MIGs/NEGs in the region.
+      WATERFALL_BY_ZONE: Attempt to keep traffic in a single zone closest to
+        the client, before spilling over to other zones.
+    """
+    LOAD_BALANCING_ALGORITHM_UNSPECIFIED = 0
+    SPRAY_TO_WORLD = 1
+    SPRAY_TO_REGION = 2
+    WATERFALL_BY_REGION = 3
+    WATERFALL_BY_ZONE = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the ServiceLbPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  autoCapacityDrain = _messages.MessageField('ServiceLbPolicyAutoCapacityDrain', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  failoverConfig = _messages.MessageField('ServiceLbPolicyFailoverConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingAlgorithm = _messages.EnumField('LoadBalancingAlgorithmValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class ServiceLbPolicyAutoCapacityDrain(_messages.Message):
+  r"""Option to specify if an unhealthy IG/NEG should be considered for global
+  load balancing and traffic routing.
+
+  Fields:
+    enable: Optional. If set to 'True', an unhealthy IG/NEG will be set as
+      drained. - An IG/NEG is considered unhealthy if less than 25% of the
+      instances/endpoints in the IG/NEG are healthy. - This option will never
+      result in draining more than 50% of the configured IGs/NEGs for the
+      Backend Service.
+  """
+
+  enable = _messages.BooleanField(1)
+
+
+class ServiceLbPolicyFailoverConfig(_messages.Message):
+  r"""Option to specify health based failover behavior. This is not related to
+  Network load balancer FailoverPolicy.
+
+  Fields:
+    failoverHealthThreshold: Optional. The percentage threshold that a load
+      balancer will begin to send traffic to failover backends. If the
+      percentage of endpoints in a MIG/NEG is smaller than this value, traffic
+      would be sent to failover backends if possible. This field should be set
+      to a value between 1 and 99. The default value is 50 for Global external
+      HTTP(S) load balancer (classic) and Proxyless service mesh, and 70 for
+      others.
+  """
+
+  failoverHealthThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class SetIamPolicyRequest(_messages.Message):

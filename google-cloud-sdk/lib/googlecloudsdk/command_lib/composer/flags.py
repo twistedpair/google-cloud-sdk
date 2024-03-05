@@ -1363,6 +1363,16 @@ MAINTENANCE_WINDOW_END_FLAG = base.Argument(
     See $ gcloud topic datetimes for information on time formats.
     """)
 
+CLEAR_MAINTENANCE_WINDOW_FLAG = base.Argument(
+    '--clear-maintenance-window',
+    default=None,
+    hidden=True,
+    action='store_true',
+    help="""\
+    Clears the maintenance window settings.
+    Can be specified for Composer {} or greater.
+    """.format(MIN_COMPOSER3_VERSION))
+
 MAINTENANCE_WINDOW_RECURRENCE_FLAG = base.Argument(
     '--maintenance-window-recurrence',
     type=str,
@@ -1375,6 +1385,10 @@ MAINTENANCE_WINDOW_RECURRENCE_FLAG = base.Argument(
 
 MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for setting the maintenance window value.')
+
+MAINTENANCE_WINDOW_FLAG_UPDATE_GROUP_DESCRIPTION = (
+    'Group of arguments for setting the maintenance window value during update.'
+)
 
 SKIP_PYPI_PACKAGES_INSTALLATION = base.Argument(
     '--skip-pypi-packages-installation',
@@ -1815,13 +1829,30 @@ def AddMasterAuthorizedNetworksUpdateFlagsToGroup(update_type_group):
   DISABLE_MASTER_AUTHORIZED_NETWORKS_FLAG.AddToParser(update_group)
 
 
-def AddMaintenanceWindowFlagsGroup(update_type_group):
+def AddMaintenanceWindowFlagsGroup(create_type_group):
   """Adds flag group for maintenance window.
+
+  Args:
+    create_type_group: argument group, the group to which flags should be added.
+  """
+  group = create_type_group.add_group(MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION)
+  MAINTENANCE_WINDOW_START_FLAG.AddToParser(group)
+  MAINTENANCE_WINDOW_END_FLAG.AddToParser(group)
+  MAINTENANCE_WINDOW_RECURRENCE_FLAG.AddToParser(group)
+
+
+def AddMaintenanceWindowFlagsUpdateGroup(update_type_group):
+  """Adds flag group for maintenance window used for an update operation.
 
   Args:
     update_type_group: argument group, the group to which flags should be added.
   """
-  group = update_type_group.add_group(MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION)
+
+  update_group = update_type_group.add_argument_group(
+      MAINTENANCE_WINDOW_FLAG_UPDATE_GROUP_DESCRIPTION, mutex=True)
+
+  CLEAR_MAINTENANCE_WINDOW_FLAG.AddToParser(update_group)
+  group = update_group.add_group(MAINTENANCE_WINDOW_FLAG_GROUP_DESCRIPTION)
   MAINTENANCE_WINDOW_START_FLAG.AddToParser(group)
   MAINTENANCE_WINDOW_END_FLAG.AddToParser(group)
   MAINTENANCE_WINDOW_RECURRENCE_FLAG.AddToParser(group)

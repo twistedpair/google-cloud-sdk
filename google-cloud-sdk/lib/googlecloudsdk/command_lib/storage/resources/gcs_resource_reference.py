@@ -49,19 +49,6 @@ def _get_json_dump(resource):
       ]))
 
 
-def _message_to_dict(message):
-  """Converts message to dict. Returns None is message is None."""
-  # TODO(b/246556206): Remove.
-  if message is not None:
-    result = encoding.MessageToDict(message)
-    # Explicit comparison is needed because we don't want to return None for
-    # False values.
-    if result == []:  # pylint: disable=g-explicit-bool-comparison
-      return None
-    return result
-  return None
-
-
 def _get_formatted_acl(acl):
   """Removes unnecessary fields from acl."""
   if acl is None:

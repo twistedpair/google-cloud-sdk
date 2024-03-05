@@ -241,6 +241,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICELBPOLICIES = (
+      'projects.locations.serviceLbPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceLbPolicies/{serviceLbPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_TCPROUTES = (
       'projects.locations.tcpRoutes',
       '{+name}',

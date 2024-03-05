@@ -33,7 +33,7 @@ _MAX_WAIT_TIME_MS = 60 * 60 * 1000  # 60 minutes.
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
     base.ReleaseTrack.BETA: 'v1beta',
-    # base.ReleaseTrack.GA: 'v1'
+    base.ReleaseTrack.GA: 'v1'
 }
 
 
@@ -43,7 +43,7 @@ def GetApiVersion(release_track):
 
 
 class OrgPolicySimulatorApi(object):
-  """Base Class for OrgPolicy Simulatoer API."""
+  """Base Class for OrgPolicy Simulator API."""
 
   def __new__(cls, release_track):
     if release_track == base.ReleaseTrack.ALPHA:
@@ -52,6 +52,9 @@ class OrgPolicySimulatorApi(object):
     if release_track == base.ReleaseTrack.BETA:
       return super(OrgPolicySimulatorApi,
                    cls).__new__(OrgPolicySimulatorApiBeta)
+    if release_track == base.ReleaseTrack.GA:
+      return super(OrgPolicySimulatorApi,
+                   cls).__new__(OrgPolicySimulatorApiGA)
 
   def __init__(self, release_track):
     self.api_version = GetApiVersion(release_track)
@@ -85,9 +88,9 @@ class OrgPolicySimulatorApi(object):
         poller, operation_ref, message, wait_ceiling_ms=_MAX_WAIT_TIME_MS)
 
   @abc.abstractmethod
-  def GenerateOrgPolicyViolationsPreviewRequest(self,
-                                                violations_preview=None,
-                                                parent=None):
+  def CreateOrgPolicyViolationsPreviewRequest(self,
+                                              violations_preview=None,
+                                              parent=None):
     pass
 
   @abc.abstractmethod
@@ -126,10 +129,10 @@ class OrgPolicySimulatorApi(object):
 class OrgPolicySimulatorApiAlpha(OrgPolicySimulatorApi):
   """Base Class for OrgPolicy Simulator API Alpha."""
 
-  def GenerateOrgPolicyViolationsPreviewRequest(self,
-                                                violations_preview=None,
-                                                parent=None):
-    return self.messages.PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest(
+  def CreateOrgPolicyViolationsPreviewRequest(self,
+                                              violations_preview=None,
+                                              parent=None):
+    return self.messages.PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(
         googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview=violations_preview,
         parent=parent)
 
@@ -175,10 +178,10 @@ class OrgPolicySimulatorApiAlpha(OrgPolicySimulatorApi):
 class OrgPolicySimulatorApiBeta(OrgPolicySimulatorApi):
   """Base Class for OrgPolicy Simulator API Beta."""
 
-  def GenerateOrgPolicyViolationsPreviewRequest(self,
-                                                violations_preview=None,
-                                                parent=None):
-    return self.messages.PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest(
+  def CreateOrgPolicyViolationsPreviewRequest(self,
+                                              violations_preview=None,
+                                              parent=None):
+    return self.messages.PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(
         googleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview=violations_preview,
         parent=parent)
 
@@ -219,3 +222,50 @@ class OrgPolicySimulatorApiBeta(OrgPolicySimulatorApi):
   def GetOrgPolicyViolationsPreviewMessage(self):
     m = self.messages.GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview
     return m
+
+class OrgPolicySimulatorApiGA(OrgPolicySimulatorApi):
+  """Base Class for OrgPolicy Simulator API GA."""
+
+  def CreateOrgPolicyViolationsPreviewRequest(self,
+                                              violations_preview=None,
+                                              parent=None):
+    return self.messages.PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(
+        googleCloudPolicysimulatorV1OrgPolicyViolationsPreview=violations_preview,
+        parent=parent)
+
+  def GetPolicysimulatorOrgPolicyViolationsPreview(self,
+                                                   name=None,
+                                                   overlay=None,
+                                                   resource_counts=None,
+                                                   state=None,
+                                                   violations_count=None):
+    return self.messages.GoogleCloudPolicysimulatorV1OrgPolicyViolationsPreview(
+        name=name,
+        overlay=overlay,
+        resourceCounts=resource_counts,
+        state=state,
+        violationsCount=violations_count)
+
+  def GetOrgPolicyOverlay(self,
+                          custom_constraints=None,
+                          policies=None):
+    return self.messages.GoogleCloudPolicysimulatorV1OrgPolicyOverlay(
+        customConstraints=custom_constraints,
+        policies=policies)
+
+  def GetOrgPolicyPolicyOverlay(self,
+                                policy=None,
+                                policy_parent=None):
+    return self.messages.GoogleCloudPolicysimulatorV1OrgPolicyOverlayPolicyOverlay(
+        policy=policy,
+        policyParent=policy_parent)
+
+  def GetOrgPolicyCustomConstraintOverlay(self,
+                                          custom_constraint=None,
+                                          custom_constraint_parent=None):
+    return self.messages.GoogleCloudPolicysimulatorV1OrgPolicyOverlayCustomConstraintOverlay(
+        customConstraint=custom_constraint,
+        customConstraintParent=custom_constraint_parent)
+
+  def GetOrgPolicyViolationsPreviewMessage(self):
+    return self.messages.GoogleCloudPolicysimulatorV1OrgPolicyViolationsPreview

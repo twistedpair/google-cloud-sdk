@@ -1811,7 +1811,7 @@ class RunappsProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class Selector(_messages.Message):
-  r"""Message for selecting the resources within an application. Next tag: 3
+  r"""Message for selecting the resources within an application. Next tag: 4
 
   Fields:
     matchTypeNames: match_type_names is a list resource name + type to match.
@@ -2036,15 +2036,22 @@ class Status(_messages.Message):
 
 
 class TypedName(_messages.Message):
-  r"""TypedName is a resource name + its type. Next tag: 3
+  r"""TypedName is a resource name + its type. Next tag: 4
 
   Fields:
+    ignoreResourceConfig: Optional. If true, the config associated with the
+      resource will not be applied, and the underlying live object config will
+      be retained. If false (or unset), the set config will be applied. If the
+      resource does not already exist, this flag will be ignored. This option
+      is only supported for certain types. This field is only supported when
+      provided as part of the selector.
     name: The name of the resource.
     type: The type of the resource.
   """
 
-  name = _messages.StringField(1)
-  type = _messages.StringField(2)
+  ignoreResourceConfig = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  type = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

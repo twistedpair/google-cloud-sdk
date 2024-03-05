@@ -511,13 +511,13 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/orgPolicyViolationsPreviews:create',
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/orgPolicyViolationsPreviews',
         http_method='POST',
         method_id='policysimulator.organizations.locations.orgPolicyViolationsPreviews.create',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['orgPolicyViolationsPreviewId'],
-        relative_path='v1alpha/{+parent}/orgPolicyViolationsPreviews:create',
+        relative_path='v1alpha/{+parent}/orgPolicyViolationsPreviews',
         request_field='googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview',
         request_type_name='PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest',
         response_type_name='GoogleLongrunningOperation',
@@ -806,33 +806,6 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
       super(PolicysimulatorV1alpha.OrganizationsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def OrgPolicyViolationsPreviews(self, request, global_params=None):
-      r"""GenerateOrgPolicyViolationsPreview generates an OrgPolicyViolationsPreview for the proposed changes in the provided OrgPolicyViolationsPreview.OrgPolicyOverlay. The changes to OrgPolicy are specified by this `OrgPolicyOverlay`. The resources to scan are inferred from these specified changes.
-
-      Args:
-        request: (PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('OrgPolicyViolationsPreviews')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    OrgPolicyViolationsPreviews.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/orgPolicyViolationsPreviews',
-        http_method='POST',
-        method_id='policysimulator.organizations.locations.orgPolicyViolationsPreviews',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha/{+parent}/orgPolicyViolationsPreviews',
-        request_field='googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview',
-        request_type_name='PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""

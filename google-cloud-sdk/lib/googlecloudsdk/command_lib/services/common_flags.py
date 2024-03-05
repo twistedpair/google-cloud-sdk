@@ -173,6 +173,17 @@ def add_key_undelete_args(parser):
   _key_string_flag(undelete_set_group)
 
 
+def validate_only_args(parser):
+  base.Argument(
+      '--validate-only',
+      action='store_true',
+      help=(
+          'If set, the action will be validated and result will be preview but'
+          ' not exceuted.'
+      ),
+  ).AddToParser(parser)
+
+
 def add_resource_args(parser):
   """Adds resource args for command."""
   resource_group = parser.add_mutually_exclusive_group(required=False)

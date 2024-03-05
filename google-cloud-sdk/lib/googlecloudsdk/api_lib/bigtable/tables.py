@@ -232,6 +232,27 @@ def AddFieldToUpdateMask(field, req):
   return req
 
 
+# TODO(b/308123191): Remove and combine with RefreshUpdateMask for GA launch.
+def RefreshUpdateMaskNonGA(unused_ref, args, req):
+  """Refresh the update mask of the updateTableRequest according to the input arguments.
+
+  Args:
+    unused_ref: the gcloud resource (unused).
+    args: the input arguments.
+    req: the original updateTableRequest.
+
+  Returns:
+    req: the updateTableRequest with update mask refreshed.
+  """
+  if args.clear_change_stream_retention_period:
+    req = AddFieldToUpdateMask('changeStreamConfig', req)
+  if args.change_stream_retention_period:
+    req = AddFieldToUpdateMask('changeStreamConfig.retentionPeriod', req)
+  if args.enable_automated_backup or args.disable_automated_backup:
+    req = AddFieldToUpdateMask('automatedBackupPolicy', req)
+  return req
+
+
 def RefreshUpdateMask(unused_ref, args, req):
   """Refresh the update mask of the updateTableRequest according to the input arguments.
 
@@ -250,8 +271,16 @@ def RefreshUpdateMask(unused_ref, args, req):
   return req
 
 
-def AddChangeStreamConfigUpdateTableParams():
-  """Adds the change stream commands to upate table CLI.
+def AddAdditionalArgs():
+  """Adds additional flags."""
+  return (
+      AddChangeStreamConfigUpdateTableArgs()
+      + AddAutomatedBackupPolicyUpdateTableArgs()
+  )
+
+
+def AddChangeStreamConfigUpdateTableArgs():
+  """Adds the change stream commands to update table CLI.
 
   This can't be defined in the yaml because that automatically generates the
   inverse for any boolean args and we don't want the nonsensical
@@ -289,6 +318,25 @@ def AddChangeStreamConfigUpdateTableParams():
   return [argument_group]
 
 
+def AddAutomatedBackupPolicyUpdateTableArgs():
+  """Adds automated backup policy commands to update table CLI."""
+  return [
+      base.Argument(
+          '--enable-automated-backup',
+          help=(
+              'Once set, enables the default automated backup policy '
+              '(retention_period=72h, frequency=24h) for the table.'
+          ),
+          action='store_true',
+      ),
+      base.Argument(
+          '--disable-automated-backup',
+          help='Once set, disables automated backup policy for the table.',
+          action='store_true',
+      ),
+  ]
+
+
 def HandleChangeStreamArgs(unused_ref, args, req):
   if args.change_stream_retention_period:
     req.table.changeStreamConfig = CreateChangeStreamConfig(
@@ -296,6 +344,39 @@ def HandleChangeStreamArgs(unused_ref, args, req):
   return req
 
 
+def HandleAutomatedBackupPolicyArgs(unused_ref, args, req):
+  # If `enable_automated_backup` flag is set, add default policy to table.
+  # If `disable_automated_backup` flag is set, keep table.automatedBackupPolicy
+  # as empty, together with the update_mask, it will clear automated backup
+  # policy.
+  if args.enable_automated_backup:
+    req.table.automatedBackupPolicy = CreateDefaultAutomatedBackupPolicy()
+  return req
+
+
 def CreateChangeStreamConfig(duration):
   return util.GetAdminMessages().ChangeStreamConfig(
       retentionPeriod=ConvertDurationToSeconds(duration))
+
+
+def CreateDefaultAutomatedBackupPolicy():
+  """Constructs AutomatedBackupPolicy message with default values.
+
+  The default values are: retention_period=3d, frequency=1d
+
+  Returns:
+    AutomatedBackupPolicy with default policy config.
+  """
+  # TODO(b/308123191): Add LINT IFTTT for the default value to
+  # //bigtable/anviltop/table/v2/validate.cc
+  return util.GetAdminMessages().AutomatedBackupPolicy(
+      retentionPeriod=ConvertDurationToSeconds('3d'),
+      frequency=ConvertDurationToSeconds('1d'),
+  )
+
+
+def EnableDefaultAutomatedBackupPolicy(enabled):
+  """Add default automated backup policy."""
+  if enabled:
+    return CreateDefaultAutomatedBackupPolicy()
+  return None

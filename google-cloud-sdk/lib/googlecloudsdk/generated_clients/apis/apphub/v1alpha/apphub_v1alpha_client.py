@@ -656,6 +656,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Lookup(self, request, global_params=None):
+      r"""Looks up a discovered service in a host project and location and with a given resource URI.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredServicesLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupDiscoveredServiceResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredServices:lookup',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredServices.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uri'],
+        relative_path='v1alpha/{+parent}/discoveredServices:lookup',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredServicesLookupRequest',
+        response_type_name='LookupDiscoveredServiceResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDiscoveredWorkloadsService(base_api.BaseApiService):
     """Service class for the projects_locations_discoveredWorkloads resource."""
 
@@ -744,6 +771,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsListRequest',
         response_type_name='ListDiscoveredWorkloadsResponse',
+        supports_download=False,
+    )
+
+    def Lookup(self, request, global_params=None):
+      r"""Looks up a discovered Workload in a host project and location and with a given resource URI.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupDiscoveredWorkloadResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads:lookup',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredWorkloads.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uri'],
+        relative_path='v1alpha/{+parent}/discoveredWorkloads:lookup',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest',
+        response_type_name='LookupDiscoveredWorkloadResponse',
         supports_download=False,
     )
 

@@ -52,7 +52,11 @@ def _get_api_class(provider):
     Error: If provider is not a cloud scheme in storage_url.ProviderPrefix.
   """
   if provider == storage_url.ProviderPrefix.GCS:
-    if (
+    # Enabling gRPC basis both properties for the time being.
+    # StoragePreferredAPI property will be removed as part of
+    # adding gRPC support at the end before releasing.
+    # TODO(b/324352239)
+    if properties.VALUES.storage.use_grpc_if_available.GetBool() or (
         properties.VALUES.storage.preferred_api.Get()
         == properties.StoragePreferredApi.GRPC_WITH_JSON_FALLBACK.value
     ):

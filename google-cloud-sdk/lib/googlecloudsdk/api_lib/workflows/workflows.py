@@ -179,7 +179,7 @@ class WorkflowsClient(object):
       flags.UpdateUserEnvVars(env_vars, workflow, updated_fields)
       if args.IsSpecified('call_log_level'):
         call_log_level_enum = self.messages.Workflow.CallLogLevelValueValuesEnum
-        workflow.callLogLevel = arg_utils.ChoiceToEnum(
+        log_level = arg_utils.ChoiceToEnum(
             args.call_log_level,
             call_log_level_enum,
             valid_choices=[
@@ -189,6 +189,7 @@ class WorkflowsClient(object):
                 'log-none',
             ],
         )
+        flags.SetWorkflowLoggingArg(log_level, workflow, updated_fields)
     return workflow, updated_fields
 
   def WaitForOperation(self, operation, workflow_ref):

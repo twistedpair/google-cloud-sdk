@@ -2110,6 +2110,37 @@ def _GetIngressChanges(args):
     )
 
 
+def _GetBaseImagesMap(container_args):
+  """Returns a string representation of the container name -> base image map."""
+
+  base_images_dict = {
+      name: args.base_image
+      for (name, args) in container_args.items()
+      if hasattr(args, 'base_image') and args.base_image
+  }
+  if base_images_dict:
+    base_images_str = ', '.join(
+        f'"{key}":"{value}"' for key, value in base_images_dict.items()
+    )
+    return '{' + base_images_str + '}'
+  else:
+    return None
+
+
+def _GetBaseImageChanges(args):
+  """Returns changes to base image based on the flags."""
+  base_images = _GetBaseImagesMap(args.containers)
+  if base_images is None:
+    return []
+
+  return [
+      config_changes.RuntimeChange(
+          revision.BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME),
+      config_changes.SetTemplateAnnotationChange(
+          revision.BASE_IMAGES_ANNOTATION, base_images),
+  ]
+
+
 def _PrependClientNameAndVersionChange(args, changes):
   """Set client name and version regardless of whether or not it was specified."""
   if 'client_name' in args:
@@ -2534,7 +2565,9 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
       changes.append(
           config_changes.ContainerDependenciesChange(dependency_changes)
       )
-
+    base_image_changes = _GetBaseImageChanges(args)
+    if base_image_changes:
+      changes.extend(base_image_changes)
   return changes
 
 
@@ -3738,9 +3771,7 @@ def BaseImageArg():
   return base.Argument(
       '--base-image',
       hidden=True,
-      help=(
-          'Opts in to use base image updates using the specified image.'
-      ),
+      help='Opts in to use base image updates using the specified image.',
   )
 
 

@@ -29,6 +29,8 @@ properties:
       type: string
   celExpression:
     description: |-
-      A Common Expression Language expression that is used to match requests for
-      which the extension chain should be executed.
+      A Common Expression Language (CEL) expression that is used to match
+      requests for which the extension chain is executed. For more information,
+      see [CEL matcher language reference](/service-extensions/docs/cel-matcher-
+      language-reference).
     type: string

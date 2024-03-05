@@ -1393,6 +1393,8 @@ class ConfigManagementConfigSyncState(_messages.Message):
   Enums:
     ReposyncCrdValueValuesEnum: The state of the Reposync CRD
     RootsyncCrdValueValuesEnum: The state of the RootSync CRD
+    StateValueValuesEnum: The state of CS This field summarizes the other
+      fields in this message.
 
   Fields:
     deploymentState: Information about the deployment of ConfigSync, including
@@ -1400,6 +1402,8 @@ class ConfigManagementConfigSyncState(_messages.Message):
     errors: Errors pertaining to the installation of Config Sync.
     reposyncCrd: The state of the Reposync CRD
     rootsyncCrd: The state of the RootSync CRD
+    state: The state of CS This field summarizes the other fields in this
+      message.
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
@@ -1438,12 +1442,31 @@ class ConfigManagementConfigSyncState(_messages.Message):
     TERMINATING = 3
     INSTALLING = 4
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of CS This field summarizes the other fields in this
+    message.
+
+    Values:
+      STATE_UNSPECIFIED: CS's state cannot be determined.
+      CONFIG_SYNC_NOT_INSTALLED: CS is not installed.
+      CONFIG_SYNC_INSTALLED: The expected CS version is installed
+        successfully.
+      CONFIG_SYNC_ERROR: CS encounters errors.
+      CONFIG_SYNC_PENDING: CS is installing or terminating.
+    """
+    STATE_UNSPECIFIED = 0
+    CONFIG_SYNC_NOT_INSTALLED = 1
+    CONFIG_SYNC_INSTALLED = 2
+    CONFIG_SYNC_ERROR = 3
+    CONFIG_SYNC_PENDING = 4
+
   deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
   errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
   reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 3)
   rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 4)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 5)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 6)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 7)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):
@@ -4049,7 +4072,9 @@ class GkehubProjectsLocationsScopesListMembershipsRequest(_messages.Message):
 
   Fields:
     filter: Optional. Lists Memberships that match the filter expression,
-      following the syntax outlined in https://google.aip.dev/160.
+      following the syntax outlined in https://google.aip.dev/160. Currently,
+      filtering can be done only based on Memberships's `name`, `labels`,
+      `create_time`, `update_time`, and `unique_id`.
     pageSize: Optional. When requesting a 'page' of resources, `page_size`
       specifies number of resources to return. If unspecified or set to 0, all
       resources will be returned. Pagination is currently not supported;
@@ -7711,9 +7736,23 @@ class ServiceMeshCondition(_messages.Message):
     Values:
       CODE_UNSPECIFIED: Default Unspecified code
       MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
+      CNI_CONFIG_UNSUPPORTED: CNI config unsupported error code
+      SECURITY_SANDBOX_UNSUPPORTED: Security sandbox unsupported error code
+      NODEPOOL_WORKLOAD_IDENTITY_REQUIRED: Nodepool workload identity required
+        error code
+      CNI_INSTALLATION_FAILED: CNI installation failed error code
+      CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
+      UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
+        error code
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
+    CNI_CONFIG_UNSUPPORTED = 2
+    SECURITY_SANDBOX_UNSUPPORTED = 3
+    NODEPOOL_WORKLOAD_IDENTITY_REQUIRED = 4
+    CNI_INSTALLATION_FAILED = 5
+    CNI_POD_UNSCHEDULABLE = 6
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -7759,10 +7798,12 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
       ISTIOD: A Google build of istiod is used for the managed control plane.
       TRAFFIC_DIRECTOR: Traffic director is used for the managed control
         plane.
+      UPDATING: The control plane implementation is being updated.
     """
     IMPLEMENTATION_UNSPECIFIED = 0
     ISTIOD = 1
     TRAFFIC_DIRECTOR = 2
+    UPDATING = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""LifecycleState of control plane management.

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import resources
 
 VERSION_MAP = {
@@ -133,3 +134,73 @@ def MakeGetUriFunc(collection, release_track=base.ReleaseTrack.ALPHA):
     return result.SelfLink()
 
   return _GetUri
+
+
+def GetServiceProjectRef(args):
+  """Returns a service project reference."""
+  service_project_ref = args.CONCEPTS.service_project.Parse()
+  if not service_project_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'service project', 'service project id must be non-empty.'
+    )
+  return service_project_ref
+
+
+def GetOperationRef(args):
+  """Returns a operation reference."""
+  operation_ref = args.CONCEPTS.operation.Parse()
+  if not operation_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'operation', 'operation id must be non-empty.'
+    )
+  return operation_ref
+
+
+def GetDiscoveredWorkloadRef(args):
+  """Returns a discovered workload reference."""
+  discovered_workload_ref = args.CONCEPTS.discovered_workload.Parse()
+  if not discovered_workload_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'discovered workload', 'discovered workload id must be non-empty.'
+    )
+  return discovered_workload_ref
+
+
+def GetDiscoveredServiceRef(args):
+  """Returns a discovered service reference."""
+  discovered_service_ref = args.CONCEPTS.discovered_service.Parse()
+  if not discovered_service_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'discovered service', 'discovered service id must be non-empty.'
+    )
+  return discovered_service_ref
+
+
+def GetApplicationRef(args):
+  """Returns a application reference."""
+  app_ref = args.CONCEPTS.application.Parse()
+  if not app_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'application', 'application id must be non-empty.'
+    )
+  return app_ref
+
+
+def GetApplicationWorkloadRef(args):
+  """Returns a application workload reference."""
+  workload_ref = args.CONCEPTS.workload.Parse()
+  if not workload_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'workload', 'workload id must be non-empty.'
+    )
+  return workload_ref
+
+
+def GetApplicationServiceRef(args):
+  """Returns a application service reference."""
+  service_ref = args.CONCEPTS.service.Parse()
+  if not service_ref.Name():
+    raise exceptions.InvalidArgumentException(
+        'service', 'service id must be non-empty.'
+    )
+  return service_ref

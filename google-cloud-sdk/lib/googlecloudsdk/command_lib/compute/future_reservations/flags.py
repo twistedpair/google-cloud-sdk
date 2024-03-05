@@ -234,7 +234,6 @@ def GetRequireSpecificReservationFlag():
       '--require-specific-reservation',
       action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
-      hidden=True,
   )
 
 

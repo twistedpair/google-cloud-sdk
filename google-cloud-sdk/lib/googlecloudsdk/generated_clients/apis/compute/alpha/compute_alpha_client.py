@@ -12711,6 +12711,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetCloudArmorTier(self, request, global_params=None):
+      r"""Sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+
+      Args:
+        request: (ComputeProjectsSetCloudArmorTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCloudArmorTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCloudArmorTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.projects.setCloudArmorTier',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setCloudArmorTier',
+        request_field='projectsSetCloudArmorTierRequest',
+        request_type_name='ComputeProjectsSetCloudArmorTierRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetCommonInstanceMetadata(self, request, global_params=None):
       r"""Sets metadata common to all instances within the specified project using the data included in the request.
 

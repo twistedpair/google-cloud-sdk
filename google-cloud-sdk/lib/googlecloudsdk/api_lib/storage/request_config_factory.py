@@ -45,6 +45,7 @@ S3_RESOURCE_ERROR_FIELDS = {
     ),
     'default_object_acl_file': 'Setting Default Object ACL',
     'enable_autoclass': 'Enabling Autoclass',
+    'enable_hierarchical_namespace': 'Enabling Hierarchical Namespace',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
     'public_access_prevention': 'Public Access Prevention',
     'recovery_point_objective': 'Setting Recovery Point Objective',
@@ -197,6 +198,8 @@ class _GcsBucketConfig(_BucketConfig):
       based on usage.
     enable_per_object_retention (bool|None): Enable the object retention for the
       bucket.
+    enable_hierarchical_namespace (bool|None): Enable heirarchical namespace
+    during bucket creation.
     placement (list|None): Dual-region of bucket.
     public_access_prevention (bool|None): Blocks public access to bucket.
       See docs for specifics:
@@ -226,6 +229,7 @@ class _GcsBucketConfig(_BucketConfig):
       default_storage_class=None,
       enable_autoclass=None,
       enable_per_object_retention=None,
+      enable_hierarchical_namespace=None,
       labels_file_path=None,
       labels_to_append=None,
       labels_to_remove=None,
@@ -262,6 +266,7 @@ class _GcsBucketConfig(_BucketConfig):
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.enable_per_object_retention = enable_per_object_retention
+    self.enable_hierarchical_namespace = enable_hierarchical_namespace
     self.placement = placement
     self.public_access_prevention = public_access_prevention
     self.recovery_point_objective = recovery_point_objective
@@ -288,6 +293,8 @@ class _GcsBucketConfig(_BucketConfig):
         and self.enable_autoclass == other.enable_autoclass
         and self.enable_per_object_retention
         == other.enable_per_object_retention
+        and self.enable_hierarchical_namespace
+        == other.enable_hierarchical_namespace
         and self.placement == other.placement
         and self.public_access_prevention == other.public_access_prevention
         and self.recovery_point_objective == other.recovery_point_objective
@@ -654,6 +661,9 @@ def _get_request_config_resource_args(url,
               user_resource_args.enable_autoclass)
           new_resource_args.enable_per_object_retention = (
               user_resource_args.enable_per_object_retention
+          )
+          new_resource_args.enable_hierarchical_namespace = (
+              user_resource_args.enable_hierarchical_namespace
           )
           new_resource_args.placement = user_resource_args.placement
           new_resource_args.public_access_prevention = (

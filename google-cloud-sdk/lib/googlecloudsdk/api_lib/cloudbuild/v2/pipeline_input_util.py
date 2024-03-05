@@ -24,6 +24,11 @@ from googlecloudsdk.api_lib.cloudbuild.v2 import input_util
 from googlecloudsdk.core import log
 _WORKER_POOL_ANNOTATION = "cloudbuild.googleapis.com/worker-pool"
 _MANAGED_SIDECARS_ANNOTATION = "cloudbuild.googleapis.com/managed-sidecars"
+_MACHINE_TYPE = "cloudbuild.googleapis.com/worker/machine-type"
+_PRIVILEGE_MODE = "cloudbuild.googleapis.com/security/privilege-mode"
+_PROVENANCE_ENABLED = "cloudbuild.googleapis.com/provenance/enabled"
+_PROVENANCE_STORAGE = "cloudbuild.googleapis.com/provenance/storage"
+_PROVENANCE_REGION = "cloudbuild.googleapis.com/provenance/region"
 
 
 def TektonYamlDataToPipelineRun(data):
@@ -100,6 +105,24 @@ def _MetadataTransform(data):
   if _WORKER_POOL_ANNOTATION in annotations:
     spec["workerPool"] = annotations[_WORKER_POOL_ANNOTATION]
   spec["annotations"] = annotations
+  if _MACHINE_TYPE in annotations:
+    spec["worker"] = {"machineType": annotations[_MACHINE_TYPE]}
+
+  security = {}
+  if _PRIVILEGE_MODE in annotations:
+    security["privilegeMode"] = annotations[_PRIVILEGE_MODE].upper()
+  if security:
+    spec["security"] = security
+
+  provenance = {}
+  if _PROVENANCE_ENABLED in annotations:
+    provenance["enabled"] = annotations[_PROVENANCE_ENABLED].upper()
+  if _PROVENANCE_STORAGE in annotations:
+    provenance["storage"] = annotations[_PROVENANCE_STORAGE].upper()
+  if _PROVENANCE_REGION in annotations:
+    provenance["region"] = annotations[_PROVENANCE_REGION].upper()
+  if provenance:
+    spec["provenance"] = provenance
   return metadata
 
 
@@ -154,9 +177,11 @@ def _TaskTransform(task):
 def _ServiceAccountTransformPipelineSpec(spec):
   if "taskRunTemplate" in spec:
     if "serviceAccountName" in spec["taskRunTemplate"]:
-      spec["serviceAccount"] = spec.pop("taskRunTemplate").pop(
-          "serviceAccountName"
-      )
+      sa = spec.pop("taskRunTemplate").pop("serviceAccountName")
+      # TODO(b/321276962): Deprecate this once we move to use security configs.
+      spec["serviceAccount"] = sa
+      security = spec.setdefault("security", {})
+      security["serviceAccount"] = sa
 
 
 def _ServiceAccountTransformTaskSpec(spec):

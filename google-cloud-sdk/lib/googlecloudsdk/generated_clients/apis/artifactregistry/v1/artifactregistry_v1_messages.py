@@ -487,6 +487,16 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
   object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. The fields eligible for filtering
+      are: * `name` Examples of using a filter: *
+      `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/a%2Fb%2F*"` --> packages with an ID
+      starting with "a/b/". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/*%2Fb%2Fc"` --> packages with an ID
+      ending with "/b/c". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/*%2Fb%2F*"` --> packages with an ID
+      containing "/b/".
     pageSize: The maximum number of packages to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -495,9 +505,10 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
       listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPackagesPatchRequest(_messages.Message):
@@ -759,6 +770,82 @@ class ArtifactregistryProjectsLocationsRepositoriesReindexRequest(_messages.Mess
 
   name = _messages.StringField(1, required=True)
   reindexRepositoryRequest = _messages.MessageField('ReindexRepositoryRequest', 2)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesRulesCreateRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesRulesCreateRequest
+  object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1Rule: A
+      GoogleDevtoolsArtifactregistryV1Rule resource to be passed as the
+      request body.
+    parent: Required. The name of the parent resource where the rule will be
+      created.
+    ruleId: The rule id to use for this repository.
+  """
+
+  googleDevtoolsArtifactregistryV1Rule = _messages.MessageField('GoogleDevtoolsArtifactregistryV1Rule', 1)
+  parent = _messages.StringField(2, required=True)
+  ruleId = _messages.StringField(3)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesRulesDeleteRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesRulesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the rule to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesRulesGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesRulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the rule to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesRulesListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesRulesListRequest object.
+
+  Fields:
+    pageSize: The maximum number of rules to return. Maximum page size is
+      10,000.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. The name of the parent repository whose rules will be
+      listed. For example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesRulesPatchRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesRulesPatchRequest object.
+
+  Fields:
+    googleDevtoolsArtifactregistryV1Rule: A
+      GoogleDevtoolsArtifactregistryV1Rule resource to be passed as the
+      request body.
+    name: The name of the rule, for example: "projects/p1/locations/us-
+      central1/repositories/repo1/rules/rule1".
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  googleDevtoolsArtifactregistryV1Rule = _messages.MessageField('GoogleDevtoolsArtifactregistryV1Rule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesSetIamPolicyRequest(_messages.Message):
@@ -1489,6 +1576,54 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryPublicR
   repositoryPath = _messages.StringField(2)
 
 
+class GoogleDevtoolsArtifactregistryV1Rule(_messages.Message):
+  r"""Rules point to a version and represent an alternative name that can be
+  used to access the version.
+
+  Enums:
+    ActionValueValuesEnum: What action this rule would make.
+    OperationValueValuesEnum:
+
+  Fields:
+    action: What action this rule would make.
+    condition: Optional. CEL expression. If not provided, the rule matches all
+      the objects.
+    name: The name of the rule, for example: "projects/p1/locations/us-
+      central1/repositories/repo1/rules/rule1".
+    operation: A OperationValueValuesEnum attribute.
+    packageId: If empty, this rule is targeting all the packages inside the
+      repository. If provided, the rule will only be applied to the package.
+  """
+
+  class ActionValueValuesEnum(_messages.Enum):
+    r"""What action this rule would make.
+
+    Values:
+      ACTION_UNSPECIFIED: Action not specified, treated as allow.
+      ALLOW: Allow the operation.
+      DENY: Deny the operation.
+    """
+    ACTION_UNSPECIFIED = 0
+    ALLOW = 1
+    DENY = 2
+
+  class OperationValueValuesEnum(_messages.Enum):
+    r"""OperationValueValuesEnum enum type.
+
+    Values:
+      OPERATION_UNSPECIFIED: Operation not specified.
+      DOWNLOAD: Download operation.
+    """
+    OPERATION_UNSPECIFIED = 0
+    DOWNLOAD = 1
+
+  action = _messages.EnumField('ActionValueValuesEnum', 1)
+  condition = _messages.MessageField('Expr', 2)
+  name = _messages.StringField(3)
+  operation = _messages.EnumField('OperationValueValuesEnum', 4)
+  packageId = _messages.StringField(5)
+
+
 class Hash(_messages.Message):
   r"""A hash of file content.
 
@@ -1788,6 +1923,19 @@ class ListRepositoriesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   repositories = _messages.MessageField('Repository', 2, repeated=True)
+
+
+class ListRulesResponse(_messages.Message):
+  r"""The response from listing rules.
+
+  Fields:
+    nextPageToken: The token to retrieve the next page of rules, or empty if
+      there are no more rules to return.
+    rules: The rules returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleDevtoolsArtifactregistryV1Rule', 2, repeated=True)
 
 
 class ListTagsResponse(_messages.Message):

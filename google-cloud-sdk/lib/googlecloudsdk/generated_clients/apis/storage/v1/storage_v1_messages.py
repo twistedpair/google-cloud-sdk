@@ -79,6 +79,8 @@ class Bucket(_messages.Message):
     CustomPlacementConfigValue: The bucket's custom placement configuration
       for Custom Dual Regions.
     EncryptionValue: Encryption configuration for a bucket.
+    HierarchicalNamespaceValue: The bucket's hierarchical namespace
+      configuration.
     IamConfigurationValue: The bucket's IAM configuration.
     LabelsValue: User-provided labels, in key/value pairs.
     LifecycleValue: The bucket's lifecycle configuration. See lifecycle
@@ -130,6 +132,7 @@ class Bucket(_messages.Message):
       ACL is provided.
     encryption: Encryption configuration for a bucket.
     etag: HTTP 1.1 Entity tag for the bucket.
+    hierarchicalNamespace: The bucket's hierarchical namespace configuration.
     iamConfiguration: The bucket's IAM configuration.
     id: The ID of the bucket. For buckets, the id and name properties are the
       same.
@@ -249,6 +252,16 @@ class Bucket(_messages.Message):
     """
 
     defaultKmsKeyName = _messages.StringField(1)
+
+  class HierarchicalNamespaceValue(_messages.Message):
+    r"""The bucket's hierarchical namespace configuration.
+
+    Fields:
+      enabled: When set to true, hierarchical namespace is enabled for this
+        bucket.
+    """
+
+    enabled = _messages.BooleanField(1)
 
   class IamConfigurationValue(_messages.Message):
     r"""The bucket's IAM configuration.
@@ -561,29 +574,30 @@ class Bucket(_messages.Message):
   defaultObjectAcl = _messages.MessageField('ObjectAccessControl', 7, repeated=True)
   encryption = _messages.MessageField('EncryptionValue', 8)
   etag = _messages.StringField(9)
-  iamConfiguration = _messages.MessageField('IamConfigurationValue', 10)
-  id = _messages.StringField(11)
-  kind = _messages.StringField(12, default='storage#bucket')
-  labels = _messages.MessageField('LabelsValue', 13)
-  lifecycle = _messages.MessageField('LifecycleValue', 14)
-  location = _messages.StringField(15)
-  locationType = _messages.StringField(16)
-  logging = _messages.MessageField('LoggingValue', 17)
-  metageneration = _messages.IntegerField(18)
-  name = _messages.StringField(19)
-  objectRetention = _messages.MessageField('ObjectRetentionValue', 20)
-  owner = _messages.MessageField('OwnerValue', 21)
-  projectNumber = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
-  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 23)
-  rpo = _messages.StringField(24)
-  satisfiesPZS = _messages.BooleanField(25)
-  selfLink = _messages.StringField(26)
-  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 27)
-  storageClass = _messages.StringField(28)
-  timeCreated = _message_types.DateTimeField(29)
-  updated = _message_types.DateTimeField(30)
-  versioning = _messages.MessageField('VersioningValue', 31)
-  website = _messages.MessageField('WebsiteValue', 32)
+  hierarchicalNamespace = _messages.MessageField('HierarchicalNamespaceValue', 10)
+  iamConfiguration = _messages.MessageField('IamConfigurationValue', 11)
+  id = _messages.StringField(12)
+  kind = _messages.StringField(13, default='storage#bucket')
+  labels = _messages.MessageField('LabelsValue', 14)
+  lifecycle = _messages.MessageField('LifecycleValue', 15)
+  location = _messages.StringField(16)
+  locationType = _messages.StringField(17)
+  logging = _messages.MessageField('LoggingValue', 18)
+  metageneration = _messages.IntegerField(19)
+  name = _messages.StringField(20)
+  objectRetention = _messages.MessageField('ObjectRetentionValue', 21)
+  owner = _messages.MessageField('OwnerValue', 22)
+  projectNumber = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
+  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 24)
+  rpo = _messages.StringField(25)
+  satisfiesPZS = _messages.BooleanField(26)
+  selfLink = _messages.StringField(27)
+  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 28)
+  storageClass = _messages.StringField(29)
+  timeCreated = _message_types.DateTimeField(30)
+  updated = _message_types.DateTimeField(31)
+  versioning = _messages.MessageField('VersioningValue', 32)
+  website = _messages.MessageField('WebsiteValue', 33)
 
 
 class BucketAccessControl(_messages.Message):
@@ -828,6 +842,70 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Folder(_messages.Message):
+  r"""A folder. Only available in buckets with hierarchical namespace enabled.
+
+  Messages:
+    PendingRenameInfoValue: Only present if the folder is part of an ongoing
+      rename folder operation. Contains information which can be used to query
+      the operation status.
+
+  Fields:
+    bucket: The name of the bucket containing this folder.
+    createTime: The creation time of the folder in RFC 3339 format.
+    id: The ID of the folder, including the bucket name, folder name.
+    kind: The kind of item this is. For folders, this is always
+      storage#folder.
+    metageneration: The version of the metadata for this folder. Used for
+      preconditions and for detecting changes in metadata.
+    name: The name of the folder. Required if not specified by URL parameter.
+    pendingRenameInfo: Only present if the folder is part of an ongoing rename
+      folder operation. Contains information which can be used to query the
+      operation status.
+    selfLink: The link to this folder.
+    updateTime: The modification time of the folder metadata in RFC 3339
+      format.
+  """
+
+  class PendingRenameInfoValue(_messages.Message):
+    r"""Only present if the folder is part of an ongoing rename folder
+    operation. Contains information which can be used to query the operation
+    status.
+
+    Fields:
+      operationId: The ID of the rename folder operation.
+    """
+
+    operationId = _messages.StringField(1)
+
+  bucket = _messages.StringField(1)
+  createTime = _message_types.DateTimeField(2)
+  id = _messages.StringField(3)
+  kind = _messages.StringField(4, default='storage#folder')
+  metageneration = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  pendingRenameInfo = _messages.MessageField('PendingRenameInfoValue', 7)
+  selfLink = _messages.StringField(8)
+  updateTime = _message_types.DateTimeField(9)
+
+
+class Folders(_messages.Message):
+  r"""A list of folders.
+
+  Fields:
+    items: The list of items.
+    kind: The kind of item this is. For lists of folders, this is always
+      storage#folders.
+    nextPageToken: The continuation token, used to page through large result
+      sets. Provide this value in a subsequent request to return the next page
+      of results.
+  """
+
+  items = _messages.MessageField('Folder', 1, repeated=True)
+  kind = _messages.StringField(2, default='storage#folders')
+  nextPageToken = _messages.StringField(3)
 
 
 class GoogleLongrunningListOperationsResponse(_messages.Message):
@@ -1672,7 +1750,7 @@ class StorageAnywhereCachesListRequest(_messages.Message):
 
   Fields:
     bucket: Name of the parent bucket.
-    pageSize: Maximum number of items return in a single page of responses.
+    pageSize: Maximum number of items to return in a single page of responses.
       Maximum 1000.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
@@ -2408,6 +2486,114 @@ class StorageDefaultObjectAccessControlsUpdateRequest(_messages.Message):
   userProject = _messages.StringField(4)
 
 
+class StorageFoldersDeleteRequest(_messages.Message):
+  r"""A StorageFoldersDeleteRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the folder resides.
+    folder: Name of a folder.
+    ifMetagenerationMatch: If set, only deletes the folder if its
+      metageneration matches this value.
+    ifMetagenerationNotMatch: If set, only deletes the folder if its
+      metageneration does not match this value.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  folder = _messages.StringField(2, required=True)
+  ifMetagenerationMatch = _messages.IntegerField(3)
+  ifMetagenerationNotMatch = _messages.IntegerField(4)
+
+
+class StorageFoldersDeleteResponse(_messages.Message):
+  r"""An empty StorageFoldersDelete response."""
+
+
+class StorageFoldersGetRequest(_messages.Message):
+  r"""A StorageFoldersGetRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the folder resides.
+    folder: Name of a folder.
+    ifMetagenerationMatch: Makes the return of the folder metadata conditional
+      on whether the folder's current metageneration matches the given value.
+    ifMetagenerationNotMatch: Makes the return of the folder metadata
+      conditional on whether the folder's current metageneration does not
+      match the given value.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  folder = _messages.StringField(2, required=True)
+  ifMetagenerationMatch = _messages.IntegerField(3)
+  ifMetagenerationNotMatch = _messages.IntegerField(4)
+
+
+class StorageFoldersInsertRequest(_messages.Message):
+  r"""A StorageFoldersInsertRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the folder resides.
+    folder: A Folder resource to be passed as the request body.
+    recursive: If true, any parent folder which doesn't exist will be created
+      automatically.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  folder = _messages.MessageField('Folder', 2)
+  recursive = _messages.BooleanField(3)
+
+
+class StorageFoldersListRequest(_messages.Message):
+  r"""A StorageFoldersListRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which to look for folders.
+    delimiter: Returns results in a directory-like mode. The only supported
+      value is '/'. If set, items will only contain folders that either
+      exactly match the prefix, or are one level below the prefix.
+    endOffset: Filter results to folders whose names are lexicographically
+      before endOffset. If startOffset is also set, the folders listed will
+      have names between startOffset (inclusive) and endOffset (exclusive).
+    pageSize: Maximum number of items to return in a single page of responses.
+    pageToken: A previously-returned page token representing part of the
+      larger set of results to view.
+    prefix: Filter results to folders whose paths begin with this prefix. If
+      set, the value must either be an empty string or end with a '/'.
+    startOffset: Filter results to folders whose names are lexicographically
+      equal to or after startOffset. If endOffset is also set, the folders
+      listed will have names between startOffset (inclusive) and endOffset
+      (exclusive).
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  delimiter = _messages.StringField(2)
+  endOffset = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  prefix = _messages.StringField(6)
+  startOffset = _messages.StringField(7)
+
+
+class StorageFoldersRenameRequest(_messages.Message):
+  r"""A StorageFoldersRenameRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the folders are in.
+    destinationFolder: Name of the destination folder.
+    ifSourceMetagenerationMatch: Makes the operation conditional on whether
+      the source object's current metageneration matches the given value.
+    ifSourceMetagenerationNotMatch: Makes the operation conditional on whether
+      the source object's current metageneration does not match the given
+      value.
+    sourceFolder: Name of the source folder.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  destinationFolder = _messages.StringField(2, required=True)
+  ifSourceMetagenerationMatch = _messages.IntegerField(3)
+  ifSourceMetagenerationNotMatch = _messages.IntegerField(4)
+  sourceFolder = _messages.StringField(5, required=True)
+
+
 class StorageManagedFoldersDeleteRequest(_messages.Message):
   r"""A StorageManagedFoldersDeleteRequest object.
 
@@ -2475,7 +2661,7 @@ class StorageManagedFoldersListRequest(_messages.Message):
 
   Fields:
     bucket: Name of the bucket containing the managed folder.
-    pageSize: Maximum number of items return in a single page of responses.
+    pageSize: Maximum number of items to return in a single page of responses.
     pageToken: A previously-returned page token representing part of the
       larger set of results to view.
     prefix: The managed folder name/path prefix to filter the output list of

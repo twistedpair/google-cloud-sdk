@@ -193,8 +193,12 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
+        # Deprecated
+        # TODO(b/319097562): cleanup once the renaming is done.
         projects.instances.tables.views:
           path: projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}
+        projects.instances.tables.authorizedViews:
+          path: projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}
   binaryauthorization:
     v1alpha2:
       default: true
@@ -239,6 +243,8 @@ apis:
       discovery_doc: blockchainvalidatormanager_v1alpha.json
       default: true
       resources:
+        projects.locations.blockchainNodes:
+          path: projects/{projectsId}/locations/{locationsId}/blockchainNodes/{blockchainNodeId}
         projects.locations.secrets:
           path: projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}
   config:

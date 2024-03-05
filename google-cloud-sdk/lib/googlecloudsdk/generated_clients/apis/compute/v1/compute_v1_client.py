@@ -61,6 +61,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.httpsHealthChecks = self.HttpsHealthChecksService(self)
     self.imageFamilyViews = self.ImageFamilyViewsService(self)
     self.images = self.ImagesService(self)
+    self.instanceGroupManagerResizeRequests = self.InstanceGroupManagerResizeRequestsService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
@@ -121,6 +122,8 @@ class ComputeV1(base_api.BaseApiClient):
     self.snapshots = self.SnapshotsService(self)
     self.sslCertificates = self.SslCertificatesService(self)
     self.sslPolicies = self.SslPoliciesService(self)
+    self.storagePoolTypes = self.StoragePoolTypesService(self)
+    self.storagePools = self.StoragePoolsService(self)
     self.subnetworks = self.SubnetworksService(self)
     self.targetGrpcProxies = self.TargetGrpcProxiesService(self)
     self.targetHttpProxies = self.TargetHttpProxiesService(self)
@@ -4721,6 +4724,146 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeImagesTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class InstanceGroupManagerResizeRequestsService(base_api.BaseApiService):
+    """Service class for the instanceGroupManagerResizeRequests resource."""
+
+    _NAME = 'instanceGroupManagerResizeRequests'
+
+    def __init__(self, client):
+      super(ComputeV1.InstanceGroupManagerResizeRequestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagerResizeRequests.cancel',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}/cancel',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.instanceGroupManagerResizeRequests.delete',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns all of the details about the specified resize request.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagerResizeRequests.get',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsGetRequest',
+        response_type_name='InstanceGroupManagerResizeRequest',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new resize request that starts provisioning VMs immediately or queues VM creation.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagerResizeRequests.insert',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='instanceGroupManagerResizeRequest',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of resize requests that are contained in the managed instance group.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequestsListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceGroupManagerResizeRequests.list',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsListRequest',
+        response_type_name='InstanceGroupManagerResizeRequestsListResponse',
         supports_download=False,
     )
 
@@ -10774,6 +10917,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/moveInstance',
         request_field='instanceMoveRequest',
         request_type_name='ComputeProjectsMoveInstanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetCloudArmorTier(self, request, global_params=None):
+      r"""Sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+
+      Args:
+        request: (ComputeProjectsSetCloudArmorTierRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCloudArmorTier')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCloudArmorTier.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.projects.setCloudArmorTier',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/setCloudArmorTier',
+        request_field='projectsSetCloudArmorTierRequest',
+        request_type_name='ComputeProjectsSetCloudArmorTierRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17930,6 +18099,364 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/sslPolicies/{sslPolicy}',
         request_field='sslPolicyResource',
         request_type_name='ComputeSslPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class StoragePoolTypesService(base_api.BaseApiService):
+    """Service class for the storagePoolTypes resource."""
+
+    _NAME = 'storagePoolTypes'
+
+    def __init__(self, client):
+      super(ComputeV1.StoragePoolTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeStoragePoolTypesAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolTypeAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePoolTypes.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/storagePoolTypes',
+        request_field='',
+        request_type_name='ComputeStoragePoolTypesAggregatedListRequest',
+        response_type_name='StoragePoolTypeAggregatedList',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified storage pool type.
+
+      Args:
+        request: (ComputeStoragePoolTypesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolType) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePoolTypes.get',
+        ordered_params=['project', 'zone', 'storagePoolType'],
+        path_params=['project', 'storagePoolType', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/storagePoolTypes/{storagePoolType}',
+        request_field='',
+        request_type_name='ComputeStoragePoolTypesGetRequest',
+        response_type_name='StoragePoolType',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of storage pool types available to the specified project.
+
+      Args:
+        request: (ComputeStoragePoolTypesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolTypeList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePoolTypes.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/storagePoolTypes',
+        request_field='',
+        request_type_name='ComputeStoragePoolTypesListRequest',
+        response_type_name='StoragePoolTypeList',
+        supports_download=False,
+    )
+
+  class StoragePoolsService(base_api.BaseApiService):
+    """Service class for the storagePools resource."""
+
+    _NAME = 'storagePools'
+
+    def __init__(self, client):
+      super(ComputeV1.StoragePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.
+
+      Args:
+        request: (ComputeStoragePoolsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
+        relative_path='projects/{project}/aggregated/storagePools',
+        request_field='',
+        request_type_name='ComputeStoragePoolsAggregatedListRequest',
+        response_type_name='StoragePoolAggregatedList',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.
+
+      Args:
+        request: (ComputeStoragePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.storagePools.delete',
+        ordered_params=['project', 'zone', 'storagePool'],
+        path_params=['project', 'storagePool', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{storagePool}',
+        request_field='',
+        request_type_name='ComputeStoragePoolsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specified storage pool. Gets a list of available storage pools by making a list() request.
+
+      Args:
+        request: (ComputeStoragePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.get',
+        ordered_params=['project', 'zone', 'storagePool'],
+        path_params=['project', 'storagePool', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{storagePool}',
+        request_field='',
+        request_type_name='ComputeStoragePoolsGetRequest',
+        response_type_name='StoragePool',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
+
+      Args:
+        request: (ComputeStoragePoolsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.getIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=['optionsRequestedPolicyVersion'],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{resource}/getIamPolicy',
+        request_field='',
+        request_type_name='ComputeStoragePoolsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a storage pool in the specified project using the data in the request.
+
+      Args:
+        request: (ComputeStoragePoolsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.storagePools.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/storagePools',
+        request_field='storagePool',
+        request_type_name='ComputeStoragePoolsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of storage pools contained within the specified zone.
+
+      Args:
+        request: (ComputeStoragePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/storagePools',
+        request_field='',
+        request_type_name='ComputeStoragePoolsListRequest',
+        response_type_name='StoragePoolList',
+        supports_download=False,
+    )
+
+    def ListDisks(self, request, global_params=None):
+      r"""Lists the disks in a specified storage pool.
+
+      Args:
+        request: (ComputeStoragePoolsListDisksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StoragePoolListDisks) The response message.
+      """
+      config = self.GetMethodConfig('ListDisks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListDisks.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.storagePools.listDisks',
+        ordered_params=['project', 'zone', 'storagePool'],
+        path_params=['project', 'storagePool', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{storagePool}/listDisks',
+        request_field='',
+        request_type_name='ComputeStoragePoolsListDisksRequest',
+        response_type_name='StoragePoolListDisks',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+
+      Args:
+        request: (ComputeStoragePoolsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.storagePools.setIamPolicy',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{resource}/setIamPolicy',
+        request_field='zoneSetPolicyRequest',
+        request_type_name='ComputeStoragePoolsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource.
+
+      Args:
+        request: (ComputeStoragePoolsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.storagePools.testIamPermissions',
+        ordered_params=['project', 'zone', 'resource'],
+        path_params=['project', 'resource', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{resource}/testIamPermissions',
+        request_field='testPermissionsRequest',
+        request_type_name='ComputeStoragePoolsTestIamPermissionsRequest',
+        response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.
+
+      Args:
+        request: (ComputeStoragePoolsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.storagePools.update',
+        ordered_params=['project', 'zone', 'storagePool'],
+        path_params=['project', 'storagePool', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/storagePools/{storagePool}',
+        request_field='storagePoolResource',
+        request_type_name='ComputeStoragePoolsUpdateRequest',
         response_type_name='Operation',
         supports_download=False,
     )

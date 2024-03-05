@@ -76,16 +76,6 @@ def _get_error_or_exists_string(value):
     return resource_util.get_exists_string(value)
 
 
-# TODO(b/246556206): Delete.
-def _get_error_string_or_value(value):
-  """Returns the error string if value is error or the value itself."""
-  if isinstance(value, errors.XmlApiError):
-    return str(value)
-  if isinstance(value, dict) and 'ResponseMetadata' in value:
-    value.pop('ResponseMetadata')
-  return value
-
-
 class S3BucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata."""
 

@@ -375,7 +375,9 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
   - 1TB-9.75TB in 256GB increments or its multiples.
   - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
-* REGIONAL: 1TB-9.75TB in 256GB increments or its multiples.
+* REGIONAL: 1TB-100TB:
+  - 1TB-9.75TB in 256GB increments or its multiples.
+  - 10TB-100TB in 2.5TB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 
@@ -437,7 +439,9 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
   - 1TB-9.75TB in 256GB increments or its multiples.
   - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
-* REGIONAL: 1TB-9.75TB in 256GB increments or its multiples.
+* REGIONAL: 1TB-100TB:
+  - 1TB-9.75TB in 256GB increments or its multiples.
+  - 10TB-100TB in 2.5TB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 

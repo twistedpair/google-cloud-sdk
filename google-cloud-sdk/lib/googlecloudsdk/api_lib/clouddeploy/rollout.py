@@ -41,21 +41,25 @@ class RolloutClient(object):
         self.client.projects_locations_deliveryPipelines_releases_rollouts
     )
 
-  def Approve(self, name, approved):
+  def Approve(self, name, approved, override_deploy_policies=None):
     """Calls the approve API to approve or reject a rollout..
 
     Args:
       name: Name of the Rollout. Format is
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
       approved: True = approve; False = reject
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       ApproveRolloutResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveRequest(
         name=name,
         approveRolloutRequest=self.messages.ApproveRolloutRequest(
-            approved=approved
+            approved=approved,
+            overrideDeployPolicy=override_deploy_policies,
         ),
     )
     return self._service.Approve(request)
@@ -114,6 +118,7 @@ class RolloutClient(object):
       annotations=None,
       labels=None,
       starting_phase_id=None,
+      override_deploy_policies=None,
   ):
     """Creates a rollout resource.
 
@@ -127,6 +132,7 @@ class RolloutClient(object):
         to select cloud deploy resources and to find collections of cloud deploy
         resources that satisfy certain conditions.
       starting_phase_id: a str that specifies the rollout starting phase.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       The operation message.
@@ -139,11 +145,14 @@ class RolloutClient(object):
         annotations,
         labels,
     )
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest(
         parent=rollout_ref.Parent().RelativeName(),
         rollout=rollout_obj,
         rolloutId=rollout_ref.Name(),
         startingPhaseId=starting_phase_id,
+        overrideDeployPolicy=override_deploy_policies,
     )
 
     return self._service.Create(request)
@@ -187,18 +196,24 @@ class RolloutClient(object):
 
     return self._service.Advance(request)
 
-  def CancelRollout(self, name):
+  def CancelRollout(self, name, override_deploy_policies=None):
     """Calls the CancelRollout API to cancel a rollout.
 
     Args:
       name: Name of the Rollout. Format is
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       CancelRolloutResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest(
         name=name,
+        cancelRolloutRequest=self.messages.CancelRolloutRequest(
+            overrideDeployPolicy=override_deploy_policies,
+        ),
     )
 
     return self._service.Cancel(request)

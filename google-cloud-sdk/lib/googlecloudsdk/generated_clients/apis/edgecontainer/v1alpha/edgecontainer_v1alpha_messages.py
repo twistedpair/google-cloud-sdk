@@ -1249,15 +1249,32 @@ class MaintenanceEvent(_messages.Message):
   uuid = _messages.StringField(10)
 
 
+class MaintenanceExclusionWindow(_messages.Message):
+  r"""Represents a maintenance exclusion window.
+
+  Fields:
+    id: Optional. A unique (per cluster) id for the window.
+    window: Optional. The time window.
+  """
+
+  id = _messages.StringField(1)
+  window = _messages.MessageField('TimeWindow', 2)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""Maintenance policy configuration.
 
   Fields:
+    maintenanceExclusions: Optional. Exclusions to automatic maintenance. Non-
+      emergency maintenance should not occur in these windows. Each exclusion
+      has a unique name and may be active or expired. The max number of
+      maintenance exclusions allowed at a given time is 3.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  window = _messages.MessageField('MaintenanceWindow', 1)
+  maintenanceExclusions = _messages.MessageField('MaintenanceExclusionWindow', 1, repeated=True)
+  window = _messages.MessageField('MaintenanceWindow', 2)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1726,10 +1743,12 @@ class SystemAddonsConfig(_messages.Message):
   Fields:
     ingress: Optional. Config for Ingress.
     sdsOperator: Optional. Config for SDS Operator.
+    unmanagedKafkaConfig: Optional. Config for unmanaged Kafka.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
   sdsOperator = _messages.MessageField('SdsOperator', 2)
+  unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 3)
 
 
 class TimeWindow(_messages.Message):
@@ -1743,6 +1762,22 @@ class TimeWindow(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UnmanagedKafkaConfig(_messages.Message):
+  r"""Config for customer provided Kafka to receive application logs from log
+  forwarder. This field is only populated for LCP clusters.
+
+  Fields:
+    brokers: Required. Comma separated string of broker addresses, with IP and
+      port.
+    topicKeys: Optional. Comma separated string of Kafka topic keys.
+    topics: Required. Comma separated string of Kafka topics.
+  """
+
+  brokers = _messages.StringField(1)
+  topicKeys = _messages.StringField(2)
+  topics = _messages.StringField(3)
 
 
 class UpgradeClusterRequest(_messages.Message):

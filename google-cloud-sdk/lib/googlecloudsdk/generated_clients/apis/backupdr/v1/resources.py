@@ -41,6 +41,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPPLANASSOCIATIONS = (
+      'projects.locations.backupPlanAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'backupPlanAssociations/{backupPlanAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPPLANS = (
+      'projects.locations.backupPlans',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupPlans/'
+              '{backupPlansId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MANAGEMENTSERVERS = (
       'projects.locations.managementServers',
       '{+name}',

@@ -110,7 +110,7 @@ def CreateNodeSpec(api_version):
       node_spec.node.shieldedInstanceConfig = (
           tpu_messages.ShieldedInstanceConfig(enableSecureBoot=True)
       )
-    if args.autocheckpoint_enabled:
+    if api_version == 'v2alpha1' and args.autocheckpoint_enabled:
       node_spec.node.autocheckpointEnabled = True
 
     node_spec.node.networkConfig = tpu_messages.NetworkConfig()
@@ -127,7 +127,7 @@ def CreateNodeSpec(api_version):
       node_spec.node.tags = args.tags
     node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
-    if args.boot_disk:
+    if api_version == 'v2alpha1' and args.boot_disk:
       node_spec.node.bootDiskConfig = ParseBootDiskConfig(args.boot_disk)
 
     node_spec.node.metadata = MergeMetadata(args, api_version)
@@ -140,10 +140,16 @@ def CreateNodeSpec(api_version):
     if args.node_id:
       node_spec.nodeId = args.node_id
     elif args.node_count:
-      node_spec.multiNodeParams = tpu_messages.MultiNodeParams()
-      node_spec.multiNodeParams.nodeCount = args.node_count
-      if args.node_prefix:
-        node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
+      if api_version == 'v2alpha1':
+        node_spec.multiNodeParams = tpu_messages.MultiNodeParams()
+        node_spec.multiNodeParams.nodeCount = args.node_count
+        if args.node_prefix:
+          node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
+      else:  # For v2 API, MultiNodeParams was renamed to MultisliceParams
+        node_spec.multisliceParams = tpu_messages.MultisliceParams()
+        node_spec.multisliceParams.nodeCount = args.node_count
+        if args.node_prefix:
+          node_spec.multisliceParams.nodeIdPrefix = args.node_prefix
     request.queuedResource.tpu.nodeSpec = [node_spec]
     return request
 

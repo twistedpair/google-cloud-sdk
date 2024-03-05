@@ -44,6 +44,7 @@ class StorageV1(base_api.BaseApiClient):
     self.buckets = self.BucketsService(self)
     self.channels = self.ChannelsService(self)
     self.defaultObjectAccessControls = self.DefaultObjectAccessControlsService(self)
+    self.folders = self.FoldersService(self)
     self.managedFolders = self.ManagedFoldersService(self)
     self.notifications = self.NotificationsService(self)
     self.objectAccessControls = self.ObjectAccessControlsService(self)
@@ -880,6 +881,146 @@ class StorageV1(base_api.BaseApiClient):
         request_field='objectAccessControl',
         request_type_name='StorageDefaultObjectAccessControlsUpdateRequest',
         response_type_name='ObjectAccessControl',
+        supports_download=False,
+    )
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(StorageV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a folder. Only applicable to buckets with hierarchical namespace enabled.
+
+      Args:
+        request: (StorageFoldersDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageFoldersDeleteResponse) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='storage.folders.delete',
+        ordered_params=['bucket', 'folder'],
+        path_params=['bucket', 'folder'],
+        query_params=['ifMetagenerationMatch', 'ifMetagenerationNotMatch'],
+        relative_path='b/{bucket}/folders/{folder}',
+        request_field='',
+        request_type_name='StorageFoldersDeleteRequest',
+        response_type_name='StorageFoldersDeleteResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns metadata for the specified folder. Only applicable to buckets with hierarchical namespace enabled.
+
+      Args:
+        request: (StorageFoldersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folder) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.folders.get',
+        ordered_params=['bucket', 'folder'],
+        path_params=['bucket', 'folder'],
+        query_params=['ifMetagenerationMatch', 'ifMetagenerationNotMatch'],
+        relative_path='b/{bucket}/folders/{folder}',
+        request_field='',
+        request_type_name='StorageFoldersGetRequest',
+        response_type_name='Folder',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new folder. Only applicable to buckets with hierarchical namespace enabled.
+
+      Args:
+        request: (StorageFoldersInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folder) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.folders.insert',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=['recursive'],
+        relative_path='b/{bucket}/folders',
+        request_field='folder',
+        request_type_name='StorageFoldersInsertRequest',
+        response_type_name='Folder',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of folders matching the criteria. Only applicable to buckets with hierarchical namespace enabled.
+
+      Args:
+        request: (StorageFoldersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Folders) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.folders.list',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=['delimiter', 'endOffset', 'pageSize', 'pageToken', 'prefix', 'startOffset'],
+        relative_path='b/{bucket}/folders',
+        request_field='',
+        request_type_name='StorageFoldersListRequest',
+        response_type_name='Folders',
+        supports_download=False,
+    )
+
+    def Rename(self, request, global_params=None):
+      r"""Renames a source folder to a destination folder. Only applicable to buckets with hierarchical namespace enabled.
+
+      Args:
+        request: (StorageFoldersRenameRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Rename')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rename.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.folders.rename',
+        ordered_params=['bucket', 'sourceFolder', 'destinationFolder'],
+        path_params=['bucket', 'destinationFolder', 'sourceFolder'],
+        query_params=['ifSourceMetagenerationMatch', 'ifSourceMetagenerationNotMatch'],
+        relative_path='b/{bucket}/folders/{sourceFolder}/renameTo/folders/{destinationFolder}',
+        request_field='',
+        request_type_name='StorageFoldersRenameRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

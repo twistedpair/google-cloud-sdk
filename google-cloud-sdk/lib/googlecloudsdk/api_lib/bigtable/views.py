@@ -208,20 +208,19 @@ def Base64EncodingYamlViewDefinition(yaml_view):
   yaml_subset_view = yaml_view["subsetView"]
 
   if "rowPrefixes" in yaml_subset_view:
-    for i in range(len(yaml_subset_view["rowPrefixes"])):
-      yaml_subset_view["rowPrefixes"][i] = Utf8ToBase64(
-          yaml_subset_view["rowPrefixes"][i]
-      )
+    yaml_subset_view["rowPrefixes"] = [
+        Utf8ToBase64(s) for s in yaml_subset_view.get("rowPrefixes", [])
+    ]
   if "familySubsets" in yaml_subset_view:
     for family_name, family_subset in yaml_subset_view["familySubsets"].items():
-      for i in range(len(family_subset["qualifiers"])):
-        family_subset["qualifiers"][i] = Utf8ToBase64(
-            family_subset["qualifiers"][i]
-        )
-      for i in range(len(family_subset["qualifierPrefixes"])):
-        family_subset["qualifierPrefixes"][i] = Utf8ToBase64(
-            family_subset["qualifierPrefixes"][i]
-        )
+      if "qualifiers" in family_subset:
+        family_subset["qualifiers"] = [
+            Utf8ToBase64(s) for s in family_subset.get("qualifiers", [])
+        ]
+      if "qualifierPrefixes" in family_subset:
+        family_subset["qualifierPrefixes"] = [
+            Utf8ToBase64(s) for s in family_subset.get("qualifierPrefixes", [])
+        ]
       yaml_subset_view["familySubsets"][family_name] = family_subset
   return yaml_view
 
@@ -233,20 +232,19 @@ def Base64DecodingYamlViewDefinition(yaml_view):
   yaml_subset_view = yaml_view["subsetView"]
 
   if "rowPrefixes" in yaml_subset_view:
-    for i in range(len(yaml_subset_view["rowPrefixes"])):
-      yaml_subset_view["rowPrefixes"][i] = Base64ToUtf8(
-          yaml_subset_view["rowPrefixes"][i]
-      )
+    yaml_subset_view["rowPrefixes"] = [
+        Base64ToUtf8(s) for s in yaml_subset_view.get("rowPrefixes", [])
+    ]
   if "familySubsets" in yaml_subset_view:
     for family_name, family_subset in yaml_subset_view["familySubsets"].items():
-      for i in range(len(family_subset["qualifiers"])):
-        family_subset["qualifiers"][i] = Base64ToUtf8(
-            family_subset["qualifiers"][i]
-        )
-      for i in range(len(family_subset["qualifierPrefixes"])):
-        family_subset["qualifierPrefixes"][i] = Base64ToUtf8(
-            family_subset["qualifierPrefixes"][i]
-        )
+      if "qualifiers" in family_subset:
+        family_subset["qualifiers"] = [
+            Base64ToUtf8(s) for s in family_subset.get("qualifiers", [])
+        ]
+      if "qualifierPrefixes" in family_subset:
+        family_subset["qualifierPrefixes"] = [
+            Base64ToUtf8(s) for s in family_subset.get("qualifierPrefixes", [])
+        ]
       yaml_subset_view["familySubsets"][family_name] = family_subset
   return yaml_view
 

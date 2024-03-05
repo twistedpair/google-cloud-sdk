@@ -34,6 +34,7 @@ def AddSourceDetailsFlag(parser):
   source_cp_params_group = parser.add_group()
   AddGcsBucket(source_cp_params_group)
   AddGcsPrefix(source_cp_params_group)
+  AddProviderFlag(source_cp_params_group)
 
 
 def AddGcsBucket(parser):
@@ -56,4 +57,13 @@ def AddGcsPrefix(parser):
           'Cloud Storage prefix path within the bucket for the source SQL'
           ' Server connection profile where the backups are stored.'
       ),
+  )
+
+
+def AddProviderFlag(parser):
+  """Adds --provider flag to the given parser."""
+  parser.add_argument(
+      '--provider',
+      help='Database provider, for managed databases.',
+      choices=['RDS'],
   )

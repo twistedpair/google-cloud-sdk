@@ -263,9 +263,11 @@ def _GetGapicClientInstance(api_name,
 def UniversifyAddress(address):
   """Update a URL based on the current universe domain."""
   universe_domain_property = properties.VALUES.core.universe_domain
-  if address is not None and universe_domain_property.IsExplicitlySet():
+  universe_domain = universe_domain_property.Get()
+  if (address is not None and
+      universe_domain_property.default != universe_domain):
     address = address.replace(universe_domain_property.default,
-                              universe_domain_property.Get(), 1)
+                              universe_domain, 1)
   return address
 
 

@@ -20,8 +20,10 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.secrets import completers as secrets_completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import resources
 
 # Args
@@ -349,6 +351,95 @@ def _ArgOrFlag(name, positional):
   return '--{}'.format(name)
 
 
+def AddGlobalOrRegionalSecret(parser, purpose='create a secret', **kwargs):
+  """Adds a secret resource.
+
+  Secret resource can be global secret or regional secret. If command has
+  "--location" then regional secret will be created or else global secret will
+  be created.
+  Regionl secret - projects/<project>/locations/<location>/secrets/<secret>
+  Global secret - projects/<project>/secrets/<secret>
+
+  Args:
+      parser: given argument parser
+      purpose: help text
+      **kwargs: extra arguments
+  """
+  secret_or_region_secret_spec = multitype.MultitypeResourceSpec(
+      'global or regional secret',
+      GetSecretResourceSpec(),
+      GetRegionalSecretResourceSpec(),
+      allow_inactive=True,
+      **kwargs,
+  )
+
+  concept_parsers.ConceptParser([
+      presentation_specs.MultitypeResourcePresentationSpec(
+          'secret',
+          secret_or_region_secret_spec,
+          purpose,
+          required=True,
+          hidden=True,
+      )
+  ]).AddToParser(parser)
+
+
+def AddGlobalOrRegionalVersion(parser, purpose='create a version', **kwargs):
+  """Adds a version resource.
+
+  Args:
+      parser: given argument parser
+      purpose: help text
+      **kwargs: extra arguments
+  """
+  global_or_region_version_spec = multitype.MultitypeResourceSpec(
+      'global or regional secret version',
+      GetVersionResourceSpec(),
+      GetRegionalVersionResourceSpec(),
+      allow_inactive=True,
+      **kwargs,
+  )
+
+  concept_parsers.ConceptParser([
+      presentation_specs.MultitypeResourcePresentationSpec(
+          'version',
+          global_or_region_version_spec,
+          purpose,
+          required=True,
+          hidden=True,
+      )
+  ]).AddToParser(parser)
+
+
+def AddGlobalOrRegionalVersionOrAlias(
+    parser, purpose='create a version alias', **kwargs
+):
+  """Adds a version resource or alias.
+
+  Args:
+      parser: given argument parser
+      purpose: help text
+      **kwargs: extra arguments
+  """
+  global_or_region_version_spec = multitype.MultitypeResourceSpec(
+      'global or regional secret version',
+      GetVersionResourceSpec(),
+      GetRegionalVersionResourceSpec(),
+      allow_inactive=True,
+      **kwargs,
+  )
+
+  concept_parsers.ConceptParser([
+      presentation_specs.MultitypeResourcePresentationSpec(
+          'version',
+          global_or_region_version_spec,
+          purpose,
+          required=True,
+          hidden=True,
+      )
+  ]).AddToParser(parser)
+
+
 ### Attribute configurations
 
 
@@ -371,12 +462,31 @@ def GetSecretAttributeConfig():
       completer=secrets_completers.SecretsCompleter)
 
 
+def GetRegionalSecretAttributeConfig():
+  """Returns the attribute config for regional secret."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='secret',
+      help_text='The secret of the {resource}.',
+      completer=secrets_completers.SecretsCompleter,
+  )
+
+
 def GetVersionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='version',
       help_text='The version of the {resource}.',
       completion_request_params={'fieldMask': 'name'},
       completion_id_field='name')
+
+
+def GetRegionalVersionAttributeConfig():
+  """Returns the attribute config for regional secret version."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='version',
+      help_text='The version of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='name',
+  )
 
 
 # Resource specs
@@ -422,6 +532,33 @@ def GetVersionResourceSpec():
       projectsId=GetProjectAttributeConfig())
 
 
+def GetRegionalSecretResourceSpec():
+  """Returns the resource spec for regional secret."""
+  return concepts.ResourceSpec(
+      resource_collection='secretmanager.projects.locations.secrets',
+      resource_name='regional secret',
+      plural_name='secrets',
+      disable_auto_completers=False,
+      secretsId=GetRegionalSecretAttributeConfig(),
+      projectsId=GetProjectAttributeConfig(),
+      locationsId=GetLocationAttributeConfig(),
+  )
+
+
+def GetRegionalVersionResourceSpec():
+  """Returns the resource spec for regional secret version."""
+  return concepts.ResourceSpec(
+      resource_collection='secretmanager.projects.locations.secrets.versions',
+      resource_name='regional version',
+      plural_name='version',
+      disable_auto_completers=False,
+      versionsId=GetRegionalVersionAttributeConfig(),
+      secretsId=GetRegionalSecretAttributeConfig(),
+      projectsId=GetProjectAttributeConfig(),
+      locationsId=GetLocationAttributeConfig(),
+  )
+
+
 # Resource parsers
 
 
@@ -442,4 +579,18 @@ def ParseSecretRef(ref, **kwargs):
 
 def ParseVersionRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets.versions'
+  return resources.REGISTRY.Parse(ref, **kwargs)
+
+
+def ParseRegionalVersionRef(ref, **kwargs):
+  """Parses regional section version into 'secretmanager.projects.locations.secrets.versions' format .
+
+  Args:
+    ref: resource name of regional secret version.
+    **kwargs: extra arguments.
+
+  Returns:
+    Parsed secret version.
+  """
+  kwargs['collection'] = 'secretmanager.projects.locations.secrets.versions'
   return resources.REGISTRY.Parse(ref, **kwargs)

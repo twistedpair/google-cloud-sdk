@@ -21,8 +21,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
 
-from google.api_core import exceptions as api_core_exceptions
-
 from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
@@ -142,7 +140,7 @@ def ResolveVersion(api_name, api_version=None):
 
 
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
-RESOURCE_EXHAUSTED_STATUS_CODE = api_core_exceptions.ResourceExhausted.code
+RESOURCE_EXHAUSTED_STATUS_CODE = 429
 
 
 def GetApiEnablementInfo(exception):

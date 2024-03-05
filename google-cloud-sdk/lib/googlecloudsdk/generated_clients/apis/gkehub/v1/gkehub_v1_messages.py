@@ -997,6 +997,8 @@ class ConfigManagementConfigSyncState(_messages.Message):
   Enums:
     ReposyncCrdValueValuesEnum: The state of the Reposync CRD
     RootsyncCrdValueValuesEnum: The state of the RootSync CRD
+    StateValueValuesEnum: The state of CS This field summarizes the other
+      fields in this message.
 
   Fields:
     deploymentState: Information about the deployment of ConfigSync, including
@@ -1004,6 +1006,8 @@ class ConfigManagementConfigSyncState(_messages.Message):
     errors: Errors pertaining to the installation of Config Sync.
     reposyncCrd: The state of the Reposync CRD
     rootsyncCrd: The state of the RootSync CRD
+    state: The state of CS This field summarizes the other fields in this
+      message.
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
@@ -1042,12 +1046,31 @@ class ConfigManagementConfigSyncState(_messages.Message):
     TERMINATING = 3
     INSTALLING = 4
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of CS This field summarizes the other fields in this
+    message.
+
+    Values:
+      STATE_UNSPECIFIED: CS's state cannot be determined.
+      CONFIG_SYNC_NOT_INSTALLED: CS is not installed.
+      CONFIG_SYNC_INSTALLED: The expected CS version is installed
+        successfully.
+      CONFIG_SYNC_ERROR: CS encounters errors.
+      CONFIG_SYNC_PENDING: CS is installing or terminating.
+    """
+    STATE_UNSPECIFIED = 0
+    CONFIG_SYNC_NOT_INSTALLED = 1
+    CONFIG_SYNC_INSTALLED = 2
+    CONFIG_SYNC_ERROR = 3
+    CONFIG_SYNC_PENDING = 4
+
   deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
   errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
   reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 3)
   rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 4)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 5)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 6)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 7)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):

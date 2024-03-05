@@ -587,6 +587,9 @@ class ConnectionProfilesClient(object):
     elif cp_type == 'SQLSERVER':
       sqlserver_connection_profile = self._GetSqlServerConnectionProfile(args)
       params['sqlserver'] = sqlserver_connection_profile
+      params['provider'] = self._GetProvider(
+          connection_profile_type, args.provider
+      )
     return connection_profile_type(
         labels=labels,
         state=connection_profile_type.StateValueValuesEnum.CREATING,

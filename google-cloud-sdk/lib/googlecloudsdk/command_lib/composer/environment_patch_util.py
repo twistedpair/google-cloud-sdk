@@ -145,6 +145,7 @@ def ConstructPatch(
     min_workers=None,
     max_workers=None,
     scheduler_count=None,
+    clear_maintenance_window=None,
     maintenance_window_start=None,
     maintenance_window_end=None,
     maintenance_window_recurrence=None,
@@ -238,6 +239,8 @@ def ConstructPatch(
       be specified only in Composer 2.0.0.
     scheduler_count: int or None, number of schedulers in the Environment. Can
       be specified only in Composer 2.0.0.
+    clear_maintenance_window: bool or None, specifies if maintenance window
+      options should be cleared.
     maintenance_window_start: Datetime or None, a starting date of the
       maintenance window.
     maintenance_window_end: Datetime or None, an ending date of the maintenance
@@ -432,11 +435,13 @@ def ConstructPatch(
       maintenance_window_start
       and maintenance_window_end
       and maintenance_window_recurrence
+      or clear_maintenance_window
   ):
     return _ConstructMaintenanceWindowPatch(
         maintenance_window_start,
         maintenance_window_end,
         maintenance_window_recurrence,
+        clear_maintenance_window,
         release_track=release_track,
     )
   if cloud_data_lineage_integration_enabled is not None:
@@ -1022,6 +1027,7 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
 def _ConstructMaintenanceWindowPatch(maintenance_window_start,
                                      maintenance_window_end,
                                      maintenance_window_recurrence,
+                                     clear_maintenance_window,
                                      release_track=base.ReleaseTrack.GA):
   """Constructs an environment patch for updating maintenance window.
 
@@ -1032,6 +1038,8 @@ def _ConstructMaintenanceWindowPatch(maintenance_window_start,
       window.
     maintenance_window_recurrence: str or None, recurrence RRULE for the
       maintenance window.
+    clear_maintenance_window: bool or None, specifies if maintenance window
+      options should be cleared.
     release_track: base.ReleaseTrack, the release track of command. Will dictate
       which Composer client library will be used.
 
@@ -1039,6 +1047,9 @@ def _ConstructMaintenanceWindowPatch(maintenance_window_start,
     (str, Environment), the field mask and environment to use for update.
   """
   messages = api_util.GetMessagesModule(release_track=release_track)
+
+  if clear_maintenance_window:
+    return 'config.maintenance_window', messages.Environment()
 
   window_value = messages.MaintenanceWindow(
       startTime=maintenance_window_start.isoformat(),

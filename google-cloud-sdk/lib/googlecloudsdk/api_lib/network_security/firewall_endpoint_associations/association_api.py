@@ -127,7 +127,7 @@ class Client:
       name: The resource name of the association.
       update_fields: A dictionary mapping from field names to update, to their
         new values. Supported values: 'labels', 'tls_inspection_policy',
-        'disabled' (ALPHA).
+        'disabled'.
 
     Returns:
       NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchResponse
@@ -135,13 +135,16 @@ class Client:
     # Only keys that exist in the dictionary are updated. This is done via the
     # updateMask request parameter. Values for keys that do not exist in the
     # dictionary can be anything and will not be updated.
-    if self._release_track == base.ReleaseTrack.ALPHA:
+    if (
+        self._release_track == base.ReleaseTrack.ALPHA
+        or self._release_track == base.ReleaseTrack.BETA
+    ):
       association = self.messages.FirewallEndpointAssociation(
           disabled=update_fields.get('disabled', None),
           labels=update_fields.get('labels', None),
           tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
       )
-    else:  # BETA and GA
+    else:  # GA
       association = self.messages.FirewallEndpointAssociation(
           labels=update_fields.get('labels', None),
           tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),

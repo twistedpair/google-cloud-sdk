@@ -48,7 +48,8 @@ def GetTestablePermissions(iam_client, messages, resource):
   return list_pager.YieldFromList(
       iam_client.permissions,
       messages.QueryTestablePermissionsRequest(
-          fullResourceName=iam_util.GetResourceName(resource), pageSize=1000),
+          fullResourceName=iam_util.GetFullResourceName(resource),
+          pageSize=1000),
       batch_size=1000,
       method='QueryTestablePermissions',
       field='permissions',

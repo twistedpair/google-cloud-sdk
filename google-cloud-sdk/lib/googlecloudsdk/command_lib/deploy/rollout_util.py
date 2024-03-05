@@ -148,6 +148,7 @@ def CreateRollout(
     labels=None,
     description=None,
     starting_phase_id=None,
+    override_deploy_policies=None,
 ):
   """Creates a rollout by calling the rollout create API and waits for the operation to finish.
 
@@ -163,6 +164,7 @@ def CreateRollout(
       resources that satisfy certain conditions.
     description: str, rollout description.
     starting_phase_id: str, rollout starting phase.
+    override_deploy_policies: List of Deploy Policies to override.
 
   Raises:
       ListRolloutsError: an error occurred calling rollout list API.
@@ -197,7 +199,12 @@ def CreateRollout(
       )
   )
   operation = rollout.RolloutClient().Create(
-      rollout_ref, rollout_obj, annotations, labels, starting_phase_id
+      rollout_ref,
+      rollout_obj,
+      annotations,
+      labels,
+      starting_phase_id,
+      override_deploy_policies,
   )
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name, collection='clouddeploy.projects.locations.operations'

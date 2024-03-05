@@ -1215,16 +1215,17 @@ class ExtensionChainExtension(_messages.Message):
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
-      Envoy to the extension service.
+      Envoy to the extension service. Required for Callout extensions.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
-      extension chain are also executed. When set to `FALSE`: * If response
+      extension chain are also executed. When set to `FALSE` or the default
+      setting of `FALSE` is used, one of the following happens: * If response
       headers have not been delivered to the downstream client, a generic 500
       error is returned to the client. The error response can be tailored by
       configuring a custom error response in the load balancer. * If response
       headers have been delivered, then the HTTP stream to the downstream
-      client is reset. Default is `FALSE`.
+      client is reset.
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
@@ -1234,8 +1235,8 @@ class ExtensionChainExtension(_messages.Message):
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
     service: Required. The reference to the service that runs the extension.
-      Currently only Callout extensions are supported here. To configure a
-      Callout extension, `service` must be a fully-qualified reference to a
+      Currently only callout extensions are supported here. To configure a
+      callout extension, `service` must be a fully-qualified reference to a
       [backend service](https://cloud.google.com/compute/docs/reference/rest/v
       1/backendServices) in the format: `https://www.googleapis.com/compute/v1
       /projects/{project}/regions/{region}/backendServices/{backendService}`
@@ -1245,8 +1246,9 @@ class ExtensionChainExtension(_messages.Message):
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It's not relevant for the
       `LbRouteExtension` resource.
-    timeout: Required. Specifies the timeout for each individual message on
-      the stream. The timeout must be between 10-1000 milliseconds.
+    timeout: Optional. Specifies the timeout for each individual message on
+      the stream. The timeout must be between 10-1000 milliseconds. Required
+      for Callout extensions.
   """
 
   class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
@@ -1262,12 +1264,18 @@ class ExtensionChainExtension(_messages.Message):
         called when the HTTP response headers arrive.
       RESPONSE_BODY: If included in `supported_events`, the extension is
         called when the HTTP response body arrives.
+      REQUEST_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP request trailers arrives.
+      RESPONSE_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP response trailers arrives.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     REQUEST_HEADERS = 1
     REQUEST_BODY = 2
     RESPONSE_HEADERS = 3
     RESPONSE_BODY = 4
+    REQUEST_TRAILERS = 5
+    RESPONSE_TRAILERS = 6
 
   authority = _messages.StringField(1)
   failOpen = _messages.BooleanField(2)
@@ -1285,8 +1293,7 @@ class ExtensionChainMatchCondition(_messages.Message):
     celExpression: Required. A Common Expression Language (CEL) expression
       that is used to match requests for which the extension chain is
       executed. For more information, see [CEL matcher language
-      reference](https://cloud.google.com/service-extensions/docs/cel-matcher-
-      language-reference).
+      reference](/service-extensions/docs/cel-matcher-language-reference).
   """
 
   celExpression = _messages.StringField(1)
@@ -1297,7 +1304,7 @@ class Gateway(_messages.Message):
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
   Gateways to dictate how requests should be routed by this Gateway. Next id:
-  31
+  32
 
   Enums:
     EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
@@ -2662,24 +2669,50 @@ class LbObservabilityExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbObservabilityExtension` resource. The format must comply with [the
-      following requirements](/compute/docs/labeling-resources#requirements).
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
+    MetadataValue: Optional. The metadata provided here will be included as
+      part of the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      will be available under the namespace `com.google.service_extensions`.
+      The following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
 
   Fields:
     authority: Optional. The `:authority` header in the gRPC request sent from
       Envoy to the extension service.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
+    forwardAttributes: Optional. List of the Envoy attributes to forward to
+      the extension server. The attributes provided here will be included as
+      part of the `ProcessingRequest.attributes` field (of type `map`), where
+      the keys are the attribute names. Refer to the [documentation](/service-
+      extensions/docs/cel-matcher-language-reference#attributes) for the names
+      of attributes that can be forwarded. If omitted, no attributes will be
+      sent. Each element is a string indicating the attribute name.
+    forwardHeaders: Optional. List of the HTTP headers to forward to the
+      extension (from the client or backend). If omitted, all headers are
+      sent. Each element is a string indicating the header name.
     forwardingRules: Required. A list of references to the forwarding rules to
       which this service extension is attached to. At least one forwarding
       rule is required.
     labels: Optional. Set of labels associated with the
       `LbObservabilityExtension` resource. The format must comply with [the
-      following requirements](/compute/docs/labeling-resources#requirements).
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here will be included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      will be available under the namespace `com.google.service_extensions`.
+      The following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
     name: Required. Identifier. Name of the `LbObservabilityExtension`
       resource in the following format: `projects/{project}/locations/{locatio
       n}/lbObservabilityExtensions/{lb_observability_extension}`.
@@ -2727,18 +2760,25 @@ class LbObservabilityExtension(_messages.Message):
         called when the HTTP response headers arrive.
       RESPONSE_BODY: If included in `supported_events`, the extension is
         called when the HTTP response body arrives.
+      REQUEST_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP request trailers arrives.
+      RESPONSE_TRAILERS: If included in `supported_events`, the extension is
+        called when the HTTP response trailers arrives.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     REQUEST_HEADERS = 1
     REQUEST_BODY = 2
     RESPONSE_HEADERS = 3
     RESPONSE_BODY = 4
+    REQUEST_TRAILERS = 5
+    RESPONSE_TRAILERS = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbObservabilityExtension`
-    resource. The format must comply with [the following
-    requirements](/compute/docs/labeling-resources#requirements).
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2760,16 +2800,49 @@ class LbObservabilityExtension(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here will be included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata
+    will be available under the namespace `com.google.service_extensions`. The
+    following variables are supported in the metadata Struct:
+    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+    qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authority = _messages.StringField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  forwardingRules = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  service = _messages.StringField(8)
-  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 9, repeated=True)
-  updateTime = _messages.StringField(10)
+  forwardAttributes = _messages.StringField(4, repeated=True)
+  forwardHeaders = _messages.StringField(5, repeated=True)
+  forwardingRules = _messages.StringField(6, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 7)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 8)
+  metadata = _messages.MessageField('MetadataValue', 9)
+  name = _messages.StringField(10)
+  service = _messages.StringField(11)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class LbRouteExtension(_messages.Message):
@@ -2785,8 +2858,9 @@ class LbRouteExtension(_messages.Message):
 
   Messages:
     LabelsValue: Optional. Set of labels associated with the
-      `LbRouteExtension` resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      `LbRouteExtension` resource. The format must comply with [the
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2802,8 +2876,9 @@ class LbRouteExtension(_messages.Message):
       rule is required. There can be only one `LbRouteExtension` resource per
       forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
-      resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2836,8 +2911,9 @@ class LbRouteExtension(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbRouteExtension`
-    resource. The format must comply with [the following
-    requirements](/compute/docs/labeling-resources#requirements).
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2885,7 +2961,8 @@ class LbTrafficExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbTrafficExtension` resource. The format must comply with [the
-      following requirements](/compute/docs/labeling-resources#requirements).
+      requirements for labels](/compute/docs/labeling-resources#requirements)
+      for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2901,8 +2978,9 @@ class LbTrafficExtension(_messages.Message):
       rule is required. There can be only one `LBTrafficExtension` resource
       per forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
-      resource. The format must comply with [the following
-      requirements](/compute/docs/labeling-resources#requirements).
+      resource. The format must comply with [the requirements for
+      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+      resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2935,8 +3013,9 @@ class LbTrafficExtension(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbTrafficExtension`
-    resource. The format must comply with [the following
-    requirements](/compute/docs/labeling-resources#requirements).
+    resource. The format must comply with [the requirements for
+    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
+    resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3706,8 +3785,11 @@ class MulticastConsumerAssociation(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     domainActivation: Reference to the domain activation in the same zone as
-      the consumer association.
+      the consumer association. [Deprecated] Use multicast_domain_activation
+      instead.
     labels: Labels as key value pairs
+    multicastDomainActivation: Optional. Reference to the multicast domain
+      activation in the same zone.
     name: name of resource
     network: Reference to the network
     updateTime: Output only. [Output only] Update time stamp
@@ -3740,9 +3822,10 @@ class MulticastConsumerAssociation(_messages.Message):
   createTime = _messages.StringField(1)
   domainActivation = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  multicastDomainActivation = _messages.StringField(4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastDomain(_messages.Message):
@@ -3810,8 +3893,11 @@ class MulticastDomainActivation(_messages.Message):
   Fields:
     adminNetwork: Output only. [Output only] URL of the admin network.
     createTime: Output only. [Output only] Create time stamp
-    domain: Reference to the domain that is being activated.
+    domain: Reference to the domain that is being activated. [Deprecated] Use
+      multicast_domain instead.
     labels: Labels as key value pairs
+    multicastDomain: Optional. Reference to the multicast domain that is being
+      activated.
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -3844,8 +3930,9 @@ class MulticastDomainActivation(_messages.Message):
   createTime = _messages.StringField(2)
   domain = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  multicastDomain = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroup(_messages.Message):
@@ -3857,11 +3944,15 @@ class MulticastGroup(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     domainActivation: Reference to the domain activation in the same zone as
-      the group.
+      the group. [Deprecated] Use multicast_domain_activation instead.
     groupDefinition: Optional. Reference to the global group definition for
-      the group.
+      the group. [Deprecated] Use multicast_group_definition instead.
     ipCidrRange: Output only. [Output only] Multicast group IP range.
     labels: Labels as key value pairs
+    multicastDomainActivation: Optional. Reference to the multicast domain
+      activation in the same zone.
+    multicastGroupDefinition: Optional. Reference to the global multicast
+      group definition.
     name: name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -3895,8 +3986,10 @@ class MulticastGroup(_messages.Message):
   groupDefinition = _messages.StringField(3)
   ipCidrRange = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  multicastDomainActivation = _messages.StringField(6)
+  multicastGroupDefinition = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):

@@ -17,6 +17,7 @@ import collections
 import copy
 import enum
 import sys
+from typing import List
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -261,7 +262,9 @@ def ListCategoryServices(resource, category, page_size=200, limit=sys.maxsize):
     )
 
 
-def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
+def UpdateConsumerPolicyV2Alpha(
+    consumerpolicy, name, force=False, validateonly=False
+):
   """Make API call to update a consumer policy.
 
   Args:
@@ -271,6 +274,8 @@ def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
       'projects/100/consumerPolicies/default'.
     force: Disable service with usage within last 30 days or disable recently
       enabled service.
+    validateonly: If set, validate the request and preview the result but do not
+      actually commit it. The default is false.
 
   Raises:
     exceptions.UpdateConsumerPolicyPermissionDeniedException: when updating a
@@ -287,6 +292,7 @@ def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
       googleApiServiceusageV2alphaConsumerPolicy=consumerpolicy,
       name=name,
       force=force,
+      validateOnly=validateonly,
   )
 
   try:
@@ -439,11 +445,12 @@ def ListAncestorGroups(resource: str, service: str, page_size=50):
 
 
 def AddEnableRule(
-    services,
-    project,
-    consumer_policy_name='default',
-    folder=None,
-    organization=None,
+    services: List[str],
+    project: str,
+    consumer_policy_name: str = 'default',
+    folder: str = None,
+    organization: str = None,
+    validate_only: bool = False,
 ):
   """Make API call to enable a specific service.
 
@@ -455,6 +462,8 @@ def AddEnableRule(
       "default".
     folder: The folder for which to enable the service.
     organization: The organization for which to enable the service.
+    validate_only: If True, the action will be validated and result will be
+      preview but not exceuted.
 
   Raises:
     exceptions.EnableServicePermissionDeniedException: when enabling API fails.
@@ -507,7 +516,11 @@ def AddEnableRule(
           )
       )
 
-    return UpdateConsumerPolicyV2Alpha(policy, policy_name)
+    if validate_only:
+      _GetServices(policy, policy_name, force=False, validate_only=True)
+      return
+    else:
+      return UpdateConsumerPolicyV2Alpha(policy, policy_name)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -518,12 +531,13 @@ def AddEnableRule(
 
 
 def RemoveEnableRule(
-    project,
-    service,
-    consumer_policy_name='default',
-    force=False,
-    folder=None,
-    organization=None,
+    project: str,
+    service: str,
+    consumer_policy_name: str = 'default',
+    force: bool = False,
+    folder: str = None,
+    organization: str = None,
+    validate_only: bool = False,
 ):
   """Make API call to disable a specific service.
 
@@ -539,6 +553,8 @@ def RemoveEnableRule(
       service to be disabled.
     folder: The folder for which to disable the service.
     organization: The organization for which to disable the service.
+    validate_only: If True, the action will be validated and result will be
+      preview but not exceuted.`
 
   Raises:
     exceptions.EnableServicePermissionDeniedException: when disabling API fails.
@@ -603,9 +619,15 @@ def RemoveEnableRule(
       if rule.services:
         updated_consumer_poicy.enableRules.append(rule)
 
-    return UpdateConsumerPolicyV2Alpha(
-        updated_consumer_poicy, policy_name, force=force
-    )
+    if validate_only:
+      _GetServices(
+          updated_consumer_poicy, policy_name, force=force, validate_only=True
+      )
+      return
+    else:
+      return UpdateConsumerPolicyV2Alpha(
+          updated_consumer_poicy, policy_name, force=force
+      )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -1164,3 +1186,25 @@ def _GetClientInstance(version='v1'):
       enable_resource_quota=enable_resource_quota)
   return apis_internal._GetClientInstance(
       'serviceusage', version, http_client=http_client)
+
+
+def _GetServices(
+    policy: str, policy_name: str, force: bool, validate_only: bool
+):
+  """Get list of services from operation response."""
+  operation = UpdateConsumerPolicyV2Alpha(
+      policy, policy_name, force, validate_only
+  )
+  services = set()
+  if operation.response:
+    reposonse_dict = encoding.MessageToPyValue(operation.response)
+    if 'enableRules' in reposonse_dict.keys():
+      enable_rules = reposonse_dict['enableRules']
+      keys = list(set().union(*(d.keys() for d in enable_rules)))
+      if 'services' in keys:
+        services_enabled = enable_rules[keys.index('services')]
+        for service in services_enabled['services']:
+          services.add(service)
+    log.status.Print("Consumer policy '" + policy_name + "' (validate-only):")
+    for service in services:
+      log.status.Print(service)

@@ -271,8 +271,7 @@ def AddRemoveServiceProjectFlags(parser):
 
 
 def GetDiscoveredServiceResourceSpec(
-    arg_name='discovered_service',
-    help_text=None
+    arg_name='discovered_service', help_text=None
 ):
   """Constructs and returns the Resource specification for Discovered Service."""
 
@@ -295,7 +294,7 @@ def GetDiscoveredServiceResourceArg(
     arg_name='discovered_service',
     help_text=None,
     positional=True,
-    required=True
+    required=True,
 ):
   """Constructs and returns the Discovered Service Resource Argument."""
 
@@ -447,6 +446,18 @@ def AddFindDiscoveredServiceFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
 
 
+def AddLookupDiscoveredServiceFlags(parser):
+  GetLocationResourceArg().AddToParser(parser)
+  parser.add_argument(
+      '--uri',
+      dest='uri',
+      required=True,
+      help=(
+          'GCP resource URI to look up service for.'
+      ),
+  )
+
+
 def AddDescribeDiscoveredWorkloadFlags(parser):
   GetDiscoveredWorkloadResourceArg().AddToParser(parser)
 
@@ -463,6 +474,18 @@ def AddFindDiscoveredWorkloadFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
 
 
+def AddLookupDiscoveredWorkloadFlags(parser):
+  GetLocationResourceArg().AddToParser(parser)
+  parser.add_argument(
+      '--uri',
+      dest='uri',
+      required=True,
+      help=(
+          'GCP resource URI to look up workload for.'
+      ),
+  )
+
+
 def AddDeleteApplicationFlags(parser):
   GetApplicationResourceArg().AddToParser(parser)
   parser.add_argument(
@@ -477,10 +500,7 @@ def AddDeleteApplicationFlags(parser):
   )
 
 
-def GetOperationResourceSpec(
-    arg_name='operation',
-    help_text=None
-):
+def GetOperationResourceSpec(arg_name='operation', help_text=None):
   """Constructs and returns the Resource specification for Operation."""
 
   def OperationAttributeConfig():
@@ -499,10 +519,7 @@ def GetOperationResourceSpec(
 
 
 def GetOperationResourceArg(
-    arg_name='operation',
-    help_text=None,
-    positional=True,
-    required=True
+    arg_name='operation', help_text=None, positional=True, required=True
 ):
   """Constructs and returns the Operation Resource Argument."""
 
@@ -651,8 +668,9 @@ def AddAttributesFlags(
           'PRODUCTION': 'Production environment',
           'STAGING': 'Staging environment',
           'TEST': 'Test environment',
-          'DEVELOPMENT': 'Development environment'},
-      help='Environment Type of the {}'.format(resource_name)
+          'DEVELOPMENT': 'Development environment',
+      },
+      help='Environment Type of the {}'.format(resource_name),
   )
   if release_track == base.ReleaseTrack.ALPHA:
     parser.add_argument(
