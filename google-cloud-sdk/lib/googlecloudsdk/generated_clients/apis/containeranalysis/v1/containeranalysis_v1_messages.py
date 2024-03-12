@@ -329,7 +329,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1078,6 +1082,13 @@ class CloudRepoSourceContext(_messages.Message):
   revisionId = _messages.StringField(3)
 
 
+class CloudStorageLocation(_messages.Message):
+  r"""Empty placeholder to denote that this is a Google Cloud Storage export
+  request.
+  """
+
+
+
 class Command(_messages.Message):
   r"""Command describes a step performed as part of the build pipeline.
 
@@ -1127,6 +1138,7 @@ class ComplianceNote(_messages.Message):
   Fields:
     cisBenchmark: A CisBenchmark attribute.
     description: A description about this compliance check.
+    impact: A string attribute.
     rationale: A rationale for the existence of this compliance check.
     remediation: A description of remediation steps if the compliance check
       fails.
@@ -1137,11 +1149,12 @@ class ComplianceNote(_messages.Message):
 
   cisBenchmark = _messages.MessageField('CisBenchmark', 1)
   description = _messages.StringField(2)
-  rationale = _messages.StringField(3)
-  remediation = _messages.StringField(4)
-  scanInstructions = _messages.BytesField(5)
-  title = _messages.StringField(6)
-  version = _messages.MessageField('ComplianceVersion', 7, repeated=True)
+  impact = _messages.StringField(3)
+  rationale = _messages.StringField(4)
+  remediation = _messages.StringField(5)
+  scanInstructions = _messages.BytesField(6)
+  title = _messages.StringField(7)
+  version = _messages.MessageField('ComplianceVersion', 8, repeated=True)
 
 
 class ComplianceOccurrence(_messages.Message):
@@ -2561,6 +2574,122 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Volume(_messages.Message):
   path = _messages.StringField(2)
 
 
+class ContaineranalysisProjectsLocationsNotesGetRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesGetRequest object.
+
+  Fields:
+    name: Required. The name of the note in the form of
+      `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsLocationsNotesListRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    pageSize: Number of notes to return in the list. Must be positive. Max
+      allowed page size is 1000. If not specified, page size defaults to 20.
+    pageToken: Token to provide to skip to a particular spot in the list.
+    parent: Required. The name of the project to list notes for in the form of
+      `projects/[PROJECT_ID]`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ContaineranalysisProjectsLocationsNotesOccurrencesListRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsNotesOccurrencesListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    name: Required. The name of the note to list occurrences for in the form
+      of `projects/[PROVIDER_ID]/notes/[NOTE_ID]`.
+    pageSize: Number of occurrences to return in the list.
+    pageToken: Token to provide to skip to a particular spot in the list.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest object.
+
+  Fields:
+    name: Required. The name of the occurrence in the form of
+      `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesGetRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesGetRequest object.
+
+  Fields:
+    name: Required. The name of the occurrence in the form of
+      `projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID]`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesGetVulnerabilitySummaryRequest(_messages.Message):
+  r"""A
+  ContaineranalysisProjectsLocationsOccurrencesGetVulnerabilitySummaryRequest
+  object.
+
+  Fields:
+    filter: The filter expression.
+    parent: Required. The name of the project to get a vulnerability summary
+      for in the form of `projects/[PROJECT_ID]`.
+  """
+
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ContaineranalysisProjectsLocationsOccurrencesListRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsOccurrencesListRequest object.
+
+  Fields:
+    filter: The filter expression.
+    pageSize: Number of occurrences to return in the list. Must be positive.
+      Max allowed page size is 1000. If not specified, page size defaults to
+      20.
+    pageToken: Token to provide to skip to a particular spot in the list.
+    parent: Required. The name of the project to list occurrences for in the
+      form of `projects/[PROJECT_ID]`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class ContaineranalysisProjectsLocationsResourcesExportSBOMRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsLocationsResourcesExportSBOMRequest object.
+
+  Fields:
+    exportSBOMRequest: A ExportSBOMRequest resource to be passed as the
+      request body.
+    name: Required. The name of the resource in the form of
+      `projects/[PROJECT_ID]/resources/[RESOURCE_URL]`.
+  """
+
+  exportSBOMRequest = _messages.MessageField('ExportSBOMRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ContaineranalysisProjectsNotesBatchCreateRequest(_messages.Message):
   r"""A ContaineranalysisProjectsNotesBatchCreateRequest object.
 
@@ -2864,6 +2993,20 @@ class ContaineranalysisProjectsOccurrencesTestIamPermissionsRequest(_messages.Me
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class ContaineranalysisProjectsResourcesExportSBOMRequest(_messages.Message):
+  r"""A ContaineranalysisProjectsResourcesExportSBOMRequest object.
+
+  Fields:
+    exportSBOMRequest: A ExportSBOMRequest resource to be passed as the
+      request body.
+    name: Required. The name of the resource in the form of
+      `projects/[PROJECT_ID]/resources/[RESOURCE_URL]`.
+  """
+
+  exportSBOMRequest = _messages.MessageField('ExportSBOMRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DSSEAttestationNote(_messages.Message):
@@ -3228,6 +3371,30 @@ class EnvelopeSignature(_messages.Message):
 
   keyid = _messages.StringField(1)
   sig = _messages.BytesField(2)
+
+
+class ExportSBOMRequest(_messages.Message):
+  r"""The request to generate and export SBOM. Target must be specified for
+  the request.
+
+  Fields:
+    cloudStorageLocation: Empty placeholder to denote that this is a Google
+      Cloud Storage export request.
+  """
+
+  cloudStorageLocation = _messages.MessageField('CloudStorageLocation', 1)
+
+
+class ExportSBOMResponse(_messages.Message):
+  r"""The response from a call to ExportSBOM.
+
+  Fields:
+    discoveryOccurrence: The name of the discovery occurrence in the form
+      "projects/{project_id}/occurrences/{OCCURRENCE_ID} It can be used to
+      track the progress of the SBOM export.
+  """
+
+  discoveryOccurrence = _messages.StringField(1)
 
 
 class Expr(_messages.Message):

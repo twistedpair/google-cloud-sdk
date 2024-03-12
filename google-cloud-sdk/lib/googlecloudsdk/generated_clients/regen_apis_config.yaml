@@ -1230,6 +1230,8 @@ apis:
       resources:
         projects.locations.jobs:
           path: projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}
+    v2:
+      discovery_doc: run_v2.json
   runapps:
     v1alpha1:
       discovery_doc: runapps_v1alpha1.json

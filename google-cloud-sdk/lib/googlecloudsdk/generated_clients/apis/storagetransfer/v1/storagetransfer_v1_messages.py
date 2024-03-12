@@ -105,9 +105,12 @@ class AwsS3Data(_messages.Message):
     bucketName: Required. S3 Bucket name (see [Creating a
       bucket](https://docs.aws.amazon.com/AmazonS3/latest/dev/create-bucket-
       get-location-example.html)).
-    cloudfrontDomain: Optional. Cloudfront domain name pointing to this bucket
-      (as origin), to use when fetching. Format: `https://{id}.cloudfront.net`
-      or any valid custom domain `https://...`
+    cloudfrontDomain: Optional. The CloudFront distribution domain name
+      pointing to this bucket, to use when fetching. See [Transfer from S3 via
+      CloudFront](https://cloud.google.com/storage-
+      transfer/docs/s3-cloudfront) for more information. Format:
+      `https://{id}.cloudfront.net` or any valid custom domain. Must begin
+      with `https://`.
     credentialsSecret: Optional. The Resource name of a secret in Secret
       Manager. AWS credentials must be stored in Secret Manager in JSON
       format: { "access_key_id": "ACCESS_KEY_ID", "secret_access_key":
@@ -116,8 +119,7 @@ class AwsS3Data(_messages.Message):
       access to a source: Amazon S3] (https://cloud.google.com/storage-
       transfer/docs/source-amazon-s3#secret_manager) for more information. If
       `credentials_secret` is specified, do not specify role_arn or
-      aws_access_key. This feature is in
-      [preview](https://cloud.google.com/terms/service-terms#1). Format:
+      aws_access_key. Format:
       `projects/{project_number}/secrets/{secret_name}`
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
@@ -164,8 +166,7 @@ class AzureBlobStorageData(_messages.Message):
       [Configure access to a source: Microsoft Azure Blob Storage]
       (https://cloud.google.com/storage-transfer/docs/source-microsoft-
       azure#secret_manager) for more information. If `credentials_secret` is
-      specified, do not specify azure_credentials. This feature is in
-      [preview](https://cloud.google.com/terms/service-terms#1). Format:
+      specified, do not specify azure_credentials. Format:
       `projects/{project_number}/secrets/{secret_name}`
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
@@ -417,11 +418,13 @@ class GcsData(_messages.Message):
   Fields:
     bucketName: Required. Cloud Storage bucket name. Must meet [Bucket Name
       Requirements](/storage/docs/naming#requirements).
-    managedFolderTransferEnabled: Transfer managed folders is in public
-      preview. This option is only applicable to the Cloud Storage source
-      bucket. If set to true: - The source managed folder will be transferred
-      to the destination bucket - The destination managed folder will always
-      be overwritten, other OVERWRITE options will not be supported
+    managedFolderTransferEnabled: Preview. Enables the transfer of managed
+      folders between Cloud Storage buckets. Set this option on the
+      gcs_data_source. If set to true: - Managed folders in the source bucket
+      are transferred to the destination bucket. - Managed folders in the
+      destination bucket are overwritten. Other OVERWRITE options are not
+      supported. See [Transfer Cloud Storage managed folders](/storage-
+      transfer/docs/managed-folders).
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'. The root path value must
@@ -616,9 +619,8 @@ class MetadataOptions(_messages.Message):
       buckets. If unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
     TimeCreatedValueValuesEnum: Specifies how each object's `timeCreated`
-      metadata is preserved for transfers between Google Cloud Storage
-      buckets. If unspecified, the default behavior is the same as
-      TIME_CREATED_SKIP.
+      metadata is preserved for transfers. If unspecified, the default
+      behavior is the same as TIME_CREATED_SKIP.
     UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
       attribute should be handled by the transfer. By default, UID is not
       preserved. Only applicable to transfers involving POSIX file systems,
@@ -650,8 +652,8 @@ class MetadataOptions(_messages.Message):
       unspecified, the default behavior is the same as
       TEMPORARY_HOLD_PRESERVE.
     timeCreated: Specifies how each object's `timeCreated` metadata is
-      preserved for transfers between Google Cloud Storage buckets. If
-      unspecified, the default behavior is the same as TIME_CREATED_SKIP.
+      preserved for transfers. If unspecified, the default behavior is the
+      same as TIME_CREATED_SKIP.
     uid: Specifies how each file's POSIX user ID (UID) attribute should be
       handled by the transfer. By default, UID is not preserved. Only
       applicable to transfers involving POSIX file systems, and ignored for
@@ -784,17 +786,18 @@ class MetadataOptions(_messages.Message):
 
   class TimeCreatedValueValuesEnum(_messages.Enum):
     r"""Specifies how each object's `timeCreated` metadata is preserved for
-    transfers between Google Cloud Storage buckets. If unspecified, the
-    default behavior is the same as TIME_CREATED_SKIP.
+    transfers. If unspecified, the default behavior is the same as
+    TIME_CREATED_SKIP.
 
     Values:
       TIME_CREATED_UNSPECIFIED: TimeCreated behavior is unspecified.
       TIME_CREATED_SKIP: Do not preserve the `timeCreated` metadata from the
         source object.
       TIME_CREATED_PRESERVE_AS_CUSTOM_TIME: Preserves the source object's
-        `timeCreated` metadata in the `customTime` field in the destination
-        object. Note that any value stored in the source object's `customTime`
-        field will not be propagated to the destination object.
+        `timeCreated` or `lastModified` metadata in the `customTime` field in
+        the destination object. Note that any value stored in the source
+        object's `customTime` field will not be propagated to the destination
+        object.
     """
     TIME_CREATED_UNSPECIFIED = 0
     TIME_CREATED_SKIP = 1
@@ -1554,14 +1557,20 @@ class StoragetransferTransferOperationsListRequest(_messages.Message):
   Fields:
     filter: Required. A list of query parameters specified as JSON text in the
       form of: `{"projectId":"my_project_id",
-      "jobNames":["jobid1","jobid2",...],
-      "operationNames":["opid1","opid2",...],
+      "jobNames":["jobid1","jobid2",...], "jobNamePattern":
+      "job_name_pattern", "operationNames":["opid1","opid2",...],
+      "operationNamePattern": "operation_name_pattern", "minCreationTime":
+      "min_creation_time", "maxCreationTime": "max_creation_time",
       "transferStatuses":["status1","status2",...]}` Since `jobNames`,
       `operationNames`, and `transferStatuses` support multiple values, they
-      must be specified with array notation. `projectId` is required.
-      `jobNames`, `operationNames`, and `transferStatuses` are optional. The
-      valid values for `transferStatuses` are case-insensitive: IN_PROGRESS,
-      PAUSED, SUCCESS, FAILED, and ABORTED.
+      must be specified with array notation. `projectId` is the only argument
+      that is required. If specified, `jobNamePattern` and
+      `operationNamePattern` must match the full job or operation name
+      respectively. '*' is a wildcard matching 0 or more characters.
+      `minCreationTime` and `maxCreationTime` should be timestamps encoded as
+      a string in the [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format.
+      The valid values for `transferStatuses` are case-insensitive:
+      IN_PROGRESS, PAUSED, SUCCESS, FAILED, and ABORTED.
     name: Required. The name of the type being listed; must be
       `transferOperations`.
     pageSize: The list page size. The max allowed value is 256.

@@ -2408,8 +2408,7 @@ class GoogleFirestoreAdminV1ListBackupsResponse(_messages.Message):
   r"""The response for FirestoreAdmin.ListBackups.
 
   Fields:
-    backups: List of all backups for the project. Ordered by `location ASC,
-      create_time DESC, name ASC`.
+    backups: List of all backups for the project.
     unreachable: List of locations that existing backups were not able to be
       fetched from. Instead of failing the entire requests when a single
       location is unreachable, this response returns a partial result set and

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 def GetClient(version=None):
@@ -41,6 +42,8 @@ def _FormatUpdateMask(update_mask):
 
 def _MakeReplicationMessage(messages, policy, locations, keys):
   """Create a replication message from its components."""
+  if not policy:
+    return None
   replication = messages.Replication(automatic=messages.Automatic())
   if policy == 'automatic' and keys:
     replication = messages.Replication(
@@ -247,18 +250,108 @@ class Secrets(Client):
                 expireTime=expire_time,
                 ttl=ttl,
                 topics=topics_message_list,
-                rotation=rotation),
-            updateMask=_FormatUpdateMask(update_mask)))
+                rotation=rotation,
+            ),
+            updateMask=_FormatUpdateMask(update_mask),
+        )
+    )
 
   def SetReplication(self, secret_ref, policy, locations, keys):
     """Set the replication policy on an existing secret.."""
-    replication = _MakeReplicationMessage(self.messages, policy, locations,
-                                          keys)
+    replication = _MakeReplicationMessage(
+        self.messages, policy, locations, keys
+    )
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
             name=secret_ref.RelativeName(),
             secret=self.messages.Secret(replication=replication),
-            updateMask=_FormatUpdateMask(['replication'])))
+            updateMask=_FormatUpdateMask(['replication']),
+        )
+    )
+
+  def GetIamPolicy(self, resource_ref):
+    """Get iam policy request.
+
+    Args:
+      resource_ref: Multitype resource (regional or global secret resource)
+
+    Returns:
+      Operation response
+    """
+    # check the secret type
+    is_regional = resource_ref.concept_type.name == 'regional secret'
+    secret_ref = resource_ref.result
+    if is_regional:
+      self.service = self.client.projects_locations_secrets
+      req = self.messages.SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest(
+          resource=secret_ref.RelativeName(),
+          options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION,
+      )
+    else:
+      self.service = self.client.projects_secrets
+      req = self.messages.SecretmanagerProjectsSecretsGetIamPolicyRequest(
+          options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION,
+          resource=secret_ref.RelativeName(),
+      )
+    return self.service.GetIamPolicy(req)
+
+  def SetIamPolicy(self, resource_ref, policy, update_mask=None):
+    """Set iam policy request.
+
+    Args:
+      resource_ref: Multitype resource (regional or global secret resource)
+      policy: policy to be set
+      update_mask: update mask
+
+    Returns:
+      Operation response
+    """
+    # check the secret type
+    is_regional = resource_ref.concept_type.name == 'regional secret'
+    secret_ref = resource_ref.result
+    if is_regional:
+      self.service = self.client.projects_locations_secrets
+      req = self.messages.SecretmanagerProjectsLocationsSecretsSetIamPolicyRequest(
+          resource=secret_ref.RelativeName(),
+          setIamPolicyRequest=self.messages.SetIamPolicyRequest(
+              policy=policy, updateMask=update_mask
+          ),
+      )
+    else:
+      self.service = self.client.projects_secrets
+      req = self.messages.SecretmanagerProjectsSecretsSetIamPolicyRequest(
+          resource=secret_ref.RelativeName(),
+          setIamPolicyRequest=self.messages.SetIamPolicyRequest(
+              policy=policy, updateMask=update_mask
+          ),
+      )
+    return self.service.SetIamPolicy(req)
+
+  def AddIamPolicyBinding(self, resorce_ref, member, role, condition=None):
+    """Add iam policy binding request."""
+    policy = self.GetIamPolicy(resorce_ref)
+    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
+    iam_util.AddBindingToIamPolicyWithCondition(
+        self.messages.Binding,
+        self.messages.Expr,
+        policy,
+        member,
+        role,
+        condition=condition,
+    )
+    return self.SetIamPolicy(resorce_ref, policy)
+
+  def RemoveIamPolicyBinding(self, resorce_ref, member, role, condition=None):
+    """Remove iam policy binding request."""
+    policy = self.GetIamPolicy(resorce_ref)
+    policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
+    iam_util.RemoveBindingFromIamPolicyWithCondition(
+        policy,
+        member,
+        role,
+        condition=condition,
+    )
+    return self.SetIamPolicy(resorce_ref, policy)
 
 
 class SecretsLatest(Client):

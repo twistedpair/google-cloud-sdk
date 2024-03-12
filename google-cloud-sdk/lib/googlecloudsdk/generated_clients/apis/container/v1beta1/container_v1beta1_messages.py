@@ -357,6 +357,8 @@ class AutopilotConversionStatus(_messages.Message):
       conversion.
 
   Fields:
+    autoCommitTime: Conversion will be automatically committed after this
+      time.
     autopilotNodeCount: Output only. The number of Autopilot nodes in the
       cluster. This field is only updated while MIGRATING.
     standardNodeCount: Output only. The number of Standard nodes in the
@@ -410,10 +412,11 @@ class AutopilotConversionStatus(_messages.Message):
     CONVERT_TO_AUTOPILOT = 1
     CONVERT_TO_STANDARD = 2
 
-  autopilotNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  standardNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  autoCommitTime = _messages.StringField(1)
+  autopilotNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  standardNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class AutoprovisioningNodePoolDefaults(_messages.Message):
@@ -2515,6 +2518,8 @@ class DatabaseEncryption(_messages.Message):
     keyName: Name of CloudKMS key to use for the encryption of secrets in
       etcd. Ex. projects/my-project/locations/global/keyRings/my-
       ring/cryptoKeys/my-key
+    lastOperationErrors: Output only. Records errors seen during
+      DatabaseEncryption update operations.
     state: The desired state of etcd encryption.
   """
 
@@ -2560,7 +2565,8 @@ class DatabaseEncryption(_messages.Message):
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 1)
   decryptionKeys = _messages.StringField(2, repeated=True)
   keyName = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  lastOperationErrors = _messages.MessageField('OperationError', 4, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class Date(_messages.Message):
@@ -3646,9 +3652,11 @@ class LoggingConfig(_messages.Message):
 
   Fields:
     componentConfig: Logging components configuration
+    rayLoggingConfig: Optional. Configuration of Ray logging.
   """
 
   componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
+  rayLoggingConfig = _messages.MessageField('RayLoggingConfig', 2)
 
 
 class LoggingVariantConfig(_messages.Message):
@@ -4038,11 +4046,13 @@ class MonitoringConfig(_messages.Message):
     componentConfig: Monitoring components configuration
     managedPrometheusConfig: Enable Google Cloud Managed Service for
       Prometheus in the cluster.
+    rayMonitoringConfig: Optional. Configuration of Ray Monitoring feature.
   """
 
   advancedDatapathObservabilityConfig = _messages.MessageField('AdvancedDatapathObservabilityConfig', 1)
   componentConfig = _messages.MessageField('MonitoringComponentConfig', 2)
   managedPrometheusConfig = _messages.MessageField('ManagedPrometheusConfig', 3)
+  rayMonitoringConfig = _messages.MessageField('RayMonitoringConfig', 4)
 
 
 class NetworkConfig(_messages.Message):
@@ -4436,6 +4446,7 @@ class NodeConfig(_messages.Message):
     resourceManagerTags: A map of resource manager tag keys and values to be
       attached to the nodes.
     sandboxConfig: Sandbox configuration for this node.
+    secondaryBootDiskUpdateStrategy: Secondary boot disk update strategy.
     secondaryBootDisks: List of secondary boot disks attached to the nodes.
     serviceAccount: The Google Cloud Platform Service Account to be used by
       the node VMs. Specify the email address of the Service Account;
@@ -4586,17 +4597,18 @@ class NodeConfig(_messages.Message):
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 30)
   resourceManagerTags = _messages.MessageField('ResourceManagerTags', 31)
   sandboxConfig = _messages.MessageField('SandboxConfig', 32)
-  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 33, repeated=True)
-  serviceAccount = _messages.StringField(34)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 35)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 36)
-  spot = _messages.BooleanField(37)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 38)
-  storagePools = _messages.StringField(39, repeated=True)
-  tags = _messages.StringField(40, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 41, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 42)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 43)
+  secondaryBootDiskUpdateStrategy = _messages.MessageField('SecondaryBootDiskUpdateStrategy', 33)
+  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 34, repeated=True)
+  serviceAccount = _messages.StringField(35)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 36)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 37)
+  spot = _messages.BooleanField(38)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 39)
+  storagePools = _messages.StringField(40, repeated=True)
+  tags = _messages.StringField(41, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 42, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 43)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 44)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -5251,6 +5263,21 @@ class Operation(_messages.Message):
   zone = _messages.StringField(15)
 
 
+class OperationError(_messages.Message):
+  r"""OperationError records errors seen from CloudKMS keys encountered during
+  updates to DatabaseEncryption configuration.
+
+  Fields:
+    errorMessage: Description of the error seen during the operation.
+    keyName: CloudKMS key resource that had the error.
+    timestamp: Time when the CloudKMS error was seen.
+  """
+
+  errorMessage = _messages.StringField(1)
+  keyName = _messages.StringField(2)
+  timestamp = _messages.StringField(3)
+
+
 class OperationProgress(_messages.Message):
   r"""Information about operation (or operation stage) progress.
 
@@ -5591,6 +5618,28 @@ class RayConfig(_messages.Message):
 
   Fields:
     enabled: Whether the Ray addon is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class RayLoggingConfig(_messages.Message):
+  r"""RayLoggingConfig specifies configuration of Ray logging.
+
+  Fields:
+    enabled: When Ray addon is enabled in a cluster, this flag controls
+      whether logging is enabled for Ray.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class RayMonitoringConfig(_messages.Message):
+  r"""RayMonitoringConfig specifies configuration of Ray Monitoring feature.
+
+  Fields:
+    enabled: When Ray addon is enabled in a cluster, this flag controls
+      whether monitoring is enabled for Ray.
   """
 
   enabled = _messages.BooleanField(1)
@@ -5994,11 +6043,19 @@ class SecondaryBootDisk(_messages.Message):
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
+class SecondaryBootDiskUpdateStrategy(_messages.Message):
+  r"""SecondaryBootDiskUpdateStrategy is a placeholder which will be extended
+  in the future to define different options for updating secondary boot disks.
+  """
+
+
+
 class SecretManagerConfig(_messages.Message):
   r"""SecretManagerConfig is config for secret manager enablement.
 
   Fields:
-    enabled: A boolean attribute.
+    enabled: Whether the cluster is configured to use secret manager CSI
+      component.
   """
 
   enabled = _messages.BooleanField(1)

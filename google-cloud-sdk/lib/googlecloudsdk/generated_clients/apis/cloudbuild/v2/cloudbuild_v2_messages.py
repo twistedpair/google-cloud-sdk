@@ -997,7 +997,7 @@ class CloudbuildProjectsLocationsWorkflowsWebhookRequest(_messages.Message):
 
 class Connection(_messages.Message):
   r"""A connection to a SCM like GitHub, GitHub Enterprise, Bitbucket Data
-  Center or GitLab.
+  Center, Bitbucket Cloud or GitLab.
 
   Messages:
     AnnotationsValue: Allows clients to store small amounts of arbitrary data.
@@ -2108,6 +2108,39 @@ class PipelineRef(_messages.Message):
   resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
 
 
+class PipelineResult(_messages.Message):
+  r"""A value produced by a Pipeline.
+
+  Enums:
+    TypeValueValuesEnum: Output only. The type of data that the result holds.
+
+  Fields:
+    description: Output only. Description of the result.
+    name: Output only. Name of the result.
+    type: Output only. The type of data that the result holds.
+    value: Output only. Value of the result.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of data that the result holds.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STRING: Default
+      ARRAY: Array type
+      OBJECT: Object type
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+    ARRAY = 2
+    OBJECT = 3
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  value = _messages.MessageField('ResultValue', 4)
+
+
 class PipelineRun(_messages.Message):
   r"""Message describing PipelineRun object
 
@@ -2142,8 +2175,12 @@ class PipelineRun(_messages.Message):
       cancellation.
     pipelineSpec: PipelineSpec defines the desired state of Pipeline.
     provenance: Optional. Provenance configuration.
+    record: Output only. The `Record` of this `PipelineRun`. Format: `projects
+      /{project}/locations/{location}/results/{result_id}/records/{record_id}`
     resolvedPipelineSpec: Output only. The exact PipelineSpec used to
       instantiate the run.
+    results: Optional. Output only. List of results written out by the
+      pipeline's containers
     security: Optional. Security configuration.
     serviceAccount: Service account used in the Pipeline.
     skippedTasks: Output only. List of tasks that were skipped due to when
@@ -2235,18 +2272,32 @@ class PipelineRun(_messages.Message):
   pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 12)
   pipelineSpec = _messages.MessageField('PipelineSpec', 13)
   provenance = _messages.MessageField('Provenance', 14)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 15)
-  security = _messages.MessageField('Security', 16)
-  serviceAccount = _messages.StringField(17)
-  skippedTasks = _messages.MessageField('SkippedTask', 18, repeated=True)
-  startTime = _messages.StringField(19)
-  timeouts = _messages.MessageField('TimeoutFields', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  worker = _messages.MessageField('Worker', 23)
-  workerPool = _messages.StringField(24)
-  workflow = _messages.StringField(25)
-  workspaces = _messages.MessageField('WorkspaceBinding', 26, repeated=True)
+  record = _messages.StringField(15)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 16)
+  results = _messages.MessageField('PipelineRunResult', 17, repeated=True)
+  security = _messages.MessageField('Security', 18)
+  serviceAccount = _messages.StringField(19)
+  skippedTasks = _messages.MessageField('SkippedTask', 20, repeated=True)
+  startTime = _messages.StringField(21)
+  timeouts = _messages.MessageField('TimeoutFields', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  worker = _messages.MessageField('Worker', 25)
+  workerPool = _messages.StringField(26)
+  workflow = _messages.StringField(27)
+  workspaces = _messages.MessageField('WorkspaceBinding', 28, repeated=True)
+
+
+class PipelineRunResult(_messages.Message):
+  r"""PipelineRunResult used to describe the results of a pipeline
+
+  Fields:
+    name: Output only. Name of the TaskRun
+    value: Output only. Value of the result.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.MessageField('ResultValue', 2)
 
 
 class PipelineSpec(_messages.Message):
@@ -2260,6 +2311,8 @@ class PipelineSpec(_messages.Message):
       display purpose for workflows using pipeline_spec, used by UI/gcloud cli
       for Workflows.
     params: List of parameters.
+    results: Optional. Output only. List of results written out by the
+      pipeline's containers
     tasks: List of Tasks that execute when this Pipeline is run.
     workspaces: Workspaces declares a set of named workspaces that are
       expected to be provided by a PipelineRun.
@@ -2268,8 +2321,9 @@ class PipelineSpec(_messages.Message):
   finallyTasks = _messages.MessageField('PipelineTask', 1, repeated=True)
   generatedYaml = _messages.StringField(2)
   params = _messages.MessageField('ParamSpec', 3, repeated=True)
-  tasks = _messages.MessageField('PipelineTask', 4, repeated=True)
-  workspaces = _messages.MessageField('PipelineWorkspaceDeclaration', 5, repeated=True)
+  results = _messages.MessageField('PipelineResult', 4, repeated=True)
+  tasks = _messages.MessageField('PipelineTask', 5, repeated=True)
+  workspaces = _messages.MessageField('PipelineWorkspaceDeclaration', 6, repeated=True)
 
 
 class PipelineTask(_messages.Message):
@@ -2481,7 +2535,6 @@ class Provenance(_messages.Message):
         state would not be impacted by the push failures.
       DISABLED: Disable the provenance push entirely.
     """
-
     ENABLED_UNSPECIFIED = 0
     REQUIRED = 1
     OPTIMISTIC = 2
@@ -2496,7 +2549,6 @@ class Provenance(_messages.Message):
         Analysis when it's regionalized.
       GLOBAL: Push provenance to Artifact Analysis in global region.
     """
-
     REGION_UNSPECIFIED = 0
     GLOBAL = 1
 
@@ -2510,7 +2562,6 @@ class Provenance(_messages.Message):
       ARTIFACT_PROJECT_ONLY: Only push to artifact project.
       BUILD_PROJECT_ONLY: Only push to build project.
     """
-
     STORAGE_UNSPECIFIED = 0
     PREFER_ARTIFACT_PROJECT = 1
     ARTIFACT_PROJECT_ONLY = 2
@@ -2743,6 +2794,9 @@ class Result(_messages.Message):
 class ResultValue(_messages.Message):
   r"""ResultValue holds different types of data for a single result.
 
+  Enums:
+    TypeValueValuesEnum: Output only. The type of data that the result holds.
+
   Messages:
     ObjectValValue: Value of the result if type is object.
 
@@ -2750,7 +2804,22 @@ class ResultValue(_messages.Message):
     arrayVal: Value of the result if type is array.
     objectVal: Value of the result if type is object.
     stringVal: Value of the result if type is string.
+    type: Output only. The type of data that the result holds.
   """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of data that the result holds.
+
+    Values:
+      TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STRING: Default
+      ARRAY: Array type
+      OBJECT: Object type
+    """
+    TYPE_UNSPECIFIED = 0
+    STRING = 1
+    ARRAY = 2
+    OBJECT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ObjectValValue(_messages.Message):
@@ -2779,6 +2848,7 @@ class ResultValue(_messages.Message):
   arrayVal = _messages.StringField(1, repeated=True)
   objectVal = _messages.MessageField('ObjectValValue', 2)
   stringVal = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class RunWorkflowCustomOperationMetadata(_messages.Message):
@@ -2855,7 +2925,6 @@ class Security(_messages.Message):
       PRIVILEGED: Privileged mode.
       UNPRIVILEGED: Unprivileged mode.
     """
-
     PRIVILEGE_MODE_UNSPECIFIED = 0
     PRIVILEGED = 1
     UNPRIVILEGED = 2
@@ -3302,6 +3371,8 @@ class TaskRun(_messages.Message):
     pipelineRun: Output only. Name of the parent PipelineRun. If it is a
       standalone TaskRun (no parent), this field will not be set.
     provenance: Optional. Provenance configuration.
+    record: Output only. The `Record` of this `TaskRun`. Format: `projects/{pr
+      oject}/locations/{location}/results/{result_id}/records/{record_id}`
     resolvedTaskSpec: Output only. The exact TaskSpec used to instantiate the
       run.
     results: Output only. List of results written out by the task's containers
@@ -3397,23 +3468,24 @@ class TaskRun(_messages.Message):
   params = _messages.MessageField('Param', 8, repeated=True)
   pipelineRun = _messages.StringField(9)
   provenance = _messages.MessageField('Provenance', 10)
-  resolvedTaskSpec = _messages.MessageField('TaskSpec', 11)
-  results = _messages.MessageField('TaskRunResult', 12, repeated=True)
-  security = _messages.MessageField('Security', 13)
-  serviceAccount = _messages.StringField(14)
-  sidecars = _messages.MessageField('SidecarState', 15, repeated=True)
-  startTime = _messages.StringField(16)
-  statusMessage = _messages.StringField(17)
-  steps = _messages.MessageField('StepState', 18, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 19)
-  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 20)
-  taskSpec = _messages.MessageField('TaskSpec', 21)
-  timeout = _messages.StringField(22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  worker = _messages.MessageField('Worker', 25)
-  workerPool = _messages.StringField(26)
-  workspaces = _messages.MessageField('WorkspaceBinding', 27, repeated=True)
+  record = _messages.StringField(11)
+  resolvedTaskSpec = _messages.MessageField('TaskSpec', 12)
+  results = _messages.MessageField('TaskRunResult', 13, repeated=True)
+  security = _messages.MessageField('Security', 14)
+  serviceAccount = _messages.StringField(15)
+  sidecars = _messages.MessageField('SidecarState', 16, repeated=True)
+  startTime = _messages.StringField(17)
+  statusMessage = _messages.StringField(18)
+  steps = _messages.MessageField('StepState', 19, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 20)
+  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 21)
+  taskSpec = _messages.MessageField('TaskSpec', 22)
+  timeout = _messages.StringField(23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  worker = _messages.MessageField('Worker', 26)
+  workerPool = _messages.StringField(27)
+  workspaces = _messages.MessageField('WorkspaceBinding', 28, repeated=True)
 
 
 class TaskRunResult(_messages.Message):
@@ -3893,6 +3965,7 @@ class WorkspaceBinding(_messages.Message):
       should be used for this binding (i.e. the volume will be mounted at this
       sub directory). +optional
     volumeClaim: Volume claim that will be created in the same namespace.
+      Deprecated, do not use for workloads that don't use workerpools.
   """
 
   name = _messages.StringField(1)

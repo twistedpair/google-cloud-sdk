@@ -225,8 +225,8 @@ class GoogleCloudSecuritypostureV1alphaCustomConstraint(_messages.Message):
       organization. Format of the name should be * `organizations/{organizatio
       n_id}/customConstraints/{custom_constraint_id}` Example:
       `organizations/123/customConstraints/custom.createOnlyE2TypeVms` The max
-      length is 70 characters and the minimum length is 1. Note that the
-      prefix `organizations/{organization_id}/customConstraints/` is not
+      length is 62 characters and the min length is 1. Note that the prefix
+      `organizations/{organization_id}/customConstraints/custom.` is not
       counted.
     resourceTypes: Immutable. The resource instance type on which this policy
       applies. Format will be of the form : `/` Example: *
@@ -763,6 +763,7 @@ class Posture(_messages.Message):
   Definition of a Posture.
 
   Enums:
+    CategoriesValueListEntryValuesEnum:
     StateValueValuesEnum: Required. State of Posture resource.
 
   Messages:
@@ -772,6 +773,9 @@ class Posture(_messages.Message):
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
       and used by the user, and not by Google Security Postures. .
+    categories: Output only. List of categories associated with a Posture.
+      Based on it's associated policies the service defines the category,
+      hence it is OUTPUT_ONLY field.
     createTime: Output only. The timestamp that the posture was created.
     description: Optional. User provided description of the posture.
     etag: Optional. An opaque tag indicating the current version of the
@@ -794,6 +798,16 @@ class Posture(_messages.Message):
     state: Required. State of Posture resource.
     updateTime: Output only. The timestamp that the posture was updated.
   """
+
+  class CategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      CATEGORY_UNSPECIFIED: Unspecified Category.
+      AI: AI Category.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    AI = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -838,15 +852,16 @@ class Posture(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  name = _messages.StringField(5)
-  policySets = _messages.MessageField('PolicySet', 6, repeated=True)
-  reconciling = _messages.BooleanField(7)
-  revisionId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  policySets = _messages.MessageField('PolicySet', 7, repeated=True)
+  reconciling = _messages.BooleanField(8)
+  revisionId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class PostureDeployment(_messages.Message):
@@ -854,6 +869,7 @@ class PostureDeployment(_messages.Message):
   Message describing PostureDeployment resource.
 
   Enums:
+    CategoriesValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. State of PostureDeployment resource.
 
   Messages:
@@ -863,6 +879,8 @@ class PostureDeployment(_messages.Message):
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
       and used by the user, and not by Google Security Postures. .
+    categories: Output only. Categories are a function of policies present in
+      a Posture Version associated with this PostureDeployment.
     createTime: Output only. The timestamp that the PostureDeployment was
       created.
     description: Optional. User provided description of the PostureDeployment.
@@ -903,6 +921,16 @@ class PostureDeployment(_messages.Message):
     updateTime: Output only. The timestamp that the PostureDeployment was
       updated.
   """
+
+  class CategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      CATEGORY_UNSPECIFIED: Unspecified Category.
+      AI: AI Category.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    AI = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -953,19 +981,20 @@ class PostureDeployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  desiredPostureId = _messages.StringField(4)
-  desiredPostureRevisionId = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  failureMessage = _messages.StringField(7)
-  name = _messages.StringField(8)
-  postureId = _messages.StringField(9)
-  postureRevisionId = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  targetResource = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  desiredPostureId = _messages.StringField(5)
+  desiredPostureRevisionId = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  failureMessage = _messages.StringField(8)
+  name = _messages.StringField(9)
+  postureId = _messages.StringField(10)
+  postureRevisionId = _messages.StringField(11)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  targetResource = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class PostureDetails(_messages.Message):
@@ -997,9 +1026,13 @@ class PostureTemplate(_messages.Message):
   Message describing PostureTemplate object.
 
   Enums:
+    CategoriesValueListEntryValuesEnum:
     StateValueValuesEnum: Output only. State of PostureTemplate resource.
 
   Fields:
+    categories: Output only. List of categories associated with a
+      PostureTemplate. Based on it's associated policies we define the
+      category, hence it is OUTPUT_ONLY field.
     description: Output only. Description of the Posture template.
     name: Output only. Identifier. The name of the Posture template will be of
       the format organizations/{organization}/locations/{location}/postureTemp
@@ -1008,6 +1041,16 @@ class PostureTemplate(_messages.Message):
     revisionId: Output only. The revision_id of a PostureTemplate.
     state: Output only. State of PostureTemplate resource.
   """
+
+  class CategoriesValueListEntryValuesEnum(_messages.Enum):
+    r"""CategoriesValueListEntryValuesEnum enum type.
+
+    Values:
+      CATEGORY_UNSPECIFIED: Unspecified Category.
+      AI: AI Category.
+    """
+    CATEGORY_UNSPECIFIED = 0
+    AI = 1
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.
@@ -1023,11 +1066,12 @@ class PostureTemplate(_messages.Message):
     ACTIVE = 1
     DEPRECATED = 2
 
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  policySets = _messages.MessageField('PolicySet', 3, repeated=True)
-  revisionId = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 1, repeated=True)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  policySets = _messages.MessageField('PolicySet', 4, repeated=True)
+  revisionId = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class Property(_messages.Message):

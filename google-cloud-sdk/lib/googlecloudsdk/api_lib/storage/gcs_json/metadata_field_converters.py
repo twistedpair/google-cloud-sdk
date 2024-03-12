@@ -94,6 +94,12 @@ def process_default_storage_class(default_storage_class):
   return default_storage_class
 
 
+def process_hierarchical_namespace(enabled=None):
+  """Converts Heirarchical Namespace boolean to Apitools object."""
+  messages = apis.GetMessagesModule('storage', 'v1')
+  return messages.Bucket.HierarchicalNamespaceValue(enabled=enabled)
+
+
 def process_iam_file(file_path, custom_etag=None):
   """Converts IAM file to Apitools objects."""
   if (

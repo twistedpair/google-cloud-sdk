@@ -792,7 +792,7 @@ class Instance(_messages.Message):
     MetadataValue: Custom metadata to apply to this instance. For example, to
       specify a Cloud Storage bucket for automatic backup, you can use the
       `gcs-data-bucket` metadata tag. Format: `"--metadata=gcs-data-
-      bucket=``BUCKET''"`.
+      bucket=BUCKET"`.
 
   Fields:
     acceleratorConfig: The hardware accelerator used on this instance. If you
@@ -843,7 +843,7 @@ class Instance(_messages.Message):
     metadata: Custom metadata to apply to this instance. For example, to
       specify a Cloud Storage bucket for automatic backup, you can use the
       `gcs-data-bucket` metadata tag. Format: `"--metadata=gcs-data-
-      bucket=``BUCKET''"`.
+      bucket=BUCKET"`.
     migrated: Output only. Bool indicating whether this notebook has been
       migrated to a Workbench Instance
     name: Output only. The name of this notebook instance. Format:
@@ -1014,7 +1014,7 @@ class Instance(_messages.Message):
   class MetadataValue(_messages.Message):
     r"""Custom metadata to apply to this instance. For example, to specify a
     Cloud Storage bucket for automatic backup, you can use the `gcs-data-
-    bucket` metadata tag. Format: `"--metadata=gcs-data-bucket=``BUCKET''"`.
+    bucket` metadata tag. Format: `"--metadata=gcs-data-bucket=BUCKET"`.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

@@ -376,6 +376,124 @@ class BatchProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class BatchProjectsLocationsResourceAllowancesCreateRequest(_messages.Message):
+  r"""A BatchProjectsLocationsResourceAllowancesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource name where the ResourceAllowance
+      will be created. Pattern: "projects/{project}/locations/{location}"
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    resourceAllowance: A ResourceAllowance resource to be passed as the
+      request body.
+    resourceAllowanceId: ID used to uniquely identify the ResourceAllowance
+      within its parent scope. This field should contain at most 63 characters
+      and must start with lowercase characters. Only lowercase characters,
+      numbers and '-' are accepted. The '-' character cannot be the first or
+      the last one. A system generated ID will be used if the field is not
+      set. The resource_allowance.name field in the request will be ignored
+      and the created resource name of the ResourceAllowance will be
+      "{parent}/resourceAllowances/{resource_allowance_id}".
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  resourceAllowance = _messages.MessageField('ResourceAllowance', 3)
+  resourceAllowanceId = _messages.StringField(4)
+
+
+class BatchProjectsLocationsResourceAllowancesDeleteRequest(_messages.Message):
+  r"""A BatchProjectsLocationsResourceAllowancesDeleteRequest object.
+
+  Fields:
+    name: Required. ResourceAllowance name.
+    reason: Optional. Reason for this deletion.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  reason = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+
+
+class BatchProjectsLocationsResourceAllowancesGetRequest(_messages.Message):
+  r"""A BatchProjectsLocationsResourceAllowancesGetRequest object.
+
+  Fields:
+    name: Required. ResourceAllowance name.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BatchProjectsLocationsResourceAllowancesListRequest(_messages.Message):
+  r"""A BatchProjectsLocationsResourceAllowancesListRequest object.
+
+  Fields:
+    pageSize: Optional. Page size.
+    pageToken: Optional. Page token.
+    parent: Required. Parent path.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BatchProjectsLocationsResourceAllowancesPatchRequest(_messages.Message):
+  r"""A BatchProjectsLocationsResourceAllowancesPatchRequest object.
+
+  Fields:
+    name: Identifier. ResourceAllowance name. For example:
+      "projects/123456/locations/us-central1/resourceAllowances/resource-
+      allowance-1".
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    resourceAllowance: A ResourceAllowance resource to be passed as the
+      request body.
+    updateMask: Required. Mask of fields to update. Field mask is used to
+      specify the fields to be overwritten in the ResourceAllowance resource
+      by the update. The fields specified in the update_mask are relative to
+      the resource, not the full request. A field will be overwritten if it is
+      in the mask. If the user does not provide a mask then all fields will be
+      overwritten. UpdateResourceAllowance request now only supports update on
+      `limit` field.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  resourceAllowance = _messages.MessageField('ResourceAllowance', 3)
+  updateMask = _messages.StringField(4)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -441,6 +559,52 @@ class ComputeResource(_messages.Message):
   cpuMilli = _messages.IntegerField(2)
   gpuCount = _messages.IntegerField(3)
   memoryMib = _messages.IntegerField(4)
+
+
+class ConsumptionReport(_messages.Message):
+  r"""ConsumptionReport is the report of ResourceAllowance consumptions in a
+  time period.
+
+  Messages:
+    LatestPeriodConsumptionsValue: Output only. ResourceAllowance consumptions
+      in the latest calendar period. Key is the calendar period in string
+      format. Batch currently supports HOUR, DAY, MONTH and YEAR.
+
+  Fields:
+    latestPeriodConsumptions: Output only. ResourceAllowance consumptions in
+      the latest calendar period. Key is the calendar period in string format.
+      Batch currently supports HOUR, DAY, MONTH and YEAR.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LatestPeriodConsumptionsValue(_messages.Message):
+    r"""Output only. ResourceAllowance consumptions in the latest calendar
+    period. Key is the calendar period in string format. Batch currently
+    supports HOUR, DAY, MONTH and YEAR.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        LatestPeriodConsumptionsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        LatestPeriodConsumptionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LatestPeriodConsumptionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PeriodConsumption attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PeriodConsumption', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  latestPeriodConsumptions = _messages.MessageField('LatestPeriodConsumptionsValue', 1)
 
 
 class Container(_messages.Message):
@@ -781,6 +945,24 @@ class InstanceStatus(_messages.Message):
   taskPack = _messages.IntegerField(4)
 
 
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class Job(_messages.Message):
   r"""The Cloud Batch Job description.
 
@@ -824,8 +1006,7 @@ class Job(_messages.Message):
     status: Output only. Job status. It is read only for users.
     taskGroups: Required. TaskGroups in the Job. Only one TaskGroup is
       supported now.
-    uid: Output only. A system generated unique ID (in UUID4 format) for the
-      Job.
+    uid: Output only. A system generated unique ID for the Job.
     updateTime: Output only. The last time the Job was updated.
   """
 
@@ -1099,6 +1280,67 @@ class LifecyclePolicy(_messages.Message):
   actionCondition = _messages.MessageField('ActionCondition', 2)
 
 
+class Limit(_messages.Message):
+  r"""UsageResourceAllowance limitation.
+
+  Enums:
+    CalendarPeriodValueValuesEnum: Optional. A CalendarPeriod represents the
+      abstract concept of a time period that has a canonical start.
+
+  Fields:
+    calendarPeriod: Optional. A CalendarPeriod represents the abstract concept
+      of a time period that has a canonical start.
+    limit: Required. Limit value of a UsageResourceAllowance within its one
+      duration. Limit cannot be a negative value. Default is 0. For example,
+      you can set `limit` as 10000.0 with duration of the current month by
+      setting `calendar_period` field as monthly. That means in your current
+      month, 10000.0 is the cour hour limitation that your resources are
+      allowed to consume.
+  """
+
+  class CalendarPeriodValueValuesEnum(_messages.Enum):
+    r"""Optional. A CalendarPeriod represents the abstract concept of a time
+    period that has a canonical start.
+
+    Values:
+      CALENDAR_PERIOD_UNSPECIFIED: Unspecified.
+      MONTH: The month starts on the first date of the month and resets at the
+        beginning of each month.
+      QUARTER: The quarter starts on dates January 1, April 1, July 1, and
+        October 1 of each year and resets at the beginning of the next
+        quarter.
+      YEAR: The year starts on January 1 and resets at the beginning of the
+        next year.
+      WEEK: The week period starts and resets every Monday.
+      DAY: The day starts at 12:00am.
+    """
+    CALENDAR_PERIOD_UNSPECIFIED = 0
+    MONTH = 1
+    QUARTER = 2
+    YEAR = 3
+    WEEK = 4
+    DAY = 5
+
+  calendarPeriod = _messages.EnumField('CalendarPeriodValueValuesEnum', 1)
+  limit = _messages.FloatField(2)
+
+
+class LimitStatus(_messages.Message):
+  r"""UsageResourceAllowanceStatus detail about usage consumption.
+
+  Fields:
+    consumed: Output only. Accumulated consumption during
+      `consumption_interval`.
+    consumptionInterval: Output only. The consumption interval.
+    limit: Output only. Limit value of a UsageResourceAllowance within its one
+      duration.
+  """
+
+  consumed = _messages.FloatField(1)
+  consumptionInterval = _messages.MessageField('Interval', 2)
+  limit = _messages.FloatField(3)
+
+
 class ListJobsResponse(_messages.Message):
   r"""ListJob Response.
 
@@ -1137,6 +1379,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListResourceAllowancesResponse(_messages.Message):
+  r"""ListResourceAllowances Response.
+
+  Fields:
+    nextPageToken: Next page token.
+    resourceAllowances: ResourceAllowances.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceAllowances = _messages.MessageField('ResourceAllowance', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListTasksResponse(_messages.Message):
@@ -1421,6 +1677,20 @@ class NetworkPolicy(_messages.Message):
   networkInterfaces = _messages.MessageField('NetworkInterface', 1, repeated=True)
 
 
+class Notification(_messages.Message):
+  r"""Notification on resource state change.
+
+  Fields:
+    pubsubTopic: Required. The Pub/Sub topic where notifications like the
+      resource allowance state changes will be published. The topic must exist
+      in the same project as the job and billings will be charged to this
+      project. If not specified, no Pub/Sub messages will be sent. Topic
+      format: `projects/{project}/topics/{topic}`.
+  """
+
+  pubsubTopic = _messages.StringField(1)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1573,6 +1843,19 @@ class PD(_messages.Message):
   existing = _messages.BooleanField(3)
 
 
+class PeriodConsumption(_messages.Message):
+  r"""A PeriodConsumption object.
+
+  Fields:
+    consumed: Output only. Accumulated consumption during
+      `consumption_interval`.
+    consumptionInterval: Output only. The consumption interval.
+  """
+
+  consumed = _messages.FloatField(1)
+  consumptionInterval = _messages.MessageField('Interval', 2)
+
+
 class PlacementPolicy(_messages.Message):
   r"""PlacementPolicy describes a group placement policy for the VMs
   controlled by this AllocationPolicy.
@@ -1591,6 +1874,77 @@ class PlacementPolicy(_messages.Message):
 
   collocation = _messages.StringField(1)
   maxDistance = _messages.IntegerField(2)
+
+
+class ResourceAllowance(_messages.Message):
+  r"""The Resource Allowance description for Cloud Batch.
+
+  Messages:
+    LabelsValue: Optional. Labels are attributes that can be set and used by
+      both the user and by Batch. Labels must meet the following constraints:
+      * Keys and values can contain only lowercase letters, numeric
+      characters, underscores, and dashes. * All characters must use UTF-8
+      encoding, and international characters are allowed. * Keys must start
+      with a lowercase letter or international character. * Each resource is
+      limited to a maximum of 64 labels. Both keys and values are additionally
+      constrained to be <= 128 bytes.
+
+  Fields:
+    createTime: Output only. Time when the ResourceAllowance was created.
+    labels: Optional. Labels are attributes that can be set and used by both
+      the user and by Batch. Labels must meet the following constraints: *
+      Keys and values can contain only lowercase letters, numeric characters,
+      underscores, and dashes. * All characters must use UTF-8 encoding, and
+      international characters are allowed. * Keys must start with a lowercase
+      letter or international character. * Each resource is limited to a
+      maximum of 64 labels. Both keys and values are additionally constrained
+      to be <= 128 bytes.
+    name: Identifier. ResourceAllowance name. For example:
+      "projects/123456/locations/us-central1/resourceAllowances/resource-
+      allowance-1".
+    notifications: Optional. Notification configurations.
+    uid: Output only. A system generated unique ID (in UUID4 format) for the
+      ResourceAllowance.
+    usageResourceAllowance: The detail of usage resource allowance.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels are attributes that can be set and used by both the
+    user and by Batch. Labels must meet the following constraints: * Keys and
+    values can contain only lowercase letters, numeric characters,
+    underscores, and dashes. * All characters must use UTF-8 encoding, and
+    international characters are allowed. * Keys must start with a lowercase
+    letter or international character. * Each resource is limited to a maximum
+    of 64 labels. Both keys and values are additionally constrained to be <=
+    128 bytes.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  notifications = _messages.MessageField('Notification', 4, repeated=True)
+  uid = _messages.StringField(5)
+  usageResourceAllowance = _messages.MessageField('UsageResourceAllowance', 6)
 
 
 class ResourceUsage(_messages.Message):
@@ -2169,6 +2523,64 @@ class TaskStatus(_messages.Message):
   resourceUsage = _messages.MessageField('TaskResourceUsage', 1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   statusEvents = _messages.MessageField('StatusEvent', 3, repeated=True)
+
+
+class UsageResourceAllowance(_messages.Message):
+  r"""UsageResourceAllowance describes the detail of usage resource allowance.
+
+  Fields:
+    spec: Required. Spec of a usage ResourceAllowance.
+    status: Output only. Status of a usage ResourceAllowance.
+  """
+
+  spec = _messages.MessageField('UsageResourceAllowanceSpec', 1)
+  status = _messages.MessageField('UsageResourceAllowanceStatus', 2)
+
+
+class UsageResourceAllowanceSpec(_messages.Message):
+  r"""Spec of a usage ResourceAllowance.
+
+  Fields:
+    limit: Required. Threshold of a UsageResourceAllowance limiting how many
+      resources can be consumed for each type.
+    type: Required. Spec type is unique for each usage ResourceAllowance.
+      Batch now only supports type as "cpu-core-hours" for CPU usage
+      consumption tracking.
+  """
+
+  limit = _messages.MessageField('Limit', 1)
+  type = _messages.StringField(2)
+
+
+class UsageResourceAllowanceStatus(_messages.Message):
+  r"""Status of a usage ResourceAllowance.
+
+  Enums:
+    StateValueValuesEnum: Output only. ResourceAllowance state.
+
+  Fields:
+    limitStatus: Output only. ResourceAllowance consumption status for usage
+      resources.
+    report: Output only. The report of ResourceAllowance consumptions in a
+      time period.
+    state: Output only. ResourceAllowance state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. ResourceAllowance state.
+
+    Values:
+      RESOURCE_ALLOWANCE_STATE_UNSPECIFIED: Unspecified.
+      RESOURCE_ALLOWANCE_ACTIVE: ResourceAllowance is active and in use.
+      RESOURCE_ALLOWANCE_DEPLETED: ResourceAllowance limit is reached.
+    """
+    RESOURCE_ALLOWANCE_STATE_UNSPECIFIED = 0
+    RESOURCE_ALLOWANCE_ACTIVE = 1
+    RESOURCE_ALLOWANCE_DEPLETED = 2
+
+  limitStatus = _messages.MessageField('LimitStatus', 1)
+  report = _messages.MessageField('ConsumptionReport', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class Volume(_messages.Message):

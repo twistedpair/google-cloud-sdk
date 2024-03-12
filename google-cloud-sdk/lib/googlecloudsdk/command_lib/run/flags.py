@@ -1032,7 +1032,8 @@ def AddSandboxArg(parser, hidden=False):
 
 def AddVpcConnectorArg(parser):
   parser.add_argument(
-      '--vpc-connector', help='Set a VPC connector for this resource.'
+      '--vpc-connector',
+      help='Set a VPC connector for this resource.',
   )
 
 
@@ -1220,15 +1221,22 @@ class _ScaleValue(object):
         )
 
 
-def AddMinInstancesFlag(parser):
+def AddMinInstancesFlag(parser, resource_kind='service'):
   """Add min scaling flag."""
+  help_text = (
+      'The minimum number of container instances for this Revision of the'
+      " Service to run or 'default' to remove any minimum."
+  )
+  if resource_kind == 'worker':
+    help_text = (
+        'The minimum number of container instances for this Worker to run or'
+        " 'default' to remove any minimum. These instances will be divided"
+        ' among all Revisions receiving a percentage of instance split.'
+    )
   parser.add_argument(
       '--min-instances',
       type=_ScaleValue,
-      help=(
-          'The minimum number of container instances for this Revision of the '
-          "Service to run or 'default' to remove any minimum."
-      ),
+      help=help_text,
   )
 
 
@@ -1316,8 +1324,10 @@ def AddDeployHealthCheckFlag(parser):
       action=arg_parsers.StoreTrueFalseAction,
       help=(
           'Schedules a single instance of the Revision and waits for it to'
-          ' start listening on its port for the deployment to succeed. This'
-          ' check is enabled by default if unspecified.'
+          ' pass its startup probe for the deployment to succeed. If disabled,'
+          ' the startup probe runs only when the revision is first started via'
+          ' invocation or by setting min-instances. This check is enabled by'
+          ' default when unspecified.'
       ),
   )
 
@@ -1921,6 +1931,29 @@ def _GetServiceScalingChanges(args):
   return result
 
 
+def _GetWorkerScalingChanges(args):
+  """Return the changes for engine-level scaling for Worker resources for the given args."""
+  result = []
+  if 'min_instances' in args and args.min_instances is not None:
+    # TODO(b/322180968): Once Worker API is ready, replace Service related
+    # references.
+    scale_value = args.min_instances
+    if scale_value.restore_default or scale_value.instance_count == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MIN_SCALE_ANNOTATION,
+              str(scale_value.instance_count),
+          )
+      )
+  return result
+
+
 def _IsVolumeMountKey(key):
   """Returns True if the key refers to a volume mount."""
   return key.startswith('/')
@@ -2110,35 +2143,37 @@ def _GetIngressChanges(args):
     )
 
 
-def _GetBaseImagesMap(container_args):
-  """Returns a string representation of the container name -> base image map."""
+def _GetBaseImagesToSet(container_args):
+  """Returns a dict of base images to set."""
 
-  base_images_dict = {
+  return {
       name: args.base_image
       for (name, args) in container_args.items()
       if hasattr(args, 'base_image') and args.base_image
   }
-  if base_images_dict:
-    base_images_str = ', '.join(
-        f'"{key}":"{value}"' for key, value in base_images_dict.items()
-    )
-    return '{' + base_images_str + '}'
-  else:
-    return None
+
+
+def _GetBaseImagesToClear(container_args):
+  """Returns a list of containers to clear base images from."""
+
+  return [
+      name
+      for name, args in container_args.items()
+      if hasattr(args, 'clear_base_image') and args.clear_base_image
+  ]
 
 
 def _GetBaseImageChanges(args):
   """Returns changes to base image based on the flags."""
-  base_images = _GetBaseImagesMap(args.containers)
-  if base_images is None:
-    return []
-
-  return [
-      config_changes.RuntimeChange(
-          revision.BASE_IMAGE_UPDATE_RUNTIME_CLASS_NAME),
-      config_changes.SetTemplateAnnotationChange(
-          revision.BASE_IMAGES_ANNOTATION, base_images),
-  ]
+  base_images_to_set = _GetBaseImagesToSet(args.containers)
+  base_images_to_clear = _GetBaseImagesToClear(args.containers)
+  if base_images_to_set or base_images_to_clear:
+    return [
+        config_changes.BaseImagesAnnotationChange(
+            updates=base_images_to_set, deletes=base_images_to_clear
+        ),
+    ]
+  return []
 
 
 def _PrependClientNameAndVersionChange(args, changes):
@@ -2168,7 +2203,6 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if hasattr(args, 'image') and args.image is not None:
     changes.append(config_changes.ImageChange(args.image))
 
-  changes.extend(_GetScalingChanges(args))
   if _HasEnvChanges(args):
     changes.append(_GetEnvChanges(args))
 
@@ -2643,6 +2677,55 @@ def GetRunJobConfigurationOverrides(args):
         )
     )
   return overrides
+
+
+# TODO(b/322180968): There exist a few configurations that are "locked" while
+# calling Services API for Workers.
+# These will be done in the server side once Worker API is ready.
+def GetWorkerConfigurationChanges(args, release_track=base.ReleaseTrack.ALPHA):
+  """Returns a list of changes to the worker config, based on the flags set."""
+  changes = []
+  # ingress = none
+  changes.append(
+      config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION, 'none')
+  )
+  # cpu is always on
+  changes.append(config_changes.CpuThrottlingChange(throttling=False))
+  # healthcheck disabled by default
+  changes.append(config_changes.HealthCheckChange(health_check=False))
+  # disable default url
+  changes.append(config_changes.DefaultUrlChange(default_url=False))
+  changes.extend(_GetConfigurationChanges(args, release_track=release_track))
+  changes.extend(_GetWorkerScalingChanges(args))
+  if _HasTrafficChanges(args):
+    changes.append(_GetTrafficChanges(args))
+  if 'update_annotations' in args and args.update_annotations:
+    for key, value in args.update_annotations.items():
+      changes.append(config_changes.SetAnnotationChange(key, value))
+  if 'revision_suffix' in args and args.revision_suffix:
+    changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
+  if 'gpu_type' in args and args.gpu_type:
+    changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+
+  _PrependClientNameAndVersionChange(args, changes)
+
+  if FlagIsExplicitlySet(args, 'depends_on'):
+    changes.append(
+        config_changes.ContainerDependenciesChange({'': args.depends_on})
+    )
+
+  if FlagIsExplicitlySet(args, 'containers'):
+    dependency_changes = {
+        container_name: container_args.depends_on
+        for container_name, container_args in args.containers.items()
+        if container_args.IsSpecified('depends_on')
+    }
+    if dependency_changes:
+      changes.append(
+          config_changes.ContainerDependenciesChange(dependency_changes)
+      )
+
+  return changes
 
 
 def ValidateResource(resource_ref):
@@ -3768,11 +3851,27 @@ def FunctionArg():
 
 # TODO(b/312784518) link to/list supported values
 def BaseImageArg():
-  return base.Argument(
-      '--base-image',
-      hidden=True,
-      help='Opts in to use base image updates using the specified image.',
+  """Adds automatic base image update related flags."""
+  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group.AddArgument(
+      base.Argument(
+          '--base-image',
+          hidden=True,
+          help=(
+              'Opts in to use automatic base image updates using the specified'
+              ' image.'
+          ),
+      )
   )
+  group.AddArgument(
+      base.Argument(
+          '--clear-base-image',
+          action='store_true',
+          hidden=True,
+          help='Opts out of use of automatic base image updates.',
+      )
+  )
+  return group
 
 
 def AddCommandAndFunctionFlag():

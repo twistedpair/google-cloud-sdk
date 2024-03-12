@@ -135,6 +135,7 @@ class Appliance(_messages.Message):
     updateTime: Output only. Update time.
     verificationState: Output only. Indicates whether appliance has been
       verified by Google.
+    verificationStateReason: A string attribute.
   """
 
   class ModelValueValuesEnum(_messages.Enum):
@@ -309,6 +310,7 @@ class Appliance(_messages.Message):
   uid = _messages.StringField(34)
   updateTime = _messages.StringField(35)
   verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 36)
+  verificationStateReason = _messages.StringField(37)
 
 
 class CancelOperationRequest(_messages.Message):

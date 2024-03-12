@@ -1269,7 +1269,7 @@ class Cluster(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project}/global/networks/{network_id}". This is required to
+      `projects/{project}/global/networks/{network_id}`. This is required to
       create a cluster. Deprecated, use network_config.network instead.
     networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
@@ -2245,7 +2245,7 @@ class NetworkConfig(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project_number}/global/networks/{network_id}". This is
+      `projects/{project_number}/global/networks/{network_id}`. This is
       required to create a cluster.
   """
 
@@ -3321,6 +3321,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     providerDescription: Optional. Needs to be used only when the provider is
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
+      redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
       spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
       datamodel
@@ -3382,6 +3383,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
     customMetadata: Any custom metadata associated with the resource
+    entitlements: Entitlements associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
       patch update, while the expected state will remain at the HEALTHY.
@@ -3391,7 +3393,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     primaryResourceId: Identifier for this resource's immediate parent/primary
       resource if the current resource is a replica or derived form of another
       Database resource. Else it would be NULL. REQUIRED if the immediate
-      parent exists when first time resource is getting ingested
+      parent exists when first time resource is getting ingested, otherwise
+      optional.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
@@ -3404,6 +3407,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       format as noted here go/condor-common-datamodel
     updationTime: The time at which the resource was updated and recorded at
       partner service.
+    userLabelSet: User-provided labels associated with the resource
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -3504,16 +3508,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 6)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 7)
-  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
-  location = _messages.StringField(10)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 11)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 12)
-  resourceContainer = _messages.StringField(13)
-  resourceName = _messages.StringField(14)
-  updationTime = _messages.StringField(15)
-  userLabels = _messages.MessageField('UserLabelsValue', 16)
+  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 7, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  location = _messages.StringField(11)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 13)
+  resourceContainer = _messages.StringField(14)
+  resourceName = _messages.StringField(15)
+  updationTime = _messages.StringField(16)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 17)
+  userLabels = _messages.MessageField('UserLabelsValue', 18)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -3525,12 +3531,28 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       `SIGNAL_TYPE_IDLE`, `SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES`, etc.
 
   Messages:
-    AdditionalMetadataValue: Required. Any other additional metadata
+    AdditionalMetadataValue: Optional. Any other additional metadata specific
+      to recommendation
 
   Fields:
-    additionalMetadata: Required. Any other additional metadata
+    additionalMetadata: Optional. Any other additional metadata specific to
+      recommendation
     lastRefreshTime: Required. last time recommendationw as refreshed
     recommendationState: Required. Recommendation state
+    recommender: Required. Name of recommendation. Examples:
+      organizations/1234/locations/us-central1/recommenders/google.cloudsql.in
+      stance.PerformanceRecommender/recommendations/9876
+    recommenderId: Required. ID of recommender. Examples:
+      "google.cloudsql.instance.PerformanceRecommender"
+    recommenderSubtype: Required. Contains an identifier for a subtype of
+      recommendations produced for the same recommender. Subtype is a function
+      of content and impact, meaning a new subtype might be added when
+      significant changes to `content` or `primary_impact.category` are
+      introduced. See the Recommenders section to see a list of subtypes for a
+      given Recommender. Examples: For recommender =
+      "google.cloudsql.instance.PerformanceRecommender", recommender_subtype
+      can be "MYSQL_HIGH_NUMBER_OF_OPEN_TABLES_BEST_PRACTICE"/"POSTGRES_HIGH_T
+      RANSACTION_ID_UTILIZATION_BEST_PRACTICE"
     resourceName: Required. Database resource name associated with the signal.
       Resource name to follow CAIS resource_name format as noted here
       go/condor-common-datamodel
@@ -3780,7 +3802,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
-    r"""Required. Any other additional metadata
+    r"""Optional. Any other additional metadata specific to recommendation
 
     Messages:
       AdditionalProperty: An additional property for a AdditionalMetadataValue
@@ -3806,20 +3828,97 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
   additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
   lastRefreshTime = _messages.StringField(2)
   recommendationState = _messages.EnumField('RecommendationStateValueValuesEnum', 3)
-  resourceName = _messages.StringField(4)
-  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 5)
+  recommender = _messages.StringField(4)
+  recommenderId = _messages.StringField(5)
+  recommenderSubtype = _messages.StringField(6)
+  resourceName = _messages.StringField(7)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
+  r"""Proto representing the access that a user has to a specific
+  feature/service. NextId: 3.
+
+  Enums:
+    EntitlementStateValueValuesEnum: The current state of user's accessibility
+      to a feature/benefit.
+    TypeValueValuesEnum: An enum that represents the type of this entitlement.
+
+  Fields:
+    entitlementState: The current state of user's accessibility to a
+      feature/benefit.
+    type: An enum that represents the type of this entitlement.
+  """
+
+  class EntitlementStateValueValuesEnum(_messages.Enum):
+    r"""The current state of user's accessibility to a feature/benefit.
+
+    Values:
+      ENTITLEMENT_STATE_UNSPECIFIED: <no description>
+      ENTITLED: User is entitled to a feature/benefit, but whether it has been
+        successfully provisioned is decided by provisioning state.
+      REVOKED: User is entitled to a feature/benefit, but it was requested to
+        be revoked. Whether the revoke has been successful is decided by
+        provisioning state.
+    """
+    ENTITLEMENT_STATE_UNSPECIFIED = 0
+    ENTITLED = 1
+    REVOKED = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""An enum that represents the type of this entitlement.
+
+    Values:
+      ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
+      DUET_AI: The root entitlement representing Duet AI package ownership.
+      GEMINI: The root entitlement representing Gemini package ownership.
+    """
+    ENTITLEMENT_TYPE_UNSPECIFIED = 0
+    DUET_AI = 1
+    GEMINI = 2
+
+  entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):
   r"""An error that occurred during a backup creation operation.
 
+  Enums:
+    ErrorTypeValueValuesEnum:
+
   Fields:
     code: Identifies the specific error that occurred. REQUIRED
+    errorType: A ErrorTypeValueValuesEnum attribute.
     message: Additional information about the error encountered. REQUIRED
   """
 
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""ErrorTypeValueValuesEnum enum type.
+
+    Values:
+      OPERATION_ERROR_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not
+        known or available.
+      KMS_KEY_ERROR: key destroyed, expired, not found, unreachable or
+        permission denied.
+      DATABASE_ERROR: Database is not accessible
+      STOCKOUT_ERROR: The zone or region does not have sufficient resources to
+        handle the request at the moment
+      CANCELLATION_ERROR: User initiated cancellation
+      SQLSERVER_ERROR: SQL server specific error
+      INTERNAL_ERROR: Any other internal error.
+    """
+    OPERATION_ERROR_TYPE_UNSPECIFIED = 0
+    KMS_KEY_ERROR = 1
+    DATABASE_ERROR = 2
+    STOCKOUT_ERROR = 3
+    CANCELLATION_ERROR = 4
+    SQLSERVER_ERROR = 5
+    INTERNAL_ERROR = 6
+
   code = _messages.StringField(1)
-  message = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
+  message = _messages.StringField(3)
 
 
 class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
@@ -3853,6 +3952,45 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
   timeBasedRetention = _messages.StringField(3)
+
+
+class StorageDatabasecenterPartnerapiV1mainUserLabels(_messages.Message):
+  r"""Message type for storing user labels. User labels are used to tag App
+  Engine resources, allowing users to search for resources matching a set of
+  labels and to aggregate usage data by labels.
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    labels: A LabelsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
 
 
 class StorageDatabasecenterProtoCommonProduct(_messages.Message):
@@ -3893,6 +4031,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         PostgreSQL dialect.
       ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT: Cloud Spanner with Google
         SQL dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS: Memorystore with Redis dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER: Memorystore with Redis cluster
+        dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
     """
@@ -3907,7 +4048,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     NATIVE = 8
     ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT = 9
     ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT = 10
-    ENGINE_OTHER = 11
+    ENGINE_MEMORYSTORE_FOR_REDIS = 11
+    ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
+    ENGINE_OTHER = 13
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -3922,6 +4065,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_SPANNER: Spanner product area in GCP
       PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
+      PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -3933,7 +4077,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_SPANNER = 5
     PRODUCT_TYPE_ON_PREM = 6
     ON_PREM = 7
-    PRODUCT_TYPE_OTHER = 8
+    PRODUCT_TYPE_MEMORYSTORE = 8
+    PRODUCT_TYPE_OTHER = 9
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

@@ -444,6 +444,8 @@ class Instance(_messages.Message):
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
     lastDenyMaintenancePeriod: Output only. Last computed maintenance denial
       period for this instance.
+    linkedLspProjectNumber: Optional. Linked Google Cloud Project Number for
+      Looker Studio Pro.
     lookerUri: Output only. Looker instance URI which can be used to access
       the Looker Instance UI.
     lookerVersion: Output only. The Looker version that the instance is using.
@@ -516,19 +518,20 @@ class Instance(_messages.Message):
   ingressPrivateIp = _messages.StringField(8)
   ingressPublicIp = _messages.StringField(9)
   lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 10)
-  lookerUri = _messages.StringField(11)
-  lookerVersion = _messages.StringField(12)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 13)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 14)
-  name = _messages.StringField(15)
-  oauthConfig = _messages.MessageField('OAuthConfig', 16)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 17)
-  privateIpEnabled = _messages.BooleanField(18)
-  publicIpEnabled = _messages.BooleanField(19)
-  reservedRange = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  updateTime = _messages.StringField(22)
-  userMetadata = _messages.MessageField('UserMetadata', 23)
+  linkedLspProjectNumber = _messages.IntegerField(11)
+  lookerUri = _messages.StringField(12)
+  lookerVersion = _messages.StringField(13)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 14)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 15)
+  name = _messages.StringField(16)
+  oauthConfig = _messages.MessageField('OAuthConfig', 17)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 18)
+  privateIpEnabled = _messages.BooleanField(19)
+  publicIpEnabled = _messages.BooleanField(20)
+  reservedRange = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  updateTime = _messages.StringField(23)
+  userMetadata = _messages.MessageField('UserMetadata', 24)
 
 
 class ListInstancesResponse(_messages.Message):

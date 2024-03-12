@@ -221,8 +221,7 @@ class CloudFunction(_messages.Message):
     LabelsValue: Labels associated with this Cloud Function.
 
   Fields:
-    automaticUpdatePolicy: See the comment next to this message for more
-      details.
+    automaticUpdatePolicy: A AutomaticUpdatePolicy attribute.
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
     buildDockerfile: Local path to the dockerfile for customizing the base
@@ -311,10 +310,8 @@ class CloudFunction(_messages.Message):
     name: A user-defined name of the function. Function names must be unique
       globally and match pattern `projects/*/locations/*/functions/*`
     network: Deprecated: use vpc_connector
-    onDeployUpdatePolicy: See the comment next to this message for more
-      details.
-    pinnedRuntimeVersionPolicy: See the comment next to this message for more
-      details.
+    onDeployUpdatePolicy: A OnDeployUpdatePolicy attribute.
+    pinnedRuntimeVersionPolicy: A PinnedRuntimeVersionPolicy attribute.
     runDockerfile: Local path to the dockerfile for customizing the base image
       for the worker, located within the source folder.
     runtime: The runtime in which to run the function. Required when deploying

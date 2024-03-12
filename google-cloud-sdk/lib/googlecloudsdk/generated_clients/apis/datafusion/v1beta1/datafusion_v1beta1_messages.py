@@ -213,7 +213,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1224,10 +1228,9 @@ class NetworkConfig(_messages.Message):
       only when using connection type VPC_PEERING. Format: a.b.c.d/22 Example:
       192.168.0.0/22
     network: Optional. Name of the network in the customer project with which
-      the Tenant Project will be peered for executing pipelines. This is
-      required only when using connection type VPC peering. In case of shared
-      VPC where the network resides in another host project the network should
-      specified in the form of projects/{host-project-
+      the Tenant Project will be peered for executing pipelines. In case of
+      shared VPC where the network resides in another host project the network
+      should specified in the form of projects/{host-project-
       id}/global/networks/{network}. This is only required for connectivity
       type VPC_PEERING.
     privateServiceConnectConfig: Optional. Configuration for Private Service

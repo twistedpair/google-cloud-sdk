@@ -6779,8 +6779,8 @@ class VmwareNodeConfig(_messages.Message):
       works for clusters with MetalLB load balancers.
     image: The OS image name in vCenter, only valid when using Windows.
     imageType: Required. The OS image to be used for each node in a node pool.
-      Currently `cos`, `ubuntu`, `ubuntu_containerd` and `windows` are
-      supported.
+      Currently `cos`, `cos_cgv2`, `ubuntu`, `ubuntu_cgv2`,
+      `ubuntu_containerd` and `windows` are supported.
     labels: The map of Kubernetes labels (key/value pairs) to be applied to
       each node. These will added in addition to any default label(s) that
       Kubernetes may apply to the node. In case of conflict in label keys, the

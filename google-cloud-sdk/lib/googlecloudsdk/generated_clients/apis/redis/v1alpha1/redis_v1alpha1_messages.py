@@ -14,6 +14,128 @@ from apitools.base.py import extra_types
 package = 'redis'
 
 
+class AOFConfig(_messages.Message):
+  r"""Configuration of the AOF based persistence.
+
+  Enums:
+    AppendFsyncValueValuesEnum: Optional. fsync configuration.
+
+  Fields:
+    appendFsync: Optional. fsync configuration.
+  """
+
+  class AppendFsyncValueValuesEnum(_messages.Enum):
+    r"""Optional. fsync configuration.
+
+    Values:
+      APPEND_FSYNC_UNSPECIFIED: Not set. Default: EVERYSEC
+      NO: Never fsync. Normally Linux will flush data every 30 seconds with
+        this configuration, but it's up to the kernel's exact tuning.
+      EVERYSEC: fsync every second. Fast enough, and you may lose 1 second of
+        data if there is a disaster
+      ALWAYS: fsync every time new commands are appended to the AOF. It has
+        the best data loss protection at the cost of performance
+    """
+    APPEND_FSYNC_UNSPECIFIED = 0
+    NO = 1
+    EVERYSEC = 2
+    ALWAYS = 3
+
+  appendFsync = _messages.EnumField('AppendFsyncValueValuesEnum', 1)
+
+
+class AvailabilityConfiguration(_messages.Message):
+  r"""Configuration for availability of database instance
+
+  Enums:
+    AvailabilityTypeValueValuesEnum: Availability type. Potential values: *
+      `ZONAL`: The instance serves data from only one zone. Outages in that
+      zone affect data accessibility. * `REGIONAL`: The instance can serve
+      data from more than one zone in a region (it is highly available).
+
+  Fields:
+    availabilityType: Availability type. Potential values: * `ZONAL`: The
+      instance serves data from only one zone. Outages in that zone affect
+      data accessibility. * `REGIONAL`: The instance can serve data from more
+      than one zone in a region (it is highly available).
+    externalReplicaConfigured: A boolean attribute.
+    promotableReplicaConfigured: A boolean attribute.
+  """
+
+  class AvailabilityTypeValueValuesEnum(_messages.Enum):
+    r"""Availability type. Potential values: * `ZONAL`: The instance serves
+    data from only one zone. Outages in that zone affect data accessibility. *
+    `REGIONAL`: The instance can serve data from more than one zone in a
+    region (it is highly available).
+
+    Values:
+      AVAILABILITY_TYPE_UNSPECIFIED: <no description>
+      ZONAL: Zonal available instance.
+      REGIONAL: Regional available instance.
+      MULTI_REGIONAL: Multi regional instance
+      AVAILABILITY_TYPE_OTHER: For rest of the other category
+    """
+    AVAILABILITY_TYPE_UNSPECIFIED = 0
+    ZONAL = 1
+    REGIONAL = 2
+    MULTI_REGIONAL = 3
+    AVAILABILITY_TYPE_OTHER = 4
+
+  availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
+  externalReplicaConfigured = _messages.BooleanField(2)
+  promotableReplicaConfigured = _messages.BooleanField(3)
+
+
+class BackupConfiguration(_messages.Message):
+  r"""Configuration for automatic backups
+
+  Fields:
+    automatedBackupEnabled: Whether customer visible automated backups are
+      enabled on the instance.
+    backupRetentionSettings: Backup retention settings.
+    pointInTimeRecoveryEnabled: Whether point-in-time recovery is enabled.
+      This is optional field, if the database service does not have this
+      feature or metadata is not available in control plane, this can be
+      omitted.
+  """
+
+  automatedBackupEnabled = _messages.BooleanField(1)
+  backupRetentionSettings = _messages.MessageField('RetentionSettings', 2)
+  pointInTimeRecoveryEnabled = _messages.BooleanField(3)
+
+
+class BackupRun(_messages.Message):
+  r"""A backup run.
+
+  Enums:
+    StatusValueValuesEnum: The status of this run. REQUIRED
+
+  Fields:
+    endTime: The time the backup operation completed. REQUIRED
+    error: Information about why the backup operation failed. This is only
+      present if the run has the FAILED status. OPTIONAL
+    startTime: The time the backup operation started. REQUIRED
+    status: The status of this run. REQUIRED
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""The status of this run. REQUIRED
+
+    Values:
+      STATUS_UNSPECIFIED: <no description>
+      SUCCESSFUL: The backup was successful.
+      FAILED: The backup was unsuccessful.
+    """
+    STATUS_UNSPECIFIED = 0
+    SUCCESSFUL = 1
+    FAILED = 2
+
+  endTime = _messages.StringField(1)
+  error = _messages.MessageField('OperationError', 2)
+  startTime = _messages.StringField(3)
+  status = _messages.EnumField('StatusValueValuesEnum', 4)
+
+
 class CategoryHealth(_messages.Message):
   r"""Category health, such as CPU/memory
 
@@ -79,31 +201,50 @@ class Cluster(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
       Redis cluster. If not provided, auth feature is disabled for the
       cluster.
+    NodeTypeValueValuesEnum:
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
     TransitEncryptionModeValueValuesEnum: Optional. The in-transit encryption
       for the Redis cluster. If not provided, encryption is disabled for the
       cluster.
 
+  Messages:
+    RedisConfigsValue: Optional. Key/Value pairs of customer overrides for
+      mutable Redis Configs
+
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
+    deletionProtectionEnabled: Optional. The delete operation will fail when
+      the value is set to true.
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
+    maintenancePolicy: Optional. ClusterMaintenancePolicy determines when to
+      allow or deny updates.
+    maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
+      Published maintenance schedule.
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+    nodeType: A NodeTypeValueValuesEnum attribute.
+    persistenceConfig: Optional. Persistence config (RDB, AOF) for the
+      cluster.
+    preciseSizeGb: Output only. Precise value of redis memory size in GB for
+      the entire cluster.
     pscConfigs: Required. Each PscConfig configures the consumer network where
       IPs will be designated to the cluster for client access through Private
       Service Connect Automation. Currently, only one PscConfig is supported.
     pscConnections: Output only. PSC connections for discovery of the cluster
       topology and accessing the cluster.
+    redisConfigs: Optional. Key/Value pairs of customer overrides for mutable
+      Redis Configs
     replicaCount: Optional. The number of replica nodes per shard.
     shardCount: Required. Number of shards for the Redis cluster.
-    sizeGb: Output only. Redis memory size in GB for the entire cluster.
+    sizeGb: Output only. Redis memory size in GB for the entire cluster
+      rounded up to the next integer.
     state: Output only. The current state of this cluster. Can be CREATING,
       READY, UPDATING, DELETING and SUSPENDED
     stateInfo: Output only. Additional information about the current state of
@@ -111,6 +252,9 @@ class Cluster(_messages.Message):
     transitEncryptionMode: Optional. The in-transit encryption for the Redis
       cluster. If not provided, encryption is disabled for the cluster.
     uid: Output only. System assigned, unique identifier for the cluster.
+    zoneDistributionConfig: Optional. This config will be used to determine
+      how the customer wants us to distribute cluster resources within the
+      region.
   """
 
   class AuthorizationModeValueValuesEnum(_messages.Enum):
@@ -125,6 +269,22 @@ class Cluster(_messages.Message):
     AUTH_MODE_UNSPECIFIED = 0
     AUTH_MODE_IAM_AUTH = 1
     AUTH_MODE_DISABLED = 2
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""NodeTypeValueValuesEnum enum type.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: <no description>
+      REDIS_SHARED_CORE_NANO: Redis shared core nano node_type.
+      REDIS_HIGHMEM_MEDIUM: Redis highmem medium node_type.
+      REDIS_HIGHMEM_XLARGE: Redis highmem xlarge node_type.
+      REDIS_STANDARD_SMALL: Redis standard small node_type.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    REDIS_SHARED_CORE_NANO = 1
+    REDIS_HIGHMEM_MEDIUM = 2
+    REDIS_HIGHMEM_XLARGE = 3
+    REDIS_STANDARD_SMALL = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this cluster. Can be CREATING,
@@ -157,19 +317,1191 @@ class Cluster(_messages.Message):
     TRANSIT_ENCRYPTION_MODE_DISABLED = 1
     TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RedisConfigsValue(_messages.Message):
+    r"""Optional. Key/Value pairs of customer overrides for mutable Redis
+    Configs
+
+    Messages:
+      AdditionalProperty: An additional property for a RedisConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RedisConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RedisConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
-  name = _messages.StringField(4)
-  pscConfigs = _messages.MessageField('PscConfig', 5, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 6, repeated=True)
-  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateInfo = _messages.MessageField('StateInfo', 11)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 12)
-  uid = _messages.StringField(13)
+  deletionProtectionEnabled = _messages.BooleanField(3)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
+  maintenancePolicy = _messages.MessageField('ClusterMaintenancePolicy', 5)
+  maintenanceSchedule = _messages.MessageField('ClusterMaintenanceSchedule', 6)
+  name = _messages.StringField(7)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 9)
+  preciseSizeGb = _messages.FloatField(10)
+  pscConfigs = _messages.MessageField('PscConfig', 11, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 12, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
+  replicaCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateInfo = _messages.MessageField('StateInfo', 18)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 19)
+  uid = _messages.StringField(20)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 21)
+
+
+class ClusterDenyMaintenancePeriod(_messages.Message):
+  r"""ClusterDenyMaintenancePeriod definition. Except emergencies, maintenance
+  will not be scheduled to start within this deny period. The start_date must
+  be less than the end_date.
+
+  Fields:
+    endDate: Deny period end date. This can be: * A full date, with non-zero
+      year, month and day values. * A month and day value, with a zero year
+      for recurring. Date matching this period will have to be before the end.
+    startDate: Deny period start date. This can be: * A full date, with non-
+      zero year, month and day values. * A month and day value, with a zero
+      year for recurring. Date matching this period will have to be the same
+      or after the start.
+    time: Time in UTC when the deny period starts on start_date and ends on
+      end_date. This can be: * Full time.
+  """
+
+  endDate = _messages.MessageField('Date', 1)
+  startDate = _messages.MessageField('Date', 2)
+  time = _messages.MessageField('TimeOfDay', 3)
+
+
+class ClusterMaintenancePolicy(_messages.Message):
+  r"""Maintenance policy per cluster.
+
+  Fields:
+    createTime: Output only. The time when the policy was created i.e.
+      Maintenance Window or Deny Period was assigned.
+    denyMaintenancePeriods: Deny maintenance periods
+    updateTime: Output only. The time when the policy was updated i.e.
+      Maintenance Window or Deny Period was updated.
+    weeklyMaintenanceWindow: Optional. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_maintenance_window is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  denyMaintenancePeriods = _messages.MessageField('ClusterDenyMaintenancePeriod', 2, repeated=True)
+  updateTime = _messages.StringField(3)
+  weeklyMaintenanceWindow = _messages.MessageField('ClusterWeeklyMaintenanceWindow', 4, repeated=True)
+
+
+class ClusterMaintenanceSchedule(_messages.Message):
+  r"""Upcoming maitenance schedule.
+
+  Fields:
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  endTime = _messages.StringField(1)
+  scheduleDeadlineTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+
+
+class ClusterPersistenceConfig(_messages.Message):
+  r"""Configuration of the persistence functionality.
+
+  Enums:
+    ModeValueValuesEnum: Optional. The mode of persistence.
+
+  Fields:
+    aofConfig: Optional. AOF configuration. This field will be ignored if mode
+      is not AOF.
+    mode: Optional. The mode of persistence.
+    rdbConfig: Optional. RDB configuration. This field will be ignored if mode
+      is not RDB.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of persistence.
+
+    Values:
+      PERSISTENCE_MODE_UNSPECIFIED: Not set.
+      DISABLED: Persistence is disabled, and any snapshot data is deleted.
+      RDB: RDB based persistence is enabled.
+      AOF: AOF based persistence is enabled.
+    """
+    PERSISTENCE_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    RDB = 2
+    AOF = 3
+
+  aofConfig = _messages.MessageField('AOFConfig', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  rdbConfig = _messages.MessageField('RDBConfig', 3)
+
+
+class ClusterWeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Enums:
+    DayValueValuesEnum: Allows to define schedule that runs specified day of
+      the week.
+
+  Fields:
+    day: Allows to define schedule that runs specified day of the week.
+    duration: Duration of the time window.
+    startTime: Start time of the window in UTC.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Allows to define schedule that runs specified day of the week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class Compliance(_messages.Message):
+  r"""Contains compliance information about a security standard indicating
+  unmet recommendations.
+
+  Fields:
+    standard: Industry-wide compliance standards or benchmarks, such as CIS,
+      PCI, and OWASP.
+    version: Version of the standard or benchmark, for example, 1.1
+  """
+
+  standard = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class CustomMetadataData(_messages.Message):
+  r"""Any custom metadata associated with the resource. i.e. A spanner
+  instance can have multiple databases with its own unique metadata.
+  Information for these individual databases can be captured in custom
+  metadata data
+
+  Fields:
+    databaseMetadata: A DatabaseMetadata attribute.
+  """
+
+  databaseMetadata = _messages.MessageField('DatabaseMetadata', 1, repeated=True)
+
+
+class DatabaseMetadata(_messages.Message):
+  r"""Metadata for individual databases created in an instance. i.e. spanner
+  instance can have multiple databases with unique configuration settings.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A Product attribute.
+    resourceId: A DatabaseResourceId attribute.
+    resourceName: Required. Database name. Resource name to follow CAIS
+      resource_name format as noted here go/condor-common-datamodel
+  """
+
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 1)
+  backupRun = _messages.MessageField('BackupRun', 2)
+  product = _messages.MessageField('Product', 3)
+  resourceId = _messages.MessageField('DatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
+class DatabaseResourceFeed(_messages.Message):
+  r"""DatabaseResourceFeed is the top level proto to be used to ingest
+  different database resource level events into Condor platform.
+
+  Enums:
+    FeedTypeValueValuesEnum: Required. Type feed to be ingested into condor
+
+  Fields:
+    feedTimestamp: Required. Timestamp when feed is generated.
+    feedType: Required. Type feed to be ingested into condor
+    recommendationSignalData: More feed data would be added in subsequent CLs
+    resourceHealthSignalData: A DatabaseResourceHealthSignalData attribute.
+    resourceId: Primary key associated with the Resource. resource_id is
+      available in individual feed level as well.
+    resourceMetadata: A DatabaseResourceMetadata attribute.
+  """
+
+  class FeedTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type feed to be ingested into condor
+
+    Values:
+      FEEDTYPE_UNSPECIFIED: <no description>
+      RESOURCE_METADATA: Database resource metadata feed from control plane
+      OBSERVABILITY_DATA: Database resource monitoring data
+      SECURITY_FINDING_DATA: Database resource security health signal data
+      RECOMMENDATION_SIGNAL_DATA: Database resource recommendation signal data
+    """
+    FEEDTYPE_UNSPECIFIED = 0
+    RESOURCE_METADATA = 1
+    OBSERVABILITY_DATA = 2
+    SECURITY_FINDING_DATA = 3
+    RECOMMENDATION_SIGNAL_DATA = 4
+
+  feedTimestamp = _messages.StringField(1)
+  feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 3)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 4)
+  resourceId = _messages.MessageField('DatabaseResourceId', 5)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 6)
+
+
+class DatabaseResourceHealthSignalData(_messages.Message):
+  r"""Common model for database resource health signal data.
+
+  Enums:
+    ProviderValueValuesEnum: Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+    SignalClassValueValuesEnum: Required. The class of the signal, such as if
+      it's a THREAT or VULNERABILITY.
+    SignalTypeValueValuesEnum: Required. Type of signal, for example,
+      `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
+    StateValueValuesEnum:
+
+  Messages:
+    AdditionalMetadataValue: Any other additional metadata
+
+  Fields:
+    additionalMetadata: Any other additional metadata
+    compliance: Industry standards associated with this signal; if this signal
+      is an issue, that could be a violation of the associated industry
+      standard(s). For example, AUTO_BACKUP_DISABLED signal is associated with
+      CIS GCP 1.1, CIS GCP 1.2, CIS GCP 1.3, NIST 800-53 and ISO-27001
+      compliance standards. If a database resource does not have automated
+      backup enable, it will violate these following industry standards.
+    description: Description associated with signal
+    eventTime: Required. The last time at which the event described by this
+      signal took place
+    externalUri: The external-uri of the signal, using which more information
+      about this signal can be obtained. In GCP, this will take user to SCC
+      page to get more details about signals.
+    name: Required. The name of the signal, ex: PUBLIC_SQL_INSTANCE,
+      SQL_LOG_ERROR_VERBOSITY etc.
+    provider: Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+    resourceContainer: Closest parent container of this resource. In GCP,
+      'container' refers to a Cloud Resource Manager project. It must be
+      resource name of a Cloud Resource Manager project with the format of
+      "provider//", such as "projects/123". For GCP provided resources, number
+      should be project number.
+    resourceName: Required. Database resource name associated with the signal.
+      Resource name to follow CAIS resource_name format as noted here
+      go/condor-common-datamodel
+    signalClass: Required. The class of the signal, such as if it's a THREAT
+      or VULNERABILITY.
+    signalId: Required. Unique identifier for the signal. This is an unique id
+      which would be mainatined by partner to identify a signal.
+    signalType: Required. Type of signal, for example,
+      `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+
+    Values:
+      PROVIDER_UNSPECIFIED: <no description>
+      GCP: Google cloud platform provider
+      AWS: Amazon web service
+      AZURE: Azure web service
+      ONPREM: On-prem database resources.
+      SELFMANAGED: Self-managed database provider. These are resources on a
+        cloud platform, e.g., database resource installed in a GCE VM, but not
+        a managed database service.
+      PROVIDER_OTHER: For the rest of the other categories. Other refers to
+        the rest of other database service providers, this could be smaller
+        cloud provider. This needs to be provided when the provider is known,
+        but it is not present in the existing set of enum values.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GCP = 1
+    AWS = 2
+    AZURE = 3
+    ONPREM = 4
+    SELFMANAGED = 5
+    PROVIDER_OTHER = 6
+
+  class SignalClassValueValuesEnum(_messages.Enum):
+    r"""Required. The class of the signal, such as if it's a THREAT or
+    VULNERABILITY.
+
+    Values:
+      CLASS_UNSPECIFIED: Unspecified signal class.
+      THREAT: Describes unwanted or malicious activity.
+      VULNERABILITY: Describes a potential weakness in software that increases
+        risk to Confidentiality & Integrity & Availability.
+      MISCONFIGURATION: Describes a potential weakness in cloud resource/asset
+        configuration that increases risk.
+      OBSERVATION: Describes a security observation that is for informational
+        purposes.
+      ERROR: Describes an error that prevents some SCC functionality.
+    """
+    CLASS_UNSPECIFIED = 0
+    THREAT = 1
+    VULNERABILITY = 2
+    MISCONFIGURATION = 3
+    OBSERVATION = 4
+    ERROR = 5
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
+    `LOGGING_MOST_ERRORS`, etc.
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified.
+      SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER: Represents if a
+        resource is protected by automatic failover. Checks for resources that
+        are configured to have redundancy within a region that enables
+        automatic failover.
+      SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS: Represents if a group
+        is replicating across regions. Checks for resources that are
+        configured to have redundancy, and ongoing replication, across
+        regions.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES: Represents if the resource
+        is available in multiple zones or not.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS: Represents if a resource
+        is available in multiple regions.
+      SIGNAL_TYPE_NO_PROMOTABLE_REPLICA: Represents if a resource has a
+        promotable replica.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has an
+        automated backup policy.
+      SIGNAL_TYPE_SHORT_BACKUP_RETENTION: Represents if a resources has a
+        short backup retention period.
+      SIGNAL_TYPE_LAST_BACKUP_FAILED: Represents if the last backup of a
+        resource failed.
+      SIGNAL_TYPE_LAST_BACKUP_OLD: Represents if the last backup of a resource
+        is older than some threshold value.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0: Represents if a resource
+        violates CIS GCP Foundation 2.0.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3: Represents if a resource
+        violates CIS GCP Foundation 1.3.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2: Represents if a resource
+        violates CIS GCP Foundation 1.2.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1: Represents if a resource
+        violates CIS GCP Foundation 1.1.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0: Represents if a resource
+        violates CIS GCP Foundation 1.0.
+      SIGNAL_TYPE_VIOLATES_NIST_800_53: Represents if a resource violates NIST
+        800-53.
+      SIGNAL_TYPE_VIOLATES_ISO_27001: Represents if a resource violates
+        ISO-27001.
+      SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
+        PCI-DSS v3.2.1.
+      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
+        log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED: Represents if the log_duration
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        on.
+      SIGNAL_TYPE_VERBOSE_ERROR_LOGGING: Represents if the log_error_verbosity
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        default or stricter (default or terse).
+      SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED: Represents if the
+        log_lock_waits database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_LOGGING_MOST_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance is not set appropriately.
+      SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance does not have an appropriate severity level.
+      SIGNAL_TYPE_MINIMAL_ERROR_LOGGING: Represents if the log_min_messages
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        warning or another recommended value.
+      SIGNAL_TYPE_QUERY_STATISTICS_LOGGED: Represents if the databaseFlags
+        property of instance metadata for the log_executor_status field is set
+        to on.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME: Represents if the
+        log_hostname database flag for a Cloud SQL for PostgreSQL instance is
+        not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS: Represents if the
+        log_parser_stats database flag for a Cloud SQL for PostgreSQL instance
+        is not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS: Represents if the
+        log_planner_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS: Represents if the
+        log_statement database flag for a Cloud SQL for PostgreSQL instance is
+        not set to DDL (all data definition statements).
+      SIGNAL_TYPE_LOGGING_QUERY_STATISTICS: Represents if the
+        log_statement_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES: Represents if the
+        log_temp_files database flag for a Cloud SQL for PostgreSQL instance
+        is not set to "0". (NOTE: 0 = ON)
+      SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED: Represents if the user
+        connections database flag for a Cloud SQL for SQL Server instance is
+        configured.
+      SIGNAL_TYPE_USER_OPTIONS_CONFIGURED: Represents if the user options
+        database flag for Cloud SQL SQL Server instance is configured or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        password configured for the root account or not.
+      SIGNAL_TYPE_WEAK_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        weak password configured for the root account.
+      SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED: Represents if a SQL
+        database instance is not encrypted with customer-managed encryption
+        keys (CMEK).
+      SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED: Represents if The
+        contained database authentication database flag for a Cloud SQL for
+        SQL Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING: Represents if the
+        cross_db_ownership_chaining database flag for a Cloud SQL for SQL
+        Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS: Represents if he external
+        scripts enabled database flag for a Cloud SQL for SQL Server instance
+        is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS: Represents if the local_infile
+        database flag for a Cloud SQL for MySQL instance is not set to off.
+      SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED: Represents if the
+        log_connections database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED: Represents if the
+        log_disconnections database flag for a Cloud SQL for PostgreSQL
+        instance is not set to on.
+      SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO: Represents if the
+        log_min_duration_statement database flag for a Cloud SQL for
+        PostgreSQL instance is not set to -1.
+      SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS: Represents if the remote access
+        database flag for a Cloud SQL for SQL Server instance is not set to
+        off.
+      SIGNAL_TYPE_DATABASE_NAMES_EXPOSED: Represents if the skip_show_database
+        database flag for a Cloud SQL for MySQL instance is not set to on.
+      SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED: Represents if the 3625
+        (trace flag) database flag for a Cloud SQL for SQL Server instance is
+        not set to on.
+      SIGNAL_TYPE_PUBLIC_IP_ENABLED: Represents if public IP is enabled.
+      SIGNAL_TYPE_IDLE: Represents Idle instance helps to reduce costs.
+      SIGNAL_TYPE_OVERPROVISIONED: Represents instances that are unnecessarily
+        large for given workload.
+      SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES: Represents high number of
+        concurrently opened tables.
+      SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES: Represents high table count close to
+        SLA limit.
+      SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION: Represents high number of
+        unvacuumed transactions
+      SIGNAL_TYPE_UNDERPROVISIONED: Represents need for more CPU and/or memory
+      SIGNAL_TYPE_OUT_OF_DISK: Represents out of disk.
+      SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY: Represents server
+        certificate is near expiry.
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS: Represents not restricted to
+        authorized networks.
+      SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
+        policy restrict public ip.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
+    SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS = 2
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES = 3
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS = 4
+    SIGNAL_TYPE_NO_PROMOTABLE_REPLICA = 5
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 6
+    SIGNAL_TYPE_SHORT_BACKUP_RETENTION = 7
+    SIGNAL_TYPE_LAST_BACKUP_FAILED = 8
+    SIGNAL_TYPE_LAST_BACKUP_OLD = 9
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0 = 10
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3 = 11
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 12
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 13
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 14
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 15
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 16
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 17
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 18
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 19
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 20
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 21
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 22
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 23
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 24
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 25
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 26
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 27
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 28
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 29
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 30
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 31
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 32
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 33
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 34
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 35
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 36
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 37
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 38
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 39
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 40
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 41
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 42
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 43
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 44
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 45
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 46
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 47
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 48
+    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 49
+    SIGNAL_TYPE_IDLE = 50
+    SIGNAL_TYPE_OVERPROVISIONED = 51
+    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 52
+    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 53
+    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 54
+    SIGNAL_TYPE_UNDERPROVISIONED = 55
+    SIGNAL_TYPE_OUT_OF_DISK = 56
+    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 57
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
+    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
+    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: The signal requires attention and has not been addressed yet.
+      RESOLVED: The signal has been fixed, triaged as a non-issue or otherwise
+        addressed and is no longer active.
+      MUTED: The signal has been muted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    RESOLVED = 2
+    MUTED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalMetadataValue(_messages.Message):
+    r"""Any other additional metadata
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
+  compliance = _messages.MessageField('Compliance', 2, repeated=True)
+  description = _messages.StringField(3)
+  eventTime = _messages.StringField(4)
+  externalUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 7)
+  resourceContainer = _messages.StringField(8)
+  resourceName = _messages.StringField(9)
+  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
+  signalId = _messages.StringField(11)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+
+
+class DatabaseResourceId(_messages.Message):
+  r"""DatabaseResourceId will serve as primary key for any resource ingestion
+  event.
+
+  Enums:
+    ProviderValueValuesEnum: Required. Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+
+  Fields:
+    provider: Required. Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+    providerDescription: Optional. Needs to be used only when the provider is
+      PROVIDER_OTHER.
+    resourceType: Required. The type of resource this ID is identifying. Ex
+      redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
+      alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
+      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
+      datamodel
+    uniqueId: Required. A service-local token that distinguishes this resource
+      from other resources within the same service.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Required. Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+
+    Values:
+      PROVIDER_UNSPECIFIED: <no description>
+      GCP: Google cloud platform provider
+      AWS: Amazon web service
+      AZURE: Azure web service
+      ONPREM: On-prem database resources.
+      SELFMANAGED: Self-managed database provider. These are resources on a
+        cloud platform, e.g., database resource installed in a GCE VM, but not
+        a managed database service.
+      PROVIDER_OTHER: For the rest of the other categories. Other refers to
+        the rest of other database service providers, this could be smaller
+        cloud provider. This needs to be provided when the provider is known,
+        but it is not present in the existing set of enum values.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GCP = 1
+    AWS = 2
+    AZURE = 3
+    ONPREM = 4
+    SELFMANAGED = 5
+    PROVIDER_OTHER = 6
+
+  provider = _messages.EnumField('ProviderValueValuesEnum', 1)
+  providerDescription = _messages.StringField(2)
+  resourceType = _messages.StringField(3)
+  uniqueId = _messages.StringField(4)
+
+
+class DatabaseResourceMetadata(_messages.Message):
+  r"""Common model for database resource instance metadata.
+
+  Enums:
+    CurrentStateValueValuesEnum: Current state of the instance.
+    ExpectedStateValueValuesEnum: The state that the instance is expected to
+      be in. For example, an instance state can transition to UNHEALTHY due to
+      wrong patch update, while the expected state will remain at the HEALTHY.
+    InstanceTypeValueValuesEnum: The type of the instance. Specified at
+      creation time.
+
+  Messages:
+    UserLabelsValue: User-provided labels, represented as a dictionary where
+      each label is a single key value pair.
+
+  Fields:
+    availabilityConfiguration: Availability configuration for this instance
+    backupConfiguration: Backup configuration for this instance
+    backupRun: Latest backup run information for this instance
+    creationTime: The creation time of the resource, i.e. the time when
+      resource is created and recorded in partner service.
+    currentState: Current state of the instance.
+    customMetadata: Any custom metadata associated with the resource
+    entitlements: Entitlements associated with the resource
+    expectedState: The state that the instance is expected to be in. For
+      example, an instance state can transition to UNHEALTHY due to wrong
+      patch update, while the expected state will remain at the HEALTHY.
+    id: Required. Unique identifier for a Database resource
+    instanceType: The type of the instance. Specified at creation time.
+    location: The resource location. REQUIRED
+    primaryResourceId: Identifier for this resource's immediate parent/primary
+      resource if the current resource is a replica or derived form of another
+      Database resource. Else it would be NULL. REQUIRED if the immediate
+      parent exists when first time resource is getting ingested, otherwise
+      optional.
+    product: The product this resource represents.
+    resourceContainer: Closest parent Cloud Resource Manager container of this
+      resource. It must be resource name of a Cloud Resource Manager project
+      with the format of "/", such as "projects/123". For GCP provided
+      resources, number should be project number.
+    resourceName: Required. Different from DatabaseResourceId.unique_id, a
+      resource name can be reused over time. That is, after a resource named
+      "ABC" is deleted, the name "ABC" can be used to to create a new resource
+      within the same source. Resource name to follow CAIS resource_name
+      format as noted here go/condor-common-datamodel
+    updationTime: The time at which the resource was updated and recorded at
+      partner service.
+    userLabelSet: User-provided labels associated with the resource
+    userLabels: User-provided labels, represented as a dictionary where each
+      label is a single key value pair.
+  """
+
+  class CurrentStateValueValuesEnum(_messages.Enum):
+    r"""Current state of the instance.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      HEALTHY: The instance is running.
+      UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      SUSPENDED: When instance is suspended
+      DELETED: Instance is deleted.
+      STATE_OTHER: For rest of the other category
+    """
+    STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    SUSPENDED = 3
+    DELETED = 4
+    STATE_OTHER = 5
+
+  class ExpectedStateValueValuesEnum(_messages.Enum):
+    r"""The state that the instance is expected to be in. For example, an
+    instance state can transition to UNHEALTHY due to wrong patch update,
+    while the expected state will remain at the HEALTHY.
+
+    Values:
+      STATE_UNSPECIFIED: <no description>
+      HEALTHY: The instance is running.
+      UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      SUSPENDED: When instance is suspended
+      DELETED: Instance is deleted.
+      STATE_OTHER: For rest of the other category
+    """
+    STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+    SUSPENDED = 3
+    DELETED = 4
+    STATE_OTHER = 5
+
+  class InstanceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the instance. Specified at creation time.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: <no description>
+      SUB_RESOURCE_TYPE_UNSPECIFIED: For rest of the other categories.
+      PRIMARY: A regular primary database instance.
+      SECONDARY: A cluster or an instance acting as a secondary.
+      READ_REPLICA: An instance acting as a read-replica.
+      OTHER: For rest of the other categories.
+      SUB_RESOURCE_TYPE_PRIMARY: A regular primary database instance.
+      SUB_RESOURCE_TYPE_SECONDARY: A cluster or an instance acting as a
+        secondary.
+      SUB_RESOURCE_TYPE_READ_REPLICA: An instance acting as a read-replica.
+      SUB_RESOURCE_TYPE_OTHER: For rest of the other categories.
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    SUB_RESOURCE_TYPE_UNSPECIFIED = 1
+    PRIMARY = 2
+    SECONDARY = 3
+    READ_REPLICA = 4
+    OTHER = 5
+    SUB_RESOURCE_TYPE_PRIMARY = 6
+    SUB_RESOURCE_TYPE_SECONDARY = 7
+    SUB_RESOURCE_TYPE_READ_REPLICA = 8
+    SUB_RESOURCE_TYPE_OTHER = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserLabelsValue(_messages.Message):
+    r"""User-provided labels, represented as a dictionary where each label is
+    a single key value pair.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserLabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  availabilityConfiguration = _messages.MessageField('AvailabilityConfiguration', 1)
+  backupConfiguration = _messages.MessageField('BackupConfiguration', 2)
+  backupRun = _messages.MessageField('BackupRun', 3)
+  creationTime = _messages.StringField(4)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
+  customMetadata = _messages.MessageField('CustomMetadataData', 6)
+  entitlements = _messages.MessageField('Entitlement', 7, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
+  id = _messages.MessageField('DatabaseResourceId', 9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  location = _messages.StringField(11)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 12)
+  product = _messages.MessageField('Product', 13)
+  resourceContainer = _messages.StringField(14)
+  resourceName = _messages.StringField(15)
+  updationTime = _messages.StringField(16)
+  userLabelSet = _messages.MessageField('UserLabels', 17)
+  userLabels = _messages.MessageField('UserLabelsValue', 18)
+
+
+class DatabaseResourceRecommendationSignalData(_messages.Message):
+  r"""Common model for database resource recommendation signal data.
+
+  Enums:
+    RecommendationStateValueValuesEnum: Required. Recommendation state
+    SignalTypeValueValuesEnum: Required. Type of signal, for example,
+      `SIGNAL_TYPE_IDLE`, `SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES`, etc.
+
+  Messages:
+    AdditionalMetadataValue: Optional. Any other additional metadata specific
+      to recommendation
+
+  Fields:
+    additionalMetadata: Optional. Any other additional metadata specific to
+      recommendation
+    lastRefreshTime: Required. last time recommendationw as refreshed
+    recommendationState: Required. Recommendation state
+    recommender: Required. Name of recommendation. Examples:
+      organizations/1234/locations/us-central1/recommenders/google.cloudsql.in
+      stance.PerformanceRecommender/recommendations/9876
+    recommenderId: Required. ID of recommender. Examples:
+      "google.cloudsql.instance.PerformanceRecommender"
+    recommenderSubtype: Required. Contains an identifier for a subtype of
+      recommendations produced for the same recommender. Subtype is a function
+      of content and impact, meaning a new subtype might be added when
+      significant changes to `content` or `primary_impact.category` are
+      introduced. See the Recommenders section to see a list of subtypes for a
+      given Recommender. Examples: For recommender =
+      "google.cloudsql.instance.PerformanceRecommender", recommender_subtype
+      can be "MYSQL_HIGH_NUMBER_OF_OPEN_TABLES_BEST_PRACTICE"/"POSTGRES_HIGH_T
+      RANSACTION_ID_UTILIZATION_BEST_PRACTICE"
+    resourceName: Required. Database resource name associated with the signal.
+      Resource name to follow CAIS resource_name format as noted here
+      go/condor-common-datamodel
+    signalType: Required. Type of signal, for example, `SIGNAL_TYPE_IDLE`,
+      `SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES`, etc.
+  """
+
+  class RecommendationStateValueValuesEnum(_messages.Enum):
+    r"""Required. Recommendation state
+
+    Values:
+      UNSPECIFIED: <no description>
+      ACTIVE: Recommendation is active and can be applied. ACTIVE
+        recommendations can be marked as CLAIMED, SUCCEEDED, or FAILED.
+      CLAIMED: Recommendation is in claimed state. Recommendations content is
+        immutable and cannot be updated by Google. CLAIMED recommendations can
+        be marked as CLAIMED, SUCCEEDED, or FAILED.
+      SUCCEEDED: Recommendation is in succeeded state. Recommendations content
+        is immutable and cannot be updated by Google. SUCCEEDED
+        recommendations can be marked as SUCCEEDED, or FAILED.
+      FAILED: Recommendation is in failed state. Recommendations content is
+        immutable and cannot be updated by Google. FAILED recommendations can
+        be marked as SUCCEEDED, or FAILED.
+      DISMISSED: Recommendation is in dismissed state. Recommendation content
+        can be updated by Google. DISMISSED recommendations can be marked as
+        ACTIVE.
+    """
+    UNSPECIFIED = 0
+    ACTIVE = 1
+    CLAIMED = 2
+    SUCCEEDED = 3
+    FAILED = 4
+    DISMISSED = 5
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of signal, for example, `SIGNAL_TYPE_IDLE`,
+    `SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES`, etc.
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified.
+      SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER: Represents if a
+        resource is protected by automatic failover. Checks for resources that
+        are configured to have redundancy within a region that enables
+        automatic failover.
+      SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS: Represents if a group
+        is replicating across regions. Checks for resources that are
+        configured to have redundancy, and ongoing replication, across
+        regions.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES: Represents if the resource
+        is available in multiple zones or not.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS: Represents if a resource
+        is available in multiple regions.
+      SIGNAL_TYPE_NO_PROMOTABLE_REPLICA: Represents if a resource has a
+        promotable replica.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has an
+        automated backup policy.
+      SIGNAL_TYPE_SHORT_BACKUP_RETENTION: Represents if a resources has a
+        short backup retention period.
+      SIGNAL_TYPE_LAST_BACKUP_FAILED: Represents if the last backup of a
+        resource failed.
+      SIGNAL_TYPE_LAST_BACKUP_OLD: Represents if the last backup of a resource
+        is older than some threshold value.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0: Represents if a resource
+        violates CIS GCP Foundation 2.0.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3: Represents if a resource
+        violates CIS GCP Foundation 1.3.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2: Represents if a resource
+        violates CIS GCP Foundation 1.2.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1: Represents if a resource
+        violates CIS GCP Foundation 1.1.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0: Represents if a resource
+        violates CIS GCP Foundation 1.0.
+      SIGNAL_TYPE_VIOLATES_NIST_800_53: Represents if a resource violates NIST
+        800-53.
+      SIGNAL_TYPE_VIOLATES_ISO_27001: Represents if a resource violates
+        ISO-27001.
+      SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
+        PCI-DSS v3.2.1.
+      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
+        log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED: Represents if the log_duration
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        on.
+      SIGNAL_TYPE_VERBOSE_ERROR_LOGGING: Represents if the log_error_verbosity
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        default or stricter (default or terse).
+      SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED: Represents if the
+        log_lock_waits database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_LOGGING_MOST_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance is not set appropriately.
+      SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance does not have an appropriate severity level.
+      SIGNAL_TYPE_MINIMAL_ERROR_LOGGING: Represents if the log_min_messages
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        warning or another recommended value.
+      SIGNAL_TYPE_QUERY_STATISTICS_LOGGED: Represents if the databaseFlags
+        property of instance metadata for the log_executor_status field is set
+        to on.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME: Represents if the
+        log_hostname database flag for a Cloud SQL for PostgreSQL instance is
+        not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS: Represents if the
+        log_parser_stats database flag for a Cloud SQL for PostgreSQL instance
+        is not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS: Represents if the
+        log_planner_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS: Represents if the
+        log_statement database flag for a Cloud SQL for PostgreSQL instance is
+        not set to DDL (all data definition statements).
+      SIGNAL_TYPE_LOGGING_QUERY_STATISTICS: Represents if the
+        log_statement_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES: Represents if the
+        log_temp_files database flag for a Cloud SQL for PostgreSQL instance
+        is not set to "0". (NOTE: 0 = ON)
+      SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED: Represents if the user
+        connections database flag for a Cloud SQL for SQL Server instance is
+        configured.
+      SIGNAL_TYPE_USER_OPTIONS_CONFIGURED: Represents if the user options
+        database flag for Cloud SQL SQL Server instance is configured or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        password configured for the root account or not.
+      SIGNAL_TYPE_WEAK_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        weak password configured for the root account.
+      SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED: Represents if a SQL
+        database instance is not encrypted with customer-managed encryption
+        keys (CMEK).
+      SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED: Represents if The
+        contained database authentication database flag for a Cloud SQL for
+        SQL Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING: Represents if the
+        cross_db_ownership_chaining database flag for a Cloud SQL for SQL
+        Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS: Represents if he external
+        scripts enabled database flag for a Cloud SQL for SQL Server instance
+        is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS: Represents if the local_infile
+        database flag for a Cloud SQL for MySQL instance is not set to off.
+      SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED: Represents if the
+        log_connections database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED: Represents if the
+        log_disconnections database flag for a Cloud SQL for PostgreSQL
+        instance is not set to on.
+      SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO: Represents if the
+        log_min_duration_statement database flag for a Cloud SQL for
+        PostgreSQL instance is not set to -1.
+      SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS: Represents if the remote access
+        database flag for a Cloud SQL for SQL Server instance is not set to
+        off.
+      SIGNAL_TYPE_DATABASE_NAMES_EXPOSED: Represents if the skip_show_database
+        database flag for a Cloud SQL for MySQL instance is not set to on.
+      SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED: Represents if the 3625
+        (trace flag) database flag for a Cloud SQL for SQL Server instance is
+        not set to on.
+      SIGNAL_TYPE_PUBLIC_IP_ENABLED: Represents if public IP is enabled.
+      SIGNAL_TYPE_IDLE: Represents Idle instance helps to reduce costs.
+      SIGNAL_TYPE_OVERPROVISIONED: Represents instances that are unnecessarily
+        large for given workload.
+      SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES: Represents high number of
+        concurrently opened tables.
+      SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES: Represents high table count close to
+        SLA limit.
+      SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION: Represents high number of
+        unvacuumed transactions
+      SIGNAL_TYPE_UNDERPROVISIONED: Represents need for more CPU and/or memory
+      SIGNAL_TYPE_OUT_OF_DISK: Represents out of disk.
+      SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY: Represents server
+        certificate is near expiry.
+      SIGNAL_TYPE_DATABASE_AUDITING_DISABLED: Represents database auditing is
+        disabled.
+      SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS: Represents not restricted to
+        authorized networks.
+      SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
+        policy restrict public ip.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
+    SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS = 2
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES = 3
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS = 4
+    SIGNAL_TYPE_NO_PROMOTABLE_REPLICA = 5
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 6
+    SIGNAL_TYPE_SHORT_BACKUP_RETENTION = 7
+    SIGNAL_TYPE_LAST_BACKUP_FAILED = 8
+    SIGNAL_TYPE_LAST_BACKUP_OLD = 9
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0 = 10
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3 = 11
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 12
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 13
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 14
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 15
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 16
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 17
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 18
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 19
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 20
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 21
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 22
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 23
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 24
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 25
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 26
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 27
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 28
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 29
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 30
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 31
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 32
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 33
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 34
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 35
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 36
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 37
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 38
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 39
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 40
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 41
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 42
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 43
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 44
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 45
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 46
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 47
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 48
+    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 49
+    SIGNAL_TYPE_IDLE = 50
+    SIGNAL_TYPE_OVERPROVISIONED = 51
+    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 52
+    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 53
+    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 54
+    SIGNAL_TYPE_UNDERPROVISIONED = 55
+    SIGNAL_TYPE_OUT_OF_DISK = 56
+    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 57
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
+    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
+    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalMetadataValue(_messages.Message):
+    r"""Optional. Any other additional metadata specific to recommendation
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
+  lastRefreshTime = _messages.StringField(2)
+  recommendationState = _messages.EnumField('RecommendationStateValueValuesEnum', 3)
+  recommender = _messages.StringField(4)
+  recommenderId = _messages.StringField(5)
+  recommenderSubtype = _messages.StringField(6)
+  resourceName = _messages.StringField(7)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class DiscoveryEndpoint(_messages.Message):
@@ -196,6 +1528,52 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class Entitlement(_messages.Message):
+  r"""Proto representing the access that a user has to a specific
+  feature/service. NextId: 3.
+
+  Enums:
+    EntitlementStateValueValuesEnum: The current state of user's accessibility
+      to a feature/benefit.
+    TypeValueValuesEnum: An enum that represents the type of this entitlement.
+
+  Fields:
+    entitlementState: The current state of user's accessibility to a
+      feature/benefit.
+    type: An enum that represents the type of this entitlement.
+  """
+
+  class EntitlementStateValueValuesEnum(_messages.Enum):
+    r"""The current state of user's accessibility to a feature/benefit.
+
+    Values:
+      ENTITLEMENT_STATE_UNSPECIFIED: <no description>
+      ENTITLED: User is entitled to a feature/benefit, but whether it has been
+        successfully provisioned is decided by provisioning state.
+      REVOKED: User is entitled to a feature/benefit, but it was requested to
+        be revoked. Whether the revoke has been successful is decided by
+        provisioning state.
+    """
+    ENTITLEMENT_STATE_UNSPECIFIED = 0
+    ENTITLED = 1
+    REVOKED = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""An enum that represents the type of this entitlement.
+
+    Values:
+      ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
+      DUET_AI: The root entitlement representing Duet AI package ownership.
+      GEMINI: The root entitlement representing Gemini package ownership.
+    """
+    ENTITLEMENT_TYPE_UNSPECIFIED = 0
+    DUET_AI = 1
+    GEMINI = 2
+
+  entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class ExportInstanceRequest(_messages.Message):
@@ -423,12 +1801,8 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
-    satisfiesPzi: Optional. Output only. Reserved for future use. Zone
-      Isolation compliance state of the instance. Field name and documentation
-      is obfuscated according to go/per-resource-zi-bit-semantics.
-    satisfiesPzs: Optional. Output only. Reserved for future use. Zone
-      Separation compliance state of the instance. Field name and
-      documentation is obfuscated according to go/zs-resource-status.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     secondaryIpRange: Optional. Additional IP range for node placement.
       Required when enabling read replicas on an existing instance. For
       DIRECT_PEERING mode value must be a CIDR range of size /28, or "auto".
@@ -1099,6 +2473,46 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationError(_messages.Message):
+  r"""An error that occurred during a backup creation operation.
+
+  Enums:
+    ErrorTypeValueValuesEnum:
+
+  Fields:
+    code: Identifies the specific error that occurred. REQUIRED
+    errorType: A ErrorTypeValueValuesEnum attribute.
+    message: Additional information about the error encountered. REQUIRED
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""ErrorTypeValueValuesEnum enum type.
+
+    Values:
+      OPERATION_ERROR_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not
+        known or available.
+      KMS_KEY_ERROR: key destroyed, expired, not found, unreachable or
+        permission denied.
+      DATABASE_ERROR: Database is not accessible
+      STOCKOUT_ERROR: The zone or region does not have sufficient resources to
+        handle the request at the moment
+      CANCELLATION_ERROR: User initiated cancellation
+      SQLSERVER_ERROR: SQL server specific error
+      INTERNAL_ERROR: Any other internal error.
+    """
+    OPERATION_ERROR_TYPE_UNSPECIFIED = 0
+    KMS_KEY_ERROR = 1
+    DATABASE_ERROR = 2
+    STOCKOUT_ERROR = 3
+    CANCELLATION_ERROR = 4
+    SQLSERVER_ERROR = 5
+    INTERNAL_ERROR = 6
+
+  code = _messages.StringField(1)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
+  message = _messages.StringField(3)
+
+
 class OperationMetadata(_messages.Message):
   r"""Pre-defined metadata fields.
 
@@ -1211,6 +2625,98 @@ class PersistenceConfig(_messages.Message):
   rdbSnapshotStartTime = _messages.StringField(4)
 
 
+class Product(_messages.Message):
+  r"""Product specification for Condor resources.
+
+  Enums:
+    EngineValueValuesEnum: The specific engine that the underlying database is
+      running.
+    TypeValueValuesEnum: Type of specific database product. It could be
+      CloudSQL, AlloyDB etc..
+
+  Fields:
+    engine: The specific engine that the underlying database is running.
+    type: Type of specific database product. It could be CloudSQL, AlloyDB
+      etc..
+    version: Version of the underlying database engine. Example values: For
+      MySQL, it could be "8.0", "5.7" etc.. For Postgres, it could be "14",
+      "15" etc..
+  """
+
+  class EngineValueValuesEnum(_messages.Enum):
+    r"""The specific engine that the underlying database is running.
+
+    Values:
+      ENGINE_UNSPECIFIED: UNSPECIFIED means engine type is not known or
+        available.
+      ENGINE_MYSQL: MySQL binary running as an engine in the database
+        instance.
+      MYSQL: MySQL binary running as engine in database instance.
+      ENGINE_POSTGRES: Postgres binary running as engine in database instance.
+      POSTGRES: Postgres binary running as engine in database instance.
+      ENGINE_SQL_SERVER: SQLServer binary running as engine in database
+        instance.
+      SQL_SERVER: SQLServer binary running as engine in database instance.
+      ENGINE_NATIVE: Native database binary running as engine in instance.
+      NATIVE: Native database binary running as engine in instance.
+      ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT: Cloud Spanner with
+        PostgreSQL dialect.
+      ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT: Cloud Spanner with Google
+        SQL dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS: Memorystore with Redis dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER: Memorystore with Redis cluster
+        dialect.
+      ENGINE_OTHER: Other refers to rest of other database engine. This is to
+        be when engine is known, but it is not present in this enum.
+    """
+    ENGINE_UNSPECIFIED = 0
+    ENGINE_MYSQL = 1
+    MYSQL = 2
+    ENGINE_POSTGRES = 3
+    POSTGRES = 4
+    ENGINE_SQL_SERVER = 5
+    SQL_SERVER = 6
+    ENGINE_NATIVE = 7
+    NATIVE = 8
+    ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT = 9
+    ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT = 10
+    ENGINE_MEMORYSTORE_FOR_REDIS = 11
+    ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
+    ENGINE_OTHER = 13
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
+
+    Values:
+      PRODUCT_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not known or
+        available.
+      PRODUCT_TYPE_CLOUD_SQL: Cloud SQL product area in GCP
+      CLOUD_SQL: Cloud SQL product area in GCP
+      PRODUCT_TYPE_ALLOYDB: AlloyDB product area in GCP
+      ALLOYDB: AlloyDB product area in GCP
+      PRODUCT_TYPE_SPANNER: Spanner product area in GCP
+      PRODUCT_TYPE_ON_PREM: On premises database product.
+      ON_PREM: On premises database product.
+      PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
+      PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
+        to be when product type is known, but it is not present in this enum.
+    """
+    PRODUCT_TYPE_UNSPECIFIED = 0
+    PRODUCT_TYPE_CLOUD_SQL = 1
+    CLOUD_SQL = 2
+    PRODUCT_TYPE_ALLOYDB = 3
+    ALLOYDB = 4
+    PRODUCT_TYPE_SPANNER = 5
+    PRODUCT_TYPE_ON_PREM = 6
+    ON_PREM = 7
+    PRODUCT_TYPE_MEMORYSTORE = 8
+    PRODUCT_TYPE_OTHER = 9
+
+  engine = _messages.EnumField('EngineValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  version = _messages.StringField(3)
+
+
 class PscConfig(_messages.Message):
   r"""A PscConfig object.
 
@@ -1245,6 +2751,39 @@ class PscConnection(_messages.Message):
   network = _messages.StringField(3)
   projectId = _messages.StringField(4)
   pscConnectionId = _messages.StringField(5)
+
+
+class RDBConfig(_messages.Message):
+  r"""Configuration of the RDB based persistence.
+
+  Enums:
+    RdbSnapshotPeriodValueValuesEnum: Optional. Period between RDB snapshots.
+
+  Fields:
+    rdbSnapshotPeriod: Optional. Period between RDB snapshots.
+    rdbSnapshotStartTime: Optional. The time that the first snapshot was/will
+      be attempted, and to which future snapshots will be aligned. If not
+      provided, the current time will be used.
+  """
+
+  class RdbSnapshotPeriodValueValuesEnum(_messages.Enum):
+    r"""Optional. Period between RDB snapshots.
+
+    Values:
+      SNAPSHOT_PERIOD_UNSPECIFIED: Not set.
+      ONE_HOUR: One hour.
+      SIX_HOURS: Six hours.
+      TWELVE_HOURS: Twelve hours.
+      TWENTY_FOUR_HOURS: Twenty four hours.
+    """
+    SNAPSHOT_PERIOD_UNSPECIFIED = 0
+    ONE_HOUR = 1
+    SIX_HOURS = 2
+    TWELVE_HOURS = 3
+    TWENTY_FOUR_HOURS = 4
+
+  rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 1)
+  rdbSnapshotStartTime = _messages.StringField(2)
 
 
 class ReconciliationOperationMetadata(_messages.Message):
@@ -1737,6 +3276,39 @@ class RescheduleMaintenanceRequest(_messages.Message):
   scheduleTime = _messages.StringField(2)
 
 
+class RetentionSettings(_messages.Message):
+  r"""A RetentionSettings object.
+
+  Enums:
+    RetentionUnitValueValuesEnum: The unit that 'retained_backups' represents.
+
+  Fields:
+    quantityBasedRetention: A integer attribute.
+    retentionUnit: The unit that 'retained_backups' represents.
+    timeBasedRetention: A string attribute.
+  """
+
+  class RetentionUnitValueValuesEnum(_messages.Enum):
+    r"""The unit that 'retained_backups' represents.
+
+    Values:
+      RETENTION_UNIT_UNSPECIFIED: Backup retention unit is unspecified, will
+        be treated as COUNT.
+      COUNT: Retention will be by count, eg. "retain the most recent 7
+        backups".
+      TIME: Retention will be by Time, eg. "retain the last 7 days backups".
+      RETENTION_UNIT_OTHER: For rest of the other category
+    """
+    RETENTION_UNIT_UNSPECIFIED = 0
+    COUNT = 1
+    TIME = 2
+    RETENTION_UNIT_OTHER = 3
+
+  quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
+  timeBasedRetention = _messages.StringField(3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1928,6 +3500,45 @@ class UpgradeInstanceRequest(_messages.Message):
   redisVersion = _messages.StringField(1)
 
 
+class UserLabels(_messages.Message):
+  r"""Message type for storing user labels. User labels are used to tag App
+  Engine resources, allowing users to search for resources matching a set of
+  labels and to aggregate usage data by labels.
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    labels: A LabelsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class WeeklyMaintenanceWindow(_messages.Message):
   r"""Time window in which disruptive maintenance updates occur. Non-
   disruptive updates can occur inside or outside this window.
@@ -1968,6 +3579,40 @@ class WeeklyMaintenanceWindow(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.MessageField('TimeOfDay', 3)
+
+
+class ZoneDistributionConfig(_messages.Message):
+  r"""Zone distribution config for allocation of cluster resources.
+
+  Enums:
+    ModeValueValuesEnum: Optional. The mode of zone distribution. Defaults to
+      MULTI_ZONE, when not specified.
+
+  Fields:
+    mode: Optional. The mode of zone distribution. Defaults to MULTI_ZONE,
+      when not specified.
+    zone: Optional. When SINGLE ZONE distribution is selected, zone field
+      would be used to allocate all resources in that zone. This is not
+      applicable to MULTI_ZONE, and would be ignored for MULTI_ZONE clusters.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of zone distribution. Defaults to MULTI_ZONE, when
+    not specified.
+
+    Values:
+      ZONE_DISTRIBUTION_MODE_UNSPECIFIED: Not Set. Default: MULTI_ZONE
+      MULTI_ZONE: Distribute all resources across 3 zones picked at random,
+        within the region.
+      SINGLE_ZONE: Distribute all resources in a single zone. The zone field
+        must be specified, when this mode is selected.
+    """
+    ZONE_DISTRIBUTION_MODE_UNSPECIFIED = 0
+    MULTI_ZONE = 1
+    SINGLE_ZONE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  zone = _messages.StringField(2)
 
 
 class ZoneMetadata(_messages.Message):

@@ -597,10 +597,10 @@ class CloudassetAnalyzeIamPolicyLongrunningRequest(_messages.Message):
       organization number (such as "organizations/123"), a folder number (such
       as "folders/123"), a project ID (such as "projects/my-project-id"), or a
       project number (such as "projects/12345"). To know how to get
-      organization id, visit [here ](https://cloud.google.com/resource-
+      organization ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       organization#retrieving_your_organization_id). To know how to get folder
-      or project id, visit [here ](https://cloud.google.com/resource-
+      or project ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       folders#viewing_or_listing_folders_and_projects).
   """
@@ -726,10 +726,10 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       organization number (such as "organizations/123"), a folder number (such
       as "folders/123"), a project ID (such as "projects/my-project-id"), or a
       project number (such as "projects/12345"). To know how to get
-      organization id, visit [here ](https://cloud.google.com/resource-
+      organization ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       organization#retrieving_your_organization_id). To know how to get folder
-      or project id, visit [here ](https://cloud.google.com/resource-
+      or project ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       folders#viewing_or_listing_folders_and_projects).
   """
@@ -1096,10 +1096,10 @@ class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
       This can only be an organization number (such as "organizations/123"), a
       folder number (such as "folders/123"), a project ID (such as
       "projects/my-project-id"), or a project number (such as
-      "projects/12345"). To know how to get organization id, visit [here
+      "projects/12345"). To know how to get organization ID, visit [here
       ](https://cloud.google.com/resource-manager/docs/creating-managing-
       organization#retrieving_your_organization_id). To know how to get folder
-      or project id, visit [here ](https://cloud.google.com/resource-
+      or project ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       folders#viewing_or_listing_folders_and_projects).
   """
@@ -1658,7 +1658,9 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
 
 class CollectAwsAssetSetting(_messages.Message):
   r"""The connection settings to collect asset data from AWS. This needs to be
-  populated if connection type is COLLECT_AWS_ASSET.
+  populated if connection type is COLLECT_AWS_ASSET. We have an option to
+  enable scanning sensitive asset data. By default, the connection will both
+  collect AWS asset metadata and scan sensitive asset data.
 
   Messages:
     QpsLimitValue: Optional. QPS rate limit for AWS API per each AWS service.
@@ -1694,6 +1696,7 @@ class CollectAwsAssetSetting(_messages.Message):
       used. Most AWS services and APIs are region specific. If region(s) is
       not specified, the data collection process can be very time consuming as
       all regions must be queried for all metadata.
+    scanSensitiveDataSetting: Scan sensitive data setting.
     stsEndpointUri: Optional. AWS security token service endpoint. If a user
       disables the default global endpoint, user must provide regional
       endpoint to call for authentication.
@@ -1731,7 +1734,8 @@ class CollectAwsAssetSetting(_messages.Message):
   includedAwsAccountIds = _messages.StringField(5, repeated=True)
   qpsLimit = _messages.MessageField('QpsLimitValue', 6)
   regionCodes = _messages.StringField(7, repeated=True)
-  stsEndpointUri = _messages.StringField(8)
+  scanSensitiveDataSetting = _messages.MessageField('ScanSensitiveDataSetting', 8)
+  stsEndpointUri = _messages.StringField(9)
 
 
 class ConditionContext(_messages.Message):
@@ -1747,7 +1751,7 @@ class ConditionContext(_messages.Message):
 
 
 class ConditionEvaluation(_messages.Message):
-  r"""The Condition evaluation.
+  r"""The condition evaluation.
 
   Enums:
     EvaluationValueValueValuesEnum: The evaluation result.
@@ -1765,7 +1769,7 @@ class ConditionEvaluation(_messages.Message):
       FALSE: The evaluation result is `false`.
       CONDITIONAL: The evaluation result is `conditional` when the condition
         expression contains variables that are either missing input values or
-        have not been supported by Analyzer yet.
+        have not been supported by Policy Analyzer yet.
     """
     EVALUATION_VALUE_UNSPECIFIED = 0
     TRUE = 1
@@ -2874,18 +2878,19 @@ class GoogleCloudAssetV1Rule(_messages.Message):
       field can be set only in Policies for list constraints.
     condition: The evaluating condition for this rule.
     conditionEvaluation: The condition evaluation result for this rule. Only
-      populated if it meets all the following criteria: * there is a condition
-      defined for this rule * this rule is within a consolidated_policy * the
-      consolidated_policy is within
-      AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer or
-      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource
+      populated if it meets all the following criteria: * There is a condition
+      defined for this rule. * This rule is within AnalyzeOrgPolicyGovernedCon
+      tainersResponse.GovernedContainer.consolidated_policy, or
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.consolidated_policy
+      when the AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset has
+      AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.governed_resource.
     denyAll: Setting this to true means that all values are denied. This field
       can be set only in Policies for list constraints.
     enforce: If `true`, then the `Policy` is enforced. If `false`, then any
       configuration is acceptable. This field can be set only in Policies for
       boolean constraints.
-    values: List of values to be used for this PolicyRule. This field can be
-      set only in Policies for list constraints.
+    values: List of values to be used for this policy rule. This field can be
+      set only in policies for list constraints.
   """
 
   allowAll = _messages.BooleanField(1)
@@ -4204,10 +4209,10 @@ class IamPolicyAnalysisQuery(_messages.Message):
       organization number (such as "organizations/123"), a folder number (such
       as "folders/123"), a project ID (such as "projects/my-project-id"), or a
       project number (such as "projects/12345"). To know how to get
-      organization id, visit [here ](https://cloud.google.com/resource-
+      organization ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       organization#retrieving_your_organization_id). To know how to get folder
-      or project id, visit [here ](https://cloud.google.com/resource-
+      or project ID, visit [here ](https://cloud.google.com/resource-
       manager/docs/creating-managing-
       folders#viewing_or_listing_folders_and_projects).
   """
@@ -5033,6 +5038,8 @@ class OtherCloudConnection(_messages.Message):
   Fields:
     collectAwsAssetSetting: A CollectAwsAssetSetting attribute.
     connectionType: Required. The other-cloud connection type.
+    createTime: Output only. The absolute point in time when the other-cloud
+      connection was created.
     description: Optional. Connection description.
     name: Output only. Immutable. The relative resource name of an other-cloud
       connection, which is unique across Google Cloud organizations. This
@@ -5066,12 +5073,13 @@ class OtherCloudConnection(_messages.Message):
 
   collectAwsAssetSetting = _messages.MessageField('CollectAwsAssetSetting', 1)
   connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
-  description = _messages.StringField(3)
-  name = _messages.StringField(4)
-  productSettings = _messages.MessageField('ProductSetting', 5, repeated=True)
-  serviceAgentId = _messages.StringField(6)
-  sharedAwsSetting = _messages.MessageField('SharedAwsSetting', 7)
-  validationResults = _messages.MessageField('ValidationResult', 8, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  productSettings = _messages.MessageField('ProductSetting', 6, repeated=True)
+  serviceAgentId = _messages.StringField(7)
+  sharedAwsSetting = _messages.MessageField('SharedAwsSetting', 8)
+  validationResults = _messages.MessageField('ValidationResult', 9, repeated=True)
 
 
 class OtherCloudProperties(_messages.Message):
@@ -6070,6 +6078,25 @@ class SavedQuery(_messages.Message):
   name = _messages.StringField(8)
 
 
+class ScanSensitiveDataSetting(_messages.Message):
+  r"""Scan sensitive data setting.
+
+  Fields:
+    roleNameToScanSensitiveData: Optional. AWS scanning sensitive data role
+      name. This is role used to scan sensitive data under AWS accounts and
+      this role is only required and used when scanning_sensitive_data_enabled
+      is set to true.
+    scanSensitiveDataEnabled: Optional. Whether we enable scanning sensitive
+      data or not. Setting this to true means that this connection is enabled
+      for SDP (Sensitive Data Protection) to scan sensitive data in customers'
+      AWS accounts, which requires extra scan sensitive data related
+      permissions otherwise scanning sensitive data will fail.
+  """
+
+  roleNameToScanSensitiveData = _messages.StringField(1)
+  scanSensitiveDataEnabled = _messages.BooleanField(2)
+
+
 class SearchAllIamPoliciesResponse(_messages.Message):
   r"""Search all IAM policies response.
 
@@ -6357,7 +6384,7 @@ class TableSchema(_messages.Message):
 
 class Tag(_messages.Message):
   r"""The key and value for a [tag](https://cloud.google.com/resource-
-  manager/docs/tags/tags-overview),
+  manager/docs/tags/tags-overview).
 
   Fields:
     tagKey: TagKey namespaced name, in the format of

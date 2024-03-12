@@ -2499,8 +2499,8 @@ class Topic(_messages.Message):
       (https://cloud.google.com/pubsub/docs/labels).
 
   Fields:
-    ingestionDataSourceSettings: Optional. Settings for managed ingestion from
-      a data source into this topic.
+    ingestionDataSourceSettings: Optional. Settings for ingestion from a data
+      source into this topic.
     kmsKeyName: Optional. The resource name of the Cloud KMS CryptoKey to be
       used to protect access to messages published on this topic. The expected
       format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`.

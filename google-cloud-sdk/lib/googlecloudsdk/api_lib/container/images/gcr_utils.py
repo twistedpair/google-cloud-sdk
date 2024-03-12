@@ -15,8 +15,8 @@
 
 """Utilities for GCR."""
 
-from collections.abc import Iterator
 import dataclasses
+from typing import Iterator
 from apitools.base.py import list_pager
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_http

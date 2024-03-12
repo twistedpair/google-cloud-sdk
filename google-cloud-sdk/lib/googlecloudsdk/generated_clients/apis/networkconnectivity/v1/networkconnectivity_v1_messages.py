@@ -308,6 +308,8 @@ class ConsumerPscConnection(_messages.Message):
       the service attachments in this service connection map.
     pscConnectionId: The PSC connection id of the PSC forwarding rule
       connected to the service attachments in this service connection map.
+    selectedSubnetwork: Output only. The URI of the selected subnetwork
+      selected to allocate IP address for this connection.
     serviceAttachmentUri: The URI of a service attachment which is the target
       of the PSC connection.
     state: The state of the PSC connection.
@@ -355,8 +357,9 @@ class ConsumerPscConnection(_messages.Message):
   network = _messages.StringField(7)
   project = _messages.StringField(8)
   pscConnectionId = _messages.StringField(9)
-  serviceAttachmentUri = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  selectedSubnetwork = _messages.StringField(10)
+  serviceAttachmentUri = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class DeactivateSpokeRequest(_messages.Message):
@@ -3499,6 +3502,8 @@ class PscConnection(_messages.Message):
       producer facing or system internal.
     gceOperation: The last Compute Engine operation to setup PSC connection.
     pscConnectionId: The PSC connection id of the PSC forwarding rule.
+    selectedSubnetwork: Output only. The URI of the subnetwork selected to
+      allocate IP address for this connection.
     state: State of the PSC Connection
   """
 
@@ -3543,7 +3548,8 @@ class PscConnection(_messages.Message):
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 6)
   gceOperation = _messages.StringField(7)
   pscConnectionId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  selectedSubnetwork = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class RejectHubSpokeRequest(_messages.Message):
@@ -3606,8 +3612,8 @@ class Route(_messages.Message):
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
       managing-labels#requirements).
-    location: Output only. The location of the route. Uses the following form:
-      "projects/{project}/locations/{location}" Example:
+    location: Output only. The origin location of the route. Uses the
+      following form: "projects/{project}/locations/{location}" Example:
       projects/1234/locations/us-central1
     name: Immutable. The name of the route. Route names must be unique. Route
       names use the following form: `projects/{project_number}/locations/globa

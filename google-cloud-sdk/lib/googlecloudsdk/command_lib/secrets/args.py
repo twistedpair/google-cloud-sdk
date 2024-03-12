@@ -455,6 +455,18 @@ def GetLocationAttributeConfig():
       completion_id_field='name')
 
 
+def GetLocationResourceAttributeConfig():
+  """Returns the attribute config for location resource."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text=(
+          '[EXPERIMENTAL] The location of the {resource}.'
+      ),
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='name',
+  )
+
+
 def GetSecretAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='secret',
@@ -541,7 +553,7 @@ def GetRegionalSecretResourceSpec():
       disable_auto_completers=False,
       secretsId=GetRegionalSecretAttributeConfig(),
       projectsId=GetProjectAttributeConfig(),
-      locationsId=GetLocationAttributeConfig(),
+      locationsId=GetLocationResourceAttributeConfig(),
   )
 
 
@@ -555,7 +567,7 @@ def GetRegionalVersionResourceSpec():
       versionsId=GetRegionalVersionAttributeConfig(),
       secretsId=GetRegionalSecretAttributeConfig(),
       projectsId=GetProjectAttributeConfig(),
-      locationsId=GetLocationAttributeConfig(),
+      locationsId=GetLocationResourceAttributeConfig(),
   )
 
 
@@ -574,6 +586,22 @@ def ParseLocationRef(ref, **kwargs):
 
 def ParseSecretRef(ref, **kwargs):
   kwargs['collection'] = 'secretmanager.projects.secrets'
+  return resources.REGISTRY.Parse(ref, **kwargs)
+
+
+# TODO(b/309085813) Refactor Usage of ParseXRef() with
+# resources.REGISTRY.Parse(ref, collection=...'
+def ParseRegionalSecretRef(ref, **kwargs):
+  """Parses regional section secret into 'secretmanager.projects.locations.secrets' format .
+
+  Args:
+    ref: resource name of regional secret.
+    **kwargs: extra arguments.
+
+  Returns:
+    Parsed secret.
+  """
+  kwargs['collection'] = 'secretmanager.projects.locations.secrets'
   return resources.REGISTRY.Parse(ref, **kwargs)
 
 

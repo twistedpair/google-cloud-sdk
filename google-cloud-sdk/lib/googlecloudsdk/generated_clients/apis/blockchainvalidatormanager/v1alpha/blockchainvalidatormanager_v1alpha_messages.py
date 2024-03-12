@@ -477,6 +477,18 @@ class CreateBlockchainNodeSource(_messages.Message):
   ethereumNodeDetails = _messages.MessageField('EthereumNodeDetails', 1)
 
 
+class DeleteBlockchainValidatorConfigResponse(_messages.Message):
+  r"""Response message for DeleteBlockchainValidatorConfig
+
+  Fields:
+    slashingProtectionData: Optional. Slashing protection data for a set of
+      Ethereum voting keys, as described in EIP-3076, deserialized into a
+      string.
+  """
+
+  slashingProtectionData = _messages.StringField(1)
+
+
 class Eip2334SeedPhraseReference(_messages.Message):
   r"""Location of the seed material, and derivation path used to generate the
   voting key.

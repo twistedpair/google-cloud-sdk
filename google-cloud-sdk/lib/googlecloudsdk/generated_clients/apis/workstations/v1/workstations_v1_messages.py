@@ -14,6 +14,19 @@ from apitools.base.py import extra_types
 package = 'workstations'
 
 
+class Accelerator(_messages.Message):
+  r"""An accelerator card attached to the instance.
+
+  Fields:
+    count: Optional. Number of accelerator cards exposed to the instance.
+    type: Optional. Type of accelerator resource to attach to the instance,
+      for example, `"nvidia-tesla-p100"`.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  type = _messages.StringField(2)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -264,6 +277,20 @@ class DomainConfig(_messages.Message):
   domain = _messages.StringField(1)
 
 
+class EphemeralDirectory(_messages.Message):
+  r"""An ephemeral directory which won't persist across workstation sessions.
+  It is freshly created on every workstation start operation.
+
+  Fields:
+    gcePd: An EphemeralDirectory backed by a Compute Engine persistent disk.
+    mountPath: Required. Location of this directory in the running
+      workstation.
+  """
+
+  gcePd = _messages.MessageField('GcePersistentDisk', 1)
+  mountPath = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -315,6 +342,8 @@ class GceInstance(_messages.Message):
   r"""A runtime using a Compute Engine instance.
 
   Fields:
+    accelerators: Optional. A list of the type and count of accelerator cards
+      attached to the instance.
     bootDiskSizeGb: Optional. The size of the boot disk for the VM in
       gigabytes (GB). The minimum boot disk size is `30` GB. Defaults to `50`
       GB.
@@ -327,8 +356,9 @@ class GceInstance(_messages.Message):
       `restricted.googleapis.com` for Container Registry and Artifact
       Registry, make sure that you set up DNS records for domains `*.gcr.io`
       and `*.pkg.dev`. Defaults to false (VMs have public IP addresses).
+    disableSsh: Optional. Whether to disable SSH access to the VM.
     enableNestedVirtualization: Optional. Whether to enable nested
-      virtualization on Cloud Workstations VMs created under this workstation
+      virtualization on Cloud Workstations VMs created using this workstation
       configuration. Nested virtualization lets you run virtual machine (VM)
       instances inside your workstation. Before enabling nested
       virtualization, consider the following important considerations. Cloud
@@ -396,21 +426,47 @@ class GceInstance(_messages.Message):
       rules).
   """
 
-  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 2)
-  disablePublicIpAddresses = _messages.BooleanField(3)
-  enableNestedVirtualization = _messages.BooleanField(4)
-  machineType = _messages.StringField(5)
-  poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(8)
-  serviceAccountScopes = _messages.StringField(9, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 10)
-  tags = _messages.StringField(11, repeated=True)
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
+  disablePublicIpAddresses = _messages.BooleanField(4)
+  disableSsh = _messages.BooleanField(5)
+  enableNestedVirtualization = _messages.BooleanField(6)
+  machineType = _messages.StringField(7)
+  poolSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(10)
+  serviceAccountScopes = _messages.StringField(11, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 12)
+  tags = _messages.StringField(13, repeated=True)
+
+
+class GcePersistentDisk(_messages.Message):
+  r"""An EphemeralDirectory is backed by a Compute Engine persistent disk.
+
+  Fields:
+    diskType: Optional. Type of the disk to use. Defaults to `"pd-standard"`.
+    readOnly: Optional. Whether the disk is read only. If true, the disk may
+      be shared by multiple VMs and source_snapshot must be set.
+    sourceImage: Optional. Name of the disk image to use as the source for the
+      disk. Must be empty if source_snapshot is set. Updating source_image
+      will update content in the ephemeral directory after the workstation is
+      restarted. This field is mutable.
+    sourceSnapshot: Optional. Name of the snapshot to use as the source for
+      the disk. Must be empty if source_image is set. Must be empty if
+      read_only is false. Updating source_snapshot will update content in the
+      ephemeral directory after the workstation is restarted. This field is
+      mutable.
+  """
+
+  diskType = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  sourceImage = _messages.StringField(3)
+  sourceSnapshot = _messages.StringField(4)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
-  r"""A PersistentDirectory backed by a Compute Engine regional persistent
+  r"""A Persistent Directory backed by a Compute Engine regional persistent
   disk. The persistent_directories field is repeated, but it may contain only
   one entry. It creates a [persistent
   disk](https://cloud.google.com/compute/docs/disks/persistent-disks) that
@@ -1473,10 +1529,10 @@ class WorkstationConfig(_messages.Message):
       soft-deleted.
     disableTcpConnections: Optional. Disables support for plain TCP
       connections in the workstation. By default the service supports TCP
-      connections via a websocket relay. Setting this option to true disables
-      that relay, which prevents the usage of services that require plain tcp
-      connections, such as ssh. When enabled, all communication must occur
-      over https or wss.
+      connections through a websocket relay. Setting this option to true
+      disables that relay, which prevents the usage of services that require
+      plain TCP connections, such as SSH. When enabled, all communication must
+      occur over HTTPS or WSS.
     displayName: Optional. Human-readable name for this workstation
       configuration.
     enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
@@ -1497,6 +1553,8 @@ class WorkstationConfig(_messages.Message):
       might be lost. If the encryption key is revoked, the workstation session
       automatically stops within 7 hours. Immutable after the workstation
       configuration is created.
+    ephemeralDirectories: Optional. Ephemeral directories which won't persist
+      across workstation sessions.
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
@@ -1609,18 +1667,19 @@ class WorkstationConfig(_messages.Message):
   displayName = _messages.StringField(8)
   enableAuditAgent = _messages.BooleanField(9)
   encryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  etag = _messages.StringField(11)
-  host = _messages.MessageField('Host', 12)
-  idleTimeout = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 16, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 17, repeated=True)
-  reconciling = _messages.BooleanField(18)
-  replicaZones = _messages.StringField(19, repeated=True)
-  runningTimeout = _messages.StringField(20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 11, repeated=True)
+  etag = _messages.StringField(12)
+  host = _messages.MessageField('Host', 13)
+  idleTimeout = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 17, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 18, repeated=True)
+  reconciling = _messages.BooleanField(19)
+  replicaZones = _messages.StringField(20, repeated=True)
+  runningTimeout = _messages.StringField(21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class WorkstationsProjectsLocationsGetRequest(_messages.Message):

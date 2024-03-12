@@ -400,6 +400,9 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           enable_per_object_retention=getattr(
               args, 'enable_per_object_retention', None
           ),
+          enable_hierarchical_namespace=getattr(
+              args, 'enable_hierarchical_namespace', None
+          ),
           labels_file_path=labels_file_path,
           labels_to_append=getattr(args, 'update_labels', None),
           labels_to_remove=getattr(args, 'remove_labels', None),

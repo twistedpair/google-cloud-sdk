@@ -44,7 +44,7 @@ class DataprocV1(base_api.BaseApiClient):
     self.projects_locations_batches = self.ProjectsLocationsBatchesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sessionTemplates = self.ProjectsLocationsSessionTemplatesService(self)
-    self.projects_locations_sessions_sessionSparkApplications = self.ProjectsLocationsSessionsSessionSparkApplicationsService(self)
+    self.projects_locations_sessions_sparkApplications = self.ProjectsLocationsSessionsSparkApplicationsService(self)
     self.projects_locations_sessions = self.ProjectsLocationsSessionsService(self)
     self.projects_locations_workflowTemplates = self.ProjectsLocationsWorkflowTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -1241,13 +1241,13 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsSessionsSessionSparkApplicationsService(base_api.BaseApiService):
-    """Service class for the projects_locations_sessions_sessionSparkApplications resource."""
+  class ProjectsLocationsSessionsSparkApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sessions_sparkApplications resource."""
 
-    _NAME = 'projects_locations_sessions_sessionSparkApplications'
+    _NAME = 'projects_locations_sessions_sparkApplications'
 
     def __init__(self, client):
-      super(DataprocV1.ProjectsLocationsSessionsSessionSparkApplicationsService, self).__init__(client)
+      super(DataprocV1.ProjectsLocationsSessionsSparkApplicationsService, self).__init__(client)
       self._upload_configs = {
           }
 
@@ -1255,7 +1255,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain high level information corresponding to a single Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationResponse) The response message.
@@ -1265,15 +1265,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Access.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:access',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:access',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.access',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.access',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent'],
         relative_path='v1/{+name}:access',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest',
         response_type_name='AccessSessionSparkApplicationResponse',
         supports_download=False,
     )
@@ -1282,7 +1282,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain environment details for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessEnvironmentInfoRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationEnvironmentInfoResponse) The response message.
@@ -1292,15 +1292,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessEnvironmentInfo.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessEnvironmentInfo',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessEnvironmentInfo',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessEnvironmentInfo',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessEnvironmentInfo',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent'],
         relative_path='v1/{+name}:accessEnvironmentInfo',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessEnvironmentInfoRequest',
         response_type_name='AccessSessionSparkApplicationEnvironmentInfoResponse',
         supports_download=False,
     )
@@ -1309,7 +1309,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to a spark job for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessJobRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationJobResponse) The response message.
@@ -1319,15 +1319,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessJob.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessJob',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessJob',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessJob',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessJob',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['jobId', 'parent'],
         relative_path='v1/{+name}:accessJob',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessJobRequest',
         response_type_name='AccessSessionSparkApplicationJobResponse',
         supports_download=False,
     )
@@ -1336,7 +1336,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain Spark Plan Graph for a Spark Application SQL execution. Limits the number of clusters returned as part of the graph to 10000.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlPlanRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationSqlSparkPlanGraphResponse) The response message.
@@ -1346,15 +1346,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessSqlPlan.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessSqlPlan',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessSqlPlan',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessSqlPlan',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessSqlPlan',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['executionId', 'parent'],
         relative_path='v1/{+name}:accessSqlPlan',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlPlanRequest',
         response_type_name='AccessSessionSparkApplicationSqlSparkPlanGraphResponse',
         supports_download=False,
     )
@@ -1363,7 +1363,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to a particular SQL Query for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlQueryRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationSqlQueryResponse) The response message.
@@ -1373,15 +1373,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessSqlQuery.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessSqlQuery',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessSqlQuery',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessSqlQuery',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessSqlQuery',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['details', 'executionId', 'parent', 'planDescription'],
         relative_path='v1/{+name}:accessSqlQuery',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlQueryRequest',
         response_type_name='AccessSessionSparkApplicationSqlQueryResponse',
         supports_download=False,
     )
@@ -1390,7 +1390,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to a spark stage attempt for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessStageAttemptRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationStageAttemptResponse) The response message.
@@ -1400,15 +1400,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessStageAttempt.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessStageAttempt',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessStageAttempt',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessStageAttempt',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessStageAttempt',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent', 'stageAttemptId', 'stageId'],
         relative_path='v1/{+name}:accessStageAttempt',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessStageAttemptRequest',
         response_type_name='AccessSessionSparkApplicationStageAttemptResponse',
         supports_download=False,
     )
@@ -1417,7 +1417,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain RDD operation graph for a Spark Application Stage. Limits the number of clusters returned as part of the graph to 10000.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (AccessSessionSparkApplicationStageRddOperationGraphResponse) The response message.
@@ -1427,15 +1427,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     AccessStageRddGraph.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:accessStageRddGraph',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:accessStageRddGraph',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.accessStageRddGraph',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.accessStageRddGraph',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent', 'stageId'],
         relative_path='v1/{+name}:accessStageRddGraph',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphRequest',
         response_type_name='AccessSessionSparkApplicationStageRddOperationGraphResponse',
         supports_download=False,
     )
@@ -1444,7 +1444,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain high level information and list of Spark Applications corresponding to a batch.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationsResponse) The response message.
@@ -1454,15 +1454,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Search.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications:search',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications:search',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.search',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.search',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['applicationStatus', 'maxEndTime', 'maxTime', 'minEndTime', 'minTime', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/sessionSparkApplications:search',
+        relative_path='v1/{+parent}/sparkApplications:search',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest',
         response_type_name='SearchSessionSparkApplicationsResponse',
         supports_download=False,
     )
@@ -1471,7 +1471,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain executor summary with respect to a spark stage attempt.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorStageSummaryRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationExecutorStageSummaryResponse) The response message.
@@ -1481,15 +1481,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchExecutorStageSummary.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchExecutorStageSummary',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchExecutorStageSummary',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchExecutorStageSummary',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchExecutorStageSummary',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['pageSize', 'pageToken', 'parent', 'stageAttemptId', 'stageId'],
         relative_path='v1/{+name}:searchExecutorStageSummary',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorStageSummaryRequest',
         response_type_name='SearchSessionSparkApplicationExecutorStageSummaryResponse',
         supports_download=False,
     )
@@ -1498,7 +1498,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to executors for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationExecutorsResponse) The response message.
@@ -1508,15 +1508,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchExecutors.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchExecutors',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchExecutors',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchExecutors',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchExecutors',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['executorStatus', 'pageSize', 'pageToken', 'parent'],
         relative_path='v1/{+name}:searchExecutors',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorsRequest',
         response_type_name='SearchSessionSparkApplicationExecutorsResponse',
         supports_download=False,
     )
@@ -1525,7 +1525,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain list of spark jobs corresponding to a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationJobsResponse) The response message.
@@ -1535,15 +1535,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchJobs.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchJobs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchJobs',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchJobs',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchJobs',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['jobStatus', 'pageSize', 'pageToken', 'parent'],
         relative_path='v1/{+name}:searchJobs',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest',
         response_type_name='SearchSessionSparkApplicationJobsResponse',
         supports_download=False,
     )
@@ -1552,7 +1552,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to SQL Queries for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationSqlQueriesResponse) The response message.
@@ -1562,15 +1562,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchSqlQueries',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchSqlQueries',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchSqlQueries',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchSqlQueries',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['details', 'pageSize', 'pageToken', 'parent', 'planDescription'],
         relative_path='v1/{+name}:searchSqlQueries',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest',
         response_type_name='SearchSessionSparkApplicationSqlQueriesResponse',
         supports_download=False,
     )
@@ -1579,7 +1579,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to tasks for a spark stage attempt for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptTasksRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationStageAttemptTasksResponse) The response message.
@@ -1589,15 +1589,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchStageAttemptTasks.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStageAttemptTasks',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchStageAttemptTasks',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStageAttemptTasks',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchStageAttemptTasks',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['pageSize', 'pageToken', 'parent', 'sortRuntime', 'stageAttemptId', 'stageId', 'taskStatus'],
         relative_path='v1/{+name}:searchStageAttemptTasks',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptTasksRequest',
         response_type_name='SearchSessionSparkApplicationStageAttemptTasksResponse',
         supports_download=False,
     )
@@ -1606,7 +1606,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to a spark stage attempts for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationStageAttemptsResponse) The response message.
@@ -1616,15 +1616,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchStageAttempts.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStageAttempts',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchStageAttempts',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStageAttempts',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchStageAttempts',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['pageSize', 'pageToken', 'parent', 'stageId'],
         relative_path='v1/{+name}:searchStageAttempts',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsRequest',
         response_type_name='SearchSessionSparkApplicationStageAttemptsResponse',
         supports_download=False,
     )
@@ -1633,7 +1633,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain data corresponding to stages for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SearchSessionSparkApplicationStagesResponse) The response message.
@@ -1643,15 +1643,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SearchStages.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:searchStages',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:searchStages',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.searchStages',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.searchStages',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['pageSize', 'pageToken', 'parent', 'stageStatus'],
         relative_path='v1/{+name}:searchStages',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest',
         response_type_name='SearchSessionSparkApplicationStagesResponse',
         supports_download=False,
     )
@@ -1660,7 +1660,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain summary of Executor Summary for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SummarizeSessionSparkApplicationExecutorsResponse) The response message.
@@ -1670,15 +1670,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SummarizeExecutors.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeExecutors',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:summarizeExecutors',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeExecutors',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.summarizeExecutors',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent'],
         relative_path='v1/{+name}:summarizeExecutors',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest',
         response_type_name='SummarizeSessionSparkApplicationExecutorsResponse',
         supports_download=False,
     )
@@ -1687,7 +1687,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain summary of Jobs for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSummarizeJobsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SummarizeSessionSparkApplicationJobsResponse) The response message.
@@ -1697,15 +1697,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SummarizeJobs.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeJobs',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:summarizeJobs',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeJobs',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.summarizeJobs',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent'],
         relative_path='v1/{+name}:summarizeJobs',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSummarizeJobsRequest',
         response_type_name='SummarizeSessionSparkApplicationJobsResponse',
         supports_download=False,
     )
@@ -1714,7 +1714,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain summary of Tasks for a Spark Application Stage Attempt.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStageAttemptTasksRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SummarizeSessionSparkApplicationStageAttemptTasksResponse) The response message.
@@ -1724,15 +1724,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SummarizeStageAttemptTasks.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeStageAttemptTasks',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:summarizeStageAttemptTasks',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeStageAttemptTasks',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.summarizeStageAttemptTasks',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent', 'stageAttemptId', 'stageId'],
         relative_path='v1/{+name}:summarizeStageAttemptTasks',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStageAttemptTasksRequest',
         response_type_name='SummarizeSessionSparkApplicationStageAttemptTasksResponse',
         supports_download=False,
     )
@@ -1741,7 +1741,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Obtain summary of Stages for a Spark Application.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStagesRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (SummarizeSessionSparkApplicationStagesResponse) The response message.
@@ -1751,15 +1751,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SummarizeStages.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:summarizeStages',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:summarizeStages',
         http_method='GET',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.summarizeStages',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.summarizeStages',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['parent'],
         relative_path='v1/{+name}:summarizeStages',
         request_field='',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStagesRequest',
         response_type_name='SummarizeSessionSparkApplicationStagesResponse',
         supports_download=False,
     )
@@ -1768,7 +1768,7 @@ class DataprocV1(base_api.BaseApiClient):
       r"""Write wrapper objects from dataplane to spanner.
 
       Args:
-        request: (DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest) input message
+        request: (DataprocProjectsLocationsSessionsSparkApplicationsWriteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (WriteSessionSparkApplicationContextResponse) The response message.
@@ -1778,15 +1778,15 @@ class DataprocV1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Write.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sessionSparkApplications/{sessionSparkApplicationsId}:write',
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}/sparkApplications/{sparkApplicationsId}:write',
         http_method='POST',
-        method_id='dataproc.projects.locations.sessions.sessionSparkApplications.write',
+        method_id='dataproc.projects.locations.sessions.sparkApplications.write',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1/{+name}:write',
         request_field='writeSessionSparkApplicationContextRequest',
-        request_type_name='DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest',
+        request_type_name='DataprocProjectsLocationsSessionsSparkApplicationsWriteRequest',
         response_type_name='WriteSessionSparkApplicationContextResponse',
         supports_download=False,
     )

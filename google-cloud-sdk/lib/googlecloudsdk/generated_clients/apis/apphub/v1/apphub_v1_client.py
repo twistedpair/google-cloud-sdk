@@ -87,7 +87,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Service in an Application.
+      r"""Deletes a Service from an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesDeleteRequest) input message
@@ -141,7 +141,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List Services in an Application.
+      r"""Lists Services in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesListRequest) input message
@@ -232,7 +232,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Workload in an Application.
+      r"""Deletes a Workload from an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest) input message
@@ -576,7 +576,7 @@ class ApphubV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a discovered service in a host project and location.
+      r"""Gets a Discovered Service in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesGetRequest) input message
@@ -603,7 +603,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists discovered services that can be added to an application in a host project and location.
+      r"""Lists Discovered Services that can be added to an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesListRequest) input message
@@ -629,6 +629,33 @@ class ApphubV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Lookup(self, request, global_params=None):
+      r"""Lists a Discovered Service in a host project and location, with a given resource URI.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredServicesLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupDiscoveredServiceResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredServices:lookup',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredServices.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uri'],
+        relative_path='v1/{+parent}/discoveredServices:lookup',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredServicesLookupRequest',
+        response_type_name='LookupDiscoveredServiceResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDiscoveredWorkloadsService(base_api.BaseApiService):
     """Service class for the projects_locations_discoveredWorkloads resource."""
 
@@ -640,7 +667,7 @@ class ApphubV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a discovered workload in a host project and location.
+      r"""Gets a Discovered Workload in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsGetRequest) input message
@@ -667,7 +694,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists discovered workloads that can be added to an application in a host project and location.
+      r"""Lists Discovered Workloads that can be added to an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsListRequest) input message
@@ -690,6 +717,33 @@ class ApphubV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsListRequest',
         response_type_name='ListDiscoveredWorkloadsResponse',
+        supports_download=False,
+    )
+
+    def Lookup(self, request, global_params=None):
+      r"""Lists a Discovered Workload in a host project and location, with a given resource URI.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupDiscoveredWorkloadResponse) The response message.
+      """
+      config = self.GetMethodConfig('Lookup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Lookup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads:lookup',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredWorkloads.lookup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['uri'],
+        relative_path='v1/{+parent}/discoveredWorkloads:lookup',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest',
+        response_type_name='LookupDiscoveredWorkloadResponse',
         supports_download=False,
     )
 
@@ -849,7 +903,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a service project attached to the host project.
+      r"""Deletes a service project attachment.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest) input message
@@ -876,7 +930,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a service project attached to the host project.
+      r"""Gets a service project attachment.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsGetRequest) input message
@@ -903,7 +957,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List service projects attached to the host project.
+      r"""Lists service projects attached to the host project.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsListRequest) input message
@@ -940,7 +994,7 @@ class ApphubV1(base_api.BaseApiClient):
           }
 
     def DetachServiceProjectAttachment(self, request, global_params=None):
-      r"""Detaches a service project from a host project. You can call this API from either a host or service project.
+      r"""Detaches a service project from a host project. You can call this API from any service project without needing access to the host project that it is attached to.
 
       Args:
         request: (ApphubProjectsLocationsDetachServiceProjectAttachmentRequest) input message
@@ -1021,7 +1075,7 @@ class ApphubV1(base_api.BaseApiClient):
     )
 
     def LookupServiceProjectAttachment(self, request, global_params=None):
-      r"""Looks up a service project attachment. You can call this API from either a host or service project.
+      r"""Lists a service project attachment for a given service project. You can call this API from any project to find if it is attached to a host project.
 
       Args:
         request: (ApphubProjectsLocationsLookupServiceProjectAttachmentRequest) input message

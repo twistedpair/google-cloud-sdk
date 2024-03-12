@@ -779,8 +779,7 @@ class Job(_messages.Message):
     status: Output only. Job status. It is read only for users.
     taskGroups: Required. TaskGroups in the Job. Only one TaskGroup is
       supported now.
-    uid: Output only. A system generated unique ID (in UUID4 format) for the
-      Job.
+    uid: Output only. A system generated unique ID for the Job.
     updateTime: Output only. The last time the Job was updated.
   """
 

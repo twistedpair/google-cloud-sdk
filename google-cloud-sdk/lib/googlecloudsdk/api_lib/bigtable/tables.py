@@ -232,8 +232,7 @@ def AddFieldToUpdateMask(field, req):
   return req
 
 
-# TODO(b/308123191): Remove and combine with RefreshUpdateMask for GA launch.
-def RefreshUpdateMaskNonGA(unused_ref, args, req):
+def RefreshUpdateMask(unused_ref, args, req):
   """Refresh the update mask of the updateTableRequest according to the input arguments.
 
   Args:
@@ -250,24 +249,6 @@ def RefreshUpdateMaskNonGA(unused_ref, args, req):
     req = AddFieldToUpdateMask('changeStreamConfig.retentionPeriod', req)
   if args.enable_automated_backup or args.disable_automated_backup:
     req = AddFieldToUpdateMask('automatedBackupPolicy', req)
-  return req
-
-
-def RefreshUpdateMask(unused_ref, args, req):
-  """Refresh the update mask of the updateTableRequest according to the input arguments.
-
-  Args:
-    unused_ref: the gcloud resource (unused).
-    args: the input arguments.
-    req: the original updateTableRequest.
-
-  Returns:
-    req: the updateTableRequest with update mask refreshed.
-  """
-  if args.clear_change_stream_retention_period:
-    req = AddFieldToUpdateMask('changeStreamConfig', req)
-  if args.change_stream_retention_period:
-    req = AddFieldToUpdateMask('changeStreamConfig.retentionPeriod', req)
   return req
 
 

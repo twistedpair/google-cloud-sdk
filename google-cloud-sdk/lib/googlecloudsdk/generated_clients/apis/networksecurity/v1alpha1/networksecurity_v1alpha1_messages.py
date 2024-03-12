@@ -526,7 +526,7 @@ class FirewallEndpoint(_messages.Message):
     associations: Output only. List of FirewallEndpointAssociations that are
       associated to this endpoint. An association will only appear in this
       list after traffic routing is fully configured.
-    billingProjectId: Optional. Project to bill on endpoint uptime usage.
+    billingProjectId: Required. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
@@ -1343,6 +1343,21 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListPartnerSSEEnvironmentsResponse(_messages.Message):
+  r"""Message for response to listing PartnerSSEEnvironments
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    partnerSseEnvironments: The list of PartnerSSEEnvironment
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partnerSseEnvironments = _messages.MessageField('PartnerSSEEnvironment', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListPartnerSSEGatewaysResponse(_messages.Message):
   r"""Message for response to listing PartnerSSEGateways
 
@@ -1879,6 +1894,8 @@ class MirroringEndpointGroupAssociation(_messages.Message):
       ion}/locations/global/mirroringEndpointGroups/{mirroringEndpointGroup}`
     name: Immutable. Identifier. The name of the
       MirroringEndpointGroupAssociation.
+    network: Required. Immutable. The VPC network associated. Format:
+      projects/{project}/global/networks/{network}.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint group association.
@@ -1931,9 +1948,10 @@ class MirroringEndpointGroupAssociation(_messages.Message):
   locationsDetails = _messages.MessageField('MirroringEndpointGroupAssociationLocationDetails', 3, repeated=True)
   mirroringEndpointGroup = _messages.StringField(4)
   name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MirroringEndpointGroupAssociationLocationDetails(_messages.Message):
@@ -4005,6 +4023,91 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    partnerSSEEnvironment: A PartnerSSEEnvironment resource to be passed as
+      the request body.
+    partnerSseEnvironmentId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      partner_sse_environment_id from the method_signature of Create RPC
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  partnerSSEEnvironment = _messages.MessageField('PartnerSSEEnvironment', 2)
+  partnerSseEnvironmentId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListPartnerSSEEnvironmentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest
   object.
@@ -4796,6 +4899,34 @@ class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_message
   updateMask = _messages.StringField(3)
 
 
+class NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest
+  object.
+
+  Fields:
+    name: Immutable. name of resource
+    partnerSSEGateway: A PartnerSSEGateway resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: The list of fields to update
+  """
+
+  name = _messages.StringField(1, required=True)
+  partnerSSEGateway = _messages.MessageField('PartnerSSEGateway', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
 
@@ -5009,6 +5140,101 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class PartnerSSEEnvironment(_messages.Message):
+  r"""Message describing PartnerSSEEnvironment object.
+
+  Enums:
+    SseServiceValueValuesEnum: Immutable. Only SYMANTEC_CLOUD_SWG uses
+      PartnerSSEEnvironment today.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pair
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    deleteTime: Output only. [Output only] Delete time stamp
+    labels: Optional. Labels as key value pair
+    name: Identifier. Name of the Partner SSE Environment. Partner SSE
+      Environment is global so the name should be unique per project. Partners
+      should use the name "default" for the environment that want customers to
+      use. See google.aip.dev/122 for resource naming.
+    partnerNetwork: Required. Partner-owned network in the partner project
+      created for this environment. Supports all user traffic and peers to
+      sse_network.
+    sseNetwork: Output only. Google-owned VPC in the SSE project created for
+      this environment. Supports all user traffic and peers to partner_vpc.
+    sseNetworkingRanges: Required. CIDR ranges reserved for Google's use.
+      Should be at least a /20.
+    sseProject: Output only. Google-owned project created for this
+      environment.
+    sseService: Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment
+      today.
+    symantecOptions: Optional. Required iff sse_service is SYMANTEC_CLOUD_SWG.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class SseServiceValueValuesEnum(_messages.Enum):
+    r"""Immutable. Only SYMANTEC_CLOUD_SWG uses PartnerSSEEnvironment today.
+
+    Values:
+      SSE_SERVICE_UNSPECIFIED: The default value. This value is used if the
+        state is omitted.
+      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
+        Access](https://www.paloaltonetworks.com/sase/access).
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet - see
+        b/323856877.
+    """
+    SSE_SERVICE_UNSPECIFIED = 0
+    PALO_ALTO_PRISMA_ACCESS = 1
+    SYMANTEC_CLOUD_SWG = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pair
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  partnerNetwork = _messages.StringField(5)
+  sseNetwork = _messages.StringField(6)
+  sseNetworkingRanges = _messages.StringField(7, repeated=True)
+  sseProject = _messages.StringField(8)
+  sseService = _messages.EnumField('SseServiceValueValuesEnum', 9)
+  symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 10)
+  updateTime = _messages.StringField(11)
+
+
+class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
+  r"""Fields that are applicable iff sse_service is SYMANTEC_CLOUD_SWG.
+
+  Fields:
+    apiEndpoint: Optional. URL to use for calling the Symantec Locations API.
+  """
+
+  apiEndpoint = _messages.StringField(1)
+
+
 class PartnerSSEGateway(_messages.Message):
   r"""Message describing PartnerSSEGateway object
 
@@ -5028,17 +5254,22 @@ class PartnerSSEGateway(_messages.Message):
     sseBgpIps: Output only. [Output Only] IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
       with this PartnerSSEGateway
-    sseSubnetRange: Output only. [Output Only] Subnet range of the subnet
-      where partner traffic is routed.
-    sseTargetIp: Output only. [Output Only] Target IP where partner traffic is
-      routed.
+    sseSubnetRange: Optional. Subnet range where SSE GW instances are
+      deployed. Default value is set to "100.88.255.0/24". The CIDR suffix
+      should be less than or equal to 24.
+    sseTargetIp: Output only. [Output Only] Target IP that belongs to
+      sse_subnet_range where partner should send the traffic to reach the
+      customer networks.
     sseVpcSubnetRange: Output only. [Output Only] Subnet range of the subnet
       where partner traffic is routed. This field is deprecated. Use
       sse_subnet_range instead.
     sseVpcTargetIp: Output only. [Output Only] This is the IP where the
       partner traffic should be routed to. This field is deprecated. Use
       sse_target_ip instead.
+    symantecOptions: Optional. Required iff Partner is Symantec.
     updateTime: Output only. [Output only] Update time stamp
+    vni: Optional. Virtual Network Identifier to use in NCG. Today the only
+      partner that depends on it is Symantec.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5078,7 +5309,23 @@ class PartnerSSEGateway(_messages.Message):
   sseTargetIp = _messages.StringField(11)
   sseVpcSubnetRange = _messages.StringField(12)
   sseVpcTargetIp = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 14)
+  updateTime = _messages.StringField(15)
+  vni = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+
+
+class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
+  r"""Options specific to gateways connected to Symantec.
+
+  Fields:
+    symantecLocationUuid: Output only. UUID of the Symantec Location created
+      on the customer's behalf.
+    symantecSiteTargetHost: Optional. Target for the NCGs to send traffic to
+      on the Symantec side. Only supports DNS hostname today.
+  """
+
+  symantecLocationUuid = _messages.StringField(1)
+  symantecSiteTargetHost = _messages.StringField(2)
 
 
 class PartnerSSERealm(_messages.Message):
@@ -5222,13 +5469,25 @@ class SSEGateway(_messages.Message):
       Defaults to "100.64.1.253" if unspecified.
     appNetworks: Optional. List of app networks which are attached to this
       gateway.
-    appVpc: Optional. name of VPC where the app runs
+    country: Optional. ISO-3166 alpha 2 country code used for localization.
+      Only used for Symantec's API today, and is optional even for gateways
+      connected to Symantec, since Symantec applies a default if we don't
+      specify it. Not case-sensitive, since it will be upper-cased when
+      sending to Symantec API.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
+    maxBandwidthMbps: Optional. Not an enforced cap. Used only for Symantec's
+      API today.
     name: Immutable. name of resource
     sseProject: Output only. [Output Only] The project owning
       app_facing_network and untrusted_facing_network
     sseRealm: Required. name of SSERealm owning the SSEGateway
+    symantecOptions: Optional. Required iff the associated realm is of type
+      SYMANTEC_CLOUD_SWG.
+    timezone: Optional. tzinfo identifier used for localization. Only used for
+      Symantec's API today, and is optional even for gateways connected to
+      Symantec, since Symantec applies a default if we don't specify it. Case
+      sensitive.
     untrustedFacingNetwork: Output only. [Output only] SSE-owned network which
       the untrusted network should peer with.
     untrustedFacingSubnetRange: Optional. Subnet range of the SSE-owned subnet
@@ -5269,17 +5528,20 @@ class SSEGateway(_messages.Message):
   appFacingSubnetRange = _messages.StringField(2)
   appFacingTargetIp = _messages.StringField(3)
   appNetworks = _messages.StringField(4, repeated=True)
-  appVpc = _messages.StringField(5)
+  country = _messages.StringField(5)
   createTime = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  sseProject = _messages.StringField(9)
-  sseRealm = _messages.StringField(10)
-  untrustedFacingNetwork = _messages.StringField(11)
-  untrustedFacingSubnetRange = _messages.StringField(12)
-  untrustedFacingTargetIp = _messages.StringField(13)
-  untrustedNetwork = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  maxBandwidthMbps = _messages.IntegerField(8)
+  name = _messages.StringField(9)
+  sseProject = _messages.StringField(10)
+  sseRealm = _messages.StringField(11)
+  symantecOptions = _messages.MessageField('SSEGatewaySSEGatewaySymantecOptions', 12)
+  timezone = _messages.StringField(13)
+  untrustedFacingNetwork = _messages.StringField(14)
+  untrustedFacingSubnetRange = _messages.StringField(15)
+  untrustedFacingTargetIp = _messages.StringField(16)
+  untrustedNetwork = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
 
 
 class SSEGatewayReference(_messages.Message):
@@ -5328,6 +5590,22 @@ class SSEGatewayReference(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class SSEGatewaySSEGatewaySymantecOptions(_messages.Message):
+  r"""Fields specific to SSEGWs connecting to Symantec Cloud SWG.
+
+  Fields:
+    symantecLocationName: Immutable. Name to be used for when creating a
+      Location on the customer's behalf in Symantec's Location API. Required
+      iff sse_realm uses SYMANTEC_CLOUD_SWG. Not to be confused with GCP
+      locations.
+    symantecSite: Immutable. Symantec data center identifier that this SSEGW
+      will connect to. Required iff sse_realm uses SYMANTEC_CLOUD_SWG.
+  """
+
+  symantecLocationName = _messages.StringField(1)
+  symantecSite = _messages.StringField(2)
+
+
 class SSERealm(_messages.Message):
   r"""Message describing SSERealm object
 
@@ -5345,8 +5623,11 @@ class SSERealm(_messages.Message):
       `projects/{project}/locations/global/sseRealms/{sseRealm}`
     pairingKey: Output only. [Output only] Key to be shared with SSE service
       provider to establish global handshake
+    partnerSseEnvironment: Optional. Full URI of environment that this Realm
+      is using. Only used in Symantec Realms today.
     sseService: Immutable. SSE service provider
     state: Output only. [Output only] State of the realm
+    symantecOptions: Optional. Required only if using SYMANTEC_CLOUD_SWG.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -5358,9 +5639,12 @@ class SSERealm(_messages.Message):
         state is omitted.
       PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
         Access](https://www.paloaltonetworks.com/sase/access).
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet - see
+        b/323856877.
     """
     SSE_SERVICE_UNSPECIFIED = 0
     PALO_ALTO_PRISMA_ACCESS = 1
+    SYMANTEC_CLOUD_SWG = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. [Output only] State of the realm
@@ -5368,15 +5652,26 @@ class SSERealm(_messages.Message):
     Values:
       STATE_UNSPECIFIED: The default value. This value is used if the state is
         omitted.
-      ATTACHED: This SSERealm is attached to a PartnerSSERealm.
-      UNATTACHED: This SSERealm is not attached to a PartnerSSERealm.
+      ATTACHED: This SSERealm is attached to a PartnerSSERealm, used only for
+        Prisma Access.
+      UNATTACHED: This SSERealm is not attached to a PartnerSSERealm, used
+        only for Prisma Access.
       KEY_EXPIRED: This SSERealm is not attached to a PartnerSSERealm, and its
-        pairing key has expired and needs key regeneration.
+        pairing key has expired and needs key regeneration, used only for
+        Prisma Access.
+      KEY_VALIDATION_PENDING: API key is pending validation for Symantec.
+      KEY_VALIDATED: API key validation succeeded for Symantec, and customers
+        can proceed to further steps.
+      KEY_INVALID: API key validation failed for Symantec, please use a new
+        API key.
     """
     STATE_UNSPECIFIED = 0
     ATTACHED = 1
     UNATTACHED = 2
     KEY_EXPIRED = 3
+    KEY_VALIDATION_PENDING = 4
+    KEY_VALIDATED = 5
+    KEY_INVALID = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5406,9 +5701,11 @@ class SSERealm(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   pairingKey = _messages.MessageField('SSERealmPairingKey', 4)
-  sseService = _messages.EnumField('SseServiceValueValuesEnum', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  partnerSseEnvironment = _messages.StringField(5)
+  sseService = _messages.EnumField('SseServiceValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  symantecOptions = _messages.MessageField('SSERealmSSERealmSymantecOptions', 8)
+  updateTime = _messages.StringField(9)
 
 
 class SSERealmPairingKey(_messages.Message):
@@ -5422,6 +5719,20 @@ class SSERealmPairingKey(_messages.Message):
 
   expireTime = _messages.StringField(1)
   key = _messages.StringField(2)
+
+
+class SSERealmSSERealmSymantecOptions(_messages.Message):
+  r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
+
+  Fields:
+    apiKey: Optional. API Key used to call Symantec APIs on the user's behalf.
+      Required if using SYMANTEC_CLOUD_SWG.
+    availableSymantecSites: Output only. Symantec site IDs that the user can
+      choose to connect to.
+  """
+
+  apiKey = _messages.StringField(1)
+  availableSymantecSites = _messages.StringField(2, repeated=True)
 
 
 class SecurityProfile(_messages.Message):

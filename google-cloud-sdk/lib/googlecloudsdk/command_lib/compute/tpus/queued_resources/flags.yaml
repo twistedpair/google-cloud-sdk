@@ -84,11 +84,11 @@ reserved:
   type: bool
   action: store_true
   default: null
-  api_field: queuedResource.guaranteed.reserved
   help_text: |
     Specifies the request should be scheduled on reserved capacity.
 
-    If this flag is set the guaranteed flag is also set.
+    If `--reservation-host-project`, `--reservation-host-folder`, or
+    `--reservation-host-organization` are present then this flag has no effect.
 
 valid_after_duration:
   arg_name: valid-after-duration

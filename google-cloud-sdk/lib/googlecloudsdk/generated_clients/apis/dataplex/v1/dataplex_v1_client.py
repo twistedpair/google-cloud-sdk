@@ -1398,65 +1398,11 @@ class DataplexV1(base_api.BaseApiClient):
         method_id='dataplex.projects.locations.entryGroups.entries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/entries',
         request_field='',
         request_type_name='DataplexProjectsLocationsEntryGroupsEntriesListRequest',
         response_type_name='GoogleCloudDataplexV1ListEntriesResponse',
-        supports_download=False,
-    )
-
-    def Lookup(self, request, global_params=None):
-      r"""Looks up a single entry. Deprecated: Do not use. Use LookupEntry instead.
-
-      Args:
-        request: (DataplexProjectsLocationsEntryGroupsEntriesLookupRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDataplexV1Entry) The response message.
-      """
-      config = self.GetMethodConfig('Lookup')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Lookup.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:lookup',
-        http_method='GET',
-        method_id='dataplex.projects.locations.entryGroups.entries.lookup',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['aspectTypes', 'entry', 'paths', 'view'],
-        relative_path='v1/{+name}:lookup',
-        request_field='',
-        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesLookupRequest',
-        response_type_name='GoogleCloudDataplexV1Entry',
-        supports_download=False,
-    )
-
-    def LookupAspects(self, request, global_params=None):
-      r"""Lists the aspects within an entry.
-
-      Args:
-        request: (DataplexProjectsLocationsEntryGroupsEntriesLookupAspectsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDataplexV1LookupAspectsResponse) The response message.
-      """
-      config = self.GetMethodConfig('LookupAspects')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LookupAspects.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:lookupAspects',
-        http_method='GET',
-        method_id='dataplex.projects.locations.entryGroups.entries.lookupAspects',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1/{+parent}:lookupAspects',
-        request_field='',
-        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesLookupAspectsRequest',
-        response_type_name='GoogleCloudDataplexV1LookupAspectsResponse',
         supports_download=False,
     )
 
@@ -1484,33 +1430,6 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleCloudDataplexV1Entry',
         request_type_name='DataplexProjectsLocationsEntryGroupsEntriesPatchRequest',
         response_type_name='GoogleCloudDataplexV1Entry',
-        supports_download=False,
-    )
-
-    def RetrieveAspects(self, request, global_params=None):
-      r"""Lists the aspects within an entry.
-
-      Args:
-        request: (DataplexProjectsLocationsEntryGroupsEntriesRetrieveAspectsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudDataplexV1RetrieveAspectsResponse) The response message.
-      """
-      config = self.GetMethodConfig('RetrieveAspects')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    RetrieveAspects.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/entryGroups/{entryGroupsId}/entries/{entriesId}:retrieveAspects',
-        http_method='GET',
-        method_id='dataplex.projects.locations.entryGroups.entries.retrieveAspects',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1/{+parent}:retrieveAspects',
-        request_field='',
-        request_type_name='DataplexProjectsLocationsEntryGroupsEntriesRetrieveAspectsRequest',
-        response_type_name='GoogleCloudDataplexV1RetrieveAspectsResponse',
         supports_download=False,
     )
 
@@ -4531,7 +4450,7 @@ class DataplexV1(base_api.BaseApiClient):
         method_id='dataplex.projects.locations.searchEntries',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['adminSearch', 'orderBy', 'pageSize', 'pageToken', 'query', 'scope'],
+        query_params=['orderBy', 'pageSize', 'pageToken', 'query', 'scope'],
         relative_path='v1/{+name}:searchEntries',
         request_field='',
         request_type_name='DataplexProjectsLocationsSearchEntriesRequest',

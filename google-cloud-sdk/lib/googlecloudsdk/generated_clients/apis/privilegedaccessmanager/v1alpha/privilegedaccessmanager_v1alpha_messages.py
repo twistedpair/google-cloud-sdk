@@ -160,8 +160,8 @@ class Entitlement(_messages.Message):
       "folders/{folder-number}/locations/{region}/entitlements/{entitlement-
       id}" * "projects/{project-id|project-
       number}/locations/{region}/entitlements/{entitlement-id}"
-    privilegedAccess: Immutable. The access granted to a requester on
-      successful approval.
+    privilegedAccess: The access granted to a requester on successful
+      approval.
     requesterJustificationConfig: Required. The manner in which the requester
       should provide a justification for requesting access.
     state: Output only. Current state of this Entitlement.

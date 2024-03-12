@@ -53,6 +53,49 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS = (
+      'projects.locations.global.hubs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_GROUPS = (
+      'projects.locations.global.hubs.groups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/groups/'
+              '{groupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_ROUTETABLES = (
+      'projects.locations.global.hubs.routeTables',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/'
+              'routeTables/{routeTablesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_GLOBAL_HUBS_ROUTETABLES_ROUTES = (
+      'projects.locations.global.hubs.routeTables.routes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/hubs/{hubsId}/'
+              'routeTables/{routeTablesId}/routes/{routesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -71,6 +114,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'regionalEndpoints/{regionalEndpointsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SPOKES = (
+      'projects.locations.spokes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/spokes/'
+              '{spokesId}',
       },
       ['name'],
       True

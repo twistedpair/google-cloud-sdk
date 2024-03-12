@@ -934,6 +934,44 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RAGCORPORA = (
+      'projects.locations.ragCorpora',
+      'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+      '{ragCorporaId}',
+      {},
+      ['projectsId', 'locationsId', 'ragCorporaId'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGCORPORA_OPERATIONS = (
+      'projects.locations.ragCorpora.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES = (
+      'projects.locations.ragCorpora.ragFiles',
+      'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+      '{ragCorporaId}/ragFiles/{ragFilesId}',
+      {},
+      ['projectsId', 'locationsId', 'ragCorporaId', 'ragFilesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES_OPERATIONS = (
+      'projects.locations.ragCorpora.ragFiles.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}/ragFiles/{ragFilesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REASONINGENGINES = (
       'projects.locations.reasoningEngines',
       'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'

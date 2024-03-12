@@ -886,6 +886,18 @@ class _BaseInstances(object):
     ):
       api_util.InstancesV1Beta4.PrintAndConfirmSimulatedMaintenanceEvent()
 
+    # BETA args.
+    if IsBetaOrNewer(release_track):
+      if args.IsKnownAndSpecified('failover_dr_replica_name'):
+        replication_cluster = sql_messages.ReplicationCluster()
+        replication_cluster.failoverDrReplicaName = (
+            args.failover_dr_replica_name
+        )
+        instance_resource.replicationCluster = replication_cluster
+      if args.IsKnownAndSpecified('clear_failover_dr_replica_name'):
+        if instance_resource.replicationCluster is not None:
+          instance_resource.replicationCluster.ClearFailoverDrReplicaName()
+
     return instance_resource
 
 

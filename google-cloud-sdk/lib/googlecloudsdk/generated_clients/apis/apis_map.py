@@ -3154,6 +3154,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.run.v2',
+                    client_classpath='run_v2_client.RunV2',
+                    base_url='https://run.googleapis.com/',
+                    messages_modulepath='run_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'runapps': {
         'v1alpha1':

@@ -63,6 +63,30 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICEINSTANCES_APPLICATIONENVIRONMENTS = (
+      'projects.locations.serviceInstances.applicationEnvironments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceInstances/{serviceInstancesId}/applicationEnvironments/'
+              '{applicationEnvironmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SERVICEINSTANCES_SPARKAPPLICATIONS = (
+      'projects.locations.serviceInstances.sparkApplications',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'serviceInstances/{serviceInstancesId}/sparkApplications/'
+              '{sparkApplicationsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

@@ -124,6 +124,12 @@ class ServicePromptFallthrough(ResourcePromptFallthrough):
     super(ServicePromptFallthrough, self).__init__('service')
 
 
+class WorkerPromptFallthrough(ResourcePromptFallthrough):
+
+  def __init__(self):
+    super(WorkerPromptFallthrough, self).__init__('worker')
+
+
 class JobPromptFallthrough(ResourcePromptFallthrough):
 
   def __init__(self):
@@ -188,6 +194,19 @@ def ServiceAttributeConfig(prompt=False):
       name='service',
       help_text='Service for the {resource}.',
       fallthroughs=fallthroughs)
+
+
+def WorkerAttributeConfig(prompt=False):
+  """Attribute config with fallthrough prompt only if requested."""
+  if prompt:
+    fallthroughs = [WorkerPromptFallthrough()]
+  else:
+    fallthroughs = []
+  return concepts.ResourceParameterAttributeConfig(
+      name='worker',
+      help_text='Worker for the {resource}.',
+      fallthroughs=fallthroughs,
+  )
 
 
 def ConfigurationAttributeConfig():
@@ -475,6 +494,18 @@ def GetTaskResourceSpec(prompt=False):
       tasksId=TaskAttributeConfig(prompt=prompt),
       resource_name='Task',
       api_version='v1')
+
+
+# TODO(b/322180968): Once Worker API is ready, replace Service related
+# references.
+def GetWorkerResourceSpec(prompt=False):
+  return concepts.ResourceSpec(
+      'run.namespaces.services',
+      namespacesId=NamespaceAttributeConfig(),
+      servicesId=WorkerAttributeConfig(prompt),
+      resource_name='worker',
+      api_version='v1',
+  )
 
 
 def GetNamespaceResourceSpec():

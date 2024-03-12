@@ -196,8 +196,8 @@ class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsole
   name = _messages.StringField(2, required=True)
 
 
-class BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest
+class BaremetalsolutionProjectsLocationsInstancesEnableHyperthreadingRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesEnableHyperthreadingRequest
   object.
 
   Fields:
@@ -3070,11 +3070,14 @@ class Volume(_messages.Message):
       VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
       VOLUME_PERFORMANCE_TIER_ASSIGNED: Assigned aggregates.
       VOLUME_PERFORMANCE_TIER_HT: High throughput aggregates.
+      VOLUME_PERFORMANCE_TIER_QOS2_PERFORMANCE: QoS 2.0 high performance
+        storage.
     """
     VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
     VOLUME_PERFORMANCE_TIER_SHARED = 1
     VOLUME_PERFORMANCE_TIER_ASSIGNED = 2
     VOLUME_PERFORMANCE_TIER_HT = 3
+    VOLUME_PERFORMANCE_TIER_QOS2_PERFORMANCE = 4
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Output only. Storage protocol for the Volume.
@@ -3240,11 +3243,14 @@ class VolumeConfig(_messages.Message):
       VOLUME_PERFORMANCE_TIER_SHARED: Regular volumes, shared aggregates.
       VOLUME_PERFORMANCE_TIER_ASSIGNED: Assigned aggregates.
       VOLUME_PERFORMANCE_TIER_HT: High throughput aggregates.
+      VOLUME_PERFORMANCE_TIER_QOS2_PERFORMANCE: QoS 2.0 high performance
+        storage.
     """
     VOLUME_PERFORMANCE_TIER_UNSPECIFIED = 0
     VOLUME_PERFORMANCE_TIER_SHARED = 1
     VOLUME_PERFORMANCE_TIER_ASSIGNED = 2
     VOLUME_PERFORMANCE_TIER_HT = 3
+    VOLUME_PERFORMANCE_TIER_QOS2_PERFORMANCE = 4
 
   class ProtocolValueValuesEnum(_messages.Enum):
     r"""Volume protocol.

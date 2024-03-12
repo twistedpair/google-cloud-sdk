@@ -899,7 +899,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Messag
       cancelled).
     name: Output only. The resource Name of the Entitlement. Entitlement names
       have the form `projects/{project_id}/entitlements/{entitlement_id}`.
-    order: Output only. Order associated with this Entitlement.
+    order: Output only. Order associated with this Entitlement. In the format
+      of `billingAccounts/{billing_account}/orders/{order}`
     pendingChange: Output only. A change which is pending and not yet
       effective.
     productExternalName: Output only. External name of the product this

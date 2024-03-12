@@ -4462,7 +4462,8 @@ class ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest(_messages.
       GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest resource
       to be passed as the request body.
     name: Required. Name of the organization for which the score needs to be
-      computed in the following format: `organizations/{org}`
+      computed in the following format:
+      `organizations/{org}/securityAssessmentResults`
   """
 
   googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest', 1)
@@ -4689,6 +4690,16 @@ class ApigeeOrganizationsSecurityProfilesV2CreateRequest(_messages.Message):
   googleCloudApigeeV1SecurityProfileV2 = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2', 1)
   parent = _messages.StringField(2, required=True)
   securityProfileV2Id = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityProfilesV2DeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesV2DeleteRequest object.
+
+  Fields:
+    name: Required. The name of the security profile v2 to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class ApigeeOrganizationsSecurityProfilesV2GetRequest(_messages.Message):
@@ -4964,6 +4975,103 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1ApiDoc: A GoogleCloudApigeeV1ApiDoc resource to be
+      passed as the request body.
+    parent: Required. Name of the portal. Use the following structure in your
+      request: `organizations/{org}/sites/{site}`
+  """
+
+  googleCloudApigeeV1ApiDoc = _messages.MessageField('GoogleCloudApigeeV1ApiDoc', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the catalog item. Use the following structure in
+      your request: `organizations/{org}/sites/{site}/apidocs/{apidoc}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsGetDocumentationRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsGetDocumentationRequest object.
+
+  Fields:
+    name: Required. Resource name of the catalog item documentation. Use the
+      following structure in your request:
+      `organizations/{org}/sites/{site}/apidocs/{apidoc}/documentation`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsGetRequest object.
+
+  Fields:
+    name: Required. Name of the catalog item. Use the following structure in
+      your request: `organizations/{org}/sites/{site}/apidocs/{apidoc}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of items to return. The service may
+      return fewer than this value. If unspecified, at most 25 books will be
+      returned. The maximum value is 100; values above 100 will be coerced to
+      100.
+    pageToken: Optional. A page token, received from a previous `ListApiDocs`
+      call. Provide this to retrieve the subsequent page.
+    parent: Required. Name of the portal. Use the following structure in your
+      request: `organizations/{org}/sites/{site}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsUpdateDocumentationRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsUpdateDocumentationRequest object.
+
+  Fields:
+    googleCloudApigeeV1ApiDocDocumentation: A
+      GoogleCloudApigeeV1ApiDocDocumentation resource to be passed as the
+      request body.
+    name: Required. Resource name of the catalog item documentation. Use the
+      following structure in your request:
+      `organizations/{org}/sites/{site}/apidocs/{apidoc}/documentation`
+  """
+
+  googleCloudApigeeV1ApiDocDocumentation = _messages.MessageField('GoogleCloudApigeeV1ApiDocDocumentation', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSitesApidocsUpdateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSitesApidocsUpdateRequest object.
+
+  Fields:
+    googleCloudApigeeV1ApiDoc: A GoogleCloudApigeeV1ApiDoc resource to be
+      passed as the request body.
+    name: Required. Name of the catalog item. Use the following structure in
+      your request: `organizations/{org}/sites/{site}/apidocs/{apidoc}`
+  """
+
+  googleCloudApigeeV1ApiDoc = _messages.MessageField('GoogleCloudApigeeV1ApiDoc', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsTestIamPermissionsRequest(_messages.Message):
@@ -5410,6 +5518,138 @@ class GoogleCloudApigeeV1ApiCategoryResponse(_messages.Message):
   """
 
   data = _messages.MessageField('GoogleCloudApigeeV1ApiCategory', 1)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1ApiDoc(_messages.Message):
+  r"""`ApiDoc` represents an API catalog item. Catalog items are used in two
+  ways in a portal: - Users can browse and interact with a visual
+  representation of the API documentation - The `api_product_name` field
+  provides a link to a backing [API product]
+  (/apigee/docs/reference/apis/apigee/rest/v1/organizations.apiproducts).
+  Through this link, portal users can create and manage developer apps linked
+  to one or more API products.
+
+  Fields:
+    anonAllowed: Optional. Boolean flag that manages user access to the
+      catalog item. When true, the catalog item can be viewed anonymously;
+      otherwise, only registered users may view it. Note: when the parent
+      portal is enrolled in the [audience management
+      feature](https://cloud.google.com/apigee/docs/api-
+      platform/publish/portal/portal-audience#enrolling_in_the_beta_release_of
+      _the_audience_management_feature), this flag is ignored; instead
+      visibility must be further managed in the management UI (see [Manage the
+      visibility of an API in your
+      portal](https://cloud.google.com/apigee/docs/api-
+      platform/publish/portal/publish-apis#visibility)).
+    apiProductName: Required. Immutable. The `name` field of the associated
+      [API product](/apigee/docs/reference/apis/apigee/rest/v1/organizations.a
+      piproducts). A portal may have only one catalog item associated with a
+      given API product.
+    categoryIds: Optional. The IDs of the API categories to which this catalog
+      item belongs.
+    description: Optional. Description of the catalog item. Max length is
+      10,000 characters.
+    edgeAPIProductName: Optional. Immutable. DEPRECATED: use the
+      `apiProductName` field instead
+    graphqlEndpointUrl: Optional. DEPRECATED: manage documentation through the
+      `getDocumentation` and `updateDocumentation` methods
+    graphqlSchema: Optional. DEPRECATED: manage documentation through the
+      `getDocumentation` and `updateDocumentation` methods
+    graphqlSchemaDisplayName: Optional. DEPRECATED: manage documentation
+      through the `getDocumentation` and `updateDocumentation` methods
+    id: Output only. The ID of the catalog item.
+    imageUrl: Optional. Location of the image used for the catalog item in the
+      catalog. For portal files, this can have the format `/files/{filename}`.
+      Max length is 2,083 characters.
+    modified: Output only. Time the catalog item was last modified in
+      milliseconds since epoch.
+    published: Optional. Denotes whether the catalog item is published to the
+      portal or is in a draft state. When the parent portal is enrolled in the
+      [audience management feature](https://cloud.google.com/apigee/docs/api-
+      platform/publish/portal/portal-audience#enrolling_in_the_beta_release_of
+      _the_audience_management_feature), the visibility must be further
+      managed in the management UI (see [Manage the visibility of an API in
+      your portal](https://cloud.google.com/apigee/docs/api-
+      platform/publish/portal/publish-apis#visibility)) before it can be
+      visible to any users. If not enrolled in the audience management
+      feature, the visibility is further managed by the `anonAllowed` flag.
+    requireCallbackUrl: Optional. Whether a callback URL is required when this
+      catalog item's API product is enabled in a developer app. When true, a
+      portal user will be required to input a URL when managing the app (this
+      is typically used for the app's OAuth flow).
+    siteId: Output only. The ID of the parent portal.
+    specId: Optional. DEPRECATED: DO NOT USE
+    title: Required. The user-facing name of the catalog item. `title` must be
+      a non-empty string with a max length of 255 characters.
+    visibility: Optional. DEPRECATED: use the `published` field instead
+  """
+
+  anonAllowed = _messages.BooleanField(1)
+  apiProductName = _messages.StringField(2)
+  categoryIds = _messages.StringField(3, repeated=True)
+  description = _messages.StringField(4)
+  edgeAPIProductName = _messages.StringField(5)
+  graphqlEndpointUrl = _messages.StringField(6)
+  graphqlSchema = _messages.StringField(7)
+  graphqlSchemaDisplayName = _messages.StringField(8)
+  id = _messages.IntegerField(9)
+  imageUrl = _messages.StringField(10)
+  modified = _messages.IntegerField(11)
+  published = _messages.BooleanField(12)
+  requireCallbackUrl = _messages.BooleanField(13)
+  siteId = _messages.StringField(14)
+  specId = _messages.StringField(15)
+  title = _messages.StringField(16)
+  visibility = _messages.BooleanField(17)
+
+
+class GoogleCloudApigeeV1ApiDocDocumentation(_messages.Message):
+  r"""The documentation for a catalog item.
+
+  Fields:
+    graphqlDocumentation: Optional. GraphQL documentation.
+    oasDocumentation: Optional. OpenAPI Specification documentation.
+  """
+
+  graphqlDocumentation = _messages.MessageField('GoogleCloudApigeeV1GraphqlDocumentation', 1)
+  oasDocumentation = _messages.MessageField('GoogleCloudApigeeV1OASDocumentation', 2)
+
+
+class GoogleCloudApigeeV1ApiDocDocumentationResponse(_messages.Message):
+  r"""The catalog item documentation wrapped with response status, error_code,
+  etc.
+
+  Fields:
+    data: Output only. The documentation resource.
+    errorCode: Output only. Unique error code for the request, if any.
+    message: Output only. Description of the operation.
+    requestId: Output only. Unique ID of the request.
+    status: Output only. Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiDocDocumentation', 1)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1ApiDocResponse(_messages.Message):
+  r"""The catalog item resource wrapped with response status, error_code, etc.
+
+  Fields:
+    data: The catalog item resource.
+    errorCode: Unique error code for the request, if any.
+    message: Description of the operation.
+    requestId: Unique ID of the request.
+    status: Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiDoc', 1)
   errorCode = _messages.StringField(2)
   message = _messages.StringField(3)
   requestId = _messages.StringField(4)
@@ -7443,6 +7683,19 @@ class GoogleCloudApigeeV1DisableSecurityActionRequest(_messages.Message):
   r"""Message to disable an enabled SecurityAction."""
 
 
+class GoogleCloudApigeeV1DocumentationFile(_messages.Message):
+  r"""Documentation file contents for a catalog item.
+
+  Fields:
+    contents: Required. The file contents. The max size is 4 MB.
+    displayName: Required. A display name for the file, shown in the
+      management UI. Max length is 255 characters.
+  """
+
+  contents = _messages.BytesField(1)
+  displayName = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1EnableSecurityActionRequest(_messages.Message):
   r"""Message to enable a disabled SecurityAction."""
 
@@ -8161,6 +8414,19 @@ class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
   operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationConfig', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1GraphqlDocumentation(_messages.Message):
+  r"""GraphQL documentation for a catalog item.
+
+  Fields:
+    endpointUri: Required. The GraphQL endpoint URI to be queried by API
+      consumers. Max length is 2,083 characters.
+    schema: Required. The documentation file contents for the GraphQL schema.
+  """
+
+  endpointUri = _messages.StringField(1)
+  schema = _messages.MessageField('GoogleCloudApigeeV1DocumentationFile', 2)
+
+
 class GoogleCloudApigeeV1GrpcOperationConfig(_messages.Message):
   r"""Binds the resources in a proxy or remote service with the gRPC operation
   and its associated quota enforcement.
@@ -8567,6 +8833,27 @@ class GoogleCloudApigeeV1ListApiCategoriesResponse(_messages.Message):
   message = _messages.StringField(3)
   requestId = _messages.StringField(4)
   status = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1ListApiDocsResponse(_messages.Message):
+  r"""A GoogleCloudApigeeV1ListApiDocsResponse object.
+
+  Fields:
+    data: The catalog item resources.
+    errorCode: Unique error code for the request, if any.
+    message: Description of the operation.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    requestId: Unique ID of the request.
+    status: Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiDoc', 1, repeated=True)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  nextPageToken = _messages.StringField(4)
+  requestId = _messages.StringField(5)
+  status = _messages.StringField(6)
 
 
 class GoogleCloudApigeeV1ListApiProductsResponse(_messages.Message):
@@ -9210,6 +9497,35 @@ class GoogleCloudApigeeV1NodeConfig(_messages.Message):
   currentAggregateNodeCount = _messages.IntegerField(1)
   maxNodeCount = _messages.IntegerField(2)
   minNodeCount = _messages.IntegerField(3)
+
+
+class GoogleCloudApigeeV1OASDocumentation(_messages.Message):
+  r"""OpenAPI Specification documentation for a catalog item.
+
+  Enums:
+    FormatValueValuesEnum: Output only. The format of the input specification
+      file contents.
+
+  Fields:
+    format: Output only. The format of the input specification file contents.
+    spec: Required. The documentation file contents for the OpenAPI
+      Specification. JSON and YAML file formats are supported.
+  """
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Output only. The format of the input specification file contents.
+
+    Values:
+      FORMAT_UNSPECIFIED: The format is not available.
+      YAML: YAML format.
+      JSON: JSON format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    YAML = 1
+    JSON = 2
+
+  format = _messages.EnumField('FormatValueValuesEnum', 1)
+  spec = _messages.MessageField('GoogleCloudApigeeV1DocumentationFile', 2)
 
 
 class GoogleCloudApigeeV1Operation(_messages.Message):
@@ -11073,23 +11389,37 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
   r"""The following are a list of conditions. A valid SecurityAction must
   contain at least one condition. Within a condition, each element is ORed.
   Across conditions elements are ANDed. For example if a SecurityAction has
-  the following: api_keys: ["key1", "key2"] and developers: ["dev1", "dev2"]
-  then this is interpreted as: enforce the action if the incoming request has
-  ((api_key = "key1" OR api_key="key") AND (developer="dev1" OR
-  developer="dev2")).
+  the following: ip_address_ranges: ["ip1", "ip2"] and bot_reasons:
+  ["Flooder", "Robot Abuser"] then this is interpreted as: enforce the action
+  if the incoming request has ((ip_address_ranges = "ip1" OR ip_address_ranges
+  = "ip2") AND (bot_reasons="Flooder" OR bot_reasons="Robot Abuser")).
+  Conditions other than ip_address_ranges and bot_reasons cannot be ANDed.
 
   Fields:
+    accessTokens: Optional. A list of access_tokens. Limit 1000 per action.
+    apiKeys: Optional. A list of API keys. Limit 1000 per action.
+    apiProducts: Optional. A list of API Products. Limit 1000 per action.
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
       TorListRule, Advanced Anomaly Detection, Advanced API Scraper, Search
       Engine Crawlers, Public Clouds, Public Cloud AWS, Public Cloud Azure,
       and Public Cloud Google.
+    developerApps: Optional. A list of developer apps. Limit 1000 per action.
+    developers: Optional. A list of developers. Limit 1000 per action.
     ipAddressRanges: Optional. A list of IP addresses. This could be either
       IPv4 or IPv6. Limited to 100 per action.
+    userAgents: Optional. A list of user agents to deny. We look for exact
+      matches. Limit 50 per action.
   """
 
-  botReasons = _messages.StringField(1, repeated=True)
-  ipAddressRanges = _messages.StringField(2, repeated=True)
+  accessTokens = _messages.StringField(1, repeated=True)
+  apiKeys = _messages.StringField(2, repeated=True)
+  apiProducts = _messages.StringField(3, repeated=True)
+  botReasons = _messages.StringField(4, repeated=True)
+  developerApps = _messages.StringField(5, repeated=True)
+  developers = _messages.StringField(6, repeated=True)
+  ipAddressRanges = _messages.StringField(7, repeated=True)
+  userAgents = _messages.StringField(8, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityActionDeny(_messages.Message):
@@ -11148,166 +11478,18 @@ class GoogleCloudApigeeV1SecurityActionsConfig(_messages.Message):
 class GoogleCloudApigeeV1SecurityAssessmentResult(_messages.Message):
   r"""The security assessment result for one resource.
 
-  Enums:
-    SeverityValueValuesEnum: The severity of the assessment.
-
-  Messages:
-    AssessmentRecommendationsValue: The recommendations of the assessment. The
-      key is the "name" of the assessment (not display_name), and the value
-      are the recommendations.
-    FailedAssessmentPerWeightValue: The number of failed assessments grouped
-      by its weight. Keys are one of the following: "MAJOR", "MODERATE",
-      "MINOR".
-
   Fields:
-    assessmentRecommendations: The recommendations of the assessment. The key
-      is the "name" of the assessment (not display_name), and the value are
-      the recommendations.
     createTime: The time of the assessment of this resource. This could lag
       behind `assessment_time` due to caching within the backend.
     error: The error status if scoring fails.
-    failedAssessmentPerWeight: The number of failed assessments grouped by its
-      weight. Keys are one of the following: "MAJOR", "MODERATE", "MINOR".
     resource: The assessed resource.
-    score: The security score of the assessment.
     scoringResult: The result of the assessment.
-    severity: The severity of the assessment.
   """
 
-  class SeverityValueValuesEnum(_messages.Enum):
-    r"""The severity of the assessment.
-
-    Values:
-      SEVERITY_UNSPECIFIED: Severity is not defined.
-      LOW: Severity is low.
-      MEDIUM: Severity is medium.
-      HIGH: Severity is high.
-    """
-    SEVERITY_UNSPECIFIED = 0
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AssessmentRecommendationsValue(_messages.Message):
-    r"""The recommendations of the assessment. The key is the "name" of the
-    assessment (not display_name), and the value are the recommendations.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        AssessmentRecommendationsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        AssessmentRecommendationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AssessmentRecommendationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A
-          GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FailedAssessmentPerWeightValue(_messages.Message):
-    r"""The number of failed assessments grouped by its weight. Keys are one
-    of the following: "MAJOR", "MODERATE", "MINOR".
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        FailedAssessmentPerWeightValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        FailedAssessmentPerWeightValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FailedAssessmentPerWeightValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A integer attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  assessmentRecommendations = _messages.MessageField('AssessmentRecommendationsValue', 1)
-  createTime = _messages.StringField(2)
-  error = _messages.MessageField('GoogleRpcStatus', 3)
-  failedAssessmentPerWeight = _messages.MessageField('FailedAssessmentPerWeightValue', 4)
-  resource = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultResource', 5)
-  score = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  scoringResult = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResult', 7)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
-
-
-class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation(_messages.Message):
-  r"""The message format of a recommendation from the assessment.
-
-  Enums:
-    WeightValueValuesEnum: The weight of the assessment which was set in the
-      profile.
-
-  Fields:
-    displayName: The display name of the assessment.
-    recommendations: The recommended steps of the assessment.
-    weight: The weight of the assessment which was set in the profile.
-  """
-
-  class WeightValueValuesEnum(_messages.Enum):
-    r"""The weight of the assessment which was set in the profile.
-
-    Values:
-      WEIGHT_UNSPECIFIED: The weight is unspecified.
-      MINOR: The weight is minor.
-      MODERATE: The weight is moderate.
-      MAJOR: The weight is major.
-    """
-    WEIGHT_UNSPECIFIED = 0
-    MINOR = 1
-    MODERATE = 2
-    MAJOR = 3
-
-  displayName = _messages.StringField(1)
-  recommendations = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendation', 2, repeated=True)
-  weight = _messages.EnumField('WeightValueValuesEnum', 3)
-
-
-class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendation(_messages.Message):
-  r"""The format of the assessment recommendation.
-
-  Fields:
-    description: The description of the recommendation.
-    link: The link for the recommendation.
-  """
-
-  description = _messages.StringField(1)
-  link = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendationLink', 2)
-
-
-class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendationLink(_messages.Message):
-  r"""The format for a link in the recommendation.
-
-  Fields:
-    text: The text of the url. (ie: "Learn more")
-    uri: The link itself.
-  """
-
-  text = _messages.StringField(1)
-  uri = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  error = _messages.MessageField('GoogleRpcStatus', 2)
+  resource = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultResource', 3)
+  scoringResult = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResult', 4)
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
@@ -11368,11 +11550,13 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message
       LOW: Severity is low.
       MEDIUM: Severity is medium.
       HIGH: Severity is high.
+      NONE: Severity is none.
     """
     SEVERITY_UNSPECIFIED = 0
     LOW = 1
     MEDIUM = 2
     HIGH = 3
+    NONE = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AssessmentRecommendationsValue(_messages.Message):
@@ -11439,14 +11623,30 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommen
   r"""The message format of a recommendation from the assessment.
 
   Enums:
+    VerdictValueValuesEnum: Verdict indicates the assessment result.
     WeightValueValuesEnum: The weight of the assessment which was set in the
       profile.
 
   Fields:
     displayName: The display name of the assessment.
     recommendations: The recommended steps of the assessment.
+    scoreImpact: Score impact indicates the impact on the overall score if the
+      assessment were to pass.
+    verdict: Verdict indicates the assessment result.
     weight: The weight of the assessment which was set in the profile.
   """
+
+  class VerdictValueValuesEnum(_messages.Enum):
+    r"""Verdict indicates the assessment result.
+
+    Values:
+      VERDICT_UNSPECIFIED: The verdict is unspecified.
+      PASS: The assessment has passed.
+      FAIL: The assessment has failed.
+    """
+    VERDICT_UNSPECIFIED = 0
+    PASS = 1
+    FAIL = 2
 
   class WeightValueValuesEnum(_messages.Enum):
     r"""The weight of the assessment which was set in the profile.
@@ -11464,7 +11664,9 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommen
 
   displayName = _messages.StringField(1)
   recommendations = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendation', 2, repeated=True)
-  weight = _messages.EnumField('WeightValueValuesEnum', 3)
+  scoreImpact = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 4)
+  weight = _messages.EnumField('WeightValueValuesEnum', 5)
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendation(_messages.Message):
@@ -11524,7 +11726,8 @@ class GoogleCloudApigeeV1SecurityFeedbackFeedbackContext(_messages.Message):
       apiproxy - client_id - organization - environment - request_uri -
       proxy_basepath - ax_resolved_client_ip - request_size - response_size -
       is_error - ax_geo_country - access_token - developer_app - incident_id -
-      incident_name
+      incident_name - api_product - developer_email - response_status_code -
+      bot_reason - target_url
     feedbackType: Required. The type of feedback being submitted.
     value: Required. The value of the attribute the user is providing feedback
       about.

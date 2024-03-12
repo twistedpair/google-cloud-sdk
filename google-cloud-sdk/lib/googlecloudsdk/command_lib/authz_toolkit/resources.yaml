@@ -32,19 +32,6 @@ policy:
     attribute_name: policy
     help: Id of the policy.
 
-binding:
-  name: binding
-  collection: authztoolkit.projects.locations.policies.bindings
-  request_id_field: bindingId
-  attributes:
-  - *project
-  - *location
-  - *policy
-  - &binding
-    parameter_name: bindingsId
-    attribute_name: binding
-    help: Id of the binding.
-
 target_association:
   name: target_association
   collection: authztoolkit.projects.locations.targetAssociations

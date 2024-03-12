@@ -707,6 +707,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SITES_APIDOCS = (
+      'organizations.sites.apidocs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/sites/{sitesId}/apidocs/'
+              '{apidocsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

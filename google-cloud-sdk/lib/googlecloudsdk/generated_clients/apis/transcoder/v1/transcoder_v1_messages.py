@@ -443,6 +443,10 @@ class Fmp4Config(_messages.Message):
 class H264CodecSettings(_messages.Message):
   r"""H264 codec settings.
 
+  Enums:
+    FrameRateConversionStrategyValueValuesEnum: Optional. Frame rate
+      conversion strategy for desired frame rate. The default is `DOWNSAMPLE`.
+
   Fields:
     allowOpenGop: Specifies whether an open Group of Pictures (GOP) structure
       should be allowed or not. The default is `false`.
@@ -466,12 +470,9 @@ class H264CodecSettings(_messages.Message):
     entropyCoder: The entropy coder to use. The default is `cabac`. Supported
       entropy coders: - `cavlc` - `cabac`
     frameRate: Required. The target video frame rate in frames per second
-      (FPS). Must be less than or equal to 120. Will default to the input
-      frame rate if larger than the input frame rate. The API will generate an
-      output FPS that is divisible by the input FPS, and smaller or equal to
-      the target FPS. See [Calculating frame
-      rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate) for
-      more information.
+      (FPS). Must be less than or equal to 120.
+    frameRateConversionStrategy: Optional. Frame rate conversion strategy for
+      desired frame rate. The default is `DOWNSAMPLE`.
     gopDuration: Select the GOP size based on the specified duration. The
       default is `3s`. Note that `gopDuration` must be less than or equal to
       [`segmentDuration`](#SegmentSettings), and
@@ -527,6 +528,28 @@ class H264CodecSettings(_messages.Message):
       and swaps the requested height and width for the output.
   """
 
+  class FrameRateConversionStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. Frame rate conversion strategy for desired frame rate. The
+    default is `DOWNSAMPLE`.
+
+    Values:
+      FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED: Unspecified frame rate
+        conversion strategy.
+      DOWNSAMPLE: Selectively retain frames to reduce the output frame rate.
+        Every _n_ th frame is kept, where `n = ceil(input frame rate / target
+        frame rate)`. When _n_ = 1 (that is, the target frame rate is greater
+        than the input frame rate), the output frame rate matches the input
+        frame rate. When _n_ > 1, frames are dropped and the output frame rate
+        is equal to `(input frame rate / n)`. For more information, see
+        [Calculate frame
+        rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate).
+      DROP_DUPLICATE: Drop or duplicate frames to match the specified frame
+        rate.
+    """
+    FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED = 0
+    DOWNSAMPLE = 1
+    DROP_DUPLICATE = 2
+
   allowOpenGop = _messages.BooleanField(1)
   aqStrength = _messages.FloatField(2)
   bFrameCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
@@ -536,19 +559,20 @@ class H264CodecSettings(_messages.Message):
   enableTwoPass = _messages.BooleanField(7)
   entropyCoder = _messages.StringField(8)
   frameRate = _messages.FloatField(9)
-  gopDuration = _messages.StringField(10)
-  gopFrameCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  heightPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  hlg = _messages.MessageField('H264ColorFormatHLG', 13)
-  pixelFormat = _messages.StringField(14)
-  preset = _messages.StringField(15)
-  profile = _messages.StringField(16)
-  rateControlMode = _messages.StringField(17)
-  sdr = _messages.MessageField('H264ColorFormatSDR', 18)
-  tune = _messages.StringField(19)
-  vbvFullnessBits = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  vbvSizeBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  widthPixels = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  frameRateConversionStrategy = _messages.EnumField('FrameRateConversionStrategyValueValuesEnum', 10)
+  gopDuration = _messages.StringField(11)
+  gopFrameCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  heightPixels = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('H264ColorFormatHLG', 14)
+  pixelFormat = _messages.StringField(15)
+  preset = _messages.StringField(16)
+  profile = _messages.StringField(17)
+  rateControlMode = _messages.StringField(18)
+  sdr = _messages.MessageField('H264ColorFormatSDR', 19)
+  tune = _messages.StringField(20)
+  vbvFullnessBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  vbvSizeBits = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  widthPixels = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class H264ColorFormatHLG(_messages.Message):
@@ -561,6 +585,10 @@ class H264ColorFormatSDR(_messages.Message):
 
 class H265CodecSettings(_messages.Message):
   r"""H265 codec settings.
+
+  Enums:
+    FrameRateConversionStrategyValueValuesEnum: Optional. Frame rate
+      conversion strategy for desired frame rate. The default is `DOWNSAMPLE`.
 
   Fields:
     allowOpenGop: Specifies whether an open Group of Pictures (GOP) structure
@@ -583,12 +611,9 @@ class H265CodecSettings(_messages.Message):
       quality. H265CodecSettings.rate_control_mode must be `vbr`. The default
       is `false`.
     frameRate: Required. The target video frame rate in frames per second
-      (FPS). Must be less than or equal to 120. Will default to the input
-      frame rate if larger than the input frame rate. The API will generate an
-      output FPS that is divisible by the input FPS, and smaller or equal to
-      the target FPS. See [Calculating frame
-      rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate) for
-      more information.
+      (FPS). Must be less than or equal to 120.
+    frameRateConversionStrategy: Optional. Frame rate conversion strategy for
+      desired frame rate. The default is `DOWNSAMPLE`.
     gopDuration: Select the GOP size based on the specified duration. The
       default is `3s`. Note that `gopDuration` must be less than or equal to
       [`segmentDuration`](#SegmentSettings), and
@@ -649,6 +674,28 @@ class H265CodecSettings(_messages.Message):
       and swaps the requested height and width for the output.
   """
 
+  class FrameRateConversionStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. Frame rate conversion strategy for desired frame rate. The
+    default is `DOWNSAMPLE`.
+
+    Values:
+      FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED: Unspecified frame rate
+        conversion strategy.
+      DOWNSAMPLE: Selectively retain frames to reduce the output frame rate.
+        Every _n_ th frame is kept, where `n = ceil(input frame rate / target
+        frame rate)`. When _n_ = 1 (that is, the target frame rate is greater
+        than the input frame rate), the output frame rate matches the input
+        frame rate. When _n_ > 1, frames are dropped and the output frame rate
+        is equal to `(input frame rate / n)`. For more information, see
+        [Calculate frame
+        rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate).
+      DROP_DUPLICATE: Drop or duplicate frames to match the specified frame
+        rate.
+    """
+    FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED = 0
+    DOWNSAMPLE = 1
+    DROP_DUPLICATE = 2
+
   allowOpenGop = _messages.BooleanField(1)
   aqStrength = _messages.FloatField(2)
   bFrameCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
@@ -657,20 +704,21 @@ class H265CodecSettings(_messages.Message):
   crfLevel = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   enableTwoPass = _messages.BooleanField(7)
   frameRate = _messages.FloatField(8)
-  gopDuration = _messages.StringField(9)
-  gopFrameCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  hdr10 = _messages.MessageField('H265ColorFormatHDR10', 11)
-  heightPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  hlg = _messages.MessageField('H265ColorFormatHLG', 13)
-  pixelFormat = _messages.StringField(14)
-  preset = _messages.StringField(15)
-  profile = _messages.StringField(16)
-  rateControlMode = _messages.StringField(17)
-  sdr = _messages.MessageField('H265ColorFormatSDR', 18)
-  tune = _messages.StringField(19)
-  vbvFullnessBits = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  vbvSizeBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  widthPixels = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  frameRateConversionStrategy = _messages.EnumField('FrameRateConversionStrategyValueValuesEnum', 9)
+  gopDuration = _messages.StringField(10)
+  gopFrameCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  hdr10 = _messages.MessageField('H265ColorFormatHDR10', 12)
+  heightPixels = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('H265ColorFormatHLG', 14)
+  pixelFormat = _messages.StringField(15)
+  preset = _messages.StringField(16)
+  profile = _messages.StringField(17)
+  rateControlMode = _messages.StringField(18)
+  sdr = _messages.MessageField('H265ColorFormatSDR', 19)
+  tune = _messages.StringField(20)
+  vbvFullnessBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  vbvSizeBits = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  widthPixels = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class H265ColorFormatHDR10(_messages.Message):
@@ -1539,6 +1587,10 @@ class VideoStream(_messages.Message):
 class Vp9CodecSettings(_messages.Message):
   r"""VP9 codec settings.
 
+  Enums:
+    FrameRateConversionStrategyValueValuesEnum: Optional. Frame rate
+      conversion strategy for desired frame rate. The default is `DOWNSAMPLE`.
+
   Fields:
     bitrateBps: Required. The video bitrate in bits per second. The minimum
       value is 1,000. The maximum value is 480,000,000.
@@ -1546,12 +1598,9 @@ class Vp9CodecSettings(_messages.Message):
       highest quality and 36 is the most efficient compression. The default is
       21. **Note:** This field is not supported.
     frameRate: Required. The target video frame rate in frames per second
-      (FPS). Must be less than or equal to 120. Will default to the input
-      frame rate if larger than the input frame rate. The API will generate an
-      output FPS that is divisible by the input FPS, and smaller or equal to
-      the target FPS. See [Calculating frame
-      rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate) for
-      more information.
+      (FPS). Must be less than or equal to 120.
+    frameRateConversionStrategy: Optional. Frame rate conversion strategy for
+      desired frame rate. The default is `DOWNSAMPLE`.
     gopDuration: Select the GOP size based on the specified duration. The
       default is `3s`. Note that `gopDuration` must be less than or equal to
       [`segmentDuration`](#SegmentSettings), and
@@ -1592,18 +1641,41 @@ class Vp9CodecSettings(_messages.Message):
       and swaps the requested height and width for the output.
   """
 
+  class FrameRateConversionStrategyValueValuesEnum(_messages.Enum):
+    r"""Optional. Frame rate conversion strategy for desired frame rate. The
+    default is `DOWNSAMPLE`.
+
+    Values:
+      FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED: Unspecified frame rate
+        conversion strategy.
+      DOWNSAMPLE: Selectively retain frames to reduce the output frame rate.
+        Every _n_ th frame is kept, where `n = ceil(input frame rate / target
+        frame rate)`. When _n_ = 1 (that is, the target frame rate is greater
+        than the input frame rate), the output frame rate matches the input
+        frame rate. When _n_ > 1, frames are dropped and the output frame rate
+        is equal to `(input frame rate / n)`. For more information, see
+        [Calculate frame
+        rate](https://cloud.google.com/transcoder/docs/concepts/frame-rate).
+      DROP_DUPLICATE: Drop or duplicate frames to match the specified frame
+        rate.
+    """
+    FRAME_RATE_CONVERSION_STRATEGY_UNSPECIFIED = 0
+    DOWNSAMPLE = 1
+    DROP_DUPLICATE = 2
+
   bitrateBps = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   crfLevel = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   frameRate = _messages.FloatField(3)
-  gopDuration = _messages.StringField(4)
-  gopFrameCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  heightPixels = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  hlg = _messages.MessageField('Vp9ColorFormatHLG', 7)
-  pixelFormat = _messages.StringField(8)
-  profile = _messages.StringField(9)
-  rateControlMode = _messages.StringField(10)
-  sdr = _messages.MessageField('Vp9ColorFormatSDR', 11)
-  widthPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  frameRateConversionStrategy = _messages.EnumField('FrameRateConversionStrategyValueValuesEnum', 4)
+  gopDuration = _messages.StringField(5)
+  gopFrameCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  heightPixels = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('Vp9ColorFormatHLG', 8)
+  pixelFormat = _messages.StringField(9)
+  profile = _messages.StringField(10)
+  rateControlMode = _messages.StringField(11)
+  sdr = _messages.MessageField('Vp9ColorFormatSDR', 12)
+  widthPixels = _messages.IntegerField(13, variant=_messages.Variant.INT32)
 
 
 class Vp9ColorFormatHLG(_messages.Message):

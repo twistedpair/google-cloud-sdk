@@ -296,10 +296,18 @@ class CloudStorageResult(_messages.Message):
   r"""Final results written to Cloud Storage.
 
   Fields:
+    srtFormatUri: The Cloud Storage URI to which recognition results were
+      written as SRT formatted captions. This is populated only when `SRT`
+      output is requested.
     uri: The Cloud Storage URI to which recognition results were written.
+    vttFormatUri: The Cloud Storage URI to which recognition results were
+      written as VTT formatted captions. This is populated only when `VTT`
+      output is requested.
   """
 
-  uri = _messages.StringField(1)
+  srtFormatUri = _messages.StringField(1)
+  uri = _messages.StringField(2)
+  vttFormatUri = _messages.StringField(3)
 
 
 class Config(_messages.Message):
@@ -632,10 +640,16 @@ class InlineResult(_messages.Message):
   r"""Final results returned inline in the recognition response.
 
   Fields:
+    srtCaptions: The transcript for the audio file as SRT formatted captions.
+      This is populated only when `SRT` output is requested.
     transcript: The transcript for the audio file.
+    vttCaptions: The transcript for the audio file as VTT formatted captions.
+      This is populated only when `VTT` output is requested.
   """
 
-  transcript = _messages.MessageField('BatchRecognizeResults', 1)
+  srtCaptions = _messages.StringField(1)
+  transcript = _messages.MessageField('BatchRecognizeResults', 2)
+  vttCaptions = _messages.StringField(3)
 
 
 class LanguageMetadata(_messages.Message):
@@ -903,6 +917,10 @@ class ModelMetadata(_messages.Message):
   modelFeatures = _messages.MessageField('ModelFeaturesValue', 1)
 
 
+class NativeOutputFileFormatConfig(_messages.Message):
+  r"""Output configurations for serialized `BatchRecognizeResults` protos."""
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1084,6 +1102,24 @@ class OperationMetadata(_messages.Message):
   updateTime = _messages.StringField(22)
 
 
+class OutputFormatConfig(_messages.Message):
+  r"""Configuration for the format of the results stored to `output`.
+
+  Fields:
+    native: Configuration for the native output format. If this field is set
+      or if no other output format field is set then transcripts will be
+      written to the sink in the native format.
+    srt: Configuration for the srt output format. If this field is set then
+      transcripts will be written to the sink in the srt format.
+    vtt: Configuration for the vtt output format. If this field is set then
+      transcripts will be written to the sink in the vtt format.
+  """
+
+  native = _messages.MessageField('NativeOutputFileFormatConfig', 1)
+  srt = _messages.MessageField('SrtOutputFileFormatConfig', 2)
+  vtt = _messages.MessageField('VttOutputFileFormatConfig', 3)
+
+
 class Phrase(_messages.Message):
   r"""A Phrase contains words and phrase "hints" so that the speech
   recognition is more likely to recognize them. This can be used to improve
@@ -1252,6 +1288,9 @@ class RecognitionConfig(_messages.Message):
       automatically replace parts of the transcript with phrases of your
       choosing. For StreamingRecognize, this normalization only applies to
       stable partial transcripts (stability > 0.8) and final transcripts.
+    translationConfig: Optional. Optional configuration used to automatically
+      run translation on the given audio to the desired language for supported
+      models.
   """
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
@@ -1261,6 +1300,7 @@ class RecognitionConfig(_messages.Message):
   languageCodes = _messages.StringField(5, repeated=True)
   model = _messages.StringField(6)
   transcriptNormalization = _messages.MessageField('TranscriptNormalization', 7)
+  translationConfig = _messages.MessageField('TranslationConfig', 8)
 
 
 class RecognitionFeatures(_messages.Message):
@@ -1344,10 +1384,14 @@ class RecognitionOutputConfig(_messages.Message):
       are provided in the BatchRecognizeResponse message of the Operation when
       completed. This is only supported when calling BatchRecognize with just
       one audio file.
+    outputFormatConfig: Optional. Configuration for the format of the results
+      stored to `output`. If unspecified transcripts will be written in the
+      `NATIVE` format only.
   """
 
   gcsOutputConfig = _messages.MessageField('GcsOutputConfig', 1)
   inlineResponseConfig = _messages.MessageField('InlineOutputConfig', 2)
+  outputFormatConfig = _messages.MessageField('OutputFormatConfig', 3)
 
 
 class RecognitionResponseMetadata(_messages.Message):
@@ -2010,6 +2054,14 @@ class SpeechRecognitionResult(_messages.Message):
   resultEndOffset = _messages.StringField(4)
 
 
+class SrtOutputFileFormatConfig(_messages.Message):
+  r"""Output configurations [SubRip
+  Text](https://www.matroska.org/technical/subtitles.html#srt-subtitles)
+  formatted subtitle file.
+  """
+
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -2178,6 +2230,17 @@ class TranscriptNormalization(_messages.Message):
   entries = _messages.MessageField('Entry', 1, repeated=True)
 
 
+class TranslationConfig(_messages.Message):
+  r"""Translation configuration. Use to translate the given audio into text
+  for the desired language.
+
+  Fields:
+    targetLanguage: Required. The language code to translate to.
+  """
+
+  targetLanguage = _messages.StringField(1)
+
+
 class UndeleteCustomClassRequest(_messages.Message):
   r"""Request message for the UndeleteCustomClass method.
 
@@ -2300,6 +2363,13 @@ class UpdateRecognizerRequest(_messages.Message):
   recognizer = _messages.MessageField('Recognizer', 1)
   updateMask = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
+
+
+class VttOutputFileFormatConfig(_messages.Message):
+  r"""Output configurations for [WebVTT](https://www.w3.org/TR/webvtt1/)
+  formatted subtitle file.
+  """
+
 
 
 class WordInfo(_messages.Message):

@@ -255,7 +255,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -927,6 +931,7 @@ class ComplianceNote(_messages.Message):
     cisBenchmark: Right now we only have one compliance type, but we may add
       additional types in the future.
     description: A description about this compliance check.
+    impact: Potential impact of the suggested remediation
     rationale: A rationale for the existence of this compliance check.
     remediation: A description of remediation steps if the compliance check
       fails.
@@ -937,11 +942,12 @@ class ComplianceNote(_messages.Message):
 
   cisBenchmark = _messages.MessageField('CisBenchmark', 1)
   description = _messages.StringField(2)
-  rationale = _messages.StringField(3)
-  remediation = _messages.StringField(4)
-  scanInstructions = _messages.BytesField(5)
-  title = _messages.StringField(6)
-  version = _messages.MessageField('ComplianceVersion', 7, repeated=True)
+  impact = _messages.StringField(3)
+  rationale = _messages.StringField(4)
+  remediation = _messages.StringField(5)
+  scanInstructions = _messages.BytesField(6)
+  title = _messages.StringField(7)
+  version = _messages.MessageField('ComplianceVersion', 8, repeated=True)
 
 
 class ComplianceOccurrence(_messages.Message):

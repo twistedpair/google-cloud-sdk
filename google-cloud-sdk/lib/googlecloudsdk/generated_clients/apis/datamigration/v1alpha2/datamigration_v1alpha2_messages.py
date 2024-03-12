@@ -1469,6 +1469,9 @@ class MigrationJobVerificationError(_messages.Message):
         defined entities (for example databases, tables, or functions). You
         can only migrate to empty instances. Clear your destination instance
         and retry the migration job.
+      SOURCE_MAX_SUBSCRIPTIONS: The migration job is configured to use max
+        number of subscriptions to migrate data from the source to the
+        destination.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1487,6 +1490,7 @@ class MigrationJobVerificationError(_messages.Message):
     EXISTING_CONFLICTING_DATABASES = 14
     PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 15
     EXISTING_DATA = 16
+    SOURCE_MAX_SUBSCRIPTIONS = 17
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

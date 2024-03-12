@@ -653,6 +653,10 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsDeleteRequest(_me
       deletions through optimistic concurrency control. If the provided ETag
       does not match the current etag of the node pool, the request will fail
       and an ABORTED error will be returned.
+    ignoreErrors: Optional. If set to true, the deletion of AzureNodePool
+      resource will succeed even if errors occur during deleting in node pool
+      resources. Using this parameter may result in orphaned resources in the
+      node pool.
     name: Required. The resource name the AzureNodePool to delete.
       `AzureNodePool` names are formatted as
       `projects//locations//azureClusters//azureNodePools/`. See [Resource
@@ -664,8 +668,9 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsDeleteRequest(_me
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsGetRequest(_messages.Message):
@@ -773,6 +778,10 @@ class GkemulticloudProjectsLocationsAzureClustersDeleteRequest(_messages.Message
       deletions through optimistic concurrency control. If the provided etag
       does not match the current etag of the cluster, the request will fail
       and an ABORTED error will be returned.
+    ignoreErrors: Optional. If set to true, the deletion of AzureCluster
+      resource will succeed even if errors occur during deleting in cluster
+      resources. Using this parameter may result in orphaned resources in the
+      cluster.
     name: Required. The resource name the AzureCluster to delete.
       `AzureCluster` names are formatted as
       `projects//locations//azureClusters/`. See [Resource
@@ -784,8 +793,9 @@ class GkemulticloudProjectsLocationsAzureClustersDeleteRequest(_messages.Message
 
   allowMissing = _messages.BooleanField(1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  ignoreErrors = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest(_messages.Message):

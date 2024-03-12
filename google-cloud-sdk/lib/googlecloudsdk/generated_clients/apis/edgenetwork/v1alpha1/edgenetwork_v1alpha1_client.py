@@ -968,7 +968,7 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Zone.
+      r"""Deprecated: not implemented. Gets details of a single Zone.
 
       Args:
         request: (EdgenetworkProjectsLocationsZonesGetRequest) input message
@@ -1022,7 +1022,7 @@ class EdgenetworkV1alpha1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Zones in a given project and location.
+      r"""Deprecated: not implemented. Lists Zones in a given project and location.
 
       Args:
         request: (EdgenetworkProjectsLocationsZonesListRequest) input message

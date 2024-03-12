@@ -145,7 +145,11 @@ def ParamDictTransform(params):
 
 
 def ParamValueTransform(param_value):
-  if isinstance(param_value, str) or isinstance(param_value, float):
+  if (
+      isinstance(param_value, str)
+      or isinstance(param_value, float)
+      or isinstance(param_value, int)
+  ):
     return {"type": "STRING", "stringVal": str(param_value)}
   elif isinstance(param_value, list):
     return {"type": "ARRAY", "arrayVal": param_value}

@@ -1214,7 +1214,7 @@ class ListSubnetsResponse(_messages.Message):
 
 
 class ListZonesResponse(_messages.Message):
-  r"""Message for response to listing Zones
+  r"""Deprecated: not implemented. Message for response to listing Zones
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -2015,19 +2015,19 @@ class Zone(_messages.Message):
   r"""A Google Edge Cloud zone.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Deprecated: not implemented. Labels as key value pairs.
 
   Fields:
     createTime: Output only. The time when the zone was created.
-    labels: Labels as key value pairs
-    layoutName: The deployment layout type.
+    labels: Deprecated: not implemented. Labels as key value pairs.
+    layoutName: Deprecated: not implemented. The deployment layout type.
     name: Required. The resource name of the zone.
     updateTime: Output only. The time when the zone was last updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Deprecated: not implemented. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

@@ -160,17 +160,15 @@ def AddCreatePushQueueFlags(
 
   if release_track == base.ReleaseTrack.ALPHA:
     flags = _AlphaPushQueueFlags()
-    if http_queue:
-      flags += _HttpPushQueueFlags()
-      _AddHttpTargetAuthFlags(parser, is_email_required=True)
   else:
     flags = _PushQueueFlags(release_track)
     if release_track == base.ReleaseTrack.BETA:
       if not app_engine_queue:
         AddQueueTypeFlag(parser)
-      if http_queue:
-        flags += _HttpPushQueueFlags()
-        _AddHttpTargetAuthFlags(parser, is_email_required=True)
+  # HTTP Queues can be enabled for all ALPHA, BETA, and GA tracks.
+  if http_queue:
+    flags += _HttpPushQueueFlags()
+    _AddHttpTargetAuthFlags(parser, is_email_required=True)
 
   for flag in flags:
     flag.AddToParser(parser)
@@ -190,15 +188,15 @@ def AddUpdatePushQueueFlags(
   """Updates flags related to Push queues."""
   if release_track == base.ReleaseTrack.ALPHA:
     flags = _AlphaPushQueueFlags()
-    if http_queue:
-      flags += _HttpPushQueueFlags() + _AddHttpTargetAuthFlags()
   else:
     flags = _PushQueueFlags(release_track)
     if release_track == base.ReleaseTrack.BETA:
       if not app_engine_queue:
         AddQueueTypeFlag(parser)
-      if http_queue:
-        flags += _HttpPushQueueFlags() + _AddHttpTargetAuthFlags()
+
+  # HTTP Queues can be enabled for all ALPHA, BETA, and GA tracks.
+  if http_queue:
+    flags += _HttpPushQueueFlags() + _AddHttpTargetAuthFlags()
 
   for flag in flags:
     _AddFlagAndItsClearEquivalent(flag, parser)

@@ -783,7 +783,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 Required. A client-assigned identifier such as
                 ``"my-bucket"``. Identifiers are limited to 100
                 characters and can include only letters, digits,
-                underscores, hyphens, and periods.
+                underscores, hyphens, and periods. Bucket identifiers
+                must start with an alphanumeric character.
 
                 This corresponds to the ``bucket_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -1087,7 +1088,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 Required. A client-assigned identifier such as
                 ``"my-bucket"``. Identifiers are limited to 100
                 characters and can include only letters, digits,
-                underscores, hyphens, and periods.
+                underscores, hyphens, and periods. Bucket identifiers
+                must start with an alphanumeric character.
 
                 This corresponds to the ``bucket_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -4539,6 +4541,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 saved_query = logging_v2.SavedQuery()
                 saved_query.logging_query.summary_field_start = 2046
                 saved_query.logging_query.filter = "filter_value"
+                saved_query.display_name = "display_name_value"
+                saved_query.visibility = "SHARED"
 
                 request = logging_v2.CreateSavedQueryRequest(
                     parent="parent_value",

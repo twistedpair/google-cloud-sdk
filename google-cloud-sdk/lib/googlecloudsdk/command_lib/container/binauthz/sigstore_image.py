@@ -40,6 +40,12 @@ BINAUTHZ_CUSTOM_PREDICATE = (
 )
 
 
+def _RemovePrefix(text, prefix):
+  if text.startswith(prefix):
+    return text[len(prefix):]
+  return text
+
+
 def AddMissingBase64Padding(encoded):
   return encoded + '==='[: -len(encoded) % 4]
 
@@ -99,7 +105,7 @@ def UploadAttestationToRegistry(
       '{}/{}:sha256-{}.att'.format(
           target_image.registry,
           target_image.repository,
-          target_image.digest.removeprefix('sha256:'),
+          _RemovePrefix(target_image.digest, 'sha256:'),
       )
   )
 
@@ -182,7 +188,7 @@ class SigstoreAttestationImage(docker_image.DockerImage):
     overrides = overrides.Override(created_by=docker_name.USER_AGENT)
 
     layers = [
-        blob_sum.removeprefix('sha256:')
+        _RemovePrefix(blob_sum, 'sha256:')
         for blob_sum in self._additional_blobs.keys()
     ]
 

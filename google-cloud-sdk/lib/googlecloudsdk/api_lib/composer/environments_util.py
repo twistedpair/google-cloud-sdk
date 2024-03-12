@@ -510,17 +510,17 @@ def _CreateConfig(messages, flags, is_composer_v1):
         endTime=flags.maintenance_window_end.isoformat(),
         recurrence=flags.maintenance_window_recurrence)
   if flags.airflow_database_retention_days:
-    enable_retention = (
-        messages.AirflowMetadataRetentionPolicy.EnableRetentionValueValuesEnum.RETENTION_MODE_ENABLED
+    retention_mode = (
+        messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_ENABLED
     )
     if flags.airflow_database_retention_days == 0:
-      enable_retention = (
-          messages.AirflowMetadataRetentionPolicy.EnableRetentionValueValuesEnum.RETENTION_MODE_DISABLED
+      retention_mode = (
+          messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_DISABLED
       )
     config.dataRetentionConfig = messages.DataRetentionConfig(
-        airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicy(
+        airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicyConfig(
             retentionDays=flags.airflow_database_retention_days,
-            enableRetention=enable_retention,
+            retentionMode=retention_mode,
         )
     )
 

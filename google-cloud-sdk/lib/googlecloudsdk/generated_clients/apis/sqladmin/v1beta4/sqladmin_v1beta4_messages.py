@@ -207,6 +207,11 @@ class Backup(_messages.Message):
 class BackupConfiguration(_messages.Message):
   r"""Database instance backup configuration.
 
+  Enums:
+    TransactionalLogStorageStateValueValuesEnum: Output only. This value
+      contains the storage location of transactional logs for the database for
+      point-in-time recovery.
+
   Fields:
     backupRetentionSettings: Backup retention settings.
     binaryLogEnabled: (MySQL only) Whether binary log is enabled. If backup
@@ -220,7 +225,31 @@ class BackupConfiguration(_messages.Message):
       in the 24 hour format - `HH:MM`.
     transactionLogRetentionDays: The number of days of transaction logs we
       retain for point in time restore, from 1-7.
+    transactionalLogStorageState: Output only. This value contains the storage
+      location of transactional logs for the database for point-in-time
+      recovery.
   """
+
+  class TransactionalLogStorageStateValueValuesEnum(_messages.Enum):
+    r"""Output only. This value contains the storage location of transactional
+    logs for the database for point-in-time recovery.
+
+    Values:
+      TRANSACTIONAL_LOG_STORAGE_STATE_UNSPECIFIED: Unspecified.
+      DISK: The transaction logs for the instance are stored on a data disk.
+      SWITCHING_TO_CLOUD_STORAGE: The transaction logs for the instance are
+        switching from being stored on a data disk to being stored in Cloud
+        Storage.
+      SWITCHED_TO_CLOUD_STORAGE: The transaction logs for the instance are now
+        stored in Cloud Storage. Previously, they were stored on a data disk.
+      CLOUD_STORAGE: The transaction logs for the instance are stored in Cloud
+        Storage.
+    """
+    TRANSACTIONAL_LOG_STORAGE_STATE_UNSPECIFIED = 0
+    DISK = 1
+    SWITCHING_TO_CLOUD_STORAGE = 2
+    SWITCHED_TO_CLOUD_STORAGE = 3
+    CLOUD_STORAGE = 4
 
   backupRetentionSettings = _messages.MessageField('BackupRetentionSettings', 1)
   binaryLogEnabled = _messages.BooleanField(2)
@@ -231,6 +260,7 @@ class BackupConfiguration(_messages.Message):
   replicationLogArchivingEnabled = _messages.BooleanField(7)
   startTime = _messages.StringField(8)
   transactionLogRetentionDays = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  transactionalLogStorageState = _messages.EnumField('TransactionalLogStorageStateValueValuesEnum', 10)
 
 
 class BackupContext(_messages.Message):
@@ -616,6 +646,14 @@ class ConnectSettings(_messages.Message):
         version is 35.
       MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
         version is 36.
+      MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
+        version is 37.
+      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
+        version is 38.
+      MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
+        version is 39.
+      MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
+        version is 40.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -659,14 +697,18 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_34 = 27
     MYSQL_8_0_35 = 28
     MYSQL_8_0_36 = 29
-    SQLSERVER_2019_STANDARD = 30
-    SQLSERVER_2019_ENTERPRISE = 31
-    SQLSERVER_2019_EXPRESS = 32
-    SQLSERVER_2019_WEB = 33
-    SQLSERVER_2022_STANDARD = 34
-    SQLSERVER_2022_ENTERPRISE = 35
-    SQLSERVER_2022_EXPRESS = 36
-    SQLSERVER_2022_WEB = 37
+    MYSQL_8_0_37 = 30
+    MYSQL_8_0_38 = 31
+    MYSQL_8_0_39 = 32
+    MYSQL_8_0_40 = 33
+    SQLSERVER_2019_STANDARD = 34
+    SQLSERVER_2019_ENTERPRISE = 35
+    SQLSERVER_2019_EXPRESS = 36
+    SQLSERVER_2019_WEB = 37
+    SQLSERVER_2022_STANDARD = 38
+    SQLSERVER_2022_ENTERPRISE = 39
+    SQLSERVER_2022_EXPRESS = 40
+    SQLSERVER_2022_WEB = 41
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -822,6 +864,9 @@ class DatabaseInstance(_messages.Message):
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
+    replicationCluster: Primary-DR replica pair. DR replica is a Cross region
+      replica designated for Disaster Recovery(DR) if the primary has regional
+      failure.
     rootPassword: Initial root password. Use only on creation. You must set
       root passwords before you can connect to PostgreSQL instances.
     satisfiesPzs: The status indicating if instance satisfiesPzs. Reserved for
@@ -912,6 +957,14 @@ class DatabaseInstance(_messages.Message):
         version is 35.
       MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
         version is 36.
+      MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
+        version is 37.
+      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
+        version is 38.
+      MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
+        version is 39.
+      MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
+        version is 40.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -955,14 +1008,18 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_34 = 27
     MYSQL_8_0_35 = 28
     MYSQL_8_0_36 = 29
-    SQLSERVER_2019_STANDARD = 30
-    SQLSERVER_2019_ENTERPRISE = 31
-    SQLSERVER_2019_EXPRESS = 32
-    SQLSERVER_2019_WEB = 33
-    SQLSERVER_2022_STANDARD = 34
-    SQLSERVER_2022_ENTERPRISE = 35
-    SQLSERVER_2022_EXPRESS = 36
-    SQLSERVER_2022_WEB = 37
+    MYSQL_8_0_37 = 30
+    MYSQL_8_0_38 = 31
+    MYSQL_8_0_39 = 32
+    MYSQL_8_0_40 = 33
+    SQLSERVER_2019_STANDARD = 34
+    SQLSERVER_2019_ENTERPRISE = 35
+    SQLSERVER_2019_EXPRESS = 36
+    SQLSERVER_2019_WEB = 37
+    SQLSERVER_2022_STANDARD = 38
+    SQLSERVER_2022_ENTERPRISE = 39
+    SQLSERVER_2022_EXPRESS = 40
+    SQLSERVER_2022_WEB = 41
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1013,6 +1070,14 @@ class DatabaseInstance(_messages.Message):
         version is 35.
       MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
         version is 36.
+      MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
+        version is 37.
+      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
+        version is 38.
+      MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
+        version is 39.
+      MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
+        version is 40.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1056,14 +1121,18 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_34 = 27
     MYSQL_8_0_35 = 28
     MYSQL_8_0_36 = 29
-    SQLSERVER_2019_STANDARD = 30
-    SQLSERVER_2019_ENTERPRISE = 31
-    SQLSERVER_2019_EXPRESS = 32
-    SQLSERVER_2019_WEB = 33
-    SQLSERVER_2022_STANDARD = 34
-    SQLSERVER_2022_ENTERPRISE = 35
-    SQLSERVER_2022_EXPRESS = 36
-    SQLSERVER_2022_WEB = 37
+    MYSQL_8_0_37 = 30
+    MYSQL_8_0_38 = 31
+    MYSQL_8_0_39 = 32
+    MYSQL_8_0_40 = 33
+    SQLSERVER_2019_STANDARD = 34
+    SQLSERVER_2019_ENTERPRISE = 35
+    SQLSERVER_2019_EXPRESS = 36
+    SQLSERVER_2019_WEB = 37
+    SQLSERVER_2022_STANDARD = 38
+    SQLSERVER_2022_ENTERPRISE = 39
+    SQLSERVER_2022_EXPRESS = 40
+    SQLSERVER_2022_WEB = 41
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1186,18 +1255,19 @@ class DatabaseInstance(_messages.Message):
   region = _messages.StringField(28)
   replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 29)
   replicaNames = _messages.StringField(30, repeated=True)
-  rootPassword = _messages.StringField(31)
-  satisfiesPzs = _messages.BooleanField(32)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 33)
-  secondaryGceZone = _messages.StringField(34)
-  selfLink = _messages.StringField(35)
-  serverCaCert = _messages.MessageField('SslCert', 36)
-  serviceAccountEmailAddress = _messages.StringField(37)
-  settings = _messages.MessageField('Settings', 38)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 39)
-  state = _messages.EnumField('StateValueValuesEnum', 40)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 41, repeated=True)
-  writeEndpoint = _messages.StringField(42)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 31)
+  rootPassword = _messages.StringField(32)
+  satisfiesPzs = _messages.BooleanField(33)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 34)
+  secondaryGceZone = _messages.StringField(35)
+  selfLink = _messages.StringField(36)
+  serverCaCert = _messages.MessageField('SslCert', 37)
+  serviceAccountEmailAddress = _messages.StringField(38)
+  settings = _messages.MessageField('Settings', 39)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 40)
+  state = _messages.EnumField('StateValueValuesEnum', 41)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 42, repeated=True)
+  writeEndpoint = _messages.StringField(43)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1607,6 +1677,14 @@ class Flag(_messages.Message):
         version is 35.
       MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
         version is 36.
+      MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
+        version is 37.
+      MYSQL_8_0_38: The database major version is MySQL 8.0 and the minor
+        version is 38.
+      MYSQL_8_0_39: The database major version is MySQL 8.0 and the minor
+        version is 39.
+      MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
+        version is 40.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1650,14 +1728,18 @@ class Flag(_messages.Message):
     MYSQL_8_0_34 = 27
     MYSQL_8_0_35 = 28
     MYSQL_8_0_36 = 29
-    SQLSERVER_2019_STANDARD = 30
-    SQLSERVER_2019_ENTERPRISE = 31
-    SQLSERVER_2019_EXPRESS = 32
-    SQLSERVER_2019_WEB = 33
-    SQLSERVER_2022_STANDARD = 34
-    SQLSERVER_2022_ENTERPRISE = 35
-    SQLSERVER_2022_EXPRESS = 36
-    SQLSERVER_2022_WEB = 37
+    MYSQL_8_0_37 = 30
+    MYSQL_8_0_38 = 31
+    MYSQL_8_0_39 = 32
+    MYSQL_8_0_40 = 33
+    SQLSERVER_2019_STANDARD = 34
+    SQLSERVER_2019_ENTERPRISE = 35
+    SQLSERVER_2019_EXPRESS = 36
+    SQLSERVER_2019_WEB = 37
+    SQLSERVER_2022_STANDARD = 38
+    SQLSERVER_2022_ENTERPRISE = 39
+    SQLSERVER_2022_EXPRESS = 40
+    SQLSERVER_2022_WEB = 41
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -2809,6 +2891,32 @@ class ReplicaConfiguration(_messages.Message):
   mysqlReplicaConfiguration = _messages.MessageField('MySqlReplicaConfiguration', 4)
 
 
+class ReplicationCluster(_messages.Message):
+  r"""Primary-DR replica pair
+
+  Fields:
+    drReplica: Output only. read-only field that indicates if the replica is a
+      dr_replica; not set for a primary.
+    failoverDrReplicaName: Optional. If this instance is a primary, this is
+      the Disaster Recovery(DR) replica which is optional for a Cluster. If
+      this instance is a replica, this field is not set. Users can set this
+      field to set a designated DR replica for a primary. Removing this field
+      removes the DR replica.
+    psaWriteEndpoint: Output only. If set, it indicates this instance has a
+      private service access (PSA) dns endpoint that is pointing to the
+      primary instance of the cluster. If this instance is the primary, the
+      dns should be pointing to this instance. After Switchover or Replica
+      failover, this DNS endpoint points to the promoted instance. This is a
+      read-only field, returned to the user as information. This field can
+      exist even if a standalone instance does not yet have a replica, or had
+      a DR replica that was deleted.
+  """
+
+  drReplica = _messages.BooleanField(1)
+  failoverDrReplicaName = _messages.StringField(2)
+  psaWriteEndpoint = _messages.StringField(3)
+
+
 class Reschedule(_messages.Message):
   r"""A Reschedule object.
 
@@ -3541,6 +3649,11 @@ class SqlExternalSyncSettingError(_messages.Message):
         for PostgreSQL database.
       PG_SYNC_PARALLEL_LEVEL: Final parallel level that is used to do
         migration.
+      INSUFFICIENT_DISK_SIZE: The disk size of the replica instance is smaller
+        than the data size of the source instance.
+      INSUFFICIENT_MACHINE_TIER: The data size of the source instance is
+        greater than 1 TB, the number of cores of the replica instance is less
+        than 8, and the memory of the replica is less than 32 GB.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3585,6 +3698,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     SUBSCRIPTION_CALCULATION_STATUS = 40
     PG_SUBSCRIPTION_COUNT = 41
     PG_SYNC_PARALLEL_LEVEL = 42
+    INSUFFICIENT_DISK_SIZE = 43
+    INSUFFICIENT_MACHINE_TIER = 44
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3998,17 +4113,35 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
   r"""A SqlInstancesStartExternalSyncRequest object.
 
   Enums:
+    MigrationTypeValueValuesEnum: Optional. MigrationType decides if the
+      migration is a physical file based migration or logical migration.
     SyncModeValueValuesEnum: External sync mode.
     SyncParallelLevelValueValuesEnum: Optional. Parallel level for initial
       data sync. Currently only applicable for MySQL.
 
   Fields:
+    migrationType: Optional. MigrationType decides if the migration is a
+      physical file based migration or logical migration.
     mysqlSyncConfig: MySQL-specific settings for start external sync.
     skipVerification: Whether to skip the verification step (VESS).
     syncMode: External sync mode.
     syncParallelLevel: Optional. Parallel level for initial data sync.
       Currently only applicable for MySQL.
   """
+
+  class MigrationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. MigrationType decides if the migration is a physical file
+    based migration or logical migration.
+
+    Values:
+      MIGRATION_TYPE_UNSPECIFIED: If no migration type is specified it will be
+        defaulted to LOGICAL.
+      LOGICAL: Logical Migrations
+      PHYSICAL: Physical file based Migrations
+    """
+    MIGRATION_TYPE_UNSPECIFIED = 0
+    LOGICAL = 1
+    PHYSICAL = 2
 
   class SyncModeValueValuesEnum(_messages.Enum):
     r"""External sync mode.
@@ -4041,10 +4174,11 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
     OPTIMAL = 2
     MAX = 3
 
-  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
-  skipVerification = _messages.BooleanField(2)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
-  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 4)
+  migrationType = _messages.EnumField('MigrationTypeValueValuesEnum', 1)
+  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 2)
+  skipVerification = _messages.BooleanField(3)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 4)
+  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 5)
 
 
 class SqlInstancesStartReplicaRequest(_messages.Message):
@@ -4121,16 +4255,38 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
   r"""A SqlInstancesVerifyExternalSyncSettingsRequest object.
 
   Enums:
+    MigrationTypeValueValuesEnum: Optional. MigrationType field decides if the
+      migration is a physical file based migration or logical migration
     SyncModeValueValuesEnum: External sync mode
+    SyncParallelLevelValueValuesEnum: Optional. Parallel level for initial
+      data sync. Currently only applicable for PostgreSQL.
 
   Fields:
+    migrationType: Optional. MigrationType field decides if the migration is a
+      physical file based migration or logical migration
     mysqlSyncConfig: Optional. MySQL-specific settings for start external
       sync.
     syncMode: External sync mode
+    syncParallelLevel: Optional. Parallel level for initial data sync.
+      Currently only applicable for PostgreSQL.
     verifyConnectionOnly: Flag to enable verifying connection only
     verifyReplicationOnly: Optional. Flag to verify settings required by
       replication setup only
   """
+
+  class MigrationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. MigrationType field decides if the migration is a physical
+    file based migration or logical migration
+
+    Values:
+      MIGRATION_TYPE_UNSPECIFIED: If no migration type is specified it will be
+        defaulted to LOGICAL.
+      LOGICAL: Logical Migrations
+      PHYSICAL: Physical file based Migrations
+    """
+    MIGRATION_TYPE_UNSPECIFIED = 0
+    LOGICAL = 1
+    PHYSICAL = 2
 
   class SyncModeValueValuesEnum(_messages.Enum):
     r"""External sync mode
@@ -4147,10 +4303,28 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
     ONLINE = 1
     OFFLINE = 2
 
-  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 2)
-  verifyConnectionOnly = _messages.BooleanField(3)
-  verifyReplicationOnly = _messages.BooleanField(4)
+  class SyncParallelLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Parallel level for initial data sync. Currently only
+    applicable for PostgreSQL.
+
+    Values:
+      EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED: Unknown sync parallel level.
+        Will be defaulted to OPTIMAL.
+      MIN: Minimal parallel level.
+      OPTIMAL: Optimal parallel level.
+      MAX: Maximum parallel level.
+    """
+    EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED = 0
+    MIN = 1
+    OPTIMAL = 2
+    MAX = 3
+
+  migrationType = _messages.EnumField('MigrationTypeValueValuesEnum', 1)
+  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 2)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+  syncParallelLevel = _messages.EnumField('SyncParallelLevelValueValuesEnum', 4)
+  verifyConnectionOnly = _messages.BooleanField(5)
+  verifyReplicationOnly = _messages.BooleanField(6)
 
 
 class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):

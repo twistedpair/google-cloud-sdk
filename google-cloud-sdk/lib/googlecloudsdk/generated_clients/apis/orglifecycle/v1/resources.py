@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://orglifecycle.googleapis.com/v1/'
-DOCS_URL = 'go/org-lifecycle-api'
+DOCS_URL = 'https://docs.google.com/document/d/1zNNcZ3F61X9bxumpMV59yDLmx8frVIsokhYtGykZpvs/edit?resourcekey=0-gwEhcUSwwMS7Lt2XmIWFNA&tab=t.0'
 
 
 class Collections(enum.Enum):

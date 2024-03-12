@@ -396,8 +396,8 @@ class Apk(_messages.Message):
 
 
 class ApkDetail(_messages.Message):
-  r"""Android application details based on application manifest and apk
-  archive contents.
+  r"""Android application details based on application manifest and archive
+  contents.
 
   Fields:
     apkManifest: A ApkManifest attribute.
@@ -795,11 +795,10 @@ class FileReference(_messages.Message):
 
 
 class GetApkDetailsResponse(_messages.Message):
-  r"""Response containing the details of the specified Android application
-  APK.
+  r"""Response containing the details of the specified Android application.
 
   Fields:
-    apkDetail: Details of the Android APK.
+    apkDetail: Details of the Android App.
   """
 
   apkDetail = _messages.MessageField('ApkDetail', 1)
@@ -1233,6 +1232,8 @@ class PerAndroidVersionInfo(_messages.Message):
     deviceCapacity: The number of online devices for an Android version.
     directAccessVersionInfo: Output only. Identifies supported clients for
       DirectAccess for this Android version.
+    interactiveDeviceAvailabilityEstimate: Output only. The estimated wait
+      time for a single interactive device session using Direct Access.
     versionId: An Android version.
   """
 
@@ -1274,7 +1275,8 @@ class PerAndroidVersionInfo(_messages.Message):
 
   deviceCapacity = _messages.EnumField('DeviceCapacityValueValuesEnum', 1)
   directAccessVersionInfo = _messages.MessageField('DirectAccessVersionInfo', 2)
-  versionId = _messages.StringField(3)
+  interactiveDeviceAvailabilityEstimate = _messages.StringField(3)
+  versionId = _messages.StringField(4)
 
 
 class PerIosVersionInfo(_messages.Message):
@@ -2133,6 +2135,20 @@ class TestTargetsForShard(_messages.Message):
   """
 
   testTargets = _messages.StringField(1, repeated=True)
+
+
+class TestingApplicationDetailServiceGetApkDetailsRequest(_messages.Message):
+  r"""A TestingApplicationDetailServiceGetApkDetailsRequest object.
+
+  Fields:
+    bundleLocation_gcsPath: A path to a file in Google Cloud Storage. Example:
+      gs://build-app-1414623860166/app%40debug-unaligned.apk These paths are
+      expected to be url encoded (percent encoding)
+    fileReference: A FileReference resource to be passed as the request body.
+  """
+
+  bundleLocation_gcsPath = _messages.StringField(1)
+  fileReference = _messages.MessageField('FileReference', 2)
 
 
 class TestingProjectsDeviceSessionsCancelRequest(_messages.Message):

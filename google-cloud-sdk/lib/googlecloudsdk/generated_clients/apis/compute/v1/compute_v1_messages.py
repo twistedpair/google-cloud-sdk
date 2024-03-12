@@ -32807,17 +32807,15 @@ class CorsPolicy(_messages.Message):
     allowMethods: Specifies the content for the Access-Control-Allow-Methods
       header.
     allowOriginRegexes: Specifies a regular expression that matches allowed
-      origins. For more information about the regular expression syntax, see
-      Syntax. An origin is allowed if it matches either an item in
-      allowOrigins or an item in allowOriginRegexes. Regular expressions can
-      only be used when the loadBalancingScheme is set to
-      INTERNAL_SELF_MANAGED.
+      origins. For more information, see regular expression syntax . An origin
+      is allowed if it matches either an item in allowOrigins or an item in
+      allowOriginRegexes. Regular expressions can only be used when the
+      loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
     allowOrigins: Specifies the list of origins that is allowed to do CORS
       requests. An origin is allowed if it matches either an item in
       allowOrigins or an item in allowOriginRegexes.
-    disabled: If true, the setting specifies the CORS policy is disabled. The
-      default value of false, which indicates that the CORS policy is in
-      effect.
+    disabled: If true, disables the CORS policy. The default value is false,
+      which indicates that the CORS policy is in effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
       header.
     maxAge: Specifies how long results of a preflight request can be cached in
@@ -61345,19 +61343,20 @@ class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewal
 
   Enums:
     TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
-      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL,
+      SYSTEM_REGIONAL.
 
   Fields:
     displayName: [Output Only] The display name of the firewall policy.
     name: [Output Only] The name of the firewall policy.
     rules: The rules that apply to the network.
     type: [Output Only] The type of the firewall policy. Can be one of
-      HIERARCHY, NETWORK, NETWORK_REGIONAL.
+      HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The type of the firewall policy. Can be one of
-    HIERARCHY, NETWORK, NETWORK_REGIONAL.
+    HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
 
     Values:
       HIERARCHY: <no description>

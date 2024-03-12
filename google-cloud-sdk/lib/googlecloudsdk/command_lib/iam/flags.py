@@ -29,7 +29,7 @@ def GetRoleFlag(verb):
   return base.Argument(
       'role',
       metavar='ROLE_ID',
-      help='The id of the role to {0}. '
+      help='ID of the role to {0}. '
       'Curated roles example: roles/viewer. '
       'Custom roles example: CustomRole. '
       'For custom roles, you must also specify the `--organization` '
@@ -40,8 +40,7 @@ def GetCustomRoleFlag(verb):
   return base.Argument(
       'role',
       metavar='ROLE_ID',
-      help='The id of the custom role to {0}. '
-      'For example: CustomRole. '
+      help='ID of the custom role to {0}. '
       'You must also specify the `--organization` or `--project` '
       'flag.'.format(verb))
 
@@ -49,11 +48,11 @@ def GetCustomRoleFlag(verb):
 def GetOrgFlag(verb):
   return base.Argument(
       '--organization',
-      help='The organization of the role you want to {0}.'.format(verb))
+      help='Organization of the role you want to {0}.'.format(verb))
 
 
 def GetProjectFlag(verb):
-  help_text = 'The project of the role you want to {0}.'.format(verb)
+  help_text = 'Project of the role you want to {0}.'.format(verb)
   return common_args.ProjectArgument(help_text_to_prepend=help_text)
 
 
@@ -91,14 +90,14 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
       required=True)
 
   parser.add_argument(
-      '--universe-domain', help='The universe domain.', hidden=True
+      '--universe-domain', help='Universe domain.', hidden=True
   )
 
   service_account_impersonation_options = parser.add_group(
       help='Service account impersonation options.')
   service_account_impersonation_options.add_argument(
       '--service-account',
-      help='The email of the service account to impersonate.',
+      help='Email of the service account to impersonate.',
       required=True)
   service_account_impersonation_options .add_argument(
       '--service-account-token-lifetime-seconds',
@@ -107,7 +106,12 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
           lower_bound='600',
           upper_bound='43200',
           parsed_unit='s'),
-      help='The desired lifetime duration of the service account access token in seconds. This defaults to one hour when not provided. If a lifetime greater than one hour is required, the service account must be added as an allowed value in an Organization Policy that enforces the `constraints/iam.allowServiceAccountCredentialLifetimeExtension` constraint.'
+      help=('Lifetime duration of the service account access token in seconds. '
+            'Defaults to one hour if not specified. If a lifetime greater than '
+            'one hour is required, the service account must be added as an '
+            'allowed value in an Organization Policy that enforces the '
+            '`constraints/iam.allowServiceAccountCredentialLifetimeExtension` '
+            'constraint.')
     )
 
   parser.add_argument(
@@ -117,10 +121,10 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
       help='Headers to use when querying the credential-source-url.')
   parser.add_argument(
       '--credential-source-type',
-      help='The format of the credential source (JSON or text).')
+      help='Format of the credential source (JSON or text).')
   parser.add_argument(
       '--credential-source-field-name',
-      help='The subject token field name (key) in a JSON credential source.')
+      help='Subject token field name (key) in a JSON credential source.')
 
   executable_args = parser.add_group(
       help='Arguments for an executable type credential source.')
@@ -131,11 +135,12 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
           lower_bound='5s',
           upper_bound='120s',
           parsed_unit='ms'),
-      help='The timeout duration in milliseconds for waiting for the executable to finish.'
+      help=('Timeout duration, in milliseconds, to '
+            'wait for the executable to finish.')
   )
   executable_args.add_argument(
       '--executable-output-file',
-      help='The absolute path to the file storing the executable response.')
+      help='Absolute path to the file storing the executable response.')
 
   if config_type == cred_config.ConfigType.WORKFORCE_POOLS:
     executable_args.add_argument(
@@ -145,5 +150,5 @@ def AddCommonByoidCreateConfigFlags(parser, config_type):
             lower_bound='30s',
             upper_bound='1800s',
             parsed_unit='ms'),
-        help='The timeout duration, in milliseconds, to wait for the ' +
+        help='Timeout duration, in milliseconds, to wait for the ' +
         'executable to finish when the command is running in interactive mode.')

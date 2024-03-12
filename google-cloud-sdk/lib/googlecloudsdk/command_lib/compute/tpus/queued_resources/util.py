@@ -246,6 +246,7 @@ def SetSpot(api_version):
 
 def SetGuaranteed(api_version):
   """Creates an empty Guaranteed structure if arg flag is set."""
+
   def Process(ref, args, request):
     del ref  # unused
     if args.guaranteed:
@@ -256,6 +257,7 @@ def SetGuaranteed(api_version):
         request.queuedResource.guaranteed = tpu_messages.Guaranteed()
 
     return request
+
   return Process
 
 
@@ -301,35 +303,51 @@ def SetValidInterval(api_version):
   return Process
 
 
-def CreateReservationName(ref, args, request):
-  """Create the target reservation name from args."""
-  del ref  # unused
-  if (
-      (args.reservation_host_project and args.reservation_host_folder)
-      or (args.reservation_host_folder and args.reservation_host_organization)
-      or (args.reservation_host_organization and args.reservation_host_project)
-  ):
-    raise exceptions.ConflictingArgumentsException(
-        'Only one reservation host is permitted'
-    )
-  pattern = '{}/{}/locations/{}/reservations/-'
-  reservation_name = None
-  if args.reservation_host_project:
-    reservation_name = pattern.format(
-        'projects', args.reservation_host_project, args.zone
-    )
-  elif args.reservation_host_folder:
-    reservation_name = pattern.format(
-        'folders', args.reservation_host_folder, args.zone
-    )
-  elif args.reservation_host_organization:
-    reservation_name = pattern.format(
-        'organizations', args.reservation_host_organization, args.zone
-    )
+def CreateReservationName(api_version):
+  """Creates the target reservation name from args.
 
-  if reservation_name:
-    request.queuedResource.reservationName = reservation_name
-  return request
+  Args:
+    api_version: The api version (e.g. v2 or v2alpha1)
+
+  Returns:
+    Handler which sets request.queuedResource.reservationName
+  """
+
+  def Process(ref, args, request):
+    del ref  # unused
+    if (
+        (args.reservation_host_project and args.reservation_host_folder)
+        or (args.reservation_host_folder and args.reservation_host_organization)
+        or (
+            args.reservation_host_organization and args.reservation_host_project
+        )
+    ):
+      raise exceptions.ConflictingArgumentsException(
+          'Only one reservation host is permitted'
+      )
+    pattern = '{}/{}/locations/{}/reservations/-'
+    reservation_name = None
+    if args.reservation_host_project:
+      reservation_name = pattern.format(
+          'projects', args.reservation_host_project, args.zone
+      )
+    elif args.reservation_host_folder:
+      reservation_name = pattern.format(
+          'folders', args.reservation_host_folder, args.zone
+      )
+    elif args.reservation_host_organization:
+      reservation_name = pattern.format(
+          'organizations', args.reservation_host_organization, args.zone
+      )
+    elif api_version == 'v2' and hasattr(args, 'reserved') and args.reserved:
+      project = properties.VALUES.core.project.GetOrFail()
+      reservation_name = pattern.format('projects', project, args.zone)
+
+    if reservation_name:
+      request.queuedResource.reservationName = reservation_name
+    return request
+
+  return Process
 
 
 def SetForce(ref, args, request):

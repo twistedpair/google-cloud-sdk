@@ -599,14 +599,16 @@ def AddHealthCheckSourceRegionsRelatedArgs(parser):
       '--source-regions',
       metavar='REGION',
       help="""\
-        Defines the list of cloud regions from which health checks are
-        performed. This option can be specified only for health checks used
-        with DNS Routing Policies. If specified, --check-interval should be at
-        least 30 seconds. --proxy-header field and --request field (for TCP)
-        are not supported with this option. source-regions is only allowed for
-        global health checks. If this option is specified, then the health
-        check cannot be used with BackendService nor with managed instance
-        group autohealing.
+        Define the list of Google Cloud regions from which health checks are
+        performed. This option is supported only for global health checks that
+        will be referenced by DNS routing policies. If specified, the
+        --check-interval field should be at least 30 seconds. The
+        --proxy-header and --request fields (for TCP health checks) are not
+        supported with this option.
+
+        If --source-regions is specified for a health check, then that health
+        check cannot be used by a backend service or by a managed instance
+        group (for autohealing).
         """,
       type=arg_parsers.ArgList(min_length=3),
       default=[],

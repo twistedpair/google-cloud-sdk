@@ -546,6 +546,17 @@ class LogSink(proto.Message):
             -  periods.
 
             First character has to be alphanumeric.
+        resource_name (str):
+            Output only. The resource name of the sink.
+
+            ::
+
+                "projects/[PROJECT_ID]/sinks/[SINK_NAME]
+                "organizations/[ORGANIZATION_ID]/sinks/[SINK_NAME]
+                "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_NAME]
+                "folders/[FOLDER_ID]/sinks/[SINK_NAME]
+
+            For example: projects/my_project/sinks/SINK_NAME
         destination (str):
             Required. The export destination:
 
@@ -629,6 +640,25 @@ class LogSink(proto.Message):
 
             logName:("projects/test-project1/" OR
             "projects/test-project2/") AND resource.type=gce_instance
+        intercept_children (bool):
+            Optional. This field applies only to sinks owned by
+            organizations and folders.
+
+            When the value of 'intercept_children' is true, the
+            following restrictions apply:
+
+            -  The sink must have the ``include_children`` flag set to
+               true.
+            -  The sink destination must be a Cloud project.
+
+            Also, the following behaviors apply:
+
+            -  Any logs matched by the sink won't be included by
+               non-\ ``_Required`` sinks owned by child resources.
+            -  The sink appears in the results of a ``ListSinks`` call
+               from a child resource if the value of the ``filter``
+               field in its request is either ``'in_scope("ALL")'`` or
+               ``'in_scope("ANCESTOR")'``.
         bigquery_options (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.BigQueryOptions):
             Optional. Options that affect sinks exporting
             data to BigQuery.
@@ -663,6 +693,10 @@ class LogSink(proto.Message):
         proto.STRING,
         number=1,
     )
+    resource_name: str = proto.Field(
+        proto.STRING,
+        number=23,
+    )
     destination: str = proto.Field(
         proto.STRING,
         number=3,
@@ -696,6 +730,10 @@ class LogSink(proto.Message):
     include_children: bool = proto.Field(
         proto.BOOL,
         number=9,
+    )
+    intercept_children: bool = proto.Field(
+        proto.BOOL,
+        number=24,
     )
     bigquery_options: 'BigQueryOptions' = proto.Field(
         proto.MESSAGE,
@@ -981,39 +1019,7 @@ class Settings(proto.Message):
             service account as their ``writer_identity`` if no custom
             service account is provided in the request when calling the
             create sink method.
-        analytics_mode (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.AnalyticsMode):
-            Optional. The default analytics mode of an
-            org or folder which is inherited by all newly
-            created child project buckets.
     """
-    class AnalyticsMode(proto.Enum):
-        r"""Describes the default analytics mode for buckets created
-        under the configured folder or organization.
-        Note: since analytics is only supported for projects buckets,
-        the configuration will be applied only to buckets directly owned
-        by projects. Buckets owned by folders or organizations will not
-        inherit this configuration.
-
-        Values:
-            ANALYTICS_MODE_UNSPECIFIED (0):
-                No default analytics mode defined at this
-                resource level, it will inherit from the closest
-                ancester which has a defined analytics mode. If
-                there is no specified analytics mode across the
-                resource hierarchy, analytics will be disabled
-                by default.
-            ANALYTICS_ENABLED (1):
-                By default, analytics will be enabled for all
-                new project-level buckets unless explicitly
-                specified otherwise at bucket creation time.
-            ANALYTICS_DISABLED (2):
-                By default, analytics will be disabled for
-                new project-level buckets unless explicitly
-                specified otherwise at bucket creation time.
-        """
-        ANALYTICS_MODE_UNSPECIFIED = 0
-        ANALYTICS_ENABLED = 1
-        ANALYTICS_DISABLED = 2
 
     class DefaultSinkConfig(proto.Message):
         r"""Describes the custom ``_Default`` sink configuration that is used to
@@ -1111,11 +1117,6 @@ class Settings(proto.Message):
     logging_service_account_id: str = proto.Field(
         proto.STRING,
         number=7,
-    )
-    analytics_mode: AnalyticsMode = proto.Field(
-        proto.ENUM,
-        number=8,
-        enum=AnalyticsMode,
     )
 
 
@@ -1243,7 +1244,7 @@ class SavedQuery(proto.Message):
             If the user doesn't provide a [QUERY_ID], the system will
             generate an alphanumeric ID.
         display_name (str):
-            Optional. The user specified title for the
+            Required. The user specified title for the
             SavedQuery.
         description (str):
             Optional. A human readable description of the
@@ -1264,7 +1265,28 @@ class SavedQuery(proto.Message):
         update_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The timestamp when the saved
             query was last updated.
+        visibility (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery.Visibility):
+            Required. The visibility status of this
+            query, which determines its ownership.
     """
+    class Visibility(proto.Enum):
+        r"""Saved query visibility.
+
+        Values:
+            VISIBILITY_UNSPECIFIED (0):
+                The saved query visibility is unspecified. A
+                ``CreateSavedQuery`` request with an unspecified visibility
+                will be rejected.
+            PRIVATE (1):
+                The saved query is only visible to the user
+                that created it.
+            SHARED (2):
+                The saved query is visible to anyone in the
+                project.
+        """
+        VISIBILITY_UNSPECIFIED = 0
+        PRIVATE = 1
+        SHARED = 2
 
     name: str = proto.Field(
         proto.STRING,
@@ -1299,6 +1321,11 @@ class SavedQuery(proto.Message):
         proto.MESSAGE,
         number=6,
         message=timestamp_pb2.Timestamp,
+    )
+    visibility: Visibility = proto.Field(
+        proto.ENUM,
+        number=9,
+        enum=Visibility,
     )
 
 
@@ -1481,7 +1508,8 @@ class CreateBucketRequest(proto.Message):
             Required. A client-assigned identifier such as
             ``"my-bucket"``. Identifiers are limited to 100 characters
             and can include only letters, digits, underscores, hyphens,
-            and periods.
+            and periods. Bucket identifiers must start with an
+            alphanumeric character.
         bucket (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogBucket):
             Required. The new bucket. The region
             specified in the new bucket must be compliant
@@ -2025,6 +2053,22 @@ class ListSinksRequest(proto.Message):
             request. Non-positive values are ignored. The presence of
             ``nextPageToken`` in the response indicates that more
             results might be available.
+        filter (str):
+            Optional. A filter expression to constrain the sinks
+            returned. Today, this only supports the following strings:
+
+            -  ``''``
+            -  ``'in_scope("ALL")'``,
+            -  ``'in_scope("ANCESTOR")'``,
+            -  ``'in_scope("DEFAULT")'``.
+
+            Description of scopes below. ALL: Includes all of the sinks
+            which can be returned in any other scope. ANCESTOR: Includes
+            intercepting sinks owned by ancestor resources. DEFAULT:
+            Includes sinks owned by ``parent``.
+
+            When the empty string is provided, then the filter
+            'in_scope("DEFAULT")' is applied.
     """
 
     parent: str = proto.Field(
@@ -2038,6 +2082,10 @@ class ListSinksRequest(proto.Message):
     page_size: int = proto.Field(
         proto.INT32,
         number=3,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=5,
     )
 
 
@@ -2953,7 +3001,8 @@ class CopyLogEntriesMetadata(proto.Message):
             Identifies whether the user has requested
             cancellation of the operation.
         request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CopyLogEntriesRequest):
-            CopyLogEntries RPC request.
+            CopyLogEntries RPC request. This field is
+            deprecated and not used.
         progress (int):
             Estimated progress of the operation (0 -
             100%).

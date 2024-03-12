@@ -400,8 +400,8 @@ class ConfigProjectsLocationsDeploymentsListRequest(_messages.Message):
       by state: - Deployments in CREATING state. state=CREATING
     orderBy: Field to use to sort the list.
     pageSize: When requesting a page of resources, 'page_size' specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
+      number of resources to return. If unspecified, at most 500 will be
+      returned. The maximum value is 1000.
     pageToken: Token returned by previous call to 'ListDeployments' which
       specifies the position in the list from where to continue listing the
       resources.
@@ -506,8 +506,8 @@ class ConfigProjectsLocationsDeploymentsRevisionsListRequest(_messages.Message):
       = bar - Filter by state: - Revisions in CREATING state. state=CREATING
     orderBy: Field to use to sort the list.
     pageSize: When requesting a page of resources, `page_size` specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
+      number of resources to return. If unspecified, at most 500 will be
+      returned. The maximum value is 1000.
     pageToken: Token returned by previous call to 'ListRevisions' which
       specifies the position in the list from where to continue listing the
       resources.
@@ -551,8 +551,8 @@ class ConfigProjectsLocationsDeploymentsRevisionsResourcesListRequest(_messages.
       central1/deployments/dep/revisions/bar/resources/baz
     orderBy: Field to use to sort the list.
     pageSize: When requesting a page of resources, 'page_size' specifies
-      number of resources to return. If unspecified or set to 0, all resources
-      will be returned.
+      number of resources to return. If unspecified, at most 500 will be
+      returned. The maximum value is 1000.
     pageToken: Token returned by previous call to 'ListResources' which
       specifies the position in the list from where to continue listing the
       resources.
@@ -787,8 +787,8 @@ class ConfigProjectsLocationsPreviewsListRequest(_messages.Message):
       by state: - Deployments in CREATING state. state=CREATING
     orderBy: Optional. Field to use to sort the list.
     pageSize: Optional. When requesting a page of resources, 'page_size'
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
+      specifies number of resources to return. If unspecified, at most 500
+      will be returned. The maximum value is 1000.
     pageToken: Optional. Token returned by previous call to 'ListDeployments'
       which specifies the position in the list from where to continue listing
       the resources.
@@ -828,8 +828,8 @@ class ConfigProjectsLocationsTerraformVersionsListRequest(_messages.Message):
       or a synthetic field. Field names can be camelCase or snake_case.
     orderBy: Optional. Field to use to sort the list.
     pageSize: Optional. When requesting a page of resources, 'page_size'
-      specifies number of resources to return. If unspecified or set to 0, all
-      resources will be returned.
+      specifies number of resources to return. If unspecified, at most 500
+      will be returned. The maximum value is 1000.
     pageToken: Optional. Token returned by previous call to
       'ListTerraformVersions' which specifies the position in the list from
       where to continue listing the resources.
@@ -865,6 +865,9 @@ class Deployment(_messages.Message):
       may have occurred.
     LockStateValueValuesEnum: Output only. Current lock state of the
       deployment.
+    QuotaValidationValueValuesEnum: Optional. Input to control quota checks
+      for resources in terraform configuration files. There are limited
+      resources on which quota validation applies.
     StateValueValuesEnum: Output only. Current state of the deployment.
 
   Messages:
@@ -904,6 +907,9 @@ class Deployment(_messages.Message):
     lockState: Output only. Current lock state of the deployment.
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    quotaValidation: Optional. Input to control quota checks for resources in
+      terraform configuration files. There are limited resources on which
+      quota validation applies.
     serviceAccount: Optional. User-specified Service Account (SA) credentials
       to be used when actuating resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}`
@@ -974,6 +980,25 @@ class Deployment(_messages.Message):
     LOCK_FAILED = 5
     UNLOCK_FAILED = 6
 
+  class QuotaValidationValueValuesEnum(_messages.Enum):
+    r"""Optional. Input to control quota checks for resources in terraform
+    configuration files. There are limited resources on which quota validation
+    applies.
+
+    Values:
+      QUOTA_VALIDATION_UNSPECIFIED: The default value. QuotaValidation on
+        terraform configuration files will be disabled in this case.
+      ENABLED: Enable computing quotas for resources in terraform
+        configuration files to get visibility on resources with insufficient
+        quotas.
+      ENFORCED: Enforce quota checks so deployment fails if there isn't
+        sufficient quotas available to deploy resources in terraform
+        configuration files.
+    """
+    QUOTA_VALIDATION_UNSPECIFIED = 0
+    ENABLED = 1
+    ENFORCED = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the deployment.
 
@@ -1034,15 +1059,16 @@ class Deployment(_messages.Message):
   latestRevision = _messages.StringField(10)
   lockState = _messages.EnumField('LockStateValueValuesEnum', 11)
   name = _messages.StringField(12)
-  serviceAccount = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateDetail = _messages.StringField(15)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
-  tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
-  tfVersion = _messages.StringField(18)
-  tfVersionConstraint = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  workerPool = _messages.StringField(21)
+  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 13)
+  serviceAccount = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateDetail = _messages.StringField(16)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 17)
+  tfErrors = _messages.MessageField('TerraformError', 18, repeated=True)
+  tfVersion = _messages.StringField(19)
+  tfVersionConstraint = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  workerPool = _messages.StringField(22)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -1082,6 +1108,8 @@ class DeploymentOperationMetadata(_messages.Message):
       UNLOCKING_DEPLOYMENT: Unlocking a deployment
       SUCCEEDED: Operation was successful
       FAILED: Operation failed
+      VALIDATING_REPOSITORY: Validating the provided repository.
+      RUNNING_QUOTA_VALIDATION: Running quota validation
     """
     DEPLOYMENT_STEP_UNSPECIFIED = 0
     PREPARING_STORAGE_BUCKET = 1
@@ -1094,6 +1122,8 @@ class DeploymentOperationMetadata(_messages.Message):
     UNLOCKING_DEPLOYMENT = 8
     SUCCEEDED = 9
     FAILED = 10
+    VALIDATING_REPOSITORY = 11
+    RUNNING_QUOTA_VALIDATION = 12
 
   applyResults = _messages.MessageField('ApplyResults', 1)
   build = _messages.StringField(2)
@@ -1677,9 +1707,9 @@ class Preview(_messages.Message):
       `projects/{project}/locations/{location}/previews/{preview}`
     previewArtifacts: Output only. Artifacts from preview.
     previewMode: Optional. Current mode of preview.
-    serviceAccount: Optional. Optional service account. If omitted, the
-      deployment resource reference must be provided, and the service account
-      attached to the deployment will be used.
+    serviceAccount: Optional. User-specified Service Account (SA) credentials
+      to be used when previewing resources. Format:
+      `projects/{projectID}/serviceAccounts/{serviceAccount}`
     state: Output only. Current state of the preview.
     terraformBlueprint: The terraform blueprint to preview.
     tfErrors: Output only. Summary of errors encountered during Terraform
@@ -1845,6 +1875,7 @@ class PreviewOperationMetadata(_messages.Message):
       UNLOCKING_DEPLOYMENT: Unlocking a deployment.
       SUCCEEDED: Operation was successful.
       FAILED: Operation failed.
+      VALIDATING_REPOSITORY: Validating the provided repository.
     """
     PREVIEW_STEP_UNSPECIFIED = 0
     PREPARING_STORAGE_BUCKET = 1
@@ -1856,6 +1887,7 @@ class PreviewOperationMetadata(_messages.Message):
     UNLOCKING_DEPLOYMENT = 7
     SUCCEEDED = 8
     FAILED = 9
+    VALIDATING_REPOSITORY = 10
 
   build = _messages.StringField(1)
   logs = _messages.StringField(2)
@@ -2005,6 +2037,9 @@ class Revision(_messages.Message):
     ActionValueValuesEnum: Output only. The action which created this revision
     ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
       have occurred.
+    QuotaValidationValueValuesEnum: Optional. Input to control quota checks
+      for resources in terraform configuration files. There are limited
+      resources on which quota validation applies.
     StateValueValuesEnum: Output only. Current state of the revision.
 
   Fields:
@@ -2028,6 +2063,13 @@ class Revision(_messages.Message):
     name: Revision name. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}/
       revisions/{revision}`
+    quotaValidation: Optional. Input to control quota checks for resources in
+      terraform configuration files. There are limited resources on which
+      quota validation applies.
+    quotaValidationResults: Output only. Cloud Storage path containing quota
+      validation results. This field is set when a user sets
+      Deployment.quota_validation field to ENABLED or ENFORCED. Format:
+      `gs://{bucket}/{object}`.
     serviceAccount: Output only. User-specified Service Account (SA) to be
       used as credential to manage resources. Format:
       `projects/{projectID}/serviceAccounts/{serviceAccount}`
@@ -2077,11 +2119,33 @@ class Revision(_messages.Message):
         updating a deployment could not be started.
       APPLY_BUILD_RUN_FAILED: Cloud Build job associated with creating or
         updating a deployment was started but failed.
+      QUOTA_VALIDATION_FAILED: quota validation failed for one or more
+        resources in terraform configuration files.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CLOUD_BUILD_PERMISSION_DENIED = 1
     APPLY_BUILD_API_FAILED = 2
     APPLY_BUILD_RUN_FAILED = 3
+    QUOTA_VALIDATION_FAILED = 4
+
+  class QuotaValidationValueValuesEnum(_messages.Enum):
+    r"""Optional. Input to control quota checks for resources in terraform
+    configuration files. There are limited resources on which quota validation
+    applies.
+
+    Values:
+      QUOTA_VALIDATION_UNSPECIFIED: The default value. QuotaValidation on
+        terraform configuration files will be disabled in this case.
+      ENABLED: Enable computing quotas for resources in terraform
+        configuration files to get visibility on resources with insufficient
+        quotas.
+      ENFORCED: Enforce quota checks so deployment fails if there isn't
+        sufficient quotas available to deploy resources in terraform
+        configuration files.
+    """
+    QUOTA_VALIDATION_UNSPECIFIED = 0
+    ENABLED = 1
+    ENFORCED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the revision.
@@ -2107,15 +2171,17 @@ class Revision(_messages.Message):
   importExistingResources = _messages.BooleanField(7)
   logs = _messages.StringField(8)
   name = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateDetail = _messages.StringField(12)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 13)
-  tfErrors = _messages.MessageField('TerraformError', 14, repeated=True)
-  tfVersion = _messages.StringField(15)
-  tfVersionConstraint = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workerPool = _messages.StringField(18)
+  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 10)
+  quotaValidationResults = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateDetail = _messages.StringField(14)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
+  tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
+  tfVersion = _messages.StringField(17)
+  tfVersionConstraint = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
 
 
 class SetIamPolicyRequest(_messages.Message):

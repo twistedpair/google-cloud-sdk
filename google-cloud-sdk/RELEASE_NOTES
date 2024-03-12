@@ -5,6 +5,103 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 468.0.0 (2024-03-12)
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.25 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.25>.
+
+* Upgraded dev_appserver from Python 2 to Python 3.
+  * You can't use the latest version of `dev_appserver.py` to locally run your applications for runtimes that reached end of support. To continue using an archived version of `dev_appserver.py`, see [Use the local development server after runtimes reach the end of support](https://cloud.google.com/appengine/docs/standard/tools/using-local-server).
+  * Python 2 is no longer supported and should not be needed in your environment.
+  * For [supported runtimes](https://cloud.google.com/appengine/docs/standard/lifecycle/support-schedule), you must update both the `gcloud` CLI and the `app-engine-python` component. If you manage `gcloud` with an external package manager, see [Managing `gcloud` CLI components](https://cloud.google.com/sdk/docs/components).
+  * If you manage `gcloud` CLI with an external package manager, see [External package managers](https://cloud.google.com/sdk/docs/components#external_package_managers). You must update both `gcloud` CLI and the `app-engine-python` component together.
+  * The latest version of `dev_appserver.py` no longer accepts `api_version` in `app.yaml`. This conforms to production behavior.
+
+### App Hub
+
+*   Promoted `gcloud apphub` to GA.
+
+### Artifact Registry
+
+* Added `gcloud artifacts files download` which downloads a file to the local environment.
+* Allowed `--remote-mvn-repo`, `--remote-docker-repo`, `--remote-npm-repo`, and `--remote-python-repo` flags to be a custom registry uri (ex: https://registry-1.docker.io) as well as the already-supported registry enum (ex: docker-hub) for `artifacts repositories create`.
+* Added `--disable-remote-validation` flag for `artifacts repositories create` and `artifacts repositories update`.
+* Added `gcloud artifacts docker upgrade migrate`.
+
+### Cloud Bigtable
+
+* Added `--enable-automated-backup` flag to `gcloud bigtable instances tables create` and `gcloud bigtable instances tables update`.
+* Added `--disable-automated-backup` flag to `gcloud bigtable instances tables update`.
+
+### Cloud Build
+
+* Unhided`gcloud builds connections create bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds connections update bitbucket-cloud`, `gcloud builds connections create bitbucket-data-center`, `gcloud builds triggers create bitbucket-cloud`, `gcloud builds triggers update bitbucket-cloud`, `gcloud builds triggers create bitbucket-data-center`, `gcloud builds triggers update bitbucket-data-center`.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.3
+  * Includes fix for ancestor queries and namespace scoped queries in Datastore Mode.
+
+### Cloud Resource Manager
+
+* Added support for `--tags` flag in `gcloud projects create` command.
+* Added support for `--tags` flag in `gcloud resource-manager folders create` command.
+
+### Cloud Run
+
+* Added `--no-deploy-health-check` to `gcloud beta run deploy` and `gcloud beta run services update` which allows disabling the deployment health check behavior.
+
+### Cloud SQL
+
+* Added `gcloud sql instances acquire-ssrs-lease` to acquire a lease for SQL Server Reporting Services setup
+in Cloud SQL for SQL Server.
+* Added `gcloud sql instances release-ssrs-lease` to release a lease for SQL Server Reporting Services setup
+in Cloud SQL for SQL Server.
+
+### Cloud TPU
+
+* Added `--reserved` flag to `gcloud compute tpus queued-resources create`.
+
+### Cloud Tasks
+
+*   Promoting `gcloud tasks buffer` to GA which enables creation of an HTTP task
+    without specifying the task body. It requires the parent queue to have
+    an HTTP target override.
+
+### Compute Engine
+
+*   Added support for OS Login SSH certificates for first-party users in alpha
+    and beta tracks of `gcloud compute ssh`.
+* Promoted `--source-regions` flag of `gcloud compute health-checks` to beta.
+* Added `--cloud-armor-tier` flag to `gcloud compute project-info update` command.
+
+### Dataproc Metastore
+
+* Promoted `--scheduled-backup-configs-from-file`, `enable-scheduled-backup`, `scheduled-backup-cron` and `scheduled-backup-location` flag of `gcloud metastore services create` and `gcloud metastore services update` to GA.
+
+### Distributed Cloud Edge
+
+* Added `--node-labels` flag to `gcloud edge-cloud container clusters node-pools create` and `gcloud edge-cloud container clusters node-pools update` commands to allow assigning labels to individual nodes in a node pool.
+
+### Kubernetes Engine
+
+* Fixed `--enable-queued-provisioning` GA in `gcloud container node-pools create`.
+  For more information see <https://cloud.google.com/kubernetes-engine/docs/how-to/provisioningrequest>.
+
+### Notebooks
+
+* Added `NVIDIA_L4` option to `--accelerator-type` flag of `gcloud notebooks instances create` and `gcloud notebooks instances update`.
+
+### Pubsub Emulator
+
+*   Add support for topic ingestion settings.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 467.0.0 (2024-03-05)
 
 ### Google Cloud CLI

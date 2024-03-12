@@ -141,13 +141,15 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_group = parser.add_group(required=required, mutex=True)
   backfill_group.add_argument(
       '--backfill-none',
-      help="""Do not automatically backfill any objects.""",
+      help="""Do not automatically backfill any objects. This flag is equivalent
+      to selecting the Manual backfill type in the Google Cloud console.""",
       action='store_true')
   backfill_all_group = backfill_group.add_group()
   backfill_all_group.add_argument(
       '--backfill-all',
       help="""Automatically backfill objects included in the stream source
-      configuration. Specific objects can be excluded.""",
+      configuration. Specific objects can be excluded. This flag is equivalent
+      to selecting the Automatic backfill type in the Google Cloud console.""",
       action='store_true')
   backfill_all_excluded_objects = backfill_all_group.add_group(mutex=True)
   backfill_all_excluded_objects.add_argument(

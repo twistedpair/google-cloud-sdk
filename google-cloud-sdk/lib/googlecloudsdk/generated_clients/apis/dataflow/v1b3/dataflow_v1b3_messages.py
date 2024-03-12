@@ -3140,12 +3140,18 @@ class FlattenInstruction(_messages.Message):
 
 class FlexTemplateRuntimeEnvironment(_messages.Message):
   r"""The environment values to be set at runtime for flex template.
+  LINT.IfChange
 
   Enums:
     AutoscalingAlgorithmValueValuesEnum: The algorithm to use for autoscaling
     FlexrsGoalValueValuesEnum: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
     IpConfigurationValueValuesEnum: Configuration for VM IPs.
+    StreamingModeValueValuesEnum: Optional. Specifies the Streaming Engine
+      message processing guarantees. Reduces cost and latency but might result
+      in duplicate messages committed to storage. Designed to run simple
+      mapping streaming ETL jobs at the lowest cost. For example, Change Data
+      Capture (CDC) to BigQuery is a canonical use case.
 
   Messages:
     AdditionalUserLabelsValue: Additional user labels to be specified for the
@@ -3198,6 +3204,11 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       job as.
     stagingLocation: The Cloud Storage path for staging local files. Must be a
       valid Cloud Storage URL, beginning with `gs://`.
+    streamingMode: Optional. Specifies the Streaming Engine message processing
+      guarantees. Reduces cost and latency but might result in duplicate
+      messages committed to storage. Designed to run simple mapping streaming
+      ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+      BigQuery is a canonical use case.
     subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
       specify a subnetwork using either a complete URL or an abbreviated path.
       Expected to be of the form "https://www.googleapis.com/compute/v1/projec
@@ -3262,6 +3273,27 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
     WORKER_IP_PUBLIC = 1
     WORKER_IP_PRIVATE = 2
 
+  class StreamingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the Streaming Engine message processing
+    guarantees. Reduces cost and latency but might result in duplicate
+    messages committed to storage. Designed to run simple mapping streaming
+    ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+    BigQuery is a canonical use case.
+
+    Values:
+      STREAMING_MODE_UNSPECIFIED: Run in the default mode.
+      STREAMING_MODE_EXACTLY_ONCE: In this mode, message deduplication is
+        performed against persistent state to make sure each message is
+        processed and committed to storage exactly once.
+      STREAMING_MODE_AT_LEAST_ONCE: Message deduplication is not performed.
+        Messages might be processed multiple times, and the results are
+        applied multiple times. Note: Setting this value also enables
+        Streaming Engine and Streaming Engine resource-based billing.
+    """
+    STREAMING_MODE_UNSPECIFIED = 0
+    STREAMING_MODE_EXACTLY_ONCE = 1
+    STREAMING_MODE_AT_LEAST_ONCE = 2
+
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalUserLabelsValue(_messages.Message):
     r"""Additional user labels to be specified for the job. Keys and values
@@ -3311,11 +3343,12 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   sdkContainerImage = _messages.StringField(17)
   serviceAccountEmail = _messages.StringField(18)
   stagingLocation = _messages.StringField(19)
-  subnetwork = _messages.StringField(20)
-  tempLocation = _messages.StringField(21)
-  workerRegion = _messages.StringField(22)
-  workerZone = _messages.StringField(23)
-  zone = _messages.StringField(24)
+  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 20)
+  subnetwork = _messages.StringField(21)
+  tempLocation = _messages.StringField(22)
+  workerRegion = _messages.StringField(23)
+  workerZone = _messages.StringField(24)
+  zone = _messages.StringField(25)
 
 
 class FloatingPointList(_messages.Message):
@@ -5279,6 +5312,7 @@ class ParameterMetadata(_messages.Message):
       rendered under. Group header text will be rendered exactly as specified
       in this field. Only considered when parent_name is NOT provided.
     helpText: Required. The help text to display for the parameter.
+    hiddenUi: Optional. Whether the parameter should be hidden in the UI.
     isOptional: Optional. Whether the parameter is optional. Defaults to
       false.
     label: Required. The label to display for the parameter.
@@ -5380,13 +5414,14 @@ class ParameterMetadata(_messages.Message):
   enumOptions = _messages.MessageField('ParameterMetadataEnumOption', 3, repeated=True)
   groupName = _messages.StringField(4)
   helpText = _messages.StringField(5)
-  isOptional = _messages.BooleanField(6)
-  label = _messages.StringField(7)
-  name = _messages.StringField(8)
-  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 9)
-  parentName = _messages.StringField(10)
-  parentTriggerValues = _messages.StringField(11, repeated=True)
-  regexes = _messages.StringField(12, repeated=True)
+  hiddenUi = _messages.BooleanField(6)
+  isOptional = _messages.BooleanField(7)
+  label = _messages.StringField(8)
+  name = _messages.StringField(9)
+  paramType = _messages.EnumField('ParamTypeValueValuesEnum', 10)
+  parentName = _messages.StringField(11)
+  parentTriggerValues = _messages.StringField(12, repeated=True)
+  regexes = _messages.StringField(13, repeated=True)
 
 
 class ParameterMetadataEnumOption(_messages.Message):
@@ -5852,6 +5887,11 @@ class RuntimeEnvironment(_messages.Message):
 
   Enums:
     IpConfigurationValueValuesEnum: Optional. Configuration for VM IPs.
+    StreamingModeValueValuesEnum: Optional. Specifies the Streaming Engine
+      message processing guarantees. Reduces cost and latency but might result
+      in duplicate messages committed to storage. Designed to run simple
+      mapping streaming ETL jobs at the lowest cost. For example, Change Data
+      Capture (CDC) to BigQuery is a canonical use case.
 
   Messages:
     AdditionalUserLabelsValue: Optional. Additional user labels to be
@@ -5889,6 +5929,11 @@ class RuntimeEnvironment(_messages.Message):
       instances for the job. The default value is 11.
     serviceAccountEmail: Optional. The email address of the service account to
       run the job as.
+    streamingMode: Optional. Specifies the Streaming Engine message processing
+      guarantees. Reduces cost and latency but might result in duplicate
+      messages committed to storage. Designed to run simple mapping streaming
+      ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+      BigQuery is a canonical use case.
     subnetwork: Optional. Subnetwork to which VMs will be assigned, if
       desired. You can specify a subnetwork using either a complete URL or an
       abbreviated path. Expected to be of the form "https://www.googleapis.com
@@ -5926,6 +5971,27 @@ class RuntimeEnvironment(_messages.Message):
     WORKER_IP_UNSPECIFIED = 0
     WORKER_IP_PUBLIC = 1
     WORKER_IP_PRIVATE = 2
+
+  class StreamingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the Streaming Engine message processing
+    guarantees. Reduces cost and latency but might result in duplicate
+    messages committed to storage. Designed to run simple mapping streaming
+    ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+    BigQuery is a canonical use case.
+
+    Values:
+      STREAMING_MODE_UNSPECIFIED: Run in the default mode.
+      STREAMING_MODE_EXACTLY_ONCE: In this mode, message deduplication is
+        performed against persistent state to make sure each message is
+        processed and committed to storage exactly once.
+      STREAMING_MODE_AT_LEAST_ONCE: Message deduplication is not performed.
+        Messages might be processed multiple times, and the results are
+        applied multiple times. Note: Setting this value also enables
+        Streaming Engine and Streaming Engine resource-based billing.
+    """
+    STREAMING_MODE_UNSPECIFIED = 0
+    STREAMING_MODE_EXACTLY_ONCE = 1
+    STREAMING_MODE_AT_LEAST_ONCE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalUserLabelsValue(_messages.Message):
@@ -5969,11 +6035,12 @@ class RuntimeEnvironment(_messages.Message):
   network = _messages.StringField(10)
   numWorkers = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   serviceAccountEmail = _messages.StringField(12)
-  subnetwork = _messages.StringField(13)
-  tempLocation = _messages.StringField(14)
-  workerRegion = _messages.StringField(15)
-  workerZone = _messages.StringField(16)
-  zone = _messages.StringField(17)
+  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 13)
+  subnetwork = _messages.StringField(14)
+  tempLocation = _messages.StringField(15)
+  workerRegion = _messages.StringField(16)
+  workerZone = _messages.StringField(17)
+  zone = _messages.StringField(18)
 
 
 class RuntimeMetadata(_messages.Message):
@@ -7439,6 +7506,17 @@ class StreamingScalingReport(_messages.Message):
   outstandingBytesCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
+class StreamingScalingReportResponse(_messages.Message):
+  r"""Contains per-user-worker streaming scaling recommendation from the
+  backend.
+
+  Fields:
+    maximumThreadCount: Maximum thread count limit;
+  """
+
+  maximumThreadCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class StreamingSetupTask(_messages.Message):
   r"""A task which initializes part of a streaming Dataflow job.
 
@@ -7602,11 +7680,19 @@ class TemplateMetadata(_messages.Message):
     description: Optional. A description of the template.
     name: Required. The name of the template.
     parameters: The parameters for the template.
+    streaming: Optional. Indicates if the template is streaming or not.
+    supportsAtLeastOnce: Optional. Indicates if the streaming template
+      supports at least once mode.
+    supportsExactlyOnce: Optional. Indicates if the streaming template
+      supports exactly once mode.
   """
 
   description = _messages.StringField(1)
   name = _messages.StringField(2)
   parameters = _messages.MessageField('ParameterMetadata', 3, repeated=True)
+  streaming = _messages.BooleanField(4)
+  supportsAtLeastOnce = _messages.BooleanField(5)
+  supportsExactlyOnce = _messages.BooleanField(6)
 
 
 class TemplateVersion(_messages.Message):
@@ -8359,6 +8445,8 @@ class WorkerMessageResponse(_messages.Message):
   sender.
 
   Fields:
+    streamingScalingReportResponse: Service's streaming scaling response for
+      workers.
     workerHealthReportResponse: The service's response to a worker's health
       report.
     workerMetricsResponse: Service's response to reporting worker metrics
@@ -8369,10 +8457,11 @@ class WorkerMessageResponse(_messages.Message):
       for workers.
   """
 
-  workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 1)
-  workerMetricsResponse = _messages.MessageField('ResourceUtilizationReportResponse', 2)
-  workerShutdownNoticeResponse = _messages.MessageField('WorkerShutdownNoticeResponse', 3)
-  workerThreadScalingReportResponse = _messages.MessageField('WorkerThreadScalingReportResponse', 4)
+  streamingScalingReportResponse = _messages.MessageField('StreamingScalingReportResponse', 1)
+  workerHealthReportResponse = _messages.MessageField('WorkerHealthReportResponse', 2)
+  workerMetricsResponse = _messages.MessageField('ResourceUtilizationReportResponse', 3)
+  workerShutdownNoticeResponse = _messages.MessageField('WorkerShutdownNoticeResponse', 4)
+  workerThreadScalingReportResponse = _messages.MessageField('WorkerThreadScalingReportResponse', 5)
 
 
 class WorkerPool(_messages.Message):

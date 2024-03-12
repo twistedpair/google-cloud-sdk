@@ -366,9 +366,11 @@ class Domain(_messages.Message):
       used by clients to connect to the service. Similar to what would be
       chosen for an Active Directory set up on an internal network.
     labels: Optional. Resource labels that can contain user-provided metadata.
-    locations: Required. Locations where domain needs to be provisioned.
-      regions e.g. us-west1 or us-east4 Service supports up to 4 locations at
-      once. Each location will use a /26 block.
+    locations: Required. Locations where domain needs to be provisioned. The
+      locations can be specified according to
+      https://cloud.google.com/compute/docs/regions-zones, such as `us-west1`
+      or `us-east4`. Each domain supports up to 4 locations, separated by
+      commas. Each location will use a /26 block.
     name: Required. The unique name of the domain using the form:
       `projects/{project_id}/locations/global/domains/{domain_name}`.
     reservedIpRange: Required. The CIDR range of internal addresses that are

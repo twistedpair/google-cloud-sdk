@@ -56,6 +56,7 @@ CERTIFICATE_DIR = os.path.join('~', '.ssh', 'google_compute_engine_cert')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 OSLOGIN_ENABLE_2FA_METADATA_KEY = 'enable-oslogin-2fa'
 OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
+OSLOGIN_REQUIRE_CERTIFICATES_METADATA_KEY = 'require-oslogin-certificates'
 
 
 class InvalidKeyError(core_exceptions.Error):
@@ -954,6 +955,7 @@ class OsloginState(object):
     security_keys: list, A list of 'private' keys associated with the security
       keys configured in the user's account.
     signed_ssh_key: bool, True if a valid signed ssh key exists.
+    require_certificates: bool, True if passing a certificate is required.
   """
 
   def __init__(
@@ -967,6 +969,7 @@ class OsloginState(object):
       environment=None,
       security_keys=None,
       signed_ssh_key=False,
+      require_certificates=False,
   ):
     self.oslogin_enabled = oslogin_enabled
     self.oslogin_2fa_enabled = oslogin_2fa_enabled
@@ -980,6 +983,7 @@ class OsloginState(object):
     else:
       self.security_keys = security_keys
     self.signed_ssh_key = signed_ssh_key
+    self.require_certificates = require_certificates
 
   def __str__(self):
     return textwrap.dedent("""\
@@ -993,6 +997,7 @@ class OsloginState(object):
         Security Keys:
         {7}
         Signed SSH Key: {8}
+        Require Certificates: {9}
         """).format(
         self.oslogin_enabled,
         self.oslogin_2fa_enabled,
@@ -1003,6 +1008,7 @@ class OsloginState(object):
         self.environment,
         '\n'.join(self.security_keys),
         self.signed_ssh_key,
+        self.require_certificates,
     )
 
   def __repr__(self):
@@ -1010,7 +1016,8 @@ class OsloginState(object):
         'OsloginState(oslogin_enabled={0}, oslogin_2fa_enabled={1}, '
         'security_keys_enabled={2}, user={3}, third_party_user={4}'
         'ssh_security_key_support={5}, environment={6}, '
-        'security_keys={7}, signed_ssh_key={8})'.format(
+        'security_keys={7}, signed_ssh_key={8}, '
+        'require_certificates={9})'.format(
             self.oslogin_enabled,
             self.oslogin_2fa_enabled,
             self.security_keys_enabled,
@@ -1020,6 +1027,7 @@ class OsloginState(object):
             self.environment,
             self.security_keys,
             self.signed_ssh_key,
+            self.require_certificates,
         )
     )
 
@@ -1048,6 +1056,7 @@ def GetOsloginState(
     instance_enable_oslogin=None,
     instance_enable_2fa=None,
     instance_enable_security_keys=None,
+    instance_require_certificates=None,
     messages=None,
 ):
   """Check instance/project metadata for oslogin and return updated username.
@@ -1078,6 +1087,10 @@ def GetOsloginState(
       that OS Login security keys are enabled, and False if not enabled. Used
       when the instance cannot be passed through the instance argument. None if
       not specified.
+    instance_require_certificates: True if the instance's metadata indicates
+      that OS Login SSH certificates are to be used exclusively, False
+      otherwise. An override to be used when the instance cannot be passed
+      through the "instance" argument. None if not specified.
     messages: API messages class, The compute API messages.
 
   Returns:
@@ -1118,6 +1131,12 @@ def GetOsloginState(
       instance_override=instance_enable_security_keys,
   )
   oslogin_state.third_party_user = IsThirdPartyUser()
+  oslogin_state.require_certificates = FeatureEnabledInMetadata(
+      instance,
+      project,
+      OSLOGIN_REQUIRE_CERTIFICATES_METADATA_KEY,
+      instance_override=instance_require_certificates,
+  )
 
   env = Environment.Current()
   if env.suite == Suite.PUTTY:
@@ -1133,11 +1152,18 @@ def GetOsloginState(
       or properties.VALUES.core.account.Get()
   )
 
-  if oslogin_state.third_party_user and release_track in [
-      base.ReleaseTrack.ALPHA,
-      base.ReleaseTrack.BETA,
-  ]:
-    user_email = quote(user_email, safe=':')
+  if (
+      release_track
+      in [
+          base.ReleaseTrack.ALPHA,
+          base.ReleaseTrack.BETA,
+      ]
+      and oslogin_state.third_party_user
+      or oslogin_state.require_certificates
+  ):
+    if oslogin_state.third_party_user:
+      # Only escape 3PI usernames; 1P identities must retain the '@' symbol.
+      user_email = quote(user_email, safe=':')
     zone = instance.zone.split('/').pop()
     # Inclusively trim suffix from last '-' to convert a zone into a region.
     region = zone[:zone.rindex('-')]

@@ -966,6 +966,7 @@ def CreateNetworkInterfaceMessages(
                   'external-ipv6-prefix-length', None
               ),
               vlan=interface.get('vlan', None),
+              igmp_query=interface.get('igmp-query', None),
           )
       )
   elif network_interface_json is not None:

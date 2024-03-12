@@ -112,9 +112,32 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
   return cluster
 
 
+def _AddEnforcedRetentionToAutomatedBackupPolicy(backup_policy, args):
+  if args.automated_backup_enforced_retention:
+    backup_policy.enforcedRetention = True
+  return backup_policy
+
+
+def _AddEnforcedRetentionToContinuousBackupConfig(
+    continuous_backup_config, args
+):
+  if args.continuous_backup_enforced_retention:
+    continuous_backup_config.enforcedRetention = True
+  return continuous_backup_config
+
+
 def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
   """Returns the cluster for beta create request based on args."""
-  return _ConstructClusterForCreateRequestGA(alloydb_messages, args)
+  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
+  cluster.automatedBackupPolicy = _AddEnforcedRetentionToAutomatedBackupPolicy(
+      cluster.automatedBackupPolicy, args
+  )
+  cluster.continuousBackupConfig = (
+      _AddEnforcedRetentionToContinuousBackupConfig(
+          cluster.continuousBackupConfig, args
+      )
+  )
+  return cluster
 
 
 def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):

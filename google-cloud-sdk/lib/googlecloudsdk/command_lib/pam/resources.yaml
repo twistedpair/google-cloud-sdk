@@ -77,3 +77,34 @@ entitlement:
     - *location
     - *entitlement
     disable_auto_completers: true
+
+grant:
+  name: grant
+  resources:
+  - name: grant
+    collection: privilegedaccessmanager.projects.locations.entitlements.grants
+    attributes:
+    - *project
+    - *location
+    - *entitlement
+    - &grant
+      parameter_name: grantsId
+      attribute_name: grant
+      help: The grant id
+    disable_auto_completers: true
+  - name: grant
+    collection: privilegedaccessmanager.folders.locations.entitlements.grants
+    attributes:
+    - *folder
+    - *location
+    - *entitlement
+    - *grant
+    disable_auto_completers: true
+  - name: grant
+    collection: privilegedaccessmanager.organizations.locations.entitlements.grants
+    attributes:
+    - *organization
+    - *location
+    - *entitlement
+    - *grant
+    disable_auto_completers: true

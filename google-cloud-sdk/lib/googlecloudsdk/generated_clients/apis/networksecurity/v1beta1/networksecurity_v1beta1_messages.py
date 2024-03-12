@@ -534,6 +534,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -589,7 +590,7 @@ class FirewallEndpoint(_messages.Message):
     associations: Output only. List of FirewallEndpointAssociations that are
       associated to this endpoint. An association will only appear in this
       list after traffic routing is fully configured.
-    billingProjectId: Optional. Project to bill on endpoint uptime usage.
+    billingProjectId: Required. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
@@ -659,22 +660,16 @@ class FirewallEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   associatedNetworks = _messages.StringField(1, repeated=True)
-  associations = _messages.MessageField(
-      'FirewallEndpointAssociationReference', 2, repeated=True
-  )
+  associations = _messages.MessageField('FirewallEndpointAssociationReference', 2, repeated=True)
   billingProjectId = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  firstPartyEndpointSettings = _messages.MessageField(
-      'FirstPartyEndpointSettings', 6
-  )
+  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   reconciling = _messages.BooleanField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
-  thirdPartyEndpointSettings = _messages.MessageField(
-      'ThirdPartyEndpointSettings', 11
-  )
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 11)
   type = _messages.EnumField('TypeValueValuesEnum', 12)
   updateTime = _messages.StringField(13)
 
@@ -759,7 +754,6 @@ class FirewallEndpointAssociation(_messages.Message):
 
 class FirewallEndpointAssociationReference(_messages.Message):
   r"""This is a subset of the FirewallEndpointAssociation message, containing
-
   fields to be used by the consumer.
 
   Fields:
@@ -1935,7 +1929,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -1984,7 +1982,6 @@ class GoogleIamV1CloudAuditOptions(_messages.Message):
       DATA_READ: Permissions that gate reading user-provided data.
       DATA_WRITE: Permissions that gate writing user-provided data.
     """
-
     PERMISSION_TYPE_UNSPECIFIED = 0
     ADMIN_READ = 1
     ADMIN_WRITE = 2
@@ -2431,11 +2428,14 @@ class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message)
     rulePriority: Rule priority of the FirewallPolicy that is using the
       Address Group.
     ruleType: Type of the rule (applies only to FIREWALL_POLICY references)
+    securityPolicy: Cloud Armor SecurityPolicy that is using the Address
+      Group.
   """
 
   firewallPolicy = _messages.StringField(1)
   rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   ruleType = _messages.StringField(3)
+  securityPolicy = _messages.StringField(4)
 
 
 class ListAddressGroupsResponse(_messages.Message):
@@ -3133,7 +3133,6 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest(_message
 
 class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest
-
   object.
 
   Fields:
@@ -4021,7 +4020,6 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsListRequest(_m
 
 class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_messages.Message):
   r"""A
-
   NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest
   object.
 
@@ -5174,7 +5172,6 @@ class SecurityProfileGroup(_messages.Message):
 
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
-
   authenticate incoming requests. This resource itself does not affect
   configuration unless it is attached to a target HTTPS proxy or endpoint
   config selector resource. ServerTlsPolicy in the form accepted by external

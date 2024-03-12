@@ -1057,6 +1057,22 @@ class BigqueryRoutinesDeleteResponse(_messages.Message):
   r"""An empty BigqueryRoutinesDelete response."""
 
 
+class BigqueryRoutinesGetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryRoutinesGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BigqueryRoutinesGetRequest(_messages.Message):
   r"""A BigqueryRoutinesGetRequest object.
 
@@ -1115,6 +1131,22 @@ class BigqueryRoutinesListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   projectId = _messages.StringField(5, required=True)
   readMask = _messages.StringField(6)
+
+
+class BigqueryRoutinesSetIamPolicyRequest(_messages.Message):
+  r"""A BigqueryRoutinesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class BigqueryRoutinesUpdateRequest(_messages.Message):
@@ -2049,9 +2081,13 @@ class Dataset(_messages.Message):
       indicated by this property.
     description: Optional. A user-friendly description of the dataset.
     etag: Output only. A hash of the resource.
-    externalDatasetReference: Optional. Information about the external
-      metadata storage where the dataset is defined. Filled out when the
-      dataset type is EXTERNAL.
+    externalCatalogDatasetOptions: Optional. Options defining open source
+      compatible datasets living in the BigQuery catalog. Contains metadata of
+      open source database, schema or namespace represented by the current
+      dataset.
+    externalDatasetReference: Optional. Reference to a read-only external
+      dataset defined in data catalogs outside of BigQuery. Filled out when
+      the dataset type is EXTERNAL.
     friendlyName: Optional. A descriptive name for the dataset.
     id: Output only. The fully-qualified unique name of the dataset in the
       format projectId:datasetId. The dataset name without the project name is
@@ -2068,6 +2104,8 @@ class Dataset(_messages.Message):
       Labels for more information.
     lastModifiedTime: Output only. The date when this dataset was last
       modified, in milliseconds since the epoch.
+    linkedDatasetMetadata: Output only. Metadata about the LinkedDataset.
+      Filled out when the dataset type is LINKED.
     linkedDatasetSource: Optional. The source dataset reference when the
       dataset is of type LINKED. For all other dataset types it is not set.
       This field cannot be updated once it is set. Any attempt to update this
@@ -2235,22 +2273,24 @@ class Dataset(_messages.Message):
   defaultTableExpirationMs = _messages.IntegerField(8)
   description = _messages.StringField(9)
   etag = _messages.StringField(10)
-  externalDatasetReference = _messages.MessageField('ExternalDatasetReference', 11)
-  friendlyName = _messages.StringField(12)
-  id = _messages.StringField(13)
-  isCaseInsensitive = _messages.BooleanField(14)
-  kind = _messages.StringField(15, default='bigquery#dataset')
-  labels = _messages.MessageField('LabelsValue', 16)
-  lastModifiedTime = _messages.IntegerField(17)
-  linkedDatasetSource = _messages.MessageField('LinkedDatasetSource', 18)
-  location = _messages.StringField(19)
-  maxTimeTravelHours = _messages.IntegerField(20)
-  satisfiesPzi = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  selfLink = _messages.StringField(23)
-  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 24)
-  tags = _messages.MessageField('TagsValueListEntry', 25, repeated=True)
-  type = _messages.StringField(26)
+  externalCatalogDatasetOptions = _messages.MessageField('ExternalCatalogDatasetOptions', 11)
+  externalDatasetReference = _messages.MessageField('ExternalDatasetReference', 12)
+  friendlyName = _messages.StringField(13)
+  id = _messages.StringField(14)
+  isCaseInsensitive = _messages.BooleanField(15)
+  kind = _messages.StringField(16, default='bigquery#dataset')
+  labels = _messages.MessageField('LabelsValue', 17)
+  lastModifiedTime = _messages.IntegerField(18)
+  linkedDatasetMetadata = _messages.MessageField('LinkedDatasetMetadata', 19)
+  linkedDatasetSource = _messages.MessageField('LinkedDatasetSource', 20)
+  location = _messages.StringField(21)
+  maxTimeTravelHours = _messages.IntegerField(22)
+  satisfiesPzi = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  selfLink = _messages.StringField(25)
+  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 26)
+  tags = _messages.MessageField('TagsValueListEntry', 27, repeated=True)
+  type = _messages.StringField(28)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -2747,6 +2787,100 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class ExternalCatalogDatasetOptions(_messages.Message):
+  r"""Options defining open source compatible datasets living in the BigQuery
+  catalog. Contains metadata of open source database, schema or namespace
+  represented by the current dataset.
+
+  Messages:
+    ParametersValue: Optional. A map of key value pairs defining the
+      parameters and properties of the open source schema. Maximum size of
+      2Mib.
+
+  Fields:
+    defaultStorageLocationUri: Optional. The storage location URI for all
+      tables in the dataset. Equivalent to hive metastore's database
+      locationUri. Maximum length of 1024 characters.
+    parameters: Optional. A map of key value pairs defining the parameters and
+      properties of the open source schema. Maximum size of 2Mib.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. A map of key value pairs defining the parameters and
+    properties of the open source schema. Maximum size of 2Mib.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  defaultStorageLocationUri = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+
+
+class ExternalCatalogTableOptions(_messages.Message):
+  r"""Metadata about open source compatible table. The fields contained in
+  these options correspond to hive metastore's table level properties.
+
+  Messages:
+    ParametersValue: Optional. A map of key value pairs defining the
+      parameters and properties of the open source table. Corresponds with
+      hive meta store table parameters. Maximum size of 4Mib.
+
+  Fields:
+    parameters: Optional. A map of key value pairs defining the parameters and
+      properties of the open source table. Corresponds with hive meta store
+      table parameters. Maximum size of 4Mib.
+    storageDescriptor: Optional. A storage descriptor containing information
+      about the physical storage of this table.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. A map of key value pairs defining the parameters and
+    properties of the open source table. Corresponds with hive meta store
+    table parameters. Maximum size of 4Mib.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  parameters = _messages.MessageField('ParametersValue', 1)
+  storageDescriptor = _messages.MessageField('StorageDescriptor', 2)
 
 
 class ExternalDataConfiguration(_messages.Message):
@@ -4828,6 +4962,36 @@ class JsonOptions(_messages.Message):
 JsonValue = extra_types.JsonValue
 
 
+class LinkedDatasetMetadata(_messages.Message):
+  r"""Metadata about the Linked Dataset.
+
+  Enums:
+    LinkStateValueValuesEnum: Output only. Specifies whether Linked Dataset is
+      currently in a linked state or not.
+
+  Fields:
+    linkState: Output only. Specifies whether Linked Dataset is currently in a
+      linked state or not.
+  """
+
+  class LinkStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies whether Linked Dataset is currently in a linked
+    state or not.
+
+    Values:
+      LINK_STATE_UNSPECIFIED: The default value. Default to the LINKED state.
+      LINKED: Normal Linked Dataset state. Data is queryable via the Linked
+        Dataset.
+      UNLINKED: Data publisher or owner has unlinked this Linked Dataset. It
+        means you can no longer query or see the data in the Linked Dataset.
+    """
+    LINK_STATE_UNSPECIFIED = 0
+    LINKED = 1
+    UNLINKED = 2
+
+  linkState = _messages.EnumField('LinkStateValueValuesEnum', 1)
+
+
 class LinkedDatasetSource(_messages.Message):
   r"""A dataset source type which refers to another BigQuery dataset.
 
@@ -5421,6 +5585,29 @@ class ParquetOptions(_messages.Message):
 
   enableListInference = _messages.BooleanField(1)
   enumAsString = _messages.BooleanField(2)
+
+
+class PartitionedColumn(_messages.Message):
+  r"""The partitioning column information.
+
+  Fields:
+    field: Output only. The name of the partition column.
+  """
+
+  field = _messages.StringField(1)
+
+
+class PartitioningDefinition(_messages.Message):
+  r"""The partitioning information, which includes managed table and external
+  table partition information.
+
+  Fields:
+    partitionedColumn: Output only. Details about each partitioning column.
+      BigQuery native tables only support 1 partitioning column. Other table
+      types may support 0, 1 or more partitioning columns.
+  """
+
+  partitionedColumn = _messages.MessageField('PartitionedColumn', 1, repeated=True)
 
 
 class PerformanceInsights(_messages.Message):
@@ -6637,6 +6824,53 @@ class SearchStatistics(_messages.Message):
   indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 2)
 
 
+class SerDeInfo(_messages.Message):
+  r"""Serializer and deserializer information.
+
+  Messages:
+    ParametersValue: Optional. Key-value pairs that define the initialization
+      parameters for the serialization library. Maximum size 10 Kib.
+
+  Fields:
+    name: Optional. Name of the SerDe. The maximum length is 256 characters.
+    parameters: Optional. Key-value pairs that define the initialization
+      parameters for the serialization library. Maximum size 10 Kib.
+    serializationLibrary: Required. Specifies a fully-qualified class name of
+      the serialization library that is responsible for the translation of
+      data between table representation and the underlying low-level input and
+      output format structures. The maximum length is 256 characters.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""Optional. Key-value pairs that define the initialization parameters
+    for the serialization library. Maximum size 10 Kib.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  name = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+  serializationLibrary = _messages.StringField(3)
+
+
 class SessionInfo(_messages.Message):
   r"""[Preview] Information related to sessions.
 
@@ -6787,24 +7021,24 @@ class SparkStatistics(_messages.Message):
     endpoints: Output only. Endpoints returned from Dataproc. Key list: -
       history_server_endpoint: A link to Spark job UI.
     gcsStagingBucket: Output only. The Google Cloud Storage bucket that is
-      used as the default filesystem by the Spark application. This fields is
-      only filled when the Spark procedure uses the INVOKER security mode. It
-      is inferred from the system variable
-      @@spark_proc_properties.staging_bucket if it is provided. Otherwise,
-      BigQuery creates a default staging bucket for the job and returns the
-      bucket name in this field. Example: * `gs://[bucket_name]`
+      used as the default file system by the Spark application. This field is
+      only filled when the Spark procedure uses the invoker security mode. The
+      `gcsStagingBucket` bucket is inferred from the
+      `@@spark_proc_properties.staging_bucket` system variable (if it is
+      provided). Otherwise, BigQuery creates a default staging bucket for the
+      job and returns the bucket name in this field. Example: *
+      `gs://[bucket_name]`
     kmsKeyName: Output only. The Cloud KMS encryption key that is used to
       protect the resources created by the Spark job. If the Spark procedure
-      uses DEFINER security mode, the Cloud KMS key is inferred from the Spark
-      connection associated with the procedure if it is provided. Otherwise
-      the key is inferred from the default key of the Spark connection's
-      project if the CMEK organization policy is enforced. If the Spark
-      procedure uses INVOKER security mode, the Cloud KMS encryption key is
-      inferred from the system variable @@spark_proc_properties.kms_key_name
-      if it is provided. Otherwise, the key is inferred fromt he default key
-      of the BigQuery job's project if the CMEK organization policy is
-      enforced. Example: * `projects/[kms_project_id]/locations/[region]/keyRi
-      ngs/[key_region]/cryptoKeys/[key]`
+      uses the invoker security mode, the Cloud KMS encryption key is either
+      inferred from the provided system variable,
+      `@@spark_proc_properties.kms_key_name`, or the default key of the
+      BigQuery job's project (if the CMEK organization policy is enforced).
+      Otherwise, the Cloud KMS key is either inferred from the Spark
+      connection associated with the procedure (if it is provided), or from
+      the default key of the Spark connection's project if the CMEK
+      organization policy is enforced. Example: * `projects/[kms_project_id]/l
+      ocations/[region]/keyRings/[key_region]/cryptoKeys/[key]`
     loggingInfo: Output only. Logging info is used to generate a link to Cloud
       Logging.
     sparkJobId: Output only. Spark job ID if a Spark job is created
@@ -7055,6 +7289,29 @@ class StandardSqlTableType(_messages.Message):
   columns = _messages.MessageField('StandardSqlField', 1, repeated=True)
 
 
+class StorageDescriptor(_messages.Message):
+  r"""Contains information about how a table's data is stored and accessed by
+  open source query engines.
+
+  Fields:
+    inputFormat: Optional. Specifies the fully qualified class name of the
+      InputFormat (e.g. "org.apache.hadoop.hive.ql.io.orc.OrcInputFormat").
+      The maximum length is 128 characters.
+    locationUri: Optional. The physical location of the table (e.g.
+      'gs://spark-dataproc-data/pangea-data/case_sensitive/' or 'gs://spark-
+      dataproc-data/pangea-data/*'). The maximum length is 2056 bytes.
+    outputFormat: Optional. Specifies the fully qualified class name of the
+      OutputFormat (e.g. "org.apache.hadoop.hive.ql.io.orc.OrcOutputFormat").
+      The maximum length is 128 characters.
+    serdeInfo: Optional. Serializer and deserializer information.
+  """
+
+  inputFormat = _messages.StringField(1)
+  locationUri = _messages.StringField(2)
+  outputFormat = _messages.StringField(3)
+  serdeInfo = _messages.MessageField('SerDeInfo', 4)
+
+
 class Streamingbuffer(_messages.Message):
   r"""A Streamingbuffer object.
 
@@ -7207,6 +7464,8 @@ class Table(_messages.Message):
       reclaimed. The defaultTableExpirationMs property of the encapsulating
       dataset can be used to set a default expirationTime on newly created
       tables.
+    externalCatalogTableOptions: Optional. Options defining open source
+      compatible table.
     externalDataConfiguration: Optional. Describes the data format, location,
       and other properties of a table stored outside of BigQuery. By defining
       these properties, the data source can then be queried as if it were a
@@ -7260,6 +7519,9 @@ class Table(_messages.Message):
       bytes. This also includes storage used for time travel. This data is not
       kept in real time, and might be delayed by a few seconds to a few
       minutes.
+    partitionDefinition: Output only. The partition information for all table
+      formats, including managed partitioned tables, hive partitioned tables,
+      and iceberg partitioned tables.
     rangePartitioning: If specified, configures range partitioning for this
       table.
     replicas: Optional. Output only. Table references of all replicas
@@ -7395,43 +7657,45 @@ class Table(_messages.Message):
   encryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 8)
   etag = _messages.StringField(9)
   expirationTime = _messages.IntegerField(10)
-  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 11)
-  friendlyName = _messages.StringField(12)
-  id = _messages.StringField(13)
-  kind = _messages.StringField(14, default='bigquery#table')
-  labels = _messages.MessageField('LabelsValue', 15)
-  lastModifiedTime = _messages.IntegerField(16, variant=_messages.Variant.UINT64)
-  location = _messages.StringField(17)
-  materializedView = _messages.MessageField('MaterializedViewDefinition', 18)
-  materializedViewStatus = _messages.MessageField('MaterializedViewStatus', 19)
-  maxStaleness = _messages.StringField(20)
-  model = _messages.MessageField('ModelDefinition', 21)
-  numActiveLogicalBytes = _messages.IntegerField(22)
-  numActivePhysicalBytes = _messages.IntegerField(23)
-  numBytes = _messages.IntegerField(24)
-  numLongTermBytes = _messages.IntegerField(25)
-  numLongTermLogicalBytes = _messages.IntegerField(26)
-  numLongTermPhysicalBytes = _messages.IntegerField(27)
-  numPartitions = _messages.IntegerField(28)
-  numPhysicalBytes = _messages.IntegerField(29)
-  numRows = _messages.IntegerField(30, variant=_messages.Variant.UINT64)
-  numTimeTravelPhysicalBytes = _messages.IntegerField(31)
-  numTotalLogicalBytes = _messages.IntegerField(32)
-  numTotalPhysicalBytes = _messages.IntegerField(33)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 34)
-  replicas = _messages.MessageField('TableReference', 35, repeated=True)
-  requirePartitionFilter = _messages.BooleanField(36, default=False)
-  resourceTags = _messages.MessageField('ResourceTagsValue', 37)
-  schema = _messages.MessageField('TableSchema', 38)
-  selfLink = _messages.StringField(39)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 40)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 41)
-  tableConstraints = _messages.MessageField('TableConstraints', 42)
-  tableReference = _messages.MessageField('TableReference', 43)
-  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 44)
-  timePartitioning = _messages.MessageField('TimePartitioning', 45)
-  type = _messages.StringField(46)
-  view = _messages.MessageField('ViewDefinition', 47)
+  externalCatalogTableOptions = _messages.MessageField('ExternalCatalogTableOptions', 11)
+  externalDataConfiguration = _messages.MessageField('ExternalDataConfiguration', 12)
+  friendlyName = _messages.StringField(13)
+  id = _messages.StringField(14)
+  kind = _messages.StringField(15, default='bigquery#table')
+  labels = _messages.MessageField('LabelsValue', 16)
+  lastModifiedTime = _messages.IntegerField(17, variant=_messages.Variant.UINT64)
+  location = _messages.StringField(18)
+  materializedView = _messages.MessageField('MaterializedViewDefinition', 19)
+  materializedViewStatus = _messages.MessageField('MaterializedViewStatus', 20)
+  maxStaleness = _messages.StringField(21)
+  model = _messages.MessageField('ModelDefinition', 22)
+  numActiveLogicalBytes = _messages.IntegerField(23)
+  numActivePhysicalBytes = _messages.IntegerField(24)
+  numBytes = _messages.IntegerField(25)
+  numLongTermBytes = _messages.IntegerField(26)
+  numLongTermLogicalBytes = _messages.IntegerField(27)
+  numLongTermPhysicalBytes = _messages.IntegerField(28)
+  numPartitions = _messages.IntegerField(29)
+  numPhysicalBytes = _messages.IntegerField(30)
+  numRows = _messages.IntegerField(31, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(32)
+  numTotalLogicalBytes = _messages.IntegerField(33)
+  numTotalPhysicalBytes = _messages.IntegerField(34)
+  partitionDefinition = _messages.MessageField('PartitioningDefinition', 35)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 36)
+  replicas = _messages.MessageField('TableReference', 37, repeated=True)
+  requirePartitionFilter = _messages.BooleanField(38, default=False)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 39)
+  schema = _messages.MessageField('TableSchema', 40)
+  selfLink = _messages.StringField(41)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 42)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 43)
+  tableConstraints = _messages.MessageField('TableConstraints', 44)
+  tableReference = _messages.MessageField('TableReference', 45)
+  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 46)
+  timePartitioning = _messages.MessageField('TimePartitioning', 47)
+  type = _messages.StringField(48)
+  view = _messages.MessageField('ViewDefinition', 49)
 
 
 class TableCell(_messages.Message):
@@ -7678,8 +7942,9 @@ class TableFieldSchema(_messages.Message):
     type: Required. The field data type. Possible values include: * STRING *
       BYTES * INTEGER (or INT64) * FLOAT (or FLOAT64) * BOOLEAN (or BOOL) *
       TIMESTAMP * DATE * TIME * DATETIME * GEOGRAPHY * NUMERIC * BIGNUMERIC *
-      JSON * RECORD (or STRUCT) Use of RECORD/STRUCT indicates that the field
-      contains a nested schema.
+      JSON * RECORD (or STRUCT) * RANGE ([Preview](/products/#product-launch-
+      stages)) Use of RECORD/STRUCT indicates that the field contains a nested
+      schema.
   """
 
   class RoundingModeValueValuesEnum(_messages.Enum):
@@ -7727,7 +7992,8 @@ class TableFieldSchema(_messages.Message):
     r"""Represents the type of a field element.
 
     Fields:
-      type: Required. The type of a field element. See TableFieldSchema.type.
+      type: Required. The type of a field element. For more information, see
+        TableFieldSchema.type.
     """
 
     type = _messages.StringField(1)

@@ -703,6 +703,33 @@ class BigqueryV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (BigqueryRoutinesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigquery.routines.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigqueryRoutinesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new routine in the dataset.
 
@@ -754,6 +781,33 @@ class BigqueryV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BigqueryRoutinesListRequest',
         response_type_name='ListRoutinesResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (BigqueryRoutinesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='projects/{projectsId}/datasets/{datasetsId}/routines/{routinesId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigquery.routines.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigqueryRoutinesSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 

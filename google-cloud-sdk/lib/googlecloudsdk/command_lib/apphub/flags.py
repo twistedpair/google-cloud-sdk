@@ -452,9 +452,7 @@ def AddLookupDiscoveredServiceFlags(parser):
       '--uri',
       dest='uri',
       required=True,
-      help=(
-          'GCP resource URI to look up service for.'
-      ),
+      help='Google Cloud Platform resource URI to look up service for.',
   )
 
 
@@ -480,9 +478,7 @@ def AddLookupDiscoveredWorkloadFlags(parser):
       '--uri',
       dest='uri',
       required=True,
-      help=(
-          'GCP resource URI to look up workload for.'
-      ),
+      help='Google Cloud Platform resource URI to look up workload for.',
   )
 
 

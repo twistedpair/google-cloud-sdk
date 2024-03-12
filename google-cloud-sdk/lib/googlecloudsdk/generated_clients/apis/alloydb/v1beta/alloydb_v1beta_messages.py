@@ -1281,11 +1281,14 @@ class Cluster(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project}/global/networks/{network_id}". This is required to
+      `projects/{project}/global/networks/{network_id}`. This is required to
       create a cluster. Deprecated, use network_config.network instead.
     networkConfig: A NetworkConfig attribute.
+    omniConfig: Optional. Configuration specific to AlloyDB Omni clusters.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
+    pscConfig: Optional. The configuration for Private Service Connect (PSC)
+      for the cluster.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of Cluster does not match the user's intended state, and the
@@ -1441,14 +1444,16 @@ class Cluster(_messages.Message):
   name = _messages.StringField(18)
   network = _messages.StringField(19)
   networkConfig = _messages.MessageField('NetworkConfig', 20)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 24)
-  sslConfig = _messages.MessageField('SslConfig', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
+  omniConfig = _messages.MessageField('OmniClusterConfig', 21)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 22)
+  pscConfig = _messages.MessageField('PscConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 26)
+  sslConfig = _messages.MessageField('SslConfig', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1466,6 +1471,7 @@ class ConnectionInfo(_messages.Message):
     pemCertificateChain: Output only. The pem-encoded chain that may be used
       to verify the X.509 certificate. Expected to be in issuer-to-root order
       according to RFC 5246.
+    pscDnsName: Output only. The DNS name to use with PSC for the Instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
       This is available ONLY when enable_public_ip is set. This is the
       connection endpoint for an end-user application.
@@ -1475,7 +1481,8 @@ class ConnectionInfo(_messages.Message):
   ipAddress = _messages.StringField(2)
   name = _messages.StringField(3)
   pemCertificateChain = _messages.StringField(4, repeated=True)
-  publicIpAddress = _messages.StringField(5)
+  pscDnsName = _messages.StringField(5)
+  publicIpAddress = _messages.StringField(6)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -1983,6 +1990,9 @@ class Instance(_messages.Message):
     networkConfig: Optional. Instance level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    omniConfig: Optional. The configuration of the Omni instance.
+    pscInstanceConfig: Optional. The configuration for Private Service Connect
+      (PSC) for the instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
       This is available ONLY when enable_public_ip is set. This is the
       connection endpoint for an end-user application.
@@ -2176,16 +2186,18 @@ class Instance(_messages.Message):
   name = _messages.StringField(15)
   networkConfig = _messages.MessageField('InstanceNetworkConfig', 16)
   nodes = _messages.MessageField('Node', 17, repeated=True)
-  publicIpAddress = _messages.StringField(18)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 19)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  uid = _messages.StringField(24)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 25)
-  updateTime = _messages.StringField(26)
-  writableNode = _messages.MessageField('Node', 27)
+  omniConfig = _messages.MessageField('OmniInstanceConfig', 18)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 19)
+  publicIpAddress = _messages.StringField(20)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 21)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 27)
+  updateTime = _messages.StringField(28)
+  writableNode = _messages.MessageField('Node', 29)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2407,7 +2419,7 @@ class NetworkConfig(_messages.Message):
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:
-      "projects/{project_number}/global/networks/{network_id}". This is
+      `projects/{project_number}/global/networks/{network_id}`. This is
       required to create a cluster.
   """
 
@@ -2423,6 +2435,7 @@ class Node(_messages.Message):
   Fields:
     id: The identifier of the VM e.g. "test-read-0601-407e52be-ms3l".
     ip: The private IP address of the VM e.g. "10.57.0.34".
+    omniMachineConfig: Machine configuration for AlloyDB Omni.
     state: Determined by state of the compute VM and postgres-service health.
       Compute VM state can have values listed in
       https://cloud.google.com/compute/docs/instances/instance-life-cycle and
@@ -2432,8 +2445,73 @@ class Node(_messages.Message):
 
   id = _messages.StringField(1)
   ip = _messages.StringField(2)
-  state = _messages.StringField(3)
-  zoneId = _messages.StringField(4)
+  omniMachineConfig = _messages.MessageField('OmniMachineConfig', 3)
+  state = _messages.StringField(4)
+  zoneId = _messages.StringField(5)
+
+
+class OmniClusterConfig(_messages.Message):
+  r"""Configuration for the AlloyDB Omni cluster. This should be set if and
+  only if the cluster is an AlloyDB Omni cluster.
+
+  Enums:
+    HostTypeValueValuesEnum: Determines the management plane of the Omni
+      Cluster.
+
+  Fields:
+    displayLocation: User-settable and human-readable display location for the
+      Omni Cluster.
+    hostType: Determines the management plane of the Omni Cluster.
+  """
+
+  class HostTypeValueValuesEnum(_messages.Enum):
+    r"""Determines the management plane of the Omni Cluster.
+
+    Values:
+      HOST_TYPE_UNSPECIFIED: The type of the host is unknown.
+      DOCKER: AlloyDB Omni on VMs.
+      KUBERNETES: AlloyDB Omni on Kubernetes.
+    """
+    HOST_TYPE_UNSPECIFIED = 0
+    DOCKER = 1
+    KUBERNETES = 2
+
+  displayLocation = _messages.StringField(1)
+  hostType = _messages.EnumField('HostTypeValueValuesEnum', 2)
+
+
+class OmniInstanceConfig(_messages.Message):
+  r"""Contains Omni related configuration at an instance level. This should be
+  set if and only if the instance is an AlloyDB Omni instance.
+
+  Fields:
+    displayLocation: User-settable and human-readable display location for the
+      Omni Instance.
+    versionInfo: Version information for the Omni instance.
+  """
+
+  displayLocation = _messages.StringField(1)
+  versionInfo = _messages.MessageField('VersionInfo', 2)
+
+
+class OmniMachineConfig(_messages.Message):
+  r"""OmniMachineConfig describes the configuration of a machine specific to
+  AlloyDB Omni. On Kubernetes, this describes the pod running Omni. On VMs,
+  this represents the pg-service container running on Docker.
+
+  Fields:
+    cpuCount: The number of CPUs.
+    memorySizeBytes: Memory size in bytes.
+    storageClass: Optional. Storage class for Omni on Kubernetes. Not
+      applicable for Omni on VMs. This value can be an arbitrary Storage Class
+      name. https://kubernetes.io/docs/concepts/storage/storage-classes/
+    storageSizeBytes: Storage size in bytes.
+  """
+
+  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  memorySizeBytes = _messages.IntegerField(2)
+  storageClass = _messages.StringField(3)
+  storageSizeBytes = _messages.IntegerField(4)
 
 
 class Operation(_messages.Message):
@@ -2610,6 +2688,75 @@ class PromoteClusterRequest(_messages.Message):
   etag = _messages.StringField(1)
   requestId = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
+
+
+class PscConfig(_messages.Message):
+  r"""PscConfig contains PSC related configuration at a cluster level.
+
+  Fields:
+    pscEnabled: Optional. Create an instance that allows connections from
+      Private Service Connect endpoints to the instance.
+  """
+
+  pscEnabled = _messages.BooleanField(1)
+
+
+class PscInstanceConfig(_messages.Message):
+  r"""PscInstanceConfig contains PSC related configuration at an instance
+  level.
+
+  Fields:
+    allowedConsumerNetworks: Optional. List of consumer networks that are
+      allowed to create PSC endpoints to service-attachments to this instance.
+    allowedConsumerProjects: Optional. List of consumer projects that are
+      allowed to create PSC endpoints to service-attachments to this instance.
+    outgoingServiceAttachmentLinks: Optional. List of service attachments that
+      this instance has created endpoints to connect with. Currently, only a
+      single outgoing service attachment is supported per instance.
+    pscDnsName: Output only. The DNS name of the instance for PSC
+      connectivity. Name convention: ...alloydb-psc.goog
+    pscEnabled: Optional. Whether PSC connectivity is enabled for this
+      instance. This is populated by referencing the value from the parent
+      cluster.
+    pscInterfaceConfigs: Optional. Configurations for setting up PSC
+      interfaces attached to the instance which are used for outbound
+      connectivity. Only primary instances can have PSC interface attached.
+      All the VMs created for the primary instance will share the same
+      configurations. Currently we only support 0 or 1 PSC interface.
+    serviceAttachmentLink: Output only. The service attachment created when
+      Private Service Connect (PSC) is enabled for the instance. The name of
+      the resource will be in the format of
+      `projects//regions//serviceAttachments/`
+  """
+
+  allowedConsumerNetworks = _messages.StringField(1, repeated=True)
+  allowedConsumerProjects = _messages.StringField(2, repeated=True)
+  outgoingServiceAttachmentLinks = _messages.StringField(3, repeated=True)
+  pscDnsName = _messages.StringField(4)
+  pscEnabled = _messages.BooleanField(5)
+  pscInterfaceConfigs = _messages.MessageField('PscInterfaceConfig', 6, repeated=True)
+  serviceAttachmentLink = _messages.StringField(7)
+
+
+class PscInterfaceConfig(_messages.Message):
+  r"""Configuration for setting up a PSC interface. This information needs to
+  be provided by the customer. PSC interfaces will be created and added to VMs
+  via SLM (adding a network interface will require recreating the VM). For HA
+  instances this will be done via LDTM.
+
+  Fields:
+    consumerEndpointIps: A list of endpoints in the consumer VPC the interface
+      might initiate outbound connections to. This list has to be provided
+      when the PSC interface is created.
+    networkAttachment: The NetworkAttachment resource created in the consumer
+      VPC to which the PSC interface will be linked, in the form of: `projects
+      /${CONSUMER_PROJECT}/regions/${REGION}/networkAttachments/${NETWORK_ATTA
+      CHMENT_NAME}`. NetworkAttachment has to be provided when the PSC
+      interface is created.
+  """
+
+  consumerEndpointIps = _messages.StringField(1, repeated=True)
+  networkAttachment = _messages.StringField(2)
 
 
 class QuantityBasedExpiry(_messages.Message):
@@ -3483,6 +3630,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     providerDescription: Optional. Needs to be used only when the provider is
       PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
+      redis.googleapis.com/Instance, redis.googleapis.com/Cluster,
       alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
       spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
       datamodel
@@ -3544,6 +3692,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
     customMetadata: Any custom metadata associated with the resource
+    entitlements: Entitlements associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
       patch update, while the expected state will remain at the HEALTHY.
@@ -3553,7 +3702,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     primaryResourceId: Identifier for this resource's immediate parent/primary
       resource if the current resource is a replica or derived form of another
       Database resource. Else it would be NULL. REQUIRED if the immediate
-      parent exists when first time resource is getting ingested
+      parent exists when first time resource is getting ingested, otherwise
+      optional.
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
@@ -3566,6 +3716,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       format as noted here go/condor-common-datamodel
     updationTime: The time at which the resource was updated and recorded at
       partner service.
+    userLabelSet: User-provided labels associated with the resource
     userLabels: User-provided labels, represented as a dictionary where each
       label is a single key value pair.
   """
@@ -3666,16 +3817,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
   customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 6)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 7)
-  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
-  location = _messages.StringField(10)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 11)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 12)
-  resourceContainer = _messages.StringField(13)
-  resourceName = _messages.StringField(14)
-  updationTime = _messages.StringField(15)
-  userLabels = _messages.MessageField('UserLabelsValue', 16)
+  entitlements = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainEntitlement', 7, repeated=True)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 8)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
+  location = _messages.StringField(11)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 13)
+  resourceContainer = _messages.StringField(14)
+  resourceName = _messages.StringField(15)
+  updationTime = _messages.StringField(16)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 17)
+  userLabels = _messages.MessageField('UserLabelsValue', 18)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -3687,12 +3840,28 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
       `SIGNAL_TYPE_IDLE`, `SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES`, etc.
 
   Messages:
-    AdditionalMetadataValue: Required. Any other additional metadata
+    AdditionalMetadataValue: Optional. Any other additional metadata specific
+      to recommendation
 
   Fields:
-    additionalMetadata: Required. Any other additional metadata
+    additionalMetadata: Optional. Any other additional metadata specific to
+      recommendation
     lastRefreshTime: Required. last time recommendationw as refreshed
     recommendationState: Required. Recommendation state
+    recommender: Required. Name of recommendation. Examples:
+      organizations/1234/locations/us-central1/recommenders/google.cloudsql.in
+      stance.PerformanceRecommender/recommendations/9876
+    recommenderId: Required. ID of recommender. Examples:
+      "google.cloudsql.instance.PerformanceRecommender"
+    recommenderSubtype: Required. Contains an identifier for a subtype of
+      recommendations produced for the same recommender. Subtype is a function
+      of content and impact, meaning a new subtype might be added when
+      significant changes to `content` or `primary_impact.category` are
+      introduced. See the Recommenders section to see a list of subtypes for a
+      given Recommender. Examples: For recommender =
+      "google.cloudsql.instance.PerformanceRecommender", recommender_subtype
+      can be "MYSQL_HIGH_NUMBER_OF_OPEN_TABLES_BEST_PRACTICE"/"POSTGRES_HIGH_T
+      RANSACTION_ID_UTILIZATION_BEST_PRACTICE"
     resourceName: Required. Database resource name associated with the signal.
       Resource name to follow CAIS resource_name format as noted here
       go/condor-common-datamodel
@@ -3942,7 +4111,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
-    r"""Required. Any other additional metadata
+    r"""Optional. Any other additional metadata specific to recommendation
 
     Messages:
       AdditionalProperty: An additional property for a AdditionalMetadataValue
@@ -3968,20 +4137,97 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
   additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
   lastRefreshTime = _messages.StringField(2)
   recommendationState = _messages.EnumField('RecommendationStateValueValuesEnum', 3)
-  resourceName = _messages.StringField(4)
-  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 5)
+  recommender = _messages.StringField(4)
+  recommenderId = _messages.StringField(5)
+  recommenderSubtype = _messages.StringField(6)
+  resourceName = _messages.StringField(7)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 8)
+
+
+class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
+  r"""Proto representing the access that a user has to a specific
+  feature/service. NextId: 3.
+
+  Enums:
+    EntitlementStateValueValuesEnum: The current state of user's accessibility
+      to a feature/benefit.
+    TypeValueValuesEnum: An enum that represents the type of this entitlement.
+
+  Fields:
+    entitlementState: The current state of user's accessibility to a
+      feature/benefit.
+    type: An enum that represents the type of this entitlement.
+  """
+
+  class EntitlementStateValueValuesEnum(_messages.Enum):
+    r"""The current state of user's accessibility to a feature/benefit.
+
+    Values:
+      ENTITLEMENT_STATE_UNSPECIFIED: <no description>
+      ENTITLED: User is entitled to a feature/benefit, but whether it has been
+        successfully provisioned is decided by provisioning state.
+      REVOKED: User is entitled to a feature/benefit, but it was requested to
+        be revoked. Whether the revoke has been successful is decided by
+        provisioning state.
+    """
+    ENTITLEMENT_STATE_UNSPECIFIED = 0
+    ENTITLED = 1
+    REVOKED = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""An enum that represents the type of this entitlement.
+
+    Values:
+      ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
+      DUET_AI: The root entitlement representing Duet AI package ownership.
+      GEMINI: The root entitlement representing Gemini package ownership.
+    """
+    ENTITLEMENT_TYPE_UNSPECIFIED = 0
+    DUET_AI = 1
+    GEMINI = 2
+
+  entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):
   r"""An error that occurred during a backup creation operation.
 
+  Enums:
+    ErrorTypeValueValuesEnum:
+
   Fields:
     code: Identifies the specific error that occurred. REQUIRED
+    errorType: A ErrorTypeValueValuesEnum attribute.
     message: Additional information about the error encountered. REQUIRED
   """
 
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""ErrorTypeValueValuesEnum enum type.
+
+    Values:
+      OPERATION_ERROR_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not
+        known or available.
+      KMS_KEY_ERROR: key destroyed, expired, not found, unreachable or
+        permission denied.
+      DATABASE_ERROR: Database is not accessible
+      STOCKOUT_ERROR: The zone or region does not have sufficient resources to
+        handle the request at the moment
+      CANCELLATION_ERROR: User initiated cancellation
+      SQLSERVER_ERROR: SQL server specific error
+      INTERNAL_ERROR: Any other internal error.
+    """
+    OPERATION_ERROR_TYPE_UNSPECIFIED = 0
+    KMS_KEY_ERROR = 1
+    DATABASE_ERROR = 2
+    STOCKOUT_ERROR = 3
+    CANCELLATION_ERROR = 4
+    SQLSERVER_ERROR = 5
+    INTERNAL_ERROR = 6
+
   code = _messages.StringField(1)
-  message = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 2)
+  message = _messages.StringField(3)
 
 
 class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
@@ -4015,6 +4261,45 @@ class StorageDatabasecenterPartnerapiV1mainRetentionSettings(_messages.Message):
   quantityBasedRetention = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   retentionUnit = _messages.EnumField('RetentionUnitValueValuesEnum', 2)
   timeBasedRetention = _messages.StringField(3)
+
+
+class StorageDatabasecenterPartnerapiV1mainUserLabels(_messages.Message):
+  r"""Message type for storing user labels. User labels are used to tag App
+  Engine resources, allowing users to search for resources matching a set of
+  labels and to aggregate usage data by labels.
+
+  Messages:
+    LabelsValue: A LabelsValue object.
+
+  Fields:
+    labels: A LabelsValue attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A LabelsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
 
 
 class StorageDatabasecenterProtoCommonProduct(_messages.Message):
@@ -4055,6 +4340,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
         PostgreSQL dialect.
       ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT: Cloud Spanner with Google
         SQL dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS: Memorystore with Redis dialect.
+      ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER: Memorystore with Redis cluster
+        dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
     """
@@ -4069,7 +4357,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     NATIVE = 8
     ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT = 9
     ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT = 10
-    ENGINE_OTHER = 11
+    ENGINE_MEMORYSTORE_FOR_REDIS = 11
+    ENGINE_MEMORYSTORE_FOR_REDIS_CLUSTER = 12
+    ENGINE_OTHER = 13
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -4084,6 +4374,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_SPANNER: Spanner product area in GCP
       PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
+      PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -4095,7 +4386,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_SPANNER = 5
     PRODUCT_TYPE_ON_PREM = 6
     ON_PREM = 7
-    PRODUCT_TYPE_OTHER = 8
+    PRODUCT_TYPE_MEMORYSTORE = 8
+    PRODUCT_TYPE_OTHER = 9
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -4266,6 +4558,18 @@ class UserPassword(_messages.Message):
 
   password = _messages.StringField(1)
   user = _messages.StringField(2)
+
+
+class VersionInfo(_messages.Message):
+  r"""VersionInfo contains version related information for the Omni instance.
+
+  Fields:
+    controlPlaneVersion: Omni control plane version.
+    dataPlaneVersion: Omni data plane version.
+  """
+
+  controlPlaneVersion = _messages.StringField(1)
+  dataPlaneVersion = _messages.StringField(2)
 
 
 class WeeklySchedule(_messages.Message):

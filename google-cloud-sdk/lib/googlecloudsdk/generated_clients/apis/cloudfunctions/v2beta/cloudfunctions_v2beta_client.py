@@ -236,7 +236,7 @@ class CloudfunctionsV2beta(base_api.BaseApiClient):
         method_id='cloudfunctions.projects.locations.functions.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['revision'],
         relative_path='v2beta/{+name}',
         request_field='',
         request_type_name='CloudfunctionsProjectsLocationsFunctionsGetRequest',

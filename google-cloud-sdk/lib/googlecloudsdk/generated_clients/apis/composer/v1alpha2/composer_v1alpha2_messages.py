@@ -18,19 +18,19 @@ class ActivateDagRequest(_messages.Message):
   r"""Request to unpause a DAG."""
 
 
-class AirflowMetadataRetentionPolicy(_messages.Message):
+class AirflowMetadataRetentionPolicyConfig(_messages.Message):
   r"""The policy for airflow metadata database retention.
 
   Enums:
-    EnableRetentionValueValuesEnum: Optional. Retention can be either enabled
-      or disabled.
+    RetentionModeValueValuesEnum: Optional. Retention can be either enabled or
+      disabled.
 
   Fields:
-    enableRetention: Optional. Retention can be either enabled or disabled.
     retentionDays: Optional. How many days data should be retained for.
+    retentionMode: Optional. Retention can be either enabled or disabled.
   """
 
-  class EnableRetentionValueValuesEnum(_messages.Enum):
+  class RetentionModeValueValuesEnum(_messages.Enum):
     r"""Optional. Retention can be either enabled or disabled.
 
     Values:
@@ -43,8 +43,8 @@ class AirflowMetadataRetentionPolicy(_messages.Message):
     RETENTION_MODE_ENABLED = 1
     RETENTION_MODE_DISABLED = 2
 
-  enableRetention = _messages.EnumField('EnableRetentionValueValuesEnum', 1)
-  retentionDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  retentionMode = _messages.EnumField('RetentionModeValueValuesEnum', 2)
 
 
 class AllowedIpRange(_messages.Message):
@@ -999,6 +999,7 @@ class Dag(_messages.Message):
     description: The description of the DAG.
     durationSchedule: The DAG's schedule as a time duration between runs.
     endDate: The end_date parameter of the DAG (if set).
+    failStop: Whether a "fail_stop" mode is enabled for the DAG.
     fileloc: File location relative to the Cloud Storage bucket root folder.
     lastRunEndTime: The end timestamp of the last completed DAG run.
     lastUpdated: The last time the DAG has been serialized.
@@ -1045,19 +1046,22 @@ class Dag(_messages.Message):
   description = _messages.StringField(5)
   durationSchedule = _messages.StringField(6)
   endDate = _messages.StringField(7)
-  fileloc = _messages.StringField(8)
-  lastRunEndTime = _messages.StringField(9)
-  lastUpdated = _messages.StringField(10)
-  maxActiveRuns = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  maxActiveTasks = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  name = _messages.StringField(13)
-  runningCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  startDate = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
+  failStop = _messages.BooleanField(8)
+  fileloc = _messages.StringField(9)
+  lastRunEndTime = _messages.StringField(10)
+  lastUpdated = _messages.StringField(11)
+  maxActiveRuns = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  maxActiveTasks = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  name = _messages.StringField(14)
+  runningCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  startDate = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
 
 
 class DagProcessorResource(_messages.Message):
-  r"""Configuration for resources used by Airflow DAG processors.
+  r"""Configuration for resources used by Airflow DAG processors. This field
+  is supported for Cloud Composer environments in versions
+  composer-3.*.*-airflow-*.*.* and newer.
 
   Fields:
     count: Optional. The number of DAG processors. If not provided or set to
@@ -1161,8 +1165,7 @@ class DataRetentionConfig(_messages.Message):
 
   Enums:
     TaskLogsStorageModeValueValuesEnum: Optional. The mode of storage for
-      Airflow workers task logs. For details, see go/composer-store-task-logs-
-      in-cloud-logging-only-design-doc
+      Airflow workers task logs.
 
   Fields:
     airflowDatabaseRetentionDays: Optional. The number of days describing for
@@ -1176,13 +1179,11 @@ class DataRetentionConfig(_messages.Message):
     taskLogsRetentionDays: Optional. The number of days to retain task logs in
       the Cloud Logging bucket.
     taskLogsStorageMode: Optional. The mode of storage for Airflow workers
-      task logs. For details, see go/composer-store-task-logs-in-cloud-
-      logging-only-design-doc
+      task logs.
   """
 
   class TaskLogsStorageModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The mode of storage for Airflow workers task logs. For
-    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+    r"""Optional. The mode of storage for Airflow workers task logs.
 
     Values:
       TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified
@@ -1196,7 +1197,7 @@ class DataRetentionConfig(_messages.Message):
     CLOUD_LOGGING_ONLY = 2
 
   airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  airflowMetadataRetentionConfig = _messages.MessageField('AirflowMetadataRetentionPolicy', 2)
+  airflowMetadataRetentionConfig = _messages.MessageField('AirflowMetadataRetentionPolicyConfig', 2)
   taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 3)
   taskLogsRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 5)
@@ -1424,8 +1425,9 @@ class EnvironmentConfig(_messages.Message):
       window, but when maintenance is planned, it will be scheduled during the
       window. The maintenance window period must encompass at least 12 hours
       per week. This may be split into multiple chunks, each with a size of at
-      least 4 hours. If this value is omitted, Cloud Composer components may
-      be subject to maintenance at any time.
+      least 4 hours. If this value is omitted, the default value for
+      maintenance window is applied. By default, maintenance windows are from
+      00:00:00 to 04:00:00 (GMT) on Friday, Saturday, and Sunday every week.
     masterAuthorizedNetworksConfig: Optional. The configuration options for
       GKE cluster master authorized networks. By default master authorized
       networks feature is: - in case of private environment: enabled with no
@@ -3047,20 +3049,16 @@ class TaskLogsRetentionConfig(_messages.Message):
 
   Enums:
     StorageModeValueValuesEnum: Optional. The mode of storage for Airflow
-      workers task logs. For details, see go/composer-store-task-logs-in-
-      cloud-logging-only-design-doc
+      workers task logs.
 
   Fields:
     retentionDays: Optional. The number of days to retain task logs in the
       Cloud Logging bucket
     storageMode: Optional. The mode of storage for Airflow workers task logs.
-      For details, see go/composer-store-task-logs-in-cloud-logging-only-
-      design-doc
   """
 
   class StorageModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The mode of storage for Airflow workers task logs. For
-    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+    r"""Optional. The mode of storage for Airflow workers task logs.
 
     Values:
       TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified

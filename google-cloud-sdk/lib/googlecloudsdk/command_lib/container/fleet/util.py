@@ -42,6 +42,13 @@ LIST_FORMAT = """
     )
 """
 
+SC_LIST_FORMAT = """
+    table(
+      name.segment(5):sort=1:label=NAME,
+      name.segment(1):label=PROJECT
+    )
+"""
+
 NS_LIST_FORMAT = """
     table(
       name.segment(5):sort=1:label=NAME,

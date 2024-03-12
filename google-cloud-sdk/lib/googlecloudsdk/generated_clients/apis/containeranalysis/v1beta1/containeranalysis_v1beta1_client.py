@@ -39,11 +39,309 @@ class ContaineranalysisV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_notes_occurrences = self.ProjectsLocationsNotesOccurrencesService(self)
+    self.projects_locations_notes = self.ProjectsLocationsNotesService(self)
+    self.projects_locations_occurrences = self.ProjectsLocationsOccurrencesService(self)
+    self.projects_locations_resources = self.ProjectsLocationsResourcesService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_notes_occurrences = self.ProjectsNotesOccurrencesService(self)
     self.projects_notes = self.ProjectsNotesService(self)
     self.projects_occurrences = self.ProjectsOccurrencesService(self)
     self.projects_resources = self.ProjectsResourcesService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsNotesOccurrencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_notes_occurrences resource."""
+
+    _NAME = 'projects_locations_notes_occurrences'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1beta1.ProjectsLocationsNotesOccurrencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists occurrences referencing the specified note. Provider projects can use this method to get all occurrences across consumer projects referencing the specified note.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesOccurrencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNoteOccurrencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}/occurrences',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.notes.occurrences.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/occurrences',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsNotesOccurrencesListRequest',
+        response_type_name='ListNoteOccurrencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNotesService(base_api.BaseApiService):
+    """Service class for the projects_locations_notes resource."""
+
+    _NAME = 'projects_locations_notes'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1beta1.ProjectsLocationsNotesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified note.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notes/{notesId}',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.notes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsNotesGetRequest',
+        response_type_name='Note',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists notes for the specified project.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsNotesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNotesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notes',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.notes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/notes',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsNotesListRequest',
+        response_type_name='ListNotesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOccurrencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_occurrences resource."""
+
+    _NAME = 'projects_locations_occurrences'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1beta1.ProjectsLocationsOccurrencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified occurrence.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Occurrence) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.occurrences.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesGetRequest',
+        response_type_name='Occurrence',
+        supports_download=False,
+    )
+
+    def GetNotes(self, request, global_params=None):
+      r"""Gets the note attached to the specified occurrence. Consumer projects can use this method to get a note that belongs to a provider project.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Note) The response message.
+      """
+      config = self.GetMethodConfig('GetNotes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetNotes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/occurrences/{occurrencesId}/notes',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.occurrences.getNotes',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}/notes',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesGetNotesRequest',
+        response_type_name='Note',
+        supports_download=False,
+    )
+
+    def GetVulnerabilitySummary(self, request, global_params=None):
+      r"""Gets a summary of the number and severity of occurrences.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesGetVulnerabilitySummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VulnerabilityOccurrencesSummary) The response message.
+      """
+      config = self.GetMethodConfig('GetVulnerabilitySummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetVulnerabilitySummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/occurrences:vulnerabilitySummary',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.occurrences.getVulnerabilitySummary',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter'],
+        relative_path='v1beta1/{+parent}/occurrences:vulnerabilitySummary',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesGetVulnerabilitySummaryRequest',
+        response_type_name='VulnerabilityOccurrencesSummary',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists occurrences for the specified project.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsOccurrencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOccurrencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/occurrences',
+        http_method='GET',
+        method_id='containeranalysis.projects.locations.occurrences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/occurrences',
+        request_field='',
+        request_type_name='ContaineranalysisProjectsLocationsOccurrencesListRequest',
+        response_type_name='ListOccurrencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsResourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_resources resource."""
+
+    _NAME = 'projects_locations_resources'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1beta1.ProjectsLocationsResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ExportSBOM(self, request, global_params=None):
+      r"""Generates an SBOM and other dependency information for the given resource.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsResourcesExportSBOMRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExportSBOMResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportSBOM')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportSBOM.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/resources/{resourcesId}:exportSBOM',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.resources.exportSBOM',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:exportSBOM',
+        request_field='exportSBOMRequest',
+        request_type_name='ContaineranalysisProjectsLocationsResourcesExportSBOMRequest',
+        response_type_name='ExportSBOMResponse',
+        supports_download=False,
+    )
+
+    def GeneratePackagesSummary(self, request, global_params=None):
+      r"""Gets a summary of the packages within a given resource.
+
+      Args:
+        request: (ContaineranalysisProjectsLocationsResourcesGeneratePackagesSummaryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PackagesSummaryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GeneratePackagesSummary')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GeneratePackagesSummary.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/resources/{resourcesId}:generatePackagesSummary',
+        http_method='POST',
+        method_id='containeranalysis.projects.locations.resources.generatePackagesSummary',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:generatePackagesSummary',
+        request_field='generatePackagesSummaryRequest',
+        request_type_name='ContaineranalysisProjectsLocationsResourcesGeneratePackagesSummaryRequest',
+        response_type_name='PackagesSummaryResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(ContaineranalysisV1beta1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsNotesOccurrencesService(base_api.BaseApiService):
     """Service class for the projects_notes_occurrences resource."""

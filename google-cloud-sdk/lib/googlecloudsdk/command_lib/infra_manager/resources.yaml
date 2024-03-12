@@ -35,6 +35,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: locations TBD
+    property: infra-manager/location
   disable_auto_completers: false
 deployment:
   name: deployment

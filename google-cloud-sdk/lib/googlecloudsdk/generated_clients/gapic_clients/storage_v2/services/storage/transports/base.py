@@ -165,26 +165,6 @@ class StorageTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
-            self.delete_notification_config: gapic_v1.method.wrap_method(
-                self.delete_notification_config,
-                default_timeout=None,
-                client_info=client_info,
-            ),
-            self.get_notification_config: gapic_v1.method.wrap_method(
-                self.get_notification_config,
-                default_timeout=None,
-                client_info=client_info,
-            ),
-            self.create_notification_config: gapic_v1.method.wrap_method(
-                self.create_notification_config,
-                default_timeout=None,
-                client_info=client_info,
-            ),
-            self.list_notification_configs: gapic_v1.method.wrap_method(
-                self.list_notification_configs,
-                default_timeout=None,
-                client_info=client_info,
-            ),
             self.compose_object: gapic_v1.method.wrap_method(
                 self.compose_object,
                 default_timeout=None,
@@ -280,6 +260,26 @@ class StorageTransport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.delete_notification_config: gapic_v1.method.wrap_method(
+                self.delete_notification_config,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.get_notification_config: gapic_v1.method.wrap_method(
+                self.get_notification_config,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.create_notification_config: gapic_v1.method.wrap_method(
+                self.create_notification_config,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.list_notification_configs: gapic_v1.method.wrap_method(
+                self.list_notification_configs,
+                default_timeout=None,
+                client_info=client_info,
+            ),
          }
 
     def close(self):
@@ -369,42 +369,6 @@ class StorageTransport(abc.ABC):
             Union[
                 storage.Bucket,
                 Awaitable[storage.Bucket]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def delete_notification_config(self) -> Callable[
-            [storage.DeleteNotificationConfigRequest],
-            Union[
-                empty_pb2.Empty,
-                Awaitable[empty_pb2.Empty]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def get_notification_config(self) -> Callable[
-            [storage.GetNotificationConfigRequest],
-            Union[
-                storage.NotificationConfig,
-                Awaitable[storage.NotificationConfig]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def create_notification_config(self) -> Callable[
-            [storage.CreateNotificationConfigRequest],
-            Union[
-                storage.NotificationConfig,
-                Awaitable[storage.NotificationConfig]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def list_notification_configs(self) -> Callable[
-            [storage.ListNotificationConfigsRequest],
-            Union[
-                storage.ListNotificationConfigsResponse,
-                Awaitable[storage.ListNotificationConfigsResponse]
             ]]:
         raise NotImplementedError()
 
@@ -576,6 +540,42 @@ class StorageTransport(abc.ABC):
             Union[
                 storage.HmacKeyMetadata,
                 Awaitable[storage.HmacKeyMetadata]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def delete_notification_config(self) -> Callable[
+            [storage.DeleteNotificationConfigRequest],
+            Union[
+                empty_pb2.Empty,
+                Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def get_notification_config(self) -> Callable[
+            [storage.GetNotificationConfigRequest],
+            Union[
+                storage.NotificationConfig,
+                Awaitable[storage.NotificationConfig]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_notification_config(self) -> Callable[
+            [storage.CreateNotificationConfigRequest],
+            Union[
+                storage.NotificationConfig,
+                Awaitable[storage.NotificationConfig]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def list_notification_configs(self) -> Callable[
+            [storage.ListNotificationConfigsRequest],
+            Union[
+                storage.ListNotificationConfigsResponse,
+                Awaitable[storage.ListNotificationConfigsResponse]
             ]]:
         raise NotImplementedError()
 

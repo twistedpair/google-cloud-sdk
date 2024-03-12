@@ -3505,7 +3505,6 @@ class StorageObjectsRestoreRequest(_messages.Message):
       of the object's live metagenerations match the given value.
     object: Name of the object. For information about how to URL encode object
       names to be path safe, see Encoding URI Path Parts.
-    objectResource: A Object resource to be passed as the request body.
     projection: Set of properties to return. Defaults to full.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
@@ -3529,9 +3528,8 @@ class StorageObjectsRestoreRequest(_messages.Message):
   ifMetagenerationMatch = _messages.IntegerField(6)
   ifMetagenerationNotMatch = _messages.IntegerField(7)
   object = _messages.StringField(8, required=True)
-  objectResource = _messages.MessageField('Object', 9)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
-  userProject = _messages.StringField(11)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
+  userProject = _messages.StringField(10)
 
 
 class StorageObjectsRewriteRequest(_messages.Message):

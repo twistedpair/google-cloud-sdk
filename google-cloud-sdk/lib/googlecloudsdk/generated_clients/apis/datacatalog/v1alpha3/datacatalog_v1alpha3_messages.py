@@ -761,6 +761,10 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
       are required, nullable, or repeated. Only `NULLABLE`, `REQUIRED`, and
       `REPEATED` values are supported. Default mode is `NULLABLE`.
     ordinalPosition: Optional. Ordinal position
+    rangeElementType: Optional. The subtype of the RANGE, if the type of this
+      field is RANGE. If the type is RANGE, this field is required. Possible
+      values for the field element type of a RANGE include: * DATE * DATETIME
+      * TIMESTAMP
     subcolumns: Optional. Schema of sub-columns. A column can have zero or
       more sub-columns.
     type: Required. Type of the column. Must be a UTF-8 string with the
@@ -791,8 +795,19 @@ class GoogleCloudDatacatalogV1ColumnSchema(_messages.Message):
   lookerColumnSpec = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec', 6)
   mode = _messages.StringField(7)
   ordinalPosition = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 9, repeated=True)
-  type = _messages.StringField(10)
+  rangeElementType = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchemaFieldElementType', 9)
+  subcolumns = _messages.MessageField('GoogleCloudDatacatalogV1ColumnSchema', 10, repeated=True)
+  type = _messages.StringField(11)
+
+
+class GoogleCloudDatacatalogV1ColumnSchemaFieldElementType(_messages.Message):
+  r"""Represents the type of a field element.
+
+  Fields:
+    type: Required. The type of a field element. See ColumnSchema.type.
+  """
+
+  type = _messages.StringField(1)
 
 
 class GoogleCloudDatacatalogV1ColumnSchemaLookerColumnSpec(_messages.Message):
@@ -1132,6 +1147,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       an empty string.
     displayName: Display name of an entry. The maximum size is 500 bytes when
       encoded in UTF-8. Default value is an empty string.
+    featureOnlineStoreSpec: FeatureonlineStore spec for Vertex AI Feature
+      Store.
     filesetSpec: Specification that applies to a fileset resource. Valid only
       for entries with the `FILESET` type.
     fullyQualifiedName: [Fully Qualified Name
@@ -1161,9 +1178,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     lookerSystemSpec: Specification that applies to Looker sysstem. Only
       settable when `user_specified_system` is equal to `LOOKER`
     modelSpec: Model specification.
-    name: Output only. The resource name of an entry in URL format. Note: The
-      entry itself and its child resources might not be stored in the location
-      specified in its name.
+    name: Output only. Identifier. The resource name of an entry in URL
+      format. Note: The entry itself and its child resources might not be
+      stored in the location specified in its name.
     personalDetails: Output only. Additional information related to the entry.
       Private to the current user.
     routineSpec: Specification that applies to a user-defined function or
@@ -1253,6 +1270,10 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
         el/lookml_model_explore).
       LOOK: A Looker Look. For more information, see [Looker Look API]
         (https://developers.looker.com/api/explorer/4.0/methods/Look).
+      FEATURE_ONLINE_STORE: Feature Online Store resource in Vertex AI Feature
+        Store.
+      FEATURE_VIEW: Feature View resource in Vertex AI Feature Store.
+      FEATURE_GROUP: Feature Group resource in Vertex AI Feature Store.
     """
     ENTRY_TYPE_UNSPECIFIED = 0
     TABLE = 1
@@ -1270,6 +1291,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     DASHBOARD = 13
     EXPLORE = 14
     LOOK = 15
+    FEATURE_ONLINE_STORE = 16
+    FEATURE_VIEW = 17
+    FEATURE_GROUP = 18
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1307,25 +1331,26 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
   datasetSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatasetSpec', 8)
   description = _messages.StringField(9)
   displayName = _messages.StringField(10)
-  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 11)
-  fullyQualifiedName = _messages.StringField(12)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 13)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  linkedResource = _messages.StringField(16)
-  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 17)
-  modelSpec = _messages.MessageField('GoogleCloudDatacatalogV1ModelSpec', 18)
-  name = _messages.StringField(19)
-  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 20)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 21)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 22)
-  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 23)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 24)
-  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 27)
-  userSpecifiedSystem = _messages.StringField(28)
-  userSpecifiedType = _messages.StringField(29)
+  featureOnlineStoreSpec = _messages.MessageField('GoogleCloudDatacatalogV1FeatureOnlineStoreSpec', 11)
+  filesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1FilesetSpec', 12)
+  fullyQualifiedName = _messages.StringField(13)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 14)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  linkedResource = _messages.StringField(17)
+  lookerSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1LookerSystemSpec', 18)
+  modelSpec = _messages.MessageField('GoogleCloudDatacatalogV1ModelSpec', 19)
+  name = _messages.StringField(20)
+  personalDetails = _messages.MessageField('GoogleCloudDatacatalogV1PersonalDetails', 21)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 22)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 23)
+  serviceSpec = _messages.MessageField('GoogleCloudDatacatalogV1ServiceSpec', 24)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 25)
+  sqlDatabaseSystemSpec = _messages.MessageField('GoogleCloudDatacatalogV1SqlDatabaseSystemSpec', 26)
+  type = _messages.EnumField('TypeValueValuesEnum', 27)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 28)
+  userSpecifiedSystem = _messages.StringField(29)
+  userSpecifiedType = _messages.StringField(30)
 
 
 class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
@@ -1340,6 +1365,34 @@ class GoogleCloudDatacatalogV1EntryOverview(_messages.Message):
   """
 
   overview = _messages.StringField(1)
+
+
+class GoogleCloudDatacatalogV1FeatureOnlineStoreSpec(_messages.Message):
+  r"""Detail description of the source information of a Vertex Feature Online
+  Store.
+
+  Enums:
+    StorageTypeValueValuesEnum: Output only. Type of underelaying storage for
+      the FeatureOnlineStore.
+
+  Fields:
+    storageType: Output only. Type of underelaying storage for the
+      FeatureOnlineStore.
+  """
+
+  class StorageTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of underelaying storage for the FeatureOnlineStore.
+
+    Values:
+      STORAGE_TYPE_UNSPECIFIED: Should not be used.
+      BIGTABLE: Underlsying storgae is Bigtable.
+      OPTIMIZED: Underlaying is optimized online server (Lightning).
+    """
+    STORAGE_TYPE_UNSPECIFIED = 0
+    BIGTABLE = 1
+    OPTIMIZED = 2
+
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 1)
 
 
 class GoogleCloudDatacatalogV1FilesetSpec(_messages.Message):
@@ -1827,9 +1880,9 @@ class GoogleCloudDatacatalogV1Tag(_messages.Message):
     fields: Required. Maps the ID of a tag field to its value and additional
       information about that field. Tag template defines valid field IDs. A
       tag must have at least 1 field and at most 500 fields.
-    name: The resource name of the tag in URL format where tag ID is a system-
-      generated identifier. Note: The tag itself might not be stored in the
-      location specified in its name.
+    name: Identifier. The resource name of the tag in URL format where tag ID
+      is a system-generated identifier. Note: The tag itself might not be
+      stored in the location specified in its name.
     template: Required. The resource name of the tag template this tag uses.
       Example: `projects/{PROJECT_ID}/locations/{LOCATION}/tagTemplates/{TAG_T
       EMPLATE_ID}` This field cannot be modified after creation.

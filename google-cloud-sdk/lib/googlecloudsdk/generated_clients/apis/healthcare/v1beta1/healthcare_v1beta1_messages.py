@@ -41,11 +41,9 @@ class AccessDeterminationLogConfig(_messages.Message):
         [`consentMode`](https://cloud.google.com/healthcare-api/docs/fhir-
         consent#audit_logs) fields:
         (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). * The accessor's
-        request headers * The `log_level` of the
-        [AccessDeterminationLogConfig](https://cloud.google.com/healthcare-api
-        /docs/reference/rest/v1beta1/projects.locations.datasets.fhirStores#Ac
-        cessDeterminationLogConfig) * The final consent evaluation (`PERMIT`,
-        `DENY`, or `NO_CONSENT`) * A human-readable summary of the evaluation
+        request headers * The `log_level` of the AccessDeterminationLogConfig
+        * The final consent evaluation (`PERMIT`, `DENY`, or `NO_CONSENT`) * A
+        human-readable summary of the evaluation
       VERBOSE: Includes `MINIMUM` and, for each resource owner, returns: * The
         resource owner's name * Most specific part of the `X-Consent-Scope`
         resulting in consensual determination * Timestamp of the applied
@@ -2253,8 +2251,8 @@ class ExplainDataAccessConsentInfo(_messages.Message):
       ocations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/
       fhir/{resource_type}/{resource_id}`
     consentResource: The resource name of this consent resource. Format: `proj
-      ects/{projectId}/datasets/{datasetId}/fhirStores/{fhirStoreId}/fhir/{res
-      ourceType}/{id}`.
+      ects/{projectId}/locations/{locationId}/datasets/{datasetId}/fhirStores/
+      {fhirStoreId}/fhir/{resourceType}/{id}`.
     enforcementTime: Last enforcement timestamp of this consent resource.
     matchingAccessorScopes: A list of all the matching accessor scopes of this
       consent policy that enforced
@@ -2284,13 +2282,14 @@ class ExplainDataAccessConsentInfo(_messages.Message):
     r"""VariantsValueListEntryValuesEnum enum type.
 
     Values:
-      VARIANT_UNSPECIFIED: Consent variant unspecified.
-      VARIANT_STANDARD: Consent is a standard patient or admin consent.
-      VARIANT_CASCADE: Consent is a cascading consent.
+      CONSENT_VARIANT_UNSPECIFIED: Consent variant unspecified.
+      CONSENT_VARIANT_STANDARD: Consent is a standard patient or admin
+        consent.
+      CONSENT_VARIANT_CASCADE: Consent is a cascading consent.
     """
-    VARIANT_UNSPECIFIED = 0
-    VARIANT_STANDARD = 1
-    VARIANT_CASCADE = 2
+    CONSENT_VARIANT_UNSPECIFIED = 0
+    CONSENT_VARIANT_STANDARD = 1
+    CONSENT_VARIANT_CASCADE = 2
 
   cascadeOrigins = _messages.StringField(1, repeated=True)
   consentResource = _messages.StringField(2)
@@ -4659,6 +4658,69 @@ class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesGetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataMapperWorkspacesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesSetIamPolicyRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDataMapperWorkspacesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class HealthcareProjectsLocationsDatasetsDataMapperWorkspacesTestIamPermissionsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDataMapperWorkspacesTestIamPermissi
+  onsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsDeidentifyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDeidentifyRequest object.
 
@@ -4757,9 +4819,9 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
 
   Fields:
     resource: Required. The path of the resource for which the storage info is
-      requested (for exaxmple for a DICOM Instance: `projects/{projectid}/data
-      sets/{datasetid}/dicomStores/{dicomStoreId}/dicomWeb/studies/{study_uid}
-      /series/{series_uid}/instances/{instance_uid}`)
+      requested (for exaxmple for a DICOM Instance: `projects/{projectID}/loca
+      tions/{locationID}/datasets/{datasetID}/dicomStores/{dicomStoreId}/dicom
+      Web/studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`)
   """
 
   resource = _messages.StringField(1, required=True)
@@ -4771,14 +4833,16 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSetBlobStorag
 
   Fields:
     resource: Required. The path of the resource to update the blob storage
-      settings in the format of `projects/{projectID}/datasets/{datasetID}/dic
-      omStores/{dicomStoreID}/dicomWeb/studies/{studyUID}`, `projects/{project
-      ID}/datasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{st
-      udyUID}/series/{seriesUID}/`, or `projects/{projectID}/datasets/{dataset
-      ID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{serie
-      sUID}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      settings in the format of `projects/{projectID}/locations/{locationID}/d
+      atasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUI
+      D}`, `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/d
+      icomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUID}
+      /`, or `projects/{projectID}/locations/{locationID}/datasets/{datasetID}
+      /dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUI
+      D}/instances/{instanceUID}`. If `filter_config` is specified, set the
       value of `resource` to the resource name of a DICOM store in the format
-      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+      `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/dicomS
+      tores/{dicomStoreID}`.
     setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
       be passed as the request body.
   """
@@ -4982,14 +5046,16 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSetBlobStorageSettingsReques
 
   Fields:
     resource: Required. The path of the resource to update the blob storage
-      settings in the format of `projects/{projectID}/datasets/{datasetID}/dic
-      omStores/{dicomStoreID}/dicomWeb/studies/{studyUID}`, `projects/{project
-      ID}/datasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{st
-      udyUID}/series/{seriesUID}/`, or `projects/{projectID}/datasets/{dataset
-      ID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{serie
-      sUID}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      settings in the format of `projects/{projectID}/locations/{locationID}/d
+      atasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUI
+      D}`, `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/d
+      icomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUID}
+      /`, or `projects/{projectID}/locations/{locationID}/datasets/{datasetID}
+      /dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{seriesUI
+      D}/instances/{instanceUID}`. If `filter_config` is specified, set the
       value of `resource` to the resource name of a DICOM store in the format
-      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+      `projects/{projectID}/locations/{locationID}/datasets/{datasetID}/dicomS
+      tores/{dicomStoreID}`.
     setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
       be passed as the request body.
   """
@@ -8789,8 +8855,8 @@ class SetBlobStorageSettingsRequest(_messages.Message):
       resources. Only fields listed in `update_mask` are applied.
     filterConfig: Optional. A filter configuration. If `filter_config` is
       specified, set the value of `resource` to the resource name of a DICOM
-      store in the format
-      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+      store in the format `projects/{projectID}/locations/{locationID}/dataset
+      s/{datasetID}/dicomStores/{dicomStoreID}`.
   """
 
   blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
@@ -8989,8 +9055,9 @@ class StorageInfo(_messages.Message):
       resource.
     referencedResource: The resource whose storage info is returned. For
       example, to specify the resource path of a DICOM Instance: `projects/{pr
-      ojectid}/datasets/{datasetid}/dicomStores/{dicom_store_id}/dicomWeb/stud
-      i/{study_uid}/series/{series_uid}/instances/{instance_uid}`
+      ojectID}/locations/{locationID}/datasets/{datasetID}/dicomStores/{dicom_
+      store_id}/dicomWeb/studi/{study_uid}/series/{series_uid}/instances/{inst
+      ance_uid}`
     structuredStorageInfo: Info about the data stored in structured storage
       for the resource.
   """

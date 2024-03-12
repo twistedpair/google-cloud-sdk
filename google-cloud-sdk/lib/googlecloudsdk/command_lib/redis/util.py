@@ -140,3 +140,11 @@ def WarnOnAuthEnabled(auth_enabled):
         cancel_on_no=True)
 
   return auth_enabled
+
+
+# TODO(b/261183749): Remove modify_request_hook when singleton resource args
+# are enabled in declarative.
+def UpdateGetCertificateAuthorityRequestPath(unused_ref, unused_args, req):
+  req.name = req.name + '/certificateAuthority'
+  return req
+

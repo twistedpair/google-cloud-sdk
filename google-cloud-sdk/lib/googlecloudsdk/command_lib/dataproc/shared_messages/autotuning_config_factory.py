@@ -51,9 +51,6 @@ class AutotuningConfigFactory(object):
     """
     kwargs = {}
 
-    if args.autotuning_cohort:
-      kwargs['cohort'] = args.autotuning_cohort
-
     if args.autotuning_scenarios:
       kwargs['scenarios'] = [
           arg_utils.ChoiceToEnum(sc, ac.ScenariosValueListEntryValuesEnum)
@@ -68,15 +65,6 @@ class AutotuningConfigFactory(object):
 
 def AddArguments(parser):
   """Adds related arguments to parser."""
-  parser.add_argument(
-      '--autotuning-cohort',
-      help=(
-          'Autotuning cohort identifier. Identifies families of the workloads'
-          ' having the similar structure and inputs, e.g. daily ETL jobs.'
-      ),
-      hidden=True,
-  )
-
   scenario_choices = [
       arg_utils.EnumNameToChoice(str(sc))
       for sc in ac.ScenariosValueListEntryValuesEnum

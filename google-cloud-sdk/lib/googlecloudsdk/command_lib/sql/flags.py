@@ -726,6 +726,33 @@ def AddFailoverReplicaName(parser, hidden=False):
   )
 
 
+def AddFailoverDrReplicaName(parser, hidden=True):
+  parser.add_argument(
+      '--failover-dr-replica-name',
+      required=False,
+      hidden=hidden,
+      help=(
+          'Set a Disaster Recovery (DR) replica with the specified name for '
+          'the primary instance. This must be one of the existing cross region '
+          'replicas of the primary instance. Flag is only available for MySQL.'
+      ),
+  )
+
+
+def AddClearFailoverDrReplicaName(parser, hidden=True):
+  kwargs = _GetKwargsForBoolFlag(False)
+  parser.add_argument(
+      '--clear-failover-dr-replica-name',
+      required=False,
+      hidden=hidden,
+      help=(
+          'Clear the DR replica setting for the primary instance. Flag is only '
+          'available for MySQL.'
+      ),
+      **kwargs
+  )
+
+
 def AddMasterInstanceName(parser, hidden=False):
   parser.add_argument(
       '--master-instance-name',
@@ -2405,33 +2432,27 @@ def AddSqlServerSsrs(parser):
   parser.add_argument(
       '--setup-login',
       required=True,
-      hidden=True,
       help=(
-          'Existing login in the SQL Server instance that will be used'
-          'as the setup login for SSRS setup. '
-          'Only available for SQL Server instances.'
+          'Existing login in the Cloud SQL for SQL Server instance that is'
+          ' used as the setup login for SSRS setup.'
       ),
   )
 
   parser.add_argument(
       '--service-login',
       required=True,
-      hidden=True,
       help=(
-          'Existing login in the SQL Server instance that will be used'
-          'as the service login for SSRS setup. '
-          'Only available for SQL Server instances.'
+          'Existing login in the Cloud SQL for SQL Server instance that is used'
+          ' as the service login for SSRS setup.'
       ),
   )
 
   parser.add_argument(
       '--report-database',
       required=True,
-      hidden=True,
       help=(
-          'Existing or new report database name in the SQL Server instance that'
-          ' will be used for SSRS setup. that will be usedas the service login'
-          ' for SSRS setup. Only available for SQL Server instances.'
+          'Existing or new report database name in the Cloud SQL for SQL Server'
+          ' instance that is used for SSRS setup.'
       ),
   )
 
@@ -2440,11 +2461,10 @@ def AddSqlServerSsrs(parser):
       default=None,
       type=arg_parsers.Duration(lower_bound='1h', upper_bound='12h'),
       required=False,
-      hidden=True,
       help=(
           'Time duration, in hours, that the lease will be active to allow SSRS'
           ' setup. Default lease duration is 5 hours if this flag is not'
-          ' specified. Only available for SQL Server instances.'
+          ' specified.'
       ),
   )
 

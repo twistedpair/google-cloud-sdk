@@ -3,8 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: authztoolkit v1alpha TargetAssociation export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-required:
-- displayName
 additionalProperties: false
 properties:
   COMMENT:
@@ -62,6 +60,6 @@ properties:
       $ref: PolicyConfig.yaml
   tdWorkload:
     description: |-
-      Immutable. Traffic Director based workloads. Authorization
-      Toolkit auto configures the authorization settings on the workload.
+      Immutable. Traffic Director based workloads. Authorization Toolkit
+      auto configures the authorization settings on the workload.
     $ref: TrafficDirector.yaml

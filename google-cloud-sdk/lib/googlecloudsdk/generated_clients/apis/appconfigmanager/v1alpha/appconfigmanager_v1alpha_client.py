@@ -40,8 +40,8 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_configs_instances = self.ProjectsLocationsConfigsInstancesService(self)
+    self.projects_locations_configs_renders = self.ProjectsLocationsConfigsRendersService(self)
     self.projects_locations_configs = self.ProjectsLocationsConfigsService(self)
-    self.projects_locations_templates_instances = self.ProjectsLocationsTemplatesInstancesService(self)
     self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -191,6 +191,70 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsConfigsRendersService(base_api.BaseApiService):
+    """Service class for the projects_locations_configs_renders resource."""
+
+    _NAME = 'projects_locations_configs_renders'
+
+    def __init__(self, client):
+      super(AppconfigmanagerV1alpha.ProjectsLocationsConfigsRendersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single ConfigRender.
+
+      Args:
+        request: (AppconfigmanagerProjectsLocationsConfigsRendersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConfigRender) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/configs/{configsId}/renders/{rendersId}',
+        http_method='GET',
+        method_id='appconfigmanager.projects.locations.configs.renders.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AppconfigmanagerProjectsLocationsConfigsRendersGetRequest',
+        response_type_name='ConfigRender',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists ConfigRenders in a given project, location, and Config.
+
+      Args:
+        request: (AppconfigmanagerProjectsLocationsConfigsRendersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListConfigRendersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/configs/{configsId}/renders',
+        http_method='GET',
+        method_id='appconfigmanager.projects.locations.configs.renders.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1alpha/{+parent}/renders',
+        request_field='',
+        request_type_name='AppconfigmanagerProjectsLocationsConfigsRendersListRequest',
+        response_type_name='ListConfigRendersResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsConfigsService(base_api.BaseApiService):
     """Service class for the projects_locations_configs resource."""
 
@@ -336,151 +400,6 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsTemplatesInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_templates_instances resource."""
-
-    _NAME = 'projects_locations_templates_instances'
-
-    def __init__(self, client):
-      super(AppconfigmanagerV1alpha.ProjectsLocationsTemplatesInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new TemplateInstance in a given project, location, and Template.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesInstancesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TemplateInstance) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}/instances',
-        http_method='POST',
-        method_id='appconfigmanager.projects.locations.templates.instances.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'templateInstanceId'],
-        relative_path='v1alpha/{+parent}/instances',
-        request_field='templateInstance',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesInstancesCreateRequest',
-        response_type_name='TemplateInstance',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single TemplateInstance.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesInstancesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}/instances/{instancesId}',
-        http_method='DELETE',
-        method_id='appconfigmanager.projects.locations.templates.instances.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesInstancesDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single TemplateInstance.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesInstancesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TemplateInstance) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}/instances/{instancesId}',
-        http_method='GET',
-        method_id='appconfigmanager.projects.locations.templates.instances.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesInstancesGetRequest',
-        response_type_name='TemplateInstance',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists TemplateInstances in a given project, location, and Template.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesInstancesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTemplateInstancesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}/instances',
-        http_method='GET',
-        method_id='appconfigmanager.projects.locations.templates.instances.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/instances',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesInstancesListRequest',
-        response_type_name='ListTemplateInstancesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single TemplateInstance.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesInstancesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TemplateInstance) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}/instances/{instancesId}',
-        http_method='PATCH',
-        method_id='appconfigmanager.projects.locations.templates.instances.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='templateInstance',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesInstancesPatchRequest',
-        response_type_name='TemplateInstance',
-        supports_download=False,
-    )
-
   class ProjectsLocationsTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_templates resource."""
 
@@ -514,114 +433,6 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+parent}/templates',
         request_field='template',
         request_type_name='AppconfigmanagerProjectsLocationsTemplatesCreateRequest',
-        response_type_name='Template',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Template.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}',
-        http_method='DELETE',
-        method_id='appconfigmanager.projects.locations.templates.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Template.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Template) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}',
-        http_method='GET',
-        method_id='appconfigmanager.projects.locations.templates.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesGetRequest',
-        response_type_name='Template',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Templates in a given project and location.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTemplatesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates',
-        http_method='GET',
-        method_id='appconfigmanager.projects.locations.templates.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/templates',
-        request_field='',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesListRequest',
-        response_type_name='ListTemplatesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Template.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Template) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates/{templatesId}',
-        http_method='PATCH',
-        method_id='appconfigmanager.projects.locations.templates.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='template',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesPatchRequest',
         response_type_name='Template',
         supports_download=False,
     )

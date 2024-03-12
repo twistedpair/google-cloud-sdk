@@ -401,7 +401,8 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
-      only include these fields: * "description" * "file_shares" * "labels"
+      only include these fields: * "description" * "directory_services" *
+      "file_shares" * "labels"
   """
 
   instance = _messages.MessageField('Instance', 1)
@@ -441,9 +442,8 @@ class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesRevertRequest object.
 
   Fields:
-    name: Required.
+    name: Required. The resource name of the instance, in the format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
-      The resource name of the instance, in the format
     revertInstanceRequest: A RevertInstanceRequest resource to be passed as
       the request body.
   """
@@ -1297,8 +1297,9 @@ class Instance(_messages.Message):
     capacityStepSizeGb: Output only. The increase/decrease capacity step size.
     createTime: Output only. The time when the instance was created.
     description: The description of the instance (2048 characters or less).
-    directoryServices: Directory Services configuration for Kerberos-based
-      authentication. Should only be set if protocol is "NFS_V4_1".
+    directoryServices: Optional. Directory Services configuration for
+      Kerberos-based authentication. Should only be set if protocol is
+      "NFS_V4_1".
     etag: Server-specified ETag for the instance resource to prevent
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
@@ -1737,11 +1738,12 @@ class ManagedActiveDirectoryConfig(_messages.Message):
   to Managed Active Directory.
 
   Fields:
-    computer: The computer name is used as a prefix to the mount remote
-      target. Example: if the computer_name is `my-computer`, the mount
-      command will look like: `$mount -o vers=4,sec=krb5 my-
-      computer.filestore.:`.
-    domain: Fully qualified domain name.
+    computer: Required. The computer name is used as a prefix to the mount
+      remote target. Example: if the computer is `my-computer`, the mount
+      command will look like: `$mount -o vers=4.1,sec=krb5 my-
+      computer.filestore.: `.
+    domain: Required. The domain resource name, in the format
+      `projects/{project_id}/locations/global/domains/{domain}`.
   """
 
   computer = _messages.StringField(1)

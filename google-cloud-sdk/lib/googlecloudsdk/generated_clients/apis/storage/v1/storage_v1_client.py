@@ -1775,7 +1775,7 @@ class StorageV1(base_api.BaseApiClient):
         path_params=['bucket', 'object'],
         query_params=['copySourceAcl', 'generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
         relative_path='b/{bucket}/o/{object}/restore',
-        request_field='objectResource',
+        request_field='',
         request_type_name='StorageObjectsRestoreRequest',
         response_type_name='Object',
         supports_download=False,

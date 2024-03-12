@@ -37,17 +37,27 @@ class JobRunsClient(object):
         self.client.projects_locations_deliveryPipelines_releases_rollouts_jobRuns
     )
 
-  def Terminate(self, name):
+  def Terminate(
+      self,
+      name,
+      override_deploy_policies=None,
+  ):
     """Terminates a job run.
 
     Args:
       name: Name of the JobRun. Format is
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}/jobRuns/{jobRun}.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       TerminateJobRunResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTerminateRequest(
-        name=name
+        name=name,
+        terminateJobRunRequest=self.messages.TerminateJobRunRequest(
+            overrideDeployPolicy=override_deploy_policies,
+        ),
     )
     return self._service.Terminate(request)

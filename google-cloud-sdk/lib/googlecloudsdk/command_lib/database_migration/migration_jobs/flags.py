@@ -176,6 +176,7 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser):
   )
   AddSqlServerBackupFilePattern(sqlserver_homogeneous_migration_config)
   AddSqlServerDatabasesFlag(sqlserver_homogeneous_migration_config)
+  AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
 
 
 def AddSqlServerBackupFilePattern(parser):
@@ -195,7 +196,7 @@ def AddSqlServerBackupFilePattern(parser):
   parser.add_argument(
       '--sqlserver-backup-file-pattern',
       help=help_text,
-      default='.*\\.(?<epoch>\\d*)\\.trn',
+      default='(?<database>.*)_(?<yyyy>\\d{4})(?<mm>\\d{2})(?<dd>\\d{2})_(?<hh>\\d{2})(?<mi>\\d{2})(?<ss>\\d{2})_(full|log)\\.(trn|bak)',
   )
 
 
@@ -203,12 +204,48 @@ def AddSqlServerDatabasesFlag(parser):
   """Adds a --sqlserver-databases flag to the given parser."""
   help_text = """\
     A list of databases to be migrated to the destination Cloud SQL instance.
-    Provide databases as a comma separated list.
+    Provide databases as a comma separated list. This list should contain all
+    encrypted and non-encrypted database names.
     """
   parser.add_argument(
       '--sqlserver-databases',
-      metavar='DATABASE_NAME',
+      metavar='databaseName',
       type=arg_parsers.ArgList(min_length=1),
       help=help_text,
       required=True,
+  )
+
+
+def AddSqlServerEncryptedDatabasesFlag(parser):
+  """Adds a --sqlserver-encrypted-databases flag to the given parser."""
+  help_text = """\
+    A JSON/YAML file describing the encryption settings per database for all encrytped databases.
+    An example of a JSON request:
+        [{
+            "databaseName": "db1",
+            "databaseDetails": {
+                "encryptionOptions": {
+                    "certPath": "Path to certificate 1",
+                    "pvkPath": "Path to certificate private key 1",
+                    "pvkPassword": "Private key password 1"
+                }
+            }
+        },
+        {
+            "databaseName": "db2",
+            "databaseDetails": {
+                "encryptionOptions": {
+                    "certPath": "Path to certificate 2",
+                    "pvkPath": "Path to certificate private key 2",
+                    "pvkPassword": "Private key password 2"
+                }
+            }
+        }]
+
+      This flag accepts "-" for stdin.
+    """
+  parser.add_argument(
+      '--sqlserver-encrypted-databases',
+      type=arg_parsers.YAMLFileContents(),
+      help=help_text,
   )

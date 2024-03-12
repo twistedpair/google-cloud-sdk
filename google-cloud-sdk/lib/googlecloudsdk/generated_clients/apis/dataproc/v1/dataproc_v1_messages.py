@@ -1752,9 +1752,11 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
       filter is a logical expression constraining the values of various fields
       in each batch resource. Filters are case sensitive, and may contain
       multiple clauses combined with logical operators (AND/OR). Supported
-      fields are batch_id, batch_uuid, state, and create_time.e.g. state =
-      RUNNING and create_time < "2023-01-01T00:00:00Z" filters for batches in
-      state RUNNING that were created before 2023-01-01See
+      fields are batch_id, batch_uuid, state, create_time, and labels.e.g.
+      state = RUNNING and create_time < "2023-01-01T00:00:00Z" filters for
+      batches in state RUNNING that were created before 2023-01-01. state =
+      RUNNING and labels.environment=production filters for batches in state
+      in a RUNNING state that have a production environment label.See
       https://google.aip.dev/assets/misc/ebnf-filtering.txt for a detailed
       description of the filter syntax and a list of supported comparisons.
     orderBy: Optional. Field(s) on which to sort the list of batches.Currently
@@ -2474,11 +2476,14 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
       filter is a logical expression constraining the values of various fields
       in each session resource. Filters are case sensitive, and may contain
       multiple clauses combined with logical operators (AND, OR). Supported
-      fields are session_id, session_uuid, state, and create_time.Example:
-      state = ACTIVE and create_time < "2023-01-01T00:00:00Z" is a filter for
-      sessions in an ACTIVE state that were created before 2023-01-01.See
-      https://google.aip.dev/assets/misc/ebnf-filtering.txt for a detailed
-      description of the filter syntax and a list of supported comparators.
+      fields are session_id, session_uuid, state, create_time, and
+      labels.Example: state = ACTIVE and create_time < "2023-01-01T00:00:00Z"
+      is a filter for sessions in an ACTIVE state that were created before
+      2023-01-01. state = ACTIVE and labels.environment=production is a filter
+      for sessions in an ACTIVE state that have a production environment
+      label.See https://google.aip.dev/assets/misc/ebnf-filtering.txt for a
+      detailed description of the filter syntax and a list of supported
+      comparators.
     orderBy: Optional. Field(s) on which to sort the list of sessions. See
       https://google.aip.dev/132#ordering for more information.
     pageSize: Optional. The maximum number of sessions to return in each
@@ -2495,14 +2500,14 @@ class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironmentInfoRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnviron
-  mentInfoRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessEnvironmentInfoRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessEnvironmentInf
+  oRequest object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2510,16 +2515,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessEnvironment
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest(_messages.Message):
-  r"""A
-  DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessJobRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessJobRequest
   object.
 
   Fields:
     jobId: Required. Job ID to fetch data for.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2528,14 +2532,14 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessJobRequest(
   parent = _messages.StringField(3)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessRequest
   object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2543,15 +2547,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessRequest(_me
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlan
-  Request object.
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlPlanRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlPlanRequest
+  object.
 
   Fields:
     executionId: Required. Execution ID
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2560,9 +2564,10 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlPlanRequ
   parent = _messages.StringField(3)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQuer
-  yRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlQueryRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsAccessSqlQueryRequest
+  object.
 
   Fields:
     details: Optional. Lists/ hides details of Spark plan nodes. True is set
@@ -2570,7 +2575,7 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryReq
     executionId: Required. Execution ID
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
     planDescription: Optional. Enables/ disables physical plan description on
       demand
@@ -2583,14 +2588,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessSqlQueryReq
   planDescription = _messages.BooleanField(5)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemptRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAt
-  temptRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessStageAttemptRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsAccessStageAttemptRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
     stageAttemptId: Required. Stage Attempt ID
     stageId: Required. Stage ID
@@ -2602,14 +2608,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageAttemp
   stageId = _messages.IntegerField(4)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRd
-  dGraphRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
     stageId: Required. Stage ID
   """
@@ -2619,14 +2626,14 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsAccessStageRddGra
   stageId = _messages.IntegerField(3)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecuto
-  rStageSummaryRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorStageS
+  ummaryRequest object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of executors to return in each
       response. The service may return fewer than this. The default page size
       is 10; the maximum page size is 100.
@@ -2646,9 +2653,10 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorSta
   stageId = _messages.IntegerField(6)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecuto
-  rsRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSearchExecutorsRequest
+  object.
 
   Enums:
     ExecutorStatusValueValuesEnum: Optional. Filter to select whether active/
@@ -2659,7 +2667,7 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRe
       executors should be selected.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of executors to return in each
       response. The service may return fewer than this. The default page size
       is 10; the maximum page size is 100.
@@ -2689,9 +2697,8 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchExecutorsRe
   parent = _messages.StringField(5)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest(_messages.Message):
-  r"""A
-  DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchJobsRequest
   object.
 
   Enums:
@@ -2701,7 +2708,7 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest
     jobStatus: Optional. List only jobs in the specific state.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of jobs to return in each response. The
       service may return fewer than this. The default page size is 10; the
       maximum page size is 100.
@@ -2734,8 +2741,8 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchJobsRequest
   parent = _messages.StringField(5)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchRequest
   object.
 
   Enums:
@@ -2781,16 +2788,17 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchRequest(_me
   parent = _messages.StringField(8, required=True)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQuer
-  iesRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSearchSqlQueriesRequest
+  object.
 
   Fields:
     details: Optional. Lists/ hides details of Spark plan nodes. True is set
       to list and false to hide.
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of queries to return in each response.
       The service may return fewer than this. The default page size is 10; the
       maximum page size is 100.
@@ -2810,9 +2818,9 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchSqlQueriesR
   planDescription = _messages.BooleanField(6)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptTasksRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAt
-  temptTasksRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptTa
+  sksRequest object.
 
   Enums:
     TaskStatusValueValuesEnum: Optional. List only tasks in the state.
@@ -2820,7 +2828,7 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemp
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of tasks to return in each response.
       The service may return fewer than this. The default page size is 10; the
       maximum page size is 100.
@@ -2862,14 +2870,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemp
   taskStatus = _messages.EnumField('TaskStatusValueValuesEnum', 8)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemptsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAt
-  temptsRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of stage attempts (paging based on
       stage_attempt_id) to return in each response. The service may return
       fewer than this. The default page size is 10; the maximum page size is
@@ -2888,9 +2897,8 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStageAttemp
   stageId = _messages.IntegerField(5)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest(_messages.Message):
-  r"""A
-  DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesRequest
+class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest
   object.
 
   Enums:
@@ -2899,7 +2907,7 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesReque
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     pageSize: Optional. Maximum number of stages (paging based on stage_id) to
       return in each response. The service may return fewer than this. The
       default page size is 10; the maximum page size is 100.
@@ -2935,14 +2943,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSearchStagesReque
   stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExec
-  utorsRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2950,14 +2959,14 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeExecutor
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobs
-  Request object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeJobsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSummarizeJobsRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2965,14 +2974,14 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeJobsRequ
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAttemptTasksRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStag
-  eAttemptTasksRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStageAttemp
+  tTasksRequest object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
     stageAttemptId: Required. Stage Attempt ID
     stageId: Required. Stage ID
@@ -2984,14 +2993,15 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStageAtt
   stageId = _messages.IntegerField(4)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStag
-  esRequest object.
+class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStagesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsSessionsSparkApplicationsSummarizeStagesRequest
+  object.
 
   Fields:
     name: Required. The fully qualified name of the session to retrieve in the
       format "projects/PROJECT_ID/locations/DATAPROC_REGION/sessions/SESSION_I
-      D/sessionSparkApplications/APPLICATION_ID"
+      D/sparkApplications/APPLICATION_ID"
     parent: Required. Parent (Session) resource reference.
   """
 
@@ -2999,14 +3009,13 @@ class DataprocProjectsLocationsSessionsSessionSparkApplicationsSummarizeStagesRe
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsSessionsSessionSparkApplicationsWriteRequest
-  object.
+class DataprocProjectsLocationsSessionsSparkApplicationsWriteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsSparkApplicationsWriteRequest object.
 
   Fields:
     name: Required. The fully qualified name of the spark application to write
       data about in the format "projects/PROJECT_ID/locations/DATAPROC_REGION/
-      sessions/SESSION_ID/sessionSparkApplications/APPLICATION_ID"
+      sessions/SESSION_ID/sparkApplications/APPLICATION_ID"
     writeSessionSparkApplicationContextRequest: A
       WriteSessionSparkApplicationContextRequest resource to be passed as the
       request body.
@@ -4995,13 +5004,16 @@ class GceClusterConfig(_messages.Message):
     confidentialInstanceConfig: Optional. Confidential Instance Config for
       clusters using Confidential VMs
       (https://cloud.google.com/compute/confidential-vm/docs).
-    internalIpOnly: Optional. If true, all instances in the cluster will only
-      have internal IP addresses. By default, clusters are not restricted to
-      internal IP addresses, and will have ephemeral external IP addresses
-      assigned to each instance. This internal_ip_only restriction can only be
-      enabled for subnetwork enabled networks, and all off-cluster
+    internalIpOnly: Optional. This setting applies to subnetwork-enabled
+      networks. It is set to true by default in clusters created with image
+      versions 2.2.x.When set to true: All cluster VMs have internal IP
+      addresses. Google Private Access
+      (https://cloud.google.com/vpc/docs/private-google-access) must be
+      enabled to access Dataproc and other Google Cloud APIs. Off-cluster
       dependencies must be configured to be accessible without external IP
-      addresses.
+      addresses.When set to false: Cluster VMs are not restricted to internal
+      IP addresses. Ephemeral external IP addresses are assigned to each
+      cluster VM.
     metadata: Optional. The Compute Engine metadata entries to add to all
       instances (see Project and instance metadata
       (https://cloud.google.com/compute/docs/storing-retrieving-
@@ -8693,7 +8705,7 @@ class SearchSessionSparkApplicationsResponse(_messages.Message):
   """
 
   nextPageToken = _messages.StringField(1)
-  sparkApplications = _messages.MessageField('SessionSparkApplication', 2, repeated=True)
+  sparkApplications = _messages.MessageField('SparkApplication', 2, repeated=True)
 
 
 class SearchSparkApplicationExecutorStageSummaryResponse(_messages.Message):
@@ -9007,19 +9019,6 @@ class SessionOperationMetadata(_messages.Message):
   session = _messages.StringField(6)
   sessionUuid = _messages.StringField(7)
   warnings = _messages.StringField(8, repeated=True)
-
-
-class SessionSparkApplication(_messages.Message):
-  r"""A summary of Spark Application
-
-  Fields:
-    application: Output only. High level information corresponding to an
-      application.
-    name: Identifier. Name of the spark application
-  """
-
-  application = _messages.MessageField('ApplicationInfo', 1)
-  name = _messages.StringField(2)
 
 
 class SessionStateHistory(_messages.Message):
@@ -10290,6 +10289,7 @@ class StageData(_messages.Message):
     numFailedTasks: A integer attribute.
     numKilledTasks: A integer attribute.
     numTasks: A integer attribute.
+    parentStageIds: A string attribute.
     peakExecutorMetrics: A ExecutorMetrics attribute.
     rddIds: A string attribute.
     resourceProfileId: A integer attribute.
@@ -10441,19 +10441,20 @@ class StageData(_messages.Message):
   numFailedTasks = _messages.IntegerField(17, variant=_messages.Variant.INT32)
   numKilledTasks = _messages.IntegerField(18, variant=_messages.Variant.INT32)
   numTasks = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  peakExecutorMetrics = _messages.MessageField('ExecutorMetrics', 20)
-  rddIds = _messages.IntegerField(21, repeated=True)
-  resourceProfileId = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  schedulingPool = _messages.StringField(23)
-  shuffleMergersCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  speculationSummary = _messages.MessageField('SpeculationStageSummary', 25)
-  stageAttemptId = _messages.IntegerField(26, variant=_messages.Variant.INT32)
-  stageId = _messages.IntegerField(27)
-  stageMetrics = _messages.MessageField('StageMetrics', 28)
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  submissionTime = _messages.StringField(30)
-  taskMetricsDistributions = _messages.MessageField('TaskMetricDistributions', 31)
-  tasks = _messages.MessageField('TasksValue', 32)
+  parentStageIds = _messages.IntegerField(20, repeated=True)
+  peakExecutorMetrics = _messages.MessageField('ExecutorMetrics', 21)
+  rddIds = _messages.IntegerField(22, repeated=True)
+  resourceProfileId = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  schedulingPool = _messages.StringField(24)
+  shuffleMergersCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  speculationSummary = _messages.MessageField('SpeculationStageSummary', 26)
+  stageAttemptId = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(28)
+  stageMetrics = _messages.MessageField('StageMetrics', 29)
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  submissionTime = _messages.StringField(31)
+  taskMetricsDistributions = _messages.MessageField('TaskMetricDistributions', 32)
+  tasks = _messages.MessageField('TasksValue', 33)
 
 
 class StageInputMetrics(_messages.Message):

@@ -389,7 +389,6 @@ def AddNodeLabels(parser):
       """,
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      hidden=True,
   )
 
 

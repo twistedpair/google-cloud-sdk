@@ -321,9 +321,7 @@ def AddFileFlag(parser, hidden=False):
   )
 
 
-# TODO: b/326133845 - Remove `hidden` annotation to make multi-tf commands
-# public.
-def AddTFVersionConstraintFlag(parser, hidden=True):
+def AddTFVersionConstraintFlag(parser, hidden=False):
   """Add --tf-version-constraint flag."""
   parser.add_argument(
       '--tf-version-constraint',
@@ -334,8 +332,7 @@ def AddTFVersionConstraintFlag(parser, hidden=True):
   )
 
 
-# TODO: b/324124739 - Remove `hidden` annotation
-def AddQuotaValidationFlag(parser, hidden=True):
+def AddQuotaValidationFlag(parser, hidden=False):
   """Add --quota-validation flag."""
 
   parser.add_argument(

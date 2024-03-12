@@ -668,7 +668,7 @@ class BaseSSHHelper(object):
       self._SetProjectMetadata(client, new_metadata)
 
   def _SetInstanceMetadata(self, client, instance, new_metadata):
-    """Sets the project metadata to the new metadata."""
+    """Sets the instance metadata to the new metadata."""
     errors = []
     # API wants just the zone name, not the full URL
     zone = instance.zone.split('/')[-1]

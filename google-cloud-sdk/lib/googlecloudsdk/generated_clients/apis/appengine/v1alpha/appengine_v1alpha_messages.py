@@ -291,6 +291,21 @@ class AppengineAppsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest(_messages.Message):
+  r"""A AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum results to return per page.
+    pageToken: Continuation token for fetching the next page of results.
+    parent: Name of the parent Application resource. Example: apps/myapp.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AppengineProjectsLocationsGetRequest(_messages.Message):
   r"""A AppengineProjectsLocationsGetRequest object.
 
@@ -454,10 +469,7 @@ class ContainerState(_messages.Message):
       data governance, abuse, and billing.If this is a CCFE-triggered event
       used for reconciliation then the current reasons will be set to their
       *_CONTROL_PLANE_SYNC state. The previous reasons will contain the last
-      known set of non-unknown non-control_plane_sync reasons for the
-      state.Reasons fields are deprecated. New tenants should only use the
-      state field. If you must know the reason(s) behind a specific state,
-      please consult with CCFE team first (cloud-ccfe-discuss@google.com).
+      known set of non-unknown non-control_plane_sync reasons for the state.
     state: The current state of the container. This state is the culmination
       of all of the opinions from external systems that CCFE knows about of
       the container.
@@ -1105,18 +1117,26 @@ class Reasons(_messages.Message):
   from various systems. CCFE will provide the CLH with reasons for the current
   state per system.The current systems that CCFE supports are: Service
   Management (Inception) Data Governance (Wipeout) Abuse (Ares) Billing
-  (Internal Cloud Billing API)
+  (Internal Cloud Billing API) Service Activation (Service Controller)
 
   Enums:
     AbuseValueValuesEnum:
     BillingValueValuesEnum:
     DataGovernanceValueValuesEnum:
+    ServiceActivationValueValuesEnum: Consumer Container denotes if the
+      service is active within a project or not. This information could be
+      used to clean up resources in case service in DISABLED_FULL i.e. Service
+      is inactive > 30 days.
     ServiceManagementValueValuesEnum:
 
   Fields:
     abuse: A AbuseValueValuesEnum attribute.
     billing: A BillingValueValuesEnum attribute.
     dataGovernance: A DataGovernanceValueValuesEnum attribute.
+    serviceActivation: Consumer Container denotes if the service is active
+      within a project or not. This information could be used to clean up
+      resources in case service in DISABLED_FULL i.e. Service is inactive > 30
+      days.
     serviceManagement: A ServiceManagementValueValuesEnum attribute.
   """
 
@@ -1199,6 +1219,28 @@ class Reasons(_messages.Message):
     UNHIDE = 3
     PURGE = 4
 
+  class ServiceActivationValueValuesEnum(_messages.Enum):
+    r"""Consumer Container denotes if the service is active within a project
+    or not. This information could be used to clean up resources in case
+    service in DISABLED_FULL i.e. Service is inactive > 30 days.
+
+    Values:
+      SERVICE_ACTIVATION_STATUS_UNSPECIFIED: Default Unspecified status
+      SERVICE_ACTIVATION_ENABLED: Service is active in the project.
+      SERVICE_ACTIVATION_DISABLED: Service is disabled in the project recently
+        i.e., within last 24 hours.
+      SERVICE_ACTIVATION_DISABLED_FULL: Service has been disabled for
+        configured grace_period (default 30 days).
+      SERVICE_ACTIVATION_UNKNOWN_REASON: Happens when PSM cannot determine the
+        status of service in a project Could happen due to variety of reasons
+        like PERMISSION_DENIED or Project got deleted etc.
+    """
+    SERVICE_ACTIVATION_STATUS_UNSPECIFIED = 0
+    SERVICE_ACTIVATION_ENABLED = 1
+    SERVICE_ACTIVATION_DISABLED = 2
+    SERVICE_ACTIVATION_DISABLED_FULL = 3
+    SERVICE_ACTIVATION_UNKNOWN_REASON = 4
+
   class ServiceManagementValueValuesEnum(_messages.Enum):
     r"""ServiceManagementValueValuesEnum enum type.
 
@@ -1234,7 +1276,8 @@ class Reasons(_messages.Message):
   abuse = _messages.EnumField('AbuseValueValuesEnum', 1)
   billing = _messages.EnumField('BillingValueValuesEnum', 2)
   dataGovernance = _messages.EnumField('DataGovernanceValueValuesEnum', 3)
-  serviceManagement = _messages.EnumField('ServiceManagementValueValuesEnum', 4)
+  serviceActivation = _messages.EnumField('ServiceActivationValueValuesEnum', 4)
+  serviceManagement = _messages.EnumField('ServiceManagementValueValuesEnum', 5)
 
 
 class ResourceRecord(_messages.Message):

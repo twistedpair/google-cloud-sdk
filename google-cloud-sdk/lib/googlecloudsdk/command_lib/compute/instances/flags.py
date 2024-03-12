@@ -1342,6 +1342,17 @@ def _ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported(stack_type_input):
         'Invalid value for stack-type [%s].' % stack_type)
 
 
+def _ValidateNetworkInterfaceIgmpQuery(igmp_query_input):
+  """Validates igmp query field, throws exception if invalid."""
+  igmp_query = igmp_query_input.upper()
+  if igmp_query in constants.NETWORK_INTERFACE_IGMP_QUERY_CHOICES:
+    return igmp_query
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--network-interface',
+        f'Invalid value for igmp-query [{igmp_query}].')
+
+
 def _ValidateNetworkTier(network_tier_input):
   """Validates network tier field, throws exception if invalid."""
   network_tier = network_tier_input.upper()
@@ -1382,7 +1393,8 @@ def AddAddressArgs(parser,
                    support_network_queue_count=False,
                    support_network_attachments=False,
                    support_vlan_nic=False,
-                   support_ipv6_only=False):
+                   support_ipv6_only=False,
+                   support_igmp_query=False):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1400,6 +1412,8 @@ def AddAddressArgs(parser,
       supported.
     support_vlan_nic: indicates whether VLAN network interfaces are supported.
     support_ipv6_only: indicates whether IPV6_ONLY stack type is supported.
+    support_igmp_query: indicates whether setting igmp query on network
+      interfaces is supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1435,6 +1449,9 @@ def AddAddressArgs(parser,
 
   multiple_network_interface_cards_spec[
       'nic-type'] = ValidateNetworkInterfaceNicType
+
+  multiple_network_interface_cards_spec[
+      'igmp-query'] = _ValidateNetworkInterfaceIgmpQuery
 
   network_interface_help_texts = []
   # IPv6 related fields are not supported in create-with-container commands yet.
@@ -1573,6 +1590,13 @@ def AddAddressArgs(parser,
   if support_vlan_nic:
     multiple_network_interface_cards_spec['vlan'] = int
     # TODO(b/274638343): Add help text before release.
+
+  if support_igmp_query:
+    network_interface_help_texts.append("""
+      *igmp-query*::: Determines if the Compute Engine Instance can receive and respond to IGMP query packets on the specified network interface.
+      ``IGMP_QUERY'' must be one of: `IGMP_QUERY_V2`, `IGMP_QUERY_DISABLED`.
+      It is disabled by default.
+    """)
 
   if instance_create:
     network_interfaces = parser.add_group(mutex=True)

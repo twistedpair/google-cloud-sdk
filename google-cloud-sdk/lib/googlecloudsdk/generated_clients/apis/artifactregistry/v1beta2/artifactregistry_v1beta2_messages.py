@@ -1314,6 +1314,7 @@ class ProjectSettings(_messages.Message):
     name: The name of the project's settings. Always of the form:
       projects/{project-id}/projectSettings In update request: never set In
       response: always set
+    pullPercent: A integer attribute.
   """
 
   class LegacyRedirectionStateValueValuesEnum(_messages.Enum):
@@ -1341,6 +1342,7 @@ class ProjectSettings(_messages.Message):
 
   legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
   name = _messages.StringField(2)
+  pullPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Repository(_messages.Message):

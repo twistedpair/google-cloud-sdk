@@ -914,10 +914,11 @@ def CheckRedirectionPermission(projects):
             f" {','.join(ar_requests.REDIRECT_PERMISSIONS)} permission(s) on"
             f" each project to migrate, including {project}."
         )
+      user = properties.VALUES.core.account.Get()
       log.status.Print(
           "You can set this permission with the following command:"
           f"\n  gcloud projects add-iam-policy-binding {project} "
-          "--member=<account> --role='roles/storage.admin'"
+          f"--member={user} --role='roles/storage.admin'"
       )
       return False
   return True
@@ -1275,16 +1276,15 @@ def MigrateToArtifactRegistry(unused_ref, args):
     projects = args.projects.split(",")
   else:
     projects = [args.project or properties.VALUES.core.project.GetOrFail()]
-  recent_images_only = args.recent_images_only
+  recent_images = args.recent_images
+  last_uploaded_versions = args.last_uploaded_versions
   from_gcr = args.from_gcr
   to_pkg_dev = args.to_pkg_dev
   copy_only = args.copy_only
   canary_reads = args.canary_reads
   skip_iam = args.skip_iam_update
-  if recent_images_only is not None and (
-      recent_images_only < 30 or recent_images_only > 90
-  ):
-    log.status.Print("--recent-images-only must be between 30 and 90 inclusive")
+  if recent_images is not None and (recent_images < 30 or recent_images > 90):
+    log.status.Print("--recent-images must be between 30 and 90 inclusive")
     return None
   if canary_reads is not None and (canary_reads < 1 or canary_reads > 100):
     log.status.Print("--canary-reads must be between 1 and 100 inclusive")
@@ -1299,6 +1299,12 @@ def MigrateToArtifactRegistry(unused_ref, args):
   if bool(from_gcr) != bool(to_pkg_dev):
     log.status.Print(
         "--from-gcr and --to-pkg-dev-repo should be provided together"
+    )
+    return None
+
+  if last_uploaded_versions and recent_images:
+    log.status.Print(
+        "Only one of --last-uploaded-versions and --recent-images can be used"
     )
     return None
 
@@ -1344,7 +1350,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
     if not WrappedCopyImagesFromGCR(
         [host],
         to_pkg_dev,
-        recent_images_only,
+        recent_images,
+        last_uploaded=last_uploaded_versions,
         copy_from=from_gcr,
         max_threads=args.max_threads,
     ):
@@ -1413,7 +1420,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
     log.status.Print(
         "Artifact Registry is already handling all requests for *gcr.io repos"
         " for the provided projects. If there are images you still need to"
-        " copy, use the --copy_only flag."
+        " copy, use the --copy-only flag."
     )
     return None
 
@@ -1484,6 +1491,39 @@ def MigrateToArtifactRegistry(unused_ref, args):
       return None
     projects_to_redirect = dangerous_projects
 
+  # Pre-copy the image. Don't bother with copy-only because we'll do it later.
+  # Pre-copy serves two purposes:
+  # 1) A smoke test such that if something breaks, it breaks BEFORE we redirect
+  # 2) Gets most of the commonly used images copied ahead of time to avoid
+  # a load/quota spike at redirection time
+  if not copy_only and projects_to_redirect:
+    pre_copied_projects = []
+    log.status.Print(
+        "\nCopying initial images (additional images will be copied later)...\n"
+    )
+    for project in projects_to_redirect:
+      gcr_hosts = [r["repository"] for r in existing_repos[project]]
+      last_uploaded_for_precopy = 100
+      if last_uploaded_versions:
+        last_uploaded_for_precopy = min(last_uploaded_versions,
+                                        last_uploaded_for_precopy)
+      if WrappedCopyImagesFromGCR(
+          gcr_hosts,
+          project,
+          # Reduce down-time by only copying recent images. This is enough to
+          # address the 2 points above
+          recent_images=7,
+          last_uploaded=last_uploaded_for_precopy,
+          # None of these projects have been redirected yet.
+          convert_to_pkg_dev=True,
+          max_threads=args.max_threads,
+          pre_copy=True,
+      ):
+        # Don't even try redirecting projects that don't have auth setup
+        # correctly(b/327496533)
+        pre_copied_projects.append(project)
+    projects_to_redirect = pre_copied_projects
+
   if not skip_iam:
     for project in projects_to_redirect:
       continue_checking_auth = SetupAuthForProject(
@@ -1492,31 +1532,9 @@ def MigrateToArtifactRegistry(unused_ref, args):
       if not continue_checking_auth:
         break
 
-  # Pre-copy the image. Don't bother with copy-only because we'll do it later.
-  # Pre-copy serves two purposes:
-  # 1) A smoke test such that if something breaks, it breaks BEFORE we redirect
-  # 2) Gets most of the commonly used images copied ahead of time to avoid
-  # a load/quota spike at redirection time
-  if not copy_only and projects_to_redirect:
-    log.status.Print(
-        "\nCopying initial images (additional images will be copied later)...\n"
-    )
-    for project in projects_to_redirect:
-      gcr_hosts = [r["host"] for r in existing_repos[project]]
-      WrappedCopyImagesFromGCR(
-          gcr_hosts,
-          project,
-          # Reduce down-time by only copying recent images. This is enough to
-          # address the 2 points above
-          recent_only=7,
-          # None of these projects have been redirected yet.
-          convert_to_pkg_dev=True,
-          max_threads=args.max_threads,
-      )
-
   projects_to_redirect.extend(partial_projects)
 
-  if canary_reads:
+  if canary_reads and projects_to_redirect:
     log.status.Print(
         f"\nThe next step will redirect {canary_reads}% of *gcr.io read"
         " traffic to Artifact Registry. All pushes will still write to"
@@ -1549,10 +1567,9 @@ def MigrateToArtifactRegistry(unused_ref, args):
 
   if projects_to_redirect:
     caveat = ""
-    if recent_images_only:
+    if recent_images:
       caveat = (
-          " that have been pulled or pushed in the last"
-          f" {recent_images_only} days"
+          f" that have been pulled or pushed in the last {recent_images} days"
       )
     log.status.Print(
         "\nThe next step will redirect all *gcr.io traffic to"
@@ -1623,7 +1640,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
     if WrappedCopyImagesFromGCR(
         gcr_hosts,
         project,
-        recent_images_only,
+        recent_images,
+        last_uploaded=last_uploaded_versions,
         convert_to_pkg_dev=convert_to_pkg_dev,
         max_threads=args.max_threads,
     ):
@@ -1680,18 +1698,26 @@ def MigrateToArtifactRegistry(unused_ref, args):
 def WrappedCopyImagesFromGCR(
     hosts,
     project_repo,
-    recent_only,
+    recent_images,
+    last_uploaded,
     copy_from="same",
     convert_to_pkg_dev=False,
     max_threads=8,
+    pre_copy=False,
 ):
   """Copies images from GCR for all hosts and handles auth error."""
   try:
     results = collections.defaultdict(int)
     if copy_from == "same":
-      message = f"Copying images for {project_repo}... "
+      if len(hosts) == 1:
+        message = f"Copying images for {hosts[0]}/{project_repo}... "
+      else:
+        message = f"Copying images for {project_repo}... "
     else:
-      message = f"Copying images to {project_repo}... "
+      if len(hosts) == 1:
+        message = f"Copying images to {hosts[0]}/{project_repo}... "
+      else:
+        message = f"Copying images to {project_repo}... "
 
     # TODO: b/325516793 - Uncomment once we can get test coverage
     # def PrintResults():
@@ -1725,7 +1751,8 @@ def WrappedCopyImagesFromGCR(
               thread_futures,
               executor if max_threads > 1 else None,
               url,
-              recent_only,
+              recent_images,
+              last_uploaded,
               copy_from,
               results,
           ]
@@ -1753,7 +1780,8 @@ def WrappedCopyImagesFromGCR(
       log.status.Print("\nExample images that failed to copy:")
       for example_failure in results["example_failures"]:
         log.status.Print(example_failure)
-      return False
+      # Some errors are okay when pre-copying. We'll just try again later
+      return pre_copy
     return True
   except docker_http.V2DiagnosticException as e:
     match = re.search("requires (.*) to have storage.objects.", str(e))
@@ -1766,22 +1794,27 @@ def WrappedCopyImagesFromGCR(
     log.status.Print(
         con.Colorize("\nERROR:", "red")
         + " The Artifact Registry service account doesn't have access to"
-        " {project} for copying images\nThe following command will grant the"
-        " necessary access (may take a few minutes):\n  gcloud projects"
-        " add-iam-policy-binding {project} --member='serviceAccount:{p4sa}'"
-        " --role='roles/storage.objectViewer'\n".format(
-            p4sa=match[1], project=project
-        ),
+        f" {project} for copying images\nThe following command will grant"
+        " the necessary access (may take a few minutes):\n  gcloud projects"
+        " add-iam-policy-binding"
+        f" {project} --member='serviceAccount:{match[1]}'"
+        " --role='roles/storage.objectViewer'\nYou can re-run this script"
+        " after granting access."
     )
     return False
 
 
 def CopyImagesFromGCR(
-    thread_futures, executor, repo_path, recent_only, copy_from, results
+    thread_futures,
+    executor,
+    repo_path,
+    recent_images,
+    last_uploaded,
+    copy_from,
+    results,
 ):
   """Recursively copies images from GCR."""
-  # TODO: b/327023681 - Use 5 minute timeout until AR can handle longer requests
-  http_obj = util.Http(timeout=5 * 60)
+  http_obj = util.Http(timeout=10 * 60)
   repository = docker_name.Repository(repo_path)
   next_page = ""
   while True:
@@ -1792,8 +1825,10 @@ def CopyImagesFromGCR(
           transport=http_obj,
       ) as image:
         query = f"?CopyFromGCR={copy_from}"
-        if recent_only:
-          query += f"&PullDays={recent_only}"
+        if recent_images:
+          query += f"&PullDays={recent_images}"
+        if last_uploaded:
+          query += f"&MaxVersions={last_uploaded}"
         if next_page:
           query += f"&NextPage={next_page}"
         tags_payload = json.loads(
@@ -1820,7 +1855,8 @@ def CopyImagesFromGCR(
         thread_futures,
         executor,
         repo_path + "/" + child,
-        recent_only,
+        recent_images,
+        last_uploaded,
         copy_from,
         results,
     ]

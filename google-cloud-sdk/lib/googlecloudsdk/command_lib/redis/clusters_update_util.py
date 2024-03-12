@@ -43,3 +43,13 @@ def UpdateShardCount(unused_instance_ref, args, patch_request):
     patch_request.cluster.shardCount = args.shard_count
     patch_request = AddFieldToUpdateMask('shard_count', patch_request)
   return patch_request
+
+
+def UpdateDeletionProtection(unused_instance_ref, args, patch_request):
+  """Hook to add delete protection to the redis cluster update request."""
+  if args.IsSpecified('deletion_protection'):
+    patch_request.cluster.deletionProtectionEnabled = args.deletion_protection
+    patch_request = AddFieldToUpdateMask(
+        'deletion_protection_enabled', patch_request
+    )
+  return patch_request

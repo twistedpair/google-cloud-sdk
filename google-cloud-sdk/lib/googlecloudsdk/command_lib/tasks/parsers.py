@@ -169,12 +169,29 @@ class QueueUpdatableConfiguration(object):
         config.app_engine_routing_override = {
             'routing_override': 'appEngineRoutingOverride',
         }
+        config.http_target = {
+            'http_uri_override':
+                'uriOverride',
+            'http_method_override':
+                'httpMethod',
+            'http_header_override':
+                'headerOverrides',
+            'http_oauth_service_account_email_override':
+                'oauthToken.serviceAccountEmail',
+            'http_oauth_token_scope_override':
+                'oauthToken.scope',
+            'http_oidc_service_account_email_override':
+                'oidcToken.serviceAccountEmail',
+            'http_oidc_token_audience_override':
+                'oidcToken.audience',
+        }
         config.stackdriver_logging_config = {
             'log_sampling_ratio': 'samplingRatio',
         }
         config.retry_config_mask_prefix = 'retryConfig'
         config.rate_limits_mask_prefix = 'rateLimits'
         config.app_engine_routing_override_mask_prefix = ''
+        config.http_target_mask_prefix = 'httpTarget'
         config.stackdriver_logging_config_mask_prefix = 'stackdriverLoggingConfig'
     return config
 
@@ -414,14 +431,22 @@ def ParseCreateOrUpdateQueueArgs(
         type=_ParseQueueType(args, queue_type, messages, is_update),
     )
   else:
+    http_target = (
+        _ParseHttpTargetArgs(args, queue_type, messages) if http_queue else None
+    )
     return messages.Queue(
         retryConfig=_ParseRetryConfigArgs(
-            args, queue_type, messages, is_update, is_alpha=False),
+            args, queue_type, messages, is_update, is_alpha=False
+        ),
         rateLimits=_ParseRateLimitsArgs(args, queue_type, messages, is_update),
         stackdriverLoggingConfig=_ParseStackdriverLoggingConfigArgs(
-            args, queue_type, messages, is_update),
+            args, queue_type, messages, is_update
+        ),
         appEngineRoutingOverride=_ParseAppEngineRoutingOverrideArgs(
-            args, queue_type, messages))
+            args, queue_type, messages
+        ),
+        httpTarget=http_target,
+    )
 
 
 def GetHttpTargetArgs(queue_config):

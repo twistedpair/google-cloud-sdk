@@ -14,6 +14,35 @@ from apitools.base.py import extra_types
 package = 'composer'
 
 
+class AirflowMetadataRetentionPolicyConfig(_messages.Message):
+  r"""The policy for airflow metadata database retention.
+
+  Enums:
+    RetentionModeValueValuesEnum: Optional. Retention can be either enabled or
+      disabled.
+
+  Fields:
+    retentionDays: Optional. How many days data should be retained for.
+    retentionMode: Optional. Retention can be either enabled or disabled.
+  """
+
+  class RetentionModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Retention can be either enabled or disabled.
+
+    Values:
+      RETENTION_MODE_UNSPECIFIED: Default mode doesn't change environment
+        parameters.
+      RETENTION_MODE_ENABLED: Retention policy is enabled.
+      RETENTION_MODE_DISABLED: Retention policy is disabled.
+    """
+    RETENTION_MODE_UNSPECIFIED = 0
+    RETENTION_MODE_ENABLED = 1
+    RETENTION_MODE_DISABLED = 2
+
+  retentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  retentionMode = _messages.EnumField('RetentionModeValueValuesEnum', 2)
+
+
 class AllowedIpRange(_messages.Message):
   r"""Allowed IP range with user-provided description.
 
@@ -656,7 +685,9 @@ class ComposerWorkloadStatus(_messages.Message):
 
 
 class DagProcessorResource(_messages.Message):
-  r"""Configuration for resources used by Airflow DAG processors.
+  r"""Configuration for resources used by Airflow DAG processors. This field
+  is supported for Cloud Composer environments in versions
+  composer-3.*.*-airflow-*.*.* and newer.
 
   Fields:
     count: Optional. The number of DAG processors. If not provided or set to
@@ -679,11 +710,14 @@ class DataRetentionConfig(_messages.Message):
   r"""The configuration setting for Airflow database data retention mechanism.
 
   Fields:
+    airflowMetadataRetentionConfig: Optional. The retention policy for airflow
+      metadata database. Details: go/composer-database-retention-2
     taskLogsRetentionConfig: Optional. The configuration settings for task
       logs retention
   """
 
-  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 1)
+  airflowMetadataRetentionConfig = _messages.MessageField('AirflowMetadataRetentionPolicyConfig', 1)
+  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 2)
 
 
 class DatabaseConfig(_messages.Message):
@@ -909,8 +943,8 @@ class EnvironmentConfig(_messages.Message):
       window. The maintenance window period must encompass at least 12 hours
       per week. This may be split into multiple chunks, each with a size of at
       least 4 hours. If this value is omitted, the default value for
-      maintenance window will be applied. The default value is Saturday and
-      Sunday 00-06 GMT.
+      maintenance window is applied. By default, maintenance windows are from
+      00:00:00 to 04:00:00 (GMT) on Friday, Saturday, and Sunday every week.
     masterAuthorizedNetworksConfig: Optional. The configuration options for
       GKE cluster master authorized networks. By default master authorized
       networks feature is: - in case of private environment: enabled with no
@@ -2196,18 +2230,14 @@ class TaskLogsRetentionConfig(_messages.Message):
 
   Enums:
     StorageModeValueValuesEnum: Optional. The mode of storage for Airflow
-      workers task logs. For details, see go/composer-store-task-logs-in-
-      cloud-logging-only-design-doc
+      workers task logs.
 
   Fields:
     storageMode: Optional. The mode of storage for Airflow workers task logs.
-      For details, see go/composer-store-task-logs-in-cloud-logging-only-
-      design-doc
   """
 
   class StorageModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The mode of storage for Airflow workers task logs. For
-    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+    r"""Optional. The mode of storage for Airflow workers task logs.
 
     Values:
       TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified

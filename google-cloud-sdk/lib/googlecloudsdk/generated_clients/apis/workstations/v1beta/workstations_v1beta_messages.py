@@ -177,6 +177,28 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BoostConfig(_messages.Message):
+  r"""A configuration that workstations can boost to.
+
+  Fields:
+    accelerators: Optional. A list of the type and count of accelerator cards
+      attached to the boost instance. Defaults to `none`.
+    id: Optional. Required. The id to be used for the boost config.
+    machineType: Optional. The type of machine that boosted VM instances will
+      use-for example, `e2-standard-4`. For more information about machine
+      types that Cloud Workstations supports, see the list of [available
+      machine types](https://cloud.google.com/workstations/docs/available-
+      machine-types). Defaults to `e2-standard-4`.
+    poolSize: Optional. The number of boost VMs that the system should keep
+      idle so that workstations can be boosted quickly. Defaults to `0`.
+  """
+
+  accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
+  id = _messages.StringField(2)
+  machineType = _messages.StringField(3)
+  poolSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -344,6 +366,9 @@ class GceInstance(_messages.Message):
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
       attached to the instance.
+    boostConfigs: Optional. A list of the boost configurations that
+      workstations created using this workstation configuration are allowed to
+      use.
     bootDiskSizeGb: Optional. The size of the boot disk for the VM in
       gigabytes (GB). The minimum boot disk size is `30` GB. Defaults to `50`
       GB.
@@ -358,7 +383,7 @@ class GceInstance(_messages.Message):
       and `*.pkg.dev`. Defaults to false (VMs have public IP addresses).
     disableSsh: Optional. Whether to disable SSH access to the VM.
     enableNestedVirtualization: Optional. Whether to enable nested
-      virtualization on Cloud Workstations VMs created under this workstation
+      virtualization on Cloud Workstations VMs created using this workstation
       configuration. Nested virtualization lets you run virtual machine (VM)
       instances inside your workstation. Before enabling nested
       virtualization, consider the following important considerations. Cloud
@@ -427,18 +452,19 @@ class GceInstance(_messages.Message):
   """
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
-  bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
-  disablePublicIpAddresses = _messages.BooleanField(4)
-  disableSsh = _messages.BooleanField(5)
-  enableNestedVirtualization = _messages.BooleanField(6)
-  machineType = _messages.StringField(7)
-  poolSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(10)
-  serviceAccountScopes = _messages.StringField(11, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 12)
-  tags = _messages.StringField(13, repeated=True)
+  boostConfigs = _messages.MessageField('BoostConfig', 2, repeated=True)
+  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 4)
+  disablePublicIpAddresses = _messages.BooleanField(5)
+  disableSsh = _messages.BooleanField(6)
+  enableNestedVirtualization = _messages.BooleanField(7)
+  machineType = _messages.StringField(8)
+  poolSize = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(11)
+  serviceAccountScopes = _messages.StringField(12, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 13)
+  tags = _messages.StringField(14, repeated=True)
 
 
 class GcePersistentDisk(_messages.Message):
@@ -466,7 +492,7 @@ class GcePersistentDisk(_messages.Message):
 
 
 class GceRegionalPersistentDisk(_messages.Message):
-  r"""A PersistentDirectory backed by a Compute Engine regional persistent
+  r"""A Persistent Directory backed by a Compute Engine regional persistent
   disk. The persistent_directories field is repeated, but it may contain only
   one entry. It creates a [persistent
   disk](https://cloud.google.com/compute/docs/disks/persistent-disks) that
@@ -1022,14 +1048,17 @@ class StartWorkstationRequest(_messages.Message):
   r"""Request message for StartWorkstation.
 
   Fields:
+    boostConfig: Optional. If set, the workstation starts using the boost
+      configuration with the specified ID.
     etag: Optional. If set, the request will be rejected if the latest version
       of the workstation on the server does not have this ETag.
     validateOnly: Optional. If set, validate the request and preview the
       review, but do not actually apply it.
   """
 
-  etag = _messages.StringField(1)
-  validateOnly = _messages.BooleanField(2)
+  boostConfig = _messages.StringField(1)
+  etag = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class Status(_messages.Message):
@@ -1436,10 +1465,10 @@ class WorkstationConfig(_messages.Message):
       soft-deleted.
     disableTcpConnections: Optional. Disables support for plain TCP
       connections in the workstation. By default the service supports TCP
-      connections via a websocket relay. Setting this option to true disables
-      that relay, which prevents the usage of services that require plain tcp
-      connections, such as ssh. When enabled, all communication must occur
-      over https or wss.
+      connections through a websocket relay. Setting this option to true
+      disables that relay, which prevents the usage of services that require
+      plain TCP connections, such as SSH. When enabled, all communication must
+      occur over HTTPS or WSS.
     displayName: Optional. Human-readable name for this workstation
       configuration.
     enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on

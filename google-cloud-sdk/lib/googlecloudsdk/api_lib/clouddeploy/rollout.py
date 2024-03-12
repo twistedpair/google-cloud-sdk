@@ -157,7 +157,13 @@ class RolloutClient(object):
 
     return self._service.Create(request)
 
-  def RetryJob(self, name, job, phase):
+  def RetryJob(
+      self,
+      name,
+      job,
+      phase,
+      override_deploy_policies=None,
+  ):
     """Calls the retryjob API to retry a job on a rollout.
 
     Args:
@@ -165,32 +171,48 @@ class RolloutClient(object):
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
       job: The job id on the rollout resource.
       phase: The phase id on the rollout resource.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       RetryJobResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobRequest(
         rollout=name,
-        retryJobRequest=self.messages.RetryJobRequest(jobId=job, phaseId=phase),
+        retryJobRequest=self.messages.RetryJobRequest(
+            jobId=job,
+            phaseId=phase,
+            overrideDeployPolicy=override_deploy_policies,
+        ),
     )
 
     return self._service.RetryJob(request)
 
-  def AdvanceRollout(self, name, phase):
+  def AdvanceRollout(
+      self,
+      name,
+      phase,
+      override_deploy_policies=None,
+  ):
     """Calls the AdvanceRollout API to advance a rollout to the next phase.
 
     Args:
       name: Name of the Rollout. Format is
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
       phase: The phase id on the rollout resource.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       AdvanceRolloutResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceRequest(
         name=name,
         advanceRolloutRequest=self.messages.AdvanceRolloutRequest(
-            phaseId=phase
+            phaseId=phase,
+            overrideDeployPolicy=override_deploy_policies,
         ),
     )
 
@@ -218,7 +240,7 @@ class RolloutClient(object):
 
     return self._service.Cancel(request)
 
-  def IgnoreJob(self, name, job, phase):
+  def IgnoreJob(self, name, job, phase, override_deploy_policies=None):
     """Calls the IgnoreJob API to ignore a job on a rollout within a specified phase.
 
     Args:
@@ -226,14 +248,19 @@ class RolloutClient(object):
         projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/rollouts/{rollout}.
       job: The job id on the rollout resource.
       phase: The phase id on the rollout resource.
+      override_deploy_policies: List of Deploy Policies to override.
 
     Returns:
       IgnoreJobResponse message.
     """
+    if override_deploy_policies is None:
+      override_deploy_policies = []
     request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequest(
         rollout=name,
         ignoreJobRequest=self.messages.IgnoreJobRequest(
-            jobId=job, phaseId=phase
+            jobId=job,
+            phaseId=phase,
+            overrideDeployPolicy=override_deploy_policies,
         ),
     )
 

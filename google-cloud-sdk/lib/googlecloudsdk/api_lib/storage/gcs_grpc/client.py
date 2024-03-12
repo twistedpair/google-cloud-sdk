@@ -45,6 +45,49 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
       self._gapic_client = core_apis.GetGapicClientInstance('storage', 'v2')
     return self._gapic_client
 
+  def compose_objects(
+      self,
+      source_resources,
+      destination_resource,
+      request_config,
+      original_source_resource=None,
+      posix_to_set=None,
+  ):
+    """See super class."""
+    pass
+
+  def copy_object(
+      self,
+      source_resource,
+      destination_resource,
+      request_config,
+      posix_to_set=None,
+      progress_callback=None,
+      should_deep_copy_metadata=False,
+  ):
+    """See super class."""
+    pass
+
+  def delete_object(self, object_url, request_config):
+    """See super class."""
+    pass
+
+  def restore_object(self, url, request_config):
+    """See super class."""
+    pass
+
+  def bulk_restore_objects(
+      self,
+      bucket_url,
+      object_globs,
+      request_config,
+      allow_overwrite=False,
+      deleted_after_time=None,
+      deleted_before_time=None,
+  ):
+    """See super class."""
+    pass
+
   def download_object(
       self,
       cloud_resource,

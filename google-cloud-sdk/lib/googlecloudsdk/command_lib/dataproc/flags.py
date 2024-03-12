@@ -393,7 +393,7 @@ def AddJobResourceArg(parser, verb, api_version):
       required=True).AddToParser(parser)
 
 
-def AddBatchResourceArg(parser, verb, api_version):
+def AddBatchResourceArg(parser, verb, api_version, use_location=False):
   """Adds batch resource argument to parser."""
 
   def BatchConfig():
@@ -409,7 +409,9 @@ def AddBatchResourceArg(parser, verb, api_version):
         resource_name='batch',
         disable_auto_completers=True,
         projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-        locationsId=_RegionAttributeConfig(),
+        locationsId=_LocationAttributeConfig()
+        if use_location
+        else _RegionAttributeConfig(),
         batchesId=BatchConfig(),
     )
 

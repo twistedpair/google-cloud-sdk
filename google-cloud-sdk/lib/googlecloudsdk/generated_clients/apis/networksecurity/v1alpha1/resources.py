@@ -244,6 +244,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PARTNERSSEENVIRONMENTS = (
+      'projects.locations.partnerSSEEnvironments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'partnerSSEEnvironments/{partnerSSEEnvironmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PARTNERSSEGATEWAYS = (
       'projects.locations.partnerSSEGateways',
       '{+name}',

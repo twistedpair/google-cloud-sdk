@@ -134,7 +134,7 @@ class SourcerepoV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+      r"""Gets the IAM policy policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
       Args:
         request: (SourcerepoProjectsReposGetIamPolicyRequest) input message
@@ -215,7 +215,7 @@ class SourcerepoV1(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
+      r"""Sets the IAM policy on the specified resource. Replaces any existing policy.
 
       Args:
         request: (SourcerepoProjectsReposSetIamPolicyRequest) input message

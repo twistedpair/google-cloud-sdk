@@ -31,6 +31,34 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_NOTES = (
+      'projects.locations.notes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/notes/{notesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OCCURRENCES = (
+      'projects.locations.occurrences',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/occurrences/'
+              '{occurrencesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_NOTES = (
       'projects.notes',
       '{+name}',

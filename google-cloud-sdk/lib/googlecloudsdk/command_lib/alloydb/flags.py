@@ -34,6 +34,7 @@ from __future__ import unicode_literals
 
 import re
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
@@ -82,6 +83,21 @@ def AddBackup(parser, positional=True):
         required=True,
         type=str,
         help='AlloyDB backup ID')
+
+
+def AddEnforcedRetention(parser):
+  """Adds the `--enforced-retention` flag to the parser."""
+  parser.add_argument(
+      '--enforced-retention',
+      action='store_true',
+      required=False,
+      hidden=True,
+      help=(
+          'If set, enforces the retention period for this backup. Backups'
+          ' with enforced retention cannot be deleted before they are out of'
+          ' retention.'
+      ),
+  )
 
 
 def AddCluster(parser, positional=True, required=True):
@@ -490,12 +506,15 @@ def _GetTimeOfDayArgList(alloydb_messages):
   return arg_parsers.ArgList(element_type=_ParseTimeOfDay)
 
 
-def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
+def AddAutomatedBackupFlags(
+    parser, alloydb_messages, release_track, update=False
+):
   """Adds automated backup flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
     alloydb_messages: Message module.
+    release_track: The command version being used - GA/BETA/ALPHA.
     update: If True, adds update specific flags.
   """
   automated_backup_help = 'Automated backup policy.'
@@ -550,6 +569,21 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
             'The backup window must be at least 5 minutes long. '
             'There is no upper bound on the window. If not set, '
             'it will default to 1 hour.'))
+  if not update and (
+      release_track == base.ReleaseTrack.ALPHA
+      or release_track == base.ReleaseTrack.BETA
+  ):
+    policy_group.add_argument(
+        '--automated-backup-enforced-retention',
+        action='store_true',
+        required=False,
+        hidden=True,
+        help=(
+            'If set, enforces the retention period for automated backups.'
+            ' Backups created by this policy cannot be deleted before they are'
+            ' out of retention.'
+        ),
+    )
 
   kms_resource_args.AddKmsKeyResourceArg(
       policy_group,
@@ -633,11 +667,12 @@ def AddRestoreClusterSourceFlags(parser):
             '2012-11-15T16:19:00.094Z.'))
 
 
-def AddContinuousBackupConfigFlags(parser, update=False):
+def AddContinuousBackupConfigFlags(parser, release_track, update=False):
   """Adds Continuous backup configuration flags.
 
   Args:
     parser: argparse.ArgumentParser: Parser object for command line inputs.
+    release_track: The command version being used - GA/BETA/ALPHA.
     update: Whether database flags were provided as part of an update.
   """
   continuous_backup_help = 'Continuous Backup configuration.'
@@ -654,8 +689,26 @@ def AddContinuousBackupConfigFlags(parser, update=False):
       '--continuous-backup-recovery-window-days',
       metavar='RECOVERY_PERIOD',
       type=int,
-      help=('Recovery window of the log files and backups saved to support '
-            'Continuous Backups.'))
+      help=(
+          'Recovery window of the log files and backups saved to support '
+          'Continuous Backups.'
+      ),
+  )
+  if not update and (
+      release_track == base.ReleaseTrack.ALPHA
+      or release_track == base.ReleaseTrack.BETA
+  ):
+    group.add_argument(
+        '--continuous-backup-enforced-retention',
+        action='store_true',
+        required=False,
+        hidden=True,
+        help=(
+            'If set, enforces the retention period for continuous backups.'
+            ' Backups created by this configuration cannot be deleted before'
+            ' they are out of retention.'
+        ),
+    )
 
   cmek_group = group
   if update:

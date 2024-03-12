@@ -40,6 +40,8 @@ class DataprocgdcV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_serviceInstances_applicationEnvironments = self.ProjectsLocationsServiceInstancesApplicationEnvironmentsService(self)
+    self.projects_locations_serviceInstances_sparkApplications = self.ProjectsLocationsServiceInstancesSparkApplicationsService(self)
     self.projects_locations_serviceInstances = self.ProjectsLocationsServiceInstancesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -159,6 +161,296 @@ class DataprocgdcV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocgdcProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServiceInstancesApplicationEnvironmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceInstances_applicationEnvironments resource."""
+
+    _NAME = 'projects_locations_serviceInstances_applicationEnvironments'
+
+    def __init__(self, client):
+      super(DataprocgdcV1alpha1.ProjectsLocationsServiceInstancesApplicationEnvironmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an application environment associated with a Dataproc ServiceInstance.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApplicationEnvironment) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/applicationEnvironments',
+        http_method='POST',
+        method_id='dataprocgdc.projects.locations.serviceInstances.applicationEnvironments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['applicationEnvironmentId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/applicationEnvironments',
+        request_field='applicationEnvironment',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsCreateRequest',
+        response_type_name='ApplicationEnvironment',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an application environment.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/applicationEnvironments/{applicationEnvironmentsId}',
+        http_method='DELETE',
+        method_id='dataprocgdc.projects.locations.serviceInstances.applicationEnvironments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an application environment.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApplicationEnvironment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/applicationEnvironments/{applicationEnvironmentsId}',
+        http_method='GET',
+        method_id='dataprocgdc.projects.locations.serviceInstances.applicationEnvironments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsGetRequest',
+        response_type_name='ApplicationEnvironment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists application environments in a location.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListApplicationEnvironmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/applicationEnvironments',
+        http_method='GET',
+        method_id='dataprocgdc.projects.locations.serviceInstances.applicationEnvironments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/applicationEnvironments',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsListRequest',
+        response_type_name='ListApplicationEnvironmentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an application environment. Only supports updating state or labels.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ApplicationEnvironment) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/applicationEnvironments/{applicationEnvironmentsId}',
+        http_method='PATCH',
+        method_id='dataprocgdc.projects.locations.serviceInstances.applicationEnvironments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='applicationEnvironment',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesApplicationEnvironmentsPatchRequest',
+        response_type_name='ApplicationEnvironment',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsServiceInstancesSparkApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceInstances_sparkApplications resource."""
+
+    _NAME = 'projects_locations_serviceInstances_sparkApplications'
+
+    def __init__(self, client):
+      super(DataprocgdcV1alpha1.ProjectsLocationsServiceInstancesSparkApplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an application associated with a Dataproc operator.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/sparkApplications',
+        http_method='POST',
+        method_id='dataprocgdc.projects.locations.serviceInstances.sparkApplications.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sparkApplicationId'],
+        relative_path='v1alpha1/{+parent}/sparkApplications',
+        request_field='sparkApplication',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a application.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/sparkApplications/{sparkApplicationsId}',
+        http_method='DELETE',
+        method_id='dataprocgdc.projects.locations.serviceInstances.sparkApplications.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a application.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SparkApplication) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/sparkApplications/{sparkApplicationsId}',
+        http_method='GET',
+        method_id='dataprocgdc.projects.locations.serviceInstances.sparkApplications.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsGetRequest',
+        response_type_name='SparkApplication',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists applications in a location.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSparkApplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/sparkApplications',
+        http_method='GET',
+        method_id='dataprocgdc.projects.locations.serviceInstances.sparkApplications.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sparkApplications',
+        request_field='',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsListRequest',
+        response_type_name='ListSparkApplicationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a application. Only supports updating state or labels.
+
+      Args:
+        request: (DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/serviceInstances/{serviceInstancesId}/sparkApplications/{sparkApplicationsId}',
+        http_method='PATCH',
+        method_id='dataprocgdc.projects.locations.serviceInstances.sparkApplications.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='sparkApplication',
+        request_type_name='DataprocgdcProjectsLocationsServiceInstancesSparkApplicationsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

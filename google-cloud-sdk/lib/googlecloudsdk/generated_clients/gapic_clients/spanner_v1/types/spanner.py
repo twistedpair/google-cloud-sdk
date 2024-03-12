@@ -166,6 +166,16 @@ class Session(proto.Message):
             earlier than the actual last use time.
         creator_role (str):
             The database role which created this session.
+        multiplexed (bool):
+            Optional. If true, specifies a multiplexed session. A
+            multiplexed session may be used for multiple, concurrent
+            read-only operations but can not be used for read-write
+            transactions, partitioned reads, or partitioned queries.
+            Multiplexed sessions can be created via
+            [CreateSession][google.spanner.v1.Spanner.CreateSession] but
+            not via
+            [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions].
+            Multiplexed sessions may not be deleted nor listed.
     """
 
     name: str = proto.Field(
@@ -190,6 +200,10 @@ class Session(proto.Message):
     creator_role: str = proto.Field(
         proto.STRING,
         number=5,
+    )
+    multiplexed: bool = proto.Field(
+        proto.BOOL,
+        number=6,
     )
 
 
@@ -1510,6 +1524,23 @@ class BatchWriteRequest(proto.Message):
         mutation_groups (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.BatchWriteRequest.MutationGroup]):
             Required. The groups of mutations to be
             applied.
+        exclude_txn_from_change_streams (bool):
+            Optional. When ``exclude_txn_from_change_streams`` is set to
+            ``true``:
+
+            -  Mutations from all transactions in this batch write
+               operation will not be recorded in change streams with DDL
+               option ``allow_txn_exclusion=true`` that are tracking
+               columns modified by these transactions.
+            -  Mutations from all transactions in this batch write
+               operation will be recorded in change streams with DDL
+               option ``allow_txn_exclusion=false or not set`` that are
+               tracking columns modified by these transactions.
+
+            When ``exclude_txn_from_change_streams`` is set to ``false``
+            or not set, mutations from all transactions in this batch
+            write operation will be recorded in all change streams that
+            are tracking columns modified by these transactions.
     """
 
     class MutationGroup(proto.Message):
@@ -1542,6 +1573,10 @@ class BatchWriteRequest(proto.Message):
         proto.MESSAGE,
         number=4,
         message=MutationGroup,
+    )
+    exclude_txn_from_change_streams: bool = proto.Field(
+        proto.BOOL,
+        number=5,
     )
 
 

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import xml.etree.cElementTree as element_tree
 
 from googlecloudsdk.command_lib.metastore import parsers
@@ -56,9 +57,10 @@ def GenerateNetworkConfigFromSubnetList(unused_ref, args, req):
   """
   if args.consumer_subnetworks:
     req.service.networkConfig = {
-        'consumers': [{
-            'subnetwork': parsers.ParseSubnetwork(s, args.location)
-        } for s in args.consumer_subnetworks]
+        'consumers': [
+            {'subnetwork': parsers.ParseSubnetwork(s, args.location)}
+            for s in args.consumer_subnetworks
+        ]
     }
   return req
 
@@ -78,8 +80,9 @@ def GenerateAuxiliaryVersionsConfigFromList(unused_ref, args, req):
   if args.auxiliary_versions:
     if req.service.hiveMetastoreConfig is None:
       req.service.hiveMetastoreConfig = {}
-    req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAuxiliaryVersionsVersionList(
-        args.auxiliary_versions)
+    req.service.hiveMetastoreConfig.auxiliaryVersions = (
+        _GenerateAuxiliaryVersionsVersionList(args.auxiliary_versions)
+    )
   return req
 
 
@@ -99,8 +102,43 @@ def LoadAuxiliaryVersionsConfigsFromYamlFile(file_contents):
     aux_versions[aux_config['name']] = {'version': aux_config['version']}
     if 'config_overrides' in aux_config:
       aux_versions[aux_config['name']]['configOverrides'] = aux_config[
-          'config_overrides']
+          'config_overrides'
+      ]
   return aux_versions
+
+
+def LoadScheduledBackupConfigsFromJsonFile(file_contents):
+  """Convert Input JSON file into scheduled backup configurations map.
+
+  Args:
+    file_contents: The JSON file contents of the file containing the scheduled
+      backup configurations.
+
+  Returns:
+    The scheduled backup configuration mapping with key and value.
+  """
+  try:
+    scheduled_backup_configs = json.loads(file_contents)
+
+    config = {}
+
+    if 'enabled' in scheduled_backup_configs:
+      config['enabled'] = scheduled_backup_configs.pop('enabled')
+
+    if config.get('enabled', False):
+      if 'cron_schedule' not in scheduled_backup_configs:
+        raise ValueError('Missing required field: cron_schedule')
+      if 'backup_location' not in scheduled_backup_configs:
+        raise ValueError('Missing required field: backup_location')
+
+    config['cron_schedule'] = scheduled_backup_configs.get('cron_schedule')
+    config['backup_location'] = scheduled_backup_configs.get('backup_location')
+    config['time_zone'] = scheduled_backup_configs.get('time_zone', 'UTC')
+
+    return config
+
+  except (json.JSONDecodeError, KeyError) as e:
+    raise ValueError(f'Invalid scheduled backup configuration JSON data: {e}')
 
 
 def _GenerateAdditionalProperties(values_dict):
@@ -145,11 +183,17 @@ def _GenerateUpdateMask(args):
           'hive_metastore_config.auxiliary_versions'
       ),
       '--clear-auxiliary-versions': 'hive_metastore_config.auxiliary_versions',
+      '--scheduled-backup-configs-from-file': 'scheduled_backup',
+      '--enable-scheduled-backup': 'scheduled_backup',
+      '--no-enable-scheduled-backup': 'scheduled_backup.enabled',
+      '--scheduled-backup-cron': 'scheduled_backup',
+      '--scheduled-backup-location': 'scheduled_backup',
   }
 
   update_mask = set()
-  for arg_name in set(
-      args.GetSpecifiedArgNames()).intersection(arg_name_to_field):
+  for arg_name in set(args.GetSpecifiedArgNames()).intersection(
+      arg_name_to_field
+  ):
     update_mask.add(arg_name_to_field[arg_name])
   hive_metastore_configs_update_mask_prefix = hive_metastore_configs + '.'
   if hive_metastore_configs not in update_mask:
@@ -170,8 +214,9 @@ def _GenerateUpdateMask(args):
   return ','.join(sorted(update_mask))
 
 
-def SetServiceRequestUpdateHiveMetastoreConfigs(unused_job_ref, args,
-                                                update_service_req):
+def SetServiceRequestUpdateHiveMetastoreConfigs(
+    unused_job_ref, args, update_service_req
+):
   """Modify the Service update request to update, remove, or clear Hive metastore configurations.
 
   Args:
@@ -187,14 +232,17 @@ def SetServiceRequestUpdateHiveMetastoreConfigs(unused_job_ref, args,
     hive_metastore_configs = args.update_hive_metastore_configs
   if args.update_hive_metastore_configs_from_file:
     hive_metastore_configs = LoadHiveMetatsoreConfigsFromXmlFile(
-        args.update_hive_metastore_configs_from_file)
-  update_service_req.service.hiveMetastoreConfig.configOverrides = _GenerateAdditionalProperties(
-      hive_metastore_configs)
+        args.update_hive_metastore_configs_from_file
+    )
+  update_service_req.service.hiveMetastoreConfig.configOverrides = (
+      _GenerateAdditionalProperties(hive_metastore_configs)
+  )
   return update_service_req
 
 
-def GenerateUpdateAuxiliaryVersionsConfigs(unused_job_ref, args,
-                                           update_service_req):
+def GenerateUpdateAuxiliaryVersionsConfigs(
+    unused_job_ref, args, update_service_req
+):
   """Modify the Service update request to add or clear list of auxiliary versions configurations.
 
   Args:
@@ -211,16 +259,16 @@ def GenerateUpdateAuxiliaryVersionsConfigs(unused_job_ref, args,
   if args.clear_auxiliary_versions:
     update_service_req.service.hiveMetastoreConfig.auxiliaryVersions = {}
   if args.add_auxiliary_versions:
-    update_service_req.service.hiveMetastoreConfig.auxiliaryVersions = _GenerateAuxiliaryVersionsVersionList(
-        args.add_auxiliary_versions)
+    update_service_req.service.hiveMetastoreConfig.auxiliaryVersions = (
+        _GenerateAuxiliaryVersionsVersionList(args.add_auxiliary_versions)
+    )
   return update_service_req
 
 
 def _GenerateAuxiliaryVersionsVersionList(aux_versions):
   return _GenerateAdditionalProperties({
-      'aux-' + version.replace('.', '-'): {
-          'version': version
-      } for version in aux_versions
+      'aux-' + version.replace('.', '-'): {'version': version}
+      for version in aux_versions
   })
 
 

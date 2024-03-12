@@ -1775,7 +1775,8 @@ class GoogleCloudDocumentaiV1DocumentPageAnchorPageRef(_messages.Message):
 
   Fields:
     boundingPoly: Optional. Identifies the bounding polygon of a layout
-      element on the page.
+      element on the page. If `layout_type` is set, the bounding polygon must
+      be exactly the same to the layout element it's referring to.
     confidence: Optional. Confidence of detected page element, if applicable.
       Range `[0, 1]`.
     layoutId: Optional. Deprecated. Use PageRef.bounding_poly instead.
@@ -2379,6 +2380,7 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
       instances an entity type appears in the document.
 
   Fields:
+    displayName: User defined name for the property.
     name: The name of the property. Follows the same guidelines as the
       EntityType name.
     occurrenceType: Occurrence type limits the number of instances an entity
@@ -2406,9 +2408,10 @@ class GoogleCloudDocumentaiV1DocumentSchemaEntityTypeProperty(_messages.Message)
     REQUIRED_ONCE = 3
     REQUIRED_MULTIPLE = 4
 
-  name = _messages.StringField(1)
-  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 2)
-  valueType = _messages.StringField(3)
+  displayName = _messages.StringField(1)
+  name = _messages.StringField(2)
+  occurrenceType = _messages.EnumField('OccurrenceTypeValueValuesEnum', 3)
+  valueType = _messages.StringField(4)
 
 
 class GoogleCloudDocumentaiV1DocumentSchemaMetadata(_messages.Message):
@@ -3003,12 +3006,16 @@ class GoogleCloudDocumentaiV1ProcessOptions(_messages.Message):
     individualPageSelector: Which pages to process (1-indexed).
     ocrConfig: Only applicable to `OCR_PROCESSOR` and `FORM_PARSER_PROCESSOR`.
       Returns error if set on other processor types.
+    schemaOverride: Optional. Override the schema of the ProcessorVersion.
+      Will return an Invalid Argument error if this field is set when the
+      underlying ProcessorVersion doesn't support schema override.
   """
 
   fromEnd = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   fromStart = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   individualPageSelector = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptionsIndividualPageSelector', 3)
   ocrConfig = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfig', 4)
+  schemaOverride = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 5)
 
 
 class GoogleCloudDocumentaiV1ProcessOptionsIndividualPageSelector(_messages.Message):
@@ -3525,6 +3532,8 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
       Extraction (CDE) Processor.
     documentSchema: Optional. The schema the processor version will be trained
       with.
+    foundationModelTuningOptions: Options to control foundation model tuning
+      of a processor.
     inputData: Optional. The input data used to train the ProcessorVersion.
     processorVersion: Required. The processor version to be created.
   """
@@ -3532,8 +3541,9 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequest(_messages.Message):
   baseProcessorVersion = _messages.StringField(1)
   customDocumentExtractionOptions = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractionOptions', 2)
   documentSchema = _messages.MessageField('GoogleCloudDocumentaiV1DocumentSchema', 3)
-  inputData = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData', 4)
-  processorVersion = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersion', 5)
+  foundationModelTuningOptions = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestFoundationModelTuningOptions', 4)
+  inputData = _messages.MessageField('GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData', 5)
+  processorVersion = _messages.MessageField('GoogleCloudDocumentaiV1ProcessorVersion', 6)
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractionOptions(_messages.Message):
@@ -3560,6 +3570,22 @@ class GoogleCloudDocumentaiV1TrainProcessorVersionRequestCustomDocumentExtractio
     TEMPLATE_BASED = 2
 
   trainingMethod = _messages.EnumField('TrainingMethodValueValuesEnum', 1)
+
+
+class GoogleCloudDocumentaiV1TrainProcessorVersionRequestFoundationModelTuningOptions(_messages.Message):
+  r"""Options to control foundation model tuning of the processor.
+
+  Fields:
+    learningRateMultiplier: Optional. The multiplier to apply to the
+      recommended learning rate. Valid values are between 0.1 and 10. If not
+      provided, recommended learning rate will be used.
+    trainSteps: Optional. The number of steps to run for model tuning. Valid
+      values are between 1 and 400. If not provided, recommended steps will be
+      used.
+  """
+
+  learningRateMultiplier = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  trainSteps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDocumentaiV1TrainProcessorVersionRequestInputData(_messages.Message):
@@ -3880,7 +3906,8 @@ class GoogleCloudDocumentaiV1beta1DocumentPageAnchorPageRef(_messages.Message):
 
   Fields:
     boundingPoly: Optional. Identifies the bounding polygon of a layout
-      element on the page.
+      element on the page. If `layout_type` is set, the bounding polygon must
+      be exactly the same to the layout element it's referring to.
     confidence: Optional. Confidence of detected page element, if applicable.
       Range `[0, 1]`.
     layoutId: Optional. Deprecated. Use PageRef.bounding_poly instead.
@@ -4950,7 +4977,8 @@ class GoogleCloudDocumentaiV1beta2DocumentPageAnchorPageRef(_messages.Message):
 
   Fields:
     boundingPoly: Optional. Identifies the bounding polygon of a layout
-      element on the page.
+      element on the page. If `layout_type` is set, the bounding polygon must
+      be exactly the same to the layout element it's referring to.
     confidence: Optional. Confidence of detected page element, if applicable.
       Range `[0, 1]`.
     layoutId: Optional. Deprecated. Use PageRef.bounding_poly instead.

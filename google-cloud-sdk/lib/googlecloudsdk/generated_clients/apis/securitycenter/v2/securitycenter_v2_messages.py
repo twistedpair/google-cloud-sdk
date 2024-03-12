@@ -175,7 +175,7 @@ class AttackPath(_messages.Message):
   Fields:
     edges: A list of the edges between nodes in this attack path.
     name: The attack path name, for example,
-      `organizations/12/simulation/34/valuedResources/56/attackPaths/78`
+      `organizations/12/simulations/34/valuedResources/56/attackPaths/78`
     pathNodes: A list of nodes that exist in this attack path.
   """
 
@@ -357,48 +357,48 @@ class BackupDisasterRecovery(_messages.Message):
 
   Fields:
     appliance: The name of the Backup and DR appliance that captures, moves,
-      and manages the lifecycle of backup data. For example, "backup-
-      server-57137".
+      and manages the lifecycle of backup data. For example, `backup-
+      server-57137`.
     applications: The names of Backup and DR applications. An application is a
       VM, database, or file system on a managed host monitored by a backup and
-      recovery appliance. For example, "centos7-01-vol00", "centos7-01-vol01",
-      "centos7-01-vol02".
+      recovery appliance. For example, `centos7-01-vol00`, `centos7-01-vol01`,
+      `centos7-01-vol02`.
     backupCreateTime: The timestamp at which the Backup and DR backup was
       created.
     backupTemplate: The name of a Backup and DR template which comprises one
       or more backup policies. See the [Backup and DR
       documentation](https://cloud.google.com/backup-disaster-
       recovery/docs/concepts/backup-plan#temp) for more information. For
-      example, "snap-ov".
+      example, `snap-ov`.
     backupType: The backup type of the Backup and DR image. For example,
-      "Snapshot", "Remote Snapshot", "OnVault".
+      `Snapshot`, `Remote Snapshot`, `OnVault`.
     host: The name of a Backup and DR host, which is managed by the backup and
       recovery appliance and known to the management console. The host can be
       of type Generic (for example, Compute Engine, SQL Server, Oracle DB, SMB
       file system, etc.), vCenter, or an ESX server. See the [Backup and DR
       documentation on hosts](https://cloud.google.com/backup-disaster-
       recovery/docs/configuration/manage-hosts-and-their-applications) for
-      more information. For example, "centos7-01".
+      more information. For example, `centos7-01`.
     policies: The names of Backup and DR policies that are associated with a
       template and that define when to run a backup, how frequently to run a
       backup, and how long to retain the backup image. For example,
-      "onvaults".
+      `onvaults`.
     policyOptions: The names of Backup and DR advanced policy options of a
       policy applying to an application. See the [Backup and DR documentation
       on policy options](https://cloud.google.com/backup-disaster-
       recovery/docs/create-plan/policy-settings). For example,
-      "skipofflineappsincongrp, nounmap".
+      `skipofflineappsincongrp, nounmap`.
     profile: The name of the Backup and DR resource profile that specifies the
       storage media for backups of application and VM data. See the [Backup
       and DR documentation on profiles](https://cloud.google.com/backup-
       disaster-recovery/docs/concepts/backup-plan#profile). For example,
-      "GCP".
+      `GCP`.
     storagePool: The name of the Backup and DR storage pool that the backup
       and recovery appliance is storing data in. The storage pool could be of
       type Cloud, Primary, Snapshot, or OnVault. See the [Backup and DR
       documentation on storage pools](https://cloud.google.com/backup-
       disaster-recovery/docs/concepts/storage-pools). For example,
-      "DiskPoolOne".
+      `DiskPoolOne`.
   """
 
   appliance = _messages.StringField(1)
@@ -1864,6 +1864,10 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   Fields:
     assignees: References primary/secondary etc assignees in the external
       system.
+    caseCloseTime: The time when the case was closed, as reported by the
+      external system.
+    caseCreateTime: The time when the case was created, as reported by the
+      external system.
     casePriority: The priority of the finding's corresponding case in the
       external system.
     caseSla: The SLA of the finding's corresponding case in the external
@@ -1885,14 +1889,16 @@ class GoogleCloudSecuritycenterV1ExternalSystem(_messages.Message):
   """
 
   assignees = _messages.StringField(1, repeated=True)
-  casePriority = _messages.StringField(2)
-  caseSla = _messages.StringField(3)
-  caseUri = _messages.StringField(4)
-  externalSystemUpdateTime = _messages.StringField(5)
-  externalUid = _messages.StringField(6)
-  name = _messages.StringField(7)
-  status = _messages.StringField(8)
-  ticketInfo = _messages.MessageField('TicketInfo', 9)
+  caseCloseTime = _messages.StringField(2)
+  caseCreateTime = _messages.StringField(3)
+  casePriority = _messages.StringField(4)
+  caseSla = _messages.StringField(5)
+  caseUri = _messages.StringField(6)
+  externalSystemUpdateTime = _messages.StringField(7)
+  externalUid = _messages.StringField(8)
+  name = _messages.StringField(9)
+  status = _messages.StringField(10)
+  ticketInfo = _messages.MessageField('TicketInfo', 11)
 
 
 class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
@@ -2744,48 +2750,48 @@ class GoogleCloudSecuritycenterV2BackupDisasterRecovery(_messages.Message):
 
   Fields:
     appliance: The name of the Backup and DR appliance that captures, moves,
-      and manages the lifecycle of backup data. For example, "backup-
-      server-57137".
+      and manages the lifecycle of backup data. For example, `backup-
+      server-57137`.
     applications: The names of Backup and DR applications. An application is a
       VM, database, or file system on a managed host monitored by a backup and
-      recovery appliance. For example, "centos7-01-vol00", "centos7-01-vol01",
-      "centos7-01-vol02".
+      recovery appliance. For example, `centos7-01-vol00`, `centos7-01-vol01`,
+      `centos7-01-vol02`.
     backupCreateTime: The timestamp at which the Backup and DR backup was
       created.
     backupTemplate: The name of a Backup and DR template which comprises one
       or more backup policies. See the [Backup and DR
       documentation](https://cloud.google.com/backup-disaster-
       recovery/docs/concepts/backup-plan#temp) for more information. For
-      example, "snap-ov".
+      example, `snap-ov`.
     backupType: The backup type of the Backup and DR image. For example,
-      "Snapshot", "Remote Snapshot", "OnVault".
+      `Snapshot`, `Remote Snapshot`, `OnVault`.
     host: The name of a Backup and DR host, which is managed by the backup and
       recovery appliance and known to the management console. The host can be
       of type Generic (for example, Compute Engine, SQL Server, Oracle DB, SMB
       file system, etc.), vCenter, or an ESX server. See the [Backup and DR
       documentation on hosts](https://cloud.google.com/backup-disaster-
       recovery/docs/configuration/manage-hosts-and-their-applications) for
-      more information. For example, "centos7-01".
+      more information. For example, `centos7-01`.
     policies: The names of Backup and DR policies that are associated with a
       template and that define when to run a backup, how frequently to run a
       backup, and how long to retain the backup image. For example,
-      "onvaults".
+      `onvaults`.
     policyOptions: The names of Backup and DR advanced policy options of a
       policy applying to an application. See the [Backup and DR documentation
       on policy options](https://cloud.google.com/backup-disaster-
       recovery/docs/create-plan/policy-settings). For example,
-      "skipofflineappsincongrp, nounmap".
+      `skipofflineappsincongrp, nounmap`.
     profile: The name of the Backup and DR resource profile that specifies the
       storage media for backups of application and VM data. See the [Backup
       and DR documentation on profiles](https://cloud.google.com/backup-
       disaster-recovery/docs/concepts/backup-plan#profile). For example,
-      "GCP".
+      `GCP`.
     storagePool: The name of the Backup and DR storage pool that the backup
       and recovery appliance is storing data in. The storage pool could be of
       type Cloud, Primary, Snapshot, or OnVault. See the [Backup and DR
       documentation on storage pools](https://cloud.google.com/backup-
       disaster-recovery/docs/concepts/storage-pools). For example,
-      "DiskPoolOne".
+      `DiskPoolOne`.
   """
 
   appliance = _messages.StringField(1)
@@ -3458,6 +3464,10 @@ class GoogleCloudSecuritycenterV2ExternalSystem(_messages.Message):
   Fields:
     assignees: References primary/secondary etc assignees in the external
       system.
+    caseCloseTime: The time when the case was closed, as reported by the
+      external system.
+    caseCreateTime: The time when the case was created, as reported by the
+      external system.
     casePriority: The priority of the finding's corresponding case in the
       external system.
     caseSla: The SLA of the finding's corresponding case in the external
@@ -3485,14 +3495,16 @@ class GoogleCloudSecuritycenterV2ExternalSystem(_messages.Message):
   """
 
   assignees = _messages.StringField(1, repeated=True)
-  casePriority = _messages.StringField(2)
-  caseSla = _messages.StringField(3)
-  caseUri = _messages.StringField(4)
-  externalSystemUpdateTime = _messages.StringField(5)
-  externalUid = _messages.StringField(6)
-  name = _messages.StringField(7)
-  status = _messages.StringField(8)
-  ticketInfo = _messages.MessageField('GoogleCloudSecuritycenterV2TicketInfo', 9)
+  caseCloseTime = _messages.StringField(2)
+  caseCreateTime = _messages.StringField(3)
+  casePriority = _messages.StringField(4)
+  caseSla = _messages.StringField(5)
+  caseUri = _messages.StringField(6)
+  externalSystemUpdateTime = _messages.StringField(7)
+  externalUid = _messages.StringField(8)
+  name = _messages.StringField(9)
+  status = _messages.StringField(10)
+  ticketInfo = _messages.MessageField('GoogleCloudSecuritycenterV2TicketInfo', 11)
 
 
 class GoogleCloudSecuritycenterV2File(_messages.Message):
@@ -6250,7 +6262,7 @@ class Policy(_messages.Message):
 
 class PolicyDriftDetails(_messages.Message):
   r"""The policy field that violates the deployed posture and its expected and
-  and detected values.
+  detected values.
 
   Fields:
     detectedValue: The detected value that violates the deployed posture, for

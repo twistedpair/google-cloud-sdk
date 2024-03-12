@@ -156,7 +156,7 @@ class RedisV1alpha1(base_api.BaseApiClient):
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1alpha1/{+name}/certificateAuthority',
+        relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='RedisProjectsLocationsClustersGetCertificateAuthorityRequest',
         response_type_name='CertificateAuthority',

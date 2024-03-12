@@ -45,6 +45,8 @@ class AppengineV1alpha(base_api.BaseApiClient):
     self.apps_locations = self.AppsLocationsService(self)
     self.apps_operations = self.AppsOperationsService(self)
     self.apps = self.AppsService(self)
+    self.projects_locations_applications_authorizedDomains = self.ProjectsLocationsApplicationsAuthorizedDomainsService(self)
+    self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -511,6 +513,53 @@ class AppengineV1alpha(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AppengineV1alpha.AppsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsApplicationsAuthorizedDomainsService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications_authorizedDomains resource."""
+
+    _NAME = 'projects_locations_applications_authorizedDomains'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsAuthorizedDomainsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all domains the user is authorized to administer.
+
+      Args:
+        request: (AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthorizedDomainsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}/authorizedDomains',
+        http_method='GET',
+        method_id='appengine.projects.locations.applications.authorizedDomains.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/authorizedDomains',
+        request_field='',
+        request_type_name='AppengineProjectsLocationsApplicationsAuthorizedDomainsListRequest',
+        response_type_name='ListAuthorizedDomainsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_applications resource."""
+
+    _NAME = 'projects_locations_applications'
+
+    def __init__(self, client):
+      super(AppengineV1alpha.ProjectsLocationsApplicationsService, self).__init__(client)
       self._upload_configs = {
           }
 

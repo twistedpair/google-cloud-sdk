@@ -61,3 +61,16 @@ managementServer:
     attribute_name: management_server
     help: The ID of the Managment Server.
   disable_auto_completers: false
+
+backupVault:
+  name: backupVault
+  collection: backupdr.projects.locations.backupVaults
+  request_id_field: backupVaultId
+  attributes:
+  - *project
+  - *location
+  - &backupVaultId
+    parameter_name: backupVaultsId
+    attribute_name: backup_vault
+    help: The ID of the Backup Vault.
+  disable_auto_completers: false

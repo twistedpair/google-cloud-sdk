@@ -653,7 +653,8 @@ class Connection(_messages.Message):
     Values:
       CONNECTION_TYPE_UNSPECIFIED: Unspecified connection type.
       NCC: Connected by [NCC](https://cloud.google.com/network-connectivity-
-        center).
+        center). Producers and consumers can be in separated VPCs connected by
+        NCC, or the same VPC.
       SAME_VPC: Producer and consumers must be in the same VPC network.
     """
     CONNECTION_TYPE_UNSPECIFIED = 0

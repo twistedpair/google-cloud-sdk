@@ -462,6 +462,25 @@ def AddPdReclaimPolicy(parser):
       help=help_text)
 
 
+def AddEphemeralDirectory(parser):
+  spec = {
+      'mount-path': str,
+      'disk-type': str,
+      'source-snapshot': str,
+      'source-image': str,
+      'read-only': bool
+  }
+  help_text = """\
+  Ephemeral directory which won't persist across workstation sessions."""
+  parser.add_argument(
+      '--ephemeral-directory',
+      type=arg_parsers.ArgDict(spec=spec),
+      action='append',
+      metavar='PROPERTY=VALUE',
+      help=help_text
+  )
+
+
 def AddContainerImageField(parser, use_default=True):
   """Adds the --container-predefined-image and --container-custom-image flags to the given parser.
   """

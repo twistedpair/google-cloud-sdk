@@ -182,27 +182,23 @@ class BuildConfig(_messages.Message):
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
       This configuration is only applicable to 1st Gen functions, 2nd Gen
-      functions can only use Artifact Registry. If `docker_repository` field
-      is specified, this field will be automatically set as
-      `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to
-      `CONTAINER_REGISTRY`. This field may be overridden by the backend for
-      eligible deployments.
+      functions can only use Artifact Registry. If unspecified, it defaults to
+      `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this
+      field should either be left unspecified or set to `ARTIFACT_REGISTRY`.
 
   Messages:
     EnvironmentVariablesValue: User-provided build-time environment variables
       for the function
 
   Fields:
-    automaticUpdatePolicy: See the comment next to this message for more
-      details.
+    automaticUpdatePolicy: A AutomaticUpdatePolicy attribute.
     build: Output only. The Cloud Build name of the latest successful
       deployment of the function.
     dockerRegistry: Docker Registry to use for this deployment. This
       configuration is only applicable to 1st Gen functions, 2nd Gen functions
-      can only use Artifact Registry. If `docker_repository` field is
-      specified, this field will be automatically set as `ARTIFACT_REGISTRY`.
-      If unspecified, it currently defaults to `CONTAINER_REGISTRY`. This
-      field may be overridden by the backend for eligible deployments.
+      can only use Artifact Registry. If unspecified, it defaults to
+      `ARTIFACT_REGISTRY`. If `docker_repository` field is specified, this
+      field should either be left unspecified or set to `ARTIFACT_REGISTRY`.
     dockerRepository: Repository in Artifact Registry to which the function
       docker image will be pushed after it is built by Cloud Build. If
       specified by user, it is created and managed by user with a customer
@@ -220,8 +216,7 @@ class BuildConfig(_messages.Message):
       `source_location`.
     environmentVariables: User-provided build-time environment variables for
       the function
-    onDeployUpdatePolicy: See the comment next to this message for more
-      details.
+    onDeployUpdatePolicy: A OnDeployUpdatePolicy attribute.
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
@@ -248,10 +243,9 @@ class BuildConfig(_messages.Message):
   class DockerRegistryValueValuesEnum(_messages.Enum):
     r"""Docker Registry to use for this deployment. This configuration is only
     applicable to 1st Gen functions, 2nd Gen functions can only use Artifact
-    Registry. If `docker_repository` field is specified, this field will be
-    automatically set as `ARTIFACT_REGISTRY`. If unspecified, it currently
-    defaults to `CONTAINER_REGISTRY`. This field may be overridden by the
-    backend for eligible deployments.
+    Registry. If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+    `docker_repository` field is specified, this field should either be left
+    unspecified or set to `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.
@@ -427,9 +421,16 @@ class CloudfunctionsProjectsLocationsFunctionsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The name of the function which details should be obtained.
+    revision: Optional. The optional version of the 1st gen function whose
+      details should be obtained. The version of a 1st gen function is an
+      integer that starts from 1 and gets incremented on redeployments. GCF
+      may keep historical configs for old versions of 1st gen function. This
+      field can be specified to fetch the historical configs. This field is
+      valid only for GCF 1st gen function.
   """
 
   name = _messages.StringField(1, required=True)
+  revision = _messages.StringField(2)
 
 
 class CloudfunctionsProjectsLocationsFunctionsListRequest(_messages.Message):

@@ -21,7 +21,8 @@ class ApphubProjectsLocationsApplicationsCreateRequest(_messages.Message):
     applicationId: Required. The Application identifier. Must contain only
       lowercase letters, numbers or hyphens, with the first character a
       letter, the last a letter or a number, and a 63 character maximum.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to create Application in. Expected
+      format: `projects/{project}/locations/{location}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -45,7 +46,9 @@ class ApphubProjectsLocationsApplicationsDeleteRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsDeleteRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Application to delete.
+      Expected format:
+      `projects/{project}/locations/{location}/applications/{application}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -93,7 +96,9 @@ class ApphubProjectsLocationsApplicationsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Application to fetch. Expected
+      format:
+      `projects/{project}/locations/{location}/applications/{application}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -103,13 +108,14 @@ class ApphubProjectsLocationsApplicationsListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to list Applications on. Expected
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -158,7 +164,9 @@ class ApphubProjectsLocationsApplicationsServicesCreateRequest(_messages.Message
   r"""A ApphubProjectsLocationsApplicationsServicesCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. Fully qualified name of the parent Application to create
+      the Service in. Expected format:
+      `projects/{project}/locations/{location}/applications/{application}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -186,7 +194,9 @@ class ApphubProjectsLocationsApplicationsServicesDeleteRequest(_messages.Message
   r"""A ApphubProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Service to delete from an
+      Application. Expected format: `projects/{project}/locations/{location}/a
+      pplications/{application}/services/{service}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -208,7 +218,9 @@ class ApphubProjectsLocationsApplicationsServicesGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsServicesGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Service to fetch. Expected
+      format: `projects/{project}/locations/{location}/applications/{applicati
+      on}/services/{service}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -224,7 +236,9 @@ class ApphubProjectsLocationsApplicationsServicesListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Fully qualified name of the parent Application to list
+      Services for. Expected format:
+      `projects/{project}/locations/{location}/applications/{application}`.
   """
 
   filter = _messages.StringField(1)
@@ -305,7 +319,9 @@ class ApphubProjectsLocationsApplicationsWorkloadsCreateRequest(_messages.Messag
   r"""A ApphubProjectsLocationsApplicationsWorkloadsCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. Fully qualified name of the Application to create
+      Workload in. Expected format:
+      `projects/{project}/locations/{location}/applications/{application}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -333,7 +349,9 @@ class ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest(_messages.Messag
   r"""A ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Workload to delete from an
+      Application. Expected format: `projects/{project}/locations/{location}/a
+      pplications/{application}/workloads/{workload}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -355,7 +373,9 @@ class ApphubProjectsLocationsApplicationsWorkloadsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsWorkloadsGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Workload to fetch. Expected
+      format: `projects/{project}/locations/{location}/applications/{applicati
+      on}/workloads/{workload}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -365,13 +385,15 @@ class ApphubProjectsLocationsApplicationsWorkloadsListRequest(_messages.Message)
   r"""A ApphubProjectsLocationsApplicationsWorkloadsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Fully qualified name of the parent Application to list
+      Workloads for. Expected format:
+      `projects/{project}/locations/{location}/applications/{application}`.
   """
 
   filter = _messages.StringField(1)
@@ -424,7 +446,9 @@ class ApphubProjectsLocationsDetachServiceProjectAttachmentRequest(_messages.Mes
     detachServiceProjectAttachmentRequest: A
       DetachServiceProjectAttachmentRequest resource to be passed as the
       request body.
-    name: Required. Value for name.
+    name: Required. Service project id and location to detach from a host
+      project. Only global location is supported. Expected format:
+      `projects/{project}/locations/{location}`.
   """
 
   detachServiceProjectAttachmentRequest = _messages.MessageField('DetachServiceProjectAttachmentRequest', 1)
@@ -436,13 +460,14 @@ class ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest(_messages
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to find unregistered Discovered
+      Services on. Expected format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -456,7 +481,9 @@ class ApphubProjectsLocationsDiscoveredServicesGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Discovered Service to fetch.
+      Expected format: `projects/{project}/locations/{location}/discoveredServ
+      ices/{discoveredService}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -466,13 +493,14 @@ class ApphubProjectsLocationsDiscoveredServicesListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to list Discovered Services on.
+      Expected format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -486,9 +514,10 @@ class ApphubProjectsLocationsDiscoveredServicesLookupRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesLookupRequest object.
 
   Fields:
-    parent: Required. Value for parent.
-    uri: Required. GCP resource URI to find service for Accepts both project
-      number and project id and does translation when needed.
+    parent: Required. Host project ID and location to lookup Discovered
+      Service in. Expected format: `projects/{project}/locations/{location}`.
+    uri: Required. Resource URI to find DiscoveredService for. Accepts both
+      project number and project ID and does translation when needed.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -500,13 +529,15 @@ class ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest(_message
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to find unregistered Discovered
+      Workloads on. Expected format:
+      `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -520,7 +551,9 @@ class ApphubProjectsLocationsDiscoveredWorkloadsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredWorkloadsGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the Discovered Workload to fetch.
+      Expected format: `projects/{project}/locations/{location}/discoveredWork
+      loads/{discoveredWorkload}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -530,13 +563,14 @@ class ApphubProjectsLocationsDiscoveredWorkloadsListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredWorkloadsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Project and location to list Discovered Workloads on.
+      Expected format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -550,9 +584,10 @@ class ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest(_messages.Message)
   r"""A ApphubProjectsLocationsDiscoveredWorkloadsLookupRequest object.
 
   Fields:
-    parent: Required. Value for parent.
-    uri: Required. GCP resource URI to find workload for. Accepts both project
-      number and project id and does translation when needed.
+    parent: Required. Host project ID and location to lookup Discovered
+      Workload in. Expected format: `projects/{project}/locations/{location}`.
+    uri: Required. Resource URI to find Discovered Workload for. Accepts both
+      project number and project ID and does translation when needed.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -593,7 +628,9 @@ class ApphubProjectsLocationsLookupServiceProjectAttachmentRequest(_messages.Mes
   r"""A ApphubProjectsLocationsLookupServiceProjectAttachmentRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Service project ID and location to lookup service project
+      attachment for. Only global location is supported. Expected format:
+      `projects/{project}/locations/{location}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -652,7 +689,9 @@ class ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest(_messages.Me
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. Host project ID and location to which service project is
+      being attached. Only global location is supported. Expected format:
+      `projects/{project}/locations/{location}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -667,9 +706,8 @@ class ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest(_messages.Me
     serviceProjectAttachment: A ServiceProjectAttachment resource to be passed
       as the request body.
     serviceProjectAttachmentId: Required. The service project attachment
-      identifier must contain the project_id of the service project specified
-      in the service_project_attachment.service_project field. Hint:
-      "projects/{project_id}"
+      identifier must contain the project id of the service project specified
+      in the service_project_attachment.service_project field.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -682,7 +720,9 @@ class ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest(_messages.Me
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the service project attachment to
+      delete. Expected format: `projects/{project}/locations/{location}/servic
+      eProjectAttachments/{serviceProjectAttachment}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -704,7 +744,9 @@ class ApphubProjectsLocationsServiceProjectAttachmentsGetRequest(_messages.Messa
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsGetRequest object.
 
   Fields:
-    name: Required. Value for name.
+    name: Required. Fully qualified name of the service project attachment to
+      retrieve. Expected format: `projects/{project}/locations/{location}/serv
+      iceProjectAttachments/{serviceProjectAttachment}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -714,13 +756,15 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Value for parent.
+    parent: Required. Host project ID and location to list service project
+      attachments. Only global location is supported. Expected format:
+      `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -985,7 +1029,7 @@ class Criticality(_messages.Message):
   r"""Criticality of the Application, Service, or Workload
 
   Enums:
-    TypeValueValuesEnum: Optional. Criticality Type.
+    TypeValueValuesEnum: Required. Criticality Type.
 
   Fields:
     level: Optional. Criticality level. Can contain only lowercase letters,
@@ -993,11 +1037,11 @@ class Criticality(_messages.Message):
       of 63 characters.
     missionCritical: Optional. Indicates mission-critical Application,
       Service, or Workload.
-    type: Optional. Criticality Type.
+    type: Required. Criticality Type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Criticality Type.
+    r"""Required. Criticality Type.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified type.
@@ -1079,17 +1123,17 @@ class Environment(_messages.Message):
   r"""Environment of the Application, Service, or Workload
 
   Enums:
-    TypeValueValuesEnum: Optional. Environment Type.
+    TypeValueValuesEnum: Required. Environment Type.
 
   Fields:
     environment: Optional. Environment name. Can contain only lowercase
       letters, numeric characters, underscores, and dashes. Can have a maximum
       length of 63 characters.
-    type: Optional. Environment Type.
+    type: Required. Environment Type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Environment Type.
+    r"""Required. Environment Type.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified type.
@@ -1148,7 +1192,7 @@ class FindUnregisteredServicesResponse(_messages.Message):
   r"""Response for FindUnregisteredServices.
 
   Fields:
-    discoveredServices: List of discovered services.
+    discoveredServices: List of Discovered Services.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1163,7 +1207,7 @@ class FindUnregisteredWorkloadsResponse(_messages.Message):
   r"""Response for FindUnregisteredWorkloads.
 
   Fields:
-    discoveredWorkloads: List of discovered workloads.
+    discoveredWorkloads: List of Discovered Workloads.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1193,7 +1237,7 @@ class ListDiscoveredServicesResponse(_messages.Message):
   r"""Response for ListDiscoveredServices.
 
   Fields:
-    discoveredServices: List of discovered services.
+    discoveredServices: List of Discovered Services.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1208,7 +1252,7 @@ class ListDiscoveredWorkloadsResponse(_messages.Message):
   r"""Response for ListDiscoveredWorkloads.
 
   Fields:
-    discoveredWorkloads: List of discovered workloads.
+    discoveredWorkloads: List of Discovered Workloads.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1374,7 +1418,7 @@ class LookupDiscoveredServiceResponse(_messages.Message):
   r"""Response for LookupDiscoveredService.
 
   Fields:
-    discoveredService: Discovered service if exists, empty otherwise.
+    discoveredService: Discovered Service if exists, empty otherwise.
   """
 
   discoveredService = _messages.MessageField('DiscoveredService', 1)
@@ -1384,7 +1428,7 @@ class LookupDiscoveredWorkloadResponse(_messages.Message):
   r"""Response for LookupDiscoveredWorkload.
 
   Fields:
-    discoveredWorkload: Discovered workload if exists, empty otherwise.
+    discoveredWorkload: Discovered Workload if exists, empty otherwise.
   """
 
   discoveredWorkload = _messages.MessageField('DiscoveredWorkload', 1)

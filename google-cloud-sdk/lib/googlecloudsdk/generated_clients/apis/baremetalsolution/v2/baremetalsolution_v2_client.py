@@ -239,29 +239,29 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def EnableHypertheading(self, request, global_params=None):
+    def EnableHyperthreading(self, request, global_params=None):
       r"""Perform enable hyperthreading operation on a single server.
 
       Args:
-        request: (BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest) input message
+        request: (BaremetalsolutionProjectsLocationsInstancesEnableHyperthreadingRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
       """
-      config = self.GetMethodConfig('EnableHypertheading')
+      config = self.GetMethodConfig('EnableHyperthreading')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    EnableHypertheading.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableHypertheading',
+    EnableHyperthreading.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableHyperthreading',
         http_method='POST',
-        method_id='baremetalsolution.projects.locations.instances.enableHypertheading',
+        method_id='baremetalsolution.projects.locations.instances.enableHyperthreading',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v2/{+name}:enableHypertheading',
+        relative_path='v2/{+name}:enableHyperthreading',
         request_field='enableHyperthreadingRequest',
-        request_type_name='BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesEnableHyperthreadingRequest',
         response_type_name='Operation',
         supports_download=False,
     )

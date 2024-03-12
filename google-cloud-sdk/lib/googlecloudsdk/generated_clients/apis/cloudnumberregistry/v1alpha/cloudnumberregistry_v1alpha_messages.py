@@ -140,6 +140,8 @@ class CloudnumberregistryProjectsLocationsRegistryBooksDeleteRequest(_messages.M
   r"""A CloudnumberregistryProjectsLocationsRegistryBooksDeleteRequest object.
 
   Fields:
+    force: Optional. If set to true, any node events and historical events
+      associated with this registry book will also be deleted.
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -154,8 +156,9 @@ class CloudnumberregistryProjectsLocationsRegistryBooksDeleteRequest(_messages.M
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class CloudnumberregistryProjectsLocationsRegistryBooksGetRequest(_messages.Message):
@@ -237,7 +240,7 @@ class CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest(_messages.Me
   r"""A CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest object.
 
   Fields:
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     registryBook: A RegistryBook resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -355,7 +358,7 @@ class CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesPatchRequest
   object.
 
   Fields:
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     registryNode: A RegistryNode resource to be passed as the request body.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -386,28 +389,28 @@ class CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest(_me
   object.
 
   Fields:
-    name: Required. Name of the resource
+    attributeKeys: Optional. A list of attribute keys owned by the registry
+      nodes.
+    book: Required. Name of the resource
+    ipRange: Optional. IP range to filter for registry node.
+    keywords: Optional. A list of keywords that are contained by the attribute
+      values within registry nodes.
     orderBy: Optional. Hint for how to order the results
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    queryFilter_attributeKeys: Optional. A list of attribute keys owned by the
-      registry nodes.
-    queryFilter_ipRange: Required. IP range to filter for registry node.
-    queryFilter_keywords: Optional. A list of keywords that are contained by
-      the attribute values within registry nodes.
-    queryFilter_source: Optional. Source filter of the registry nodes.
+    source: Optional. Source filter of the registry nodes.
   """
 
-  name = _messages.StringField(1, required=True)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  queryFilter_attributeKeys = _messages.StringField(5, repeated=True)
-  queryFilter_ipRange = _messages.StringField(6)
-  queryFilter_keywords = _messages.StringField(7, repeated=True)
-  queryFilter_source = _messages.StringField(8)
+  attributeKeys = _messages.StringField(1, repeated=True)
+  book = _messages.StringField(2, required=True)
+  ipRange = _messages.StringField(3)
+  keywords = _messages.StringField(4, repeated=True)
+  orderBy = _messages.StringField(5)
+  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(7)
+  source = _messages.StringField(8)
 
 
 class Empty(_messages.Message):
@@ -807,7 +810,7 @@ class RegistryBook(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -854,7 +857,7 @@ class RegistryNode(_messages.Message):
     importInfo: Optional. Metadata contains resource importing information.
     ipRange: Required. IP range of registry node.
     labels: Optional. Labels as key value pairs
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
 

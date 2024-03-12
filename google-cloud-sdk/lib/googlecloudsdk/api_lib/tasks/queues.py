@@ -132,14 +132,26 @@ class Queues(BaseQueues):
       rate_limits=None,
       app_engine_routing_override=None,
       stackdriver_logging_config=None,
+      http_target=None,
   ):
     """Prepares and sends a Create request for creating a queue."""
+    targets = (app_engine_routing_override, http_target)
+    if sum([1 if x is not None else 0 for x in targets]) > 1:
+      raise CreatingHttpAndAppEngineQueueError(
+          'Attempting to send multiple queue target types simultaneously: {}'
+          ' , {}'.format(
+              six.text_type(app_engine_routing_override),
+              six.text_type(http_target),
+          )
+      )
+
     queue = self.messages.Queue(
         name=queue_ref.RelativeName(),
         retryConfig=retry_config,
         rateLimits=rate_limits,
         appEngineRoutingOverride=app_engine_routing_override,
         stackdriverLoggingConfig=stackdriver_logging_config,
+        httpTarget=http_target
     )
     request = self.messages.CloudtasksProjectsLocationsQueuesCreateRequest(
         parent=parent_ref.RelativeName(), queue=queue
@@ -154,6 +166,13 @@ class Queues(BaseQueues):
       rate_limits=None,
       app_engine_routing_override=None,
       stackdriver_logging_config=None,
+      http_uri_override=None,
+      http_method_override=None,
+      http_header_override=None,
+      http_oauth_email_override=None,
+      http_oauth_scope_override=None,
+      http_oidc_email_override=None,
+      http_oidc_audience_override=None,
   ):
     """Prepares and sends a Patch request for modifying a queue."""
     if not any([retry_config, rate_limits, stackdriver_logging_config]):
@@ -162,6 +181,18 @@ class Queues(BaseQueues):
       if (
           not app_engine_routing_override
           and 'appEngineRoutingOverride' not in updated_fields
+      ) and _NeitherUpdateNorClear(
+          [
+              http_uri_override,
+              http_method_override,
+              http_header_override,
+              http_oauth_email_override,
+              http_oauth_scope_override,
+              http_oidc_email_override,
+              http_oidc_audience_override,
+          ],
+          http_target_update_masks_list,
+          updated_fields,
       ):
         raise NoFieldsSpecifiedError(
             'Must specify at least one field to update.'
@@ -180,6 +211,21 @@ class Queues(BaseQueues):
         queue.appEngineRoutingOverride = app_engine_routing_override
     if stackdriver_logging_config is not None:
       queue.stackdriverLoggingConfig = stackdriver_logging_config
+
+    # modifies the queue
+    _GenerateHttpTargetUpdateMask(
+        self.messages,
+        queue,
+        updated_fields,
+        http_uri_override,
+        http_method_override,
+        http_header_override,
+        http_oauth_email_override,
+        http_oauth_scope_override,
+        http_oidc_email_override,
+        http_oidc_audience_override,
+    )
+
     update_mask = ','.join(updated_fields)
 
     request = self.messages.CloudtasksProjectsLocationsQueuesPatchRequest(

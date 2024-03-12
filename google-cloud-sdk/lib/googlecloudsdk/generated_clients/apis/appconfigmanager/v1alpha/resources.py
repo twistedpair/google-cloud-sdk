@@ -63,24 +63,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_TEMPLATES = (
-      'projects.locations.templates',
+  PROJECTS_LOCATIONS_CONFIGS_RENDERS = (
+      'projects.locations.configs.renders',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/templates/'
-              '{templatesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_TEMPLATES_INSTANCES = (
-      'projects.locations.templates.instances',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/templates/'
-              '{templatesId}/instances/{instancesId}',
+              'projects/{projectsId}/locations/{locationsId}/configs/'
+              '{configsId}/renders/{rendersId}',
       },
       ['name'],
       True

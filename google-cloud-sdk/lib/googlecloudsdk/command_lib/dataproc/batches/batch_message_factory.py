@@ -70,7 +70,7 @@ class BatchMessageFactory(object):
     self.runtime_config_factory = runtime_config_factory_override
     if not self.runtime_config_factory:
       self.runtime_config_factory = rcf.RuntimeConfigFactory(
-          self.dataproc, include_autotuning=True
+          self.dataproc, include_autotuning=True, include_cohort=True
       )
 
     self.environment_config_factory = environment_config_factory_override
@@ -142,5 +142,5 @@ def AddArguments(parser):
 
 
 def _AddDependency(parser):
-  rcf.AddArguments(parser, include_autotuning=True)
+  rcf.AddArguments(parser, include_autotuning=True, include_cohort=True)
   ecf.AddArguments(parser)

@@ -1427,12 +1427,12 @@ class NetappProjectsLocationsStoragePoolsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragePoolsListRequest object.
 
   Fields:
-    filter: List filter.
-    orderBy: Sort results. Supported values are "name", "name desc" or ""
-      (unsorted).
-    pageSize: The maximum number of items to return.
-    pageToken: The next_page_token value to use if there are additional
-      results to retrieve for this list request.
+    filter: Optional. List filter.
+    orderBy: Optional. Sort results. Supported values are "name", "name desc"
+      or "" (unsorted).
+    pageSize: Optional. The maximum number of items to return.
+    pageToken: Optional. The next_page_token value to use if there are
+      additional results to retrieve for this list request.
     parent: Required. Parent value
   """
 
@@ -2379,26 +2379,28 @@ class StoragePool(_messages.Message):
     StateValueValuesEnum: Output only. State of the storage pool
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    activeDirectory: Specifies the Active Directory to be used for creating a
-      SMB volume.
+    activeDirectory: Optional. Specifies the Active Directory to be used for
+      creating a SMB volume.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
-    description: Description of the storage pool
+    description: Optional. Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
     globalAccessAllowed: Deprecated. Used to allow SO pool to access AD or DNS
       server from other regions.
-    kmsConfig: Specifies the KMS config to be used for volume encryption.
-    labels: Labels as key value pairs
-    ldapEnabled: Flag indicating if the pool is NFS LDAP enabled or not.
+    kmsConfig: Optional. Specifies the KMS config to be used for volume
+      encryption.
+    labels: Optional. Labels as key value pairs
+    ldapEnabled: Optional. Flag indicating if the pool is NFS LDAP enabled or
+      not.
     name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
-    psaRange: Name of the Private Service Access allocated range. If not
-      provided, any available range will be chosen.
+    psaRange: Optional. Name of the Private Service Access allocated range. If
+      not provided, any available range will be chosen.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2411,7 +2413,7 @@ class StoragePool(_messages.Message):
     r"""Output only. Specifies the current pool encryption key source.
 
     Values:
-      ENCRYPTION_TYPE_UNSPECIFIED: The source of encryption key is not
+      ENCRYPTION_TYPE_UNSPECIFIED: The source of the encryption key is not
         specified.
       SERVICE_MANAGED: Google managed encryption key.
       CLOUD_KMS: Customer managed encryption key, which is stored in KMS.
@@ -2427,7 +2429,7 @@ class StoragePool(_messages.Message):
       SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
-      STANDARD: Standard (Software offering)
+      STANDARD: Standard service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1
@@ -2458,7 +2460,7 @@ class StoragePool(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2629,7 +2631,7 @@ class Volume(_messages.Message):
     r"""Output only. Specified the current volume encryption key source.
 
     Values:
-      ENCRYPTION_TYPE_UNSPECIFIED: The source of encryption key is not
+      ENCRYPTION_TYPE_UNSPECIFIED: The source of the encryption key is not
         specified.
       SERVICE_MANAGED: Google managed encryption key.
       CLOUD_KMS: Customer managed encryption key, which is stored in KMS.
@@ -2681,7 +2683,7 @@ class Volume(_messages.Message):
       SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
-      STANDARD: Standard (Software offering)
+      STANDARD: Standard service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1

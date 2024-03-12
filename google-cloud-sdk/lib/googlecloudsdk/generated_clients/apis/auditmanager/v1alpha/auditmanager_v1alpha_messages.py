@@ -13,6 +13,35 @@ from apitools.base.py import extra_types
 package = 'auditmanager'
 
 
+class AuditReport(_messages.Message):
+  r"""Represents an audit report.
+
+  Fields:
+    auditScopeReport: Output only. Audit Scope Report.
+    complianceStandard: Output only. Compliance Standard.
+    controlDetails: Output only. The overall status of controls
+    createTime: Output only. Creation time of the audit report.
+    destinationDetails: Output only. The location where the generated report
+      will be uploaded.
+    name: Identifier. The name of this Audit Report, in the format of scope
+      given in request.
+    operationId: Output only. ClientOperationId
+    reportSummary: Output only. Report summary with compliance, violation
+      counts etc.
+    scope: Output only. The parent scope on which the report was generated.
+  """
+
+  auditScopeReport = _messages.MessageField('AuditScopeReport', 1)
+  complianceStandard = _messages.StringField(2)
+  controlDetails = _messages.MessageField('ControlDetails', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  destinationDetails = _messages.MessageField('DestinationDetails', 5)
+  name = _messages.StringField(6)
+  operationId = _messages.StringField(7)
+  reportSummary = _messages.MessageField('ReportSummary', 8)
+  scope = _messages.StringField(9)
+
+
 class AuditScopeReport(_messages.Message):
   r"""Response message containing the Audit Scope Report.
 
@@ -24,6 +53,36 @@ class AuditScopeReport(_messages.Message):
 
   name = _messages.StringField(1)
   scopeReportContents = _messages.BytesField(2)
+
+
+class AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest
+  object.
+
+  Fields:
+    name: Required. Format projects/{project-id}/locations/{location}/auditRep
+      orts/{auditReportName}/controlReports/{controlId}, folders/{folder-id}/l
+      ocations/{location}/auditReports/{auditReportName}/controlReports/{contr
+      olId}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerFoldersLocationsAuditReportsControlReportsListRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsAuditReportsControlReportsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which to list the reports.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditReportsGenerateRequest(_messages.Message):
@@ -39,6 +98,33 @@ class AuditmanagerFoldersLocationsAuditReportsGenerateRequest(_messages.Message)
 
   generateAuditReportRequest = _messages.MessageField('GenerateAuditReportRequest', 1)
   scope = _messages.StringField(2, required=True)
+
+
+class AuditmanagerFoldersLocationsAuditReportsGetRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsAuditReportsGetRequest object.
+
+  Fields:
+    name: Required. Format projects/{project-
+      id}/locations/{location}/auditReports/{auditReportName},
+      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerFoldersLocationsAuditReportsListRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsAuditReportsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which to list the reports.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditScopeReportsGenerateRequest(_messages.Message):
@@ -92,6 +178,133 @@ class AuditmanagerFoldersLocationsOperationIdsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AuditmanagerFoldersLocationsResourceEnrollmentStatusesGetRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsResourceEnrollmentStatusesGetRequest
+  object.
+
+  Fields:
+    name: Required. Format folders/{folder}/locations/{location}/resourceEnrol
+      lmentStatuses/{resource_enrollment_status}, projects/{project}/locations
+      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerFoldersLocationsResourceEnrollmentStatusesListRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsResourceEnrollmentStatusesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which the list of resources with
+      enrollments are required.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerFoldersLocationsStandardsControlsListRequest(_messages.Message):
+  r"""A AuditmanagerFoldersLocationsStandardsControlsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. Format projects/{project-
+      id}/locations/{location}/standards/{compliance-standard},
+      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerOrganizationsLocationsAuditReportsListRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsAuditReportsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which to list the reports.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesListRequest(_messages.Message):
+  r"""A
+  AuditmanagerOrganizationsLocationsResourceEnrollmentStatusesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which the list of resources with
+      enrollments are required.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerOrganizationsLocationsStandardsControlsListRequest(_messages.Message):
+  r"""A AuditmanagerOrganizationsLocationsStandardsControlsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. Format projects/{project-
+      id}/locations/{location}/standards/{compliance-standard},
+      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsControlReportsGetRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsAuditReportsControlReportsGetRequest
+  object.
+
+  Fields:
+    name: Required. Format projects/{project-id}/locations/{location}/auditRep
+      orts/{auditReportName}/controlReports/{controlId}, folders/{folder-id}/l
+      ocations/{location}/auditReports/{auditReportName}/controlReports/{contr
+      olId}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsControlReportsListRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsAuditReportsControlReportsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which to list the reports.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class AuditmanagerProjectsLocationsAuditReportsGenerateRequest(_messages.Message):
   r"""A AuditmanagerProjectsLocationsAuditReportsGenerateRequest object.
 
@@ -105,6 +318,33 @@ class AuditmanagerProjectsLocationsAuditReportsGenerateRequest(_messages.Message
 
   generateAuditReportRequest = _messages.MessageField('GenerateAuditReportRequest', 1)
   scope = _messages.StringField(2, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsGetRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsAuditReportsGetRequest object.
+
+  Fields:
+    name: Required. Format projects/{project-
+      id}/locations/{location}/auditReports/{auditReportName},
+      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsListRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsAuditReportsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which to list the reports.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerProjectsLocationsAuditScopeReportsGenerateRequest(_messages.Message):
@@ -237,8 +477,426 @@ class AuditmanagerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class AuditmanagerProjectsLocationsResourceEnrollmentStatusesGetRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsResourceEnrollmentStatusesGetRequest
+  object.
+
+  Fields:
+    name: Required. Format folders/{folder}/locations/{location}/resourceEnrol
+      lmentStatuses/{resource_enrollment_status}, projects/{project}/locations
+      /{location}/resourceEnrollmentStatuses/{resource_enrollment_status}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerProjectsLocationsResourceEnrollmentStatusesListRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsResourceEnrollmentStatusesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent scope for which the list of resources with
+      enrollments are required.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerProjectsLocationsStandardsControlsListRequest(_messages.Message):
+  r"""A AuditmanagerProjectsLocationsStandardsControlsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. Format projects/{project-
+      id}/locations/{location}/standards/{compliance-standard},
+      folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Control(_messages.Message):
+  r"""Represents a control.
+
+  Enums:
+    ControlIdValueValuesEnum: Output only. The ID of the control.
+    FamilyValueValuesEnum: Output only. Group where the control belongs. E.g.
+      Access Control.
+
+  Fields:
+    controlId: Output only. The ID of the control.
+    displayName: Output only. Display name of the control.
+    family: Output only. Group where the control belongs. E.g. Access Control.
+  """
+
+  class ControlIdValueValuesEnum(_messages.Enum):
+    r"""Output only. The ID of the control.
+
+    Values:
+      REGULATORY_CONTROL_ID_UNSPECIFIED: <no description>
+      REGULATORY_CONTROL_ID_TEST: <no description>
+      NIST_R4_SC_01: <no description>
+      NIST_R4_SC_02: <no description>
+      NIST_R4_SC_04: <no description>
+      NIST_R4_SC_05: <no description>
+      NIST_R4_SC_06: <no description>
+      NIST_R4_SC_07: <no description>
+      NIST_R4_SC_07_03: <no description>
+      NIST_R4_SC_07_04: <no description>
+      NIST_R4_SC_07_05: <no description>
+      NIST_R4_SC_07_07: <no description>
+      NIST_R4_SC_07_08: <no description>
+      NIST_R4_SC_07_12: <no description>
+      NIST_R4_SC_07_13: <no description>
+      NIST_R4_SC_07_18: <no description>
+      NIST_R4_SC_08: <no description>
+      NIST_R4_SC_08_01: <no description>
+      NIST_R4_SC_10: <no description>
+      NIST_R4_SC_12: <no description>
+      NIST_R4_SC_12_02: <no description>
+      NIST_R4_SC_12_03: <no description>
+      NIST_R4_SC_13: <no description>
+      NIST_R4_SC_15: <no description>
+      NIST_R4_SC_17: <no description>
+      NIST_R4_SC_18: <no description>
+      NIST_R4_SC_19: <no description>
+      NIST_R4_SC_20: <no description>
+      NIST_R4_SC_21: <no description>
+      NIST_R4_SC_22: <no description>
+      NIST_R4_SC_23: <no description>
+      NIST_R4_SC_28: <no description>
+      NIST_R4_SC_28_01: <no description>
+      NIST_R4_SC_39: <no description>
+      NIST_R4_SI_01: <no description>
+      NIST_R4_SI_02: <no description>
+      NIST_R4_SI_02_02: <no description>
+      NIST_R4_SI_02_03: <no description>
+      NIST_R4_SI_03: <no description>
+      NIST_R4_SI_04: <no description>
+      NIST_R4_SI_04_01: <no description>
+      NIST_R4_SI_04_02: <no description>
+      NIST_R4_SI_04_04: <no description>
+      NIST_R4_SI_04_05: <no description>
+      NIST_R4_SI_04_14: <no description>
+      NIST_R4_SI_04_16: <no description>
+      NIST_R4_SI_04_23: <no description>
+      NIST_R4_SI_05: <no description>
+      NIST_R4_SI_06: <no description>
+      NIST_R4_SI_07: <no description>
+      NIST_R4_SI_07_01: <no description>
+      NIST_R4_SI_07_07: <no description>
+      NIST_R4_SI_08: <no description>
+      NIST_R4_SI_08_01: <no description>
+      NIST_R4_SI_08_02: <no description>
+      NIST_R4_SI_10: <no description>
+      NIST_R4_SI_11: <no description>
+      NIST_R4_SI_12: <no description>
+      NIST_R4_SI_16: <no description>
+      NIST_R4_SA_01: <no description>
+      NIST_R4_SA_02: <no description>
+      NIST_R4_SA_03: <no description>
+      NIST_R4_SA_04: <no description>
+      NIST_R4_SA_04_01: <no description>
+      NIST_R4_SA_04_02: <no description>
+      NIST_R4_SA_04_08: <no description>
+      NIST_R4_SA_04_09: <no description>
+      NIST_R4_SA_04_10: <no description>
+      NIST_R4_SA_05: <no description>
+      NIST_R4_SA_08: <no description>
+      NIST_R4_SA_09: <no description>
+      NIST_R4_SA_09_01: <no description>
+      NIST_R4_SA_09_02: <no description>
+      NIST_R4_SA_09_04: <no description>
+      NIST_R4_SA_09_05: <no description>
+      NIST_R4_SA_10: <no description>
+      NIST_R4_SA_10_01: <no description>
+      NIST_R4_SA_11: <no description>
+      NIST_R4_SA_11_01: <no description>
+      NIST_R4_SA_11_02: <no description>
+      NIST_R4_SA_11_08: <no description>
+      NIST_R4_AU_01: <no description>
+      NIST_R4_AU_02: <no description>
+      NIST_R4_AU_02_03: <no description>
+      NIST_R4_AU_03: <no description>
+      NIST_R4_AU_03_01: <no description>
+      NIST_R4_AU_04: <no description>
+      NIST_R4_AU_05: <no description>
+      NIST_R4_AU_06: <no description>
+      NIST_R4_AU_06_01: <no description>
+      NIST_R4_AU_06_03: <no description>
+      NIST_R4_AU_07: <no description>
+      NIST_R4_AU_08: <no description>
+      NIST_R4_AU_08_01: <no description>
+      NIST_R4_AU_09: <no description>
+      NIST_R4_AU_09_02: <no description>
+      NIST_R4_AU_09_04: <no description>
+      NIST_R4_AU_11: <no description>
+      NIST_R4_AU_12: <no description>
+      NIST_R4_AC_01: <no description>
+      NIST_R4_AC_02: <no description>
+      NIST_R4_AC_02_01: <no description>
+      NIST_R4_AC_02_02: <no description>
+      NIST_R4_AC_02_03: <no description>
+      NIST_R4_AC_02_04: <no description>
+      NIST_R4_AC_02_05: <no description>
+      NIST_R4_AC_02_07: <no description>
+      NIST_R4_AC_02_09: <no description>
+      NIST_R4_AC_02_12: <no description>
+      NIST_R4_AC_03: <no description>
+      NIST_R4_AC_04: <no description>
+      NIST_R4_AC_04_21: <no description>
+      NIST_R4_AC_05: <no description>
+      NIST_R4_AC_06: <no description>
+      NIST_R4_AC_06_01: <no description>
+      NIST_R4_AC_06_02: <no description>
+      NIST_R4_AC_06_05: <no description>
+      NIST_R4_AC_06_09: <no description>
+      NIST_R4_AC_06_10: <no description>
+      NIST_R4_AC_08: <no description>
+      NIST_R4_AC_10: <no description>
+      NIST_R4_AC_11: <no description>
+      NIST_R4_AC_12: <no description>
+      NIST_R4_AC_14: <no description>
+      NIST_R4_AC_17: <no description>
+      NIST_R4_AC_17_01: <no description>
+      NIST_R4_AC_17_02: <no description>
+      NIST_R4_AC_17_03: <no description>
+      NIST_R4_AC_17_04: <no description>
+      NIST_R4_AC_17_09: <no description>
+      NIST_R4_AC_18: <no description>
+      NIST_R4_AC_18_01: <no description>
+      NIST_R4_AC_19: <no description>
+      NIST_R4_AC_19_05: <no description>
+      NIST_R4_AC_20: <no description>
+      NIST_R4_AC_20_01: <no description>
+      NIST_R4_AC_20_02: <no description>
+      NIST_R4_AC_21: <no description>
+      NIST_R4_AC_22: <no description>
+    """
+    REGULATORY_CONTROL_ID_UNSPECIFIED = 0
+    REGULATORY_CONTROL_ID_TEST = 1
+    NIST_R4_SC_01 = 2
+    NIST_R4_SC_02 = 3
+    NIST_R4_SC_04 = 4
+    NIST_R4_SC_05 = 5
+    NIST_R4_SC_06 = 6
+    NIST_R4_SC_07 = 7
+    NIST_R4_SC_07_03 = 8
+    NIST_R4_SC_07_04 = 9
+    NIST_R4_SC_07_05 = 10
+    NIST_R4_SC_07_07 = 11
+    NIST_R4_SC_07_08 = 12
+    NIST_R4_SC_07_12 = 13
+    NIST_R4_SC_07_13 = 14
+    NIST_R4_SC_07_18 = 15
+    NIST_R4_SC_08 = 16
+    NIST_R4_SC_08_01 = 17
+    NIST_R4_SC_10 = 18
+    NIST_R4_SC_12 = 19
+    NIST_R4_SC_12_02 = 20
+    NIST_R4_SC_12_03 = 21
+    NIST_R4_SC_13 = 22
+    NIST_R4_SC_15 = 23
+    NIST_R4_SC_17 = 24
+    NIST_R4_SC_18 = 25
+    NIST_R4_SC_19 = 26
+    NIST_R4_SC_20 = 27
+    NIST_R4_SC_21 = 28
+    NIST_R4_SC_22 = 29
+    NIST_R4_SC_23 = 30
+    NIST_R4_SC_28 = 31
+    NIST_R4_SC_28_01 = 32
+    NIST_R4_SC_39 = 33
+    NIST_R4_SI_01 = 34
+    NIST_R4_SI_02 = 35
+    NIST_R4_SI_02_02 = 36
+    NIST_R4_SI_02_03 = 37
+    NIST_R4_SI_03 = 38
+    NIST_R4_SI_04 = 39
+    NIST_R4_SI_04_01 = 40
+    NIST_R4_SI_04_02 = 41
+    NIST_R4_SI_04_04 = 42
+    NIST_R4_SI_04_05 = 43
+    NIST_R4_SI_04_14 = 44
+    NIST_R4_SI_04_16 = 45
+    NIST_R4_SI_04_23 = 46
+    NIST_R4_SI_05 = 47
+    NIST_R4_SI_06 = 48
+    NIST_R4_SI_07 = 49
+    NIST_R4_SI_07_01 = 50
+    NIST_R4_SI_07_07 = 51
+    NIST_R4_SI_08 = 52
+    NIST_R4_SI_08_01 = 53
+    NIST_R4_SI_08_02 = 54
+    NIST_R4_SI_10 = 55
+    NIST_R4_SI_11 = 56
+    NIST_R4_SI_12 = 57
+    NIST_R4_SI_16 = 58
+    NIST_R4_SA_01 = 59
+    NIST_R4_SA_02 = 60
+    NIST_R4_SA_03 = 61
+    NIST_R4_SA_04 = 62
+    NIST_R4_SA_04_01 = 63
+    NIST_R4_SA_04_02 = 64
+    NIST_R4_SA_04_08 = 65
+    NIST_R4_SA_04_09 = 66
+    NIST_R4_SA_04_10 = 67
+    NIST_R4_SA_05 = 68
+    NIST_R4_SA_08 = 69
+    NIST_R4_SA_09 = 70
+    NIST_R4_SA_09_01 = 71
+    NIST_R4_SA_09_02 = 72
+    NIST_R4_SA_09_04 = 73
+    NIST_R4_SA_09_05 = 74
+    NIST_R4_SA_10 = 75
+    NIST_R4_SA_10_01 = 76
+    NIST_R4_SA_11 = 77
+    NIST_R4_SA_11_01 = 78
+    NIST_R4_SA_11_02 = 79
+    NIST_R4_SA_11_08 = 80
+    NIST_R4_AU_01 = 81
+    NIST_R4_AU_02 = 82
+    NIST_R4_AU_02_03 = 83
+    NIST_R4_AU_03 = 84
+    NIST_R4_AU_03_01 = 85
+    NIST_R4_AU_04 = 86
+    NIST_R4_AU_05 = 87
+    NIST_R4_AU_06 = 88
+    NIST_R4_AU_06_01 = 89
+    NIST_R4_AU_06_03 = 90
+    NIST_R4_AU_07 = 91
+    NIST_R4_AU_08 = 92
+    NIST_R4_AU_08_01 = 93
+    NIST_R4_AU_09 = 94
+    NIST_R4_AU_09_02 = 95
+    NIST_R4_AU_09_04 = 96
+    NIST_R4_AU_11 = 97
+    NIST_R4_AU_12 = 98
+    NIST_R4_AC_01 = 99
+    NIST_R4_AC_02 = 100
+    NIST_R4_AC_02_01 = 101
+    NIST_R4_AC_02_02 = 102
+    NIST_R4_AC_02_03 = 103
+    NIST_R4_AC_02_04 = 104
+    NIST_R4_AC_02_05 = 105
+    NIST_R4_AC_02_07 = 106
+    NIST_R4_AC_02_09 = 107
+    NIST_R4_AC_02_12 = 108
+    NIST_R4_AC_03 = 109
+    NIST_R4_AC_04 = 110
+    NIST_R4_AC_04_21 = 111
+    NIST_R4_AC_05 = 112
+    NIST_R4_AC_06 = 113
+    NIST_R4_AC_06_01 = 114
+    NIST_R4_AC_06_02 = 115
+    NIST_R4_AC_06_05 = 116
+    NIST_R4_AC_06_09 = 117
+    NIST_R4_AC_06_10 = 118
+    NIST_R4_AC_08 = 119
+    NIST_R4_AC_10 = 120
+    NIST_R4_AC_11 = 121
+    NIST_R4_AC_12 = 122
+    NIST_R4_AC_14 = 123
+    NIST_R4_AC_17 = 124
+    NIST_R4_AC_17_01 = 125
+    NIST_R4_AC_17_02 = 126
+    NIST_R4_AC_17_03 = 127
+    NIST_R4_AC_17_04 = 128
+    NIST_R4_AC_17_09 = 129
+    NIST_R4_AC_18 = 130
+    NIST_R4_AC_18_01 = 131
+    NIST_R4_AC_19 = 132
+    NIST_R4_AC_19_05 = 133
+    NIST_R4_AC_20 = 134
+    NIST_R4_AC_20_01 = 135
+    NIST_R4_AC_20_02 = 136
+    NIST_R4_AC_21 = 137
+    NIST_R4_AC_22 = 138
+
+  class FamilyValueValuesEnum(_messages.Enum):
+    r"""Output only. Group where the control belongs. E.g. Access Control.
+
+    Values:
+      FAMILY_UNSPECIFIED: Unspecified.
+    """
+    FAMILY_UNSPECIFIED = 0
+
+  controlId = _messages.EnumField('ControlIdValueValuesEnum', 1)
+  displayName = _messages.StringField(2)
+  family = _messages.EnumField('FamilyValueValuesEnum', 3)
+
+
+class ControlDetails(_messages.Message):
+  r"""Evaluation details for a control
+
+  Enums:
+    ComplianceStateValueValuesEnum: Output only. Overall status of the
+      findings for the control.
+
+  Fields:
+    complianceState: Output only. Overall status of the findings for the
+      control.
+    control: The control for which the findings are being reported.
+    findings: Findings for the control.
+  """
+
+  class ComplianceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Overall status of the findings for the control.
+
+    Values:
+      COMPLIANCE_STATE_UNSPECIFIED: Unspecified. Invalid state.
+      COMPLIANT: Compliant.
+      VIOLATION: Violation.
+      UNKNOWN: Unknown, requires manual review
+      ERROR: Error while computing status.
+    """
+    COMPLIANCE_STATE_UNSPECIFIED = 0
+    COMPLIANT = 1
+    VIOLATION = 2
+    UNKNOWN = 3
+    ERROR = 4
+
+  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
+  control = _messages.MessageField('Control', 2)
+  findings = _messages.MessageField('Finding', 3, repeated=True)
+
+
+class ControlReport(_messages.Message):
+  r"""Represents a control audit report.
+
+  Fields:
+    controlDetails: Output only. Control details for the report including the
+      findings.
+    name: Identifier. The name of this Control Report, in the format of scope
+      given in request.
+  """
+
+  controlDetails = _messages.MessageField('ControlDetails', 1)
+  name = _messages.StringField(2)
+
+
+class DestinationDetails(_messages.Message):
+  r"""Represents the locations where the generated reports is saved.
+
+  Fields:
+    gcsBucketUri: The Cloud Storage bucket where the audit report is/will be
+      uploaded.
+  """
+
+  gcsBucketUri = _messages.StringField(1)
 
 
 class EligibleDestination(_messages.Message):
@@ -285,11 +943,47 @@ class Enrollment(_messages.Message):
   corresponding response code
 
   Fields:
+    destinationDetails: Output only. The locations where the generated reports
+      can be uploaded.
     name: Identifier. The name of this Enrollment, in the format of scope
       given in request.
   """
 
-  name = _messages.StringField(1)
+  destinationDetails = _messages.MessageField('DestinationDetails', 1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class Finding(_messages.Message):
+  r"""Represents a violation finding for a particular control.
+
+  Enums:
+    ComplianceStateValueValuesEnum: Output only. Status of the finding.
+
+  Fields:
+    complianceState: Output only. Status of the finding.
+    evidencePath: Evidence path of the finding.
+    overview: Overview of the finding.
+  """
+
+  class ComplianceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Status of the finding.
+
+    Values:
+      COMPLIANCE_STATE_UNSPECIFIED: Unspecified. Invalid state.
+      COMPLIANT: Compliant.
+      VIOLATION: Violation.
+      UNKNOWN: Unknown, requires manual review
+      ERROR: Error while computing status.
+    """
+    COMPLIANCE_STATE_UNSPECIFIED = 0
+    COMPLIANT = 1
+    VIOLATION = 2
+    UNKNOWN = 3
+    ERROR = 4
+
+  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
+  evidencePath = _messages.StringField(2)
+  overview = _messages.StringField(3)
 
 
 class GenerateAuditReportRequest(_messages.Message):
@@ -354,6 +1048,45 @@ class GenerateAuditScopeReportRequest(_messages.Message):
   reportFormat = _messages.EnumField('ReportFormatValueValuesEnum', 2)
 
 
+class ListAuditReportsResponse(_messages.Message):
+  r"""Response message with all the audit reports.
+
+  Fields:
+    auditReports: Output only. The audit reports.
+    nextPageToken: Output only. The token to retrieve the next page of
+      results.
+  """
+
+  auditReports = _messages.MessageField('AuditReport', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListControlReportsResponse(_messages.Message):
+  r"""Response message with all the control reports.
+
+  Fields:
+    controlReports: Output only. The control reports.
+    nextPageToken: Output only. The token to retrieve the next page of
+      results.
+  """
+
+  controlReports = _messages.MessageField('ControlReport', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListControlsResponse(_messages.Message):
+  r"""Response message with all the controls for a compliance standard.
+
+  Fields:
+    controls: Output only. The controls for the compliance standard.
+    nextPageToken: Output only. The token to retrieve the next page of
+      results.
+  """
+
+  controls = _messages.MessageField('Control', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -378,6 +1111,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListResourceEnrollmentStatusesResponse(_messages.Message):
+  r"""Response message with all the descendent resources with enrollment.
+
+  Fields:
+    nextPageToken: Output only. The token to retrieve the next page of
+      results.
+    resourceEnrollmentStatuses: The resources with their enrollment status.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  resourceEnrollmentStatuses = _messages.MessageField('ResourceEnrollmentStatus', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -664,6 +1410,39 @@ class ReportGenerationProgress(_messages.Message):
   reportGenerationPercentComplete = _messages.FloatField(4)
   reportUploadingPercentComplete = _messages.FloatField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class ReportSummary(_messages.Message):
+  r"""Represents additional information for an audit operation.
+
+  Fields:
+    compliantCount: Number of compliant checks.
+    errorCount: Number of checks that could not be performed due to errors.
+    totalCount: Total number of checks.
+    unknownsCount: Number of checks with unknown status.
+    violationCount: Number of checks with violations.
+  """
+
+  compliantCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  totalCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  unknownsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  violationCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class ResourceEnrollmentStatus(_messages.Message):
+  r"""Represents a resource (project or folder) with its enrollment status.
+
+  Fields:
+    children: Output only. The children of the current resource.
+    enrollment: Output only. Enrollment which contains enrolled destination
+      details for a resource
+    name: Identifier. The name of this resource.
+  """
+
+  children = _messages.MessageField('ResourceEnrollmentStatus', 1, repeated=True)
+  enrollment = _messages.MessageField('Enrollment', 2)
+  name = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

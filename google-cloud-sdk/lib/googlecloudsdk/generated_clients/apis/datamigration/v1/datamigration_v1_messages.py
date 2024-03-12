@@ -875,12 +875,14 @@ class ConnectionProfile(_messages.Message):
     r"""The database provider.
 
     Values:
-      DATABASE_PROVIDER_UNSPECIFIED: The database provider is unknown.
-      CLOUDSQL: CloudSQL runs the database.
-      RDS: RDS runs the database.
-      AURORA: Amazon Aurora.
-      ALLOYDB: AlloyDB.
-      AZURE: Microsoft Azure SQL Managed Instance.
+      DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
+        database instances.
+      CLOUDSQL: Cloud SQL is the source instance provider.
+      RDS: Amazon RDS is the source instance provider.
+      AURORA: Amazon Aurora is the source instance provider.
+      ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
+      AZURE: Microsoft Azure SQL Managed Instance is the source instance
+        provider.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1
@@ -1378,12 +1380,14 @@ class DatabaseType(_messages.Message):
     r"""The database provider.
 
     Values:
-      DATABASE_PROVIDER_UNSPECIFIED: The database provider is unknown.
-      CLOUDSQL: CloudSQL runs the database.
-      RDS: RDS runs the database.
-      AURORA: Amazon Aurora.
-      ALLOYDB: AlloyDB.
-      AZURE: Microsoft Azure SQL Managed Instance.
+      DATABASE_PROVIDER_UNSPECIFIED: Use this value for on-premise source
+        database instances.
+      CLOUDSQL: Cloud SQL is the source instance provider.
+      RDS: Amazon RDS is the source instance provider.
+      AURORA: Amazon Aurora is the source instance provider.
+      ALLOYDB: AlloyDB for PostgreSQL is the source instance provider.
+      AZURE: Microsoft Azure SQL Managed Instance is the source instance
+        provider.
     """
     DATABASE_PROVIDER_UNSPECIFIED = 0
     CLOUDSQL = 1

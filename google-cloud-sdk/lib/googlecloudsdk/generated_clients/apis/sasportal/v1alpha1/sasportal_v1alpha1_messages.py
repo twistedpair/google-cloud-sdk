@@ -115,7 +115,8 @@ class SasPortalDevice(_messages.Message):
       Portal and SAS registration requests.
     displayName: Device display name.
     fccId: The FCC identifier of the device. Refer to
-      https://www.fcc.gov/oet/ea/fccid for FccID format.
+      https://www.fcc.gov/oet/ea/fccid for FccID format. Accept underscores
+      and periods because some test-SAS customers use them.
     grantRangeAllowlists: Only ranges that are within the allowlists are
       available for new grants.
     grants: Output only. Grants held by the device.

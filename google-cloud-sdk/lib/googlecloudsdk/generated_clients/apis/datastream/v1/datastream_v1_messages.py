@@ -26,11 +26,14 @@ class BackfillAllStrategy(_messages.Message):
     oracleExcludedObjects: Oracle data source objects to avoid backfilling.
     postgresqlExcludedObjects: PostgreSQL data source objects to avoid
       backfilling.
+    sqlServerExcludedObjects: SQLServer data source objects to avoid
+      backfilling
   """
 
   mysqlExcludedObjects = _messages.MessageField('MysqlRdbms', 1)
   oracleExcludedObjects = _messages.MessageField('OracleRdbms', 2)
   postgresqlExcludedObjects = _messages.MessageField('PostgresqlRdbms', 3)
+  sqlServerExcludedObjects = _messages.MessageField('SqlServerRdbms', 4)
 
 
 class BackfillJob(_messages.Message):
@@ -163,6 +166,7 @@ class ConnectionProfile(_messages.Message):
     oracleProfile: Oracle ConnectionProfile configuration.
     postgresqlProfile: PostgreSQL Connection Profile configuration.
     privateConnectivity: Private connectivity.
+    sqlServerProfile: SQLServer Connection Profile configuration.
     staticServiceIpConnectivity: Static Service IP connectivity.
     updateTime: Output only. The update time of the resource.
   """
@@ -202,8 +206,9 @@ class ConnectionProfile(_messages.Message):
   oracleProfile = _messages.MessageField('OracleProfile', 9)
   postgresqlProfile = _messages.MessageField('PostgresqlProfile', 10)
   privateConnectivity = _messages.MessageField('PrivateConnectivity', 11)
-  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 12)
-  updateTime = _messages.StringField(13)
+  sqlServerProfile = _messages.MessageField('SqlServerProfile', 12)
+  staticServiceIpConnectivity = _messages.MessageField('StaticServiceIpConnectivity', 13)
+  updateTime = _messages.StringField(14)
 
 
 class DatasetTemplate(_messages.Message):
@@ -2014,12 +2019,14 @@ class SourceConfig(_messages.Message):
     sourceConnectionProfile: Required. Source connection profile resoource.
       Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
+    sqlServerSourceConfig: SQLServer data source configuration.
   """
 
   mysqlSourceConfig = _messages.MessageField('MysqlSourceConfig', 1)
   oracleSourceConfig = _messages.MessageField('OracleSourceConfig', 2)
   postgresqlSourceConfig = _messages.MessageField('PostgresqlSourceConfig', 3)
   sourceConnectionProfile = _messages.StringField(4)
+  sqlServerSourceConfig = _messages.MessageField('SqlServerSourceConfig', 5)
 
 
 class SourceHierarchyDatasets(_messages.Message):
@@ -2040,11 +2047,13 @@ class SourceObjectIdentifier(_messages.Message):
     mysqlIdentifier: Mysql data source object identifier.
     oracleIdentifier: Oracle data source object identifier.
     postgresqlIdentifier: PostgreSQL data source object identifier.
+    sqlServerIdentifier: SQLServer data source object identifier.
   """
 
   mysqlIdentifier = _messages.MessageField('MysqlObjectIdentifier', 1)
   oracleIdentifier = _messages.MessageField('OracleObjectIdentifier', 2)
   postgresqlIdentifier = _messages.MessageField('PostgresqlObjectIdentifier', 3)
+  sqlServerIdentifier = _messages.MessageField('SqlServerObjectIdentifier', 4)
 
 
 class SpecificStartPosition(_messages.Message):
@@ -2058,6 +2067,111 @@ class SpecificStartPosition(_messages.Message):
 
   mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)
   oracleScnPosition = _messages.MessageField('OracleScnPosition', 2)
+
+
+class SqlServerColumn(_messages.Message):
+  r"""SQLServer Column.
+
+  Fields:
+    column: Column name.
+    dataType: The SQLServer data type.
+    length: Column length.
+    nullable: Whether or not the column can accept a null value.
+    ordinalPosition: The ordinal position of the column in the table.
+    precision: Column precision.
+    primaryKey: Whether or not the column represents a primary key.
+    scale: Column scale.
+  """
+
+  column = _messages.StringField(1)
+  dataType = _messages.StringField(2)
+  length = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nullable = _messages.BooleanField(4)
+  ordinalPosition = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  precision = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  primaryKey = _messages.BooleanField(7)
+  scale = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+
+
+class SqlServerObjectIdentifier(_messages.Message):
+  r"""SQLServer data source object identifier.
+
+  Fields:
+    schema: Required. The schema name.
+    table: Required. The table name.
+  """
+
+  schema = _messages.StringField(1)
+  table = _messages.StringField(2)
+
+
+class SqlServerProfile(_messages.Message):
+  r"""SQLServer database profile
+
+  Fields:
+    database: Required. Database for the SQLServer connection.
+    hostname: Required. Hostname for the SQLServer connection.
+    password: Required. Password for the SQLServer connection.
+    port: Port for the SQLServer connection, default value is 1433.
+    username: Required. Username for the SQLServer connection.
+  """
+
+  database = _messages.StringField(1)
+  hostname = _messages.StringField(2)
+  password = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  username = _messages.StringField(5)
+
+
+class SqlServerRdbms(_messages.Message):
+  r"""SQLServer database structure.
+
+  Fields:
+    schemas: SQLServer schemas in the database server.
+  """
+
+  schemas = _messages.MessageField('SqlServerSchema', 1, repeated=True)
+
+
+class SqlServerSchema(_messages.Message):
+  r"""SQLServer schema.
+
+  Fields:
+    schema: Schema name.
+    tables: Tables in the schema.
+  """
+
+  schema = _messages.StringField(1)
+  tables = _messages.MessageField('SqlServerTable', 2, repeated=True)
+
+
+class SqlServerSourceConfig(_messages.Message):
+  r"""SQLServer data source configuration
+
+  Fields:
+    excludeObjects: SQLServer objects to exclude from the stream.
+    includeObjects: SQLServer objects to include in the stream.
+    maxConcurrentBackfillTasks: Max concurrent backfill tasks.
+    maxConcurrentCdcTasks: Max concurrent CDC tasks.
+  """
+
+  excludeObjects = _messages.MessageField('SqlServerRdbms', 1)
+  includeObjects = _messages.MessageField('SqlServerRdbms', 2)
+  maxConcurrentBackfillTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maxConcurrentCdcTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class SqlServerTable(_messages.Message):
+  r"""SQLServer table.
+
+  Fields:
+    columns: SQLServer columns in the schema. When unspecified as part of
+      include/exclude objects, includes/excludes everything.
+    table: Table name.
+  """
+
+  columns = _messages.MessageField('SqlServerColumn', 1, repeated=True)
+  table = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

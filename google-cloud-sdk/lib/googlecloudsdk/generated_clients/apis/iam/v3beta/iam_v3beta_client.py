@@ -39,7 +39,6 @@ class IamV3beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.SearchTargetPolicyBindings = self.SearchTargetPolicyBindingsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations_policies = self.FoldersLocationsPoliciesService(self)
     self.folders_locations_policyBindings = self.FoldersLocationsPolicyBindingsService(self)
@@ -57,42 +56,6 @@ class IamV3beta(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
     self.searchApplicablePolicies = self.SearchApplicablePoliciesService(self)
-
-  class SearchTargetPolicyBindingsService(base_api.BaseApiService):
-    """Service class for the SearchTargetPolicyBindings resource."""
-
-    _NAME = 'SearchTargetPolicyBindings'
-
-    def __init__(self, client):
-      super(IamV3beta.SearchTargetPolicyBindingsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Search(self, request, global_params=None):
-      r"""Search policy bindings by target. Returns all policy binding objects bound directly to target.
-
-      Args:
-        request: (IamSearchTargetPolicyBindingsSearchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV3betaSearchTargetPolicyBindingsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Search')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='iam.SearchTargetPolicyBindings.search',
-        ordered_params=[],
-        path_params=[],
-        query_params=['filter', 'pageSize', 'pageToken', 'target'],
-        relative_path='v3beta/SearchTargetPolicyBindings:search',
-        request_field='',
-        request_type_name='IamSearchTargetPolicyBindingsSearchRequest',
-        response_type_name='GoogleIamV3betaSearchTargetPolicyBindingsResponse',
-        supports_download=False,
-    )
 
   class FoldersLocationsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_operations resource."""
@@ -162,7 +125,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=['policyId', 'validateOnly'],
         relative_path='v3beta/{+parent}/policies',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamFoldersLocationsPoliciesCreateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -202,7 +165,7 @@ class IamV3beta(base_api.BaseApiClient):
         request: (IamFoldersLocationsPoliciesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleIamV3betaPolicy) The response message.
+        (GoogleIamV3betaV3Policy) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -218,7 +181,7 @@ class IamV3beta(base_api.BaseApiClient):
         relative_path='v3beta/{+name}',
         request_field='',
         request_type_name='IamFoldersLocationsPoliciesGetRequest',
-        response_type_name='GoogleIamV3betaPolicy',
+        response_type_name='GoogleIamV3betaV3Policy',
         supports_download=False,
     )
 
@@ -270,7 +233,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['name'],
         query_params=['updateMask', 'validateOnly'],
         relative_path='v3beta/{+name}',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamFoldersLocationsPoliciesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -421,6 +384,33 @@ class IamV3beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchTargetPolicyBindings(self, request, global_params=None):
+      r"""Search policy bindings by target. Returns all policy binding objects bound directly to target.
+
+      Args:
+        request: (IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3betaSearchTargetPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchTargetPolicyBindings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchTargetPolicyBindings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta/folders/{foldersId}/locations/{locationsId}/policyBindings:searchTargetPolicyBindings',
+        http_method='GET',
+        method_id='iam.folders.locations.policyBindings.searchTargetPolicyBindings',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'target'],
+        relative_path='v3beta/{+parent}/policyBindings:searchTargetPolicyBindings',
+        request_field='',
+        request_type_name='IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest',
+        response_type_name='GoogleIamV3betaSearchTargetPolicyBindingsResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
 
@@ -563,7 +553,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=['policyId', 'validateOnly'],
         relative_path='v3beta/{+parent}/policies',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamOrganizationsLocationsPoliciesCreateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -603,7 +593,7 @@ class IamV3beta(base_api.BaseApiClient):
         request: (IamOrganizationsLocationsPoliciesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleIamV3betaPolicy) The response message.
+        (GoogleIamV3betaV3Policy) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -619,7 +609,7 @@ class IamV3beta(base_api.BaseApiClient):
         relative_path='v3beta/{+name}',
         request_field='',
         request_type_name='IamOrganizationsLocationsPoliciesGetRequest',
-        response_type_name='GoogleIamV3betaPolicy',
+        response_type_name='GoogleIamV3betaV3Policy',
         supports_download=False,
     )
 
@@ -671,7 +661,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['name'],
         query_params=['updateMask', 'validateOnly'],
         relative_path='v3beta/{+name}',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamOrganizationsLocationsPoliciesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -822,6 +812,33 @@ class IamV3beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchTargetPolicyBindings(self, request, global_params=None):
+      r"""Search policy bindings by target. Returns all policy binding objects bound directly to target.
+
+      Args:
+        request: (IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3betaSearchTargetPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchTargetPolicyBindings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchTargetPolicyBindings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta/organizations/{organizationsId}/locations/{locationsId}/policyBindings:searchTargetPolicyBindings',
+        http_method='GET',
+        method_id='iam.organizations.locations.policyBindings.searchTargetPolicyBindings',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'target'],
+        relative_path='v3beta/{+parent}/policyBindings:searchTargetPolicyBindings',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest',
+        response_type_name='GoogleIamV3betaSearchTargetPolicyBindingsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsPrincipalAccessBoundaryPoliciesService(base_api.BaseApiService):
     """Service class for the organizations_locations_principalAccessBoundaryPolicies resource."""
 
@@ -967,6 +984,33 @@ class IamV3beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchPolicyBindings(self, request, global_params=None):
+      r"""Returns all policy bindings that bind a specific policy if a user has searchPolicyBindings permission on that policy.
+
+      Args:
+        request: (IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3betaSearchPrincipalAccessBoundaryPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchPolicyBindings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchPolicyBindings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta/organizations/{organizationsId}/locations/{locationsId}/principalAccessBoundaryPolicies/{principalAccessBoundaryPoliciesId}:searchPolicyBindings',
+        http_method='GET',
+        method_id='iam.organizations.locations.principalAccessBoundaryPolicies.searchPolicyBindings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3beta/{+name}:searchPolicyBindings',
+        request_field='',
+        request_type_name='IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindingsRequest',
+        response_type_name='GoogleIamV3betaSearchPrincipalAccessBoundaryPolicyBindingsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 
@@ -1109,7 +1153,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=['policyId', 'validateOnly'],
         relative_path='v3beta/{+parent}/policies',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamProjectsLocationsPoliciesCreateRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -1149,7 +1193,7 @@ class IamV3beta(base_api.BaseApiClient):
         request: (IamProjectsLocationsPoliciesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleIamV3betaPolicy) The response message.
+        (GoogleIamV3betaV3Policy) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -1165,7 +1209,7 @@ class IamV3beta(base_api.BaseApiClient):
         relative_path='v3beta/{+name}',
         request_field='',
         request_type_name='IamProjectsLocationsPoliciesGetRequest',
-        response_type_name='GoogleIamV3betaPolicy',
+        response_type_name='GoogleIamV3betaV3Policy',
         supports_download=False,
     )
 
@@ -1217,7 +1261,7 @@ class IamV3beta(base_api.BaseApiClient):
         path_params=['name'],
         query_params=['updateMask', 'validateOnly'],
         relative_path='v3beta/{+name}',
-        request_field='googleIamV3betaPolicy',
+        request_field='googleIamV3betaV3Policy',
         request_type_name='IamProjectsLocationsPoliciesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
@@ -1365,6 +1409,33 @@ class IamV3beta(base_api.BaseApiClient):
         request_field='googleIamV3betaPolicyBinding',
         request_type_name='IamProjectsLocationsPolicyBindingsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SearchTargetPolicyBindings(self, request, global_params=None):
+      r"""Search policy bindings by target. Returns all policy binding objects bound directly to target.
+
+      Args:
+        request: (IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3betaSearchTargetPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchTargetPolicyBindings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchTargetPolicyBindings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3beta/projects/{projectsId}/locations/{locationsId}/policyBindings:searchTargetPolicyBindings',
+        http_method='GET',
+        method_id='iam.projects.locations.policyBindings.searchTargetPolicyBindings',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'target'],
+        relative_path='v3beta/{+parent}/policyBindings:searchTargetPolicyBindings',
+        request_field='',
+        request_type_name='IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest',
+        response_type_name='GoogleIamV3betaSearchTargetPolicyBindingsResponse',
         supports_download=False,
     )
 

@@ -805,8 +805,8 @@ class IdentitySource(_messages.Message):
       ensure that the user-provided value is up to date before the server
       processes a request. The server computes checksums based on the value of
       other fields in the request.
-    name: Output only. The resource name of this identity source. Resource
-      names are schemeless URIs that follow the conventions in
+    name: Output only. Identifier. The resource name of this identity source.
+      Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/identitySources/my-identity-source`
@@ -4523,8 +4523,8 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest(_mes
   Fields:
     identitySource: A IdentitySource resource to be passed as the request
       body.
-    name: Output only. The resource name of this identity source. Resource
-      names are schemeless URIs that follow the conventions in
+    name: Output only. Identifier. The resource name of this identity source.
+      Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/identitySources/my-identity-source`

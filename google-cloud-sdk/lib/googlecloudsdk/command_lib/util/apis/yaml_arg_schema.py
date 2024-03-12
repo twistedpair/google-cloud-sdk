@@ -417,17 +417,20 @@ class Argument(YAMLArgument):
     if not methods or not self.api_field:
       return None
 
-    fields = set(
-        self._GetField(method.GetRequestType()) for method in methods)
+    field = self._GetField(methods[0].GetRequestType())
 
-    if len(fields) != 1:
-      message_names = ', '.join(
-          method.GetRequestType().__name__ for method in methods)
-      raise util.InvalidSchemaError(
-          f'Unable to generate flag for api field {self.api_field}. '
-          f'Found non equivalent fields in messages: [{message_names}].')
+    for method in methods:
+      other_field = self._GetField(method.GetRequestType())
+      if (field.name != other_field.name or
+          field.variant != other_field.variant or
+          field.repeated != other_field.repeated):
+        message_names = ', '.join(
+            method.GetRequestType().__name__ for method in methods)
+        raise util.InvalidSchemaError(
+            f'Unable to generate flag for api field {self.api_field}. '
+            f'Found non equivalent fields in messages: [{message_names}].')
 
-    return fields.pop()
+    return field
 
   def _GenerateUpdateFlags(self, field):
     """Creates update flags generator using aptiools field."""
@@ -824,7 +827,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
   """Encapsulates the spec for the resource arg of a declarative command."""
 
   @classmethod
-  def FromSpecData(cls, data, request_api_version):
+  def FromSpecData(cls, data, request_api_version, **kwargs):
     """Create a resource argument with no command-level information configured.
 
     Given just the reusable resource specification (such as attribute names
@@ -834,6 +837,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     Args:
       data: the yaml resource definition.
       request_api_version: str, api version of request collection.
+      **kwargs: attributes outside of the resource spec
 
     Returns:
       YAMLResourceArgument with no group help or flag name information.
@@ -841,7 +845,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     if not data:
       return None
 
-    return cls(data, None, request_api_version=request_api_version)
+    return cls(data, None, request_api_version=request_api_version, **kwargs)
 
   def __init__(self, data, group_help, request_api_version=None, **kwargs):
     super(YAMLResourceArgument, self).__init__(data, group_help, **kwargs)
@@ -1016,9 +1020,13 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
     super(YAMLMultitypeResourceArgument, self).__init__(
         data, group_help, **kwargs)
 
-    self._resources = [
-        YAMLResourceArgument.FromSpecData(resource, request_api_version)
-        for resource in data.get('resources', [])]
+    self._resources = []
+    for resource_data in data.get('resources', []):
+      self._resources.append(
+          YAMLResourceArgument.FromSpecData(
+              resource_data,
+              request_api_version,
+              is_parent_resource=self.is_parent_resource))
 
   @property
   def collection(self):

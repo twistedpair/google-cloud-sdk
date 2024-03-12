@@ -4325,11 +4325,15 @@ class GoogleCloudDialogflowCxV3AdvancedSettings(_messages.Message):
     loggingSettings: Settings for logging. Settings for Dialogflow History,
       Contact Center messages, StackDriver logs, and speech logging. Exposed
       at the following levels: - Agent level.
+    speechSettings: Settings for speech to text detection. Exposed at the
+      following levels: - Agent level - Flow level - Page level - Parameter
+      level
   """
 
   audioExportGcsDestination = _messages.MessageField('GoogleCloudDialogflowCxV3GcsDestination', 1)
   dtmfSettings = _messages.MessageField('GoogleCloudDialogflowCxV3AdvancedSettingsDtmfSettings', 2)
   loggingSettings = _messages.MessageField('GoogleCloudDialogflowCxV3AdvancedSettingsLoggingSettings', 3)
+  speechSettings = _messages.MessageField('GoogleCloudDialogflowCxV3AdvancedSettingsSpeechSettings', 4)
 
 
 class GoogleCloudDialogflowCxV3AdvancedSettingsDtmfSettings(_messages.Message):
@@ -4363,6 +4367,63 @@ class GoogleCloudDialogflowCxV3AdvancedSettingsLoggingSettings(_messages.Message
 
   enableInteractionLogging = _messages.BooleanField(1)
   enableStackdriverLogging = _messages.BooleanField(2)
+
+
+class GoogleCloudDialogflowCxV3AdvancedSettingsSpeechSettings(_messages.Message):
+  r"""Define behaviors of speech to text detection.
+
+  Messages:
+    ModelsValue: Mapping from language to Speech-to-Text model. The mapped
+      Speech-to-Text model will be selected for requests from its
+      corresponding language. For more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
+
+  Fields:
+    endpointerSensitivity: Sensitivity of the speech model that detects the
+      end of speech. Scale from 0 to 100.
+    models: Mapping from language to Speech-to-Text model. The mapped Speech-
+      to-Text model will be selected for requests from its corresponding
+      language. For more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
+    noSpeechTimeout: Timeout before detecting no speech.
+    useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
+      endpointer sensitivy as seconds of timeout value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModelsValue(_messages.Message):
+    r"""Mapping from language to Speech-to-Text model. The mapped Speech-to-
+    Text model will be selected for requests from its corresponding language.
+    For more information, see [Speech
+    models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+    models).
+
+    Messages:
+      AdditionalProperty: An additional property for a ModelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endpointerSensitivity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  models = _messages.MessageField('ModelsValue', 2)
+  noSpeechTimeout = _messages.StringField(3)
+  useTimeoutBasedEndpointing = _messages.BooleanField(4)
 
 
 class GoogleCloudDialogflowCxV3AudioInput(_messages.Message):
@@ -6953,11 +7014,15 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettings(_messages.Message):
     loggingSettings: Settings for logging. Settings for Dialogflow History,
       Contact Center messages, StackDriver logs, and speech logging. Exposed
       at the following levels: - Agent level.
+    speechSettings: Settings for speech to text detection. Exposed at the
+      following levels: - Agent level - Flow level - Page level - Parameter
+      level
   """
 
   audioExportGcsDestination = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GcsDestination', 1)
   dtmfSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AdvancedSettingsDtmfSettings', 2)
   loggingSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AdvancedSettingsLoggingSettings', 3)
+  speechSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AdvancedSettingsSpeechSettings', 4)
 
 
 class GoogleCloudDialogflowCxV3beta1AdvancedSettingsDtmfSettings(_messages.Message):
@@ -6991,6 +7056,63 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettingsLoggingSettings(_messages.Me
 
   enableInteractionLogging = _messages.BooleanField(1)
   enableStackdriverLogging = _messages.BooleanField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1AdvancedSettingsSpeechSettings(_messages.Message):
+  r"""Define behaviors of speech to text detection.
+
+  Messages:
+    ModelsValue: Mapping from language to Speech-to-Text model. The mapped
+      Speech-to-Text model will be selected for requests from its
+      corresponding language. For more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
+
+  Fields:
+    endpointerSensitivity: Sensitivity of the speech model that detects the
+      end of speech. Scale from 0 to 100.
+    models: Mapping from language to Speech-to-Text model. The mapped Speech-
+      to-Text model will be selected for requests from its corresponding
+      language. For more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
+    noSpeechTimeout: Timeout before detecting no speech.
+    useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
+      endpointer sensitivy as seconds of timeout value.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModelsValue(_messages.Message):
+    r"""Mapping from language to Speech-to-Text model. The mapped Speech-to-
+    Text model will be selected for requests from its corresponding language.
+    For more information, see [Speech
+    models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+    models).
+
+    Messages:
+      AdditionalProperty: An additional property for a ModelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endpointerSensitivity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  models = _messages.MessageField('ModelsValue', 2)
+  noSpeechTimeout = _messages.StringField(3)
+  useTimeoutBasedEndpointing = _messages.BooleanField(4)
 
 
 class GoogleCloudDialogflowCxV3beta1AudioInput(_messages.Message):

@@ -15,7 +15,7 @@ class DataflowV1b3(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://dataflow.mtls.googleapis.com/'
 
   _PACKAGE = 'dataflow'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly', 'https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly']
   _VERSION = 'v1b3'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'

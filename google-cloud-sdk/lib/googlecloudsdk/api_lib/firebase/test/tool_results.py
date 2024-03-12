@@ -19,13 +19,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import os
 import time
 
 from googlecloudsdk.api_lib.firebase.test import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import progress_tracker
-
 from six.moves.urllib import parse
 import uritemplate
 
@@ -99,7 +99,7 @@ def GetToolResultsIds(matrix,
           break
 
       if matrix.state in matrix_monitor.completed_matrix_states:
-        raise exceptions.BadMatrixError(_ErrorFromInvalidMatrix(matrix))
+        raise exceptions.BadMatrixError(_ErrorFromMatrixInFailedState(matrix))
 
       time.sleep(status_interval)
       matrix = matrix_monitor.GetTestMatrixStatus()
@@ -107,8 +107,40 @@ def GetToolResultsIds(matrix,
   return ToolResultsIds(history_id=history_id, execution_id=execution_id)
 
 
-def _ErrorFromInvalidMatrix(matrix):
+def _ErrorFromMatrixInFailedState(matrix):
   """Produces a human-readable error message from an invalid matrix."""
+  messages = apis.GetMessagesModule('testing', 'v1')
+  if matrix.state == messages.TestMatrix.StateValueValuesEnum.INVALID:
+    return _ExtractInvalidMatrixDetails(matrix)
+
+  return _GenericErrorMessage(matrix)
+
+
+def _ExtractInvalidMatrixDetails(matrix):
+  invalid_details_for_user = []
+  for invalid_detail in matrix.extendedInvalidMatrixDetails:
+    invalid_details_for_user.append(
+        f'Reason: {invalid_detail.reason} Message: {invalid_detail.message}'
+    )
+  if invalid_details_for_user:
+    return 'Matrix [{m}] failed during validation.\n{msg}'.format(
+        m=matrix.testMatrixId, msg=os.linesep.join(invalid_details_for_user)
+    )
+  else:
+    return _GetLegacyInvalidMatrixDetails(matrix)
+
+
+def _GetLegacyInvalidMatrixDetails(matrix):
+  """Converts legacy invalid matrix enum to a descriptive message for the user.
+
+  Args:
+    matrix: A TestMatrix in a failed state
+
+  Returns:
+    A string containing the legacy error message when no message is available
+    from the API.
+
+  """
   messages = apis.GetMessagesModule('testing', 'v1')
   enum_values = messages.TestMatrix.InvalidMatrixDetailsValueValuesEnum
   error_dict = {
@@ -207,8 +239,13 @@ def _ErrorFromInvalidMatrix(matrix):
     return ('\nMatrix [{m}] failed during validation: {e}.'.format(
         m=matrix.testMatrixId, e=error_dict[details_enum]))
   # Use a generic message if the enum is unknown or unspecified/unavailable.
+  return _GenericErrorMessage(matrix)
+
+
+def _GenericErrorMessage(matrix):
   return (
       '\nMatrix [{m}] unexpectedly reached final status {s} without returning '
       'a URL to any test results in the Firebase console. Please re-check the '
       'validity of your test files and parameters and try again.'.format(
           m=matrix.testMatrixId, s=matrix.state))
+

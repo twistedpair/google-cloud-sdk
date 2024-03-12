@@ -614,14 +614,14 @@ class QuotaConfig(_messages.Message):
       preference request.
 
   Messages:
-    AnnotationsValue: The annotations map for clients to store small amounts
-      of arbitrary data. Do not put PII or other sensitive information here.
-      See https://google.aip.dev/128#annotations
+    AnnotationsValue: Optional. The annotations map for clients to store small
+      amounts of arbitrary data. Do not put PII or other sensitive information
+      here. See https://google.aip.dev/128#annotations
 
   Fields:
-    annotations: The annotations map for clients to store small amounts of
-      arbitrary data. Do not put PII or other sensitive information here. See
-      https://google.aip.dev/128#annotations
+    annotations: Optional. The annotations map for clients to store small
+      amounts of arbitrary data. Do not put PII or other sensitive information
+      here. See https://google.aip.dev/128#annotations
     grantedValue: Output only. Granted quota value.
     preferredValue: Required. The preferred value. Must be greater than or
       equal to -1. If set to -1, it means the value is "unlimited".
@@ -649,8 +649,8 @@ class QuotaConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""The annotations map for clients to store small amounts of arbitrary
-    data. Do not put PII or other sensitive information here. See
+    r"""Optional. The annotations map for clients to store small amounts of
+    arbitrary data. Do not put PII or other sensitive information here. See
     https://google.aip.dev/128#annotations
 
     Messages:
@@ -686,10 +686,14 @@ class QuotaDetails(_messages.Message):
   r"""The quota details for a map of dimensions.
 
   Fields:
+    rolloutInfo: Rollout information of this quota. This field is present only
+      if the effective limit will change due to the ongoing rollout of the
+      service config.
     value: The value currently in effect and being enforced.
   """
 
-  value = _messages.IntegerField(1)
+  rolloutInfo = _messages.MessageField('RolloutInfo', 1)
+  value = _messages.IntegerField(2)
 
 
 class QuotaIncreaseEligibility(_messages.Message):
@@ -764,15 +768,9 @@ class QuotaInfo(_messages.Message):
       per day, or "10 seconds" for every 10 seconds.
     service: The name of the service in which the quota is defined. Example:
       `compute.googleapis.com`
-    serviceRequestQuotaUri: URI to the page where the user can request more
-      quotas for the cloud service, such as https://docs.google.com/spreadshee
-      t/viewform?formkey=abc123&entry_0={email}&entry_1={id}. Google
-      Developers Console UI replace {email} with the current user's e-mail,
-      {id} with the current project number, or organization ID with
-      "organizations/" prefix. For example, https://docs.google.com/spreadshee
-      t/viewform?formkey=abc123&entry_0=johndoe@gmail.com&entry_1=25463754, or
-      https://docs.google.com/spreadsheet/viewform?formkey=abc123&entry_0=john
-      doe@gmail.com&entry_1=organizations/26474422.
+    serviceRequestQuotaUri: URI to the page where users can request more quota
+      for the cloud service-for example, https://console.cloud.google.com/iam-
+      admin/quotas.
   """
 
   class ContainerTypeValueValuesEnum(_messages.Enum):
@@ -813,35 +811,38 @@ class QuotaPreference(_messages.Message):
   resource for a quota value targeting a unique set of dimensions.
 
   Messages:
-    DimensionsValue: The dimensions that this quota preference applies to. The
-      key of the map entry is the name of a dimension, such as "region",
-      "zone", "network_id", and the value of the map entry is the dimension
-      value. If a dimension is missing from the map of dimensions, the quota
-      preference applies to all the dimension values except for those that
-      have other quota preferences configured for the specific value. NOTE:
-      QuotaPreferences can only be applied across all values of "user" and
-      "resource" dimension. Do not set values for "user" or "resource" in the
-      dimension map. Example: {"provider", "Foo Inc"} where "provider" is a
-      service specific dimension.
+    DimensionsValue: Immutable. The dimensions that this quota preference
+      applies to. The key of the map entry is the name of a dimension, such as
+      "region", "zone", "network_id", and the value of the map entry is the
+      dimension value. If a dimension is missing from the map of dimensions,
+      the quota preference applies to all the dimension values except for
+      those that have other quota preferences configured for the specific
+      value. NOTE: QuotaPreferences can only be applied across all values of
+      "user" and "resource" dimension. Do not set values for "user" or
+      "resource" in the dimension map. Example: {"provider", "Foo Inc"} where
+      "provider" is a service specific dimension.
 
   Fields:
-    contactEmail: Required. Input only. An email address that can be used for
-      quota related communication between the Google Cloud and the user in
-      case the Google Cloud needs further information to make a decision on
-      whether the user preferred quota can be granted. The Google account for
-      the email address must have quota update permission for the project,
-      folder or organization this quota preference is for.
+    contactEmail: Input only. An email address that can be used for quota
+      related communication between the Google Cloud and the user in case the
+      Google Cloud needs further information to make a decision on whether the
+      user preferred quota can be granted. The email address is optional for
+      decrease quota preferences. In another word, QuotaConfig.preferred_value
+      is smaller than the QuotaDetails.reset_value. It is required for
+      increase quota preferences. The Google account for the email address
+      must have quota update permission for the project, folder or
+      organization this quota preference is for.
     createTime: Output only. Create time stamp
-    dimensions: The dimensions that this quota preference applies to. The key
-      of the map entry is the name of a dimension, such as "region", "zone",
-      "network_id", and the value of the map entry is the dimension value. If
-      a dimension is missing from the map of dimensions, the quota preference
-      applies to all the dimension values except for those that have other
-      quota preferences configured for the specific value. NOTE:
-      QuotaPreferences can only be applied across all values of "user" and
-      "resource" dimension. Do not set values for "user" or "resource" in the
-      dimension map. Example: {"provider", "Foo Inc"} where "provider" is a
-      service specific dimension.
+    dimensions: Immutable. The dimensions that this quota preference applies
+      to. The key of the map entry is the name of a dimension, such as
+      "region", "zone", "network_id", and the value of the map entry is the
+      dimension value. If a dimension is missing from the map of dimensions,
+      the quota preference applies to all the dimension values except for
+      those that have other quota preferences configured for the specific
+      value. NOTE: QuotaPreferences can only be applied across all values of
+      "user" and "resource" dimension. Do not set values for "user" or
+      "resource" in the dimension map. Example: {"provider", "Foo Inc"} where
+      "provider" is a service specific dimension.
     etag: Optional. The current etag of the quota preference. If an etag is
       provided on update and does not match the current server's etag of the
       quota preference, the request will be blocked and an ABORTED error will
@@ -865,8 +866,8 @@ class QuotaPreference(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DimensionsValue(_messages.Message):
-    r"""The dimensions that this quota preference applies to. The key of the
-    map entry is the name of a dimension, such as "region", "zone",
+    r"""Immutable. The dimensions that this quota preference applies to. The
+    key of the map entry is the name of a dimension, such as "region", "zone",
     "network_id", and the value of the map entry is the dimension value. If a
     dimension is missing from the map of dimensions, the quota preference
     applies to all the dimension values except for those that have other quota
@@ -906,6 +907,16 @@ class QuotaPreference(_messages.Message):
   reconciling = _messages.BooleanField(9)
   service = _messages.StringField(10)
   updateTime = _messages.StringField(11)
+
+
+class RolloutInfo(_messages.Message):
+  r"""[Output only] Rollout information of a quota.
+
+  Fields:
+    ongoingRollout: Whether there is an ongoing rollout for a quota or not.
+  """
+
+  ongoingRollout = _messages.BooleanField(1)
 
 
 class StandardQueryParameters(_messages.Message):

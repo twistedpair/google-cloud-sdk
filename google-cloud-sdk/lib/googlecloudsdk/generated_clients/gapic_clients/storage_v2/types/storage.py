@@ -35,11 +35,6 @@ __protobuf__ = proto.module(
         'ListBucketsResponse',
         'LockBucketRetentionPolicyRequest',
         'UpdateBucketRequest',
-        'DeleteNotificationConfigRequest',
-        'GetNotificationConfigRequest',
-        'CreateNotificationConfigRequest',
-        'ListNotificationConfigsRequest',
-        'ListNotificationConfigsResponse',
         'ComposeObjectRequest',
         'DeleteObjectRequest',
         'RestoreObjectRequest',
@@ -62,6 +57,7 @@ __protobuf__ = proto.module(
         'StartResumableWriteResponse',
         'UpdateObjectRequest',
         'GetServiceAccountRequest',
+        'ServiceAccount',
         'CreateHmacKeyRequest',
         'CreateHmacKeyResponse',
         'DeleteHmacKeyRequest',
@@ -76,15 +72,19 @@ __protobuf__ = proto.module(
         'BucketAccessControl',
         'ChecksummedData',
         'ObjectChecksums',
-        'NotificationConfig',
         'CustomerEncryption',
         'Object',
         'ObjectAccessControl',
         'ListObjectsResponse',
         'ProjectTeam',
-        'ServiceAccount',
         'Owner',
         'ContentRange',
+        'DeleteNotificationConfigRequest',
+        'GetNotificationConfigRequest',
+        'CreateNotificationConfigRequest',
+        'ListNotificationConfigsRequest',
+        'ListNotificationConfigsResponse',
+        'NotificationConfig',
     },
 )
 
@@ -408,123 +408,6 @@ class UpdateBucketRequest(proto.Message):
         proto.MESSAGE,
         number=6,
         message=field_mask_pb2.FieldMask,
-    )
-
-
-class DeleteNotificationConfigRequest(proto.Message):
-    r"""Request message for DeleteNotificationConfig.
-
-    Attributes:
-        name (str):
-            Required. The parent bucket of the
-            NotificationConfig.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class GetNotificationConfigRequest(proto.Message):
-    r"""Request message for GetNotificationConfig.
-
-    Attributes:
-        name (str):
-            Required. The parent bucket of the NotificationConfig.
-            Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class CreateNotificationConfigRequest(proto.Message):
-    r"""Request message for CreateNotificationConfig.
-
-    Attributes:
-        parent (str):
-            Required. The bucket to which this
-            NotificationConfig belongs.
-        notification_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig):
-            Required. Properties of the
-            NotificationConfig to be inserted.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    notification_config: 'NotificationConfig' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message='NotificationConfig',
-    )
-
-
-class ListNotificationConfigsRequest(proto.Message):
-    r"""Request message for ListNotifications.
-
-    Attributes:
-        parent (str):
-            Required. Name of a Google Cloud Storage
-            bucket.
-        page_size (int):
-            The maximum number of NotificationConfigs to return. The
-            service may return fewer than this value. The default value
-            is 100. Specifying a value above 100 will result in a
-            page_size of 100.
-        page_token (str):
-            A page token, received from a previous
-            ``ListNotificationConfigs`` call. Provide this to retrieve
-            the subsequent page.
-
-            When paginating, all other parameters provided to
-            ``ListNotificationConfigs`` must match the call that
-            provided the page token.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    page_size: int = proto.Field(
-        proto.INT32,
-        number=2,
-    )
-    page_token: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-
-
-class ListNotificationConfigsResponse(proto.Message):
-    r"""The result of a call to ListNotificationConfigs
-
-    Attributes:
-        notification_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
-            The list of items.
-        next_page_token (str):
-            A token, which can be sent as ``page_token`` to retrieve the
-            next page. If this field is omitted, there are no subsequent
-            pages.
-    """
-
-    @property
-    def raw_page(self):
-        return self
-
-    notification_configs: MutableSequence['NotificationConfig'] = proto.RepeatedField(
-        proto.MESSAGE,
-        number=1,
-        message='NotificationConfig',
-    )
-    next_page_token: str = proto.Field(
-        proto.STRING,
-        number=2,
     )
 
 
@@ -1624,6 +1507,10 @@ class ListObjectsRequest(proto.Message):
             Optional. If true, only list all soft-deleted
             versions of the object. Soft delete policy is
             required to set this option.
+        include_folders_as_prefixes (bool):
+            Optional. If true, will also include folders and managed
+            folders (besides objects) in the returned ``prefixes``.
+            Requires ``delimiter`` to be set to '/'.
         match_glob (str):
             Optional. Filter results to objects and prefixes that match
             this glob pattern. See `List Objects Using
@@ -1676,6 +1563,10 @@ class ListObjectsRequest(proto.Message):
     soft_deleted: bool = proto.Field(
         proto.BOOL,
         number=12,
+    )
+    include_folders_as_prefixes: bool = proto.Field(
+        proto.BOOL,
+        number=13,
     )
     match_glob: str = proto.Field(
         proto.STRING,
@@ -2229,6 +2120,22 @@ class GetServiceAccountRequest(proto.Message):
     )
 
 
+class ServiceAccount(proto.Message):
+    r"""A service account, owned by Cloud Storage, which may be used
+    when taking action on behalf of a given project, for example to
+    publish Pub/Sub notifications or to retrieve security keys.
+
+    Attributes:
+        email_address (str):
+            The ID of the notification.
+    """
+
+    email_address: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
 class CreateHmacKeyRequest(proto.Message):
     r"""Request message for CreateHmacKey.
 
@@ -2760,6 +2667,11 @@ class Bucket(proto.Message):
             there is no configuration, the Autoclass feature
             will be disabled and have no effect on the
             bucket.
+        hierarchical_namespace (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.HierarchicalNamespace):
+            Optional. The bucket's hierarchical namespace
+            configuration. If there is no configuration, the
+            hierarchical namespace feature will be disabled
+            and have no effect on the bucket.
         soft_delete_policy (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.SoftDeletePolicy):
             Optional. The bucket's soft delete policy.
             The soft delete policy prevents soft-deleted
@@ -3280,6 +3192,20 @@ class Bucket(proto.Message):
             message=timestamp_pb2.Timestamp,
         )
 
+    class HierarchicalNamespace(proto.Message):
+        r"""Configuration for a bucket's hierarchical namespace feature.
+
+        Attributes:
+            enabled (bool):
+                Optional. Enables the hierarchical namespace
+                feature.
+        """
+
+        enabled: bool = proto.Field(
+            proto.BOOL,
+            number=1,
+        )
+
     name: str = proto.Field(
         proto.STRING,
         number=1,
@@ -3408,6 +3334,11 @@ class Bucket(proto.Message):
         proto.MESSAGE,
         number=28,
         message=Autoclass,
+    )
+    hierarchical_namespace: HierarchicalNamespace = proto.Field(
+        proto.MESSAGE,
+        number=32,
+        message=HierarchicalNamespace,
     )
     soft_delete_policy: SoftDeletePolicy = proto.Field(
         proto.MESSAGE,
@@ -3569,75 +3500,6 @@ class ObjectChecksums(proto.Message):
     md5_hash: bytes = proto.Field(
         proto.BYTES,
         number=2,
-    )
-
-
-class NotificationConfig(proto.Message):
-    r"""A directive to publish Pub/Sub notifications upon changes to
-    a bucket.
-
-    Attributes:
-        name (str):
-            Required. The resource name of this NotificationConfig.
-            Format:
-            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
-            The ``{project}`` portion may be ``_`` for globally unique
-            buckets.
-        topic (str):
-            Required. The Pub/Sub topic to which this
-            subscription publishes. Formatted as:
-
-            '//pubsub.googleapis.com/projects/{project-identifier}/topics/{my-topic}'
-        etag (str):
-            The etag of the NotificationConfig.
-            If included in the metadata of
-            GetNotificationConfigRequest, the operation will
-            only be performed if the etag matches that of
-            the NotificationConfig.
-        event_types (MutableSequence[str]):
-            If present, only send notifications about
-            listed event types. If empty, sent notifications
-            for all event types.
-        custom_attributes (MutableMapping[str, str]):
-            A list of additional attributes to attach to
-            each Pub/Sub message published for this
-            NotificationConfig.
-        object_name_prefix (str):
-            If present, only apply this
-            NotificationConfig to object names that begin
-            with this prefix.
-        payload_format (str):
-            Required. The desired content of the Payload.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    topic: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    etag: str = proto.Field(
-        proto.STRING,
-        number=7,
-    )
-    event_types: MutableSequence[str] = proto.RepeatedField(
-        proto.STRING,
-        number=3,
-    )
-    custom_attributes: MutableMapping[str, str] = proto.MapField(
-        proto.STRING,
-        proto.STRING,
-        number=4,
-    )
-    object_name_prefix: str = proto.Field(
-        proto.STRING,
-        number=5,
-    )
-    payload_format: str = proto.Field(
-        proto.STRING,
-        number=6,
     )
 
 
@@ -3807,6 +3669,23 @@ class Object(proto.Message):
             if the object is encrypted by such a key.
         custom_time (google.protobuf.timestamp_pb2.Timestamp):
             A user-specified timestamp set on an object.
+        soft_delete_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. This is the time when the object became
+            soft-deleted.
+
+            Soft-deleted objects are only accessible if a
+            soft_delete_policy is enabled. Also see hard_delete_time.
+
+            This field is a member of `oneof`_ ``_soft_delete_time``.
+        hard_delete_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The time when the object will be permanently
+            deleted.
+
+            Only set when an object becomes soft-deleted with a
+            soft_delete_policy. Otherwise, the object will not be
+            accessible.
+
+            This field is a member of `oneof`_ ``_hard_delete_time``.
     """
 
     name: str = proto.Field(
@@ -3927,6 +3806,18 @@ class Object(proto.Message):
     custom_time: timestamp_pb2.Timestamp = proto.Field(
         proto.MESSAGE,
         number=26,
+        message=timestamp_pb2.Timestamp,
+    )
+    soft_delete_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=28,
+        optional=True,
+        message=timestamp_pb2.Timestamp,
+    )
+    hard_delete_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=29,
+        optional=True,
         message=timestamp_pb2.Timestamp,
     )
 
@@ -4079,22 +3970,6 @@ class ProjectTeam(proto.Message):
     )
 
 
-class ServiceAccount(proto.Message):
-    r"""A service account, owned by Cloud Storage, which may be used
-    when taking action on behalf of a given project, for example to
-    publish Pub/Sub notifications or to retrieve security keys.
-
-    Attributes:
-        email_address (str):
-            The ID of the notification.
-    """
-
-    email_address: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
 class Owner(proto.Message):
     r"""The owner of a specific resource.
 
@@ -4140,6 +4015,192 @@ class ContentRange(proto.Message):
     complete_length: int = proto.Field(
         proto.INT64,
         number=3,
+    )
+
+
+class DeleteNotificationConfigRequest(proto.Message):
+    r"""Request message for DeleteNotificationConfig.
+
+    Attributes:
+        name (str):
+            Required. The parent bucket of the
+            NotificationConfig.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class GetNotificationConfigRequest(proto.Message):
+    r"""Request message for GetNotificationConfig.
+
+    Attributes:
+        name (str):
+            Required. The parent bucket of the NotificationConfig.
+            Format:
+            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class CreateNotificationConfigRequest(proto.Message):
+    r"""Request message for CreateNotificationConfig.
+
+    Attributes:
+        parent (str):
+            Required. The bucket to which this
+            NotificationConfig belongs.
+        notification_config (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig):
+            Required. Properties of the
+            NotificationConfig to be inserted.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    notification_config: 'NotificationConfig' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='NotificationConfig',
+    )
+
+
+class ListNotificationConfigsRequest(proto.Message):
+    r"""Request message for ListNotifications.
+
+    Attributes:
+        parent (str):
+            Required. Name of a Google Cloud Storage
+            bucket.
+        page_size (int):
+            Optional. The maximum number of NotificationConfigs to
+            return. The service may return fewer than this value. The
+            default value is 100. Specifying a value above 100 will
+            result in a page_size of 100.
+        page_token (str):
+            Optional. A page token, received from a previous
+            ``ListNotificationConfigs`` call. Provide this to retrieve
+            the subsequent page.
+
+            When paginating, all other parameters provided to
+            ``ListNotificationConfigs`` must match the call that
+            provided the page token.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_size: int = proto.Field(
+        proto.INT32,
+        number=2,
+    )
+    page_token: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+
+
+class ListNotificationConfigsResponse(proto.Message):
+    r"""The result of a call to ListNotificationConfigs
+
+    Attributes:
+        notification_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig]):
+            The list of items.
+        next_page_token (str):
+            A token, which can be sent as ``page_token`` to retrieve the
+            next page. If this field is omitted, there are no subsequent
+            pages.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    notification_configs: MutableSequence['NotificationConfig'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='NotificationConfig',
+    )
+    next_page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class NotificationConfig(proto.Message):
+    r"""A directive to publish Pub/Sub notifications upon changes to
+    a bucket.
+
+    Attributes:
+        name (str):
+            Required. The resource name of this NotificationConfig.
+            Format:
+            ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
+            The ``{project}`` portion may be ``_`` for globally unique
+            buckets.
+        topic (str):
+            Required. The Pub/Sub topic to which this
+            subscription publishes. Formatted as:
+
+            '//pubsub.googleapis.com/projects/{project-identifier}/topics/{my-topic}'
+        etag (str):
+            Optional. The etag of the NotificationConfig.
+            If included in the metadata of
+            GetNotificationConfigRequest, the operation will
+            only be performed if the etag matches that of
+            the NotificationConfig.
+        event_types (MutableSequence[str]):
+            Optional. If present, only send notifications
+            about listed event types. If empty, sent
+            notifications for all event types.
+        custom_attributes (MutableMapping[str, str]):
+            Optional. A list of additional attributes to
+            attach to each Pub/Sub message published for
+            this NotificationConfig.
+        object_name_prefix (str):
+            Optional. If present, only apply this
+            NotificationConfig to object names that begin
+            with this prefix.
+        payload_format (str):
+            Required. The desired content of the Payload.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    topic: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    etag: str = proto.Field(
+        proto.STRING,
+        number=7,
+    )
+    event_types: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
+    )
+    custom_attributes: MutableMapping[str, str] = proto.MapField(
+        proto.STRING,
+        proto.STRING,
+        number=4,
+    )
+    object_name_prefix: str = proto.Field(
+        proto.STRING,
+        number=5,
+    )
+    payload_format: str = proto.Field(
+        proto.STRING,
+        number=6,
     )
 
 

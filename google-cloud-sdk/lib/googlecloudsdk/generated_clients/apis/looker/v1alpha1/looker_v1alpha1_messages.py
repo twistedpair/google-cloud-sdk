@@ -458,6 +458,10 @@ class Instance(_messages.Message):
       `projects/{project}/locations/{location}/instances/{instance}`.
     oauthConfig: Looker instance OAuth login settings.
     platformEdition: Platform edition.
+    pscConfig: Optional. PSC configuration. Used when `enable_private_ip` and
+      `psc_enabled` are both true.
+    pscEnabled: Optional. Whether to use Private Service Connect (PSC) for
+      private IP connectivity. If true, VPC peering (PSA) will not be used.
     reservedRange: Name of a reserved IP address range within the
       Instance.consumer_network, to be used for private services access
       connection. May or may not be specified in a create request.
@@ -550,11 +554,13 @@ class Instance(_messages.Message):
   name = _messages.StringField(18)
   oauthConfig = _messages.MessageField('OAuthConfig', 19)
   platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
-  reservedRange = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  tier = _messages.EnumField('TierValueValuesEnum', 23)
-  updateTime = _messages.StringField(24)
-  users = _messages.MessageField('Users', 25)
+  pscConfig = _messages.MessageField('PscConfig', 21)
+  pscEnabled = _messages.BooleanField(22)
+  reservedRange = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  tier = _messages.EnumField('TierValueValuesEnum', 25)
+  updateTime = _messages.StringField(26)
+  users = _messages.MessageField('Users', 27)
 
 
 class InstanceBackup(_messages.Message):
@@ -1392,6 +1398,24 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PscConfig(_messages.Message):
+  r"""Information for Private Service Connect (PSC) setup for a Looker
+  instance.
+
+  Fields:
+    allowedVpcs: Optional. List of VPCs that are allowed ingress into looker.
+      Format: projects/{project}/global/networks/{network}
+    lookerServiceAttachmentUri: Output only. URI of the Looker service
+      attachment.
+    serviceAttachments: Optional. List of egress service attachment
+      configurations.
+  """
+
+  allowedVpcs = _messages.StringField(1, repeated=True)
+  lookerServiceAttachmentUri = _messages.StringField(2)
+  serviceAttachments = _messages.MessageField('ServiceAttachment', 3, repeated=True)
+
+
 class RestartInstanceRequest(_messages.Message):
   r"""Request options for restarting an instance."""
 
@@ -1405,6 +1429,48 @@ class RestoreInstanceRequest(_messages.Message):
   """
 
   backup = _messages.StringField(1)
+
+
+class ServiceAttachment(_messages.Message):
+  r"""Service attachment configuration.
+
+  Enums:
+    ConnectionStatusValueValuesEnum: Output only. Connection status.
+
+  Fields:
+    connectionStatus: Output only. Connection status.
+    localFqdn: Required. Fully qualified domain name that will be used in the
+      private DNS record created for the service attachment.
+    targetServiceAttachmentUri: Required. URI of the service attachment to
+      connect to. Format: projects/{project}/regions/{region}/serviceAttachmen
+      ts/{service_attachment}
+  """
+
+  class ConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Connection status.
+
+    Values:
+      UNKNOWN: Connection status is unspecified.
+      ACCEPTED: Connection is established and functioning normally.
+      PENDING: Connection is not established (Looker tenant project hasn't
+        been allowlisted).
+      REJECTED: Connection is not established (Looker tenant project is
+        explicitly in reject list).
+      NEEDS_ATTENTION: Issue with target service attachment, e.g. NAT subnet
+        is exhausted.
+      CLOSED: Target service attachment does not exist. This status is a
+        terminal state.
+    """
+    UNKNOWN = 0
+    ACCEPTED = 1
+    PENDING = 2
+    REJECTED = 3
+    NEEDS_ATTENTION = 4
+    CLOSED = 5
+
+  connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
+  localFqdn = _messages.StringField(2)
+  targetServiceAttachmentUri = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

@@ -59,7 +59,7 @@ class TestingV1(base_api.BaseApiClient):
       r"""Gets the details of an Android application APK.
 
       Args:
-        request: (FileReference) input message
+        request: (TestingApplicationDetailServiceGetApkDetailsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GetApkDetailsResponse) The response message.
@@ -73,10 +73,10 @@ class TestingV1(base_api.BaseApiClient):
         method_id='testing.applicationDetailService.getApkDetails',
         ordered_params=[],
         path_params=[],
-        query_params=[],
+        query_params=['bundleLocation_gcsPath'],
         relative_path='v1/applicationDetailService/getApkDetails',
-        request_field='<request>',
-        request_type_name='FileReference',
+        request_field='fileReference',
+        request_type_name='TestingApplicationDetailServiceGetApkDetailsRequest',
         response_type_name='GetApkDetailsResponse',
         supports_download=False,
     )

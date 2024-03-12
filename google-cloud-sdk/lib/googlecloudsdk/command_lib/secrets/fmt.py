@@ -42,6 +42,13 @@ table(
 )
 """
 
+_REGIONAL_SECRET_TABLE = """
+table(
+  name.basename():label=NAME,
+  createTime.date():label=CREATED
+)
+"""
+
 _VERSION_TABLE = """
 table(
   name.basename():label=NAME,
@@ -101,6 +108,32 @@ def UseSecretTable(parser):
   parser.display_info.AddTransforms(_SECRET_TRANSFORMS)
   parser.display_info.AddUriFunc(
       lambda r: secrets_args.ParseSecretRef(r.name).SelfLink())
+
+
+def SecretTableUsingArgument(args):
+  """Table format to display global secrets.
+
+  Args:
+    args: arguments interceptor
+  """
+  args.GetDisplayInfo().AddFormat(_SECRET_TABLE)
+  args.GetDisplayInfo().AddTransforms(_SECRET_TRANSFORMS)
+  args.GetDisplayInfo().AddUriFunc(
+      lambda r: secrets_args.ParseSecretRef(r.name).SelfLink()
+  )
+
+
+def RegionalSecretTableUsingArgument(args):
+  """Table format to display regional secrets.
+
+  Args:
+    args: arguments interceptor
+  """
+  args.GetDisplayInfo().AddFormat(_REGIONAL_SECRET_TABLE)
+  args.GetDisplayInfo().AddTransforms(_SECRET_TRANSFORMS)
+  args.GetDisplayInfo().AddUriFunc(
+      lambda r: secrets_args.ParseRegionalSecretRef(r.name).SelfLink()
+  )
 
 
 def UseSecretData(parser):

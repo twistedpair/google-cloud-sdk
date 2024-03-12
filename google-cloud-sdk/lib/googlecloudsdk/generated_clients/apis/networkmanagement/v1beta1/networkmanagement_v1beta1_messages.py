@@ -23,9 +23,10 @@ class AbortInfo(_messages.Message):
 
   Fields:
     cause: Causes that the analysis is aborted.
-    projectsMissingPermission: List of project IDs that the user has specified
-      in the request but does not have permission to access network configs.
-      Analysis is aborted in this case with the PERMISSION_DENIED cause.
+    ipAddress: IP address that caused the abort.
+    projectsMissingPermission: List of project IDs the user specified in the
+      request but lacks access to. In this case, analysis is aborted with the
+      PERMISSION_DENIED cause.
     resourceUri: URI of the resource that caused the abort.
   """
 
@@ -34,40 +35,48 @@ class AbortInfo(_messages.Message):
 
     Values:
       CAUSE_UNSPECIFIED: Cause is unspecified.
-      UNKNOWN_NETWORK: Aborted due to unknown network. The reachability
-        analysis cannot proceed because the user does not have access to the
-        host project's network configurations, including firewall rules and
-        routes. This happens when the project is a service project and the
-        endpoints being traced are in the host project's network.
-      UNKNOWN_IP: Aborted because the IP address(es) are unknown.
+      UNKNOWN_NETWORK: Aborted due to unknown network. Deprecated, not used in
+        the new tests.
       UNKNOWN_PROJECT: Aborted because no project information can be derived
-        from the test input.
-      PERMISSION_DENIED: Aborted because the user lacks the permission to
-        access all or part of the network configurations required to run the
-        test.
-      NO_SOURCE_LOCATION: Aborted because no valid source endpoint is derived
-        from the input test request.
-      INVALID_ARGUMENT: Aborted because the source and/or destination endpoint
-        specified in the test are invalid. The possible reasons that an
-        endpoint is invalid include: malformed IP address; nonexistent
-        instance or network URI; IP address not in the range of specified
-        network URI; and instance not owning the network interface in the
-        specified network.
+        from the test input. Deprecated, not used in the new tests.
       NO_EXTERNAL_IP: Aborted because traffic is sent from a public IP to an
-        instance without an external IP.
+        instance without an external IP. Deprecated, not used in the new
+        tests.
       UNINTENDED_DESTINATION: Aborted because none of the traces matches
         destination information specified in the input test request.
-      TRACE_TOO_LONG: Aborted because the number of steps in the trace
-        exceeding a certain limit which may be caused by routing loop.
-      INTERNAL_ERROR: Aborted due to internal server error.
+        Deprecated, not used in the new tests.
       SOURCE_ENDPOINT_NOT_FOUND: Aborted because the source endpoint could not
-        be found.
+        be found. Deprecated, not used in the new tests.
       MISMATCHED_SOURCE_NETWORK: Aborted because the source network does not
-        match the source endpoint.
+        match the source endpoint. Deprecated, not used in the new tests.
       DESTINATION_ENDPOINT_NOT_FOUND: Aborted because the destination endpoint
-        could not be found.
+        could not be found. Deprecated, not used in the new tests.
       MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
-        does not match the destination endpoint.
+        does not match the destination endpoint. Deprecated, not used in the
+        new tests.
+      UNKNOWN_IP: Aborted because no endpoint with the packet's destination IP
+        address is found.
+      SOURCE_IP_ADDRESS_NOT_IN_SOURCE_NETWORK: Aborted because the source IP
+        address doesn't belong to any of the subnets of the source VPC
+        network.
+      PERMISSION_DENIED: Aborted because user lacks permission to access all
+        or part of the network configurations required to run the test.
+      PERMISSION_DENIED_NO_CLOUD_NAT_CONFIGS: Aborted because user lacks
+        permission to access Cloud NAT configs required to run the test.
+      PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS: Aborted because user lacks
+        permission to access Network endpoint group endpoint configs required
+        to run the test.
+      NO_SOURCE_LOCATION: Aborted because no valid source or destination
+        endpoint is derived from the input test request.
+      INVALID_ARGUMENT: Aborted because the source or destination endpoint
+        specified in the request is invalid. Some examples: - The request
+        might contain malformed resource URI, project ID, or IP address. - The
+        request might contain inconsistent information (for example, the
+        request might include both the instance and the network, but the
+        instance might not have a NIC in that network).
+      TRACE_TOO_LONG: Aborted because the number of steps in the trace exceeds
+        a certain limit. It might be caused by a routing loop.
+      INTERNAL_ERROR: Aborted due to internal server error.
       UNSUPPORTED: Aborted because the test scenario is not supported.
       MISMATCHED_IP_VERSION: Aborted because the source and destination
         resources have no common IP version.
@@ -76,6 +85,14 @@ class AbortInfo(_messages.Message):
         initiated by the node and managed by the Konnectivity proxy.
       RESOURCE_CONFIG_NOT_FOUND: Aborted because expected resource
         configuration was missing.
+      VM_INSTANCE_CONFIG_NOT_FOUND: Aborted because expected VM instance
+        configuration was missing.
+      NETWORK_CONFIG_NOT_FOUND: Aborted because expected network configuration
+        was missing.
+      FIREWALL_CONFIG_NOT_FOUND: Aborted because expected firewall
+        configuration was missing.
+      ROUTE_CONFIG_NOT_FOUND: Aborted because expected route configuration was
+        missing.
       GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT: Aborted because a PSC
         endpoint selection for the Google-managed service is ambiguous
         (several PSC endpoints satisfy test input).
@@ -85,34 +102,48 @@ class AbortInfo(_messages.Message):
         forwarding rule as a source are not supported.
       NON_ROUTABLE_IP_ADDRESS: Aborted because one of the endpoints is a non-
         routable IP address (loopback, link-local, etc).
+      UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT: Aborted due to an unknown issue
+        in the Google-managed project.
+      UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG: Aborted due to an unsupported
+        configuration of the Google-managed project.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
-    UNKNOWN_IP = 2
-    UNKNOWN_PROJECT = 3
-    PERMISSION_DENIED = 4
-    NO_SOURCE_LOCATION = 5
-    INVALID_ARGUMENT = 6
-    NO_EXTERNAL_IP = 7
-    UNINTENDED_DESTINATION = 8
-    TRACE_TOO_LONG = 9
-    INTERNAL_ERROR = 10
-    SOURCE_ENDPOINT_NOT_FOUND = 11
-    MISMATCHED_SOURCE_NETWORK = 12
-    DESTINATION_ENDPOINT_NOT_FOUND = 13
-    MISMATCHED_DESTINATION_NETWORK = 14
-    UNSUPPORTED = 15
-    MISMATCHED_IP_VERSION = 16
-    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 17
-    RESOURCE_CONFIG_NOT_FOUND = 18
-    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 19
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 20
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 21
-    NON_ROUTABLE_IP_ADDRESS = 22
+    UNKNOWN_PROJECT = 2
+    NO_EXTERNAL_IP = 3
+    UNINTENDED_DESTINATION = 4
+    SOURCE_ENDPOINT_NOT_FOUND = 5
+    MISMATCHED_SOURCE_NETWORK = 6
+    DESTINATION_ENDPOINT_NOT_FOUND = 7
+    MISMATCHED_DESTINATION_NETWORK = 8
+    UNKNOWN_IP = 9
+    SOURCE_IP_ADDRESS_NOT_IN_SOURCE_NETWORK = 10
+    PERMISSION_DENIED = 11
+    PERMISSION_DENIED_NO_CLOUD_NAT_CONFIGS = 12
+    PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS = 13
+    NO_SOURCE_LOCATION = 14
+    INVALID_ARGUMENT = 15
+    TRACE_TOO_LONG = 16
+    INTERNAL_ERROR = 17
+    UNSUPPORTED = 18
+    MISMATCHED_IP_VERSION = 19
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 20
+    RESOURCE_CONFIG_NOT_FOUND = 21
+    VM_INSTANCE_CONFIG_NOT_FOUND = 22
+    NETWORK_CONFIG_NOT_FOUND = 23
+    FIREWALL_CONFIG_NOT_FOUND = 24
+    ROUTE_CONFIG_NOT_FOUND = 25
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 26
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 27
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 28
+    NON_ROUTABLE_IP_ADDRESS = 29
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 30
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 31
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
-  projectsMissingPermission = _messages.StringField(2, repeated=True)
-  resourceUri = _messages.StringField(3)
+  ipAddress = _messages.StringField(2)
+  projectsMissingPermission = _messages.StringField(3, repeated=True)
+  resourceUri = _messages.StringField(4)
 
 
 class AppEngineVersionEndpoint(_messages.Message):
@@ -381,6 +412,8 @@ class ConnectivityTest(_messages.Message):
     LabelsValue: Resource labels to represent user-provided metadata.
 
   Fields:
+    bypassFirewallChecks: Whether the test should skip firewall checking. If
+      not provided, we assume false.
     createTime: Output only. The time the test was created.
     description: The user-supplied description of the Connectivity Test.
       Maximum of 512 characters.
@@ -452,18 +485,19 @@ class ConnectivityTest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destination = _messages.MessageField('Endpoint', 3)
-  displayName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  probingDetails = _messages.MessageField('ProbingDetails', 7)
-  protocol = _messages.StringField(8)
-  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 9)
-  relatedProjects = _messages.StringField(10, repeated=True)
-  source = _messages.MessageField('Endpoint', 11)
-  updateTime = _messages.StringField(12)
+  bypassFirewallChecks = _messages.BooleanField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destination = _messages.MessageField('Endpoint', 4)
+  displayName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  probingDetails = _messages.MessageField('ProbingDetails', 8)
+  protocol = _messages.StringField(9)
+  reachabilityDetails = _messages.MessageField('ReachabilityDetails', 10)
+  relatedProjects = _messages.StringField(11, repeated=True)
+  source = _messages.MessageField('Endpoint', 12)
+  updateTime = _messages.StringField(13)
 
 
 class DeliverInfo(_messages.Message):
@@ -473,6 +507,7 @@ class DeliverInfo(_messages.Message):
     TargetValueValuesEnum: Target type where the packet is delivered to.
 
   Fields:
+    ipAddress: IP address of the target (if applicable).
     resourceUri: URI of the resource that the packet is delivered to.
     target: Target type where the packet is delivered to.
   """
@@ -522,8 +557,9 @@ class DeliverInfo(_messages.Message):
     APP_ENGINE_VERSION = 13
     CLOUD_RUN_REVISION = 14
 
-  resourceUri = _messages.StringField(1)
-  target = _messages.EnumField('TargetValueValuesEnum', 2)
+  ipAddress = _messages.StringField(1)
+  resourceUri = _messages.StringField(2)
+  target = _messages.EnumField('TargetValueValuesEnum', 3)
 
 
 class DropInfo(_messages.Message):
@@ -676,6 +712,17 @@ class DropInfo(_messages.Message):
       PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS: The packet is sent to
         the Private Service Connect backend (network endpoint group), but the
         producer PSC forwarding rule has multiple ports specified.
+      CLOUD_SQL_PSC_NEG_UNSUPPORTED: The packet is sent to the Private Service
+        Connect backend (network endpoint group) targeting a Cloud SQL service
+        attachment, but this configuration is not supported.
+      NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT: No NAT subnets are defined
+        for the PSC service attachment.
+      HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED: The packet sent from the hybrid
+        NEG proxy matches a non-dynamic route, but such a configuration is not
+        supported.
+      HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED: The packet sent from the
+        hybrid NEG proxy matches a dynamic route with a next hop in a
+        different region, but such a configuration is not supported.
       CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
         is not ready.
       DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
@@ -735,10 +782,14 @@ class DropInfo(_messages.Message):
     PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 48
     PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 49
     PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 50
-    CLOUD_RUN_REVISION_NOT_READY = 51
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 52
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 53
-    CLOUD_NAT_NO_ADDRESSES = 54
+    CLOUD_SQL_PSC_NEG_UNSUPPORTED = 51
+    NO_NAT_SUBNETS_FOR_PSC_SERVICE_ATTACHMENT = 52
+    HYBRID_NEG_NON_DYNAMIC_ROUTE_MATCHED = 53
+    HYBRID_NEG_NON_LOCAL_DYNAMIC_ROUTE_MATCHED = 54
+    CLOUD_RUN_REVISION_NOT_READY = 55
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 56
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 57
+    CLOUD_NAT_NO_ADDRESSES = 58
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1062,6 +1113,7 @@ class ForwardInfo(_messages.Message):
     TargetValueValuesEnum: Target type where this packet is forwarded to.
 
   Fields:
+    ipAddress: IP address of the target (if applicable).
     resourceUri: URI of the resource that the packet is forwarded to.
     target: Target type where this packet is forwarded to.
   """
@@ -1094,8 +1146,9 @@ class ForwardInfo(_messages.Message):
     NCC_HUB = 8
     ROUTER_APPLIANCE = 9
 
-  resourceUri = _messages.StringField(1)
-  target = _messages.EnumField('TargetValueValuesEnum', 2)
+  ipAddress = _messages.StringField(1)
+  resourceUri = _messages.StringField(2)
+  target = _messages.EnumField('TargetValueValuesEnum', 3)
 
 
 class ForwardingRuleInfo(_messages.Message):

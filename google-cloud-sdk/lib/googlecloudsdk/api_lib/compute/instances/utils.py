@@ -60,6 +60,7 @@ def CreateNetworkInterfaceMessage(
     external_ipv6_prefix_length=None,
     parent_nic_name=None,
     vlan=None,
+    igmp_query=None,
 ):
   """Returns a new NetworkInterface message."""
   # TODO(b/30460572): instance reference should have zone name, not zone URI.
@@ -238,5 +239,10 @@ def CreateNetworkInterfaceMessage(
 
   if vlan is not None:
     network_interface.vlan = vlan
+
+  if igmp_query is not None:
+    network_interface.igmpQuery = (
+        messages.NetworkInterface.IgmpQueryValueValuesEnum(igmp_query)
+    )
 
   return network_interface

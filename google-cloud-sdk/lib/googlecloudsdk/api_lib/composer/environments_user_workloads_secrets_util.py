@@ -15,6 +15,7 @@
 """Utilities for calling the Composer UserWorkloads Secrets API."""
 
 import typing
+from typing import Mapping, Tuple
 
 from googlecloudsdk.api_lib.composer import util as api_util
 from googlecloudsdk.calliope import base
@@ -60,19 +61,14 @@ def CreateUserWorkloadsSecret(
     command_util.InvalidUserInputError: if metadata.name was absent from the
     file.
   """
-  secret_file_content = yaml.load_path(secret_file_path)
-
   message_module = api_util.GetMessagesModule(release_track=release_track)
-  metadata_name = secret_file_content.get('metadata', {}).get('name', '')
-  if not metadata_name:
-    raise command_util.InvalidUserInputError(
-        f'Empty metadata.name in {secret_file_path}'
-    )
+
+  secret_name, secret_data = _ReadSecretFromFile(secret_file_path)
   user_workloads_secret_name = (
-      f'{environment_ref.RelativeName()}/userWorkloadsSecrets/{metadata_name}'
+      f'{environment_ref.RelativeName()}/userWorkloadsSecrets/{secret_name}'
   )
   user_workloads_secret_data = api_util.DictToMessage(
-      secret_file_content.get('data', {}),
+      secret_data,
       message_module.UserWorkloadsSecret.DataValue,
   )
   request_message = message_module.ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest(
@@ -183,19 +179,14 @@ def UpdateUserWorkloadsSecret(
     command_util.InvalidUserInputError: if metadata.name was absent from the
     file.
   """
-  secret_file_content = yaml.load_path(secret_file_path)
-
   message_module = api_util.GetMessagesModule(release_track=release_track)
-  metadata_name = secret_file_content.get('metadata', {}).get('name', '')
-  if not metadata_name:
-    raise command_util.InvalidUserInputError(
-        f'Empty metadata.name in {secret_file_path}'
-    )
+
+  secret_name, secret_data = _ReadSecretFromFile(secret_file_path)
   user_workloads_secret_name = (
-      f'{environment_ref.RelativeName()}/userWorkloadsSecrets/{metadata_name}'
+      f'{environment_ref.RelativeName()}/userWorkloadsSecrets/{secret_name}'
   )
   user_workloads_secret_data = api_util.DictToMessage(
-      secret_file_content.get('data', {}),
+      secret_data,
       message_module.UserWorkloadsSecret.DataValue,
   )
   request_message = message_module.UserWorkloadsSecret(
@@ -229,3 +220,36 @@ def DeleteUserWorkloadsSecret(
   )
 
   GetService(release_track=release_track).Delete(request_message)
+
+
+def _ReadSecretFromFile(secret_file_path: str) -> Tuple[str, Mapping[str, str]]:
+  """Reads Secret object from yaml file.
+
+  Args:
+    secret_file_path: path to the file.
+
+  Returns:
+    tuple with name and data of the Secret.
+
+  Raises:
+    command_util.InvalidUserInputError: if the content of the file is invalid.
+  """
+  secret_file_content = yaml.load_path(secret_file_path)
+  if not isinstance(secret_file_content, dict):
+    raise command_util.InvalidUserInputError(
+        f'Invalid content of the {secret_file_path}'
+    )
+
+  kind = secret_file_content.get('kind')
+  metadata_name = secret_file_content.get('metadata', {}).get('name', '')
+  data = secret_file_content.get('data', {})
+  if kind != 'Secret':
+    raise command_util.InvalidUserInputError(
+        f'Incorrect "kind" attribute value. Found: {kind}, should be: Secret'
+    )
+  if not metadata_name:
+    raise command_util.InvalidUserInputError(
+        f'Empty metadata.name in {secret_file_path}'
+    )
+
+  return metadata_name, data

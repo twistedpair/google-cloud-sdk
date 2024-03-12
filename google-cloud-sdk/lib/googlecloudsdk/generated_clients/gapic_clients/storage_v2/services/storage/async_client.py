@@ -1214,400 +1214,6 @@ class StorageAsyncClient:
         # Done; return the response.
         return response
 
-    async def delete_notification_config(self,
-            request: Optional[Union[storage.DeleteNotificationConfigRequest, dict]] = None,
-            *,
-            name: Optional[str] = None,
-            retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
-            ) -> None:
-        r"""Permanently deletes a NotificationConfig.
-
-        .. code-block:: python
-
-            # This snippet has been automatically generated and should be regarded as a
-            # code template only.
-            # It will require modifications to work:
-            # - It may require correct/in-range values for request initialization.
-            # - It may require specifying regional endpoints when creating the service
-            #   client as shown in:
-            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
-            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
-
-            async def sample_delete_notification_config():
-                # Create a client
-                client = storage_v2.StorageAsyncClient()
-
-                # Initialize request argument(s)
-                request = storage_v2.DeleteNotificationConfigRequest(
-                    name="name_value",
-                )
-
-                # Make the request
-                await client.delete_notification_config(request=request)
-
-        Args:
-            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationConfigRequest, dict]]):
-                The request object. Request message for
-                DeleteNotificationConfig.
-            name (:class:`str`):
-                Required. The parent bucket of the
-                NotificationConfig.
-
-                This corresponds to the ``name`` field
-                on the ``request`` instance; if ``request`` is provided, this
-                should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
-                should be retried.
-            timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
-        """
-        # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
-        if request is not None and has_flattened_params:
-            raise ValueError("If the `request` argument is set, then none of "
-                             "the individual field arguments should be set.")
-
-        request = storage.DeleteNotificationConfigRequest(request)
-
-        # If we have keyword arguments corresponding to fields on the
-        # request, apply these.
-        if name is not None:
-            request.name = name
-
-        # Wrap the RPC method; this adds retry and timeout information,
-        # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_notification_config,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
-
-        # Send the request.
-        await rpc(
-            request,
-            retry=retry,
-            timeout=timeout,
-            metadata=metadata,
-        )
-
-    async def get_notification_config(self,
-            request: Optional[Union[storage.GetNotificationConfigRequest, dict]] = None,
-            *,
-            name: Optional[str] = None,
-            retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
-            ) -> storage.NotificationConfig:
-        r"""View a NotificationConfig.
-
-        .. code-block:: python
-
-            # This snippet has been automatically generated and should be regarded as a
-            # code template only.
-            # It will require modifications to work:
-            # - It may require correct/in-range values for request initialization.
-            # - It may require specifying regional endpoints when creating the service
-            #   client as shown in:
-            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
-            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
-
-            async def sample_get_notification_config():
-                # Create a client
-                client = storage_v2.StorageAsyncClient()
-
-                # Initialize request argument(s)
-                request = storage_v2.GetNotificationConfigRequest(
-                    name="name_value",
-                )
-
-                # Make the request
-                response = await client.get_notification_config(request=request)
-
-                # Handle the response
-                print(response)
-
-        Args:
-            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationConfigRequest, dict]]):
-                The request object. Request message for
-                GetNotificationConfig.
-            name (:class:`str`):
-                Required. The parent bucket of the NotificationConfig.
-                Format:
-                ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
-
-                This corresponds to the ``name`` field
-                on the ``request`` instance; if ``request`` is provided, this
-                should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
-                should be retried.
-            timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
-
-        Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
-                A directive to publish Pub/Sub
-                notifications upon changes to a bucket.
-
-        """
-        # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
-        has_flattened_params = any([name])
-        if request is not None and has_flattened_params:
-            raise ValueError("If the `request` argument is set, then none of "
-                             "the individual field arguments should be set.")
-
-        request = storage.GetNotificationConfigRequest(request)
-
-        # If we have keyword arguments corresponding to fields on the
-        # request, apply these.
-        if name is not None:
-            request.name = name
-
-        # Wrap the RPC method; this adds retry and timeout information,
-        # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_notification_config,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
-
-        # Send the request.
-        response = await rpc(
-            request,
-            retry=retry,
-            timeout=timeout,
-            metadata=metadata,
-        )
-
-        # Done; return the response.
-        return response
-
-    async def create_notification_config(self,
-            request: Optional[Union[storage.CreateNotificationConfigRequest, dict]] = None,
-            *,
-            parent: Optional[str] = None,
-            notification_config: Optional[storage.NotificationConfig] = None,
-            retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
-            ) -> storage.NotificationConfig:
-        r"""Creates a NotificationConfig for a given bucket.
-        These NotificationConfigs, when triggered, publish
-        messages to the specified Pub/Sub topics. See
-        https://cloud.google.com/storage/docs/pubsub-notifications.
-
-        .. code-block:: python
-
-            # This snippet has been automatically generated and should be regarded as a
-            # code template only.
-            # It will require modifications to work:
-            # - It may require correct/in-range values for request initialization.
-            # - It may require specifying regional endpoints when creating the service
-            #   client as shown in:
-            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
-            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
-
-            async def sample_create_notification_config():
-                # Create a client
-                client = storage_v2.StorageAsyncClient()
-
-                # Initialize request argument(s)
-                notification_config = storage_v2.NotificationConfig()
-                notification_config.name = "name_value"
-                notification_config.topic = "topic_value"
-                notification_config.payload_format = "payload_format_value"
-
-                request = storage_v2.CreateNotificationConfigRequest(
-                    parent="parent_value",
-                    notification_config=notification_config,
-                )
-
-                # Make the request
-                response = await client.create_notification_config(request=request)
-
-                # Handle the response
-                print(response)
-
-        Args:
-            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationConfigRequest, dict]]):
-                The request object. Request message for
-                CreateNotificationConfig.
-            parent (:class:`str`):
-                Required. The bucket to which this
-                NotificationConfig belongs.
-
-                This corresponds to the ``parent`` field
-                on the ``request`` instance; if ``request`` is provided, this
-                should not be set.
-            notification_config (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig`):
-                Required. Properties of the
-                NotificationConfig to be inserted.
-
-                This corresponds to the ``notification_config`` field
-                on the ``request`` instance; if ``request`` is provided, this
-                should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
-                should be retried.
-            timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
-
-        Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
-                A directive to publish Pub/Sub
-                notifications upon changes to a bucket.
-
-        """
-        # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent, notification_config])
-        if request is not None and has_flattened_params:
-            raise ValueError("If the `request` argument is set, then none of "
-                             "the individual field arguments should be set.")
-
-        request = storage.CreateNotificationConfigRequest(request)
-
-        # If we have keyword arguments corresponding to fields on the
-        # request, apply these.
-        if parent is not None:
-            request.parent = parent
-        if notification_config is not None:
-            request.notification_config = notification_config
-
-        # Wrap the RPC method; this adds retry and timeout information,
-        # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_notification_config,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
-
-        # Send the request.
-        response = await rpc(
-            request,
-            retry=retry,
-            timeout=timeout,
-            metadata=metadata,
-        )
-
-        # Done; return the response.
-        return response
-
-    async def list_notification_configs(self,
-            request: Optional[Union[storage.ListNotificationConfigsRequest, dict]] = None,
-            *,
-            parent: Optional[str] = None,
-            retry: OptionalRetry = gapic_v1.method.DEFAULT,
-            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
-            metadata: Sequence[Tuple[str, str]] = (),
-            ) -> pagers.ListNotificationConfigsAsyncPager:
-        r"""Retrieves a list of NotificationConfigs for a given
-        bucket.
-
-        .. code-block:: python
-
-            # This snippet has been automatically generated and should be regarded as a
-            # code template only.
-            # It will require modifications to work:
-            # - It may require correct/in-range values for request initialization.
-            # - It may require specifying regional endpoints when creating the service
-            #   client as shown in:
-            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
-            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
-
-            async def sample_list_notification_configs():
-                # Create a client
-                client = storage_v2.StorageAsyncClient()
-
-                # Initialize request argument(s)
-                request = storage_v2.ListNotificationConfigsRequest(
-                    parent="parent_value",
-                )
-
-                # Make the request
-                page_result = client.list_notification_configs(request=request)
-
-                # Handle the response
-                async for response in page_result:
-                    print(response)
-
-        Args:
-            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationConfigsRequest, dict]]):
-                The request object. Request message for
-                ListNotifications.
-            parent (:class:`str`):
-                Required. Name of a Google Cloud
-                Storage bucket.
-
-                This corresponds to the ``parent`` field
-                on the ``request`` instance; if ``request`` is provided, this
-                should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
-                should be retried.
-            timeout (float): The timeout for this request.
-            metadata (Sequence[Tuple[str, str]]): Strings which should be
-                sent along with the request as metadata.
-
-        Returns:
-            googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListNotificationConfigsAsyncPager:
-                The result of a call to
-                ListNotificationConfigs
-                Iterating over this object will yield
-                results and resolve additional pages
-                automatically.
-
-        """
-        # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
-        has_flattened_params = any([parent])
-        if request is not None and has_flattened_params:
-            raise ValueError("If the `request` argument is set, then none of "
-                             "the individual field arguments should be set.")
-
-        request = storage.ListNotificationConfigsRequest(request)
-
-        # If we have keyword arguments corresponding to fields on the
-        # request, apply these.
-        if parent is not None:
-            request.parent = parent
-
-        # Wrap the RPC method; this adds retry and timeout information,
-        # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_notification_configs,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
-
-        # Send the request.
-        response = await rpc(
-            request,
-            retry=retry,
-            timeout=timeout,
-            metadata=metadata,
-        )
-
-        # This method is paged; wrap the response in a pager, which provides
-        # an `__aiter__` convenience method.
-        response = pagers.ListNotificationConfigsAsyncPager(
-            method=rpc,
-            request=request,
-            response=response,
-            metadata=metadata,
-        )
-
-        # Done; return the response.
-        return response
-
     async def compose_object(self,
             request: Optional[Union[storage.ComposeObjectRequest, dict]] = None,
             *,
@@ -3014,6 +2620,9 @@ class StorageAsyncClient:
                 or to retrieve security keys.
 
         """
+        warnings.warn("StorageAsyncClient.get_service_account is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
@@ -3587,6 +3196,412 @@ class StorageAsyncClient:
             request,
             retry=retry,
             timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def delete_notification_config(self,
+            request: Optional[Union[storage.DeleteNotificationConfigRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> None:
+        r"""Permanently deletes a NotificationConfig.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            async def sample_delete_notification_config():
+                # Create a client
+                client = storage_v2.StorageAsyncClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.DeleteNotificationConfigRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                await client.delete_notification_config(request=request)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.DeleteNotificationConfigRequest, dict]]):
+                The request object. Request message for
+                DeleteNotificationConfig.
+            name (:class:`str`):
+                Required. The parent bucket of the
+                NotificationConfig.
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+        """
+        warnings.warn("StorageAsyncClient.delete_notification_config is deprecated",
+            DeprecationWarning)
+
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = storage.DeleteNotificationConfigRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if name is not None:
+            request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.delete_notification_config,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Send the request.
+        await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+    async def get_notification_config(self,
+            request: Optional[Union[storage.GetNotificationConfigRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> storage.NotificationConfig:
+        r"""View a NotificationConfig.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            async def sample_get_notification_config():
+                # Create a client
+                client = storage_v2.StorageAsyncClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.GetNotificationConfigRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = await client.get_notification_config(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.GetNotificationConfigRequest, dict]]):
+                The request object. Request message for
+                GetNotificationConfig.
+            name (:class:`str`):
+                Required. The parent bucket of the NotificationConfig.
+                Format:
+                ``projects/{project}/buckets/{bucket}/notificationConfigs/{notificationConfig}``
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
+                A directive to publish Pub/Sub
+                notifications upon changes to a bucket.
+
+        """
+        warnings.warn("StorageAsyncClient.get_notification_config is deprecated",
+            DeprecationWarning)
+
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = storage.GetNotificationConfigRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if name is not None:
+            request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.get_notification_config,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def create_notification_config(self,
+            request: Optional[Union[storage.CreateNotificationConfigRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            notification_config: Optional[storage.NotificationConfig] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> storage.NotificationConfig:
+        r"""Creates a NotificationConfig for a given bucket.
+        These NotificationConfigs, when triggered, publish
+        messages to the specified Pub/Sub topics. See
+        https://cloud.google.com/storage/docs/pubsub-notifications.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            async def sample_create_notification_config():
+                # Create a client
+                client = storage_v2.StorageAsyncClient()
+
+                # Initialize request argument(s)
+                notification_config = storage_v2.NotificationConfig()
+                notification_config.name = "name_value"
+                notification_config.topic = "topic_value"
+                notification_config.payload_format = "payload_format_value"
+
+                request = storage_v2.CreateNotificationConfigRequest(
+                    parent="parent_value",
+                    notification_config=notification_config,
+                )
+
+                # Make the request
+                response = await client.create_notification_config(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CreateNotificationConfigRequest, dict]]):
+                The request object. Request message for
+                CreateNotificationConfig.
+            parent (:class:`str`):
+                Required. The bucket to which this
+                NotificationConfig belongs.
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            notification_config (:class:`googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig`):
+                Required. Properties of the
+                NotificationConfig to be inserted.
+
+                This corresponds to the ``notification_config`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.NotificationConfig:
+                A directive to publish Pub/Sub
+                notifications upon changes to a bucket.
+
+        """
+        warnings.warn("StorageAsyncClient.create_notification_config is deprecated",
+            DeprecationWarning)
+
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent, notification_config])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = storage.CreateNotificationConfigRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if parent is not None:
+            request.parent = parent
+        if notification_config is not None:
+            request.notification_config = notification_config
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.create_notification_config,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def list_notification_configs(self,
+            request: Optional[Union[storage.ListNotificationConfigsRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> pagers.ListNotificationConfigsAsyncPager:
+        r"""Retrieves a list of NotificationConfigs for a given
+        bucket.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import storage_v2
+
+            async def sample_list_notification_configs():
+                # Create a client
+                client = storage_v2.StorageAsyncClient()
+
+                # Initialize request argument(s)
+                request = storage_v2.ListNotificationConfigsRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_notification_configs(request=request)
+
+                # Handle the response
+                async for response in page_result:
+                    print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.ListNotificationConfigsRequest, dict]]):
+                The request object. Request message for
+                ListNotifications.
+            parent (:class:`str`):
+                Required. Name of a Google Cloud
+                Storage bucket.
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.storage_v2.services.storage.pagers.ListNotificationConfigsAsyncPager:
+                The result of a call to
+                ListNotificationConfigs
+                Iterating over this object will yield
+                results and resolve additional pages
+                automatically.
+
+        """
+        warnings.warn("StorageAsyncClient.list_notification_configs is deprecated",
+            DeprecationWarning)
+
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        request = storage.ListNotificationConfigsRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if parent is not None:
+            request.parent = parent
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = gapic_v1.method_async.wrap_method(
+            self._client._transport.list_notification_configs,
+            default_timeout=None,
+            client_info=DEFAULT_CLIENT_INFO,
+        )
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # This method is paged; wrap the response in a pager, which provides
+        # an `__aiter__` convenience method.
+        response = pagers.ListNotificationConfigsAsyncPager(
+            method=rpc,
+            request=request,
+            response=response,
             metadata=metadata,
         )
 

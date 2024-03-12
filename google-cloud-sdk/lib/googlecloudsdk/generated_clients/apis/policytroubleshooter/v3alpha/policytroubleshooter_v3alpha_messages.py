@@ -164,6 +164,135 @@ class GoogleCloudAuditAuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBindingExplanation(_messages.Message):
+  r"""The explanation of the GcpUserAccessBinding. NextTAG: 4
+
+  Enums:
+    AccessLevelEvaluationStateValueListEntryValuesEnum:
+    EvalStateValueValuesEnum: Output only. Evaluation state of this
+      GcpUserAccessBinding.
+    PrincipalStateValueValuesEnum: Output only. Principal evaluation states
+      indicating whether the principals match.
+
+  Fields:
+    accessLevelEvaluationState: Output only. Access level evaluation states.
+    evalState: Output only. Evaluation state of this GcpUserAccessBinding.
+    principalState: Output only. Principal evaluation states indicating
+      whether the principals match.
+  """
+
+  class AccessLevelEvaluationStateValueListEntryValuesEnum(_messages.Enum):
+    r"""AccessLevelEvaluationStateValueListEntryValuesEnum enum type.
+
+    Values:
+      ACCESS_LEVEL_EVAL_STATE_UNSPECIFIED: Not used
+      ACCESS_LEVEL_EVAL_STATE_SATISFIED: The access level is satisfied
+      ACCESS_LEVEL_EVAL_STATE_UNSATISFIED: The access level is unsatisfied
+      ACCESS_LEVEL_EVAL_STATE_ERROR: The access level is not satisfied nor
+        unsatisfied
+      ACCESS_LEVEL_EVAL_STATE_NOT_EXIST: The access level does not exist
+      ACCESS_LEVEL_EVAL_STATE_INFO_DENIED: No permission to read access
+        levels.
+    """
+    ACCESS_LEVEL_EVAL_STATE_UNSPECIFIED = 0
+    ACCESS_LEVEL_EVAL_STATE_SATISFIED = 1
+    ACCESS_LEVEL_EVAL_STATE_UNSATISFIED = 2
+    ACCESS_LEVEL_EVAL_STATE_ERROR = 3
+    ACCESS_LEVEL_EVAL_STATE_NOT_EXIST = 4
+    ACCESS_LEVEL_EVAL_STATE_INFO_DENIED = 5
+
+  class EvalStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Evaluation state of this GcpUserAccessBinding.
+
+    Values:
+      EVAL_STATE_UNSPECIFIED: Not used
+      EVAL_STATE_GRANTED: The GcpUserAccessBinding grants the request.
+      EVAL_STATE_DENIED: The GcpUserAccessBinding denies the request.
+      EVAL_STATE_NOT_APPLICABLE: THE GcpUserAccessBinding is not applicable
+        for the principal.
+      EVAL_STATE_UNKNOWN: / No enough information to get a conclusion.
+    """
+    EVAL_STATE_UNSPECIFIED = 0
+    EVAL_STATE_GRANTED = 1
+    EVAL_STATE_DENIED = 2
+    EVAL_STATE_NOT_APPLICABLE = 3
+    EVAL_STATE_UNKNOWN = 4
+
+  class PrincipalStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Principal evaluation states indicating whether the
+    principals match.
+
+    Values:
+      PRINCIPAL_STATE_UNSPECIFIED: Not used
+      PRINCIPAL_STATE_MATCHED: Principal matches the GcpUserAccessBinding
+        principal.
+      PRINCIPAL_STATE_UNMATCHED: Principal does not match the
+        GcpUserAccessBinding principal.
+      PRINCIPAL_STATE_NOT_FOUND: GcpUserAccessBinding principal does not
+        exist.
+      PRINCIPAL_STATE_INFO_DENIED: Principal does not have enough permission
+        to read the GcpUserAccessBinding principal.
+      PRINCIPAL_STATE_UNSUPPORTED: Denied or target principal is not supported
+        to troubleshoot.
+    """
+    PRINCIPAL_STATE_UNSPECIFIED = 0
+    PRINCIPAL_STATE_MATCHED = 1
+    PRINCIPAL_STATE_UNMATCHED = 2
+    PRINCIPAL_STATE_NOT_FOUND = 3
+    PRINCIPAL_STATE_INFO_DENIED = 4
+    PRINCIPAL_STATE_UNSUPPORTED = 5
+
+  accessLevelEvaluationState = _messages.EnumField('AccessLevelEvaluationStateValueListEntryValuesEnum', 1, repeated=True)
+  evalState = _messages.EnumField('EvalStateValueValuesEnum', 2)
+  principalState = _messages.EnumField('PrincipalStateValueValuesEnum', 3)
+
+
+class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaTroubleshootGcpUserAccessBindingRequest(_messages.Message):
+  r"""Request to troubleshoot GcpUserAccessBinding.
+
+  Fields:
+    troubleshootingToken: Optional. The troubleshooting token can be generated
+      when customers get access denied by the GcpUserAccessBinding.
+  """
+
+  troubleshootingToken = _messages.StringField(1)
+
+
+class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaTroubleshootGcpUserAccessBindingResponse(_messages.Message):
+  r"""Response for troubleshooting GcpUserAccessBinding.
+
+  Enums:
+    AccessStateValueValuesEnum: Output only. The access state of the request.
+
+  Fields:
+    accessState: Output only. The access state of the request.
+    gcpUserAccessBindingExplanation: The explanation of the
+      GcpUserAccessBinding.
+    principal: The principal email address of the caller.
+  """
+
+  class AccessStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The access state of the request.
+
+    Values:
+      ACCESS_STATE_UNSPECIFIED: Not used
+      ACCESS_STATE_GRANTED: The request is granted by GcpUserAccessBinding.
+      ACCESS_STATE_DENIED: The request is denied by GcpUserAccessBinding.
+      ACCESS_STATE_NOT_APPLICABLE: GcpUserAccessBinding are not applicable to
+        principal.
+      ACCESS_STATE_UNKNOWN: No enough information to get a conclusion.
+    """
+    ACCESS_STATE_UNSPECIFIED = 0
+    ACCESS_STATE_GRANTED = 1
+    ACCESS_STATE_DENIED = 2
+    ACCESS_STATE_NOT_APPLICABLE = 3
+    ACCESS_STATE_UNKNOWN = 4
+
+  accessState = _messages.EnumField('AccessStateValueValuesEnum', 1)
+  gcpUserAccessBindingExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBindingExplanation', 2, repeated=True)
+  principal = _messages.StringField(3)
+
+
 class GoogleCloudPolicytroubleshooterIamV3alphaAccessTuple(_messages.Message):
   r"""Information about the principal, resource, and permission to check.
 
@@ -1469,12 +1598,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
     specified resource based on evaluating the binding and policy.
 
     Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: An error occurred when explaining a PAB
-        component.
+      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
       PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
         access to the specified resource.
-      PAB_ACCESS_STATE_DENIED: The PAB component denies the principal's access
-        to the specified resource.
+      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
+        principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
         principal, or the specified resource. This state refers to 2 specific
         scenarios: - The service that the specified resource belongs to is not
@@ -1486,7 +1614,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy(_mes
     """
     PAB_ACCESS_STATE_UNSPECIFIED = 0
     PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_DENIED = 2
+    PAB_ACCESS_STATE_NOT_ALLOWED = 2
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
@@ -1532,6 +1660,8 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
     policy: The policy that is explained.
     policyAccessState: Output only. Indicates whether the policy allows access
       to the specified resource.
+    policyVersion: Output only. Explanation of the Principal Access Boundary
+      policy's version.
     relevance: The relevance of this policy to the overall access state.
   """
 
@@ -1540,12 +1670,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
     specified resource.
 
     Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: An error occurred when explaining a PAB
-        component.
+      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
       PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
         access to the specified resource.
-      PAB_ACCESS_STATE_DENIED: The PAB component denies the principal's access
-        to the specified resource.
+      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
+        principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
         principal, or the specified resource. This state refers to 2 specific
         scenarios: - The service that the specified resource belongs to is not
@@ -1557,7 +1686,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
     """
     PAB_ACCESS_STATE_UNSPECIFIED = 0
     PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_DENIED = 2
+    PAB_ACCESS_STATE_NOT_ALLOWED = 2
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
@@ -1580,7 +1709,45 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
   explainedRules = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule', 1, repeated=True)
   policy = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicy', 2)
   policyAccessState = _messages.EnumField('PolicyAccessStateValueValuesEnum', 3)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
+  policyVersion = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicyVersion', 4)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 5)
+
+
+class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicyVersion(_messages.Message):
+  r"""Details about how a Principal Access Boundary policy's version
+  contributes to the policy's enforcement state.
+
+  Enums:
+    EnforcementStateValueValuesEnum: Output only. Indicates whether the policy
+      is enforced based on its version.
+
+  Fields:
+    enforcementState: Output only. Indicates whether the policy is enforced
+      based on its version.
+    version: Output only. The actual version of the policy. - If the policy
+      uses static version, this field is the chosen static version. - If the
+      policy uses dynamic version, this field is the effective latest version.
+  """
+
+  class EnforcementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates whether the policy is enforced based on its
+    version.
+
+    Values:
+      PAB_POLICY_ENFORCEMENT_STATE_UNSPECIFIED: An error occurred when
+        checking whether a Principal Access Boundary policy is enforced based
+        on its version.
+      PAB_POLICY_ENFORCEMENT_STATE_ENFORCED: The Principal Access Boundary
+        policy is enforced based on its version.
+      PAB_POLICY_ENFORCEMENT_STATE_NOT_ENFORCED: The Principal Access Boundary
+        policy is not enforced based on its version.
+    """
+    PAB_POLICY_ENFORCEMENT_STATE_UNSPECIFIED = 0
+    PAB_POLICY_ENFORCEMENT_STATE_ENFORCED = 1
+    PAB_POLICY_ENFORCEMENT_STATE_NOT_ENFORCED = 2
+
+  enforcementState = _messages.EnumField('EnforcementStateValueValuesEnum', 1)
+  version = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Message):
@@ -1620,17 +1787,21 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
     Values:
       RESOURCE_INCLUSION_STATE_UNSPECIFIED: An error occurred when checking
         whether the resource includes the specified resource.
-      RESOURCE_INCLUDED: The resource includes the specified resource.
-      RESOURCE_NOT_INCLUDED: The resource doesn't include the specified
+      RESOURCE_INCLUSION_STATE_INCLUDED: The resource includes the specified
         resource.
-      RESOURCE_INCLUSION_UNKNOWN_INFO: The sender of the request does not have
-        access to the relevant data to check whether the resource includes the
+      RESOURCE_INCLUSION_STATE_NOT_INCLUDED: The resource doesn't include the
         specified resource.
+      RESOURCE_INCLUSION_STATE_UNKNOWN_INFO: The sender of the request does
+        not have access to the relevant data to check whether the resource
+        includes the specified resource.
+      RESOURCE_INCLUSION_STATE_UNKNOWN_UNSUPPORTED: The resource is of an
+        unsupported type, such as non-CRM resources.
     """
     RESOURCE_INCLUSION_STATE_UNSPECIFIED = 0
-    RESOURCE_INCLUDED = 1
-    RESOURCE_NOT_INCLUDED = 2
-    RESOURCE_INCLUSION_UNKNOWN_INFO = 3
+    RESOURCE_INCLUSION_STATE_INCLUDED = 1
+    RESOURCE_INCLUSION_STATE_NOT_INCLUDED = 2
+    RESOURCE_INCLUSION_STATE_UNKNOWN_INFO = 3
+    RESOURCE_INCLUSION_STATE_UNKNOWN_UNSUPPORTED = 4
 
   class EffectValueValuesEnum(_messages.Enum):
     r"""Required. The effect of the rule which describes the access
@@ -1664,12 +1835,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
     resource.
 
     Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: An error occurred when explaining a PAB
-        component.
+      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
       PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
         access to the specified resource.
-      PAB_ACCESS_STATE_DENIED: The PAB component denies the principal's access
-        to the specified resource.
+      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
+        principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
         principal, or the specified resource. This state refers to 2 specific
         scenarios: - The service that the specified resource belongs to is not
@@ -1681,7 +1851,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
     """
     PAB_ACCESS_STATE_UNSPECIFIED = 0
     PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_DENIED = 2
+    PAB_ACCESS_STATE_NOT_ALLOWED = 2
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
@@ -1736,17 +1906,21 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource
     Values:
       RESOURCE_INCLUSION_STATE_UNSPECIFIED: An error occurred when checking
         whether the resource includes the specified resource.
-      RESOURCE_INCLUDED: The resource includes the specified resource.
-      RESOURCE_NOT_INCLUDED: The resource doesn't include the specified
+      RESOURCE_INCLUSION_STATE_INCLUDED: The resource includes the specified
         resource.
-      RESOURCE_INCLUSION_UNKNOWN_INFO: The sender of the request does not have
-        access to the relevant data to check whether the resource includes the
+      RESOURCE_INCLUSION_STATE_NOT_INCLUDED: The resource doesn't include the
         specified resource.
+      RESOURCE_INCLUSION_STATE_UNKNOWN_INFO: The sender of the request does
+        not have access to the relevant data to check whether the resource
+        includes the specified resource.
+      RESOURCE_INCLUSION_STATE_UNKNOWN_UNSUPPORTED: The resource is of an
+        unsupported type, such as non-CRM resources.
     """
     RESOURCE_INCLUSION_STATE_UNSPECIFIED = 0
-    RESOURCE_INCLUDED = 1
-    RESOURCE_NOT_INCLUDED = 2
-    RESOURCE_INCLUSION_UNKNOWN_INFO = 3
+    RESOURCE_INCLUSION_STATE_INCLUDED = 1
+    RESOURCE_INCLUSION_STATE_NOT_INCLUDED = 2
+    RESOURCE_INCLUSION_STATE_UNKNOWN_INFO = 3
+    RESOURCE_INCLUSION_STATE_UNKNOWN_UNSUPPORTED = 4
 
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 1)
   resource = _messages.StringField(2)
@@ -1803,12 +1977,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABTarget(_messages.Mess
     policies bound to this target.
 
     Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: An error occurred when explaining a PAB
-        component.
+      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
       PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
         access to the specified resource.
-      PAB_ACCESS_STATE_DENIED: The PAB component denies the principal's access
-        to the specified resource.
+      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
+        principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
         principal, or the specified resource. This state refers to 2 specific
         scenarios: - The service that the specified resource belongs to is not
@@ -1820,7 +1993,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABTarget(_messages.Mess
     """
     PAB_ACCESS_STATE_UNSPECIFIED = 0
     PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_DENIED = 2
+    PAB_ACCESS_STATE_NOT_ALLOWED = 2
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
@@ -1860,13 +2033,10 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPolicyBinding(_messages.
         whether the policy binding is enforced.
       POLICY_BINDING_STATE_ENFORCED: The policy binding is enforced.
       POLICY_BINDING_STATE_NOT_ENFORCED: The policy binding is not enforced.
-      POLICY_BINDING_STATE_UNKNOWN_INFO: The sender of the request does not
-        have access to the relevant data to check the policy binding state.
     """
     POLICY_BINDING_STATE_UNSPECIFIED = 0
     POLICY_BINDING_STATE_ENFORCED = 1
     POLICY_BINDING_STATE_NOT_ENFORCED = 2
-    POLICY_BINDING_STATE_UNKNOWN_INFO = 3
 
   class RelevanceValueValuesEnum(_messages.Enum):
     r"""The relevance of this policy binding to the overall access state.
@@ -1920,12 +2090,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
     Boundary bindings and policies.
 
     Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: An error occurred when explaining a PAB
-        component.
+      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
       PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
         access to the specified resource.
-      PAB_ACCESS_STATE_DENIED: The PAB component denies the principal's access
-        to the specified resource.
+      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
+        principal's access to the specified resource.
       PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
         principal, or the specified resource. This state refers to 2 specific
         scenarios: - The service that the specified resource belongs to is not
@@ -1937,7 +2106,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
     """
     PAB_ACCESS_STATE_UNSPECIFIED = 0
     PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_DENIED = 2
+    PAB_ACCESS_STATE_NOT_ALLOWED = 2
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
@@ -3516,12 +3685,12 @@ class GoogleIamV3PolicyBinding(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
-      https://google.aip.dev/128#annotations for more details such as format
+      https://google.aip.dev/148#annotations for more details such as format
       and size limitations
 
   Fields:
     annotations: Optional. User defined annotations. See
-      https://google.aip.dev/128#annotations for more details such as format
+      https://google.aip.dev/148#annotations for more details such as format
       and size limitations
     condition: Optional. Condition can either be a principal condition or a
       resource condition. It depends on the type of target, the policy it is
@@ -3555,7 +3724,9 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
       organizations/{organization_id}/locations/{location}/policyBindings/{pol
       icy_binding_id}`
-    policy: Immutable. The resource name of the policy to be bound.
+    policy: Immutable. The resource name of the policy to be bound. The
+      binding parent and policy must belong to the same Organization (or
+      Project).
     policyKind: Immutable. The kind of the policy to attach in this binding: +
       When the policy is empty, this field must be set. + When the policy is
       set, this field + can be left empty and will be set to the policy kind,
@@ -3585,7 +3756,7 @@ class GoogleIamV3PolicyBinding(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User defined annotations. See
-    https://google.aip.dev/128#annotations for more details such as format and
+    https://google.aip.dev/148#annotations for more details such as format and
     size limitations
 
     Messages:
@@ -3638,7 +3809,7 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
       OCATION/workloadIdentityPools/WORKLOAD_POOL_ID" Workforce Identity:
       "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID"
       Workspace Identity:
-      "//iam.googleapis.com/locations/global/workspacePools/WORKSPACE_ID"
+      "//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID"
   """
 
   principalSet = _messages.StringField(1)
@@ -3649,12 +3820,12 @@ class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
-      https://google.aip.dev/128#annotations for more details such as format
+      https://google.aip.dev/148#annotations for more details such as format
       and size limitations
 
   Fields:
     annotations: Optional. User defined annotations. See
-      https://google.aip.dev/128#annotations for more details such as format
+      https://google.aip.dev/148#annotations for more details such as format
       and size limitations
     createTime: Output only. The time when the principal access boundary
       policy was created.
@@ -3675,7 +3846,7 @@ class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User defined annotations. See
-    https://google.aip.dev/128#annotations for more details such as format and
+    https://google.aip.dev/148#annotations for more details such as format and
     size limitations
 
     Messages:
@@ -3718,18 +3889,10 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
       empty, the PAB policy version will be set to the current latest version,
       and this version won't get updated when new versions are released.
     rules: Required. A list of principal access boundary policy rules.
-    staticEnforcementVersionNumber: A specific version number. This will need
-      to be manually updated to newer versions as they become available in
-      order to keep maximum protection.
-    useLatestEnforcementVersion: Use the latest officially released version
-      number. This will automatically increase in scope as more services are
-      included in enforcemment.
   """
 
   enforcementVersion = _messages.StringField(1)
   rules = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 2, repeated=True)
-  staticEnforcementVersionNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  useLatestEnforcementVersion = _messages.BooleanField(4)
 
 
 class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):

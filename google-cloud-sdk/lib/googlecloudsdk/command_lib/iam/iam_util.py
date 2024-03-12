@@ -63,6 +63,11 @@ secrets_message = core_apis.GetMessagesModule('secretmanager', 'v1')
 encoding.AddCustomJsonFieldMapping(
     secrets_message.SecretmanagerProjectsSecretsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    secrets_message.SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest,
+    'options_requestedPolicyVersion',
+    'options.requestedPolicyVersion',
+)
 
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 encoding.AddCustomJsonFieldMapping(
@@ -403,7 +408,7 @@ def AddArgsForAddIamPolicyBinding(parser,
     _AddConditionFlagsForAddBindingToIamPolicy(parser)
 
 
-# TODO (b/114447521): implement a completer for condition
+# TODO(b/114447521): implement a completer for condition
 def AddArgsForRemoveIamPolicyBinding(parser,
                                      role_completer=None,
                                      add_condition=False,
@@ -990,7 +995,7 @@ def ParseYamlToTrustStore(yaml_dict):
   """Construct a TrustStore protorpc.Message from the content of a Yaml file.
 
   Args:
-    file_content: YAML file content to parse.
+    yaml_dict: YAML file content to parse.
 
   Returns:
     a TrustStore from the parsed YAML file.

@@ -154,7 +154,6 @@ class BrowserAttributes(_messages.Message):
 
 class BrowserInfo(_messages.Message):
   r"""Browser-specific fields reported by the Endpoint Verification extension.
-  See go/additionalattributesdesign and go/caa-webprotect-attributes-extension
   LINT.IfChange
 
   Enums:
@@ -2364,6 +2363,150 @@ class GoogleAppsCloudidentityDevicesV1BlockDeviceUserResponse(_messages.Message)
   deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1DeviceUser', 1)
 
 
+class GoogleAppsCloudidentityDevicesV1BrowserAttributes(_messages.Message):
+  r"""Contains information about browser profiles reported by the [Endpoint
+  Verification extension](https://chromewebstore.google.com/detail/endpoint-
+  verification/callobklhcbilhphinckomhgkigmfocg?pli=1).
+
+  Fields:
+    chromeBrowserInfo: Represents the current state of the [Chrome browser
+      attributes](https://cloud.google.com/access-context-
+      manager/docs/browser-attributes) sent by the [Endpoint Verification
+      extension](https://chromewebstore.google.com/detail/endpoint-
+      verification/callobklhcbilhphinckomhgkigmfocg?pli=1).
+    chromeProfileId: Chrome profile ID that is exposed by the Chrome API. It
+      is unique for each device.
+    lastProfileSyncTime: Timestamp in milliseconds since Epoch when the
+      profile/gcm id was last synced.
+  """
+
+  chromeBrowserInfo = _messages.MessageField('GoogleAppsCloudidentityDevicesV1BrowserInfo', 1)
+  chromeProfileId = _messages.StringField(2)
+  lastProfileSyncTime = _messages.StringField(3)
+
+
+class GoogleAppsCloudidentityDevicesV1BrowserInfo(_messages.Message):
+  r"""Browser-specific fields reported by the [Endpoint Verification
+  extension](https://chromewebstore.google.com/detail/endpoint-
+  verification/callobklhcbilhphinckomhgkigmfocg?pli=1). LINT.IfChange
+
+  Enums:
+    BrowserManagementStateValueValuesEnum: Output only. Browser's management
+      state.
+    PasswordProtectionWarningTriggerValueValuesEnum: Current state of
+      [password protection trigger](https://chromeenterprise.google/policies/#
+      PasswordProtectionWarningTrigger).
+    SafeBrowsingProtectionLevelValueValuesEnum: Current state of [Safe
+      Browsing protection level](https://chromeenterprise.google/policies/#Saf
+      eBrowsingProtectionLevel).
+
+  Fields:
+    browserManagementState: Output only. Browser's management state.
+    browserVersion: Version of the request initiating browser.
+    isBuiltInDnsClientEnabled: Current state of [built-in DNS client](https://
+      chromeenterprise.google/policies/#BuiltInDnsClientEnabled).
+    isBulkDataEntryAnalysisEnabled: Current state of [bulk data analysis](http
+      s://chromeenterprise.google/policies/#OnBulkDataEntryEnterpriseConnector
+      ). Set to true if provider list from Chrome is non-empty.
+    isChromeCleanupEnabled: Current state of [Chrome
+      Cleanup](https://chromeenterprise.google/policies/#ChromeCleanupEnabled)
+      .
+    isChromeRemoteDesktopAppBlocked: Current state of [Chrome Remote Desktop
+      app](https://chromeenterprise.google/policies/#URLBlocklist).
+    isFileDownloadAnalysisEnabled: Current state of [file download analysis](h
+      ttps://chromeenterprise.google/policies/#OnFileDownloadedEnterpriseConne
+      ctor). Set to true if provider list from Chrome is non-empty.
+    isFileUploadAnalysisEnabled: Current state of [file upload analysis](https
+      ://chromeenterprise.google/policies/#OnFileAttachedEnterpriseConnector).
+      Set to true if provider list from Chrome is non-empty.
+    isRealtimeUrlCheckEnabled: Current state of [real-time URL check](https://
+      chromeenterprise.google/policies/#EnterpriseRealTimeUrlCheckMode). Set
+      to true if provider list from Chrome is non-empty.
+    isSecurityEventAnalysisEnabled: Current state of [security event analysis]
+      (https://chromeenterprise.google/policies/#OnSecurityEventEnterpriseConn
+      ector). Set to true if provider list from Chrome is non-empty.
+    isSiteIsolationEnabled: Current state of [site isolation](https://chromeen
+      terprise.google/policies/?policy=IsolateOrigins).
+    isThirdPartyBlockingEnabled: Current state of [third-party blocking](https
+      ://chromeenterprise.google/policies/#ThirdPartyBlockingEnabled).
+    passwordProtectionWarningTrigger: Current state of [password protection tr
+      igger](https://chromeenterprise.google/policies/#PasswordProtectionWarni
+      ngTrigger).
+    safeBrowsingProtectionLevel: Current state of [Safe Browsing protection le
+      vel](https://chromeenterprise.google/policies/#SafeBrowsingProtectionLev
+      el).
+  """
+
+  class BrowserManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Browser's management state.
+
+    Values:
+      UNSPECIFIED: Management state is not specified.
+      UNMANAGED: Browser/Profile is not managed by any customer.
+      MANAGED_BY_OTHER_DOMAIN: Browser/Profile is managed, but by some other
+        customer.
+      PROFILE_MANAGED: Profile is managed by customer.
+      BROWSER_MANAGED: Browser is managed by customer.
+    """
+    UNSPECIFIED = 0
+    UNMANAGED = 1
+    MANAGED_BY_OTHER_DOMAIN = 2
+    PROFILE_MANAGED = 3
+    BROWSER_MANAGED = 4
+
+  class PasswordProtectionWarningTriggerValueValuesEnum(_messages.Enum):
+    r"""Current state of [password protection trigger](https://chromeenterpris
+    e.google/policies/#PasswordProtectionWarningTrigger).
+
+    Values:
+      PASSWORD_PROTECTION_TRIGGER_UNSPECIFIED: Password protection is not
+        specified.
+      PROTECTION_OFF: Password reuse is never detected.
+      PASSWORD_REUSE: Warning is shown when the user reuses their protected
+        password on a non-allowed site.
+      PHISHING_REUSE: Warning is shown when the user reuses their protected
+        password on a phishing site.
+    """
+    PASSWORD_PROTECTION_TRIGGER_UNSPECIFIED = 0
+    PROTECTION_OFF = 1
+    PASSWORD_REUSE = 2
+    PHISHING_REUSE = 3
+
+  class SafeBrowsingProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""Current state of [Safe Browsing protection level](https://chromeenterp
+    rise.google/policies/#SafeBrowsingProtectionLevel).
+
+    Values:
+      SAFE_BROWSING_LEVEL_UNSPECIFIED: Browser protection level is not
+        specified.
+      DISABLED: No protection against dangerous websites, downloads, and
+        extensions.
+      STANDARD: Standard protection against websites, downloads, and
+        extensions that are known to be dangerous.
+      ENHANCED: Faster, proactive protection against dangerous websites,
+        downloads, and extensions.
+    """
+    SAFE_BROWSING_LEVEL_UNSPECIFIED = 0
+    DISABLED = 1
+    STANDARD = 2
+    ENHANCED = 3
+
+  browserManagementState = _messages.EnumField('BrowserManagementStateValueValuesEnum', 1)
+  browserVersion = _messages.StringField(2)
+  isBuiltInDnsClientEnabled = _messages.BooleanField(3)
+  isBulkDataEntryAnalysisEnabled = _messages.BooleanField(4)
+  isChromeCleanupEnabled = _messages.BooleanField(5)
+  isChromeRemoteDesktopAppBlocked = _messages.BooleanField(6)
+  isFileDownloadAnalysisEnabled = _messages.BooleanField(7)
+  isFileUploadAnalysisEnabled = _messages.BooleanField(8)
+  isRealtimeUrlCheckEnabled = _messages.BooleanField(9)
+  isSecurityEventAnalysisEnabled = _messages.BooleanField(10)
+  isSiteIsolationEnabled = _messages.BooleanField(11)
+  isThirdPartyBlockingEnabled = _messages.BooleanField(12)
+  passwordProtectionWarningTrigger = _messages.EnumField('PasswordProtectionWarningTriggerValueValuesEnum', 13)
+  safeBrowsingProtectionLevel = _messages.EnumField('SafeBrowsingProtectionLevelValueValuesEnum', 14)
+
+
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceMetadata(_messages.Message):
   r"""Metadata for CancelWipeDevice LRO."""
 
@@ -2391,6 +2534,63 @@ class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserResponse(_messages.Mes
   """
 
   deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1DeviceUser', 1)
+
+
+class GoogleAppsCloudidentityDevicesV1CertificateAttributes(_messages.Message):
+  r"""Stores information about a certificate.
+
+  Enums:
+    ValidationStateValueValuesEnum: Output only. Validation state of this
+      certificate.
+
+  Fields:
+    certificateTemplate: The X.509 extension for CertificateTemplate.
+    fingerprint: The encoded certificate fingerprint.
+    issuer: The name of the issuer of this certificate.
+    serialNumber: Serial number of the certificate, Example: "123456789".
+    subject: The subject name of this certificate.
+    thumbprint: The certificate thumbprint.
+    validationState: Output only. Validation state of this certificate.
+    validityExpirationTime: Certificate not valid at or after this timestamp.
+    validityStartTime: Certificate not valid before this timestamp.
+  """
+
+  class ValidationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Validation state of this certificate.
+
+    Values:
+      CERTIFICATE_VALIDATION_STATE_UNSPECIFIED: Default value.
+      VALIDATION_SUCCESSFUL: Certificate validation was successful.
+      VALIDATION_FAILED: Certificate validation failed.
+    """
+    CERTIFICATE_VALIDATION_STATE_UNSPECIFIED = 0
+    VALIDATION_SUCCESSFUL = 1
+    VALIDATION_FAILED = 2
+
+  certificateTemplate = _messages.MessageField('GoogleAppsCloudidentityDevicesV1CertificateTemplate', 1)
+  fingerprint = _messages.StringField(2)
+  issuer = _messages.StringField(3)
+  serialNumber = _messages.StringField(4)
+  subject = _messages.StringField(5)
+  thumbprint = _messages.StringField(6)
+  validationState = _messages.EnumField('ValidationStateValueValuesEnum', 7)
+  validityExpirationTime = _messages.StringField(8)
+  validityStartTime = _messages.StringField(9)
+
+
+class GoogleAppsCloudidentityDevicesV1CertificateTemplate(_messages.Message):
+  r"""CertificateTemplate (v3 Extension in X.509).
+
+  Fields:
+    id: The template id of the template. Example: "1.3.6.1.4.1.311.21.8.156086
+      21.11768144.5720724.16068415.6889630.81.2472537.7784047".
+    majorVersion: The Major version of the template. Example: 100.
+    minorVersion: The minor version of the template. Example: 12.
+  """
+
+  id = _messages.StringField(1)
+  majorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minorVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
@@ -2617,6 +2817,9 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     enabledUsbDebugging: Output only. Whether USB debugging is enabled on
       device.
     encryptionState: Output only. Device encryption state.
+    endpointVerificationSpecificAttributes: Output only. Attributes specific
+      to [Endpoint Verification](https://cloud.google.com/endpoint-
+      verification/docs/overview) devices.
     hostname: Host name of the device.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
@@ -2743,23 +2946,24 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
   enabledDeveloperOptions = _messages.BooleanField(11)
   enabledUsbDebugging = _messages.BooleanField(12)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 13)
-  hostname = _messages.StringField(14)
-  imei = _messages.StringField(15)
-  kernelVersion = _messages.StringField(16)
-  lastSyncTime = _messages.StringField(17)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 18)
-  manufacturer = _messages.StringField(19)
-  meid = _messages.StringField(20)
-  model = _messages.StringField(21)
-  name = _messages.StringField(22)
-  networkOperator = _messages.StringField(23)
-  osVersion = _messages.StringField(24)
-  otherAccounts = _messages.StringField(25, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 26)
-  releaseVersion = _messages.StringField(27)
-  securityPatchTime = _messages.StringField(28)
-  serialNumber = _messages.StringField(29)
-  wifiMacAddresses = _messages.StringField(30, repeated=True)
+  endpointVerificationSpecificAttributes = _messages.MessageField('GoogleAppsCloudidentityDevicesV1EndpointVerificationSpecificAttributes', 14)
+  hostname = _messages.StringField(15)
+  imei = _messages.StringField(16)
+  kernelVersion = _messages.StringField(17)
+  lastSyncTime = _messages.StringField(18)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 19)
+  manufacturer = _messages.StringField(20)
+  meid = _messages.StringField(21)
+  model = _messages.StringField(22)
+  name = _messages.StringField(23)
+  networkOperator = _messages.StringField(24)
+  osVersion = _messages.StringField(25)
+  otherAccounts = _messages.StringField(26, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 27)
+  releaseVersion = _messages.StringField(28)
+  securityPatchTime = _messages.StringField(29)
+  serialNumber = _messages.StringField(30)
+  wifiMacAddresses = _messages.StringField(31, repeated=True)
 
 
 class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):
@@ -2847,6 +3051,69 @@ class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):
   passwordState = _messages.EnumField('PasswordStateValueValuesEnum', 8)
   userAgent = _messages.StringField(9)
   userEmail = _messages.StringField(10)
+
+
+class GoogleAppsCloudidentityDevicesV1EndpointVerificationSpecificAttributes(_messages.Message):
+  r"""Resource representing the [Endpoint Verification-specific
+  attributes](https://cloud.google.com/endpoint-verification/docs/device-
+  information) of a device.
+
+  Messages:
+    AdditionalSignalsValue: Additional signals reported by Endpoint
+      Verification. It includes the following attributes: 1. Non-configurable
+      attributes: hotfixes, av_installed, av_enabled, windows_domain_name,
+      is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
+      [Configurable attributes](https://cloud.google.com/endpoint-
+      verification/docs/collect-config-attributes): file, folder, and binary
+      attributes; registry entries; and properties in a plist.
+
+  Fields:
+    additionalSignals: Additional signals reported by Endpoint Verification.
+      It includes the following attributes: 1. Non-configurable attributes:
+      hotfixes, av_installed, av_enabled, windows_domain_name,
+      is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
+      [Configurable attributes](https://cloud.google.com/endpoint-
+      verification/docs/collect-config-attributes): file, folder, and binary
+      attributes; registry entries; and properties in a plist.
+    browserAttributes: Details of browser profiles reported by Endpoint
+      Verification.
+    certificateAttributes: Details of certificates.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalSignalsValue(_messages.Message):
+    r"""Additional signals reported by Endpoint Verification. It includes the
+    following attributes: 1. Non-configurable attributes: hotfixes,
+    av_installed, av_enabled, windows_domain_name,
+    is_os_native_firewall_enabled, and is_secure_boot_enabled. 2.
+    [Configurable attributes](https://cloud.google.com/endpoint-
+    verification/docs/collect-config-attributes): file, folder, and binary
+    attributes; registry entries; and properties in a plist.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalSignalsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalSignalsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalSignals = _messages.MessageField('AdditionalSignalsValue', 1)
+  browserAttributes = _messages.MessageField('GoogleAppsCloudidentityDevicesV1BrowserAttributes', 2, repeated=True)
+  certificateAttributes = _messages.MessageField('GoogleAppsCloudidentityDevicesV1CertificateAttributes', 3, repeated=True)
 
 
 class GoogleAppsCloudidentityDevicesV1ListEndpointAppsMetadata(_messages.Message):

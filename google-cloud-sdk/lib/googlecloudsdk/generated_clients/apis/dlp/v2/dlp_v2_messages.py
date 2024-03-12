@@ -65,11 +65,11 @@ class DlpOrganizationsDeidentifyTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -128,11 +128,11 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -175,11 +175,11 @@ class DlpOrganizationsInspectTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -238,11 +238,11 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -275,6 +275,65 @@ class DlpOrganizationsInspectTemplatesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsLocationsColumnDataProfilesGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsColumnDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/columnDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsColumnDataProfilesListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsColumnDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `table_data_profile_name` - The name of the
+      related table data profile. - `project_id` - The Google Cloud project
+      ID. (REQUIRED) - `dataset_id` - The BigQuery dataset ID. (REQUIRED) -
+      `table_id` - The BigQuery table ID. (REQUIRED) - `field_id` - The ID of
+      the BigQuery field. - `info_type` - The infotype detected in the
+      resource. - `sensitivity_level` - HIGH|MEDIUM|LOW - `data_risk_level`:
+      How much risk is associated with this data. - `status_code` - an RPC
+      status code as defined in https://github.com/googleapis/googleapis/blob/
+      master/google/rpc/code.proto * The operator must be `=` for project_id,
+      dataset_id, and table_id. Other filters also support `!=`. Examples: *
+      project_id = 12345 AND status_code = 1 * project_id = 12345 AND
+      sensitivity_level = HIGH * project_id = 12345 AND info_type =
+      STREET_ADDRESS The length of this field should be no more than 500
+      characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id asc` *
+      `table_id` * `sensitivity_level desc` Supported fields are: -
+      `project_id`: The Google Cloud project ID. - `dataset_id`: The ID of a
+      BigQuery dataset. - `table_id`: The ID of a BigQuery table. -
+      `sensitivity_level`: How sensitive the data in a column is, at most. -
+      `data_risk_level`: How much risk is associated with this data. -
+      `profile_last_generated`: When the profile was last updated in epoch
+      seconds.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest object.
 
@@ -285,11 +344,11 @@ class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Messag
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -348,11 +407,11 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -505,14 +564,14 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -547,11 +606,11 @@ class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -610,11 +669,11 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -656,14 +715,14 @@ class DlpOrganizationsLocationsJobTriggersCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -732,14 +791,14 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -779,6 +838,54 @@ class DlpOrganizationsLocationsJobTriggersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsLocationsProjectDataProfilesGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsProjectDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/projectDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsProjectDataProfilesListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsProjectDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `status_code` - an RPC status
+      code as defined in https://github.com/googleapis/googleapis/blob/master/
+      google/rpc/code.proto * The operator must be `=` or `!=`. Examples: *
+      `project_id = 12345 AND status_code = 1` * `project_id = 12345 AND
+      sensitivity_level = HIGH` The length of this field should be no more
+      than 500 characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id` *
+      `sensitivity_level desc` Supported fields are: - `project_id`: GCP
+      project ID - `sensitivity_level`: How sensitive the data in a project
+      is, at most. - `data_risk_level`: How much risk is associated with this
+      data. - `profile_last_generated`: When the profile was last updated in
+      epoch seconds.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. organizations/{org_id}/locations/{loc_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsStoredInfoTypesCreateRequest object.
 
@@ -789,11 +896,11 @@ class DlpOrganizationsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -850,14 +957,14 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -883,6 +990,63 @@ class DlpOrganizationsLocationsStoredInfoTypesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsLocationsTableDataProfilesGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsTableDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/tableDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsTableDataProfilesListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsTableDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `project_id` - The GCP project ID. -
+      `dataset_id` - The BigQuery dataset ID. - `table_id` - The ID of the
+      BigQuery table. - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` The length of this
+      field should be no more than 500 characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id asc` *
+      `table_id` * `sensitivity_level desc` Supported fields are: -
+      `project_id`: The GCP project ID. - `dataset_id`: The ID of a BigQuery
+      dataset. - `table_id`: The ID of a BigQuery table. -
+      `sensitivity_level`: How sensitive the data in a table is, at most. -
+      `data_risk_level`: How much risk is associated with this data. -
+      `profile_last_generated`: When the profile was last updated in epoch
+      seconds. - `last_modified`: The last time the resource was modified. -
+      `resource_visibility`: Visibility restriction for this resource. -
+      `row_count`: Number of rows in this resource.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsStoredInfoTypesCreateRequest object.
 
@@ -893,11 +1057,11 @@ class DlpOrganizationsStoredInfoTypesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -954,14 +1118,14 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -996,14 +1160,14 @@ class DlpProjectsContentDeidentifyRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -1019,14 +1183,14 @@ class DlpProjectsContentInspectRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -1042,14 +1206,14 @@ class DlpProjectsContentReidentifyRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -1066,11 +1230,11 @@ class DlpProjectsDeidentifyTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1129,11 +1293,11 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1189,14 +1353,14 @@ class DlpProjectsDlpJobsCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -1260,14 +1424,14 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -1301,14 +1465,14 @@ class DlpProjectsImageRedactRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -1325,11 +1489,11 @@ class DlpProjectsInspectTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1388,11 +1552,11 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1449,14 +1613,14 @@ class DlpProjectsJobTriggersCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -1525,14 +1689,14 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -1572,6 +1736,65 @@ class DlpProjectsJobTriggersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsLocationsColumnDataProfilesGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsColumnDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/columnDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsColumnDataProfilesListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsColumnDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `table_data_profile_name` - The name of the
+      related table data profile. - `project_id` - The Google Cloud project
+      ID. (REQUIRED) - `dataset_id` - The BigQuery dataset ID. (REQUIRED) -
+      `table_id` - The BigQuery table ID. (REQUIRED) - `field_id` - The ID of
+      the BigQuery field. - `info_type` - The infotype detected in the
+      resource. - `sensitivity_level` - HIGH|MEDIUM|LOW - `data_risk_level`:
+      How much risk is associated with this data. - `status_code` - an RPC
+      status code as defined in https://github.com/googleapis/googleapis/blob/
+      master/google/rpc/code.proto * The operator must be `=` for project_id,
+      dataset_id, and table_id. Other filters also support `!=`. Examples: *
+      project_id = 12345 AND status_code = 1 * project_id = 12345 AND
+      sensitivity_level = HIGH * project_id = 12345 AND info_type =
+      STREET_ADDRESS The length of this field should be no more than 500
+      characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id asc` *
+      `table_id` * `sensitivity_level desc` Supported fields are: -
+      `project_id`: The Google Cloud project ID. - `dataset_id`: The ID of a
+      BigQuery dataset. - `table_id`: The ID of a BigQuery table. -
+      `sensitivity_level`: How sensitive the data in a column is, at most. -
+      `data_risk_level`: How much risk is associated with this data. -
+      `profile_last_generated`: When the profile was last updated in epoch
+      seconds.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
   r"""A DlpProjectsLocationsContentDeidentifyRequest object.
 
@@ -1581,14 +1804,14 @@ class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2DeidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2DeidentifyContentRequest', 1)
@@ -1604,14 +1827,14 @@ class DlpProjectsLocationsContentInspectRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2InspectContentRequest = _messages.MessageField('GooglePrivacyDlpV2InspectContentRequest', 1)
@@ -1627,14 +1850,14 @@ class DlpProjectsLocationsContentReidentifyRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2ReidentifyContentRequest = _messages.MessageField('GooglePrivacyDlpV2ReidentifyContentRequest', 1)
@@ -1651,11 +1874,11 @@ class DlpProjectsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1714,11 +1937,11 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -1857,14 +2080,14 @@ class DlpProjectsLocationsDlpJobsCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDlpJobRequest', 1)
@@ -1957,14 +2180,14 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
     pageToken: The standard list page token.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of job. Defaults to `DlpJobType.INSPECT`
   """
 
@@ -1998,14 +2221,14 @@ class DlpProjectsLocationsImageRedactRequest(_messages.Message):
       request body.
     parent: Parent resource name. The format of this value varies depending on
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2RedactImageRequest = _messages.MessageField('GooglePrivacyDlpV2RedactImageRequest', 1)
@@ -2022,11 +2245,11 @@ class DlpProjectsLocationsInspectTemplatesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -2085,11 +2308,11 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -2146,14 +2369,14 @@ class DlpProjectsLocationsJobTriggersCreateRequest(_messages.Message):
       request body.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   googlePrivacyDlpV2CreateJobTriggerRequest = _messages.MessageField('GooglePrivacyDlpV2CreateJobTriggerRequest', 1)
@@ -2237,14 +2460,14 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
     type: The type of jobs. Will use `DlpJobType.INSPECT` if not set.
   """
 
@@ -2284,6 +2507,54 @@ class DlpProjectsLocationsJobTriggersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsLocationsProjectDataProfilesGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsProjectDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/projectDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsProjectDataProfilesListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsProjectDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `status_code` - an RPC status
+      code as defined in https://github.com/googleapis/googleapis/blob/master/
+      google/rpc/code.proto * The operator must be `=` or `!=`. Examples: *
+      `project_id = 12345 AND status_code = 1` * `project_id = 12345 AND
+      sensitivity_level = HIGH` The length of this field should be no more
+      than 500 characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id` *
+      `sensitivity_level desc` Supported fields are: - `project_id`: GCP
+      project ID - `sensitivity_level`: How sensitive the data in a project
+      is, at most. - `data_risk_level`: How much risk is associated with this
+      data. - `profile_last_generated`: When the profile was last updated in
+      epoch seconds.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. organizations/{org_id}/locations/{loc_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpProjectsLocationsStoredInfoTypesCreateRequest object.
 
@@ -2294,11 +2565,11 @@ class DlpProjectsLocationsStoredInfoTypesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -2355,14 +2626,14 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -2388,6 +2659,63 @@ class DlpProjectsLocationsStoredInfoTypesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsLocationsTableDataProfilesGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsTableDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/tableDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsTableDataProfilesListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsTableDataProfilesListRequest object.
+
+  Fields:
+    filter: Allows filtering. Supported syntax: * Filter expressions are made
+      up of one or more restrictions. * Restrictions can be combined by `AND`
+      or `OR` logical operators. A sequence of restrictions implicitly uses
+      `AND`. * A restriction has the form of `{field} {operator} {value}`. *
+      Supported fields/values: - `project_id` - The GCP project ID. -
+      `dataset_id` - The BigQuery dataset ID. - `table_id` - The ID of the
+      BigQuery table. - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` The length of this
+      field should be no more than 500 characters.
+    orderBy: Comma separated list of fields to order by, followed by `asc` or
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Only one
+      order field at a time is allowed. Examples: * `project_id asc` *
+      `table_id` * `sensitivity_level desc` Supported fields are: -
+      `project_id`: The GCP project ID. - `dataset_id`: The ID of a BigQuery
+      dataset. - `table_id`: The ID of a BigQuery table. -
+      `sensitivity_level`: How sensitive the data in a table is, at most. -
+      `data_risk_level`: How much risk is associated with this data. -
+      `profile_last_generated`: When the profile was last updated in epoch
+      seconds. - `last_modified`: The last time the resource was modified. -
+      `resource_visibility`: Visibility restriction for this resource. -
+      `row_count`: Number of rows in this resource.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero, server returns a page of max size 100.
+    pageToken: Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
   r"""A DlpProjectsStoredInfoTypesCreateRequest object.
 
@@ -2398,11 +2726,11 @@ class DlpProjectsStoredInfoTypesCreateRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID +
-      Organizations scope, location specified:
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      + Organizations scope, location specified:
       `organizations/`ORG_ID`/locations/`LOCATION_ID + Organizations scope, no
       location specified (defaults to global): `organizations/`ORG_ID The
       following example `parent` string specifies a parent project with the
@@ -2459,14 +2787,14 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
-      location](https://cloud.google.com/dlp/docs/specifying-location): +
-      Projects scope, location specified:
-      `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects scope, no
-      location specified (defaults to global): `projects/`PROJECT_ID The
-      following example `parent` string specifies a parent project with the
-      identifier `example-project`, and specifies the `europe-west3` location
-      for processing data: parent=projects/example-project/locations/europe-
-      west3
+      location](https://cloud.google.com/sensitive-data-
+      protection/docs/specifying-location): + Projects scope, location
+      specified: `projects/`PROJECT_ID`/locations/`LOCATION_ID + Projects
+      scope, no location specified (defaults to global): `projects/`PROJECT_ID
+      The following example `parent` string specifies a parent project with
+      the identifier `example-project`, and specifies the `europe-west3`
+      location for processing data: parent=projects/example-
+      project/locations/europe-west3
   """
 
   locationId = _messages.StringField(1)
@@ -2494,7 +2822,8 @@ class DlpProjectsStoredInfoTypesPatchRequest(_messages.Message):
 
 class GooglePrivacyDlpV2Action(_messages.Message):
   r"""A task to execute on the completion of a job. See
-  https://cloud.google.com/dlp/docs/concepts-actions to learn more.
+  https://cloud.google.com/sensitive-data-protection/docs/concepts-actions to
+  learn more.
 
   Fields:
     deidentify: Create a de-identified copy of the input data.
@@ -2675,9 +3004,9 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
       inclusively. Both 0 and 100 means no limit. Defaults to 0. Only one of
       rows_limit and rows_limit_percent can be specified. Cannot be used in
       conjunction with TimespanConfig. Caution: A [known
-      issue](https://cloud.google.com/dlp/docs/known-issues#bq-sampling) is
-      causing the `rowsLimitPercent` field to behave unexpectedly. We
-      recommend using `rowsLimit` instead.
+      issue](https://cloud.google.com/sensitive-data-protection/docs/known-
+      issues#bq-sampling) is causing the `rowsLimitPercent` field to behave
+      unexpectedly. We recommend using `rowsLimit` instead.
     sampleMethod: How to sample the data.
     tableReference: Complete BigQuery table reference.
   """
@@ -2828,8 +3157,8 @@ class GooglePrivacyDlpV2BucketingConfig(_messages.Message):
   used on data of type: number, long, string, timestamp. If the bound `Value`
   type differs from the type of data being transformed, we will first attempt
   converting the type of the data to be transformed to match the type of the
-  bound before comparing. See https://cloud.google.com/dlp/docs/concepts-
-  bucketing to learn more.
+  bound before comparing. See https://cloud.google.com/sensitive-data-
+  protection/docs/concepts-bucketing to learn more.
 
   Fields:
     buckets: Set of buckets. Ranges must be non-overlapping.
@@ -3044,8 +3373,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       `bytes_limit_per_file_percent` can be specified. This field can't be set
       if de-identification is requested. For certain file types, setting this
       field has no effect. For more information, see [Limits on bytes scanned
-      per file](https://cloud.google.com/dlp/docs/supported-file-types#max-
-      byte-size-per-file).
+      per file](https://cloud.google.com/sensitive-data-
+      protection/docs/supported-file-types#max-byte-size-per-file).
     bytesLimitPerFilePercent: Max percentage of bytes to scan from a file. The
       rest are omitted. The number of bytes scanned is rounded down. Must be
       between 0 and 100, inclusively. Both 0 and 100 means no limit. Defaults
@@ -3053,8 +3382,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
       can be specified. This field can't be set if de-identification is
       requested. For certain file types, setting this field has no effect. For
       more information, see [Limits on bytes scanned per
-      file](https://cloud.google.com/dlp/docs/supported-file-types#max-byte-
-      size-per-file).
+      file](https://cloud.google.com/sensitive-data-protection/docs/supported-
+      file-types#max-byte-size-per-file).
     fileSet: The set of one or more files to scan.
     fileTypes: List of file type groups to include in the scan. If empty, all
       files are scanned and available data format processors are applied. In
@@ -3083,8 +3412,8 @@ class GooglePrivacyDlpV2CloudStorageOptions(_messages.Message):
         hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
         plist, pm, php, phtml, pht, properties, py, pyw, rb, rbw, rs, rss, rc,
         scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
-        js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
-        xcodeproj, xml, xsl, xsd, yml, yaml.
+        js, json, jsonl, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs,
+        wml, xcodeproj, xml, xsl, xsd, yml, yaml.
       IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png. Setting
         bytes_limit_per_file or bytes_limit_per_file_percent has no effect on
         image files. Image inspection is restricted to the `global`, `us`,
@@ -3145,8 +3474,8 @@ class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
   r"""Message representing a single file or path in Cloud Storage.
 
   Fields:
-    path: A url representing a file or path (no wildcards) in Cloud Storage.
-      Example: gs://[BUCKET_NAME]/dictionary.txt
+    path: A URL representing a file or path (no wildcards) in Cloud Storage.
+      Example: `gs://[BUCKET_NAME]/dictionary.txt`
   """
 
   path = _messages.StringField(1)
@@ -3234,8 +3563,8 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
     datasetLocation: The BigQuery location where the dataset's data is stored.
       See https://cloud.google.com/bigquery/docs/locations for supported
       locations.
-    datasetProjectId: The Google Cloud project ID that owns the BigQuery
-      dataset.
+    datasetProjectId: The Google Cloud project ID that owns the profiled
+      resource.
     estimatedNullPercentage: Approximate percentage of entries being null in
       the column.
     estimatedUniquenessScore: Approximate uniqueness of the column.
@@ -3253,7 +3582,8 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
     sensitivityScore: The sensitivity of this column.
     state: State of a profile.
     tableDataProfile: The resource name of the table data profile.
-    tableFullResource: The resource name of the table this column is within.
+    tableFullResource: The resource name of the resource this column is
+      within.
     tableId: The BigQuery table ID.
   """
 
@@ -3482,8 +3812,8 @@ class GooglePrivacyDlpV2ContentItem(_messages.Message):
   Fields:
     byteItem: Content data to inspect or redact. Replaces `type` and `data`.
     table: Structured content for inspection. See
-      https://cloud.google.com/dlp/docs/inspecting-text#inspecting_a_table to
-      learn more.
+      https://cloud.google.com/sensitive-data-protection/docs/inspecting-
+      text#inspecting_a_table to learn more.
     value: String data to inspect or redact.
   """
 
@@ -3686,8 +4016,8 @@ class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
   hashing. Uses SHA-256. The key size must be either 32 or 64 bytes. Outputs a
   base64 encoded representation of the hashed output (for example,
   L7k0BHmF1ha5U3NfGykjro4xWi1MPVQPjhMAZbSV9mM=). Currently, only string and
-  integer values can be hashed. See
-  https://cloud.google.com/dlp/docs/pseudonymization to learn more.
+  integer values can be hashed. See https://cloud.google.com/sensitive-data-
+  protection/docs/pseudonymization to learn more.
 
   Fields:
     cryptoKey: The key used by the hash function.
@@ -3721,10 +4051,10 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
   encoded as ASCII. For a given crypto key and context, the same identifier
   will be replaced with the same surrogate. Identifiers must be at least two
   characters long. In the case that the identifier is the empty string, it
-  will be skipped. See https://cloud.google.com/dlp/docs/pseudonymization to
-  learn more. Note: We recommend using CryptoDeterministicConfig for all use
-  cases which do not require preserving the input alphabet space and size,
-  plus warrant referential integrity.
+  will be skipped. See https://cloud.google.com/sensitive-data-
+  protection/docs/pseudonymization to learn more. Note: We recommend using
+  CryptoDeterministicConfig for all use cases which do not require preserving
+  the input alphabet space and size, plus warrant referential integrity.
 
   Enums:
     CommonAlphabetValueValuesEnum: Common alphabets.
@@ -3762,18 +4092,20 @@ class GooglePrivacyDlpV2CryptoReplaceFfxFpeConfig(_messages.Message):
       name of custom infoType is 'MY_TOKEN_INFO_TYPE' and the surrogate is
       'abc', the full replacement value will be: 'MY_TOKEN_INFO_TYPE(3):abc'
       This annotation identifies the surrogate when inspecting content using
-      the custom infoType [`SurrogateType`](https://cloud.google.com/dlp/docs/
-      reference/rest/v2/InspectConfig#surrogatetype). This facilitates
-      reversal of the surrogate when it occurs in free text. In order for
-      inspection to work properly, the name of this infoType must not occur
-      naturally anywhere in your data; otherwise, inspection may find a
-      surrogate that does not correspond to an actual identifier. Therefore,
-      choose your custom infoType name carefully after considering what your
-      data looks like. One way to select a name that has a high chance of
-      yielding reliable detection is to include one or more unicode characters
-      that are highly improbable to exist in your data. For example, assuming
-      your data is entered from a regular ASCII keyboard, the symbol with the
-      hex code point 29DD might be used like so: \u29ddMY_TOKEN_TYPE
+      the custom infoType
+      [`SurrogateType`](https://cloud.google.com/sensitive-data-
+      protection/docs/reference/rest/v2/InspectConfig#surrogatetype). This
+      facilitates reversal of the surrogate when it occurs in free text. In
+      order for inspection to work properly, the name of this infoType must
+      not occur naturally anywhere in your data; otherwise, inspection may
+      find a surrogate that does not correspond to an actual identifier.
+      Therefore, choose your custom infoType name carefully after considering
+      what your data looks like. One way to select a name that has a high
+      chance of yielding reliable detection is to include one or more unicode
+      characters that are highly improbable to exist in your data. For
+      example, assuming your data is entered from a regular ASCII keyboard,
+      the symbol with the hex code point 29DD might be used like so:
+      \u29ddMY_TOKEN_TYPE
   """
 
   class CommonAlphabetValueValuesEnum(_messages.Enum):
@@ -3925,19 +4257,24 @@ class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
     inspectConfig: A copy of the inspection config used to generate this
       profile. This is a copy of the inspect_template specified in
       `DataProfileJobConfig`.
+    inspectTemplateModifiedTime: Timestamp when the template was modified
+    inspectTemplateName: Name of the inspection template used to generate this
+      profile
   """
 
   dataProfileJob = _messages.MessageField('GooglePrivacyDlpV2DataProfileJobConfig', 1)
   discoveryConfig = _messages.MessageField('GooglePrivacyDlpV2DiscoveryConfig', 2)
   inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 3)
+  inspectTemplateModifiedTime = _messages.StringField(4)
+  inspectTemplateName = _messages.StringField(5)
 
 
 class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
   r"""Configuration for setting up a job to scan resources for profile
   generation. Only one data profile configuration may exist per organization,
   folder, or project. The generated data profiles are retained according to
-  the [data retention policy] (https://cloud.google.com/dlp/docs/data-
-  profiles#retention).
+  the [data retention policy] (https://cloud.google.com/sensitive-data-
+  protection/docs/data-profiles#retention).
 
   Fields:
     dataProfileActions: Actions to execute at the completion of the job.
@@ -3950,8 +4287,8 @@ class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
       is specified, but a "global" template is specified, it will be copied to
       that region and used instead. If no global or region-specific template
       is provided for a region with data, that region's data will not be
-      scanned. For more information, see
-      https://cloud.google.com/dlp/docs/data-profiles#data-residency.
+      scanned. For more information, see https://cloud.google.com/sensitive-
+      data-protection/docs/data-profiles#data-residency.
     location: The data to scan.
     projectId: The project that will run the scan. The DLP service account
       that exists within this project must have access to all resources that
@@ -4098,8 +4435,8 @@ class GooglePrivacyDlpV2DatastoreOptions(_messages.Message):
 
 class GooglePrivacyDlpV2DateShiftConfig(_messages.Message):
   r"""Shifts dates by random number of days, with option to be consistent for
-  the same context. See https://cloud.google.com/dlp/docs/concepts-date-
-  shifting to learn more.
+  the same context. See https://cloud.google.com/sensitive-data-
+  protection/docs/concepts-date-shifting to learn more.
 
   Fields:
     context: Points to the field that contains the context, for example, an
@@ -4218,8 +4555,8 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
         hh, hpp, hxx, h++, hs, html, htm, mkd, markdown, m, ml, mli, perl, pl,
         plist, pm, php, phtml, pht, properties, py, pyw, rb, rbw, rs, rss, rc,
         scala, sh, sql, swift, tex, shtml, shtm, xhtml, lhs, ics, ini, java,
-        js, json, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs, wml,
-        xcodeproj, xml, xsl, xsd, yml, yaml.
+        js, json, jsonl, kix, kml, ocaml, md, txt, text, tsv, vb, vcard, vcs,
+        wml, xcodeproj, xml, xsl, xsd, yml, yaml.
       IMAGE: Included file extensions: bmp, gif, jpg, jpeg, jpe, png. Setting
         bytes_limit_per_file or bytes_limit_per_file_percent has no effect on
         image files. Image inspection is restricted to the `global`, `us`,
@@ -4356,7 +4693,8 @@ class GooglePrivacyDlpV2DeidentifyDataSourceStats(_messages.Message):
 
 class GooglePrivacyDlpV2DeidentifyTemplate(_messages.Message):
   r"""DeidentifyTemplates contains instructions on how to de-identify content.
-  See https://cloud.google.com/dlp/docs/concepts-templates to learn more.
+  See https://cloud.google.com/sensitive-data-protection/docs/concepts-
+  templates to learn more.
 
   Fields:
     createTime: Output only. The creation timestamp of an inspectTemplate.
@@ -4490,10 +4828,10 @@ class GooglePrivacyDlpV2Dictionary(_messages.Message):
   matches for "jennifer". Dictionary words containing a large number of
   characters that are not letters or digits may result in unexpected findings
   because such characters are treated as whitespace. The
-  [limits](https://cloud.google.com/dlp/limits) page contains details about
-  the size limits of dictionaries. For dictionaries that do not fit within
-  these constraints, consider using `LargeCustomDictionaryConfig` in the
-  `StoredInfoType` API.
+  [limits](https://cloud.google.com/sensitive-data-protection/limits) page
+  contains details about the size limits of dictionaries. For dictionaries
+  that do not fit within these constraints, consider using
+  `LargeCustomDictionaryConfig` in the `StoredInfoType` API.
 
   Fields:
     cloudStoragePath: Newline-delimited file of words in Cloud Storage. Only a
@@ -4579,8 +4917,8 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   r"""Configuration for discovery to scan resources for profile generation.
   Only one discovery configuration may exist per organization, folder, or
   project. The generated data profiles are retained according to the [data
-  retention policy] (https://cloud.google.com/dlp/docs/data-
-  profiles#retention).
+  retention policy] (https://cloud.google.com/sensitive-data-
+  protection/docs/data-profiles#retention).
 
   Enums:
     StatusValueValuesEnum: Required. A status for this configuration.
@@ -4602,8 +4940,8 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
       specified, but a "global" template is specified, it will be copied to
       that region and used instead. If no global or region-specific template
       is provided for a region with data, that region's data will not be
-      scanned. For more information, see
-      https://cloud.google.com/dlp/docs/data-profiles#data-residency.
+      scanned. For more information, see https://cloud.google.com/sensitive-
+      data-protection/docs/data-profiles#data-residency.
     lastRunTime: Output only. The timestamp of the last time this config was
       executed.
     name: Unique resource name for the DiscoveryConfig, assigned by the
@@ -5233,8 +5571,8 @@ class GooglePrivacyDlpV2FixedSizeBucketingConfig(_messages.Message):
   with "10-20". This can be used on data of type: double, long. If the bound
   Value type differs from the type of data being transformed, we will first
   attempt converting the type of the data to be transformed to match the type
-  of the bound before comparing. See
-  https://cloud.google.com/dlp/docs/concepts-bucketing to learn more.
+  of the bound before comparing. See https://cloud.google.com/sensitive-data-
+  protection/docs/concepts-bucketing to learn more.
 
   Fields:
     bucketSize: Required. Size of each bucket (except for minimum and maximum
@@ -5276,8 +5614,8 @@ class GooglePrivacyDlpV2HotwordRule(_messages.Message):
       "xxx" is the area code in question. For tabular data, if you want to
       modify the likelihood of an entire column of findngs, see [Hotword
       example: Set the match likelihood of a table column]
-      (https://cloud.google.com/dlp/docs/creating-custom-infotypes-
-      likelihood#match-column-values).
+      (https://cloud.google.com/sensitive-data-protection/docs/creating-
+      custom-infotypes-likelihood#match-column-values).
   """
 
   hotwordRegex = _messages.MessageField('GooglePrivacyDlpV2Regex', 1)
@@ -5559,9 +5897,10 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
   Fields:
     name: Name of the information type. Either a name of your choosing when
       creating a CustomInfoType, or one of the names listed at
-      https://cloud.google.com/dlp/docs/infotypes-reference when specifying a
-      built-in type. When sending Cloud DLP results to Data Catalog, infoType
-      names should conform to the pattern `[A-Za-z0-9$_-]{1,64}`.
+      https://cloud.google.com/sensitive-data-protection/docs/infotypes-
+      reference when specifying a built-in type. When sending Cloud DLP
+      results to Data Catalog, infoType names should conform to the pattern
+      `[A-Za-z0-9$_-]{1,64}`.
     sensitivityScore: Optional custom sensitivity for this InfoType. This only
       applies to data profiling.
     version: Optional version name for this InfoType.
@@ -5895,13 +6234,14 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       threshold. The default is POSSIBLE. In general, the highest likelihood
       setting yields the fewest findings in results and the lowest chance of a
       false positive. For more information, see [Match
-      likelihood](https://cloud.google.com/dlp/docs/likelihood).
+      likelihood](https://cloud.google.com/sensitive-data-
+      protection/docs/likelihood).
 
   Fields:
     contentOptions: Deprecated and unused.
     customInfoTypes: CustomInfoTypes provided by the user. See
-      https://cloud.google.com/dlp/docs/creating-custom-infotypes to learn
-      more.
+      https://cloud.google.com/sensitive-data-protection/docs/creating-custom-
+      infotypes to learn more.
     excludeInfoTypes: When true, excludes type information of the findings.
       This is not used for data profiling.
     includeQuote: When true, a contextual quote from the data that triggered a
@@ -5909,13 +6249,13 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       for data profiling.
     infoTypes: Restricts what info_types to look for. The values must
       correspond to InfoType values returned by ListInfoTypes or listed at
-      https://cloud.google.com/dlp/docs/infotypes-reference. When no InfoTypes
-      or CustomInfoTypes are specified in a request, the system may
-      automatically choose a default list of detectors to run, which may
-      change over time. If you need precise control and predictability as to
-      what detectors are run you should specify specific InfoTypes listed in
-      the reference, otherwise a default list will be used, which may change
-      over time.
+      https://cloud.google.com/sensitive-data-protection/docs/infotypes-
+      reference. When no InfoTypes or CustomInfoTypes are specified in a
+      request, the system may automatically choose a default list of detectors
+      to run, which may change over time. If you need precise control and
+      predictability as to what detectors are run you should specify specific
+      InfoTypes listed in the reference, otherwise a default list will be
+      used, which may change over time.
     limits: Configuration to control the number of findings returned. This is
       not used for data profiling. When redacting sensitive data from images,
       finding limits don't apply. They can cause unexpected or inconsistent
@@ -5930,7 +6270,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       default is POSSIBLE. In general, the highest likelihood setting yields
       the fewest findings in results and the lowest chance of a false
       positive. For more information, see [Match
-      likelihood](https://cloud.google.com/dlp/docs/likelihood).
+      likelihood](https://cloud.google.com/sensitive-data-
+      protection/docs/likelihood).
     minLikelihoodPerInfoType: Minimum likelihood per infotype. For each
       infotype, a user can specify a minimum likelihood. The system only
       returns a finding if its likelihood is above this threshold. If this
@@ -5956,8 +6297,8 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     r"""Only returns findings equal to or above this threshold. The default is
     POSSIBLE. In general, the highest likelihood setting yields the fewest
     findings in results and the lowest chance of a false positive. For more
-    information, see [Match
-    likelihood](https://cloud.google.com/dlp/docs/likelihood).
+    information, see [Match likelihood](https://cloud.google.com/sensitive-
+    data-protection/docs/likelihood).
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.
@@ -6067,8 +6408,8 @@ class GooglePrivacyDlpV2InspectResult(_messages.Message):
 class GooglePrivacyDlpV2InspectTemplate(_messages.Message):
   r"""The inspectTemplate contains a configuration (set of types of sensitive
   data to be detected) to be used anywhere you otherwise would normally
-  specify InspectConfig. See https://cloud.google.com/dlp/docs/concepts-
-  templates to learn more.
+  specify InspectConfig. See https://cloud.google.com/sensitive-data-
+  protection/docs/concepts-templates to learn more.
 
   Fields:
     createTime: Output only. The creation timestamp of an inspectTemplate.
@@ -6128,7 +6469,8 @@ class GooglePrivacyDlpV2JobNotificationEmails(_messages.Message):
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):
   r"""Contains a configuration to make dlp api calls on a repeating basis. See
-  https://cloud.google.com/dlp/docs/concepts-job-triggers to learn more.
+  https://cloud.google.com/sensitive-data-protection/docs/concepts-job-
+  triggers to learn more.
 
   Enums:
     StatusValueValuesEnum: Required. A status for this trigger.
@@ -6370,8 +6712,8 @@ class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
   following IAM permissions when sending a request to perform a crypto
   transformation using a KMS-wrapped crypto key: dlp.kms.encrypt For more
   information, see [Creating a wrapped key]
-  (https://cloud.google.com/dlp/docs/create-wrapped-key). Note: When you use
-  Cloud KMS for cryptographic operations, [charges
+  (https://cloud.google.com/sensitive-data-protection/docs/create-wrapped-
+  key). Note: When you use Cloud KMS for cryptographic operations, [charges
   apply](https://cloud.google.com/kms/pricing).
 
   Fields:
@@ -6452,10 +6794,10 @@ class GooglePrivacyDlpV2LDiversityResult(_messages.Message):
 class GooglePrivacyDlpV2LargeCustomDictionaryConfig(_messages.Message):
   r"""Configuration for a custom dictionary created from a data source of any
   size up to the maximum size defined in the
-  [limits](https://cloud.google.com/dlp/limits) page. The artifacts of
-  dictionary creation are stored in the specified Cloud Storage location.
-  Consider using `CustomInfoType.Dictionary` for smaller dictionaries that
-  satisfy the size requirements.
+  [limits](https://cloud.google.com/sensitive-data-protection/limits) page.
+  The artifacts of dictionary creation are stored in the specified Cloud
+  Storage location. Consider using `CustomInfoType.Dictionary` for smaller
+  dictionaries that satisfy the size requirements.
 
   Fields:
     bigQueryField: Field in a BigQuery table where each cell represents a
@@ -6536,6 +6878,18 @@ class GooglePrivacyDlpV2LikelihoodAdjustment(_messages.Message):
   relativeLikelihood = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GooglePrivacyDlpV2ListColumnDataProfilesResponse(_messages.Message):
+  r"""List of profiles generated for a given organization or project.
+
+  Fields:
+    columnDataProfiles: List of data profiles.
+    nextPageToken: The next page token.
+  """
+
+  columnDataProfiles = _messages.MessageField('GooglePrivacyDlpV2ColumnDataProfile', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2ListDeidentifyTemplatesResponse(_messages.Message):
   r"""Response message for ListDeidentifyTemplates.
 
@@ -6614,6 +6968,18 @@ class GooglePrivacyDlpV2ListJobTriggersResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2ListProjectDataProfilesResponse(_messages.Message):
+  r"""List of profiles generated for a given organization or project.
+
+  Fields:
+    nextPageToken: The next page token.
+    projectDataProfiles: List of data profiles.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  projectDataProfiles = _messages.MessageField('GooglePrivacyDlpV2ProjectDataProfile', 2, repeated=True)
+
+
 class GooglePrivacyDlpV2ListStoredInfoTypesResponse(_messages.Message):
   r"""Response message for ListStoredInfoTypes.
 
@@ -6626,6 +6992,18 @@ class GooglePrivacyDlpV2ListStoredInfoTypesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   storedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2StoredInfoType', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2ListTableDataProfilesResponse(_messages.Message):
+  r"""List of profiles generated for a given organization or project.
+
+  Fields:
+    nextPageToken: The next page token.
+    tableDataProfiles: List of data profiles.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tableDataProfiles = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 2, repeated=True)
 
 
 class GooglePrivacyDlpV2Location(_messages.Message):
@@ -6928,6 +7306,28 @@ class GooglePrivacyDlpV2ProfileStatus(_messages.Message):
   timestamp = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2ProjectDataProfile(_messages.Message):
+  r"""An aggregated profile for this project, based on the resources profiled
+  within it.
+
+  Fields:
+    dataRiskLevel: The data risk level of this project.
+    name: The resource name of the profile.
+    profileLastGenerated: The last time the profile was generated.
+    profileStatus: Success or error status of the last attempt to profile the
+      project.
+    projectId: Project ID that was profiled.
+    sensitivityScore: The sensitivity score of this project.
+  """
+
+  dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 1)
+  name = _messages.StringField(2)
+  profileLastGenerated = _messages.StringField(3)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 4)
+  projectId = _messages.StringField(5)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 6)
+
+
 class GooglePrivacyDlpV2Proximity(_messages.Message):
   r"""Message for specifying a window around a finding to apply a detection
   rule.
@@ -6938,8 +7338,8 @@ class GooglePrivacyDlpV2Proximity(_messages.Message):
       tabular data, if you want to modify the likelihood of an entire column
       of findngs, set this to 1. For more information, see [Hotword example:
       Set the match likelihood of a table column]
-      (https://cloud.google.com/dlp/docs/creating-custom-infotypes-
-      likelihood#match-column-values).
+      (https://cloud.google.com/sensitive-data-protection/docs/creating-
+      custom-infotypes-likelihood#match-column-values).
   """
 
   windowAfter = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -7118,8 +7518,9 @@ class GooglePrivacyDlpV2PublishSummaryToCscc(_messages.Message):
 class GooglePrivacyDlpV2PublishToPubSub(_messages.Message):
   r"""Publish a message into a given Pub/Sub topic when DlpJob has completed.
   The message contains a single field, `DlpJobName`, which is equal to the
-  finished job's [`DlpJob.name`](https://cloud.google.com/dlp/docs/reference/r
-  est/v2/projects.dlpJobs#DlpJob). Compatible with: Inspect, Risk
+  finished job's [`DlpJob.name`](https://cloud.google.com/sensitive-data-
+  protection/docs/reference/rest/v2/projects.dlpJobs#DlpJob). Compatible with:
+  Inspect, Risk
 
   Fields:
     topic: Cloud Pub/Sub topic to send notifications to. The topic must have
@@ -7229,7 +7630,7 @@ class GooglePrivacyDlpV2RecordKey(_messages.Message):
 
   Fields:
     bigQueryKey: Datastore key
-    datastoreKey: Bigquery key
+    datastoreKey: BigQuery key
     idValues: Values of identifying columns in the given row. Order of values
       matches the order of `identifying_fields` specified in the scanning
       request.
@@ -7415,8 +7816,8 @@ class GooglePrivacyDlpV2ReplaceDictionaryConfig(_messages.Message):
 
   Fields:
     wordList: A list of words to select from for random replacement. The
-      [limits](https://cloud.google.com/dlp/limits) page contains details
-      about the size limits of dictionaries.
+      [limits](https://cloud.google.com/sensitive-data-protection/limits) page
+      contains details about the size limits of dictionaries.
   """
 
   wordList = _messages.MessageField('GooglePrivacyDlpV2WordList', 1)
@@ -7499,7 +7900,8 @@ class GooglePrivacyDlpV2Result(_messages.Message):
 
 class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):
   r"""Configuration for a risk analysis job. See
-  https://cloud.google.com/dlp/docs/concepts-risk-analysis to learn more.
+  https://cloud.google.com/sensitive-data-protection/docs/concepts-risk-
+  analysis to learn more.
 
   Fields:
     actions: Actions to execute at the completion of the job. Are executed in
@@ -7665,8 +8067,8 @@ class GooglePrivacyDlpV2StoredInfoType(_messages.Message):
 
 class GooglePrivacyDlpV2StoredInfoTypeConfig(_messages.Message):
   r"""Configuration for stored infoTypes. All fields and subfield are provided
-  by the user. For more information, see
-  https://cloud.google.com/dlp/docs/creating-custom-infotypes.
+  by the user. For more information, see https://cloud.google.com/sensitive-
+  data-protection/docs/creating-custom-infotypes.
 
   Fields:
     description: Description of the StoredInfoType (max 256 characters).
@@ -7799,20 +8201,21 @@ class GooglePrivacyDlpV2SummaryResult(_messages.Message):
 
 class GooglePrivacyDlpV2SurrogateType(_messages.Message):
   r"""Message for detecting output from deidentification transformations such
-  as [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/dlp/docs/reference
-  /rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig). These
-  types of transformations are those that perform pseudonymization, thereby
-  producing a "surrogate" as output. This should be used in conjunction with a
-  field on the transformation such as `surrogate_info_type`. This
-  CustomInfoType does not support the use of `detection_rules`.
+  as [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/sensitive-data-pro
+  tection/docs/reference/rest/v2/organizations.deidentifyTemplates#cryptorepla
+  ceffxfpeconfig). These types of transformations are those that perform
+  pseudonymization, thereby producing a "surrogate" as output. This should be
+  used in conjunction with a field on the transformation such as
+  `surrogate_info_type`. This CustomInfoType does not support the use of
+  `detection_rules`.
   """
 
 
 
 class GooglePrivacyDlpV2Table(_messages.Message):
   r"""Structured content to inspect. Up to 50,000 `Value`s per request
-  allowed. See https://cloud.google.com/dlp/docs/inspecting-structured-
-  text#inspecting_a_table to learn more.
+  allowed. See https://cloud.google.com/sensitive-data-
+  protection/docs/inspecting-structured-text#inspecting_a_table to learn more.
 
   Fields:
     headers: Headers of the table.
@@ -7841,17 +8244,16 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     createTime: The time at which the table was created.
     dataRiskLevel: The data risk level of this table.
     dataSourceType: The resource type that was profiled.
-    datasetId: The BigQuery dataset ID.
-    datasetLocation: The BigQuery location where the dataset's data is stored.
-      See https://cloud.google.com/bigquery/docs/locations for supported
-      locations.
-    datasetProjectId: The Google Cloud project ID that owns the BigQuery
-      dataset.
+    datasetId: If the resource is BigQuery, the dataset ID.
+    datasetLocation: If supported, the location where the dataset's data is
+      stored. See https://cloud.google.com/bigquery/docs/locations for
+      supported locations.
+    datasetProjectId: The Google Cloud project ID that owns the resource.
     encryptionStatus: How the table is encrypted.
     expirationTime: Optional. The time when this table expires.
     failedColumnCount: The number of columns skipped in the table because of
       an error.
-    fullResource: The resource name of the table.
+    fullResource: The resource name of the resource profiled.
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     lastModifiedTime: The time when this table was last modified
     name: The name of the profile.
@@ -7871,7 +8273,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     scannedColumnCount: The number of columns profiled in the table.
     sensitivityScore: The sensitivity score of this table.
     state: State of a profile.
-    tableId: The BigQuery table ID.
+    tableId: If the resource is BigQuery, the BigQuery table ID.
     tableSizeBytes: The size of the table when the profile was generated.
   """
 
@@ -8103,8 +8505,8 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       entity does not contain the provided timestamp property or contains
       empty or invalid values, then it is included. Valid data types of the
       provided timestamp property are: `TIMESTAMP`. See the [known
-      issue](https://cloud.google.com/dlp/docs/known-issues#bq-timespan)
-      related to this operation.
+      issue](https://cloud.google.com/sensitive-data-protection/docs/known-
+      issues#bq-timespan) related to this operation.
   """
 
   enableAutoPopulationOfTimespanConfig = _messages.BooleanField(1)

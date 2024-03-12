@@ -481,6 +481,12 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
         resource_args.enable_autoclass,
         resource_args.autoclass_terminal_storage_class,
     )
+  if resource_args.enable_hierarchical_namespace is not None:
+    bucket_metadata.hierarchicalNamespace = (
+        metadata_field_converters.process_hierarchical_namespace(
+            resource_args.enable_hierarchical_namespace
+        )
+    )
   if resource_args.cors_file_path is not None:
     bucket_metadata.cors = metadata_field_converters.process_cors(
         resource_args.cors_file_path)

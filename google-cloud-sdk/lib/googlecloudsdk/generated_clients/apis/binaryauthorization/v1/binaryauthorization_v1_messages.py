@@ -178,9 +178,9 @@ class AttestationSource(_messages.Message):
   r"""Specifies the locations for fetching the provenance attestations.
 
   Fields:
-    containerAnalysisAttestationProjects: The IDs of the GCP projects storing
-      the SLSA attestations as Container Analysis Occurrences, in the format
-      `projects/[PROJECT_ID]`. Maximum number of
+    containerAnalysisAttestationProjects: The IDs of the Google Cloud projects
+      that store the SLSA attestations as Container Analysis Occurrences, in
+      the format `projects/[PROJECT_ID]`. Maximum number of
       `container_analysis_attestation_projects` allowed in each
       `AttestationSource` is 10.
   """
@@ -677,7 +677,7 @@ class CheckResult(_messages.Message):
   r"""Result of evaluating one check.
 
   Fields:
-    allowlistResult: If the image was exempted by an allowlist_pattern in the
+    allowlistResult: If the image was exempted by an allow_pattern in the
       check, contains the pattern that the image name matched.
     displayName: The name of the check.
     evaluationResult: If a check was evaluated, contains the result of the
@@ -739,7 +739,7 @@ class CheckSetResult(_messages.Message):
   r"""Result of evaluating one check set.
 
   Fields:
-    allowlistResult: If the image was exempted by an allowlist_pattern in the
+    allowlistResult: If the image was exempted by an allow_pattern in the
       check set, contains the pattern that the image name matched.
     checkResults: If checks were evaluated, contains the results of evaluating
       each check.
@@ -828,7 +828,7 @@ class EvaluateGkePolicyResponse(_messages.Message):
     VerdictValueValuesEnum: The result of evaluating all Pods in the request.
 
   Fields:
-    attestations: If AttestationMode is set to GENERATE_DEPLOY and the top-
+    attestations: If AttestationMode is set to `GENERATE_DEPLOY` and the top-
       level verdict is conformant, an attestation will be returned for each
       image in the request. Attestations are in the form of websafe base64
       encoded JSON DSSEs (https://github.com/secure-systems-
@@ -1116,16 +1116,13 @@ class ImageResult(_messages.Message):
     VerdictValueValuesEnum: The result of evaluating this image.
 
   Fields:
-    allowlistResult: If the image was exempted by a top-level
-      allowlist_pattern, contains the allowlist pattern that the image name
-      matched.
+    allowlistResult: If the image was exempted by a top-level allow_pattern,
+      contains the allowlist pattern that the image name matched.
     checkSetResult: If a check set was evaluated, contains the result of the
       check set. Empty if there were no check sets.
     explanation: Explanation of this image result. Only populated if no check
       sets were evaluated.
     imageUri: Image URI from the request.
-    systemPolicyResult: If the image was exempted by the system policy,
-      contains the allowlist pattern that was matched in the system policy.
     verdict: The result of evaluating this image.
   """
 
@@ -1136,7 +1133,7 @@ class ImageResult(_messages.Message):
       IMAGE_VERDICT_UNSPECIFIED: Not specified. This should never be used.
       CONFORMANT: Image conforms to the policy.
       NON_CONFORMANT: Image does not conform to the policy.
-      ERROR: Error evaluating the image. Non-conformance has precedance over
+      ERROR: Error evaluating the image. Non-conformance has precedence over
         errors.
     """
     IMAGE_VERDICT_UNSPECIFIED = 0
@@ -1148,8 +1145,7 @@ class ImageResult(_messages.Message):
   checkSetResult = _messages.MessageField('CheckSetResult', 2)
   explanation = _messages.StringField(3)
   imageUri = _messages.StringField(4)
-  systemPolicyResult = _messages.MessageField('SystemPolicyResult', 5)
-  verdict = _messages.EnumField('VerdictValueValuesEnum', 6)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 5)
 
 
 class InlineAttestor(_messages.Message):
@@ -1407,8 +1403,8 @@ class PodResult(_messages.Message):
       CONFORMANT: All images conform to the policy.
       NON_CONFORMANT: At least one image does not conform to the policy.
       ERROR: Encountered at least one error evaluating an image and all other
-        images conform to the policy. Non-conformance has precedance over
-        errors.
+        images with non-error verdicts conform to the policy. Non-conformance
+        has precedence over errors.
     """
     POD_VERDICT_UNSPECIFIED = 0
     CONFORMANT = 1
@@ -1708,9 +1704,9 @@ class Signature(_messages.Message):
 
 
 class SigstoreAuthority(_messages.Message):
-  r"""A Sigstore authority, used to verify signatures created by Sigstore. An
-  authority is analogous to an attestation authenticator, verifying that a
-  signature is valid or invalid.
+  r"""A Sigstore authority, used to verify signatures that are created by
+  Sigstore. An authority is analogous to an attestation authenticator,
+  verifying that a signature is valid or invalid.
 
   Fields:
     displayName: Optional. A user-provided name for this `SigstoreAuthority`.
@@ -1862,16 +1858,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class SystemPolicyResult(_messages.Message):
-  r"""Result of evaluating the system policy.
-
-  Fields:
-    matchedPattern: The allowlist pattern that the image matched.
-  """
-
-  matchedPattern = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

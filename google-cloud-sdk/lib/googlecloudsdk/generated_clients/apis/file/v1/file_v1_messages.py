@@ -416,9 +416,8 @@ class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesRevertRequest object.
 
   Fields:
-    name: Required.
+    name: Required. The resource name of the instance, in the format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
-      The resource name of the instance, in the format
     revertInstanceRequest: A RevertInstanceRequest resource to be passed as
       the request body.
   """
