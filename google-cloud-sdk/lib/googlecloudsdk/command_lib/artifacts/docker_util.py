@@ -312,13 +312,19 @@ def _GetDockerVersions(docker_img,
   for ver in ver_list:
     v = resources.REGISTRY.Parse(
         ver.name, collection=_VERSION_COLLECTION_NAME).Name()
-    img_list.append({
+    img = {
         "package": docker_img.GetDockerString(),
         "tags": ", ".join([t.name.split("/")[-1] for t in ver.relatedTags]),
         "version": v,
         "createTime": ver.createTime,
         "updateTime": ver.updateTime
-    })
+    }
+    if ver.metadata is not None:
+      img["metadata"] = {
+          prop.key: prop.value.string_value
+          for prop in ver.metadata.additionalProperties
+      }
+    img_list.append(img)
   return img_list
 
 

@@ -520,6 +520,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'authztoolkit': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.authztoolkit.v1',
+                    client_classpath='authztoolkit_v1_client.AuthztoolkitV1',
+                    base_url='',
+                    messages_modulepath='authztoolkit_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -527,7 +537,7 @@ MAP = {
                     client_classpath='authztoolkit_v1alpha_client.AuthztoolkitV1alpha',
                     base_url='https://authztoolkit.googleapis.com/',
                     messages_modulepath='authztoolkit_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -722,6 +732,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'blockchainvalidatormanager': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.blockchainvalidatormanager.v1',
+                    client_classpath='blockchainvalidatormanager_v1_client.BlockchainvalidatormanagerV1',
+                    base_url='https://blockchainvalidatormanager.googleapis.com/',
+                    messages_modulepath='blockchainvalidatormanager_v1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3234,6 +3254,16 @@ MAP = {
                     base_url='https://secretmanager.googleapis.com/',
                     messages_modulepath='secretmanager_v1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.secretmanager.v1beta2',
+                    client_classpath='secretmanager_v1beta2_client.SecretmanagerV1beta2',
+                    base_url='https://secretmanager.googleapis.com/',
+                    messages_modulepath='secretmanager_v1beta2_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

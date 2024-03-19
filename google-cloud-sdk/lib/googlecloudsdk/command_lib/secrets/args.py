@@ -228,6 +228,47 @@ def AddCreateReplicationPolicyGroup(parser):
             'replicated.'))
 
 
+def AddCreateVersionDestroyTTL(parser, positional=False, **kwargs):
+  """Add flags for specifying version destroy ttl on secret creates."""
+  parser.add_argument(
+      _ArgOrFlag('version-destroy-ttl', positional),
+      metavar='VERSION-DESTROY-TTL',
+      type=arg_parsers.Duration(),
+      help=(
+          'Secret Version Time To Live (TTL) after destruction request. '
+          'For secret with TTL>0, version destruction does not happen '
+          'immediately on calling destroy; instead, the version goes to a '
+          'disabled state and destruction happens after the TTL expires. '
+          'See `$ gcloud topic datetimes` for information on duration formats.'
+      ),
+      **kwargs,
+  )
+
+
+def AddUpdateVersionDestroyTTL(parser, positional=False, **kwargs):
+  """Add flags for specifying version destroy ttl on secret updates."""
+  group = parser.add_group(mutex=True, help='Version destroy ttl.')
+  group.add_argument(
+      _ArgOrFlag('version-destroy-ttl', positional),
+      metavar='VERSION-DESTROY-TTL',
+      type=arg_parsers.Duration(),
+      help=(
+          'Secret Version TTL after destruction request. '
+          'For secret with TTL>0, version destruction does not happen '
+          'immediately on calling destroy; instead, the version goes to a '
+          'disabled state and destruction happens after the TTL expires. '
+          'See `$ gcloud topic datetimes` for information on duration formats.'
+      ),
+      **kwargs,
+  )
+  group.add_argument(
+      _ArgOrFlag('remove-version-destroy-ttl', False),
+      action='store_true',
+      help='If set, removes the version destroy TTL from the secret.',
+      **kwargs,
+  )
+
+
 def AddCreateExpirationGroup(parser):
   """Add flags for specifying expiration on secret creates."""
 

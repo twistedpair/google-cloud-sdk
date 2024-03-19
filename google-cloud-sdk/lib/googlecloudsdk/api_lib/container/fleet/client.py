@@ -387,6 +387,27 @@ class FleetClient(object):
         batch_size_attribute=None,
     )
 
+  def ListBoundMemberships(self, scope_path):
+    """Lists memberships bound to a scope.
+
+    Args:
+      scope_path: Full resource path of the scope for listing bound memberships.
+
+    Returns:
+      A ListMembershipsResponse (list of memberships and next page token)
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesListMembershipsRequest(
+        pageToken='', scopeName=scope_path)
+    return list_pager.YieldFromList(
+        self.client.projects_locations_scopes,
+        req,
+        method='ListMemberships',
+        field='memberships',
+        batch_size_attribute=None)
+
   def UpdateScope(
       self, scope_path, labels=None, namespace_labels=None, mask=''
   ):

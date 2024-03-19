@@ -300,7 +300,6 @@ def CreateDiskMessages(
     support_multi_writer=False,
     match_container_mount_disks=False,
     support_replica_zones=True,
-    support_storage_pool=False,
 ):
   """Create disk messages for a single instance template."""
   container_mount_disk = (
@@ -320,8 +319,7 @@ def CreateDiskMessages(
           getattr(args, 'create_disk', []),
           support_kms=support_kms,
           support_multi_writer=support_multi_writer,
-          support_replica_zones=support_replica_zones,
-          support_storage_pool=support_storage_pool))
+          support_replica_zones=support_replica_zones))
 
   if create_boot_disk:
     boot_disk_list = [
@@ -426,7 +424,6 @@ def CreatePersistentCreateDiskMessages(
     container_mount_disk=None,
     support_multi_writer=False,
     support_replica_zones=True,
-    support_storage_pool=False,
 ):
   """Returns a list of AttachedDisk messages.
 
@@ -457,7 +454,6 @@ def CreatePersistentCreateDiskMessages(
     container_mount_disk: list of disks to be mounted to container, if any.
     support_multi_writer: if multi writer disks are supported.
     support_replica_zones: True if we allow creation of regional disks.
-    support_storage_pool: if storage pool is upported
 
   Returns:
     list of API messages for attached disks
@@ -534,8 +530,7 @@ def CreatePersistentCreateDiskMessages(
 
     init_params.provisionedThroughput = disk.get('provisioned-throughput')
 
-    if support_storage_pool:
-      init_params.storagePool = disk.get('storage-pool')
+    init_params.storagePool = disk.get('storage-pool')
 
     create_disk = client.messages.AttachedDisk(
         autoDelete=auto_delete,

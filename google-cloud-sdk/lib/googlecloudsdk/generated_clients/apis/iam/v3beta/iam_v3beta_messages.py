@@ -417,6 +417,10 @@ class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
   principalSet = _messages.StringField(1)
 
 
+class GoogleIamV3betaPolicyInaccessible(_messages.Message):
+  r"""A marker to indicate that the policy is inaccessible"""
+
+
 class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
   r"""An IAM principal access boundary policy resource.
 
@@ -562,13 +566,13 @@ class GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy(_messages.
     binding: A binding between a target and a policy
     policy: The policy associated with the above binding. Omitted if the
       policy cannot be retrieved due to lack of permissions
-    policyAccessible: Will be set to false if there was a permission error
-      getting the policy (even though the binding was accessible).
+    policyInaccessible: Will be set if there was a permission error getting
+      the policy (even though the binding was accessible).
   """
 
   binding = _messages.MessageField('GoogleIamV3betaPolicyBinding', 1)
   policy = _messages.MessageField('GoogleIamV3betaPolicy', 2)
-  policyAccessible = _messages.BooleanField(3)
+  policyInaccessible = _messages.MessageField('GoogleIamV3betaPolicyInaccessible', 3)
 
 
 class GoogleIamV3betaSearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):

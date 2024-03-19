@@ -730,6 +730,7 @@ class DropInfo(_messages.Message):
       LOAD_BALANCER_HAS_NO_PROXY_SUBNET: Packet sent to a load balancer, which
         requires a proxy-only subnet and the subnet is not found.
       CLOUD_NAT_NO_ADDRESSES: Packet sent to Cloud Nat without active NAT IPs.
+      ROUTING_LOOP: Packet is stuck in a routing loop.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -790,6 +791,7 @@ class DropInfo(_messages.Message):
     DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 56
     LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 57
     CLOUD_NAT_NO_ADDRESSES = 58
+    ROUTING_LOOP = 59
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)

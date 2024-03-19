@@ -898,6 +898,17 @@ properties:
       # False by default.
       disable_auto_field_mask: {type: boolean}
 
+  # Additional information for generic commands
+  generic:
+    type: object
+    additionalProperties: false
+    properties:
+      # Used for commands where pagination is enabled. When pagination is enabled, list
+      # flags are automatically added. Setting disable_paging_flags prevents list
+      # flags from being automatically added. This allows users to opt out of flags or
+      # add their own flags
+      disable_paging_flags: {type: boolean}
+
   # Additional information for handling the import commands.
   import:
     type: object

@@ -219,6 +219,8 @@ class IndexConfig(proto.Message):
 class LogBucket(proto.Message):
     r"""Describes a repository in which log entries are stored.
 
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
     Attributes:
         name (str):
             Output only. The resource name of the bucket.
@@ -260,10 +262,12 @@ class LogBucket(proto.Message):
         lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
             Output only. The bucket lifecycle state.
         analytics_enabled (bool):
-            Optional. Whether log analytics is enabled
-            for this bucket.
+            Whether log analytics is enabled for this
+            bucket.
             Once enabled, log analytics features cannot be
             disabled.
+
+            This field is a member of `oneof`_ ``_analytics_enabled``.
         restricted_fields (MutableSequence[str]):
             Optional. Log entry field paths that are denied access in
             this bucket.
@@ -322,6 +326,7 @@ class LogBucket(proto.Message):
     analytics_enabled: bool = proto.Field(
         proto.BOOL,
         number=14,
+        optional=True,
     )
     restricted_fields: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,

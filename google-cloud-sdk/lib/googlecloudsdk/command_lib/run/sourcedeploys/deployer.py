@@ -15,6 +15,7 @@
 """Creates an image from Source."""
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.api_lib.run import run_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.builds import submit_util
@@ -34,23 +35,47 @@ def CreateImage(
     already_activated_services,
     region: str,
     resource_ref,
+    delegate_builds=False,
+    base_image=None,
 ):
   """Creates an image from Source."""
-  build_messages, build_config = _UploadSource(
-      tracker,
-      build_image,
-      build_source,
-      build_pack,
-      release_track,
-      region,
-      resource_ref,
-  )
-  response_dict, build_log_url = _BuildFromSource(
-      tracker,
-      build_messages,
-      build_config,
-      skip_activation_prompt=already_activated_services,
-  )
+  # Automatic base image updates implies call to build API.
+  delegate_builds = base_image or delegate_builds
+  # Upload source and call build API if it's in alpha and `--delegate-builds`
+  # flag is set. Otherwise, default behavior stays the same.
+  if release_track is base.ReleaseTrack.ALPHA and delegate_builds:
+    submit_build_request = _PrepareSubmitBuildRequest(
+        tracker,
+        build_image,
+        build_source,
+        build_pack,
+        region,
+        resource_ref,
+        release_track,
+        base_image,
+    )
+    response_dict, build_log_url = _SubmitBuild(
+        tracker,
+        release_track,
+        region,
+        submit_build_request,
+    )
+  else:
+    build_messages, build_config = _PrepareBuildConfig(
+        tracker,
+        build_image,
+        build_source,
+        build_pack,
+        release_track,
+        region,
+        resource_ref,
+    )
+    response_dict, build_log_url = _BuildFromSource(
+        tracker,
+        build_messages,
+        build_config,
+        skip_activation_prompt=already_activated_services,
+    )
 
   if response_dict and response_dict['status'] != 'SUCCESS':
     tracker.FailStage(
@@ -69,7 +94,7 @@ def CreateImage(
     return response_dict['results']['images'][0]['digest']
 
 
-def _UploadSource(
+def _PrepareBuildConfig(
     tracker,
     build_image,
     build_source,
@@ -181,7 +206,6 @@ def _BuildFromSource(
       build_region=build_region,
       skip_activation_prompt=skip_activation_prompt,
   )
-
   build_op = f'projects/{build.projectId}/locations/{build_region}/operations/{build.id}'
   build_op_ref = resources.REGISTRY.ParseRelativeName(
       build_op, collection='cloudbuild.projects.locations.operations'
@@ -196,6 +220,88 @@ def _BuildFromSource(
       ),
   )
 
+  response_dict = _PollUntilBuildCompletes(build_op_ref)
+  return response_dict, build_log_url
+
+
+def _PrepareSubmitBuildRequest(
+    tracker,
+    build_image,
+    build_source,
+    build_pack,
+    region,
+    resource_ref,
+    release_track,
+    base_image,
+):
+  """Upload the provided build source and prepare submit build request."""
+  messages = run_util.GetMessagesModule(release_track)
+  tracker.StartStage(stages.UPLOAD_SOURCE)
+  tracker.UpdateHeaderMessage('Uploading sources.')
+  source = sources.Upload(build_source, region, resource_ref)
+  tracker.CompleteStage(stages.UPLOAD_SOURCE)
+  parent = 'projects/{project}/locations/{region}'.format(
+      project=properties.VALUES.core.project.Get(required=True),
+      region=region)
+  storage_source = messages.GoogleCloudRunV2StorageSource(
+      bucket=source.bucket, object=source.name, generation=source.generation)
+
+  buildpack_build = None
+  docker_build = None
+  if build_pack:
+    function_target = None
+    # https://github.com/GoogleCloudPlatform/buildpacks/blob/main/cmd/utils/label/README.md
+    # uri = f'gs://{source.bucket}/{source.name}#{source.generation}'
+    envs = build_pack[0].get('envs', [])
+    function_target_env = [x for x in envs
+                           if x.startswith('GOOGLE_FUNCTION_TARGET')]
+    if function_target_env:
+      function_target = function_target_env[0].split('=')[1]
+    buildpack_build = messages.GoogleCloudRunV2BuildpacksBuild(
+        baseImage=base_image, functionTarget=function_target)
+  else:
+    docker_build = messages.GoogleCloudRunV2DockerBuild()
+  submit_build_request = messages.RunProjectsLocationsBuildsSubmitRequest(
+      parent=parent,
+      googleCloudRunV2SubmitBuildRequest=messages.GoogleCloudRunV2SubmitBuildRequest(
+          storageSource=storage_source,
+          imageUri=build_image,
+          buildpackBuild=buildpack_build,
+          dockerBuild=docker_build,),
+      )
+  return submit_build_request
+
+
+def _SubmitBuild(
+    tracker,
+    release_track,
+    region,
+    submit_build_request,
+):
+  """Calls Build API to submit a build."""
+  run_client = run_util.GetClientInstance(release_track)
+  build_messages = cloudbuild_util.GetMessagesModule()
+
+  build_response = run_client.projects_locations_builds.Submit(
+      submit_build_request)
+  build_op = build_response.buildOperation
+  json = encoding.MessageToJson(build_op.metadata)
+  build = encoding.JsonToMessage(
+      build_messages.BuildOperationMetadata, json).build
+  name = f'projects/{build.projectId}/locations/{region}/operations/{build.id}'
+
+  build_op_ref = resources.REGISTRY.ParseRelativeName(
+      name, collection='cloudbuild.projects.locations.operations'
+  )
+  build_log_url = build.logUrl
+  tracker.StartStage(stages.BUILD_READY)
+  tracker.UpdateHeaderMessage('Building Container.')
+  tracker.UpdateStage(
+      stages.BUILD_READY,
+      'Logs are available at [{build_log_url}].'.format(
+          build_log_url=build_log_url
+      ),
+  )
   response_dict = _PollUntilBuildCompletes(build_op_ref)
   return response_dict, build_log_url
 

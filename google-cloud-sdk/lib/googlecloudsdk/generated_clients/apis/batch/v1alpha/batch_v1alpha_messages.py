@@ -1294,7 +1294,7 @@ class Limit(_messages.Message):
       duration. Limit cannot be a negative value. Default is 0. For example,
       you can set `limit` as 10000.0 with duration of the current month by
       setting `calendar_period` field as monthly. That means in your current
-      month, 10000.0 is the cour hour limitation that your resources are
+      month, 10000.0 is the core hour limitation that your resources are
       allowed to consume.
   """
 
@@ -1877,7 +1877,8 @@ class PlacementPolicy(_messages.Message):
 
 
 class ResourceAllowance(_messages.Message):
-  r"""The Resource Allowance description for Cloud Batch.
+  r"""The Resource Allowance description for Cloud Batch. Only one Resource
+  Allowance is supported now under a specific location and project.
 
   Messages:
     LabelsValue: Optional. Labels are attributes that can be set and used by
@@ -2440,7 +2441,8 @@ class TaskSpec(_messages.Message):
     maxRetryCount: Maximum number of retries on failures. The default, 0,
       which means never retry. The valid value range is [0, 10].
     maxRunDuration: Maximum duration the task should run. The task will be
-      killed and marked as FAILED if over this limit.
+      killed and marked as FAILED if over this limit. The valid value range
+      for max_run_duration in seconds is [0, 315576000000.999999999],
     runnables: The sequence of scripts or containers to run for this Task.
       Each Task using this TaskSpec executes its list of runnables in order.
       The Task succeeds if all of its runnables either exit with a zero status

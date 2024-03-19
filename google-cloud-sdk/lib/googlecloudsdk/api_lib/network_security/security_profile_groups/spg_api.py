@@ -34,22 +34,22 @@ _API_VERSION_FOR_TRACK = {
 _API_NAME = 'networksecurity'
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.BETA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
-def GetApiBaseUrl(release_track=base.ReleaseTrack.BETA):
+def GetApiBaseUrl(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
-def GetApiVersion(release_track=base.ReleaseTrack.BETA):
+def GetApiVersion(release_track=base.ReleaseTrack.GA):
   return _API_VERSION_FOR_TRACK.get(release_track)
 
 

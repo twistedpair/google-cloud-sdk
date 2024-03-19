@@ -191,6 +191,10 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
   """
   instance_resource = _ConstructInstanceFromArgsBeta(
       client, alloydb_messages, args)
+  if args.allowed_psc_projects:
+    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+        alloydb_messages, args.allowed_psc_projects
+    )
   return instance_resource
 
 
@@ -470,6 +474,13 @@ def _NetworkConfig(
   return instance_network_config
 
 
+def _PscInstanceConfig(alloydb_messages, allowed_consumer_projects=None):
+  """Generates the PSC instance config for the instance."""
+  psc_instance_config = alloydb_messages.PscInstanceConfig()
+  psc_instance_config.allowedConsumerProjects = allowed_consumer_projects
+  return psc_instance_config
+
+
 def _ParseAssignInboundPublicIp(assign_inbound_public_ip):
   """Parses the assign_inbound_public_ip flag.
 
@@ -605,5 +616,10 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsBeta(
       alloydb_messages, instance_ref, args
   )
-
+  # Empty lists are allowed for consumers to remove all PSC allowed projects.
+  if args.allowed_psc_projects is not None:
+    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+        alloydb_messages, args.allowed_psc_projects
+    )
+    paths.append('pscInstanceConfig.allowedConsumerProjects')
   return instance_resource, paths

@@ -118,7 +118,7 @@ def _BucketToRepo(
         f'{bucket.parentFullResourceName} is not a Project name. Skipping...'
     )
     return None
-  project_id = bucket.parentFullResourceName.removeprefix(project_prefix)
+  project_id = bucket.parentFullResourceName[len(project_prefix):]
 
   bucket_prefix = f'//storage.{properties.VALUES.core.universe_domain.Get()}/'
   bucket_suffix = _BucketSuffix(project_id)
@@ -129,9 +129,7 @@ def _BucketToRepo(
         f'{bucket.name} is not a Container Registry bucket. Skipping...',
     )
     return None
-  gcr_region_prefix = bucket.name.removeprefix(bucket_prefix).removesuffix(
-      bucket_suffix,
-  )
+  gcr_region_prefix = bucket.name[len(bucket_prefix):-len(bucket_suffix)]
   if gcr_region_prefix not in _VALID_GCR_REGION_PREFIX:
     log.warning(
         f'{bucket.name} is not a Container Registry bucket. Skipping...',

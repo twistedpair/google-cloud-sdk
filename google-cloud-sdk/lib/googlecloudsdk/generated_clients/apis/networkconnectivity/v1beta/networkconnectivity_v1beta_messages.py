@@ -705,6 +705,11 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     accessType: Required. The access type of this regional endpoint. This
       field is reflected in the PSC Forwarding Rule configuration to enable
       global access.
+    address: Optional. The IP Address of the Regional Endpoint. When no
+      address is provided, an IP from the subnetwork is allocated. Use one of
+      the following formats: * IPv4 address as in `10.0.0.1` * Address
+      resource URI as in
+      `projects/{project}/regions/{region}/addresses/{address_name}`
     createTime: Output only. Time when the RegionalEndpoint was created.
     description: Optional. A description of this resource.
     ipAddress: Output only. The literal IP address of the PSC Forwarding Rule
@@ -767,16 +772,17 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  pscForwardingRule = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  targetGoogleApi = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  address = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  ipAddress = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  pscForwardingRule = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  targetGoogleApi = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudNetworkconnectivityV1betaRejectHubSpokeRequest(_messages.Message):

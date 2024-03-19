@@ -60,8 +60,8 @@ class SupportedFeatures:
       support_max_count_per_zone,
       support_performance_monitoring_unit,
       support_custom_hostnames,
-      support_storage_pool,
       support_specific_then_x_affinity,
+      support_watchdog_timer,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -95,8 +95,8 @@ class SupportedFeatures:
         support_performance_monitoring_unit
     )
     self.support_custom_hostnames = support_custom_hostnames
-    self.support_storage_pool = support_storage_pool
     self.support_specific_then_x_affinity = support_specific_then_x_affinity
+    self.support_watchdog_timer = support_watchdog_timer
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -356,8 +356,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         support_image_csek=supported_features.support_image_csek,
         support_create_disk_snapshots=supported_features
         .support_create_disk_snapshots,
-        use_disk_type_uri=False,
-        support_storage_pool=supported_features.support_storage_pool)
+        use_disk_type_uri=False)
 
   machine_type_name = None
   if instance_utils.CheckSpecifiedMachineTypeArgs(args, skip_defaults):
@@ -387,6 +386,10 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
           supported_features.support_performance_monitoring_unit
           and args.performance_monitoring_unit
       )
+      or (
+          supported_features.support_watchdog_timer
+          and args.enable_watchdog_timer is not None
+      )
   ):
     visible_core_count = (
         args.visible_core_count
@@ -405,6 +408,9 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
             args.enable_uefi_networking,
             args.performance_monitoring_unit
             if supported_features.support_performance_monitoring_unit
+            else None,
+            args.enable_watchdog_timer
+            if supported_features.support_watchdog_timer
             else None,
         )
     )

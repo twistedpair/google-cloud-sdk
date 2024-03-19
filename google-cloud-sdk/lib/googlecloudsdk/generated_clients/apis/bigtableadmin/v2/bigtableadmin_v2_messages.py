@@ -1692,10 +1692,17 @@ class ColumnFamily(_messages.Message):
     stats: Output only. Only available with STATS_VIEW, this includes summary
       statistics about column family contents. For statistics over an entire
       table, see TableStats above.
+    valueType: The type of data stored in each of this family's cell values,
+      including its full encoding. If omitted, the family only serves raw
+      untyped bytes. For now, only the `Aggregate` type is supported.
+      `Aggregate` can only be set at family creation and is immutable
+      afterwards. If `value_type` is `Aggregate`, written data must be
+      compatible with: * `value_type.input_type` for `AddInput` mutations
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
   stats = _messages.MessageField('ColumnFamilyStats', 2)
+  valueType = _messages.MessageField('Type', 3)
 
 
 class ColumnFamilyStats(_messages.Message):
@@ -2041,15 +2048,16 @@ class CreateViewRequest(_messages.Message):
 
 
 class DataBoostIsolationReadOnly(_messages.Message):
-  r"""Data Boost allows a customer to bypass Bigtable nodes when it comes to
-  fetching their data. The data is instead read directly from the filesystem,
-  which enables the customer to isolate specific read-only workflows. Data
-  Boost reads are only guaranteed to see the results of writes that were
-  written more than 30 minutes ago. This means newly written values may not
-  become visible for up to 30m, and also means that old values may remain
-  visible for up to 30m after being deleted or overwritten. To mitigate the
-  staleness of the data, users may either wait 30m, or use CheckConsistency.
-  At the moment, Data Boost only supports single-cluster requests.
+  r"""Data Boost is a serverless compute capability that lets you run high-
+  throughput read jobs on your Bigtable data, without impacting the
+  performance of the clusters that handle your application traffic. Currently,
+  Data Boost exclusively supports read-only use-cases with single-cluster
+  routing. Data Boost reads are only guaranteed to see the results of writes
+  that were written at least 30 minutes ago. This means newly written values
+  may not become visible for up to 30m, and also means that old values may
+  remain visible for up to 30m after being deleted or overwritten. To mitigate
+  the staleness of the data, users may either wait 30m, or use
+  CheckConsistency.
 
   Enums:
     ComputeBillingOwnerValueValuesEnum: The Compute Billing Owner for this
@@ -2079,7 +2087,7 @@ class DataBoostIsolationReadOnly(_messages.Message):
 
 class DataBoostReadLocalWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated in the
-  same cluster is readable by Databoost.
+  same cluster are readable by Databoost.
   """
 
 
@@ -2333,6 +2341,95 @@ class GoogleBigtableAdminV2AuthorizedViewSubsetView(_messages.Message):
 
   familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
   rowPrefixes = _messages.BytesField(2, repeated=True)
+
+
+class GoogleBigtableAdminV2TypeAggregate(_messages.Message):
+  r"""A value that combines incremental updates into a summarized value. Data
+  is never directly written or read using type `Aggregate`. Writes will
+  provide either the `input_type` or `state_type`, and reads will always
+  return the `state_type` .
+
+  Fields:
+    inputType: Type of the inputs that are accumulated by this `Aggregate`,
+      which must specify a full encoding. Use `AddInput` mutations to
+      accumulate new inputs.
+    stateType: Output only. Type that holds the internal accumulator state for
+      the `Aggregate`. This is a function of the `input_type` and `aggregator`
+      chosen, and will always specify a full encoding.
+    sum: Sum aggregator.
+  """
+
+  inputType = _messages.MessageField('Type', 1)
+  stateType = _messages.MessageField('Type', 2)
+  sum = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateSum', 3)
+
+
+class GoogleBigtableAdminV2TypeAggregateSum(_messages.Message):
+  r"""Computes the sum of the input values. Allowed input: `Int64` State: same
+  as input
+  """
+
+
+
+class GoogleBigtableAdminV2TypeBytes(_messages.Message):
+  r"""Bytes Values of type `Bytes` are stored in `Value.bytes_value`.
+
+  Fields:
+    encoding: The encoding to use when converting to/from lower level types.
+  """
+
+  encoding = _messages.MessageField('GoogleBigtableAdminV2TypeBytesEncoding', 1)
+
+
+class GoogleBigtableAdminV2TypeBytesEncoding(_messages.Message):
+  r"""Rules used to convert to/from lower level types.
+
+  Fields:
+    raw: Use `Raw` encoding.
+  """
+
+  raw = _messages.MessageField('GoogleBigtableAdminV2TypeBytesEncodingRaw', 1)
+
+
+class GoogleBigtableAdminV2TypeBytesEncodingRaw(_messages.Message):
+  r"""Leaves the value "as-is" * Natural sort? Yes * Self-delimiting? No *
+  Compatibility? N/A
+  """
+
+
+
+class GoogleBigtableAdminV2TypeInt64(_messages.Message):
+  r"""Int64 Values of type `Int64` are stored in `Value.int_value`.
+
+  Fields:
+    encoding: The encoding to use when converting to/from lower level types.
+  """
+
+  encoding = _messages.MessageField('GoogleBigtableAdminV2TypeInt64Encoding', 1)
+
+
+class GoogleBigtableAdminV2TypeInt64Encoding(_messages.Message):
+  r"""Rules used to convert to/from lower level types.
+
+  Fields:
+    bigEndianBytes: Use `BigEndianBytes` encoding.
+  """
+
+  bigEndianBytes = _messages.MessageField('GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes', 1)
+
+
+class GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes(_messages.Message):
+  r"""Encodes the value as an 8-byte big endian twos complement `Bytes` value.
+  * Natural sort? No (positive values only) * Self-delimiting? Yes *
+  Compatibility? - BigQuery Federation `BINARY` encoding - HBase
+  `Bytes.toBytes` - Java `ByteBuffer.putLong()` with `ByteOrder.BIG_ENDIAN`
+
+  Fields:
+    bytesType: The underlying `Bytes` type, which may be able to encode
+      further.
+  """
+
+  bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 1)
 
 
 class GoogleBigtableAdminV2ViewFamilySubsets(_messages.Message):
@@ -3398,7 +3495,7 @@ class StandardQueryParameters(_messages.Message):
 
 
 class StandardReadRemoteWrites(_messages.Message):
-  r"""Checks that all writes before the consistency token was generated is
+  r"""Checks that all writes before the consistency token was generated are
   replicated in every cluster and readable.
   """
 
@@ -3683,6 +3780,44 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Type(_messages.Message):
+  r"""`Type` represents the type of data that is written to, read from, or
+  stored in Bigtable. It is heavily based on the GoogleSQL standard to help
+  maintain familiarity and consistency across products and features. For
+  compatibility with Bigtable's existing untyped APIs, each `Type` includes an
+  `Encoding` which describes how to convert to/from the underlying data. This
+  might involve composing a series of steps into an "encoding chain," for
+  example to convert from INT64 -> STRING -> raw bytes. In most cases, a
+  "link" in the encoding chain will be based an on existing GoogleSQL
+  conversion function like `CAST`. Each link in the encoding chain also
+  defines the following properties: * Natural sort: Does the encoded value
+  sort consistently with the original typed value? Note that Bigtable will
+  always sort data based on the raw encoded value, *not* the decoded type. -
+  Example: STRING values sort in the same order as their UTF-8 encodings. -
+  Counterexample: Encoding INT64 to a fixed-width STRING does *not* preserve
+  sort order when dealing with negative numbers. INT64(1) > INT64(-1), but
+  STRING("-00001") > STRING("00001). - The overall encoding chain sorts
+  naturally if *every* link does. * Self-delimiting: If we concatenate two
+  encoded values, can we always tell where the first one ends and the second
+  one begins? - Example: If we encode INT64s to fixed-width STRINGs, the first
+  value will always contain exactly N digits, possibly preceded by a sign. -
+  Counterexample: If we concatenate two UTF-8 encoded STRINGs, we have no way
+  to tell where the first one ends. - The overall encoding chain is self-
+  delimiting if *any* link is. * Compatibility: Which other systems have
+  matching encoding schemes? For example, does this encoding have a GoogleSQL
+  equivalent? HBase? Java?
+
+  Fields:
+    aggregateType: Aggregate
+    bytesType: Bytes
+    int64Type: Int64
+  """
+
+  aggregateType = _messages.MessageField('GoogleBigtableAdminV2TypeAggregate', 1)
+  bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 2)
+  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 3)
 
 
 class UndeleteTableMetadata(_messages.Message):

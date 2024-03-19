@@ -1431,19 +1431,18 @@ def CreateInstanceLifecyclePolicy(messages, args):
   return ValueOrNone(policy)
 
 
-def CreateInstanceFlexibilityPolicy(messages, args):
+def CreateInstanceFlexibilityPolicy(args, messages, igm_resource=None):
   """Creates instance flexibility policy from args.
 
   Args:
-    messages: Compute API messages
     args: arguments of the request
+    messages: Compute API messages
+    igm_resource: instance group manager resource that is being patched
 
   Returns:
     InstanceFlexibilityPolicy.
   """
-  instance_selections = CreateInstanceSelections(messages, args)
-  if not instance_selections:
-    return None
+  instance_selections = CreateInstanceSelections(args, messages, igm_resource)
 
   instance_flexibility_policy = (
       messages.InstanceGroupManagerInstanceFlexibilityPolicy(
@@ -1453,18 +1452,50 @@ def CreateInstanceFlexibilityPolicy(messages, args):
   return ValueOrNone(instance_flexibility_policy)
 
 
-def CreateInstanceSelections(messages, args):
+def CreateInstanceSelections(args, messages, igm_resource):
   """Build a list of InstanceSelection from the given flags."""
   instance_selections = []
-  if args.IsKnownAndSpecified('instance_selection_machine_types'):
-    instance_selections.append(
-        messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
-            key='instance-selection-1',
-            value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
-                rank=1, machineTypes=args.instance_selection_machine_types
-            ),
-        )
+  if args.IsKnownAndSpecified(
+      'remove_instance_selections_all'
+  ) or args.IsKnownAndSpecified('remove_instance_selections'):
+    RegisterInstanceSelectionsPatchEncoders(messages)
+    existing_instance_selection_names = _GetExistingInstanceSelectionNames(
+        igm_resource
     )
+
+    if args.IsKnownAndSpecified('remove_instance_selections_all'):
+      for instance_selection_name in existing_instance_selection_names:
+        instance_selections.append(
+            messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+                key=instance_selection_name,
+                value=None,
+            )
+        )
+    elif args.IsKnownAndSpecified('remove_instance_selections'):
+      for instance_selection_name in args.remove_instance_selections:
+        if instance_selection_name not in existing_instance_selection_names:
+          continue
+        if any(
+            instance_selection.key == instance_selection_name
+            for instance_selection in instance_selections
+        ):
+          continue
+        instance_selections.append(
+            messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+                key=instance_selection_name,
+                value=None,
+            )
+        )
+
+  if args.IsKnownAndSpecified('instance_selection_machine_types'):
+    _AddInstanceSelection(
+        messages,
+        instance_selections,
+        'instance-selection-1',
+        args.instance_selection_machine_types,
+        1,
+    )
+
   if args.IsKnownAndSpecified('instance_selection'):
     for instance_selection in args.instance_selection:
       if 'name' not in instance_selection:
@@ -1487,20 +1518,69 @@ def CreateInstanceSelections(messages, args):
               'Invalid value for rank in instance selection.'
           )
         rank = int(rank)
-
-      instance_selections.append(
-          messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
-              key=name,
-              value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
-                  rank=rank, machineTypes=machine_types
-              ),
-          )
+      _AddInstanceSelection(
+          messages, instance_selections, name, machine_types, rank
       )
+
   if not instance_selections:
     return None
   return messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue(
       additionalProperties=instance_selections
   )
+
+
+def _AddInstanceSelection(
+    messages, instance_selections, instance_selection_name, machine_types, rank
+):
+  """Adds instance selection to instance selections list."""
+  for instance_selection in instance_selections:
+    if instance_selection.key == instance_selection_name:
+      if instance_selection.value is not None:
+        raise InvalidArgumentError(
+            'Attempt to add multiple instance selections with the same name.'
+        )
+      instance_selections.remove(
+          messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+              key=instance_selection_name,
+              value=None,
+          )
+      )
+  if rank is not None:
+    instance_selections.append(
+        messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+            key=instance_selection_name,
+            value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
+                rank=rank, machineTypes=machine_types
+            ),
+        )
+    )
+  else:
+    instance_selections.append(
+        messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+            key=instance_selection_name,
+            value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
+                machineTypes=machine_types
+            ),
+        )
+    )
+
+
+def _IsPreviouslyProcessed(intance_selection_name, instance_selections, is_add):
+  for instance_selection in instance_selections:
+    if instance_selection.key == intance_selection_name:
+      if instance_selection.value is not None and is_add:
+        raise InvalidArgumentError(
+            'Attempt to add multiple instance selections with the same name.'
+        )
+      return True
+  return False
+
+
+def _GetExistingInstanceSelectionNames(igm_resource):
+  return [
+      instance_selection.key
+      for instance_selection in igm_resource.instanceFlexibilityPolicy.instanceSelections.additionalProperties
+  ]
 
 
 def CreateStandbyPolicy(
@@ -2201,3 +2281,59 @@ def RegisterCustomStatefulDisksPatchEncoders(client):
   encoding.RegisterCustomMessageCodec(
       encoder=_StatefulDisksValueEncoder, decoder=_StatefulDisksDecoder
   )(client.messages.StatefulPolicyPreservedState.DisksValue)
+
+
+def RegisterInstanceSelectionsPatchEncoders(messages):
+  """Registers encoders that will handle null values for Instance Selections in InstanceFlexibilityPolicy message."""
+
+  def _InstanceSelectionsValueEncoder(message):
+    """Encoder for Instance Selections map entries.
+
+    It works around issues with proto encoding of InstanceSelections
+    with null values by directly encoding a dict of keys with None values into
+    json, skipping proto-based encoding.
+
+    Args:
+      message: an instance of
+        InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue
+
+    Returns:
+      JSON string with null value.
+    """
+    def _GetInstanceSelectionValueOrNone(prop):
+      if prop.value is None:
+        return None
+      return {'rank': prop.value.rank, 'machineTypes': prop.value.machineTypes}
+
+    return json.dumps({
+        property.key: _GetInstanceSelectionValueOrNone(property)
+        for property in message.additionalProperties
+    })
+
+  def _InstanceSelectionsDecoder(data):
+    """Decoder for Instance Selections map entries.
+
+    Args:
+      data: JSON representation of Instance Selections.
+
+    Returns:
+      Instance of
+      InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.
+    """
+    instance_selections_value = (
+        messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue
+    )
+    py_object = json.loads(data)
+    return instance_selections_value(
+        additionalProperties=[
+            instance_selections_value.AdditionalProperty(key=key, value=value)
+            for key, value in py_object.items()
+        ]
+    )
+
+  encoding.RegisterCustomMessageCodec(
+      encoder=_InstanceSelectionsValueEncoder,
+      decoder=_InstanceSelectionsDecoder,
+  )(
+      messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue
+  )

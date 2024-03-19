@@ -226,10 +226,6 @@ class _NfsVolume(_VolumeType):
   """Volume Type representing an NFS volume."""
 
   @classmethod
-  def release_tracks(cls):
-    return [base.ReleaseTrack.ALPHA]
-
-  @classmethod
   def name(cls):
     return 'nfs'
 

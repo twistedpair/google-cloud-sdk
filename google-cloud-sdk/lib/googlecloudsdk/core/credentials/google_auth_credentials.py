@@ -113,14 +113,31 @@ class Credentials(credentials.Credentials):
       # part.
       if properties.VALUES.auth.reauth_use_google_auth.GetBool():
         log.debug('using google-auth reauth')
-        self._rapt_token = google_auth_reauth.get_rapt_token(
-            request,
-            self._client_id,
-            self._client_secret,
-            self._refresh_token,
-            self._token_uri,
-            list(self.scopes or []),
-        )
+
+        try:
+          from pyu2f.convenience import customauthenticator  # pylint: disable=g-import-not-at-top
+
+          # pyu2f has a hardcoded 5s timeout for the users to touch the security
+          # key. Here we extend it to 15s.
+          customauthenticator.U2F_SIGNATURE_TIMEOUT_SECONDS = 15
+          self._rapt_token = google_auth_reauth.get_rapt_token(
+              request,
+              self._client_id,
+              self._client_secret,
+              self._refresh_token,
+              self._token_uri,
+              list(self.scopes or []),
+          )
+        except KeyError:
+          # context: b/328663283
+          # pyu2f lib doesn't handle the timeout well. When timeout happens, the
+          # key challenge pair is ('', ''), which doesn't exist in the client
+          # data map and causes a key error, see
+          # https://github.com/google/pyu2f/blob/master/pyu2f/convenience/customauthenticator.py#L108
+          raise google_auth_exceptions.RefreshError(
+              'Failed to obtain reauth rapt token. Did you touch the security '
+              'key within the 15 second timeout window?'
+          )
       else:
         # reauth.GetRaptToken is implemented in oauth2client and it is built on
         # httplib2. GetRaptToken does not work with

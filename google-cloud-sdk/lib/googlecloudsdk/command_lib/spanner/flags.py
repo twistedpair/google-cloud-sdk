@@ -67,6 +67,16 @@ class InstanceCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+class InstancePartitionCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(InstancePartitionCompleter, self).__init__(
+        collection='spanner.projects.instances.instancePartitions',
+        list_command='alpha spanner instance-partitions list --uri',
+        **kwargs
+    )
+
+
 class InstanceConfigCompleter(completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
@@ -229,12 +239,27 @@ def Instance(positional=True, text='Cloud Spanner instance ID.'):
         '--instance', required=True, completer=InstanceCompleter, help=text)
 
 
+def InstancePartition(
+    positional=True,
+    text='Cloud Spanner instance partition ID.',
+):
+  if positional:
+    return base.Argument(
+        'instance_partition', completer=InstancePartitionCompleter, help=text
+    )
+  else:
+    # TODO: b/328253113 - Add the non-positional flag in LRO APIs support, and
+    # make it required.
+    pass
+
+
 def Nodes(required=False):
   return base.Argument(
       '--nodes',
       required=required,
       type=int,
-      help='Number of nodes for the instance.')
+      help='Number of nodes for the instance.',
+  )
 
 
 def ProcessingUnits(required=False):
@@ -373,6 +398,19 @@ def AddCapacityArgsForInstance(
   AutoscalingMaxProcessingUnits(
       required=require_all_autoscaling_args
   ).AddToParser(autoscaling_pu_limits_group_parser)
+
+
+def AddCapacityArgsForInstancePartition(parser):
+  """Parse the instance partition capacity arguments.
+
+  Args:
+    parser: the argparse parser for the command.
+  """
+  capacity_parser = parser.add_argument_group(mutex=True, required=False)
+
+  # Manual scaling.
+  Nodes().AddToParser(capacity_parser)
+  ProcessingUnits().AddToParser(capacity_parser)
 
 
 def TargetConfig(required=True):

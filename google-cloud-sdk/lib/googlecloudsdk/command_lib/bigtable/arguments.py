@@ -350,19 +350,20 @@ class ArgAdder(object):
         type=lambda x: x.replace('-', '_').upper(),
         choices=choices,
         default=None,
-        # TODO(b/293306176): Replace with:
-        #
-        # help=(
-        #     'Specify the request priority under Standard Isolation. Passing'
-        #     ' this option implies Standard Isolation, e.g. the --standard'
-        #     ' option. If not specified, the app profile uses Standard'
-        #     ' Isolation with PRIORITY_HIGH by default. Specifying request'
-        #     ' priority on an app profile that has Data Boost Read-Only'
-        #     ' Isolation enabled will change the isolation to Standard and'
-        #     ' use the specified priority, which may cause unexpected behavior'
-        #     ' for running applications.'
-        # ),
+        # The first help can be used once Data Boost is GA.
+        # pylint:disable=g-long-ternary
         help=(
+            'Specify the request priority under Standard Isolation. Passing'
+            ' this option implies Standard Isolation, e.g. the `--standard`'
+            ' option. If not specified, the app profile uses Standard'
+            ' Isolation with PRIORITY_HIGH by default. Specifying request'
+            ' priority on an app profile that has Data Boost Read-Only'
+            ' Isolation enabled will change the isolation to Standard and'
+            ' use the specified priority, which may cause unexpected behavior'
+            ' for running applications.'
+        )
+        if allow_data_boost
+        else (
             'Specify the request priority. If not specified, the app profile'
             ' uses PRIORITY_HIGH by default.'
         ),
@@ -376,14 +377,12 @@ class ArgAdder(object):
           default=False,
           help=(
               'Use Standard Isolation, rather than Data Boost Read-only'
-              ' Isolation. If specified, --priority is required.'
+              ' Isolation. If specified, `--priority` is required.'
           ),
-          hidden=True,  # TODO(b/293306176): Unhide
       )
 
       data_boost_isolation_group = isolation_group.add_group(
           'Data Boost Read-only Isolation',
-          hidden=True,  # TODO(b/293306176): Unhide
       )
 
       data_boost_isolation_group.add_argument(

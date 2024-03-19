@@ -123,6 +123,11 @@ def ParamSpecTransform(param_spec):
   _ConvertToUpperCase(param_spec, "type")
 
 
+def PipelineResultTransform(pipeline_result):
+  if "value" in pipeline_result:
+    pipeline_result["value"] = ResultValueTransform(pipeline_result["value"])
+
+
 def TaskResultTransform(task_result):
   _ConvertToUpperCase(task_result, "type")
 
@@ -157,6 +162,26 @@ def ParamValueTransform(param_value):
     raise cloudbuild_exceptions.InvalidYamlError(
         "Unsupported param value type. {msg_type}".format(
             msg_type=type(param_value)))
+
+
+def ResultValueTransform(result_value):
+  """Transforms the string result value from Tekton to GCB resultValue struct."""
+  if (
+      isinstance(result_value, str)
+      or isinstance(result_value, float)
+      or isinstance(result_value, int)
+  ):
+    return {"type": "STRING", "stringVal": str(result_value)}
+  elif isinstance(result_value, list):
+    return {"type": "ARRAY", "arrayVal": result_value}
+  elif isinstance(result_value, object):
+    return {"type": "OBJECT", "objectVal": result_value}
+  else:
+    raise cloudbuild_exceptions.InvalidYamlError(
+        "Unsupported param value type. {msg_type}".format(
+            msg_type=type(result_value)
+        )
+    )
 
 
 def RefTransform(ref):

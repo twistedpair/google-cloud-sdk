@@ -1296,7 +1296,7 @@ class Folder(_messages.Message):
     TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
       to this folder. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
 
   Fields:
     createTime: Output only. Timestamp when the folder was created.
@@ -1321,7 +1321,7 @@ class Folder(_messages.Message):
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this folder. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
     updateTime: Output only. Timestamp when the folder was last modified.
   """
 
@@ -1342,7 +1342,8 @@ class Folder(_messages.Message):
   class TagsValue(_messages.Message):
     r"""Optional. Input only. Immutable. Tag keys/values directly bound to
     this folder. Each item in the map must be expressed as " : ". For example:
-    "123/environment" : "production", "123/costCenter" : "marketing"
+    "123/environment" : "production", "123/costCenter" : "marketing" Note:
+    Currently this field is in Preview.
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.
@@ -1960,7 +1961,7 @@ class Project(_messages.Message):
     TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
       to this project. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
 
   Fields:
     createTime: Output only. Creation time.
@@ -1995,7 +1996,7 @@ class Project(_messages.Message):
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this project. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
     updateTime: Output only. The most recent time this resource was modified.
   """
 
@@ -2050,6 +2051,7 @@ class Project(_messages.Message):
     r"""Optional. Input only. Immutable. Tag keys/values directly bound to
     this project. Each item in the map must be expressed as " : ". For
     example: "123/environment" : "production", "123/costCenter" : "marketing"
+    Note: Currently this field is in Preview.
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.

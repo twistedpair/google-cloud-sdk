@@ -2182,7 +2182,8 @@ class PipelineRun(_messages.Message):
     results: Optional. Output only. List of results written out by the
       pipeline's containers
     security: Optional. Security configuration.
-    serviceAccount: Service account used in the Pipeline.
+    serviceAccount: Service account used in the Pipeline. Deprecated; please
+      use security.service_account instead.
     skippedTasks: Output only. List of tasks that were skipped due to when
       expressions evaluating to false.
     startTime: Output only. Time the pipeline is actually started.
@@ -3377,7 +3378,8 @@ class TaskRun(_messages.Message):
       run.
     results: Output only. List of results written out by the task's containers
     security: Optional. Security configuration.
-    serviceAccount: Required. Service account used in the task.
+    serviceAccount: Required. Service account used in the task. Deprecated;
+      please use security.service_account instead.
     sidecars: Output only. State of each Sidecar in the TaskSpec.
     startTime: Output only. Time the task is actually started.
     statusMessage: Optional. Output only. Status message for cancellation.
@@ -3752,7 +3754,8 @@ class Workflow(_messages.Message):
       Secret Manager.
     serviceAccount: If omitted, the default Cloud Build Service Account is
       used instead. Format:
-      `projects/{project}/serviceAccounts/{serviceAccount}`
+      `projects/{project}/serviceAccounts/{serviceAccount}` Deprecated; please
+      use options.security.service_account instead.
     uid: Output only. A unique identifier for the `Workflow`.
     updateTime: Output only. Server assigned timestamp for when the workflow
       was last updated.

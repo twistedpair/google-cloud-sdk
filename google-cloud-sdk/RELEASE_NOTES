@@ -5,6 +5,112 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 469.0.0 (2024-03-19)
+
+### Google Cloud CLI
+
+* Updated `bundled-python` for windows to version 3.11.8.
+* Updated `openssl` package to version 3.0.13.
+
+### Anthos Multi-Cloud
+
+*   Added `--ignore-errors` flag to the following command groups:
+    `gcloud container aws clusters delete`,
+    `gcloud container aws node-pools delete`,
+    `gcloud container azure clusters delete`,
+    `gcloud container azure node-pools delete`,
+    to allow the delete request to succeed, even if errors occur while deleting
+    in-cluster resources.
+
+### Artifact Registry
+
+*   Modified `gcloud docker images list` and
+    `gcloud artifacts versions describe` to display image size.
+*   Fixed issue where `gcloud artifacts versions describe` formatted extra
+    metadata incorrectly.
+
+### BigQuery
+
+* Began internal refactoring that will continue for this minor version number.
+* Added `copy_files_only` to load commands targeting BigLake tables.
+* Added `universe_domain`, `use_lep` and `use_rep` as alternatives to using
+  `api` and `use_regional_endpoints`.
+* Added support for `DELTA_LAKE` external table types.
+* Added support to load some configuration that has been set in `gcloud config`.
+* Exposed more information to the `bq info` command.
+* Exposes `connector_configuration` options when creating a connection.
+
+### Cloud Bigtable
+
+*   Added support for types and aggregates to the cbt CLI.
+*   Added support for Standard Isolation and Data Boost in `gcloud beta bigtable app-profiles {create,update,list}`.
+
+### Cloud Dataproc
+
+*   Updated `gcloud dataproc session-templates export` to filter out additional
+    output only fields.
+
+### Cloud Pub/Sub
+
+*   Added flags to `gcloud pubsub topics create` to support creating Cloud Pub/Sub Import Topics.
+  *   Added `--kinesis-ingestion-consumer-arn`
+  *   Added `--kinesis-ingestion-role-arn`
+  *   Added `--kinesis-ingestion-service-account`
+  *   Added `--kinesis-ingestion-stream-arn`
+*   Added flags to `gcloud pubsub topics update` to support updating Cloud Pub/Sub Import Topics.
+  *   Added `--clear-ingestion-data-source-settings`
+  *   Added `--kinesis-ingestion-consumer-arn`
+  *   Added `--kinesis-ingestion-role-arn`
+  *   Added `--kinesis-ingestion-service-account`
+  *   Added `--kinesis-ingestion-stream-arn`
+
+### Cloud Run
+
+* Support volumes with `type=nfs` in `gcloud beta run deploy`,
+`gcloud beta run services update`, `gcloud beta run jobs deploy` and
+`gcloud beta run jobs update`.
+
+### Cloud Workstations
+
+* Added `disable-ssh-to-vm` flag support for `gcloud` CLI workstations GA.
+
+### Compute Engine
+
+* Modified `location` flag from `gcloud compute connect-to-serial-port` beta command to use region from `zone` flag as location if `location` is unspecified.
+
+### Database Migration
+
+* Updated `gcloud database-migrate migration-jobs create` to support the type of data dump for MySQL to Cloud SQL-MySQL migrations.
+* Updated `gcloud database-migrate migration-jobs update` to support the type of data dump for MySQL to Cloud SQL-MySQL migrations.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.26.13 to 1.26.14.
+* Additional kubectl versions:
+  * kubectl.1.26 (1.26.14)
+  * kubectl.1.27 (1.27.11)
+  * kubectl.1.28 (1.28.7)
+  * kubectl.1.28 (1.29.2)
+
+### Network Security
+
+* Promoted `gcloud network-security firewall-endpoints` to GA track.
+* Promoted `gcloud network-security firewall-endpoint-associations` to GA track.
+* Promoted `gcloud network-security security-profiles` to GA track.
+* Promoted `gcloud network-security security-profile-groups` to GA track.
+
+### Recaptcha
+
+* Add `akamai` option to `--waf-service` flag from `gcloud recaptcha keys create` command to support creating Akamai enabled site keys.
+
+### Workbench
+
+* Added `workbench instances get-config` to describe the valid configurations for workbench instances.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 468.0.0 (2024-03-12)
 
 ### App Engine

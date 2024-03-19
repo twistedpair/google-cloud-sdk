@@ -47,6 +47,7 @@ class CommandData(object):
     async_data = data.get('async')
     iam_data = data.get('iam')
     update_data = data.get('update')
+    generic_data = data.get('generic')
     import_data = data.get('import')
     if self.command_type == CommandType.WAIT and not async_data:
       raise util.InvalidSchemaError(
@@ -57,6 +58,7 @@ class CommandData(object):
     self.input = Input(self.command_type, data.get('input', {}))
     self.output = Output(data.get('output', {}))
     self.update = UpdateData(update_data) if update_data else None
+    self.generic = GenericData(generic_data) if generic_data else None
     self.import_ = ImportData(import_data, request_data,
                               async_data) if import_data else None
     self.deprecated_data = data.get('deprecate')
@@ -242,6 +244,13 @@ class UpdateData(object):
     self.mask_field = data.get('mask_field', None)
     self.read_modify_update = data.get('read_modify_update', False)
     self.disable_auto_field_mask = data.get('disable_auto_field_mask', False)
+
+
+class GenericData(object):
+  """A holder object for generic commands."""
+
+  def __init__(self, data):
+    self.disable_paging_flags = data.get('disable_paging_flags', False)
 
 
 class ImportData(object):

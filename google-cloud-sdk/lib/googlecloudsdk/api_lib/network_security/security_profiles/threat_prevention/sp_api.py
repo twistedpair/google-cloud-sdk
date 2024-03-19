@@ -35,22 +35,22 @@ _API_VERSION_FOR_TRACK = {
 _API_NAME = 'networksecurity'
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.BETA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
-def GetApiBaseUrl(release_track=base.ReleaseTrack.BETA):
+def GetApiBaseUrl(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
 
-def GetApiVersion(release_track=base.ReleaseTrack.BETA):
+def GetApiVersion(release_track=base.ReleaseTrack.GA):
   return _API_VERSION_FOR_TRACK.get(release_track)
 
 
@@ -214,7 +214,7 @@ class Client:
     Args:
       existing_threat_prevention_profile_object: Existing Threat Prevention
         Profile JSON object.
-      overrides: JSON object of overrides specifed in command line.
+      overrides: JSON object of overrides specified in command line.
       update_mask: String Arg specifying type of override which needs update.
       operation_type: String Arg specifying the type of operation which is
         performed in this method.

@@ -1104,15 +1104,36 @@ def GetMonitoringConfig(args):
   )
 
 
-def AddAllowMissing(parser):
-  help_txt = """Allow idempotent deletion of cluster.
-  The request will still succeed in case the cluster does not exist.
+def AddAllowMissing(parser, resource):
+  help_txt = """Allow idempotent deletion of {resource}.
+  The request will still succeed in case the {resource} does not exist.
   """
-  parser.add_argument('--allow-missing', action='store_true', help=help_txt)
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help=help_txt.format(resource=resource),
+  )
 
 
 def GetAllowMissing(args):
   return getattr(args, 'allow_missing', None)
+
+
+def AddIgnoreErrors(parser, platform, resource):
+  help_txt = """Force delete an {platform} {resource}.
+  Deletion of the {platform} {resource} will succeed even if errors occur
+  during deleting in-{resource} resources. Using this parameter may
+  result in orphaned resources in the {resource}.
+  """
+  parser.add_argument(
+      '--ignore-errors',
+      action='store_true',
+      help=help_txt.format(resource=resource, platform=platform),
+  )
+
+
+def GetIgnoreErrors(args):
+  return getattr(args, 'ignore_errors', None)
 
 
 def AddBinauthzEvaluationMode(parser):

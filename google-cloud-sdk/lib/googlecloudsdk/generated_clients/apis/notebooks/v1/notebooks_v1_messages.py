@@ -40,6 +40,7 @@ class AcceleratorConfig(_messages.Message):
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
       NVIDIA_L4: Accelerator type is Nvidia Tesla L4.
+      NVIDIA_A100_80GB: Accelerator type is Nvidia Tesla A100 80GB.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
@@ -57,11 +58,12 @@ class AcceleratorConfig(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
     NVIDIA_L4 = 7
-    NVIDIA_TESLA_T4_VWS = 8
-    NVIDIA_TESLA_P100_VWS = 9
-    NVIDIA_TESLA_P4_VWS = 10
-    TPU_V2 = 11
-    TPU_V3 = 12
+    NVIDIA_A100_80GB = 8
+    NVIDIA_TESLA_T4_VWS = 9
+    NVIDIA_TESLA_P100_VWS = 10
+    NVIDIA_TESLA_P4_VWS = 11
+    TPU_V2 = 12
+    TPU_V3 = 13
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3491,6 +3493,7 @@ class SetInstanceAcceleratorRequest(_messages.Message):
       NVIDIA_TESLA_T4: Accelerator type is Nvidia Tesla T4.
       NVIDIA_TESLA_A100: Accelerator type is Nvidia Tesla A100.
       NVIDIA_L4: Accelerator type is Nvidia Tesla L4.
+      NVIDIA_A100_80GB: Accelerator type is Nvidia Tesla A100 80GB.
       NVIDIA_TESLA_T4_VWS: Accelerator type is NVIDIA Tesla T4 Virtual
         Workstations.
       NVIDIA_TESLA_P100_VWS: Accelerator type is NVIDIA Tesla P100 Virtual
@@ -3508,11 +3511,12 @@ class SetInstanceAcceleratorRequest(_messages.Message):
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
     NVIDIA_L4 = 7
-    NVIDIA_TESLA_T4_VWS = 8
-    NVIDIA_TESLA_P100_VWS = 9
-    NVIDIA_TESLA_P4_VWS = 10
-    TPU_V2 = 11
-    TPU_V3 = 12
+    NVIDIA_A100_80GB = 8
+    NVIDIA_TESLA_T4_VWS = 9
+    NVIDIA_TESLA_P100_VWS = 10
+    NVIDIA_TESLA_P4_VWS = 11
+    TPU_V2 = 12
+    TPU_V3 = 13
 
   coreCount = _messages.IntegerField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

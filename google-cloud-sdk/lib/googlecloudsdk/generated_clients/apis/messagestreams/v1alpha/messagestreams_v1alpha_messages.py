@@ -17,11 +17,17 @@ class AuthenticationConfig(_messages.Message):
   r"""Represents a config used to authenticate message requests.
 
   Fields:
+    googleOauth: If specified, an [OAuth
+      token](https://developers.google.com/identity/protocols/OAuth2) will be
+      generated and attached as an `Authorization` header in the HTTP request.
+      This type of authorization should generally only be used when calling
+      Google APIs hosted on *.googleapis.com.
     googleOidc: This authenticate method will apply Google OIDC tokens signed
       by a GCP service account to the requests.
   """
 
-  googleOidc = _messages.MessageField('GoogleOidc', 1)
+  googleOauth = _messages.MessageField('GoogleOAuth', 1)
+  googleOidc = _messages.MessageField('GoogleOidc', 2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -118,6 +124,27 @@ class GetReferenceRequest(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class GoogleOAuth(_messages.Message):
+  r"""Contains information needed for generating an [OAuth
+  token](https://developers.google.com/identity/protocols/OAuth2). This type
+  of authorization should generally only be used when calling Google APIs
+  hosted on *.googleapis.com.
+
+  Fields:
+    scope: Optional. OAuth scope to be used for generating OAuth access token.
+      If not specified, "https://www.googleapis.com/auth/cloud-platform" will
+      be used.
+    serviceAccount: Required. [Service account
+      email](https://cloud.google.com/iam/docs/service-accounts) to be used
+      for generating OAuth token. The service account must be within the same
+      project as the job. The caller must have iam.serviceAccounts.actAs
+      permission for the service account.
+  """
+
+  scope = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class GoogleOidc(_messages.Message):
@@ -296,6 +323,21 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class Mediation(_messages.Message):
+  r"""Mediation defines different ways to modify the stream.
+
+  Fields:
+    bindAttributesAsRawHeaders: Optional. If bind_attributes_as_raw_headers
+      set true, we will bind the attributes of an incoming cloud event as raw
+      HTTP headers.
+    transformation: Optional. Transformation defines the way to transform an
+      incoming message.
+  """
+
+  bindAttributesAsRawHeaders = _messages.BooleanField(1)
+  transformation = _messages.MessageField('Transformation', 2)
 
 
 class MessagestreamsProjectsLocationsGetRequest(_messages.Message):
@@ -848,7 +890,13 @@ class Stream(_messages.Message):
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
     eventarcTransformationType: Optional.
+    generateReplies: Optional. Whether to generate messages that contain the
+      details of the final HTTP response of a message stream and is sent to
+      the message bus that the message was received from. Ignored if the
+      message did not come from a bus.
     labels: Optional. Labels as key value pairs
+    mediations: Optional. Mediations to define the way to modify the incoming
+      message.
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
       `projects/{project}/locations/{location}/streams/{stream}` format.
@@ -860,6 +908,11 @@ class Stream(_messages.Message):
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
     updateTime: Output only. [Output only] Update time stamp
+    useSharedPool: Optional. use_shared_pool specifies whether the Stream will
+      run with dedicated resources or using the shared pool. Dedicated pools
+      cost more but provide better workload isolation and peak performance
+      guarantees. Certain functionality of Stream may be available only in
+      dedicated pools.
   """
 
   class EventarcTransformationTypeValueValuesEnum(_messages.Enum):
@@ -949,13 +1002,16 @@ class Stream(_messages.Message):
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  source = _messages.MessageField('Source', 8)
-  streamAction = _messages.MessageField('StreamAction', 9)
-  streamIdentityOverride = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  generateReplies = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mediations = _messages.MessageField('Mediation', 8, repeated=True)
+  name = _messages.StringField(9)
+  source = _messages.MessageField('Source', 10)
+  streamAction = _messages.MessageField('StreamAction', 11)
+  streamIdentityOverride = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  useSharedPool = _messages.BooleanField(15)
 
 
 class StreamAction(_messages.Message):
@@ -968,6 +1024,17 @@ class StreamAction(_messages.Message):
   """
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
+
+
+class Transformation(_messages.Message):
+  r"""Transformation defines the way to transfer an incoming message.
+
+  Fields:
+    celExpression: Optional. The CEL expression to transform the incoming
+      message.
+  """
+
+  celExpression = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

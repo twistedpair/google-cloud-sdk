@@ -248,6 +248,23 @@ def AddEnablePrivateServicesConnect(parser):
             'cluster.'))
 
 
+def AddAllowedPSCProjects(parser):
+  """Adds the `--allowed-psc-projects` flag to the parser."""
+  parser.add_argument(
+      '--allowed-psc-projects',
+      required=False,
+      type=arg_parsers.ArgList(),
+      metavar='ALLOWED_PSC_PROJECTS',
+      help=(
+          'Comma-separated list of allowed consumer projects to create'
+          ' endpoints for Private Services Connect (PSC) connectivity for the'
+          ' instance. Only instances in PSC-enabled clusters are allowed to set'
+          ' this field.(e.g.,'
+          ' `--allowed-psc-projects=project1,12345678,project2)'
+      ),
+  )
+
+
 def AddNetwork(parser):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
@@ -1092,3 +1109,208 @@ def AddAuthorizedExternalNetworks(parser):
           'public IP enabled.'
       ),
   )
+
+
+def _AddMaintenanceWindowAny(group):
+  """Adds maintenance window any flag to the group."""
+  group.add_argument(
+      '--maintenance-window-any',
+      required=False,
+      hidden=True,
+      action='store_true',
+      default=False,
+      help='Remove the user-specified maintenance window.',
+  )
+
+
+def _AddMaintenanceWindowDayAndHour(group, alloydb_messages):
+  """Adds maintenance window day and hour flags to the group."""
+  day_of_week_enum = alloydb_messages.MaintenanceWindow.DayValueValuesEnum
+  group.add_argument(
+      '--maintenance-window-day',
+      required=True,
+      hidden=True,
+      type=day_of_week_enum,
+      choices=([
+          day_of_week_enum.MONDAY,
+          day_of_week_enum.TUESDAY,
+          day_of_week_enum.WEDNESDAY,
+          day_of_week_enum.THURSDAY,
+          day_of_week_enum.FRIDAY,
+          day_of_week_enum.SATURDAY,
+          day_of_week_enum.SUNDAY,
+      ]),
+      help='Day of week for maintenance window, in UTC time zone.',
+  )
+  group.add_argument(
+      '--maintenance-window-hour',
+      required=True,
+      hidden=True,
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=23),
+      help='Hour of day for maintenance window, in UTC time zone.',
+  )
+
+
+def AddMaintenanceWindow(parser, alloydb_messages, update=False):
+  """Adds maintenance window related flags to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module
+    update: If false, only allow user to configure maintenance window
+            day and hour.
+  """
+  if update:
+    parent_group = parser.add_group(
+        mutex=True, hidden=True,
+        help='Configure a preferred maintenance window.'
+    )
+    child_group = parent_group.add_group(
+        help='Specify preferred day and time for maintenance.'
+    )
+    _AddMaintenanceWindowAny(parent_group)
+    _AddMaintenanceWindowDayAndHour(child_group, alloydb_messages)
+  else:
+    group = parser.add_group(
+        hidden=True,
+        help='Specify preferred day and time for maintenance.'
+    )
+    _AddMaintenanceWindowDayAndHour(group, alloydb_messages)
+
+
+def _ValidateMonthAndDay(month, day, value):
+  """Validates value of month and day."""
+  if month < 1 or month > 12:
+    raise arg_parsers.ArgumentTypeError(
+        'Failed to parse date: {0}, invalid month.'.format(value)
+    )
+  if day < 1 or day > 31:
+    raise arg_parsers.ArgumentTypeError(
+        'Failed to parse date: {0}, invalid day.'.format(value)
+    )
+  return
+
+
+def _GetDate(alloydb_message):
+  """returns google.type.Date date."""
+
+  def Parse(value):
+    full_match = re.match(r'^\d{4}-\d{2}-\d{2}', value)
+    if full_match:
+      ymd = full_match.group().split('-')
+      year = int(ymd[0])
+      month = int(ymd[1])
+      day = int(ymd[2])
+      _ValidateMonthAndDay(month, day, value)
+      return alloydb_message.GoogleTypeDate(year=year, month=month, day=day)
+
+    no_year_match = re.match(r'\d{2}-\d{2}', value)
+    if no_year_match:
+      ymd = no_year_match.group().split('-')
+      month = int(ymd[0])
+      day = int(ymd[1])
+      _ValidateMonthAndDay(month, day, value)
+      return alloydb_message.GoogleTypeDate(year=0, month=month, day=day)
+
+    fmt = '"YYYY-MM-DD" or "MM-DD"'
+    err_msg = 'Failed to parse date: {}, expected format: {}.'
+    raise arg_parsers.ArgumentTypeError(err_msg.format(value, fmt))
+
+  return Parse
+
+
+def _GetTimeOfDay(alloydb_message):
+  """returns google.type.TimeOfDay time of day."""
+
+  def Parse(value):
+    hour_min_sec = value.split(':')
+    if len(hour_min_sec) != 3 or not all(
+        [item.isdigit() for item in hour_min_sec]
+    ):
+      raise arg_parsers.ArgumentTypeError(
+          """Failed to parse time of day: {0}, expected format HH:MM:SS.
+        """.format(value)
+      )
+    hour = int(hour_min_sec[0])
+    minute = int(hour_min_sec[1])
+    second = int(hour_min_sec[2])
+    return alloydb_message.GoogleTypeTimeOfDay(
+        hours=hour,
+        minutes=minute,
+        seconds=second,
+    )
+
+  return Parse
+
+
+def _AddRemoveDenyMaintenancePeriod(group):
+  """Adds remove deny maintenance period flag to the group."""
+  group.add_argument(
+      '--remove-deny-maintenance-period',
+      required=False,
+      hidden=True,
+      action='store_true',
+      default=False,
+      help='Remove the user-specified maintenance deny period.',
+  )
+
+
+def _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages):
+  """Adds deny maintenance period start and end date and time flags to the group."""
+  group.add_argument(
+      '--deny-maintenance-period-start-date',
+      required=True,
+      hidden=True,
+      type=_GetDate(alloydb_messages),
+      help=(
+          'Date when the deny maintenance period begins, that is 2020-11-01 or'
+          ' 11-01 for recurring.'
+      ),
+  )
+  group.add_argument(
+      '--deny-maintenance-period-end-date',
+      required=True,
+      hidden=True,
+      type=_GetDate(alloydb_messages),
+      help=(
+          'Date when the deny maintenance period ends, that is 2020-11-01 or'
+          ' 11-01 for recurring.'
+      ),
+  )
+  group.add_argument(
+      '--deny-maintenance-period-time',
+      required=True,
+      hidden=True,
+      type=_GetTimeOfDay(alloydb_messages),
+      help=(
+          'Time when the deny maintenance period starts and ends, for example'
+          ' 05:00:00, in UTC time zone.'
+      ),
+  )
+
+
+def AddDenyMaintenancePeriod(parser, alloydb_messages, update=False):
+  """Adds deny maintenance period flags to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module
+    update: If false, only allow user to configure deny maintenance
+      period start and end date and time.
+  """
+  if update:
+    parent_group = parser.add_group(
+        mutex=True, hidden=True,
+        help='Specify maintenance deny period.'
+    )
+    child_group = parent_group.add_group(
+        help='Specify preferred day and time for maintenance deny period.'
+    )
+    _AddRemoveDenyMaintenancePeriod(parent_group)
+    _AddDenyMaintenancePeriodDateAndTime(child_group, alloydb_messages)
+  else:
+    group = parser.add_group(
+        hidden=True,
+        help='Specify preferred day and time for maintenance deny period.'
+    )
+    _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages)

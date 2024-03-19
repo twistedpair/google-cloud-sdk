@@ -31,6 +31,7 @@ from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.functions.v2.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -332,6 +333,16 @@ def AddJobFlag(parser):
   )
 
 
+def AddWorkerFlag(parser):
+  """Add a worker resource flag."""
+  parser.add_argument(
+      '--worker',
+      required=False,
+      hidden=True,
+      help='Limit matched revisions to the given worker.',
+  )
+
+
 def AddRegionArg(parser):
   """Add a region arg."""
   parser.add_argument(
@@ -545,6 +556,76 @@ def AddUpdateTrafficFlags(parser):
           "created, it will become the 'latest' and traffic will be "
           'directed to it. Defaults to False. Synonymous with '
           "'--to-revisions=LATEST=100'."
+      ),
+  )
+
+
+def AddUpdateInstanceSplitFlags(parser):
+  """Add flags for updating instance assignments for a worker."""
+
+  @staticmethod
+  def InstanceSplitTargetKey(key):
+    return key
+
+  @staticmethod
+  def InstanceSplitPercentageValue(value):
+    """Type validation for intance split percentage flag values."""
+    try:
+      result = int(value)
+    except (TypeError, ValueError):
+      raise serverless_exceptions.ArgumentError(
+          'Instance split percentage value %s is not an integer.' % value
+      )
+
+    if result < 0 or result > 100:
+      raise serverless_exceptions.ArgumentError(
+          'Instance split percentage value %s is not between 0 and 100.' % value
+      )
+    return result
+
+  group = parser.add_mutually_exclusive_group()
+
+  group.add_argument(
+      '--to-revisions',
+      metavar='REVISION-NAME=PERCENTAGE',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgDict(
+          key_type=InstanceSplitTargetKey.__func__,
+          value_type=InstanceSplitPercentageValue.__func__,
+      ),
+      help=(
+          'Comma separated list of instance assignments in the form'
+          ' REVISION-NAME=PERCENTAGE. REVISION-NAME must be the name for a'
+          " revision for the worker as returned by 'gcloud run workers"
+          " revisions list --worker=WORKER' . PERCENTAGE must be an integer"
+          ' percentage between 0 and 100 inclusive.  Ex'
+          ' worker-nw9hs=10,worker-nw9hs=20 Up to 100 percent of instances may'
+          ' be assigned. If the total of 100 percent of instances is assigned,'
+          ' the Worker instance split is updated as specified. If under 100'
+          ' percent of instance split is assigned, the Worker instance split is'
+          ' updated as specified for revisions with assignments and instance'
+          ' split is scaled up or down proportionally as needed for revision'
+          ' that are currently serving workload but that do not have new'
+          ' assignments. For example assume revision-1 is serving 40 percent of'
+          ' workload and revision-2 is serving 60 percent. If revision-1 is'
+          ' assigned 45 percent of instances and no assignment is made for'
+          ' revision-2, the worker is updated with revsion-1 assigned 45'
+          ' percent of instances and revision-2 scaled down to 55 percent. You'
+          ' can use "LATEST" as a special revision name to always put the given'
+          ' percentage of instance split on the latest ready revision.'
+      ),
+  )
+
+  group.add_argument(
+      '--to-latest',
+      default=False,
+      action='store_true',
+      help=(
+          "True to assign 100 percent of instances to the 'latest' revision of"
+          ' this service. Note that when a new revision is created, it will'
+          " become the 'latest' and instances will be fully assigned to it"
+          ' unless configured otherwise using `--[no-]promote` flag. Defaults'
+          " to False. Synonymous with '--to-revisions=LATEST=100'."
       ),
   )
 
@@ -1357,6 +1438,31 @@ def AddInvokerIamCheckFlag(parser):
   )
 
 
+def AddRegionsArg(parser, hidden=True):
+  """Add a multi-regional 'regions' arg."""
+  parser.add_argument(
+      '--regions',
+      hidden=hidden,
+      help='Regions in which the multi-region Service can be found.',
+  )
+
+
+def AddAddRegionsArg(parser):
+  parser.add_argument(
+      '--add-regions',
+      hidden=True,
+      help='Additional regions to deploy the multi-region Service',
+  )
+
+
+def AddRemoveRegionsArg(parser):
+  parser.add_argument(
+      '--remove-regions',
+      hidden=True,
+      help='Existing egions to remove the multi-region Service from',
+  )
+
+
 def AddClientNameAndVersionFlags(parser):
   """Add flags for specifying the client name and version annotations."""
   parser.add_argument(
@@ -1830,6 +1936,12 @@ def _HasTrafficChanges(args):
   return _HasChanges(args, traffic_flags) or _HasTrafficTagsChanges(args)
 
 
+def _HasInstanceSplitChanges(args):
+  """True iff any of the instance split flags are set."""
+  traffic_flags = ['to_revisions', 'to_latest']
+  return _HasChanges(args, traffic_flags)
+
+
 def _HasCustomAudiencesChanges(args):
   """True iff any of the custom audiences flags are set."""
   instances_flags = [
@@ -2121,6 +2233,26 @@ def _GetTrafficChanges(args):
       update_tags,
       remove_tags,
       clear_other_tags,
+  )
+
+
+# TODO(b/322180968): Once Worker API is added, use InstanceSplit message.
+def _GetInstanceSplitChanges(args):
+  """Returns a changes for instance split based on the flags."""
+  if args.to_latest:
+    # Mutually exclusive flag with to-revisions
+    new_percentages = {traffic.LATEST_REVISION_KEY: 100}
+  elif args.to_revisions:
+    new_percentages = args.to_revisions
+  else:
+    new_percentages = {}
+
+  return config_changes.TrafficChanges(
+      new_percentages,
+      False,  # by_tag
+      {},  # update_tags
+      [],  # remove_tags
+      False,  # clear_other_tags
   )
 
 
@@ -2682,23 +2814,29 @@ def GetRunJobConfigurationOverrides(args):
 # TODO(b/322180968): There exist a few configurations that are "locked" while
 # calling Services API for Workers.
 # These will be done in the server side once Worker API is ready.
-def GetWorkerConfigurationChanges(args, release_track=base.ReleaseTrack.ALPHA):
+def GetWorkerConfigurationChanges(
+    args, release_track=base.ReleaseTrack.ALPHA, for_update=False
+):
   """Returns a list of changes to the worker config, based on the flags set."""
   changes = []
-  # ingress = none
-  changes.append(
-      config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION, 'none')
-  )
-  # cpu is always on
-  changes.append(config_changes.CpuThrottlingChange(throttling=False))
-  # healthcheck disabled by default
-  changes.append(config_changes.HealthCheckChange(health_check=False))
-  # disable default url
-  changes.append(config_changes.DefaultUrlChange(default_url=False))
+  # For private preview, Worker is CR Service configured in specific way.
+  # This "locked" configuration could just happen once when created,
+  # but unnecessary for following updates.
+  if not for_update:
+    # ingress = none
+    changes.append(
+        config_changes.SetAnnotationChange(service.INGRESS_ANNOTATION, 'none')
+    )
+    # cpu is always on
+    changes.append(config_changes.CpuThrottlingChange(throttling=False))
+    # healthcheck disabled by default
+    changes.append(config_changes.HealthCheckChange(health_check=False))
+    # disable default url
+    changes.append(config_changes.DefaultUrlChange(default_url=False))
   changes.extend(_GetConfigurationChanges(args, release_track=release_track))
   changes.extend(_GetWorkerScalingChanges(args))
-  if _HasTrafficChanges(args):
-    changes.append(_GetTrafficChanges(args))
+  if _HasInstanceSplitChanges(args):
+    changes.append(_GetInstanceSplitChanges(args))
   if 'update_annotations' in args and args.update_annotations:
     for key, value in args.update_annotations.items():
       changes.append(config_changes.SetAnnotationChange(key, value))
@@ -2768,6 +2906,28 @@ def PromptForRegion():
         '`gcloud config set run/region {}`.\n'.format(region)
     )
     return region
+
+
+def GetMultiRegion(args):
+  """Returns a list of regions if regions is defined, or region is a multi-region, empty otherwise.
+
+  Args:
+    args: Namespace, The args namespace.
+  """
+  regions = (
+      getattr(args, 'regions', None)
+      if FlagIsExplicitlySet(args, 'regions')
+      else None
+  )
+  region = getattr(args, 'region', None)
+  if region and regions:
+    raise c_exceptions.InvalidArgumentException(
+        parameter_name='--regions',
+        message='--region and --regions are mutually exclusive.',
+    )
+  if region and len(region.split(',')) > 1:
+    return region
+  return regions
 
 
 def GetRegion(args, prompt=False, region_label=None):
@@ -3880,3 +4040,16 @@ def AddCommandAndFunctionFlag():
   group.AddArgument(FunctionArg())
   group.AddArgument(CommandFlag())
   return group
+
+
+def AddDelegateBuildsFlag(parser):
+  """Adds flag to indicate using Build API for source deploy builds."""
+  parser.add_argument(
+      '--delegate-builds',
+      hidden=True,
+      action='store_true',
+      help="""\
+      Specifies that the source deploy for run will use the Build API
+      to submit the build.
+      """,
+  )

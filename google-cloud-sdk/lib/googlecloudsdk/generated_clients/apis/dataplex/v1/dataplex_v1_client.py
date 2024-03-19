@@ -529,6 +529,33 @@ class DataplexV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GenerateDataQualityRules(self, request, global_params=None):
+      r"""Generates recommended DataQualityRule from a data profiling DataScan.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GenerateDataQualityRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateDataQualityRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateDataQualityRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}/jobs/{jobsId}:generateDataQualityRules',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataScans.jobs.generateDataQualityRules',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:generateDataQualityRules',
+        request_field='googleCloudDataplexV1GenerateDataQualityRulesRequest',
+        request_type_name='DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest',
+        response_type_name='GoogleCloudDataplexV1GenerateDataQualityRulesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a DataScanJob resource.
 
@@ -644,6 +671,33 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsDataScansDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def GenerateDataQualityRules(self, request, global_params=None):
+      r"""Generates recommended DataQualityRule from a data profiling DataScan.
+
+      Args:
+        request: (DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1GenerateDataQualityRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateDataQualityRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateDataQualityRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/dataScans/{dataScansId}:generateDataQualityRules',
+        http_method='POST',
+        method_id='dataplex.projects.locations.dataScans.generateDataQualityRules',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:generateDataQualityRules',
+        request_field='googleCloudDataplexV1GenerateDataQualityRulesRequest',
+        request_type_name='DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest',
+        response_type_name='GoogleCloudDataplexV1GenerateDataQualityRulesResponse',
         supports_download=False,
     )
 

@@ -2040,7 +2040,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastConsumerAssociation in a given project and location.
+      r"""Creates a new multicast consumer association in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest) input message
@@ -2067,7 +2067,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastConsumerAssociation.
+      r"""Deletes a single multicast consumer association.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest) input message
@@ -2094,7 +2094,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastConsumerAssociation.
+      r"""Gets details of a single multicast consumer association.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest) input message
@@ -2121,7 +2121,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastConsumerAssociations in a given project and location.
+      r"""Lists multicast consumer associations in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest) input message
@@ -2148,7 +2148,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastConsumerAssociation.
+      r"""Updates the parameters of a single multicast consumer association.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest) input message
@@ -2185,7 +2185,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastDomainActivation in a given project and location.
+      r"""Creates a new multicast domain activation in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest) input message
@@ -2212,7 +2212,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastDomainActivation.
+      r"""Deletes a single multicast domain activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest) input message
@@ -2239,7 +2239,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastDomainActivation.
+      r"""Gets details of a single multicast domain activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest) input message
@@ -2266,7 +2266,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastDomainActivations in a given project and location.
+      r"""Lists multicast domain activations in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest) input message
@@ -2293,7 +2293,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastDomainActivation.
+      r"""Updates the parameters of a single multicast domain activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest) input message
@@ -2330,7 +2330,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastDomain in a given project and location.
+      r"""Creates a new multicast domain in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainsCreateRequest) input message
@@ -2357,7 +2357,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastDomain.
+      r"""Deletes a single multicast domain.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest) input message
@@ -2384,7 +2384,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastDomain.
+      r"""Gets details of a single multicast domain.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainsGetRequest) input message
@@ -2411,7 +2411,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastDomains in a given project and location.
+      r"""Lists multicast domains in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainsListRequest) input message
@@ -2438,7 +2438,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastDomain.
+      r"""Updates the parameters of a single multicast domain.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastDomainsPatchRequest) input message
@@ -2475,7 +2475,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastGroupConsumerActivation in a given project and location.
+      r"""Creates a new multicast group consumer activation in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreateRequest) input message
@@ -2502,7 +2502,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastGroupConsumerActivation.
+      r"""Deletes a single multicast group consumer activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDeleteRequest) input message
@@ -2529,7 +2529,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastGroupConsumerActivation.
+      r"""Gets details of a single multicast group consumer activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetRequest) input message
@@ -2556,7 +2556,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastGroupConsumerActivations in a given project and location.
+      r"""Lists multicast group consumer activations in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListRequest) input message
@@ -2583,7 +2583,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastGroupConsumerActivation.
+      r"""Updates the parameters of a single multicast group consumer activation.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequest) input message
@@ -2620,7 +2620,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastGroupDefinition in a given project and location.
+      r"""Creates a new multicast group definition in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest) input message
@@ -2647,7 +2647,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastGroupDefinition.
+      r"""Deletes a single multicast group definition.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest) input message
@@ -2674,7 +2674,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastGroupDefinition.
+      r"""Gets details of a single multicast group definition.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest) input message
@@ -2701,7 +2701,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastGroupDefinitions in a given project and location.
+      r"""Lists multicast group definitions in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest) input message
@@ -2728,7 +2728,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastGroupDefinition.
+      r"""Updates the parameters of a single multicast group definition.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest) input message
@@ -2765,7 +2765,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new MulticastGroup in a given project and location.
+      r"""Creates a new multicast group in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupsCreateRequest) input message
@@ -2792,7 +2792,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MulticastGroup.
+      r"""Deletes a single multicast group.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest) input message
@@ -2819,7 +2819,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single MulticastGroup.
+      r"""Gets details of a single multicast group.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupsGetRequest) input message
@@ -2846,7 +2846,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists MulticastGroups in a given project and location.
+      r"""Lists multicast groups in a given project and location.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupsListRequest) input message
@@ -2873,7 +2873,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single MulticastGroup.
+      r"""Updates the parameters of a single multicast group.
 
       Args:
         request: (NetworkservicesProjectsLocationsMulticastGroupsPatchRequest) input message
@@ -4024,7 +4024,7 @@ class NetworkservicesV1(base_api.BaseApiClient):
         method_id='networkservices.projects.locations.wasmPlugins.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force'],
+        query_params=[],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='NetworkservicesProjectsLocationsWasmPluginsDeleteRequest',

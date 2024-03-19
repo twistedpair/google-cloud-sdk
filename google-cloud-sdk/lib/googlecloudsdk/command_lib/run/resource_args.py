@@ -20,6 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import copy
 import os
 import re
 
@@ -102,7 +103,9 @@ class ResourcePromptFallthrough(PromptFallthrough):
   def __init__(self, resource_type_lower):
     super(ResourcePromptFallthrough, self).__init__(
         'specify the {} name from an interactive prompt'.format(
-            resource_type_lower))
+            resource_type_lower
+        )
+    )
     self.resource_type_lower = resource_type_lower
 
   def _Prompt(self, parsed_args):
@@ -153,35 +156,57 @@ class DefaultFallthrough(deps.Fallthrough):
   def __init__(self):
     super(DefaultFallthrough, self).__init__(
         function=None,
-        hint='For Cloud Run on Kubernetes Engine, defaults to "default". '
-        'Otherwise, defaults to project ID.')
+        hint=(
+            'For Cloud Run on Kubernetes Engine, defaults to "default". '
+            'Otherwise, defaults to project ID.'
+        ),
+    )
 
   def _Call(self, parsed_args):
-    if (platforms.GetPlatform() == platforms.PLATFORM_GKE or
-        platforms.GetPlatform() == platforms.PLATFORM_KUBERNETES):
+    if (
+        platforms.GetPlatform() == platforms.PLATFORM_GKE
+        or platforms.GetPlatform() == platforms.PLATFORM_KUBERNETES
+    ):
       return 'default'
-    elif not (getattr(parsed_args, 'project', None) or
-              properties.VALUES.core.project.Get()):
+    elif not (
+        getattr(parsed_args, 'project', None)
+        or properties.VALUES.core.project.Get()
+    ):
       # HACK: Compensate for how "namespace" is actually "project" in Cloud Run
       # by providing an error message explicitly early here.
       raise exceptions.ArgumentError(
           'The [project] resource is not properly specified. '
           'Please specify the argument [--project] on the command line or '
-          'set the property [core/project].')
+          'set the property [core/project].'
+      )
     return None
 
 
 def NamespaceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='namespace',
-      help_text='Specific to Cloud Run for Anthos: '
-      'Kubernetes namespace for the {resource}.',
+      help_text=(
+          'Specific to Cloud Run for Anthos: '
+          'Kubernetes namespace for the {resource}.'
+      ),
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.namespace),
           DefaultFallthrough(),
           deps.ArgFallthrough('project'),
           deps.PropertyFallthrough(properties.VALUES.core.project),
-      ])
+      ],
+  )
+
+
+def ProjectAttributeConfig():
+  project_attribute_config = copy.deepcopy(
+      concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG
+  )
+  fallthroughs = [
+      DefaultFallthrough()
+  ] + concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG.fallthroughs
+  project_attribute_config.fallthroughs = fallthroughs
+  return project_attribute_config
 
 
 def ServiceAttributeConfig(prompt=False):
@@ -193,7 +218,8 @@ def ServiceAttributeConfig(prompt=False):
   return concepts.ResourceParameterAttributeConfig(
       name='service',
       help_text='Service for the {resource}.',
-      fallthroughs=fallthroughs)
+      fallthroughs=fallthroughs,
+  )
 
 
 def WorkerAttributeConfig(prompt=False):
@@ -211,22 +237,26 @@ def WorkerAttributeConfig(prompt=False):
 
 def ConfigurationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='configuration', help_text='Configuration for the {resource}.')
+      name='configuration', help_text='Configuration for the {resource}.'
+  )
 
 
 def RouteAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='route', help_text='Route for the {resource}.')
+      name='route', help_text='Route for the {resource}.'
+  )
 
 
 def RevisionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='revision', help_text='Revision for the {resource}.')
+      name='revision', help_text='Revision for the {resource}.'
+  )
 
 
 def DomainAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='domain', help_text='Name of the domain to be mapped to.')
+      name='domain', help_text='Name of the domain to be mapped to.'
+  )
 
 
 def JobAttributeConfig(prompt=False):
@@ -237,7 +267,8 @@ def JobAttributeConfig(prompt=False):
   return concepts.ResourceParameterAttributeConfig(
       name='jobs',
       help_text='Job for the {resource}.',
-      fallthroughs=fallthroughs)
+      fallthroughs=fallthroughs,
+  )
 
 
 def ExecutionAttributeConfig(prompt=False):
@@ -246,7 +277,8 @@ def ExecutionAttributeConfig(prompt=False):
   else:
     fallthroughs = []
   return concepts.ResourceParameterAttributeConfig(
-      name='executions', help_text='Execution.', fallthroughs=fallthroughs)
+      name='executions', help_text='Execution.', fallthroughs=fallthroughs
+  )
 
 
 class TaskExecutionAndIndexFallthrough(deps.ArgFallthrough):
@@ -255,14 +287,17 @@ class TaskExecutionAndIndexFallthrough(deps.ArgFallthrough):
   def __init__(self, arg_name, plural=False):
     super(TaskExecutionAndIndexFallthrough, self).__init__(
         'provide the arguments `{}`  and `index` on the command line'.format(
-            arg_name),
+            arg_name
+        ),
         active=True,
-        plural=plural)
+        plural=plural,
+    )
     self.arg_name = arg_name
 
   def _Call(self, parsed_args):
-    prefix = getattr(parsed_args, concepts_util.NamespaceFormat(self.arg_name),
-                     None)
+    prefix = getattr(
+        parsed_args, concepts_util.NamespaceFormat(self.arg_name), None
+    )
     index = getattr(parsed_args, 'index', None)
     return '{}-{}'.format(prefix, index)
 
@@ -273,16 +308,17 @@ def TaskAttributeConfig(prompt=False):
   else:
     fallthroughs = []
   return concepts.ResourceParameterAttributeConfig(
-      name='tasks', help_text='Task.', fallthroughs=fallthroughs)
+      name='tasks', help_text='Task.', fallthroughs=fallthroughs
+  )
 
 
 class ClusterPromptFallthrough(PromptFallthrough):
   """Fall through to reading the cluster name from an interactive prompt."""
 
   def __init__(self):
-    super(
-        ClusterPromptFallthrough,
-        self).__init__('specify the cluster from a list of available clusters')
+    super(ClusterPromptFallthrough, self).__init__(
+        'specify the cluster from a list of available clusters'
+    )
 
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster name from an interactive prompt.
@@ -300,18 +336,23 @@ class ClusterPromptFallthrough(PromptFallthrough):
 
     project = properties.VALUES.core.project.Get(required=True)
     cluster_location = (
-        getattr(parsed_args, 'cluster_location', None) or
-        properties.VALUES.run.cluster_location.Get())
-    cluster_location_msg = ' in [{}]'.format(
-        cluster_location) if cluster_location else ''
+        getattr(parsed_args, 'cluster_location', None)
+        or properties.VALUES.run.cluster_location.Get()
+    )
+    cluster_location_msg = (
+        ' in [{}]'.format(cluster_location) if cluster_location else ''
+    )
 
     cluster_refs = global_methods.MultiTenantClustersForProject(
-        project, cluster_location)
+        project, cluster_location
+    )
     if not cluster_refs:
       raise exceptions.ConfigurationError(
           'No compatible clusters found{}. '
           'Ensure your cluster has Cloud Run enabled.'.format(
-              cluster_location_msg))
+              cluster_location_msg
+          )
+      )
 
     cluster_refs_descs = [
         self._GetClusterDescription(c, cluster_location, project)
@@ -321,7 +362,8 @@ class ClusterPromptFallthrough(PromptFallthrough):
     idx = console_io.PromptChoice(
         cluster_refs_descs,
         message='GKE cluster{}:'.format(cluster_location_msg),
-        cancel_option=True)
+        cancel_option=True,
+    )
 
     cluster_ref = cluster_refs[idx]
 
@@ -330,7 +372,9 @@ class ClusterPromptFallthrough(PromptFallthrough):
     else:
       location_help_text = (
           ' && gcloud config set run/cluster_location {}'.format(
-              cluster_ref.zone))
+              cluster_ref.zone
+          )
+      )
 
     cluster_name = cluster_ref.Name()
 
@@ -338,10 +382,13 @@ class ClusterPromptFallthrough(PromptFallthrough):
       cluster_name = cluster_ref.RelativeName()
       location_help_text = ''
 
-    log.status.Print('To make this the default cluster, run '
-                     '`gcloud config set run/cluster {cluster}'
-                     '{location}`.\n'.format(
-                         cluster=cluster_name, location=location_help_text))
+    log.status.Print(
+        'To make this the default cluster, run '
+        '`gcloud config set run/cluster {cluster}'
+        '{location}`.\n'.format(
+            cluster=cluster_name, location=location_help_text
+        )
+    )
     return cluster_ref.SelfLink()
 
   def _GetClusterDescription(self, cluster, cluster_location, project):
@@ -359,12 +406,15 @@ class ClusterPromptFallthrough(PromptFallthrough):
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
-      help_text='Name of the Kubernetes Engine cluster to use. '
-      'Alternatively, set the property [run/cluster].',
+      help_text=(
+          'Name of the Kubernetes Engine cluster to use. '
+          'Alternatively, set the property [run/cluster].'
+      ),
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster),
-          ClusterPromptFallthrough()
-      ])
+          ClusterPromptFallthrough(),
+      ],
+  )
 
 
 class ClusterLocationPromptFallthrough(PromptFallthrough):
@@ -372,7 +422,8 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
 
   def __init__(self):
     super(ClusterLocationPromptFallthrough, self).__init__(
-        'specify the cluster location from a list of available zones')
+        'specify the cluster location from a list of available zones'
+    )
 
   def _Prompt(self, parsed_args):
     """Fallthrough to reading the cluster location from an interactive prompt.
@@ -387,8 +438,9 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
       A cluster location string
     """
     cluster_name = (
-        getattr(parsed_args, 'cluster', None) or
-        properties.VALUES.run.cluster.Get())
+        getattr(parsed_args, 'cluster', None)
+        or properties.VALUES.run.cluster.Get()
+    )
     if platforms.GetPlatform() == platforms.PLATFORM_GKE and cluster_name:
       clusters = [
           c for c in global_methods.ListClusters() if c.name == cluster_name
@@ -396,28 +448,34 @@ class ClusterLocationPromptFallthrough(PromptFallthrough):
       if not clusters:
         raise exceptions.ConfigurationError(
             'No cluster locations found for cluster [{}]. '
-            'Ensure your clusters have Cloud Run enabled.'.format(cluster_name))
+            'Ensure your clusters have Cloud Run enabled.'.format(cluster_name)
+        )
       cluster_locations = [c.zone for c in clusters]
       idx = console_io.PromptChoice(
           cluster_locations,
           message='GKE cluster location for [{}]:'.format(cluster_name),
-          cancel_option=True)
+          cancel_option=True,
+      )
       location = cluster_locations[idx]
       log.status.Print(
           'To make this the default cluster location, run '
-          '`gcloud config set run/cluster_location {}`.\n'.format(location))
+          '`gcloud config set run/cluster_location {}`.\n'.format(location)
+      )
       return location
 
 
 def ClusterLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='Zone in which the {resource} is located. '
-      'Alternatively, set the property [run/cluster_location].',
+      help_text=(
+          'Zone in which the {resource} is located. '
+          'Alternatively, set the property [run/cluster_location].'
+      ),
       fallthroughs=[
           deps.PropertyFallthrough(properties.VALUES.run.cluster_location),
-          ClusterLocationPromptFallthrough()
-      ])
+          ClusterLocationPromptFallthrough(),
+      ],
+  )
 
 
 def GetClusterResourceSpec():
@@ -426,7 +484,8 @@ def GetClusterResourceSpec():
       projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       zone=ClusterLocationAttributeConfig(),
       clusterId=ClusterAttributeConfig(),
-      resource_name='cluster')
+      resource_name='cluster',
+  )
 
 
 def GetServiceResourceSpec(prompt=False):
@@ -434,7 +493,8 @@ def GetServiceResourceSpec(prompt=False):
       'run.namespaces.services',
       namespacesId=NamespaceAttributeConfig(),
       servicesId=ServiceAttributeConfig(prompt),
-      resource_name='service')
+      resource_name='service',
+  )
 
 
 def GetConfigurationResourceSpec():
@@ -442,7 +502,8 @@ def GetConfigurationResourceSpec():
       'run.namespaces.configurations',
       namespacesId=NamespaceAttributeConfig(),
       configurationsId=ConfigurationAttributeConfig(),
-      resource_name='configuration')
+      resource_name='configuration',
+  )
 
 
 def GetRouteResourceSpec():
@@ -450,7 +511,8 @@ def GetRouteResourceSpec():
       'run.namespaces.routes',
       namespacesId=NamespaceAttributeConfig(),
       routesId=RouteAttributeConfig(),
-      resource_name='route')
+      resource_name='route',
+  )
 
 
 def GetRevisionResourceSpec():
@@ -458,7 +520,8 @@ def GetRevisionResourceSpec():
       'run.namespaces.revisions',
       namespacesId=NamespaceAttributeConfig(),
       revisionsId=RevisionAttributeConfig(),
-      resource_name='revision')
+      resource_name='revision',
+  )
 
 
 def GetDomainMappingResourceSpec():
@@ -466,7 +529,8 @@ def GetDomainMappingResourceSpec():
       'run.namespaces.domainmappings',
       namespacesId=NamespaceAttributeConfig(),
       domainmappingsId=DomainAttributeConfig(),
-      resource_name='DomainMapping')
+      resource_name='DomainMapping',
+  )
 
 
 def GetJobResourceSpec(prompt=False):
@@ -475,7 +539,8 @@ def GetJobResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       jobsId=JobAttributeConfig(prompt=prompt),
       resource_name='Job',
-      api_version='v1')
+      api_version='v1',
+  )
 
 
 def GetExecutionResourceSpec(prompt=False):
@@ -484,7 +549,8 @@ def GetExecutionResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       executionsId=ExecutionAttributeConfig(prompt=prompt),
       resource_name='Execution',
-      api_version='v1')
+      api_version='v1',
+  )
 
 
 def GetTaskResourceSpec(prompt=False):
@@ -493,7 +559,8 @@ def GetTaskResourceSpec(prompt=False):
       namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       tasksId=TaskAttributeConfig(prompt=prompt),
       resource_name='Task',
-      api_version='v1')
+      api_version='v1',
+  )
 
 
 # TODO(b/322180968): Once Worker API is ready, replace Service related
@@ -508,6 +575,14 @@ def GetWorkerResourceSpec(prompt=False):
   )
 
 
+def GetProjectResourceSpec():
+  return concepts.ResourceSpec(
+      'run.projects',
+      resource_name='project',
+      projectsId=ProjectAttributeConfig(),
+  )
+
+
 def GetNamespaceResourceSpec():
   """Returns a resource spec for the namespace."""
   # TODO(b/148817410): Remove this when the api has been split.
@@ -517,12 +592,14 @@ def GetNamespaceResourceSpec():
     return concepts.ResourceSpec(
         'run.namespaces',
         namespacesId=NamespaceAttributeConfig(),
-        resource_name='namespace')
+        resource_name='namespace',
+    )
   except resources.InvalidCollectionException:
     return concepts.ResourceSpec(
         'run.api.v1.namespaces',
         namespacesId=NamespaceAttributeConfig(),
-        resource_name='namespace')
+        resource_name='namespace',
+    )
 
 
 CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
@@ -530,4 +607,5 @@ CLUSTER_PRESENTATION = presentation_specs.ResourcePresentationSpec(
     GetClusterResourceSpec(),
     'Kubernetes Engine cluster to connect to.',
     required=False,
-    prefixes=True)
+    prefixes=True,
+)

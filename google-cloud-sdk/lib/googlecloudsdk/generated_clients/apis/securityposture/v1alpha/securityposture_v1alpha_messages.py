@@ -450,6 +450,21 @@ class ListPosturesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListReportsResponse(_messages.Message):
+  r"""Message for response to listing Report.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    reports: The list of Reports.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  reports = _messages.MessageField('GoogleCloudSecuritypostureV1alphaReport', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents a Google Cloud location.
 
@@ -805,9 +820,13 @@ class Posture(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -928,9 +947,13 @@ class PostureDeployment(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -1048,9 +1071,13 @@ class PostureTemplate(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.
@@ -1490,6 +1517,38 @@ class SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportReque
 
   createIaCValidationReportRequest = _messages.MessageField('CreateIaCValidationReportRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class SecuritypostureOrganizationsLocationsReportsGetRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsReportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource. The format of this value is as
+      follows:
+      `organizations/{organization}/locations/{location}/reports/{reportID}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritypostureOrganizationsLocationsReportsListRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsReportsListRequest object.
+
+  Fields:
+    filter: Optional. Filter to be applied on the resource, defined by EBNF
+      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListReportsRequest. The format of this
+      value is as follows: `organizations/{organization}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

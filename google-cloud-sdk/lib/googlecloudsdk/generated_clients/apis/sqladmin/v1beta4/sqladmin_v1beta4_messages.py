@@ -832,6 +832,7 @@ class DatabaseInstance(_messages.Message):
       from. This value could be different from the zone that was specified
       when the instance was created if the instance has failed over to its
       secondary zone. WARNING: Changing this might restart the instance.
+    geminiConfig: Gemini instance configuration.
     installedVersion: Stores the current database version including minor
       version such as `MYSQL_8_0_18`.
     instanceType: The instance type.
@@ -1238,36 +1239,37 @@ class DatabaseInstance(_messages.Message):
   etag = _messages.StringField(11)
   failoverReplica = _messages.MessageField('FailoverReplicaValue', 12)
   gceZone = _messages.StringField(13)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 14)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 15)
-  ipAddresses = _messages.MessageField('IpMapping', 16, repeated=True)
-  ipv6Address = _messages.StringField(17)
-  kind = _messages.StringField(18)
-  maintenanceVersion = _messages.StringField(19)
-  masterInstanceName = _messages.StringField(20)
-  maxDiskSize = _messages.IntegerField(21)
-  name = _messages.StringField(22)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 23)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 24)
-  primaryDnsName = _messages.StringField(25)
-  project = _messages.StringField(26)
-  pscServiceAttachmentLink = _messages.StringField(27)
-  region = _messages.StringField(28)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 29)
-  replicaNames = _messages.StringField(30, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 31)
-  rootPassword = _messages.StringField(32)
-  satisfiesPzs = _messages.BooleanField(33)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 34)
-  secondaryGceZone = _messages.StringField(35)
-  selfLink = _messages.StringField(36)
-  serverCaCert = _messages.MessageField('SslCert', 37)
-  serviceAccountEmailAddress = _messages.StringField(38)
-  settings = _messages.MessageField('Settings', 39)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 40)
-  state = _messages.EnumField('StateValueValuesEnum', 41)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 42, repeated=True)
-  writeEndpoint = _messages.StringField(43)
+  geminiConfig = _messages.MessageField('GeminiInstanceConfig', 14)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 15)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 16)
+  ipAddresses = _messages.MessageField('IpMapping', 17, repeated=True)
+  ipv6Address = _messages.StringField(18)
+  kind = _messages.StringField(19)
+  maintenanceVersion = _messages.StringField(20)
+  masterInstanceName = _messages.StringField(21)
+  maxDiskSize = _messages.IntegerField(22)
+  name = _messages.StringField(23)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 24)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 25)
+  primaryDnsName = _messages.StringField(26)
+  project = _messages.StringField(27)
+  pscServiceAttachmentLink = _messages.StringField(28)
+  region = _messages.StringField(29)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 30)
+  replicaNames = _messages.StringField(31, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 32)
+  rootPassword = _messages.StringField(33)
+  satisfiesPzs = _messages.BooleanField(34)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 35)
+  secondaryGceZone = _messages.StringField(36)
+  selfLink = _messages.StringField(37)
+  serverCaCert = _messages.MessageField('SslCert', 38)
+  serviceAccountEmailAddress = _messages.StringField(39)
+  settings = _messages.MessageField('Settings', 40)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 41)
+  state = _messages.EnumField('StateValueValuesEnum', 42)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 43, repeated=True)
+  writeEndpoint = _messages.StringField(44)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1789,6 +1791,28 @@ class FlagsListResponse(_messages.Message):
 
   items = _messages.MessageField('Flag', 1, repeated=True)
   kind = _messages.StringField(2)
+
+
+class GeminiInstanceConfig(_messages.Message):
+  r"""Gemini configuration.
+
+  Fields:
+    activeQueryEnabled: Output only. Whether active query is enabled.
+    entitled: Output only. Whether Gemini is enabled.
+    flagRecommenderEnabled: Output only. Whether flag recommender is enabled.
+    googleVacuumMgmtEnabled: Output only. Whether vacuum management is
+      enabled.
+    indexAdvisorEnabled: Output only. Whether index advisor is enabled.
+    oomSessionCancelEnabled: Output only. Whether oom session cancel is
+      enabled.
+  """
+
+  activeQueryEnabled = _messages.BooleanField(1)
+  entitled = _messages.BooleanField(2)
+  flagRecommenderEnabled = _messages.BooleanField(3)
+  googleVacuumMgmtEnabled = _messages.BooleanField(4)
+  indexAdvisorEnabled = _messages.BooleanField(5)
+  oomSessionCancelEnabled = _messages.BooleanField(6)
 
 
 class GenerateEphemeralCertRequest(_messages.Message):

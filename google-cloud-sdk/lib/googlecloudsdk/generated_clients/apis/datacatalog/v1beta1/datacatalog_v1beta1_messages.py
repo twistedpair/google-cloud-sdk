@@ -3597,6 +3597,10 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
   User](https://cloud.google.com/data-catalog/docs/how-to/template-user) role,
   which includes permission to use the tag template to tag resources.
 
+  Enums:
+    DataplexTransferStatusValueValuesEnum: Output only. Transfer status of the
+      TagTemplate
+
   Messages:
     FieldsValue: Required. Map of tag template field IDs to the settings for
       the field. This map is an exhaustive list of the allowed fields. This
@@ -3607,6 +3611,7 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
       IDs must start with a letter or underscore.
 
   Fields:
+    dataplexTransferStatus: Output only. Transfer status of the TagTemplate
     displayName: The display name for this template. Defaults to an empty
       string.
     fields: Required. Map of tag template field IDs to the settings for the
@@ -3621,6 +3626,19 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
       template_id} Note that this TagTemplate and its child resources may not
       actually be stored in the location in this name.
   """
+
+  class DataplexTransferStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Transfer status of the TagTemplate
+
+    Values:
+      DATAPLEX_TRANSFER_STATUS_UNSPECIFIED: Default value. TagTemplate and its
+        tags are only visible and editable in DataCatalog.
+      MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
+        Visible in both services. Editable in DataCatalog, read-only in
+        Dataplex.
+    """
+    DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
+    MIGRATED = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
@@ -3652,9 +3670,10 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  displayName = _messages.StringField(1)
-  fields = _messages.MessageField('FieldsValue', 2)
-  name = _messages.StringField(3)
+  dataplexTransferStatus = _messages.EnumField('DataplexTransferStatusValueValuesEnum', 1)
+  displayName = _messages.StringField(2)
+  fields = _messages.MessageField('FieldsValue', 3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudDatacatalogV1beta1TagTemplateField(_messages.Message):

@@ -17,7 +17,15 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import properties
+
 
 def SetGlobalLocation():
   """Set default location to global."""
   return '-'
+
+
+def SetDefaultBackupVault():
+  """Set default backup vault value to use wildcards."""
+  project = properties.VALUES.core.project.Get()
+  return 'projects/{}/locations/-/backupVaults/-'.format(project)

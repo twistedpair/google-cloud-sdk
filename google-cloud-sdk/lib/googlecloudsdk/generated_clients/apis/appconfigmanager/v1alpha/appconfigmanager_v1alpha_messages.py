@@ -73,178 +73,6 @@ class AppconfigmanagerProjectsLocationsConfigsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class AppconfigmanagerProjectsLocationsConfigsInstancesCreateRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsInstancesCreateRequest object.
-
-  Fields:
-    configInstance: A ConfigInstance resource to be passed as the request
-      body.
-    configInstanceId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and config_instance_id from the
-      method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  configInstance = _messages.MessageField('ConfigInstance', 1)
-  configInstanceId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class AppconfigmanagerProjectsLocationsConfigsInstancesDeleteRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsInstancesDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class AppconfigmanagerProjectsLocationsConfigsInstancesGetRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsInstancesGetRequest object.
-
-  Enums:
-    ViewValueValuesEnum: Optional. View of the ConfigInstance. In the default
-      BASIC view, only the metadata associated with the ConfigInstance will be
-      returned.
-
-  Fields:
-    name: Required. Name of the resource
-    view: Optional. View of the ConfigInstance. In the default BASIC view,
-      only the metadata associated with the ConfigInstance will be returned.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigInstance. In the default BASIC view, only
-    the metadata associated with the ConfigInstance will be returned.
-
-    Values:
-      VIEW_UNSPECIFIED: The default / unset value. The API will default to the
-        BASIC view for LIST calls & FULL for GET calls..
-      BASIC: Include only the metadata for the resource. This is the default
-        view.
-      FULL: Include metadata & other relevant payload data as well. For a
-        ConfigInstance this implies that the response will hold the user
-        provided payload. For a ConfigRender this implies that the response
-        will hold the user provided payload along with the rendered payload
-        data.
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
-
-
-class AppconfigmanagerProjectsLocationsConfigsInstancesListRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsInstancesListRequest object.
-
-  Enums:
-    ViewValueValuesEnum: Optional. View of the ConfigInstance. In the default
-      BASIC view, only the metadata associated with the ConfigInstance will be
-      returned.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListConfigsRequest
-    view: Optional. View of the ConfigInstance. In the default BASIC view,
-      only the metadata associated with the ConfigInstance will be returned.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigInstance. In the default BASIC view, only
-    the metadata associated with the ConfigInstance will be returned.
-
-    Values:
-      VIEW_UNSPECIFIED: The default / unset value. The API will default to the
-        BASIC view for LIST calls & FULL for GET calls..
-      BASIC: Include only the metadata for the resource. This is the default
-        view.
-      FULL: Include metadata & other relevant payload data as well. For a
-        ConfigInstance this implies that the response will hold the user
-        provided payload. For a ConfigRender this implies that the response
-        will hold the user provided payload along with the rendered payload
-        data.
-    """
-    VIEW_UNSPECIFIED = 0
-    BASIC = 1
-    FULL = 2
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 6)
-
-
-class AppconfigmanagerProjectsLocationsConfigsInstancesPatchRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsInstancesPatchRequest object.
-
-  Fields:
-    configInstance: A ConfigInstance resource to be passed as the request
-      body.
-    name: Immutable. Identifier. [Output only] The resource name of the
-      ConfigInstance in the format `projects/*/configs/*/instances/*`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the ConfigInstance resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. 1. Empty
-      field mask is not supported. Specifying an empty field mask will result
-      in an INVALID_ARGUMENT error. 2. Wildcard field mask is not supported.
-      Specifying a wildcard field mask will result in an INVALID_ARGUMENT
-      error. 3. Only a subset of fields are mutable. Mutable fields are: -
-      (bool) disabled Specifying an immutable field in the field mask will
-      result in an INVALID_ARGUMENT error.
-  """
-
-  configInstance = _messages.MessageField('ConfigInstance', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class AppconfigmanagerProjectsLocationsConfigsListRequest(_messages.Message):
   r"""A AppconfigmanagerProjectsLocationsConfigsListRequest object.
 
@@ -296,23 +124,26 @@ class AppconfigmanagerProjectsLocationsConfigsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class AppconfigmanagerProjectsLocationsConfigsRendersGetRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsRendersGetRequest object.
+class AppconfigmanagerProjectsLocationsConfigsVersionRendersGetRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionRendersGetRequest
+  object.
 
   Enums:
-    ViewValueValuesEnum: Optional. View of the ConfigRender. In the default
-      BASIC view, only the metadata associated with the ConfigRender will be
-      returned.
+    ViewValueValuesEnum: Optional. View of the ConfigVersionRender. In the
+      default BASIC view, only the metadata associated with the
+      ConfigVersionRender will be returned.
 
   Fields:
     name: Required. Name of the resource
-    view: Optional. View of the ConfigRender. In the default BASIC view, only
-      the metadata associated with the ConfigRender will be returned.
+    view: Optional. View of the ConfigVersionRender. In the default BASIC
+      view, only the metadata associated with the ConfigVersionRender will be
+      returned.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigRender. In the default BASIC view, only
-    the metadata associated with the ConfigRender will be returned.
+    r"""Optional. View of the ConfigVersionRender. In the default BASIC view,
+    only the metadata associated with the ConfigVersionRender will be
+    returned.
 
     Values:
       VIEW_UNSPECIFIED: The default / unset value. The API will default to the
@@ -320,10 +151,10 @@ class AppconfigmanagerProjectsLocationsConfigsRendersGetRequest(_messages.Messag
       BASIC: Include only the metadata for the resource. This is the default
         view.
       FULL: Include metadata & other relevant payload data as well. For a
-        ConfigInstance this implies that the response will hold the user
-        provided payload. For a ConfigRender this implies that the response
-        will hold the user provided payload along with the rendered payload
-        data.
+        ConfigVersion this implies that the response will hold the user
+        provided payload. For a ConfigVersionRender this implies that the
+        response will hold the user provided payload along with the rendered
+        payload data.
     """
     VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -333,13 +164,14 @@ class AppconfigmanagerProjectsLocationsConfigsRendersGetRequest(_messages.Messag
   view = _messages.EnumField('ViewValueValuesEnum', 2)
 
 
-class AppconfigmanagerProjectsLocationsConfigsRendersListRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsConfigsRendersListRequest object.
+class AppconfigmanagerProjectsLocationsConfigsVersionRendersListRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionRendersListRequest
+  object.
 
   Enums:
-    ViewValueValuesEnum: Optional. View of the ConfigRender. In the default
-      BASIC view, only the metadata associated with the ConfigRender will be
-      returned.
+    ViewValueValuesEnum: Optional. View of the ConfigVersionRender. In the
+      default BASIC view, only the metadata associated with the
+      ConfigVersionRender will be returned.
 
   Fields:
     filter: Optional. Filtering results
@@ -349,13 +181,15 @@ class AppconfigmanagerProjectsLocationsConfigsRendersListRequest(_messages.Messa
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListConfigsRequest
-    view: Optional. View of the ConfigRender. In the default BASIC view, only
-      the metadata associated with the ConfigRender will be returned.
+    view: Optional. View of the ConfigVersionRender. In the default BASIC
+      view, only the metadata associated with the ConfigVersionRender will be
+      returned.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigRender. In the default BASIC view, only
-    the metadata associated with the ConfigRender will be returned.
+    r"""Optional. View of the ConfigVersionRender. In the default BASIC view,
+    only the metadata associated with the ConfigVersionRender will be
+    returned.
 
     Values:
       VIEW_UNSPECIFIED: The default / unset value. The API will default to the
@@ -363,10 +197,10 @@ class AppconfigmanagerProjectsLocationsConfigsRendersListRequest(_messages.Messa
       BASIC: Include only the metadata for the resource. This is the default
         view.
       FULL: Include metadata & other relevant payload data as well. For a
-        ConfigInstance this implies that the response will hold the user
-        provided payload. For a ConfigRender this implies that the response
-        will hold the user provided payload along with the rendered payload
-        data.
+        ConfigVersion this implies that the response will hold the user
+        provided payload. For a ConfigVersionRender this implies that the
+        response will hold the user provided payload along with the rendered
+        payload data.
     """
     VIEW_UNSPECIFIED = 0
     BASIC = 1
@@ -378,6 +212,176 @@ class AppconfigmanagerProjectsLocationsConfigsRendersListRequest(_messages.Messa
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class AppconfigmanagerProjectsLocationsConfigsVersionsCreateRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsCreateRequest object.
+
+  Fields:
+    configVersion: A ConfigVersion resource to be passed as the request body.
+    configVersionId: Required. Id of the requesting object If auto-generating
+      Id server-side, remove this field and config_version_id from the
+      method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  configVersion = _messages.MessageField('ConfigVersion', 1)
+  configVersionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class AppconfigmanagerProjectsLocationsConfigsVersionsDeleteRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class AppconfigmanagerProjectsLocationsConfigsVersionsGetRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. View of the ConfigVersion. In the default
+      BASIC view, only the metadata associated with the ConfigVersion will be
+      returned.
+
+  Fields:
+    name: Required. Name of the resource
+    view: Optional. View of the ConfigVersion. In the default BASIC view, only
+      the metadata associated with the ConfigVersion will be returned.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View of the ConfigVersion. In the default BASIC view, only
+    the metadata associated with the ConfigVersion will be returned.
+
+    Values:
+      VIEW_UNSPECIFIED: The default / unset value. The API will default to the
+        BASIC view for LIST calls & FULL for GET calls..
+      BASIC: Include only the metadata for the resource. This is the default
+        view.
+      FULL: Include metadata & other relevant payload data as well. For a
+        ConfigVersion this implies that the response will hold the user
+        provided payload. For a ConfigVersionRender this implies that the
+        response will hold the user provided payload along with the rendered
+        payload data.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class AppconfigmanagerProjectsLocationsConfigsVersionsListRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. View of the ConfigVersion. In the default
+      BASIC view, only the metadata associated with the ConfigVersion will be
+      returned.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListConfigsRequest
+    view: Optional. View of the ConfigVersion. In the default BASIC view, only
+      the metadata associated with the ConfigVersion will be returned.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. View of the ConfigVersion. In the default BASIC view, only
+    the metadata associated with the ConfigVersion will be returned.
+
+    Values:
+      VIEW_UNSPECIFIED: The default / unset value. The API will default to the
+        BASIC view for LIST calls & FULL for GET calls..
+      BASIC: Include only the metadata for the resource. This is the default
+        view.
+      FULL: Include metadata & other relevant payload data as well. For a
+        ConfigVersion this implies that the response will hold the user
+        provided payload. For a ConfigVersionRender this implies that the
+        response will hold the user provided payload along with the rendered
+        payload data.
+    """
+    VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class AppconfigmanagerProjectsLocationsConfigsVersionsPatchRequest(_messages.Message):
+  r"""A AppconfigmanagerProjectsLocationsConfigsVersionsPatchRequest object.
+
+  Fields:
+    configVersion: A ConfigVersion resource to be passed as the request body.
+    name: Immutable. Identifier. [Output only] The resource name of the
+      ConfigVersion in the format `projects/*/configs/*/versions/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ConfigVersion resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. 1. Empty
+      field mask is not supported. Specifying an empty field mask will result
+      in an INVALID_ARGUMENT error. 2. Wildcard field mask is not supported.
+      Specifying a wildcard field mask will result in an INVALID_ARGUMENT
+      error. 3. Only a subset of fields are mutable. Mutable fields are: -
+      (bool) disabled Specifying an immutable field in the field mask will
+      result in an INVALID_ARGUMENT error.
+  """
+
+  configVersion = _messages.MessageField('ConfigVersion', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class AppconfigmanagerProjectsLocationsGetRequest(_messages.Message):
@@ -504,27 +508,26 @@ class Config(_messages.Message):
   updateTime = _messages.StringField(6)
 
 
-class ConfigInstance(_messages.Message):
-  r"""Message describing ConfigInstance object
+class ConfigVersion(_messages.Message):
+  r"""Message describing ConfigVersion object
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    configRender: Output only. Resource identifier to the corresponding
-      ConfigRender resource associated with the ConfigInstance.
+    configVersionRender: Output only. Resource identifier to the corresponding
+      ConfigVersionRender resource associated with the ConfigVersion.
     createTime: Output only. [Output only] Create time stamp
-    disabled: Optional. Disabled boolean to determine if a ConfigInstance acts
+    disabled: Optional. Disabled boolean to determine if a ConfigVersion acts
       as a deleted (but recoverable) resource. Default value is False.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. [Output only] The resource name of the
-      ConfigInstance in the format `projects/*/configs/*/instances/*`.
-    payload: Required. Immutable. Payload content of a ConfigInstance
-      resource. If the parent Config has a RAW ConfigType the payload data
-      must point to a RawPayload & if the parent Config has a TEMPLATED
-      ConfigType the payload data must point to a TemplateValuesPayload. This
-      is only returned when the Get/(List?) request provides the View value of
-      FULL.
+      ConfigVersion in the format `projects/*/configs/*/versions/*`.
+    payload: Required. Immutable. Payload content of a ConfigVersion resource.
+      If the parent Config has a RAW ConfigType the payload data must point to
+      a RawPayload & if the parent Config has a TEMPLATED ConfigType the
+      payload data must point to a TemplateValuesPayload. This is only
+      returned when the Get/(List?) request provides the View value of FULL.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -552,17 +555,17 @@ class ConfigInstance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configRender = _messages.StringField(1)
+  configVersionRender = _messages.StringField(1)
   createTime = _messages.StringField(2)
   disabled = _messages.BooleanField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  payload = _messages.MessageField('ConfigInstancePayload', 6)
+  payload = _messages.MessageField('ConfigVersionPayload', 6)
   updateTime = _messages.StringField(7)
 
 
-class ConfigInstancePayload(_messages.Message):
-  r"""Message for storing a ConfigInstance resource's payload data based upon
+class ConfigVersionPayload(_messages.Message):
+  r"""Message for storing a ConfigVersion resource's payload data based upon
   its type.
 
   Fields:
@@ -574,32 +577,32 @@ class ConfigInstancePayload(_messages.Message):
   templateValuesPayload = _messages.MessageField('TemplateValuesPayload', 2)
 
 
-class ConfigRender(_messages.Message):
-  r"""Message describing ConfigRender object
+class ConfigVersionRender(_messages.Message):
+  r"""Message describing ConfigVersionRender object
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    configInstance: Output only. Resource identifier to the corresponding
-      ConfigInstance resource associated with the ConfigRender.
+    configVersion: Output only. Resource identifier to the corresponding
+      ConfigVersion resource associated with the ConfigVersionRender.
     createTime: Output only. [Output only] Create time stamp
-    disabled: Optional. Disabled boolean to determine if a ConfigRender acts
-      as a deleted (but recoverable) resource. Default value is False.
+    disabled: Optional. Disabled boolean to determine if a ConfigVersionRender
+      acts as a deleted (but recoverable) resource. Default value is False.
     labels: Optional. Labels as key value pairs
     name: Output only. Identifier. [Output only] The resource name of the
-      ConfigRender in the format `projects/*/configs/*/renders/*`.
-    payload: Required. Immutable. Payload content of a ConfigInstance
-      resource. If the parent Config has a RAW ConfigType the payload data
-      must point to a RawPayload & if the parent Config has a TEMPLATED
-      ConfigType the payload data must point to a TemplateValuesPayload. This
-      is only returned when the Get/(List?) request provides the View value of
-      FULL.
+      ConfigVersionRender in the format
+      `projects/*/configs/*/versionRenders/*`.
+    payload: Required. Immutable. Payload content of a ConfigVersion resource.
+      If the parent Config has a RAW ConfigType the payload data must point to
+      a RawPayload & if the parent Config has a TEMPLATED ConfigType the
+      payload data must point to a TemplateValuesPayload. This is only
+      returned when the Get/(List?) request provides the View value of FULL.
     renderedPayload: Output only. Server generated rendered version of the
-      user provided payload data (ConfigInstancePayload) which has all
+      user provided payload data (ConfigVersionPayload) which has all
       references to a SecretManager version resource substitutions. Any
-      TemplateInstances referenced by the ConfigInstances are also processed
-      to generate the final templated config output.
+      TemplateInstances referenced by the ConfigVersions are also processed to
+      generate the final templated config output.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -627,12 +630,12 @@ class ConfigRender(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  configInstance = _messages.StringField(1)
+  configVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   disabled = _messages.BooleanField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  payload = _messages.MessageField('ConfigInstancePayload', 6)
+  payload = _messages.MessageField('ConfigVersionPayload', 6)
   renderedPayload = _messages.BytesField(7)
   updateTime = _messages.StringField(8)
 
@@ -646,32 +649,32 @@ class Empty(_messages.Message):
 
 
 
-class ListConfigInstancesResponse(_messages.Message):
-  r"""Message for response to listing Configs
+class ListConfigVersionRendersResponse(_messages.Message):
+  r"""Message for response to listing ConfigVersionRenders
 
   Fields:
-    configInstances: The list of Config
+    configVersionRenders: The list of Config
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
   """
 
-  configInstances = _messages.MessageField('ConfigInstance', 1, repeated=True)
+  configVersionRenders = _messages.MessageField('ConfigVersionRender', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class ListConfigRendersResponse(_messages.Message):
-  r"""Message for response to listing ConfigRenders
+class ListConfigVersionsResponse(_messages.Message):
+  r"""Message for response to listing Configs
 
   Fields:
-    configRenders: The list of Config
+    configVersions: The list of Config
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
   """
 
-  configRenders = _messages.MessageField('ConfigRender', 1, repeated=True)
+  configVersions = _messages.MessageField('ConfigVersion', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -788,7 +791,7 @@ class RawPayload(_messages.Message):
   r"""Message for storing a RAW ConfigType Config resource.
 
   Fields:
-    data: Required. User provided content of a ConfigInstance. It can hold
+    data: Required. User provided content of a ConfigVersion. It can hold
       references to Secret Manager SecretVersion resources.
   """
 
@@ -906,10 +909,10 @@ class TemplateValuesPayload(_messages.Message):
   r"""Message for storing a TEMPLATED ConfigType Config resource.
 
   Fields:
-    data: Required. User provided content of a ConfigInstance in reference to
-      a TemplateInstance. It can hold references to Secret Manager
-      SecretVersion resources & must hold all template variable definitions
-      required by a TemplateInstance to be rendered properly.
+    data: Required. User provided content of a ConfigVersion in reference to a
+      TemplateInstance. It can hold references to Secret Manager SecretVersion
+      resources & must hold all template variable definitions required by a
+      TemplateInstance to be rendered properly.
   """
 
   data = _messages.BytesField(1)

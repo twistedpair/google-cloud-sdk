@@ -115,7 +115,6 @@ class SnapshotsClient(object):
     """
     request = self.messages.NetappProjectsLocationsVolumesSnapshotsListRequest(
         parent=volume_ref)
-    log.status.Print('request: {}'.format(request))
     # Check for unreachable locations.
     response = self.client.projects_locations_volumes_snapshots.List(request)
     for location in response.unreachable:

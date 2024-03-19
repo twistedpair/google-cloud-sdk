@@ -35,22 +35,22 @@ _API_VERSION_FOR_TRACK = {
 _API_NAME = 'networksecurity'
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
-def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.ALPHA):
+def GetEffectiveApiEndpoint(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return apis.GetEffectiveApiEndpoint(_API_NAME, api_version)
 
 
-def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
+def GetApiBaseUrl(release_track=base.ReleaseTrack.GA):
   api_version = _API_VERSION_FOR_TRACK.get(release_track)
   return resources.GetApiBaseUrlOrThrow(_API_NAME, api_version)
 
@@ -63,7 +63,6 @@ class Client:
   """
 
   def __init__(self, release_track):
-    self._release_track = release_track
     self._client = GetClientInstance(release_track)
     self._association_client = (
         self._client.projects_locations_firewallEndpointAssociations
@@ -135,20 +134,11 @@ class Client:
     # Only keys that exist in the dictionary are updated. This is done via the
     # updateMask request parameter. Values for keys that do not exist in the
     # dictionary can be anything and will not be updated.
-    if (
-        self._release_track == base.ReleaseTrack.ALPHA
-        or self._release_track == base.ReleaseTrack.BETA
-    ):
-      association = self.messages.FirewallEndpointAssociation(
-          disabled=update_fields.get('disabled', None),
-          labels=update_fields.get('labels', None),
-          tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
-      )
-    else:  # GA
-      association = self.messages.FirewallEndpointAssociation(
-          labels=update_fields.get('labels', None),
-          tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
-      )
+    association = self.messages.FirewallEndpointAssociation(
+        disabled=update_fields.get('disabled', None),
+        labels=update_fields.get('labels', None),
+        tlsInspectionPolicy=update_fields.get('tls_inspection_policy', None),
+    )
 
     update_request = self.messages.NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(
         name=name,

@@ -2846,6 +2846,11 @@ class ExternalCatalogTableOptions(_messages.Message):
       hive meta store table parameters. Maximum size of 4Mib.
 
   Fields:
+    connectionId: Optional. The connection specifying the credentials to be
+      used to read external storage, such as Azure Blob, Cloud Storage, or S3.
+      The connection is needed to read the open source table from BigQuery
+      Engine. The connection_id can have the form `..` or
+      `projects//locations//connections/`.
     parameters: Optional. A map of key value pairs defining the parameters and
       properties of the open source table. Corresponds with hive meta store
       table parameters. Maximum size of 4Mib.
@@ -2879,8 +2884,9 @@ class ExternalCatalogTableOptions(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  parameters = _messages.MessageField('ParametersValue', 1)
-  storageDescriptor = _messages.MessageField('StorageDescriptor', 2)
+  connectionId = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+  storageDescriptor = _messages.MessageField('StorageDescriptor', 3)
 
 
 class ExternalDataConfiguration(_messages.Message):

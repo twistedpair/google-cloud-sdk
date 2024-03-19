@@ -348,9 +348,9 @@ def AddCommonBulkInsertArgs(
     support_network_queue_count=False,
     support_performance_monitoring_unit=False,
     support_custom_hostnames=False,
-    support_storage_pool=False,
     support_specific_then_x_affinity=False,
     support_ipv6_only=False,
+    support_watchdog_timer=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -362,8 +362,7 @@ def AddCommonBulkInsertArgs(
       source_snapshot_csek=snapshot_csek,
       image_csek=image_csek,
       include_name=False,
-      support_boot=True,
-      support_storage_pool=support_storage_pool)
+      support_boot=True)
   instances_flags.AddCanIpForwardArgs(parser)
   instances_flags.AddAcceleratorArgs(parser)
   instances_flags.AddMachineTypeArgs(parser)
@@ -466,6 +465,8 @@ def AddCommonBulkInsertArgs(
 
   if support_performance_monitoring_unit:
     instances_flags.AddPerformanceMonitoringUnitArgs(parser)
+  if support_watchdog_timer:
+    instances_flags.AddWatchdogTimerArg(parser)
 
 
 def ValidateBulkCreateArgs(args):

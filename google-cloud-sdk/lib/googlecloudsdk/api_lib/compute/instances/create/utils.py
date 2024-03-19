@@ -90,7 +90,6 @@ def CreateDiskMessages(
     support_replica_zones=False,
     use_disk_type_uri=True,
     support_multi_writer=False,
-    support_storage_pool=False,
     support_source_instant_snapshot=False,
     support_boot_instant_snapshot_uri=False,
     support_enable_confidential_compute=False,
@@ -132,7 +131,6 @@ def CreateDiskMessages(
       support_replica_zones=support_replica_zones,
       use_disk_type_uri=use_disk_type_uri,
       support_multi_writer=support_multi_writer,
-      support_storage_pool=support_storage_pool,
       enable_source_instant_snapshots=support_source_instant_snapshot,
       support_enable_confidential_compute=support_enable_confidential_compute,
   )
@@ -282,7 +280,6 @@ def CreatePersistentCreateDiskMessages(
     use_disk_type_uri=True,
     support_multi_writer=False,
     support_image_family_scope=False,
-    support_storage_pool=False,
     enable_source_instant_snapshots=False,
     support_enable_confidential_compute=False,
 ):
@@ -319,7 +316,6 @@ def CreatePersistentCreateDiskMessages(
     use_disk_type_uri: True to use disk type URI, False if naked type.
     support_multi_writer: True if we allow multiple instances to write to disk.
     support_image_family_scope: True if the zonal image views are supported.
-    support_storage_pool: True if storage pool is supported.
     enable_source_instant_snapshots: True if instant snapshot initialization is
       supported for the disk.
     support_enable_confidential_compute: True to use confidential mode for disk.
@@ -454,14 +450,13 @@ def CreatePersistentCreateDiskMessages(
     if provisioned_throughput:
       initialize_params.provisionedThroughput = provisioned_throughput
 
-    if support_storage_pool:
-      storage_pool = disk.get('storage-pool')
-      if storage_pool:
-        storage_pool_ref = instance_utils.ParseStoragePool(
-            resources, storage_pool, project, location
-        )
-        storage_pool_uri = storage_pool_ref.SelfLink()
-        initialize_params.storagePool = storage_pool_uri
+    storage_pool = disk.get('storage-pool')
+    if storage_pool:
+      storage_pool_ref = instance_utils.ParseStoragePool(
+          resources, storage_pool, project, location
+      )
+      storage_pool_uri = storage_pool_ref.SelfLink()
+      initialize_params.storagePool = storage_pool_uri
 
     disk_architecture = disk.get('architecture')
     if disk_architecture:

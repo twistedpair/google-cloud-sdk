@@ -160,9 +160,7 @@ def AddDumpTypeFlag(parser):
       'migrations only.'
   )
   choices = ['LOGICAL', 'PHYSICAL']
-  parser.add_argument(
-      '--dump-type', help=help_text, choices=choices, hidden=True
-  )
+  parser.add_argument('--dump-type', help=help_text, choices=choices)
 
 
 def AddSqlServerHomogeneousMigrationConfigFlag(parser):
@@ -184,19 +182,16 @@ def AddSqlServerBackupFilePattern(parser):
   help_text = (
       'Pattern that describes the default backup naming strategy. The specified'
       ' pattern should ensure lexicographical order of backups. The pattern'
-      ' must define one of the following capture group sets:\nCapture group set'
-      ' #1\nyy/yyyy - year, 2 or 4 digits mm - month number, 1-12 dd - day of'
-      ' month,1-31 hh - hour of day, 00-23 mi - minutes, 00-59 ss - seconds,'
-      ' 00-59\nExample: For backup file TestDB_backup_20230802_155400.trn, use'
-      ' pattern:(?<database>.*)_backup_(?<yyyy>\\d{4})(?<mm>\\d{2})(?<dd>\\d{2})_(?<hh>\\d{2})(?<mi>\\d{2})(?<ss>\\d{2}).trn'
-      ' \nCapture group set #2\ntimestamp - unix timestamp\nExample: For backup'
-      ' file TestDB_backup_1691448254.trn, use'
-      ' pattern:(?<database>.*)_backup_(?<timestamp>.*).trn'
+      ' should define the following capture group set\nepoch - unix'
+      ' timestamp\nExample: For backup files TestDB.1691448240.bak,'
+      ' TestDB.1691448254.trn, TestDB.1691448284.trn.final use pattern:'
+      ' .*\\.(<epoch>\\d*)\\.(trn|bak|trn\\.final) or'
+      ' .*\\.(<timestamp>\\d*)\\.(trn|bak|trn\\.final)'
   )
   parser.add_argument(
       '--sqlserver-backup-file-pattern',
       help=help_text,
-      default='(?<database>.*)_(?<yyyy>\\d{4})(?<mm>\\d{2})(?<dd>\\d{2})_(?<hh>\\d{2})(?<mi>\\d{2})(?<ss>\\d{2})_(full|log)\\.(trn|bak)',
+      default='.*(\\.|_)(<epoch>\\d*)\\.(trn|bak|trn\\.final)',
   )
 
 
@@ -222,23 +217,19 @@ def AddSqlServerEncryptedDatabasesFlag(parser):
     A JSON/YAML file describing the encryption settings per database for all encrytped databases.
     An example of a JSON request:
         [{
-            "databaseName": "db1",
-            "databaseDetails": {
-                "encryptionOptions": {
-                    "certPath": "Path to certificate 1",
-                    "pvkPath": "Path to certificate private key 1",
-                    "pvkPassword": "Private key password 1"
-                }
+            "database": "db1",
+            "encryptionOptions": {
+                "certPath": "Path to certificate 1",
+                "pvkPath": "Path to certificate private key 1",
+                "pvkPassword": "Private key password 1"
             }
         },
         {
-            "databaseName": "db2",
-            "databaseDetails": {
-                "encryptionOptions": {
-                    "certPath": "Path to certificate 2",
-                    "pvkPath": "Path to certificate private key 2",
-                    "pvkPassword": "Private key password 2"
-                }
+            "database": "db2",
+            "encryptionOptions": {
+                "certPath": "Path to certificate 2",
+                "pvkPath": "Path to certificate private key 2",
+                "pvkPassword": "Private key password 2"
             }
         }]
 

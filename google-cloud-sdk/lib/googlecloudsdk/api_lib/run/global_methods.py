@@ -79,7 +79,7 @@ def ListLocations(client):
           name=project_resource_relname, pageSize=100)).locations
 
 
-def ListServices(client, region=_ALL_REGIONS):
+def ListServices(client, region=_ALL_REGIONS, field_selector=None):
   """Get the global services for a OnePlatform project.
 
   Args:
@@ -87,6 +87,7 @@ def ListServices(client, region=_ALL_REGIONS):
       request.
     region: (str) optional name of location to search for services in. If not
       passed, this defaults to the global value for all locations.
+    field_selector: (str) optional parameter to pass in request.field_selector.
 
   Returns:
     List of googlecloudsdk.api_lib.run import service.Service objects.
@@ -97,7 +98,8 @@ def ListServices(client, region=_ALL_REGIONS):
       params={'projectsId': project},
       collection='run.projects.locations')
   request = client.MESSAGES_MODULE.RunProjectsLocationsServicesListRequest(
-      parent=locations.RelativeName())
+      parent=locations.RelativeName(), fieldSelector=field_selector
+  )
   response = client.projects_locations_services.List(request)
 
   # Log the regions that did not respond.
@@ -109,6 +111,11 @@ def ListServices(client, region=_ALL_REGIONS):
   return [
       service.Service(item, client.MESSAGES_MODULE) for item in response.items
   ]
+
+
+# TODO(b/322180968): Once Worker API is ready, wire up to the Worker API.
+def ListWorkers(client):
+  return ListServices(client)
 
 
 def ListJobs(client, namespace):

@@ -1626,8 +1626,8 @@ class LogBucket(_messages.Message):
     UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
   Fields:
-    analyticsEnabled: Optional. Whether log analytics is enabled for this
-      bucket.Once enabled, log analytics features cannot be disabled.
+    analyticsEnabled: Whether log analytics is enabled for this bucket.Once
+      enabled, log analytics features cannot be disabled.
     analyticsUpgradeTime: Output only. The time that the bucket was upgraded
       to enable analytics. This will eventually be deprecated once there is
       not a need to upgrade existing buckets (i.e. when analytics becomes

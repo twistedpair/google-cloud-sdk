@@ -2715,7 +2715,9 @@ class Environment(_messages.Message):
       message processing guarantees. Reduces cost and latency but might result
       in duplicate messages committed to storage. Designed to run simple
       mapping streaming ETL jobs at the lowest cost. For example, Change Data
-      Capture (CDC) to BigQuery is a canonical use case.
+      Capture (CDC) to BigQuery is a canonical use case. For more information,
+      see [Set the pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
   Messages:
     InternalExperimentsValue: Experimental settings.
@@ -2761,7 +2763,9 @@ class Environment(_messages.Message):
       guarantees. Reduces cost and latency but might result in duplicate
       messages committed to storage. Designed to run simple mapping streaming
       ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-      BigQuery is a canonical use case.
+      BigQuery is a canonical use case. For more information, see [Set the
+      pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage. The system will append the suffix "/temp-{JOBNAME} to
       this resource prefix, where {JOBNAME} is the value of the job_name
@@ -2820,7 +2824,9 @@ class Environment(_messages.Message):
     guarantees. Reduces cost and latency but might result in duplicate
     messages committed to storage. Designed to run simple mapping streaming
     ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-    BigQuery is a canonical use case.
+    BigQuery is a canonical use case. For more information, see [Set the
+    pipeline streaming
+    mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
     Values:
       STREAMING_MODE_UNSPECIFIED: Run in the default mode.
@@ -3151,7 +3157,9 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       message processing guarantees. Reduces cost and latency but might result
       in duplicate messages committed to storage. Designed to run simple
       mapping streaming ETL jobs at the lowest cost. For example, Change Data
-      Capture (CDC) to BigQuery is a canonical use case.
+      Capture (CDC) to BigQuery is a canonical use case. For more information,
+      see [Set the pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
   Messages:
     AdditionalUserLabelsValue: Additional user labels to be specified for the
@@ -3208,7 +3216,9 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       guarantees. Reduces cost and latency but might result in duplicate
       messages committed to storage. Designed to run simple mapping streaming
       ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-      BigQuery is a canonical use case.
+      BigQuery is a canonical use case. For more information, see [Set the
+      pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
     subnetwork: Subnetwork to which VMs will be assigned, if desired. You can
       specify a subnetwork using either a complete URL or an abbreviated path.
       Expected to be of the form "https://www.googleapis.com/compute/v1/projec
@@ -3278,7 +3288,9 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
     guarantees. Reduces cost and latency but might result in duplicate
     messages committed to storage. Designed to run simple mapping streaming
     ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-    BigQuery is a canonical use case.
+    BigQuery is a canonical use case. For more information, see [Set the
+    pipeline streaming
+    mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
     Values:
       STREAMING_MODE_UNSPECIFIED: Run in the default mode.
@@ -5891,7 +5903,9 @@ class RuntimeEnvironment(_messages.Message):
       message processing guarantees. Reduces cost and latency but might result
       in duplicate messages committed to storage. Designed to run simple
       mapping streaming ETL jobs at the lowest cost. For example, Change Data
-      Capture (CDC) to BigQuery is a canonical use case.
+      Capture (CDC) to BigQuery is a canonical use case. For more information,
+      see [Set the pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
   Messages:
     AdditionalUserLabelsValue: Optional. Additional user labels to be
@@ -5933,7 +5947,9 @@ class RuntimeEnvironment(_messages.Message):
       guarantees. Reduces cost and latency but might result in duplicate
       messages committed to storage. Designed to run simple mapping streaming
       ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-      BigQuery is a canonical use case.
+      BigQuery is a canonical use case. For more information, see [Set the
+      pipeline streaming
+      mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
     subnetwork: Optional. Subnetwork to which VMs will be assigned, if
       desired. You can specify a subnetwork using either a complete URL or an
       abbreviated path. Expected to be of the form "https://www.googleapis.com
@@ -5977,7 +5993,9 @@ class RuntimeEnvironment(_messages.Message):
     guarantees. Reduces cost and latency but might result in duplicate
     messages committed to storage. Designed to run simple mapping streaming
     ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
-    BigQuery is a canonical use case.
+    BigQuery is a canonical use case. For more information, see [Set the
+    pipeline streaming
+    mode](https://cloud.google.com/dataflow/docs/guides/streaming-modes).
 
     Values:
       STREAMING_MODE_UNSPECIFIED: Run in the default mode.
@@ -6068,6 +6086,9 @@ class RuntimeUpdatableParams(_messages.Message):
     workerUtilizationHint: Target worker utilization, compared against the
       aggregate utilization of the worker pool by autoscaler, to determine
       upscaling and downscaling when absent other constraints such as backlog.
+      For more information, see [Update an existing
+      pipeline](https://cloud.google.com/dataflow/docs/guides/updating-a-
+      pipeline).
   """
 
   maxNumWorkers = _messages.IntegerField(1, variant=_messages.Variant.INT32)

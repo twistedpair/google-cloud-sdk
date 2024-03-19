@@ -6585,6 +6585,10 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
   Enums:
     HttpMethodValueValuesEnum: Optional. HTTP method for the flexible webhook
       calls. Standard webhook always uses POST.
+    ServiceAgentAuthValueValuesEnum: Optional. Indicate the auth token type
+      generated from the [Diglogflow service
+      agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
+      service-agent). The generated token is sent in the Authorization header.
     WebhookTypeValueValuesEnum: Optional. Type of the webhook.
 
   Messages:
@@ -6606,6 +6610,10 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
       "\nsubjectAltName='DNS:www.example.com'") ```
     httpMethod: Optional. HTTP method for the flexible webhook calls. Standard
       webhook always uses POST.
+    oauthConfig: Optional. The OAuth configuration of the webhook. If
+      specified, Dialogflow will initiate the OAuth client credential flow to
+      exchange an access token from the 3rd party platform and put it in the
+      auth header.
     parameterMapping: Optional. Maps the values extracted from specific fields
       of the flexible webhook response into session parameters. - Key: session
       parameter name - Value: field path in the webhook response
@@ -6614,6 +6622,10 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
       send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
+    serviceAgentAuth: Optional. Indicate the auth token type generated from
+      the [Diglogflow service
+      agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
+      service-agent). The generated token is sent in the Authorization header.
     uri: Required. The webhook URI for receiving POST requests. It must use
       https protocol.
     username: The user name for HTTP Basic authentication.
@@ -6642,6 +6654,32 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
     DELETE = 5
     PATCH = 6
     OPTIONS = 7
+
+  class ServiceAgentAuthValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicate the auth token type generated from the [Diglogflow
+    service agent](https://cloud.google.com/iam/docs/service-
+    agents#dialogflow-service-agent). The generated token is sent in the
+    Authorization header.
+
+    Values:
+      SERVICE_AGENT_AUTH_UNSPECIFIED: Service agent auth type unspecified.
+        Default to ID_TOKEN.
+      NONE: No token used.
+      ID_TOKEN: Use [ID
+        token](https://cloud.google.com/docs/authentication/token-types#id)
+        generated from service agent. This can be used to access Cloud
+        Function and Cloud Run after you grant Invoker role to `service-@gcp-
+        sa-dialogflow.iam.gserviceaccount.com`.
+      ACCESS_TOKEN: Use [access
+        token](https://cloud.google.com/docs/authentication/token-
+        types#access) generated from service agent. This can be used to access
+        other Google Cloud APIs after you grant required roles to
+        `service-@gcp-sa-dialogflow.iam.gserviceaccount.com`.
+    """
+    SERVICE_AGENT_AUTH_UNSPECIFIED = 0
+    NONE = 1
+    ID_TOKEN = 2
+    ACCESS_TOKEN = 3
 
   class WebhookTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Type of the webhook.
@@ -6710,13 +6748,34 @@ class GoogleCloudDialogflowCxV3WebhookGenericWebService(_messages.Message):
 
   allowedCaCerts = _messages.BytesField(1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
-  parameterMapping = _messages.MessageField('ParameterMappingValue', 3)
-  password = _messages.StringField(4)
-  requestBody = _messages.StringField(5)
-  requestHeaders = _messages.MessageField('RequestHeadersValue', 6)
-  uri = _messages.StringField(7)
-  username = _messages.StringField(8)
-  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 9)
+  oauthConfig = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig', 3)
+  parameterMapping = _messages.MessageField('ParameterMappingValue', 4)
+  password = _messages.StringField(5)
+  requestBody = _messages.StringField(6)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 7)
+  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 8)
+  uri = _messages.StringField(9)
+  username = _messages.StringField(10)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 11)
+
+
+class GoogleCloudDialogflowCxV3WebhookGenericWebServiceOAuthConfig(_messages.Message):
+  r"""Represents configuration of OAuth client credential flow for 3rd party
+  API authentication.
+
+  Fields:
+    clientId: Required. The client ID provided by the 3rd party platform.
+    clientSecret: Required. The client secret provided by the 3rd party
+      platform.
+    scopes: Optional. The OAuth scopes to grant.
+    tokenEndpoint: Required. The token endpoint provided by the 3rd party
+      platform to exchange an access token.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  scopes = _messages.StringField(3, repeated=True)
+  tokenEndpoint = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
@@ -9254,6 +9313,10 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
   Enums:
     HttpMethodValueValuesEnum: Optional. HTTP method for the flexible webhook
       calls. Standard webhook always uses POST.
+    ServiceAgentAuthValueValuesEnum: Optional. Indicate the auth token type
+      generated from the [Diglogflow service
+      agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
+      service-agent). The generated token is sent in the Authorization header.
     WebhookTypeValueValuesEnum: Optional. Type of the webhook.
 
   Messages:
@@ -9275,6 +9338,10 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
       "\nsubjectAltName='DNS:www.example.com'") ```
     httpMethod: Optional. HTTP method for the flexible webhook calls. Standard
       webhook always uses POST.
+    oauthConfig: Optional. The OAuth configuration of the webhook. If
+      specified, Dialogflow will initiate the OAuth client credential flow to
+      exchange an access token from the 3rd party platform and put it in the
+      auth header.
     parameterMapping: Optional. Maps the values extracted from specific fields
       of the flexible webhook response into session parameters. - Key: session
       parameter name - Value: field path in the webhook response
@@ -9283,6 +9350,10 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
       send to flexible webhook.
     requestHeaders: The HTTP request headers to send together with webhook
       requests.
+    serviceAgentAuth: Optional. Indicate the auth token type generated from
+      the [Diglogflow service
+      agent](https://cloud.google.com/iam/docs/service-agents#dialogflow-
+      service-agent). The generated token is sent in the Authorization header.
     uri: Required. The webhook URI for receiving POST requests. It must use
       https protocol.
     username: The user name for HTTP Basic authentication.
@@ -9311,6 +9382,32 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
     DELETE = 5
     PATCH = 6
     OPTIONS = 7
+
+  class ServiceAgentAuthValueValuesEnum(_messages.Enum):
+    r"""Optional. Indicate the auth token type generated from the [Diglogflow
+    service agent](https://cloud.google.com/iam/docs/service-
+    agents#dialogflow-service-agent). The generated token is sent in the
+    Authorization header.
+
+    Values:
+      SERVICE_AGENT_AUTH_UNSPECIFIED: Service agent auth type unspecified.
+        Default to ID_TOKEN.
+      NONE: No token used.
+      ID_TOKEN: Use [ID
+        token](https://cloud.google.com/docs/authentication/token-types#id)
+        generated from service agent. This can be used to access Cloud
+        Function and Cloud Run after you grant Invoker role to `service-@gcp-
+        sa-dialogflow.iam.gserviceaccount.com`.
+      ACCESS_TOKEN: Use [access
+        token](https://cloud.google.com/docs/authentication/token-
+        types#access) generated from service agent. This can be used to access
+        other Google Cloud APIs after you grant required roles to
+        `service-@gcp-sa-dialogflow.iam.gserviceaccount.com`.
+    """
+    SERVICE_AGENT_AUTH_UNSPECIFIED = 0
+    NONE = 1
+    ID_TOKEN = 2
+    ACCESS_TOKEN = 3
 
   class WebhookTypeValueValuesEnum(_messages.Enum):
     r"""Optional. Type of the webhook.
@@ -9379,13 +9476,34 @@ class GoogleCloudDialogflowCxV3beta1WebhookGenericWebService(_messages.Message):
 
   allowedCaCerts = _messages.BytesField(1, repeated=True)
   httpMethod = _messages.EnumField('HttpMethodValueValuesEnum', 2)
-  parameterMapping = _messages.MessageField('ParameterMappingValue', 3)
-  password = _messages.StringField(4)
-  requestBody = _messages.StringField(5)
-  requestHeaders = _messages.MessageField('RequestHeadersValue', 6)
-  uri = _messages.StringField(7)
-  username = _messages.StringField(8)
-  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 9)
+  oauthConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig', 3)
+  parameterMapping = _messages.MessageField('ParameterMappingValue', 4)
+  password = _messages.StringField(5)
+  requestBody = _messages.StringField(6)
+  requestHeaders = _messages.MessageField('RequestHeadersValue', 7)
+  serviceAgentAuth = _messages.EnumField('ServiceAgentAuthValueValuesEnum', 8)
+  uri = _messages.StringField(9)
+  username = _messages.StringField(10)
+  webhookType = _messages.EnumField('WebhookTypeValueValuesEnum', 11)
+
+
+class GoogleCloudDialogflowCxV3beta1WebhookGenericWebServiceOAuthConfig(_messages.Message):
+  r"""Represents configuration of OAuth client credential flow for 3rd party
+  API authentication.
+
+  Fields:
+    clientId: Required. The client ID provided by the 3rd party platform.
+    clientSecret: Required. The client secret provided by the 3rd party
+      platform.
+    scopes: Optional. The OAuth scopes to grant.
+    tokenEndpoint: Required. The token endpoint provided by the 3rd party
+      platform to exchange an access token.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  scopes = _messages.StringField(3, repeated=True)
+  tokenEndpoint = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):

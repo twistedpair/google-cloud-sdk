@@ -52,8 +52,20 @@ def _NewRoutingTrafficStage():
   return progress_tracker.Stage('Routing traffic...', key=SERVICE_ROUTES_READY)
 
 
+# TODO(b/322180968): Once Worker API is ready, replace 'key' to Worker specific
+# condition.
+def _NewSplittingInstanceStage():
+  return progress_tracker.Stage(
+      'Splitting instances...', key=SERVICE_ROUTES_READY
+  )
+
+
 def UpdateTrafficStages():
   return [_NewRoutingTrafficStage()]
+
+
+def UpdateInstanceSplitStages():
+  return [_NewSplittingInstanceStage()]
 
 
 # Because some terminals cannot update multiple lines of output simultaneously,
@@ -139,7 +151,9 @@ def ExecutionDependencies():
 # TODO(b/322180315): Once Worker's API is ready,
 # replace Service/Configuration related references.
 def WorkerStages(
-    include_build=False, include_create_repo=False, include_create_revision=True
+    include_build=False,
+    include_create_repo=False,
+    include_create_revision=True,
 ):
   """Return the progress tracker Stages for conditions of a Worker."""
   stages = []

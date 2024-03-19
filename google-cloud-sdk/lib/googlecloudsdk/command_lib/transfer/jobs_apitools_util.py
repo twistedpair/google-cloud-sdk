@@ -36,29 +36,35 @@ from googlecloudsdk.core.util import times
 
 UPDATE_FIELD_MASK = ('description,logging_config,notification_config,schedule,'
                      'status,transfer_spec')
-VALID_TRANSFER_SCHEMES = [
+
+COMMON_VALID_TRANSFER_SCHEMES = (
     storage_url.ProviderPrefix.POSIX,
     storage_url.ProviderPrefix.GCS,
     storage_url.ProviderPrefix.S3,
     storage_url.ProviderPrefix.HTTP,
     storage_url.ProviderPrefix.HTTPS,
-]
+)
+
+VALID_SOURCE_TRANSFER_SCHEMES = COMMON_VALID_TRANSFER_SCHEMES + (
+    storage_url.ProviderPrefix.HDFS,
+)
+VALID_DESTINATION_TRANSFER_SCHEMES = COMMON_VALID_TRANSFER_SCHEMES
 
 
-def _prompt_and_add_valid_scheme(url):
+def _prompt_and_add_valid_scheme(url, valid_schemes):
   """Has user select a valid scheme from a list and returns new URL."""
   if not console_io.CanPrompt():
     raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
         url.object_name))
   scheme_index = console_io.PromptChoice(
-      [scheme.value + '://' for scheme in VALID_TRANSFER_SCHEMES],
+      [scheme.value + '://' for scheme in valid_schemes],
       cancel_option=True,
       message=('Storage Transfer does not support direct file URLs: {}\n'
                'Did you mean to use "posix://"?\n'
                'Run this command with "--help" for more info,\n'
                'or select a valid scheme below.').format(url))
 
-  new_scheme = VALID_TRANSFER_SCHEMES[scheme_index]
+  new_scheme = valid_schemes[scheme_index]
   return storage_url.switch_scheme(url, new_scheme)
 
 
@@ -241,7 +247,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
         raise
     else:
       if source_url.scheme is storage_url.ProviderPrefix.FILE:
-        source_url = _prompt_and_add_valid_scheme(source_url)
+        source_url = _prompt_and_add_valid_scheme(
+            source_url, VALID_SOURCE_TRANSFER_SCHEMES
+        )
       if source_url.scheme is storage_url.ProviderPrefix.HDFS:
         job.transferSpec.hdfsDataSource = messages.HdfsData(
             path=source_url.object_name)
@@ -282,7 +290,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
 
     destination_url = storage_url.storage_url_from_string(args.destination)
     if destination_url.scheme is storage_url.ProviderPrefix.FILE:
-      destination_url = _prompt_and_add_valid_scheme(destination_url)
+      destination_url = _prompt_and_add_valid_scheme(
+          destination_url, VALID_DESTINATION_TRANSFER_SCHEMES
+      )
 
     if destination_url.scheme is storage_url.ProviderPrefix.GCS:
       job.transferSpec.gcsDataSink = messages.GcsData(

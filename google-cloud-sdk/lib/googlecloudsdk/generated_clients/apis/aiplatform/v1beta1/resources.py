@@ -336,10 +336,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_EXTENSIONS = (
       'projects.locations.extensions',
-      'projects/{projectsId}/locations/{locationsId}/extensions/'
-      '{extensionsId}',
-      {},
-      ['projectsId', 'locationsId', 'extensionsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/extensions/'
+              '{extensionsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_EXTENSIONS_DEPLOYMENTS = (

@@ -28,8 +28,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import encoding
 
-import six
-
 _DEFAULT_PASSWORD = 'notasecret'
 _PYCA_CRYPTOGRAPHY_MIN_VERSION = '2.5'
 
@@ -76,32 +74,6 @@ class PKCS12Signer(crypt_base.Signer, crypt_base.FromServiceAccountMixin):
     return cls(key)
 
 
-class PKCS12SignerPyOpenSSL(crypt_base.Signer,
-                            crypt_base.FromServiceAccountMixin):
-  """Signer for a p12 service account key based on pyOpenSSL."""
-
-  def __init__(self, key):
-    self._key = key
-
-  # Defined in the Signer interface, and is not useful for gcloud.
-  @property
-  def key_id(self):
-    return None
-
-  def sign(self, message):
-    message = _helpers.to_bytes(message)
-    from OpenSSL import crypto  # pylint: disable=g-import-not-at-top
-    return crypto.sign(self._key, message, six.ensure_str('sha256'))
-
-  @classmethod
-  def from_string(cls, key_strings, key_id=None):
-    del key_id
-    key_string, password = (_helpers.to_bytes(k) for k in key_strings)
-    from OpenSSL import crypto  # pylint: disable=g-import-not-at-top
-    key = crypto.load_pkcs12(key_string, password).get_privatekey()
-    return cls(key)
-
-
 class Credentials(service_account.Credentials):
   """google-auth service account credentials using p12 keys.
 
@@ -115,13 +87,7 @@ class Credentials(service_account.Credentials):
 
   oauth2client uses PyOpenSSL to handle p12 keys. PyOpenSSL deprecated
   p12 support from version 20.0.0 and encourages to use pyca/cryptography for
-  anything other than TLS connections. We should build the p12 support on
-  pyca/cryptography. Otherwise, newer PyOpenSSL may remove p12 support and
-  break p12 key users. The PyOpenSSL is used as a fallback to avoid breaking
-  existing p12 users. Even though PyOpenSSL depends on pyca/cryptography and
-  users who installed PyOpenSSL should have also installed pyca/cryptography,
-  the pyca/cryptography may be older than version 2.5 which is the minimum
-  required version.
+  anything other than TLS connections.
   """
 
   _REQUIRED_FIELDS = ('service_account_email', 'token_uri', 'scopes')
@@ -140,13 +106,7 @@ class Credentials(service_account.Credentials):
                                             password=None,
                                             **kwargs):
     password = password or _DEFAULT_PASSWORD
-    try:
-      signer = PKCS12Signer.from_string((key_string, password))
-    except ImportError:
-      log.debug(
-          'pyca/cryptography is not available or the version is < {}. Fall '
-          'back to using OpenSSL.'.format(_PYCA_CRYPTOGRAPHY_MIN_VERSION))
-      signer = PKCS12SignerPyOpenSSL.from_string((key_string, password))
+    signer = PKCS12Signer.from_string((key_string, password))
 
     missing_fields = [f for f in cls._REQUIRED_FIELDS if f not in kwargs]
     if missing_fields:

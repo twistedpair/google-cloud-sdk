@@ -77,6 +77,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    connectionState: Output only. The current connection state of the cluster.
     controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
@@ -174,29 +175,30 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlane = _messages.MessageField('ControlPlane', 3)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 4)
-  controlPlaneVersion = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(8)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(10, repeated=True)
-  fleet = _messages.MessageField('Fleet', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 13, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 14)
-  name = _messages.StringField(15)
-  networking = _messages.MessageField('ClusterNetworking', 16)
-  nodeVersion = _messages.StringField(17)
-  port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 21)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 22)
-  targetVersion = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 25)
+  connectionState = _messages.MessageField('ConnectionState', 3)
+  controlPlane = _messages.MessageField('ControlPlane', 4)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 5)
+  controlPlaneVersion = _messages.StringField(6)
+  createTime = _messages.StringField(7)
+  defaultMaxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(9)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(10, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(11, repeated=True)
+  fleet = _messages.MessageField('Fleet', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 14, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 15)
+  name = _messages.StringField(16)
+  networking = _messages.MessageField('ClusterNetworking', 17)
+  nodeVersion = _messages.StringField(18)
+  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 22)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 23)
+  targetVersion = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 26)
 
 
 class ClusterNetworking(_messages.Message):
@@ -253,6 +255,39 @@ class ClusterUser(_messages.Message):
   """
 
   username = _messages.StringField(1)
+
+
+class ConnectionState(_messages.Message):
+  r"""ConnectionState holds the current connection state from the cluster to
+  Google.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current connection state.
+
+  Fields:
+    state: Output only. The current connection state.
+    updateTime: Output only. The time when the connection state was last
+      changed.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current connection state.
+
+    Values:
+      STATE_UNSPECIFIED: Unknown connection state.
+      DISCONNECTED: This cluster is currently disconnected from Google.
+      CONNECTED: This cluster is currently connected to Google.
+      CONNECTED_AND_SYNCING: This cluster is currently connected to Google,
+        but may have recently reconnected after a disconnection. It is still
+        syncing back.
+    """
+    STATE_UNSPECIFIED = 0
+    DISCONNECTED = 1
+    CONNECTED = 2
+    CONNECTED_AND_SYNCING = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  updateTime = _messages.StringField(2)
 
 
 class ControlPlane(_messages.Message):

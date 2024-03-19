@@ -1715,6 +1715,10 @@ class Preview(_messages.Message):
     tfErrors: Output only. Summary of errors encountered during Terraform
       preview. It has a size limit of 10, i.e. only top 10 errors will be
       summarized here.
+    tfVersion: Output only. The current Terraform version set on the preview.
+      It is in the format of "Major.Minor.Patch", for example, "1.3.10".
+    tfVersionConstraint: Optional. The user-specified Terraform version
+      constraint. Example: "=1.3.10".
     workerPool: Optional. The user-specified Worker Pool resource in which the
       Cloud Build job will execute. Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId} If
@@ -1827,7 +1831,9 @@ class Preview(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 14)
   terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
   tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
-  workerPool = _messages.StringField(17)
+  tfVersion = _messages.StringField(17)
+  tfVersionConstraint = _messages.StringField(18)
+  workerPool = _messages.StringField(19)
 
 
 class PreviewArtifacts(_messages.Message):
@@ -2428,7 +2434,7 @@ class TerraformVersion(_messages.Message):
     obsoleteTime: Output only. When the version is obsolete.
     state: Output only. The state of the version, ACTIVE, DEPRECATED or
       OBSOLETE.
-    supportTime: Output only. When the version is supported .
+    supportTime: Output only. When the version is supported.
   """
 
   class StateValueValuesEnum(_messages.Enum):

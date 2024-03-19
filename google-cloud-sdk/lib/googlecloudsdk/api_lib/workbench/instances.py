@@ -390,6 +390,11 @@ def CreateInstanceStopRequest(args, messages):
       name=instance, stopInstanceRequest=stop_request)
 
 
+def CreateGetConfigRequest(args, messages):
+  name = util.GetParentFromArgs(args)
+  return messages.NotebooksProjectsLocationsInstancesGetConfigRequest(name=name)
+
+
 def UpdateInstance(args, messages):
   """Creates the Instance message for the update request.
 

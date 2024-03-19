@@ -521,9 +521,9 @@ class BackupPlan(_messages.Message):
       cases to be provided. An example description is the following: "This is
       a backup plan that performs a daily backup at 6pm and retains data for 3
       months". The description must be at most 2048 characters.
-    displayName: Required. The display name of the `BackupPlan`. This human-
-      readable name must start with a lowercase letter followed by up to 62
-      lowercase letters, numbers, or hyphens. Pattern, /a-z{,62}/.
+    displayName: Optional. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. The display name of the
+      `BackupPlan`.
     etag: Optional. `etag` is returned from the service in the response. As a
       user of the service, you may provide an etag value in this field to
       prevent stale resources.
@@ -615,7 +615,7 @@ class BackupPlanAssociation(_messages.Message):
       ions/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
-    resourceType: Required. Immutable. Resource type of workload on which
+    resourceType: Output only. Output Only. Resource type of workload on which
       backupplan is applied
     rulesConfigInfo: Output only. The config info related to backup rules.
     scopeId: Output only. TODO b/325560313: Deprecated and field will be
@@ -697,9 +697,13 @@ class BackupRule(_messages.Message):
       email address of the Backup Vault Service Account. (precedent: https://s
       ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
       service.proto;l=1014-1019)
-    displayName: Optional. The display name of the `BackupRule`.
-    ruleId: Output only. The unique id of this `BackupRule`. The `rule_id` is
-      unique per `BackupPlan`.
+    displayName: Optional. TODO b/325560313: Deprecated and field will be
+      removed after UI integration change. The display name of the
+      `BackupRule`.
+    ruleId: Required. Immutable. The unique id of this `BackupRule`. The
+      `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens. Pattern, /a-z{,62}/.
     standardSchedule: Required. Defines a schedule that runs within the
       confines of a defined window of time.
   """
@@ -3058,8 +3062,6 @@ class RuleConfigInfo(_messages.Message):
       lt}/dataSources/{datasource}
     lastSuccessfulBackupConsistencyTime: Output only. The point in time when
       the last successful backup was captured from the source.
-    ruleDisplayName: Output only. Output Only. Backup Rule id fetched from
-      backup plan.
     ruleId: Output only. Output Only. Backup Rule id fetched from backup plan.
     state: Output only. The config state for rule.
     stateDetails: Output only. Output Only. Additional details for current
@@ -3085,10 +3087,9 @@ class RuleConfigInfo(_messages.Message):
 
   dataSource = _messages.StringField(1)
   lastSuccessfulBackupConsistencyTime = _messages.StringField(2)
-  ruleDisplayName = _messages.StringField(3)
-  ruleId = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  stateDetails = _messages.StringField(6)
+  ruleId = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  stateDetails = _messages.StringField(5)
 
 
 class Scheduling(_messages.Message):

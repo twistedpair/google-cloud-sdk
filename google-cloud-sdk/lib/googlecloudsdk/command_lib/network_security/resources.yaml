@@ -227,6 +227,18 @@ partnerSSERealm:
     attribute_name: partner_sse_realm
     help: Id of the partner SSE realm.
 
+partnerSSEEnvironment:
+  name: partner SSE environment
+  collection: networksecurity.projects.locations.partnerSSEEnvironments
+  request_id_field: partnerSseEnvironmentId
+  attributes:
+  - *project
+  - *globalDefaultLocation
+  - &partnerSSEEnvironment
+    parameter_name: partnerSSEEnvironmentsId
+    attribute_name: partner_sse_environment
+    help: Id of the partner SSE environment.
+
 sseGateway:
   name: SSE gateway
   collection: networksecurity.projects.locations.sseGateways

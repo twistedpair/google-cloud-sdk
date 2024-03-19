@@ -638,17 +638,17 @@ class Connection(_messages.Message):
   r"""VPC connectivity information.
 
   Enums:
-    ConnectionTypeValueValuesEnum: Required. VPC connection type.
+    ConnectionTypeValueValuesEnum: Required. The VPC connection type.
 
   Fields:
-    connectionType: Required. VPC connection type.
-    nccHub: Optional. Reference to a [NCC](https://cloud.google.com/network-
-      connectivity-center) hub. References should have the following format:
-      `projects/{project}/locations/global/hubs/{hub}`.
+    connectionType: Required. The VPC connection type.
+    nccHub: Optional. The resource name of the
+      [NCC](https://cloud.google.com/network-connectivity-center) hub. Use the
+      following format: `projects/{project}/locations/global/hubs/{hub}`.
   """
 
   class ConnectionTypeValueValuesEnum(_messages.Enum):
-    r"""Required. VPC connection type.
+    r"""Required. The VPC connection type.
 
     Values:
       CONNECTION_TYPE_UNSPECIFIED: Unspecified connection type.
@@ -3010,12 +3010,13 @@ class ListMeshesResponse(_messages.Message):
 
 
 class ListMulticastConsumerAssociationsResponse(_messages.Message):
-  r"""Message for response to listing MulticastConsumerAssociations
+  r"""Response message for ListMulticastConsumerAssociations.
 
   Fields:
-    multicastConsumerAssociations: The list of MulticastConsumerAssociation
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastConsumerAssociations: The list of multicast consumer
+      associations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3025,12 +3026,12 @@ class ListMulticastConsumerAssociationsResponse(_messages.Message):
 
 
 class ListMulticastDomainActivationsResponse(_messages.Message):
-  r"""Message for response to listing MulticastDomainActivations
+  r"""Response message for ListMulticastDomainActivations.
 
   Fields:
-    multicastDomainActivations: The list of MulticastDomainActivation
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastDomainActivations: The list of multicast domain activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3040,12 +3041,12 @@ class ListMulticastDomainActivationsResponse(_messages.Message):
 
 
 class ListMulticastDomainsResponse(_messages.Message):
-  r"""Message for response to listing MulticastDomains
+  r"""Response message for ListMulticastDomains.
 
   Fields:
-    multicastDomains: The list of MulticastDomain
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastDomains: The list of multicast domains.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3055,13 +3056,13 @@ class ListMulticastDomainsResponse(_messages.Message):
 
 
 class ListMulticastGroupConsumerActivationsResponse(_messages.Message):
-  r"""Message for response to listing MulticastGroupConsumerActivations
+  r"""Response message for ListMulticastGroupConsumerActivations.
 
   Fields:
-    multicastGroupConsumerActivations: The list of
-      MulticastGroupConsumerActivation
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastGroupConsumerActivations: The list of multicast group consumer
+      activations.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3071,12 +3072,12 @@ class ListMulticastGroupConsumerActivationsResponse(_messages.Message):
 
 
 class ListMulticastGroupDefinitionsResponse(_messages.Message):
-  r"""Message for response to listing MulticastGroupDefinitions
+  r"""Response message for ListMulticastGroupDefinitions.
 
   Fields:
-    multicastGroupDefinitions: The list of MulticastGroupDefinition
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastGroupDefinitions: The list of multicast group definitions.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3086,12 +3087,12 @@ class ListMulticastGroupDefinitionsResponse(_messages.Message):
 
 
 class ListMulticastGroupsResponse(_messages.Message):
-  r"""Message for response to listing MulticastGroups
+  r"""Response message for ListMulticastGroups.
 
   Fields:
-    multicastGroups: The list of MulticastGroup
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    multicastGroups: The list of multicast groups.
+    nextPageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
     unreachable: Locations that could not be reached.
   """
 
@@ -3445,27 +3446,35 @@ class Mesh(_messages.Message):
 
 
 class MulticastConsumerAssociation(_messages.Message):
-  r"""Message describing MulticastConsumerAssociation object
+  r"""Multicast consumer association resource.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Labels as key-value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. [Output only] The timestamp when the multicast
+      consumer association was created.
     domainActivation: Reference to the domain activation in the same zone as
       the consumer association. [Deprecated] Use multicast_domain_activation
       instead.
-    labels: Labels as key value pairs
-    multicastDomainActivation: Optional. Reference to the multicast domain
-      activation in the same zone.
-    name: name of resource
-    network: Reference to the network
-    updateTime: Output only. [Output only] Update time stamp
+    labels: Labels as key-value pairs
+    multicastDomainActivation: Optional. The resource name of the multicast
+      domain activation that is in the same zone as this multicast consumer
+      association. Use the following format: //
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    name: The resource name of the multicast consumer association. Use the
+      following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    network: The resource name of the multicast consumer VPC network. Use
+      following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    updateTime: Output only. [Output only] The timestamp when the Multicast
+      Consumer Association was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key-value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3497,30 +3506,33 @@ class MulticastConsumerAssociation(_messages.Message):
 
 
 class MulticastDomain(_messages.Message):
-  r"""Message describing MulticastDomain object
+  r"""Multicast domain resource.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs.
+    LabelsValue: Optional. Labels as key-value pairs.
 
   Fields:
-    adminNetwork: Required. URI of the multicast admin VPC network. The URI
-      must be in the following format:
-      `projects/{project}/global/networks/{network}`.
-    connection: Required. VPC connectivity type for this domain.
-    createTime: Output only. [Output only] Create time stamp.
-    description: Optional. Optional text description of the resource.
-    labels: Optional. Labels as key value pairs.
-    name: Name of the resource.
-    network: Optional. URI of the multicast producer VPC network. The URI must
-      be in the following format:
-      `projects/{project}/global/networks/{network}`. [Deprecated] Use
-      admin_network instead.
-    updateTime: Output only. [Output only] Update time stamp.
+    adminNetwork: Required. The resource name of the multicast admin VPC
+      network. Use the following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    connection: Required. The VPC connection type for this multicast domain.
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain was created.
+    description: Optional. An optional text description of the multicast
+      domain.
+    labels: Optional. Labels as key-value pairs.
+    name: The resource name of the multicast domain. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`
+    network: Optional. [Deprecated] Use `admin_network` instead. The resource
+      name of the multicast producer VPC network. Use following format:
+      `projects/{project}/locations/global/networks/{network}`.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs.
+    r"""Optional. Labels as key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3553,26 +3565,30 @@ class MulticastDomain(_messages.Message):
 
 
 class MulticastDomainActivation(_messages.Message):
-  r"""Message describing MulticastDomainActivation object
+  r"""Multicast domain activation resource.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Labels as key-value pairs
 
   Fields:
-    adminNetwork: Output only. [Output only] URL of the admin network.
-    createTime: Output only. [Output only] Create time stamp
+    adminNetwork: Output only. [Output only] The URL of the admin network.
+    createTime: Output only. [Output only] The timestamp when the multicast
+      domain activation was created.
     domain: Reference to the domain that is being activated. [Deprecated] Use
       multicast_domain instead.
-    labels: Labels as key value pairs
-    multicastDomain: Optional. Reference to the multicast domain that is being
-      activated.
-    name: name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    labels: Labels as key-value pairs
+    multicastDomain: Optional. The resource name of the multicast domain to
+      activate. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`.
+    name: The resource name of the multicast domain activation. Use the
+      following format: `projects/*/locations/*/multicastDomainActivations/*`.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      domain activation was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key-value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3604,30 +3620,37 @@ class MulticastDomainActivation(_messages.Message):
 
 
 class MulticastGroup(_messages.Message):
-  r"""Message describing MulticastGroup object
+  r"""Multicast group resource.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Labels as key-value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group was created.
     domainActivation: Reference to the domain activation in the same zone as
       the group. [Deprecated] Use multicast_domain_activation instead.
     groupDefinition: Optional. Reference to the global group definition for
       the group. [Deprecated] Use multicast_group_definition instead.
-    ipCidrRange: Output only. [Output only] Multicast group IP range.
-    labels: Labels as key value pairs
-    multicastDomainActivation: Optional. Reference to the multicast domain
-      activation in the same zone.
-    multicastGroupDefinition: Optional. Reference to the global multicast
-      group definition.
-    name: name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    ipCidrRange: Output only. [Output only] The multicast group IP address
+      range.
+    labels: Labels as key-value pairs.
+    multicastDomainActivation: Optional. The resource name of a multicast
+      domain activation that is in the same zone as this multicast group. Use
+      the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`
+    multicastGroupDefinition: Optional. The resource name of the global
+      multicast group definition for the group. Use the following format:
+      `projects/*/locations/global/multicastGroupDefinitions/*`
+    name: The resource name of the multicast group. Use the following format:
+      `projects/*/locations/*/multicastGroups/*`.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3661,25 +3684,33 @@ class MulticastGroup(_messages.Message):
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
-  r"""Message describing MulticastGroupConsumerActivation object
+  r"""Multicast group consumer activation resource.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key-value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    multicastConsumerAssociation: Required. Reference to the domain
-      association in the same zone as the group activation.
-    multicastGroup: Required. Reference to the multicast group activated by
-      the producer in the same zone.
-    name: Identifier. name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group consumer activation was created.
+    labels: Optional. Labels as key-value pairs
+    multicastConsumerAssociation: Required. The resource name of the multicast
+      consumer association that is in the same zone as this multicast group
+      consumer activation. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
+    multicastGroup: Required. The resource name of the multicast group created
+      by the producer in the same zone as this multicast group consumer
+      activation. Use the following format: //
+      `projects/*/locations/*/multicastGroups/*`.
+    name: Identifier. The resource name of the multicast group consumer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    updateTime: Output only. [Output only] The timestamp when the multicast
+      group consumer activation was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key-value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3710,25 +3741,33 @@ class MulticastGroupConsumerActivation(_messages.Message):
 
 
 class MulticastGroupDefinition(_messages.Message):
-  r"""Message describing MulticastGroupDefinition object
+  r"""Multicast group definition resource.
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Labels as key-value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    ipCidrRange: Output only. [Output only] MulticastGroup IP range.
-    labels: Labels as key value pairs
-    multicastDomain: Required. Reference to the MulticastDomain.
-    name: name of resource
-    reservedInternalRange: Required. Reference to the InternalRange reserved
-      for this MulticastGroupDefinition.
-    updateTime: Output only. [Output only] Update time stamp
+    createTime: Output only. [Output only] The timestamp when the multicast
+      group definition was created.
+    ipCidrRange: Output only. [Output only] The multicast group IP address
+      range.
+    labels: Labels as key-value pairs.
+    multicastDomain: Required. The resource name of the multicast domain in
+      which to create this multicast group definition. Use the following
+      format: `projects/*/locations/global/multicastDomains/*`.
+    name: The resource name of the multicast group definition. Use the
+      following format:
+      `projects/*/locations/global/multicastGroupDefinitions/*`.
+    reservedInternalRange: Required. The resource name of the internal range
+      reserved for this multicast group definition. Use the following format:
+      `projects/*/locations/global/internalRanges/*`.
+    updateTime: Output only. [Output only] The timestamp whenthe multicast
+      group definition was most recently updated.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Labels as key-value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -5037,15 +5076,14 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest
   Fields:
     multicastConsumerAssociation: A MulticastConsumerAssociation resource to
       be passed as the request body.
-    multicastConsumerAssociationId: Required. Id of the requesting object If
-      auto-generating Id server-side, remove this field and
-      multicast_consumer_association_id from the method_signature of Create
-      RPC
-    parent: Required. Value for parent.
+    multicastConsumerAssociationId: Required. A unique name for the multicast
+      consumer association.
+    parent: Required. The parent resource of the multicast consumer
+      association. Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5067,7 +5105,9 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsDeleteRequest
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast consumer association to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5091,7 +5131,9 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsGetRequest(_m
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast consumer association to
+      get. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5103,13 +5145,22 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsListRequest(_
   object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for
-      ListMulticastConsumerAssociationsRequest
+    filter: A filter expression that filters the resources listed in the
+      response. The expression must be of the form ` ` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). can refer to a
+      proto or JSON field, or a synthetic field. Field names can be camelCase
+      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
+      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
+      Resources that have a key named `foo` whose value is `bar` labels.foo =
+      bar
+    orderBy: A field used to sort the results by a certain order.
+    pageSize: The maximum number of multicast consumer associations to return
+      per call.
+    pageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast consumer
+      associations. Use the following format: `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -5127,11 +5178,13 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(
   Fields:
     multicastConsumerAssociation: A MulticastConsumerAssociation resource to
       be passed as the request body.
-    name: name of resource
+    name: The resource name of the multicast consumer association. Use the
+      following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5139,11 +5192,11 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsPatchRequest(
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastConsumerAssociation resource by the update.
-      The fields specified in the update_mask are relative to the resource,
-      not the full request. A field will be overwritten if it is in the mask.
-      If the user does not provide a mask then all fields will be overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the MulticastConsumerAssociation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
   """
 
   multicastConsumerAssociation = _messages.MessageField('MulticastConsumerAssociation', 1)
@@ -5160,14 +5213,14 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_m
   Fields:
     multicastDomainActivation: A MulticastDomainActivation resource to be
       passed as the request body.
-    multicastDomainActivationId: Required. Id of the requesting object If
-      auto-generating Id server-side, remove this field and
-      multicast_domain_activation_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
+    multicastDomainActivationId: Required. A unique name for the multicast
+      domain activation.
+    parent: Required. The parent resource of the multicast domain activation.
+      Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5189,7 +5242,9 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsDeleteRequest(_m
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast domain activation to
+      delete. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5212,7 +5267,9 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsGetRequest(_mess
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast domain activation to
+      get. Use the following format:
+      `projects/*/locations/*/multicastDomainActivations/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5223,12 +5280,22 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsListRequest(_mes
   object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListMulticastDomainActivationsRequest
+    filter: A filter expression that filters the resources listed in the
+      response. The expression must be of the form ` ` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). can refer to a
+      proto or JSON field, or a synthetic field. Field names can be camelCase
+      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
+      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
+      Resources that have a key named `foo` whose value is `bar` labels.foo =
+      bar
+    orderBy: A field used to sort the results by a certain order.
+    pageSize: The maximum number of multicast domain activations to return per
+      call.
+    pageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domain
+      activations. Use the following format: `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -5245,11 +5312,12 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
   Fields:
     multicastDomainActivation: A MulticastDomainActivation resource to be
       passed as the request body.
-    name: name of resource
+    name: The resource name of the multicast domain activation. Use the
+      following format: `projects/*/locations/*/multicastDomainActivations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5257,11 +5325,11 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsPatchRequest(_me
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastDomainActivation resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the MulticastDomainActivation resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
   """
 
   multicastDomainActivation = _messages.MessageField('MulticastDomainActivation', 1)
@@ -5276,14 +5344,13 @@ class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Me
   Fields:
     multicastDomain: A MulticastDomain resource to be passed as the request
       body.
-    multicastDomainId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and multicast_domain_id
-      from the method_signature of Create RPC
-    parent: Required. Value for parent.
+    multicastDomainId: Required. A unique name for the multicast domain.
+    parent: Required. The parent resource of the multicast domain. Use the
+      following format: `projects/*/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5303,7 +5370,8 @@ class NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsMulticastDomainsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast domain to delete. Use
+      the following format: `projects/*/locations/global/multicastDomains/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5325,7 +5393,8 @@ class NetworkservicesProjectsLocationsMulticastDomainsGetRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsMulticastDomainsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast domain to get. Use the
+      following format: `projects/*/locations/global/multicastDomains/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5335,12 +5404,21 @@ class NetworkservicesProjectsLocationsMulticastDomainsListRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsMulticastDomainsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListMulticastDomainsRequest
+    filter: A filter expression that filters the resources listed in the
+      response. The expression must be of the form ` ` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). can refer to a
+      proto or JSON field, or a synthetic field. Field names can be camelCase
+      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
+      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
+      Resources that have a key named `foo` whose value is `bar` labels.foo =
+      bar
+    orderBy: A field used to sort the results by a certain order.
+    pageSize: The maximum number of multicast domains to return per call.
+    pageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast domains.
+      Use the following format: `projects/*/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -5356,11 +5434,12 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   Fields:
     multicastDomain: A MulticastDomain resource to be passed as the request
       body.
-    name: Name of the resource.
+    name: The resource name of the multicast domain. Use the following format:
+      `projects/*/locations/global/multicastDomains/*`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5368,11 +5447,11 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastDomain resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the multicast domain resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. If a
+      field is in the mask, then it is overwritten. If the you do not provide
+      a mask, then all fields are overwritten.
   """
 
   multicastDomain = _messages.MessageField('MulticastDomain', 1)
@@ -5388,15 +5467,14 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreateReq
   Fields:
     multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
       resource to be passed as the request body.
-    multicastGroupConsumerActivationId: Required. Id of the requesting object
-      If auto-generating Id server-side, remove this field and
-      multicast_group_consumer_activation_id from the method_signature of
-      Create RPC
-    parent: Required. Value for parent.
+    multicastGroupConsumerActivationId: Required. A unique name for the
+      multicast group consumer activation.
+    parent: Required. The parent resource of the multicast group consumer
+      activation. Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5417,7 +5495,9 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDeleteReq
   eRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group consumer
+      activation to delete. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5441,7 +5521,9 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetReques
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group consumer
+      activation to get. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5453,14 +5535,23 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListReque
   object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for
-      ListMulticastGroupConsumerActivationsRequest
+    filter: Optional. A filter expression that filters the resources listed in
+      the response. The expression must be of the form ` ` where operators:
+      `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents
+      a HAS operator which is roughly synonymous with equality). can refer to
+      a proto or JSON field, or a synthetic field. Field names can be
+      camelCase or snake_case. Examples: * Filter by name: name =
+      "RESOURCE_NAME" * Filter by labels: * Resources that have a key named
+      `foo` labels.foo:* * Resources that have a key named `foo` whose value
+      is `bar` labels.foo = bar
+    orderBy: Optional. A field used to sort the results by a certain order.
+    pageSize: Optional. The maximum number of multicast group consumer
+      activations to return per call.
+    pageToken: Optional. A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      consumer activations. Use the following format:
+      `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -5477,11 +5568,13 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequ
   Fields:
     multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
       resource to be passed as the request body.
-    name: Identifier. name of resource
+    name: Identifier. The resource name of the multicast group consumer
+      activation. Use the following format:
+      `projects/*/locations/*/multicastGroupConsumerActivations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5489,12 +5582,11 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequ
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastGroupConsumerActivation resource by the
-      update. The fields specified in the update_mask are relative to the
-      resource, not the full request. A field will be overwritten if it is in
-      the mask. If the user does not provide a mask then all fields will be
-      overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the MulticastGroupConsumerActivationresource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten
   """
 
   multicastGroupConsumerActivation = _messages.MessageField('MulticastGroupConsumerActivation', 1)
@@ -5510,14 +5602,14 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_me
   Fields:
     multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
       as the request body.
-    multicastGroupDefinitionId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      multicast_group_definition_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
+    multicastGroupDefinitionId: Required. A unique name for the multicast
+      group definition.
+    parent: Required. The parent resource of the multicast group definition.
+      Use the following format: `projects/*/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5538,7 +5630,9 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsDeleteRequest(_me
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group definition to
+      delete. Use the following format:
+      `projects/*/locations/global/multicastGroupDefinitions/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5561,7 +5655,9 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsGetRequest(_messa
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group definition to
+      get. Use the following format:
+      `projects/*/locations/global/multicastGroupDefinitions/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5572,12 +5668,22 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsListRequest(_mess
   object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListMulticastGroupDefinitionsRequest
+    filter: A filter expression that filters the resources listed in the
+      response. The expression must be of the form ` ` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). can refer to a
+      proto or JSON field, or a synthetic field. Field names can be camelCase
+      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
+      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
+      Resources that have a key named `foo` whose value is `bar` labels.foo =
+      bar
+    orderBy: A field used to sort the results by a certain order.
+    pageSize: The maximum number of multicast group definitions to return per
+      call.
+    pageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast group
+      definitions. Use the following format: `projects/*/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -5594,11 +5700,13 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
   Fields:
     multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
       as the request body.
-    name: name of resource
+    name: The resource name of the multicast group definition. Use the
+      following format:
+      `projects/*/locations/global/multicastGroupDefinitions/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5606,11 +5714,11 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsPatchRequest(_mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastGroupDefinition resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the multicast group definition resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. If a field is in the mask, then it is overwritten. If the
+      you do not provide a mask, then all fields are overwritten.
   """
 
   multicastGroupDefinition = _messages.MessageField('MulticastGroupDefinition', 1)
@@ -5625,14 +5733,13 @@ class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Mes
   Fields:
     multicastGroup: A MulticastGroup resource to be passed as the request
       body.
-    multicastGroupId: Required. Id of the requesting object If auto-generating
-      Id server-side, remove this field and multicast_group_id from the
-      method_signature of Create RPC
-    parent: Required. Value for parent.
+    multicastGroupId: Required. A unique name for the multicast group.
+    parent: Required. The parent resource of the multicast group. Use the
+      following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5652,7 +5759,8 @@ class NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest(_messages.Mes
   r"""A NetworkservicesProjectsLocationsMulticastGroupsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group to delete. Use
+      the following format: `projects/*/locations/*/multicastGroups/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5674,7 +5782,8 @@ class NetworkservicesProjectsLocationsMulticastGroupsGetRequest(_messages.Messag
   r"""A NetworkservicesProjectsLocationsMulticastGroupsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The resource name of the multicast group to get. Use the
+      following format: `projects/*/locations/*/multicastGroups/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5684,12 +5793,21 @@ class NetworkservicesProjectsLocationsMulticastGroupsListRequest(_messages.Messa
   r"""A NetworkservicesProjectsLocationsMulticastGroupsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListMulticastGroupsRequest
+    filter: A filter expression that filters the resources listed in the
+      response. The expression must be of the form ` ` where operators: `<`,
+      `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:` represents a
+      HAS operator which is roughly synonymous with equality). can refer to a
+      proto or JSON field, or a synthetic field. Field names can be camelCase
+      or snake_case. Examples: * Filter by name: name = "RESOURCE_NAME" *
+      Filter by labels: * Resources that have a key named `foo` labels.foo:* *
+      Resources that have a key named `foo` whose value is `bar` labels.foo =
+      bar
+    orderBy: A field used to sort the results by a certain order.
+    pageSize: The maximum number of multicast groups to return per call.
+    pageToken: A page token from an earlier query, as returned in
+      `next_page_token`.
+    parent: Required. The parent resource for which to list multicast groups.
+      Use the following format: `projects/*/locations/*`.
   """
 
   filter = _messages.StringField(1)
@@ -5705,11 +5823,12 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
   Fields:
     multicastGroup: A MulticastGroup resource to be passed as the request
       body.
-    name: name of resource
+    name: The resource name of the multicast group. Use the following format:
+      `projects/*/locations/*/multicastGroups/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
+      server will guarantee that for at least 60 minutes after the first
       request. For example, consider a situation where you make an initial
       request and the request times out. If you make the request again with
       the same request ID, the server can check if original operation with the
@@ -5717,11 +5836,11 @@ class NetworkservicesProjectsLocationsMulticastGroupsPatchRequest(_messages.Mess
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MulticastGroup resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+    updateMask: Required. The field mask specifies the fields to overwrite in
+      the multicast group resource by the update. The fields specified in the
+      `update_mask` are relative to the resource, not the full request. If a
+      field is in the mask, then it is overwritten. If the you do not provide
+      a mask, then all fields are overwritten.
   """
 
   multicastGroup = _messages.MessageField('MulticastGroup', 1)
@@ -6264,16 +6383,12 @@ class NetworkservicesProjectsLocationsWasmPluginsDeleteRequest(_messages.Message
   r"""A NetworkservicesProjectsLocationsWasmPluginsDeleteRequest object.
 
   Fields:
-    force: If set to `true`, any versions of this `WasmPlugin` resource are
-      also deleted. Otherwise, the request works only when the plugin has no
-      versions.
     name: Required. A name of the `WasmPlugin` resource to delete. Must be in
       the format
       `projects/{project}/locations/global/wasmPlugins/{wasm_plugin}`.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
+  name = _messages.StringField(1, required=True)
 
 
 class NetworkservicesProjectsLocationsWasmPluginsGetRequest(_messages.Message):

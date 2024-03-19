@@ -37,6 +37,8 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
   r"""Build the source using Buildpacks.
 
   Fields:
+    baseImage: Optional. The base image used to opt into automatic base image
+      updates.
     cacheImageUri: Optional. cache_image_uri is the GCR/AR URL where the cache
       image will be stored. cache_image_uri is optional and omitting it will
       disable caching. This URL must be stable across builds. It is used to
@@ -49,9 +51,10 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       builds.
   """
 
-  cacheImageUri = _messages.StringField(1)
-  functionTarget = _messages.StringField(2)
-  runtime = _messages.StringField(3)
+  baseImage = _messages.StringField(1)
+  cacheImageUri = _messages.StringField(2)
+  functionTarget = _messages.StringField(3)
+  runtime = _messages.StringField(4)
 
 
 class GoogleCloudRunV2CancelExecutionRequest(_messages.Message):

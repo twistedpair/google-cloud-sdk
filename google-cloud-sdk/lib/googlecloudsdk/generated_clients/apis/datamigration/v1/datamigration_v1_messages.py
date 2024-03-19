@@ -863,7 +863,7 @@ class ConnectionProfile(_messages.Message):
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
     spanner: A Spanner database connection profile.
-    sqlserver: An SQL Server database connection profile.
+    sqlserver: Connection profile for a SQL Server data source.
     state: The current connection profile state (e.g. DRAFT, READY, or
       FAILED).
     updateTime: Output only. The timestamp when the resource was last updated.
@@ -3784,6 +3784,7 @@ class MigrationJob(_messages.Message):
         writes to stop
       PREPARING_THE_DUMP: Only RDS flow - the sources writes stopped, waiting
         for dump to begin
+      READY_FOR_PROMOTE: The migration job is ready to be promoted.
     """
     PHASE_UNSPECIFIED = 0
     FULL_DUMP = 1
@@ -3791,6 +3792,7 @@ class MigrationJob(_messages.Message):
     PROMOTE_IN_PROGRESS = 3
     WAITING_FOR_SOURCE_WRITES_TO_STOP = 4
     PREPARING_THE_DUMP = 5
+    READY_FOR_PROMOTE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current migration job state.
@@ -5219,7 +5221,7 @@ class SqlServerBackups(_messages.Message):
   Fields:
     gcsBucket: Required. The Cloud Storage bucket that stores backups for all
       replicated databases.
-    gcsPrefix: Required. Cloud Storage path inside the bucket that stores
+    gcsPrefix: Optional. Cloud Storage path inside the bucket that stores
       backups.
   """
 
@@ -5311,12 +5313,10 @@ class SqlServerEncryptionOptions(_messages.Message):
 
   Fields:
     certPath: Required. Path to certificate.
-    pkvPassword: Required. Input only. Private key password. To be deprecated
-    pkvPath: Required. Path to certificate private key. To be deprecated
-    pvkPassword: Optional. Input only. Private key password. Enable REQUIRED
-      options when other fields are deprecated.
-    pvkPath: Optional. Path to certificate private key. Enable REQUIRED
-      options when other fields are deprecated.
+    pkvPassword: Optional. Input only. Private key password. To be deprecated
+    pkvPath: Optional. Path to certificate private key. To be deprecated
+    pvkPassword: Required. Input only. Private key password.
+    pvkPath: Required. Path to certificate private key.
   """
 
   certPath = _messages.StringField(1)
@@ -5330,7 +5330,7 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
   r"""Configuration for homogeneous migration to Cloud SQL for SQL Server.
 
   Messages:
-    DatabaseDetailsValue: Required. Backup details per database in Cloud
+    DatabaseDetailsValue: Optional. Backup details per database in Cloud
       Storage.
 
   Fields:
@@ -5344,14 +5344,13 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
       (?.*)_backup_(?\d{4})(?\d{2})(?\d{2})_(?\d{2})(?\d{2})(?\d{2}).trn
       Capture group set #2 timestamp - unix timestamp Example: For backup file
       TestDB_backup_1691448254.trn, use pattern: (?.*)_backup_(?.*).trn
-    databaseBackups: Backup details per database in Cloud Storage. To be
-      deprecated. database_details to be used instead.
-    databaseDetails: Required. Backup details per database in Cloud Storage.
+    databaseBackups: Required. Backup details per database in Cloud Storage.
+    databaseDetails: Optional. Backup details per database in Cloud Storage.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DatabaseDetailsValue(_messages.Message):
-    r"""Required. Backup details per database in Cloud Storage.
+    r"""Optional. Backup details per database in Cloud Storage.
 
     Messages:
       AdditionalProperty: An additional property for a DatabaseDetailsValue

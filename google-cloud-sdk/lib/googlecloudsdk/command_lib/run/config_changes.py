@@ -459,6 +459,60 @@ class SetLaunchStageAnnotationChange(NonTemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class SetRegionsAnnotationChange(NonTemplateConfigChanger):
+  """Sets regions annotation on a resource.
+
+  Attributes:
+    regions: A comma-separated list of regions.
+  """
+
+  regions: str
+
+  def Adjust(self, resource):
+    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = (
+        self.regions
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
+  """Adds or removes regions annotation on an existing service.
+
+  Attributes:
+    existing: the existing Service.
+    to_add: A comma-separated list of regions to add to existing.
+    to_remove: A comma-separated list of regions to remove from existing.
+  """
+
+  to_add: str
+  to_remove: str
+
+  def Adjust(self, resource):
+    annotation = (
+        resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] or None
+    )
+    existing = set(annotation.split(',') if annotation else [])
+    to_add = set(self.to_add.split(',') if self.to_add else [])
+    to_remove = set(self.to_remove.split(',') if self.to_remove else [])
+    already_added = existing & to_add
+    if already_added:
+      raise exceptions.ConfigurationError(
+          'Multi-region Service already exists in {}'.format(already_added)
+      )
+    cant_remove = to_remove - (to_remove & existing)
+    if cant_remove:
+      raise exceptions.ConfigurationError(
+          'Multi-region Service not deployed to {}'.format(cant_remove)
+      )
+    final_list = ','.join((existing | to_add) - to_remove)
+    resource.annotations[k8s_object.MULTI_REGION_REGIONS_ANNOTATION] = (
+        final_list
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class SetClientNameAndVersionAnnotationChange(ConfigChanger):
   """Sets the client name and version annotations.
 

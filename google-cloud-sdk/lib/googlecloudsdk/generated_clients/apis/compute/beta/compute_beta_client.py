@@ -6446,7 +6446,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instanceTemplates.get',
         ordered_params=['project', 'instanceTemplate'],
         path_params=['instanceTemplate', 'project'],
-        query_params=[],
+        query_params=['view'],
         relative_path='projects/{project}/global/instanceTemplates/{instanceTemplate}',
         request_field='',
         request_type_name='ComputeInstanceTemplatesGetRequest',
@@ -6524,7 +6524,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instanceTemplates.list',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'view'],
         relative_path='projects/{project}/global/instanceTemplates',
         request_field='',
         request_type_name='ComputeInstanceTemplatesListRequest',
@@ -6820,7 +6820,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.get',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=[],
+        query_params=['view'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='',
         request_type_name='ComputeInstancesGetRequest',
@@ -6903,6 +6903,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInstancesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def GetPartnerMetadata(self, request, global_params=None):
+      r"""Gets partner metadata of the specified instance and namespaces.
+
+      Args:
+        request: (ComputeInstancesGetPartnerMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (PartnerMetadata) The response message.
+      """
+      config = self.GetMethodConfig('GetPartnerMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetPartnerMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instances.getPartnerMetadata',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['namespaces'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/getPartnerMetadata',
+        request_field='',
+        request_type_name='ComputeInstancesGetPartnerMetadataRequest',
+        response_type_name='PartnerMetadata',
         supports_download=False,
     )
 
@@ -7054,7 +7080,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.list',
         ordered_params=['project', 'zone'],
         path_params=['project', 'zone'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'view'],
         relative_path='projects/{project}/zones/{zone}/instances',
         request_field='',
         request_type_name='ComputeInstancesListRequest',
@@ -7085,6 +7111,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeInstancesListReferrersRequest',
         response_type_name='InstanceListReferrers',
+        supports_download=False,
+    )
+
+    def PatchPartnerMetadata(self, request, global_params=None):
+      r"""Patches partner metadata of the specified instance.
+
+      Args:
+        request: (ComputeInstancesPatchPartnerMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchPartnerMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchPartnerMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.patchPartnerMetadata',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/patchPartnerMetadata',
+        request_field='partnerMetadata',
+        request_type_name='ComputeInstancesPatchPartnerMetadataRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -15252,7 +15304,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionInstanceTemplates.get',
         ordered_params=['project', 'region', 'instanceTemplate'],
         path_params=['instanceTemplate', 'project', 'region'],
-        query_params=[],
+        query_params=['view'],
         relative_path='projects/{project}/regions/{region}/instanceTemplates/{instanceTemplate}',
         request_field='',
         request_type_name='ComputeRegionInstanceTemplatesGetRequest',
@@ -15304,7 +15356,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionInstanceTemplates.list',
         ordered_params=['project', 'region'],
         path_params=['project', 'region'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'view'],
         relative_path='projects/{project}/regions/{region}/instanceTemplates',
         request_field='',
         request_type_name='ComputeRegionInstanceTemplatesListRequest',
@@ -18482,6 +18534,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DeleteRoutePolicy(self, request, global_params=None):
+      r"""Deletes Route Policy.
+
+      Args:
+        request: (ComputeRoutersDeleteRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.deleteRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['policy', 'requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/deleteRoutePolicy',
+        request_field='',
+        request_type_name='ComputeRoutersDeleteRoutePolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Returns the specified Router resource.
 
@@ -18560,6 +18638,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetRoutePolicy(self, request, global_params=None):
+      r"""Returns specified Route Policy.
+
+      Args:
+        request: (ComputeRoutersGetRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersGetRoutePolicyResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.getRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['policy'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/getRoutePolicy',
+        request_field='',
+        request_type_name='ComputeRoutersGetRoutePolicyRequest',
+        response_type_name='RoutersGetRoutePolicyResponse',
+        supports_download=False,
+    )
+
     def GetRouterStatus(self, request, global_params=None):
       r"""Retrieves runtime information of the specified router.
 
@@ -18635,6 +18739,58 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRoutersListRequest',
         response_type_name='RouterList',
+        supports_download=False,
+    )
+
+    def ListBgpRoutes(self, request, global_params=None):
+      r"""Retrieves a list of router bgp routes available to the specified project.
+
+      Args:
+        request: (ComputeRoutersListBgpRoutesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersListBgpRoutes) The response message.
+      """
+      config = self.GetMethodConfig('ListBgpRoutes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListBgpRoutes.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.listBgpRoutes',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['addressFamily', 'destinationPrefix', 'filter', 'maxResults', 'orderBy', 'pageToken', 'peer', 'policyApplied', 'returnPartialSuccess', 'routeType'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/listBgpRoutes',
+        request_field='',
+        request_type_name='ComputeRoutersListBgpRoutesRequest',
+        response_type_name='RoutersListBgpRoutes',
+        supports_download=False,
+    )
+
+    def ListRoutePolicies(self, request, global_params=None):
+      r"""Retrieves a list of router route policy subresources available to the specified project.
+
+      Args:
+        request: (ComputeRoutersListRoutePoliciesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RoutersListRoutePolicies) The response message.
+      """
+      config = self.GetMethodConfig('ListRoutePolicies')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRoutePolicies.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.routers.listRoutePolicies',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/listRoutePolicies',
+        request_field='',
+        request_type_name='ComputeRoutersListRoutePoliciesRequest',
+        response_type_name='RoutersListRoutePolicies',
         supports_download=False,
     )
 
@@ -18738,6 +18894,32 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/routers/{router}',
         request_field='routerResource',
         request_type_name='ComputeRoutersUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def UpdateRoutePolicy(self, request, global_params=None):
+      r"""Updates or creates new Route Policy.
+
+      Args:
+        request: (ComputeRoutersUpdateRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.updateRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/updateRoutePolicy',
+        request_field='routePolicy',
+        request_type_name='ComputeRoutersUpdateRoutePolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )

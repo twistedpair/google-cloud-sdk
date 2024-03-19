@@ -999,9 +999,12 @@ def Create(
   preview = messages.Preview(
       serviceAccount=service_account,
       workerPool=worker_pool,
-      terraformBlueprint=tf_blueprint,
       labels=labels_message,
   )
+
+  # set tf_blueprint only when one of the three sources is specified.
+  if any(_ is not None for _ in (gcs_source, local_source, git_source_repo)):
+    preview.terraformBlueprint = tf_blueprint
 
   if preview_full_name is not None:
     preview.name = preview_full_name

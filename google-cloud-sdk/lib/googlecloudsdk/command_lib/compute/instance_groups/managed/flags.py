@@ -60,96 +60,128 @@ def AddTypeArg(parser):
   parser.add_argument(
       '--type',
       choices={
-          'opportunistic':
+          'opportunistic': (
               'Do not proactively replace VMs. Create new VMs and delete old '
               'ones on resizes of the group and when you target specific VMs '
-              'to be updated or recreated.',
+              'to be updated or recreated.'
+          ),
           'proactive': 'Replace instances proactively.',
       },
       default='proactive',
       category=base.COMMONLY_USED_FLAGS,
-      help='Desired update type.')
+      help='Desired update type.',
+  )
 
 
 def AddMaxSurgeArg(parser):
   parser.add_argument(
       '--max-surge',
       type=str,
-      help=('Maximum additional number of instances that '
-            'can be created during the update process. '
-            'This can be a fixed number (e.g. 5) or '
-            'a percentage of size to the managed instance '
-            'group (e.g. 10%). Defaults to 0 if the managed '
-            'instance group has stateful configuration, or to '
-            'the number of zones in which it operates otherwise.'))
+      help=(
+          'Maximum additional number of instances that '
+          'can be created during the update process. '
+          'This can be a fixed number (e.g. 5) or '
+          'a percentage of size to the managed instance '
+          'group (e.g. 10%). Defaults to 0 if the managed '
+          'instance group has stateful configuration, or to '
+          'the number of zones in which it operates otherwise.'
+      ),
+  )
 
 
 def AddMaxUnavailableArg(parser):
   parser.add_argument(
       '--max-unavailable',
       type=str,
-      help=('Maximum number of instances that can be '
-            'unavailable during the update process. '
-            'This can be a fixed number (e.g. 5) or '
-            'a percentage of size to the managed instance '
-            'group (e.g. 10%). Defaults to the number of zones '
-            'in which the managed instance group operates.'))
+      help=(
+          'Maximum number of instances that can be '
+          'unavailable during the update process. '
+          'This can be a fixed number (e.g. 5) or '
+          'a percentage of size to the managed instance '
+          'group (e.g. 10%). Defaults to the number of zones '
+          'in which the managed instance group operates.'
+      ),
+  )
 
 
 def AddMinReadyArg(parser):
   parser.add_argument(
       '--min-ready',
       type=arg_parsers.Duration(lower_bound='0s'),
-      help=('Minimum time for which a newly created instance '
-            'should be ready to be considered available. For example `10s` '
-            'for 10 seconds. See $ gcloud topic datetimes for information '
-            'on duration formats.'))
+      help=(
+          'Minimum time for which a newly created instance '
+          'should be ready to be considered available. For example `10s` '
+          'for 10 seconds. See $ gcloud topic datetimes for information '
+          'on duration formats.'
+      ),
+  )
 
 
 def AddReplacementMethodFlag(parser):
   parser.add_argument(
       '--replacement-method',
       choices={
-          'substitute':
-              'Delete old instances and create instances with new names.',
-          'recreate':
+          'substitute': (
+              'Delete old instances and create instances with new names.'
+          ),
+          'recreate': (
               'Recreate instances and preserve the instance names. '
-              'The instance IDs and creation timestamps might change.',
+              'The instance IDs and creation timestamps might change.'
+          ),
       },
-      help='Type of replacement method. Specifies what action will be taken '
-      'to update instances. Defaults to ``recreate`` if the managed instance '
-      'group has stateful configuration, or to ``substitute`` otherwise.')
+      help=(
+          'Type of replacement method. Specifies what action will be taken to'
+          ' update instances. Defaults to ``recreate`` if the managed instance'
+          ' group has stateful configuration, or to ``substitute`` otherwise.'
+      ),
+  )
 
 
 def AddForceArg(parser):
   parser.add_argument(
       '--force',
       action='store_true',
-      help=('If set, accepts any original or new version '
-            'configurations without validation.'))
+      help=(
+          'If set, accepts any original or new version '
+          'configurations without validation.'
+      ),
+  )
 
 
 def InstanceActionChoicesWithoutNone(flag_prefix=''):
   """Return possible instance action choices without NONE value."""
   return collections.OrderedDict([
-      ('refresh',
-       ('Apply the new configuration without stopping VMs, if possible. For '
-        'example, use ``refresh`` to apply changes that only affect metadata '
-        'or additional disks.')),
-      ('restart',
-       ('Apply the new configuration without replacing VMs, if possible. For '
-        'example, stopping VMs and starting them again is sufficient to apply '
-        'changes to machine type.')),
-      ('replace', ('Replace old VMs according to the '
-                   '--{flag_prefix}replacement-method flag.').format(
-                       flag_prefix=flag_prefix))
+      (
+          'refresh',
+          (
+              'Apply the new configuration without stopping VMs, if possible.'
+              ' For example, use ``refresh`` to apply changes that only affect'
+              ' metadata or additional disks.'
+          ),
+      ),
+      (
+          'restart',
+          (
+              'Apply the new configuration without replacing VMs, if possible.'
+              ' For example, stopping VMs and starting them again is sufficient'
+              ' to apply changes to machine type.'
+          ),
+      ),
+      (
+          'replace',
+          (
+              'Replace old VMs according to the '
+              '--{flag_prefix}replacement-method flag.'
+          ).format(flag_prefix=flag_prefix),
+      ),
   ])
 
 
 def InstanceActionChoicesWithNone(flag_prefix=''):
   """Return possible instance action choices with NONE value."""
-  return _CombineOrderedChoices({'none': 'No action'},
-                                InstanceActionChoicesWithoutNone(flag_prefix))
+  return _CombineOrderedChoices(
+      {'none': 'No action'}, InstanceActionChoicesWithoutNone(flag_prefix)
+  )
 
 
 def _CombineOrderedChoices(choices1, choices2):
@@ -160,8 +192,11 @@ def _CombineOrderedChoices(choices1, choices2):
 
 
 def AddMinimalActionArg(parser, choices_with_none=True, default=None):
-  choices = (InstanceActionChoicesWithNone() if choices_with_none
-             else InstanceActionChoicesWithoutNone())
+  choices = (
+      InstanceActionChoicesWithNone()
+      if choices_with_none
+      else InstanceActionChoicesWithoutNone()
+  )
   parser.add_argument(
       '--minimal-action',
       choices=choices,
@@ -173,12 +208,16 @@ def AddMinimalActionArg(parser, choices_with_none=True, default=None):
         the one specified here, then the more disruptive action is
         performed. If you omit this flag, the update uses the
         ``minimal-action'' value from the MIG\'s update policy, unless it
-        is not set in which case the default is ``replace''.""")
+        is not set in which case the default is ``replace''.""",
+  )
 
 
 def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
-  choices = (InstanceActionChoicesWithNone() if choices_with_none
-             else InstanceActionChoicesWithoutNone())
+  choices = (
+      InstanceActionChoicesWithNone()
+      if choices_with_none
+      else InstanceActionChoicesWithoutNone()
+  )
   parser.add_argument(
       '--most-disruptive-allowed-action',
       choices=choices,
@@ -190,7 +229,8 @@ def AddMostDisruptiveActionArg(parser, choices_with_none=True, default=None):
         the update fails and no changes are made. If you omit this flag,
         the update uses the ``most-disruptive-allowed-action'' value from
         the MIG\'s update policy, unless it is not set in which case
-        the default is ``replace''.""")
+        the default is ``replace''.""",
+  )
 
 
 def AddUpdateInstancesArgs(parser):
@@ -201,12 +241,14 @@ def AddUpdateInstancesArgs(parser):
       type=arg_parsers.ArgList(min_length=1),
       metavar='INSTANCE',
       required=False,
-      help='Names of instances to update.')
+      help='Names of instances to update.',
+  )
   instance_selector_group.add_argument(
       '--all-instances',
       required=False,
       action='store_true',
-      help='Update all instances in the group.')
+      help='Update all instances in the group.',
+  )
   AddMinimalActionArg(parser, True, 'none')
   AddMostDisruptiveActionArg(parser, True, 'replace')
 
@@ -222,7 +264,8 @@ def AddGracefulValidationArg(parser):
   parser.add_argument(
       '--skip-instances-on-validation-error',
       action='store_true',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def GetCommonPerInstanceCommandOutputFormat(with_validation_error=False):
@@ -249,8 +292,10 @@ def AddMigUpdatePolicyFlags(parser, support_min_ready_flag=False):
   group = parser.add_group(
       required=False,
       mutex=False,
-      help='Parameters for setting update policy for this managed instance '
-           'group.'
+      help=(
+          'Parameters for setting update policy for this managed instance '
+          'group.'
+      ),
   )
   _AddUpdatePolicyTypeFlag(group)
   _AddUpdatePolicyMaxUnavailableFlag(group)
@@ -264,17 +309,20 @@ def AddMigUpdatePolicyFlags(parser, support_min_ready_flag=False):
 
 def _AddUpdatePolicyTypeFlag(group):
   """Add --update-policy-type flag to the parser."""
-  help_text = ('Specifies the type of update process. You can specify either '
-               '``proactive`` so that the managed instance group proactively '
-               'executes actions in order to bring VMs to their target '
-               'versions or ``opportunistic`` so that no action is '
-               'proactively executed but the update will be performed as part '
-               'of other actions.')
+  help_text = (
+      'Specifies the type of update process. You can specify either '
+      '``proactive`` so that the managed instance group proactively '
+      'executes actions in order to bring VMs to their target '
+      'versions or ``opportunistic`` so that no action is '
+      'proactively executed but the update will be performed as part '
+      'of other actions.'
+  )
   choices = {
-      'opportunistic':
+      'opportunistic': (
           'Do not proactively replace VMs. Create new VMs and delete old ones '
           'on resizes of the group and when you target specific VMs to be '
-          'updated or recreated.',
+          'updated or recreated.'
+      ),
       'proactive': 'Replace VMs proactively.',
   }
   group.add_argument(
@@ -282,7 +330,8 @@ def _AddUpdatePolicyTypeFlag(group):
       metavar='UPDATE_TYPE',
       type=lambda x: x.lower(),
       choices=choices,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def _AddUpdatePolicyMaxUnavailableFlag(group):
@@ -290,10 +339,13 @@ def _AddUpdatePolicyMaxUnavailableFlag(group):
       '--update-policy-max-unavailable',
       metavar='MAX_UNAVAILABLE',
       type=str,
-      help=('Maximum number of VMs that can be unavailable during the update '
-            'process. This can be a fixed number (e.g. 5) or a percentage of '
-            'size to the managed instance group (e.g. 10%). Defaults to the '
-            'number of zones in which the managed instance group operates.'))
+      help=(
+          'Maximum number of VMs that can be unavailable during the update '
+          'process. This can be a fixed number (e.g. 5) or a percentage of '
+          'size to the managed instance group (e.g. 10%). Defaults to the '
+          'number of zones in which the managed instance group operates.'
+      ),
+  )
 
 
 def _AddUpdatePolicyMaxSurgeFlag(group):
@@ -304,7 +356,9 @@ def _AddUpdatePolicyMaxSurgeFlag(group):
       help=(
           'Maximum additional number of VMs that can be created during the '
           'update process. This can be a fixed number (e.g. 5) or a percentage '
-          'of size to the managed instance group (e.g. 10%).'))
+          'of size to the managed instance group (e.g. 10%).'
+      ),
+  )
 
 
 def _AddUpdatePolicyMinReadyFlag(group):
@@ -312,32 +366,41 @@ def _AddUpdatePolicyMinReadyFlag(group):
       '--update-policy-min-ready',
       metavar='MIN_READY',
       type=arg_parsers.Duration(lower_bound='0s'),
-      help=('Minimum time for which a newly created VM should be ready to be '
-            'considered available. For example `10s` for 10 seconds. See '
-            '$ gcloud topic datetimes for information on duration formats.'))
+      help=(
+          'Minimum time for which a newly created VM should be ready to be '
+          'considered available. For example `10s` for 10 seconds. See '
+          '$ gcloud topic datetimes for information on duration formats.'
+      ),
+  )
 
 
 def _AddUpdatePolicyMinimalActionFlag(group):
   group.add_argument(
       '--update-policy-minimal-action',
       choices=InstanceActionChoicesWithNone(flag_prefix='update-policy-'),
-      help=('Use this flag to minimize disruption as much as possible or to '
-            'apply a more disruptive action than is strictly necessary. '
-            'The MIG performs at least this action on each VM while '
-            'updating. If the update requires a more disruptive action than '
-            'the one specified here, then the more disruptive action is '
-            'performed. '))
+      help=(
+          'Use this flag to minimize disruption as much as possible or to '
+          'apply a more disruptive action than is strictly necessary. '
+          'The MIG performs at least this action on each VM while '
+          'updating. If the update requires a more disruptive action than '
+          'the one specified here, then the more disruptive action is '
+          'performed. '
+      ),
+  )
 
 
 def _AddUpdatePolicyMostDisruptiveActionFlag(group):
   group.add_argument(
       '--update-policy-most-disruptive-action',
       choices=InstanceActionChoicesWithNone(flag_prefix='update-policy-'),
-      help=('Use this flag to prevent an update if it requires more disruption '
-            'than you can afford. At most, the MIG performs the specified '
-            'action on each VM while updating. If the update requires '
-            'a more disruptive action than the one specified here, then '
-            'the update fails and no changes are made.'))
+      help=(
+          'Use this flag to prevent an update if it requires more disruption '
+          'than you can afford. At most, the MIG performs the specified '
+          'action on each VM while updating. If the update requires '
+          'a more disruptive action than the one specified here, then '
+          'the update fails and no changes are made.'
+      ),
+  )
 
 
 def _AddUpdatePolicyReplacementMethodFlag(group):
@@ -345,11 +408,16 @@ def _AddUpdatePolicyReplacementMethodFlag(group):
       '--update-policy-replacement-method',
       choices={
           'substitute': 'Delete old VMs and create VMs with new names.',
-          'recreate': 'Recreate VMs and preserve the VM names. '
-                      'The VM IDs and creation timestamps might change.',
+          'recreate': (
+              'Recreate VMs and preserve the VM names. '
+              'The VM IDs and creation timestamps might change.'
+          ),
       },
-      help=('Type of replacement method. Specifies what action will be taken '
-            'to update VMs.'))
+      help=(
+          'Type of replacement method. Specifies what action will be taken '
+          'to update VMs.'
+      ),
+  )
 
 
 def AddMigInstanceRedistributionTypeFlag(parser):
@@ -363,12 +431,14 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       regional managed instance group. By default it is set to ``proactive''.
       """
   choices = {
-      'none':
+      'none': (
           'The managed instance group does not redistribute instances across '
-          'zones.',
-      'proactive':
+          'zones.'
+      ),
+      'proactive': (
           'The managed instance group proactively redistributes instances to '
           'meet its target distribution.'
+      ),
   }
 
   parser.add_argument(
@@ -376,7 +446,8 @@ def AddMigInstanceRedistributionTypeFlag(parser):
       metavar='TYPE',
       type=lambda x: x.lower(),
       choices=choices,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddMigDistributionPolicyTargetShapeFlag(parser):
@@ -421,22 +492,25 @@ def AddMigDistributionPolicyTargetShapeFlag(parser):
       metavar='SHAPE',
       type=arg_utils.EnumNameToChoice,
       choices=choices,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddFlagsForUpdateAllInstancesConfig(parser):
   """Adds args for all-instances' config update command."""
   # Add  metadata args
   metadata_argument_name = '--metadata'
-  metadata_help_text = ("Add metadata to the group's all instances "
-                        "configuration.")
+  metadata_help_text = (
+      "Add metadata to the group's all instances configuration."
+  )
   parser.add_argument(
       metadata_argument_name,
       type=arg_parsers.ArgDict(min_length=1),
       default={},
       action=arg_parsers.StoreOnceAction,
       metavar='KEY=VALUE',
-      help=metadata_help_text)
+      help=metadata_help_text,
+  )
   # Add labels args
   labels_argument_name = '--labels'
   metadata_help_text = "Add labels to the group's all instances configuration."
@@ -446,7 +520,8 @@ def AddFlagsForUpdateAllInstancesConfig(parser):
       default={},
       action=arg_parsers.StoreOnceAction,
       metavar='KEY=VALUE',
-      help=metadata_help_text)
+      help=metadata_help_text,
+  )
 
 
 def AddFlagsForDeleteAllInstancesConfig(parser):
@@ -457,7 +532,7 @@ def AddFlagsForDeleteAllInstancesConfig(parser):
       metadata_argument_name,
       metavar='KEY',
       type=arg_parsers.ArgList(min_length=1),
-      help="Remove metadata keys from the group's all instances configuration."
+      help="Remove metadata keys from the group's all instances configuration.",
   )
   # Add labels args
   labels_argument_name = '--labels'
@@ -465,7 +540,8 @@ def AddFlagsForDeleteAllInstancesConfig(parser):
       labels_argument_name,
       metavar='KEY',
       type=arg_parsers.ArgList(min_length=1),
-      help="Remove labels keys from the group's all instances configuration.")
+      help="Remove labels keys from the group's all instances configuration.",
+  )
 
 
 def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
@@ -484,10 +560,12 @@ def ValidateRegionalMigFlagsUsage(args, regional_flags_dests, igm_ref):
   for dest in regional_flags_dests:
     if args.IsKnownAndSpecified(dest):
       flag_name = args.GetFlag(dest)
-      error_message = ('Flag %s may be specified for regional managed instance '
-                       'groups only.') % flag_name
+      error_message = (
+          'Flag %s may be specified for regional managed instance groups only.'
+      ) % flag_name
       raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name, message=error_message)
+          parameter_name=flag_name, message=error_message
+      )
 
 
 def AddMigListManagedInstancesResultsFlag(parser):
@@ -498,13 +576,15 @@ def AddMigListManagedInstancesResultsFlag(parser):
       behavior. By default it is set to ``pageless''.
     """
   choices = {
-      'pageless':
-          'Pagination is disabled for the group\'s listManagedInstances API '
+      'pageless': (
+          "Pagination is disabled for the group's listManagedInstances API "
           'method. maxResults and pageToken query parameters are ignored and '
-          'all instances are returned in a single response.',
-      'paginated':
-          'Pagination is enabled for the group\'s listManagedInstances API '
-          'method. maxResults and pageToken query parameters are respected.',
+          'all instances are returned in a single response.'
+      ),
+      'paginated': (
+          "Pagination is enabled for the group's listManagedInstances API "
+          'method. maxResults and pageToken query parameters are respected.'
+      ),
   }
 
   parser.add_argument(
@@ -512,7 +592,8 @@ def AddMigListManagedInstancesResultsFlag(parser):
       metavar='MODE',
       type=lambda x: x.lower(),
       choices=choices,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddMigForceUpdateOnRepairFlags(parser):
@@ -528,7 +609,8 @@ def AddMigForceUpdateOnRepairFlags(parser):
   parser.add_argument(
       '--force-update-on-repair',
       action=arg_parsers.StoreTrueFalseAction,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddMigDefaultActionOnVmFailure(parser):
@@ -539,10 +621,8 @@ def AddMigDefaultActionOnVmFailure(parser):
       fails a health check.
       By default, the value of the flag is set to ``repair''."""
   choices = {
-      'repair':
-          'MIG automatically repairs a failed or an unhealthy VM.',
-      'do-nothing':
-          'MIG does not repair a failed or an unhealthy VM.',
+      'repair': 'MIG automatically repairs a failed or an unhealthy VM.',
+      'do-nothing': 'MIG does not repair a failed or an unhealthy VM.',
   }
 
   parser.add_argument(
@@ -550,7 +630,8 @@ def AddMigDefaultActionOnVmFailure(parser):
       metavar='ACTION_ON_VM_FAILURE',
       type=arg_utils.EnumNameToChoice,
       choices=choices,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddStandbyPolicyFlags(parser):
@@ -611,6 +692,7 @@ def AddMigResourceManagerTagsFlags(parser):
 
 def AddInstanceFlexibilityPolicyArgs(
     parser: Any,
+    is_update: bool = False,
 ) -> None:
   """Adds instance flexibility policy args."""
   parser.add_argument(
@@ -633,6 +715,25 @@ def AddInstanceFlexibilityPolicyArgs(
       type=ArgMultiValueDict(),
       action=arg_parsers.FlattenAction(),
   )
+  if is_update:
+    parser.add_argument(
+        '--remove-instance-selections-all',
+        action='store_true',
+        hidden=True,
+        help=(
+            'Remove all instance selections from the instance flexibility.'
+            ' policy.'
+        ),
+    )
+    parser.add_argument(
+        '--remove-instance-selections',
+        type=arg_parsers.ArgList(),
+        metavar='INSTANCE_SELECTION_NAME',
+        hidden=True,
+        help=(
+            'Remove instance selections from the instance flexibility policy.'
+        ),
+    )
 
 
 class ArgMultiValueDict:

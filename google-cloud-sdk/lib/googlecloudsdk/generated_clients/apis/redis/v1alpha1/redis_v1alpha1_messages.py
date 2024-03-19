@@ -832,6 +832,16 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         authorized networks.
       SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
         policy restrict public ip.
+      SIGNAL_TYPE_QUOTA_LIMIT: Cluster nearing quota limit
+      SIGNAL_TYPE_NO_PASSWORD_POLICY: No password policy set on resources
+      SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT: Performance impact of
+        connections settings
+      SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT: Performance impact of
+        temporary tables settings
+      SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT: Performance impact of
+        transaction logs settings
+      SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
+        without indexes
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -894,6 +904,12 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
     SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
     SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+    SIGNAL_TYPE_QUOTA_LIMIT = 61
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1380,6 +1396,16 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         authorized networks.
       SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
         policy restrict public ip.
+      SIGNAL_TYPE_QUOTA_LIMIT: Cluster nearing quota limit
+      SIGNAL_TYPE_NO_PASSWORD_POLICY: No password policy set on resources
+      SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT: Performance impact of
+        connections settings
+      SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT: Performance impact of
+        temporary tables settings
+      SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT: Performance impact of
+        transaction logs settings
+      SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
+        without indexes
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1442,6 +1468,12 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
     SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
     SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+    SIGNAL_TYPE_QUOTA_LIMIT = 61
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

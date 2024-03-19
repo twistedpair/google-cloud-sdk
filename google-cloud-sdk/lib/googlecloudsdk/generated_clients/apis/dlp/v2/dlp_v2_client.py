@@ -488,7 +488,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists column data profiles for an organization.
 
       Args:
         request: (DlpOrganizationsLocationsColumnDataProfilesListRequest) input message
@@ -1169,7 +1169,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists project data profiles for an organization.
 
       Args:
         request: (DlpOrganizationsLocationsProjectDataProfilesListRequest) input message
@@ -1378,7 +1378,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists table data profiles for an organization.
 
       Args:
         request: (DlpOrganizationsLocationsTableDataProfilesListRequest) input message
@@ -2342,7 +2342,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists column data profiles for an organization.
 
       Args:
         request: (DlpProjectsLocationsColumnDataProfilesListRequest) input message
@@ -3367,7 +3367,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists project data profiles for an organization.
 
       Args:
         request: (DlpProjectsLocationsProjectDataProfilesListRequest) input message
@@ -3576,7 +3576,7 @@ class DlpV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists data profiles for an organization.
+      r"""Lists table data profiles for an organization.
 
       Args:
         request: (DlpProjectsLocationsTableDataProfilesListRequest) input message

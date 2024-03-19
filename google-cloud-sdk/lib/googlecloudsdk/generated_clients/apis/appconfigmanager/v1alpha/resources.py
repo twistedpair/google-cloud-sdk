@@ -52,24 +52,24 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CONFIGS_INSTANCES = (
-      'projects.locations.configs.instances',
+  PROJECTS_LOCATIONS_CONFIGS_VERSIONRENDERS = (
+      'projects.locations.configs.versionRenders',
       '{+name}',
       {
           '':
               'projects/{projectsId}/locations/{locationsId}/configs/'
-              '{configsId}/instances/{instancesId}',
+              '{configsId}/versionRenders/{versionRendersId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CONFIGS_RENDERS = (
-      'projects.locations.configs.renders',
+  PROJECTS_LOCATIONS_CONFIGS_VERSIONS = (
+      'projects.locations.configs.versions',
       '{+name}',
       {
           '':
               'projects/{projectsId}/locations/{locationsId}/configs/'
-              '{configsId}/renders/{rendersId}',
+              '{configsId}/versions/{versionsId}',
       },
       ['name'],
       True

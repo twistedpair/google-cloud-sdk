@@ -1905,6 +1905,17 @@ class AiplatformProjectsLocationsExtensionControllersOperationsWaitRequest(_mess
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsExtensionsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Extension resource to be deleted. Format:
+      `projects/{project}/locations/{location}/extensions/{extension}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AiplatformProjectsLocationsExtensionsDeploymentsOperationsCancelRequest(_messages.Message):
   r"""A
   AiplatformProjectsLocationsExtensionsDeploymentsOperationsCancelRequest
@@ -1973,6 +1984,71 @@ class AiplatformProjectsLocationsExtensionsDeploymentsOperationsWaitRequest(_mes
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsExtensionsExecuteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsExecuteRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1ExecuteExtensionRequest: A
+      GoogleCloudAiplatformV1beta1ExecuteExtensionRequest resource to be
+      passed as the request body.
+    name: Required. Name (identifier) of the extension; Format:
+      `projects/{project}/locations/{location}/extensions/{extension}`
+  """
+
+  googleCloudAiplatformV1beta1ExecuteExtensionRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExecuteExtensionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsExtensionsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the Extension resource. Format:
+      `projects/{project}/locations/{location}/extensions/{extension}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsExtensionsImportRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsImportRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Extension: A
+      GoogleCloudAiplatformV1beta1Extension resource to be passed as the
+      request body.
+    parent: Required. The resource name of the Location to import the
+      Extension in. Format: `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1Extension = _messages.MessageField('GoogleCloudAiplatformV1beta1Extension', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsExtensionsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsListRequest object.
+
+  Fields:
+    filter: Optional. The standard list filter. Supported fields: *
+      `display_name` * `create_time` * `update_time` More detail in
+      [AIP-160](https://google.aip.dev/160).
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * `display_name` * `create_time` * `update_time` Example:
+      `display_name, create_time desc`.
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token.
+    parent: Required. The resource name of the Location to list the Extensions
+      from. Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class AiplatformProjectsLocationsExtensionsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsExtensionsOperationsCancelRequest object.
 
@@ -2032,6 +2108,23 @@ class AiplatformProjectsLocationsExtensionsOperationsWaitRequest(_messages.Messa
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsExtensionsPatchRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsExtensionsPatchRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1Extension: A
+      GoogleCloudAiplatformV1beta1Extension resource to be passed as the
+      request body.
+    name: Identifier. The resource name of the Extension.
+    updateMask: Required. Mask specifying which fields to update. Supported
+      fields: * `display_name` * `description`
+  """
+
+  googleCloudAiplatformV1beta1Extension = _messages.MessageField('GoogleCloudAiplatformV1beta1Extension', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class AiplatformProjectsLocationsFeatureGroupsCreateRequest(_messages.Message):
@@ -10679,6 +10772,150 @@ class GoogleCloudAiplatformV1beta1Attribution(_messages.Message):
   outputName = _messages.StringField(7)
 
 
+class GoogleCloudAiplatformV1beta1AuthConfig(_messages.Message):
+  r"""Auth configuration to run the extension.
+
+  Enums:
+    AuthTypeValueValuesEnum: Type of auth scheme.
+
+  Fields:
+    apiKeyConfig: Config for API key auth.
+    authType: Type of auth scheme.
+    googleServiceAccountConfig: Config for Google Service Account auth.
+    httpBasicAuthConfig: Config for HTTP Basic auth.
+    noAuth: Config for no auth.
+    oauthConfig: Config for user oauth.
+    oidcConfig: Config for user OIDC auth.
+  """
+
+  class AuthTypeValueValuesEnum(_messages.Enum):
+    r"""Type of auth scheme.
+
+    Values:
+      AUTH_TYPE_UNSPECIFIED: <no description>
+      NO_AUTH: <no description>
+      API_KEY_AUTH: <no description>
+      HTTP_BASIC_AUTH: <no description>
+      GOOGLE_SERVICE_ACCOUNT_AUTH: <no description>
+      OAUTH: <no description>
+      OIDC_AUTH: <no description>
+    """
+    AUTH_TYPE_UNSPECIFIED = 0
+    NO_AUTH = 1
+    API_KEY_AUTH = 2
+    HTTP_BASIC_AUTH = 3
+    GOOGLE_SERVICE_ACCOUNT_AUTH = 4
+    OAUTH = 5
+    OIDC_AUTH = 6
+
+  apiKeyConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig', 1)
+  authType = _messages.EnumField('AuthTypeValueValuesEnum', 2)
+  googleServiceAccountConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigGoogleServiceAccountConfig', 3)
+  httpBasicAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigHttpBasicAuthConfig', 4)
+  noAuth = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigNoAuth', 5)
+  oauthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigOauthConfig', 6)
+  oidcConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfigOidcConfig', 7)
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigApiKeyConfig(_messages.Message):
+  r"""Config for authentication with API key.
+
+  Enums:
+    HttpElementLocationValueValuesEnum: Required. The location of the API key.
+
+  Fields:
+    apiKeySecret: Required. The name of the SecretManager secret version
+      resource storing the API key. Format:
+      `projects/{project}/secrets/{secrete}/versions/{version}`
+    httpElementLocation: Required. The location of the API key.
+    name: Required. The parameter name of the API key. E.g. If the API request
+      is "https://example.com/act?api_key=", "api_key" would be the parameter
+      name.
+  """
+
+  class HttpElementLocationValueValuesEnum(_messages.Enum):
+    r"""Required. The location of the API key.
+
+    Values:
+      HTTP_IN_UNSPECIFIED: <no description>
+      HTTP_IN_QUERY: <no description>
+      HTTP_IN_HEADER: <no description>
+      HTTP_IN_PATH: <no description>
+      HTTP_IN_BODY: <no description>
+      HTTP_IN_COOKIE: <no description>
+    """
+    HTTP_IN_UNSPECIFIED = 0
+    HTTP_IN_QUERY = 1
+    HTTP_IN_HEADER = 2
+    HTTP_IN_PATH = 3
+    HTTP_IN_BODY = 4
+    HTTP_IN_COOKIE = 5
+
+  apiKeySecret = _messages.StringField(1)
+  httpElementLocation = _messages.EnumField('HttpElementLocationValueValuesEnum', 2)
+  name = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigGoogleServiceAccountConfig(_messages.Message):
+  r"""Config for Google Service Account Authentication.
+
+  Fields:
+    serviceAccount: Optional. The service account that the extension execution
+      service runs as. - If it is not specified, the Vertex AI Extension
+      Service Agent (https://cloud.google.com/vertex-ai/docs/general/access-
+      control#service-agents) will be used. - If the service account is
+      provided, the service account should grant Vertex AI Extension Service
+      Agent `iam.serviceAccounts.getAccessToken` permission.
+  """
+
+  serviceAccount = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigHttpBasicAuthConfig(_messages.Message):
+  r"""Config for HTTP Basic Authentication.
+
+  Fields:
+    credentialSecret: Required. The name of the SecretManager secret version
+      resource storing the base64 encoded credentials. Format:
+      `projects/{project}/secrets/{secrete}/versions/{version}`
+  """
+
+  credentialSecret = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigNoAuth(_messages.Message):
+  r"""Empty message, used to indicate no authentication for an endpoint."""
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigOauthConfig(_messages.Message):
+  r"""Config for user oauth.
+
+  Fields:
+    accessToken: Access token for extension endpoint. Only used to propagate
+      token from ExecuteExtensionRequest.runtime_auth_config at request time.
+    serviceAccount: The service account that the extension execution service
+      will use to query extension. Used for generating OAuth token on behalf
+      of provided service account. - If the service account is provided, the
+      service account should grant Vertex AI Service Agent
+      `iam.serviceAccounts.getAccessToken` permission.
+  """
+
+  accessToken = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1AuthConfigOidcConfig(_messages.Message):
+  r"""Config for user OIDC auth.
+
+  Fields:
+    idToken: OpenID Connect formatted ID token for extension endpoint. Only
+      used to propagate token from ExecuteExtensionRequest.runtime_auth_config
+      at request time.
+  """
+
+  idToken = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
   r"""A description of resources that to large degree are decided by Vertex
   AI, and require only a modest additional configuration. Each Model
@@ -14233,6 +14470,114 @@ class GoogleCloudAiplatformV1beta1ExamplesRestrictionsNamespace(_messages.Messag
   namespaceName = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1beta1ExecuteExtensionRequest(_messages.Message):
+  r"""Request message for ExtensionExecutionService.ExecuteExtension.
+
+  Messages:
+    OperationParamsValue: Optional. Request parameters that will be used for
+      executing this operation. The struct should be in a form of map with
+      param name as the key and actual param value as the value. E.g. If this
+      operation requires a param "name" to be set to "abc". you can set this
+      to something like {"name": "abc"}.
+
+  Fields:
+    operationId: Required. The operation to be executed in this extension as
+      defined in ExtensionOperation.operation_id.
+    operationParams: Optional. Request parameters that will be used for
+      executing this operation. The struct should be in a form of map with
+      param name as the key and actual param value as the value. E.g. If this
+      operation requires a param "name" to be set to "abc". you can set this
+      to something like {"name": "abc"}.
+    runtimeAuthConfig: Optional. Auth config provided at runtime to override
+      the default value in Extension.manifest.auth_config. The
+      AuthConfig.auth_type should match the value in
+      Extension.manifest.auth_config.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OperationParamsValue(_messages.Message):
+    r"""Optional. Request parameters that will be used for executing this
+    operation. The struct should be in a form of map with param name as the
+    key and actual param value as the value. E.g. If this operation requires a
+    param "name" to be set to "abc". you can set this to something like
+    {"name": "abc"}.
+
+    Messages:
+      AdditionalProperty: An additional property for a OperationParamsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OperationParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  operationId = _messages.StringField(1)
+  operationParams = _messages.MessageField('OperationParamsValue', 2)
+  runtimeAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfig', 3)
+
+
+class GoogleCloudAiplatformV1beta1ExecuteExtensionResponse(_messages.Message):
+  r"""Response message for ExtensionExecutionService.ExecuteExtension.
+
+  Messages:
+    OutputValue: Output from the extension. The output should be conformant to
+      the extension's manifest/OpenAPI spec. The output can contain values for
+      keys like "content", "headers", etc. This field is deprecated, please
+      use content field below for the extension execution result.
+
+  Fields:
+    content: Response content from the extension. The content should be
+      conformant to the response.content schema in the extension's
+      manifest/OpenAPI spec.
+    output: Output from the extension. The output should be conformant to the
+      extension's manifest/OpenAPI spec. The output can contain values for
+      keys like "content", "headers", etc. This field is deprecated, please
+      use content field below for the extension execution result.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputValue(_messages.Message):
+    r"""Output from the extension. The output should be conformant to the
+    extension's manifest/OpenAPI spec. The output can contain values for keys
+    like "content", "headers", etc. This field is deprecated, please use
+    content field below for the extension execution result.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  content = _messages.StringField(1)
+  output = _messages.MessageField('OutputValue', 2)
+
+
 class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
   r"""Instance of a general execution.
 
@@ -15358,6 +15703,85 @@ class GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse(_messa
   timeSeriesDataPoints = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesDataPoint', 2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1Extension(_messages.Message):
+  r"""Extensions are tools for large language models to access external data,
+  run computations, etc.
+
+  Fields:
+    createTime: Output only. Timestamp when this Extension was created.
+    description: Optional. The description of the Extension.
+    displayName: Required. The display name of the Extension. The name can be
+      up to 128 characters long and can consist of any UTF-8 characters.
+    etag: Optional. Used to perform consistent read-modify-write updates. If
+      not set, a blind "overwrite" update happens.
+    extensionOperations: Output only. Supported operations.
+    manifest: Required. Manifest of the Extension.
+    name: Identifier. The resource name of the Extension.
+    toolUseExamples: Optional. Examples to illustrate the usage of the
+      extension as a tool.
+    updateTime: Output only. Timestamp when this Extension was most recently
+      updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  extensionOperations = _messages.MessageField('GoogleCloudAiplatformV1beta1ExtensionOperation', 5, repeated=True)
+  manifest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExtensionManifest', 6)
+  name = _messages.StringField(7)
+  toolUseExamples = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolUseExample', 8, repeated=True)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudAiplatformV1beta1ExtensionManifest(_messages.Message):
+  r"""Manifest spec of an Extension needed for runtime execution.
+
+  Fields:
+    apiSpec: Required. Immutable. The API specification shown to the LLM.
+    authConfig: Required. Immutable. Type of auth supported by this extension.
+    description: Required. The natural language description shown to the LLM.
+      It should describe the usage of the extension, and is essential for the
+      LLM to perform reasoning.
+    name: Required. Extension name shown to the LLM. The name can be up to 128
+      characters long.
+  """
+
+  apiSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExtensionManifestApiSpec', 1)
+  authConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1AuthConfig', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1beta1ExtensionManifestApiSpec(_messages.Message):
+  r"""The API specification shown to the LLM.
+
+  Fields:
+    openApiGcsUri: Cloud Storage URI pointing to the OpenAPI spec.
+    openApiYaml: The API spec in Open API standard and YAML format.
+  """
+
+  openApiGcsUri = _messages.StringField(1)
+  openApiYaml = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ExtensionOperation(_messages.Message):
+  r"""Operation of an extension.
+
+  Fields:
+    functionDeclaration: Output only. Structured representation of a function
+      declaration as defined by the OpenAPI Spec.
+    operationId: Operation ID that uniquely identifies the operations among
+      the extension. See: "Operation Object" in
+      https://swagger.io/specification/. This field is parsed from the OpenAPI
+      spec. For HTTP extensions, if it does not exist in the spec, we will
+      generate one from the HTTP method and path.
+  """
+
+  functionDeclaration = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionDeclaration', 1)
+  operationId = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
   r"""Feature Metadata information. For example, color is a feature that
   describes an apple.
@@ -16239,8 +16663,11 @@ class GoogleCloudAiplatformV1beta1FeatureViewVectorSearchConfig(_messages.Messag
       generate the ground truth for approximate search.
     crowdingColumn: Optional. Column of crowding. This column contains
       crowding attribute which is a constraint on a neighbor list produced by
-      nearest neighbor search requiring that no more than some value k' of the
-      k neighbors returned have the same value of crowding_attribute.
+      FeatureOnlineStoreService.SearchNearestEntities to diversify search
+      results. If NearestNeighborQuery.per_crowding_attribute_neighbor_count
+      is set to K in SearchNearestEntitiesRequest, it's guaranteed that no
+      more than K entities of the same crowding attribute are returned in the
+      response.
     distanceMeasureType: Optional. The distance measure used in nearest
       neighbor search.
     embeddingColumn: Optional. Column of embedding. This column contains the
@@ -16937,13 +17364,15 @@ class GoogleCloudAiplatformV1beta1FunctionDeclaration(_messages.Message):
     description: Optional. Description and purpose of the function. Model uses
       it to decide how and whether to call the function.
     name: Required. The name of the function to call. Must start with a letter
-      or an underscore. Must be a-z, A-Z, 0-9, or contain underscores and
-      dashes, with a maximum length of 64.
+      or an underscore. Must be a-z, A-Z, 0-9, or contain underscores, dots
+      and dashes, with a maximum length of 64.
     parameters: Optional. Describes the parameters to this function in JSON
       Schema Object format. Reflects the Open API 3.03 Parameter Object.
       string Key: the name of the parameter. Parameter names are case
       sensitive. Schema Value: the Schema defining the type used for the
       parameter. For function with no parameters, this can be left unset.
+      Parameter names must start with a letter or an underscore and must only
+      contain chars a-z, A-Z, 0-9, or underscores with a maximum length of 64.
       Example with 1 required and 1 optional parameter: type: OBJECT
       properties: param1: type: STRING param2: type: INTEGER required: -
       param1
@@ -17066,6 +17495,8 @@ class GoogleCloudAiplatformV1beta1GenerateContentRequest(_messages.Message):
     generationConfig: Optional. Generation config.
     safetySettings: Optional. Per request settings for blocking unsafe
       content. Enforced on GenerateContentResponse.candidates.
+    systemInstructions: Optional. The user provided system instructions for
+      the model.
     tools: Optional. A list of `Tools` the model may use to generate the next
       response. A `Tool` is a piece of code that enables the system to
       interact with external systems to perform an action, or set of actions,
@@ -17075,7 +17506,8 @@ class GoogleCloudAiplatformV1beta1GenerateContentRequest(_messages.Message):
   contents = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 1, repeated=True)
   generationConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1GenerationConfig', 2)
   safetySettings = _messages.MessageField('GoogleCloudAiplatformV1beta1SafetySetting', 3, repeated=True)
-  tools = _messages.MessageField('GoogleCloudAiplatformV1beta1Tool', 4, repeated=True)
+  systemInstructions = _messages.MessageField('GoogleCloudAiplatformV1beta1Content', 4, repeated=True)
+  tools = _messages.MessageField('GoogleCloudAiplatformV1beta1Tool', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1GenerateContentResponse(_messages.Message):
@@ -18408,6 +18840,19 @@ class GoogleCloudAiplatformV1beta1ListExecutionsResponse(_messages.Message):
   """
 
   executions = _messages.MessageField('GoogleCloudAiplatformV1beta1Execution', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1ListExtensionsResponse(_messages.Message):
+  r"""Response message for ExtensionRegistryService.ListExtensions
+
+  Fields:
+    extensions: List of Extension in the requested page.
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListExtensionsRequest.page_token to obtain that page.
+  """
+
+  extensions = _messages.MessageField('GoogleCloudAiplatformV1beta1Extension', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -23698,6 +24143,18 @@ class GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerUserUsageData(_
   viewCount = _messages.IntegerField(2)
 
 
+class GoogleCloudAiplatformV1beta1RebootPersistentResourceOperationMetadata(_messages.Message):
+  r"""Details of operations that perform reboot PersistentResource.
+
+  Fields:
+    genericMetadata: Operation metadata for PersistentResource.
+    progressMessage: Progress Message for Reboot LRO
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  progressMessage = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1RebootPersistentResourceRequest(_messages.Message):
   r"""Request message for PersistentResourceService.RebootPersistentResource.
   """
@@ -24088,10 +24545,16 @@ class GoogleCloudAiplatformV1beta1SafetySetting(_messages.Message):
 
   Enums:
     CategoryValueValuesEnum: Required. Harm category.
+    MethodValueValuesEnum: Optional. Specify if the threshold is used for
+      probability or severity score. If not specified, the threshold is used
+      for probability score.
     ThresholdValueValuesEnum: Required. The harm block threshold.
 
   Fields:
     category: Required. Harm category.
+    method: Optional. Specify if the threshold is used for probability or
+      severity score. If not specified, the threshold is used for probability
+      score.
     threshold: Required. The harm block threshold.
   """
 
@@ -24112,6 +24575,20 @@ class GoogleCloudAiplatformV1beta1SafetySetting(_messages.Message):
     HARM_CATEGORY_HARASSMENT = 3
     HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
 
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Optional. Specify if the threshold is used for probability or severity
+    score. If not specified, the threshold is used for probability score.
+
+    Values:
+      HARM_BLOCK_METHOD_UNSPECIFIED: The harm block method is unspecified.
+      SEVERITY: The harm block method uses both probability and severity
+        scores.
+      PROBABILITY: The harm block method uses the probability score.
+    """
+    HARM_BLOCK_METHOD_UNSPECIFIED = 0
+    SEVERITY = 1
+    PROBABILITY = 2
+
   class ThresholdValueValuesEnum(_messages.Enum):
     r"""Required. The harm block threshold.
 
@@ -24129,7 +24606,8 @@ class GoogleCloudAiplatformV1beta1SafetySetting(_messages.Message):
     BLOCK_NONE = 4
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
-  threshold = _messages.EnumField('ThresholdValueValuesEnum', 2)
+  method = _messages.EnumField('MethodValueValuesEnum', 2)
+  threshold = _messages.EnumField('ThresholdValueValuesEnum', 3)
 
 
 class GoogleCloudAiplatformV1beta1SampleConfig(_messages.Message):
@@ -29922,6 +30400,94 @@ class GoogleCloudAiplatformV1beta1Tool(_messages.Message):
   functionDeclarations = _messages.MessageField('GoogleCloudAiplatformV1beta1FunctionDeclaration', 1, repeated=True)
   googleSearchRetrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1GoogleSearchRetrieval', 2)
   retrieval = _messages.MessageField('GoogleCloudAiplatformV1beta1Retrieval', 3)
+
+
+class GoogleCloudAiplatformV1beta1ToolUseExample(_messages.Message):
+  r"""A single example of the tool usage.
+
+  Messages:
+    RequestParamsValue: Request parameters used for executing this tool.
+    ResponseParamsValue: Response parameters generated by this tool.
+
+  Fields:
+    displayName: Required. The display name for example.
+    extensionOperation: Extension operation to call.
+    functionName: Function name to call.
+    query: Required. Query that should be routed to this tool.
+    requestParams: Request parameters used for executing this tool.
+    responseParams: Response parameters generated by this tool.
+    responseSummary: Summary of the tool response to the user query.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestParamsValue(_messages.Message):
+    r"""Request parameters used for executing this tool.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestParamsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseParamsValue(_messages.Message):
+    r"""Response parameters generated by this tool.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseParamsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  displayName = _messages.StringField(1)
+  extensionOperation = _messages.MessageField('GoogleCloudAiplatformV1beta1ToolUseExampleExtensionOperation', 2)
+  functionName = _messages.StringField(3)
+  query = _messages.StringField(4)
+  requestParams = _messages.MessageField('RequestParamsValue', 5)
+  responseParams = _messages.MessageField('ResponseParamsValue', 6)
+  responseSummary = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1beta1ToolUseExampleExtensionOperation(_messages.Message):
+  r"""Identifies one operation of the extension.
+
+  Fields:
+    extension: Resource name of the extension.
+    operationId: Required. Operation ID of the extension.
+  """
+
+  extension = _messages.StringField(1)
+  operationId = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1TrainingConfig(_messages.Message):

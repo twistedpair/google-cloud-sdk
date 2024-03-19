@@ -87,9 +87,13 @@ class Collections(enum.Enum):
   )
   ORGANIZATIONS_LOCATIONS_REPORTS = (
       'organizations.locations.reports',
-      'organizations/{organizationsId}/locations/{locationsId}/reports',
-      {},
-      ['organizationsId', 'locationsId'],
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'reports/{reportsId}',
+      },
+      ['name'],
       True
   )
 

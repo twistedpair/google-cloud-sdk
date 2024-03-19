@@ -249,10 +249,10 @@ class MigrationJobsClient(object):
         )
     )
 
-  def _GetSqlServerDatabaseDetails(
+  def _GetSqlServerDatabaseBackups(
       self, sqlserver_databases, sqlserver_encrypted_databases
   ):
-    """Returns the sqlserver database details list.
+    """Returns the sqlserver database backups list.
 
     Args:
       sqlserver_databases: The list of databases to be migrated.
@@ -264,44 +264,35 @@ class MigrationJobsClient(object):
       Error: Encrypted Database name not found in database list.
       Error: Invalid JSON/YAML file.
     """
-    database_details_class = (
-        self.messages.SqlServerHomogeneousMigrationJobConfig.DatabaseDetailsValue
-    )
-    additional_properties = []
+    database_backups = []
     encrypted_databases_list = []
 
     if sqlserver_encrypted_databases:
       for database in sqlserver_encrypted_databases:
         if database is None:
           raise Error('Empty list item in JSON/YAML file.')
-        if database['databaseName'] not in sqlserver_databases:
+        if database['database'] not in sqlserver_databases:
           raise Error(
               'Encrypted Database name {dbName} not found in database list.'
-              .format(dbName=database['databaseName'])
+              .format(dbName=database['database'])
           )
         try:
-          database_details = encoding.PyValueToMessage(
-              self.messages.SqlServerDatabaseDetails,
-              database['databaseDetails'],
+          database_backup = encoding.PyValueToMessage(
+              self.messages.SqlServerDatabaseBackup,
+              database,
           )
         except Exception as e:
           raise Error(e)
-        encrypted_databases_list.append(database['databaseName'])
-        additional_properties.append(
-            database_details_class.AdditionalProperty(
-                key=database['databaseName'], value=database_details
-            )
-        )
+        encrypted_databases_list.append(database['database'])
+        database_backups.append(database_backup)
 
     for database in sqlserver_databases:
       if database in encrypted_databases_list:
         continue
-      additional_properties.append(
-          database_details_class.AdditionalProperty(
-              key=database, value=self.messages.SqlServerDatabaseDetails()
-          )
+      database_backups.append(
+          self.messages.SqlServerDatabaseBackup(database=database)
       )
-    return database_details_class(additionalProperties=additional_properties)
+    return database_backups
 
   def _GetSqlserverHomogeneousMigrationJobConfig(self, args):
     """Returns the sqlserver homogeneous migration job config.
@@ -316,8 +307,8 @@ class MigrationJobsClient(object):
         )
     )
     if args.IsKnownAndSpecified('sqlserver_databases'):
-      sqlserver_homogeneous_migration_job_config_obj.databaseDetails = (
-          self._GetSqlServerDatabaseDetails(
+      sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
+          self._GetSqlServerDatabaseBackups(
               args.sqlserver_databases, args.sqlserver_encrypted_databases
           )
       )

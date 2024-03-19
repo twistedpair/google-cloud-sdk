@@ -354,6 +354,26 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if self.spec.output.flatten:
       parser.display_info.AddFlatten(self.spec.output.flatten)
 
+  def _RegisterURIFunc(self, args):
+    """Generates and registers a function to create a URI from a resource.
+
+    Args:
+      args: The argparse namespace.
+
+    Returns:
+      f(resource) -> str, A function that converts the given resource payload
+      into a URI.
+    """
+    def URIFunc(resource):
+      id_value = getattr(
+          resource, self.spec.response.id_field)
+      method = self.arg_generator.GetPrimaryResource(self.methods, args).method
+      ref = self.arg_generator.GetResponseResourceRef(id_value, args, method)
+      return ref.SelfLink()
+
+    if hasattr(args, 'uri'):
+      args.GetDisplayInfo().AddUriFunc(URIFunc)
+
   def _Exclude(self, parser):
     """Excludes specified arguments from the parser.
 
@@ -664,9 +684,27 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
 
 class GenericCommandGenerator(BaseCommandGenerator):
-  """Generator for generic commands."""
+  """Generator for generic/custom commands."""
 
   command_type = yaml_command_schema.CommandType.GENERIC
+
+  def _AddAsyncFlag(self, parser):
+    if self.spec.async_:
+      base.ASYNC_FLAG.AddToParser(parser)
+
+  def _AddPagingFlags(self, parser):
+    is_paginated = any(
+        method.ListItemField() and method.HasTokenizedRequest()
+        for method in self.methods)
+    generic = self.spec.generic
+    if not is_paginated or (generic and generic.disable_paging_flags):
+      return
+    base.FILTER_FLAG.AddToParser(parser)
+    base.LIMIT_FLAG.AddToParser(parser)
+    base.PAGE_SIZE_FLAG.AddToParser(parser)
+    base.SORT_BY_FLAG.AddToParser(parser)
+    if self.spec.response.id_field:
+      base.URI_FLAG.AddToParser(parser)
 
   def _Generate(self):
     """Generates a generic command.
@@ -690,10 +728,11 @@ class GenericCommandGenerator(BaseCommandGenerator):
       @staticmethod
       def Args(parser):
         self._CommonArgs(parser)
-        if self.spec.async_:
-          base.ASYNC_FLAG.AddToParser(parser)
+        self._AddAsyncFlag(parser)
+        self._AddPagingFlags(parser)
 
       def Run(self_, args):
+        self._RegisterURIFunc(args)
         ref, response = self._CommonRun(args)
         if self.spec.async_:
           request_string = None
@@ -743,24 +782,6 @@ class ListCommandGenerator(BaseCommandGenerator):
   """Generator for list commands."""
 
   command_type = yaml_command_schema.CommandType.LIST
-
-  def _RegisterURIFunc(self, args):
-    """Generates and registers a function to create a URI from a resource.
-
-    Args:
-      args: The argparse namespace.
-
-    Returns:
-      f(resource) -> str, A function that converts the given resource payload
-      into a URI.
-    """
-    def URIFunc(resource):
-      id_value = getattr(
-          resource, self.spec.response.id_field)
-      method = self.arg_generator.GetPrimaryResource(self.methods, args).method
-      ref = self.arg_generator.GetResponseResourceRef(id_value, args, method)
-      return ref.SelfLink()
-    args.GetDisplayInfo().AddUriFunc(URIFunc)
 
   def _Generate(self):
     """Generates a List command.

@@ -235,6 +235,9 @@ def get_signing_information_from_json(raw_data, password_bytes=None):
     A tuple (client_id: str, key: crypto.PKey), which can be used to sign URLs.
   """
   from OpenSSL import crypto  # pylint:disable=g-import-not-at-top
+  from cryptography.hazmat.primitives.serialization import pkcs12  # pylint:disable=g-import-not-at-top
+  from cryptography.x509.oid import NameOID  # pylint:disable=g-import-not-at-top
+
   try:
     # Expects JSON formatted like the return value of the iam service-account
     # keys create command:
@@ -259,9 +262,14 @@ def get_signing_information_from_json(raw_data, password_bytes=None):
           "Keystore password (default: 'notasecret'): "
       )
 
-    keystore = crypto.load_pkcs12(raw_data, passphrase=password_bytes)
-    client_id = keystore.get_certificate().get_subject().CN
-    return client_id, keystore.get_privatekey()
+    if not isinstance(password_bytes, bytes):
+      password_bytes = password_bytes.encode('utf-8')
+    private_key, certificate, _ = pkcs12.load_key_and_certificates(
+        raw_data, password=password_bytes
+    )
+    client_id = certificate.subject.get_attributes_for_oid(NameOID.COMMON_NAME)
+
+    return client_id[0].value, private_key
 
 
 def get_signing_information_from_file(path, password=None):

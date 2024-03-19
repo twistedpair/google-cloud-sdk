@@ -63,17 +63,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_POLICIES_BINDINGS = (
-      'projects.locations.policies.bindings',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/policies/'
-              '{policiesId}/bindings/{bindingsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_TARGETASSOCIATIONS = (
       'projects.locations.targetAssociations',
       '{+name}',

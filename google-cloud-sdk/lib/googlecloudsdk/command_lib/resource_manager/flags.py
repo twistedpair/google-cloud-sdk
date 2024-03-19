@@ -132,7 +132,8 @@ def TagsFlag():
       'List of tags KEY=VALUE pairs to bind.',
       'Each item must be expressed as',
       '"<tag-key-namespaced-name>=<tag-value-short-name>".\n',
-      'Example: 123/environment=production,123/costCenter=marketing',
+      'Example: 123/environment=production,123/costCenter=marketing\n',
+      'Note: Currently this field is in Preview.',
   ]
   return base.Argument(
       '--tags',

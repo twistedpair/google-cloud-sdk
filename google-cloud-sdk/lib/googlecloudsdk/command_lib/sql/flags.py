@@ -384,6 +384,26 @@ def AddFinalbackupRetentionDays(parser):
   )
 
 
+def AddBackupTtlDays(parser):
+  """Add the flag to specify the retention days of the backup.
+
+  Args:
+    parser: The current parser to add this argument.
+  """
+  parser.add_argument(
+      '--ttl-days',
+      required=False,
+      type=arg_parsers.BoundedInt(1, 365, unlimited=False),
+      default=None,
+      hidden=True,
+      help=(
+          ' Specifies the number of days to retain the final backup.'
+          ' The valid range is between 1 and 365. The Default value is 30 days.'
+          ' Provide either ttl-days or expiry-time.'
+      ),
+  )
+
+
 def AddFinalbackupDescription(parser):
   parser.add_argument(
       '--final-backup-description',
@@ -402,6 +422,26 @@ def AddFinalBackupExpiryTimeArgument(parser):
       help=(
           'Specifies the time at which the final backup will expire. Maximum'
           ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
+      ),
+  )
+
+
+def AddBackupExpiryTime(parser):
+  """Add the flag to specify the expiration time of the backup.
+
+  Args:
+    parser: The current parser to add this argument.
+  """
+  parser.add_argument(
+      '--expiry-time',
+      required=False,
+      type=arg_parsers.Datetime.Parse,
+      default=None,
+      hidden=True,
+      help=(
+          'Specifies when the final backup expires. The Maximum'
+          ' time allowed is 365 days from now. Format: YYYY-MM-DDTHH:MM:SS.'
+          ' Provide either ttl-days or expiry-time.'
       ),
   )
 
@@ -1702,6 +1742,21 @@ def AddBackupId(
   )
 
 
+def AddBackupName(parser):
+  """Add the flag for the NAME of the backup.
+
+  Args:
+    parser: The current parser to add this argument.
+  """
+  parser.add_argument(
+      'name',
+      help=(
+          'The NAME of the backup. To find the NAME, run the following command:'
+          ' $ gcloud sql backups list --project-level.'
+      ),
+  )
+
+
 def AddProjectLevelBackupEndpoint(parser):
   """Add the flag to specify requests to route to new backup service end point.
 
@@ -2480,4 +2535,18 @@ def AddEnableGoogleMLIntegration(parser):
           'Currently, only PostgreSQL is supported.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
+  )
+
+
+def AddSwitchoverDbTimeout(parser):
+  parser.add_argument(
+      '--db-timeout',
+      default=None,
+      type=arg_parsers.Duration(lower_bound='1s', upper_bound='1d'),
+      required=False,
+      help=(
+          '(MySQL only) Cloud SQL instance operations timeout, which is the sum'
+          ' of all database operations. Default value is 10 minutes and can be'
+          ' modified to a maximum value of 24h.'
+      )
   )

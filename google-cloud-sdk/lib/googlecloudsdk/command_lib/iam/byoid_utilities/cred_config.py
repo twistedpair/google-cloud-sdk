@@ -103,7 +103,7 @@ def create_credential_config(args, config_type):
   elif universe_domain_property.IsExplicitlySet():
     universe_domain = universe_domain_property.Get()
   else:
-    universe_domain = 'googleapis.com'
+    universe_domain = properties.VALUES.core.universe_domain.default
 
   token_endpoint_builder = StsEndpoints(
       enable_mtls=enable_mtls, universe_domain=universe_domain
@@ -112,22 +112,22 @@ def create_credential_config(args, config_type):
   try:
     generator = get_generator(args, config_type)
     output = {
+        'universe_domain': universe_domain,
         'type': 'external_account',
         'audience': '//iam.googleapis.com/' + args.audience,
         'subject_token_type': generator.get_token_type(args.subject_token_type),
         'token_url': token_endpoint_builder.token_url,
         'credential_source': generator.get_source(args),
     }
-    # TODO(b/276367366): Add in all cases once approved.
-    if universe_domain != 'googleapis.com':
-      output['universe_domain'] = universe_domain
 
     if config_type is ConfigType.WORKFORCE_POOLS:
       output['workforce_pool_user_project'] = args.workforce_pool_user_project
 
     if args.service_account:
       sa_endpoint_builder = IamEndpoints(
-          args.service_account, enable_mtls=enable_mtls
+          args.service_account,
+          enable_mtls=enable_mtls,
+          universe_domain=universe_domain,
       )
       output['service_account_impersonation_url'] = (
           sa_endpoint_builder.impersonation_url

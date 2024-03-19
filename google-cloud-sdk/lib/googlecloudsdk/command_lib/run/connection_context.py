@@ -387,6 +387,38 @@ def DeriveRegionalEndpoint(endpoint, region):
   return urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
 
 
+class MultiRegionConnectionContext(ConnectionInfo):
+  """Context manager to connect to the multi-region endpoint (global)."""
+
+  def __init__(self, api_name, version, region_list):
+    super(MultiRegionConnectionContext, self).__init__(api_name, version)
+    # Global endpoint.
+    self.region = '-'
+    self.region_list = region_list
+
+  @property
+  def ns_label(self):
+    return 'project'
+
+  @property
+  def operator(self):
+    return 'Cloud Run'
+
+  @property
+  def location_label(self):
+    return ' regions [{{{{bold}}}}{}{{{{reset}}}}]'.format(self.region_list)
+
+  @property
+  def supports_one_platform(self):
+    return True
+
+  @contextlib.contextmanager
+  def Connect(self):
+    self.endpoint = apis.GetEffectiveApiEndpoint(self._api_name, self._version)
+    with _OverrideEndpointOverrides(self._api_name, self.endpoint):
+      yield self
+
+
 class RegionalConnectionContext(ConnectionInfo):
   """Context manager to connect a particular Cloud Run region."""
 
@@ -455,12 +487,15 @@ def _GetApiVersion(product,
     raise ValueError('Unrecognized product: ' + six.u(product))
 
 
-def GetConnectionContext(args,
-                         product=flags.Product.RUN,
-                         release_track=base.ReleaseTrack.GA,
-                         version_override=None,
-                         platform=None,
-                         region_label=None):
+def GetConnectionContext(
+    args,
+    product=flags.Product.RUN,
+    release_track=base.ReleaseTrack.GA,
+    version_override=None,
+    platform=None,
+    region_label=None,
+    is_multiregion=False,
+):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
@@ -472,6 +507,7 @@ def GetConnectionContext(args,
     platform: 'gke', 'kubernetes', or 'managed'. If not specified, the value of
       the --platform flag will be used instead.
     region_label: A k8s label representing the intended region.
+    is_multiregion: Whether we will use the managed Multi-region API.
 
   Raises:
     ArgumentError if region or cluster is not specified.
@@ -508,12 +544,17 @@ def GetConnectionContext(args,
     return GKEConnectionContext(cluster_ref, api_name, api_version)
 
   if platform == platforms.PLATFORM_MANAGED:
-    region = flags.GetRegion(args, prompt=True, region_label=region_label)
-    if not region:
-      raise serverless_exceptions.ArgumentError(
-          'You must specify a region. Either use the `--region` flag '
-          'or set the run/region property.')
     api_name = _GetApiName(product, release_track)
     api_version = _GetApiVersion(
         product, release_track, version_override=version_override)
-    return RegionalConnectionContext(region, api_name, api_version)
+    if not is_multiregion:
+      region = flags.GetRegion(args, prompt=True, region_label=region_label)
+      if not region:
+        raise serverless_exceptions.ArgumentError(
+            'You must specify a region. Either use the `--region` flag '
+            'or set the run/region property.'
+        )
+      return RegionalConnectionContext(region, api_name, api_version)
+    else:
+      region_list = flags.GetMultiRegion(args)
+      return MultiRegionConnectionContext(api_name, api_version, region_list)

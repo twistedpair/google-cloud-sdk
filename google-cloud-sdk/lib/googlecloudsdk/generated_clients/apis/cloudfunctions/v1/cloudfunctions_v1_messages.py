@@ -558,17 +558,10 @@ class CloudfunctionsOperationsListRequest(_messages.Message):
   r"""A CloudfunctionsOperationsListRequest object.
 
   Fields:
-    filter: Required. A filter for matching the requested operations. The
-      supported formats of *filter* are: To query for a specific function:
-      project:*,location:*,function:* To query for all of the latest
-      operations for a project: project:*,latest:true
-    name: Must not be set.
-    pageSize: The maximum number of records that should be returned. Requested
-      page size cannot exceed 100. If not set, the default page size is 100.
-      Pagination is only supported when querying for a specific function.
-    pageToken: Token identifying which result to start with, which is returned
-      by a previous list call. Pagination is only supported when querying for
-      a specific function.
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
   """
 
   filter = _messages.StringField(1)

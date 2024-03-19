@@ -38,6 +38,12 @@ def ShortenRelatedTags(response, unused_args):
   json_obj.pop('relatedTags', None)
   if tags:
     json_obj['relatedTags'] = tags
+  # Restore the display format of `metadata` after json conversion.
+  if response.metadata is not None:
+    json_obj['metadata'] = {
+        prop.key: prop.value.string_value
+        for prop in response.metadata.additionalProperties
+    }
   return json_obj
 
 

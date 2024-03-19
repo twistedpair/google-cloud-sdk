@@ -82,7 +82,7 @@ class Backup(_messages.Message):
   r"""Represents a request to perform a single point-in-time capture of some
   portion of the state of a GKE cluster, the record of the backup operation
   itself, and an anchor for the underlying artifacts that comprise the Backup
-  (the config backup and VolumeBackups). Next id: 29
+  (the config backup and VolumeBackups).
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the Backup
@@ -665,7 +665,7 @@ class EncryptionKey(_messages.Message):
 
 class ExclusionWindow(_messages.Message):
   r"""Defines a time window during which no backup should happen. All time and
-  date are in UTC. Next id: 6
+  date are in UTC.
 
   Fields:
     daily: The exclusion window occurs every day if set to "True". Specifying
@@ -732,7 +732,7 @@ class Filter(_messages.Message):
   refine the resource selection of the `Restore` beyond the coarse-grained
   scope defined in the `RestorePlan`. `exclusion_filters` take precedence over
   `inclusion_filters`. If a resource matches both `inclusion_filters` and
-  `exclusion_filters`, it will not be restored. Next id: 3
+  `exclusion_filters`, it will not be restored.
 
   Fields:
     exclusionFilters: Optional. Excludes resources from restoration. If
@@ -2241,8 +2241,7 @@ class ResourceSelector(_messages.Message):
   Conditions in the selector are optional, but at least one field should be
   set to a non-empty value. If a condition is not specified, no restrictions
   will be applied on that dimension. If more than one condition is specified,
-  a resource will be selected if and only if all conditions are met. Next id:
-  5
+  a resource will be selected if and only if all conditions are met.
 
   Messages:
     LabelsValue: Optional. Selects resources using Kubernetes
@@ -2307,7 +2306,7 @@ class ResourceSelector(_messages.Message):
 
 class Restore(_messages.Message):
   r"""Represents both a request to Restore some portion of a Backup into a
-  target GKE cluster and a record of the restore operation itself. Next id: 20
+  target GKE cluster and a record of the restore operation itself.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the Restore.
@@ -2439,7 +2438,7 @@ class Restore(_messages.Message):
 
 
 class RestoreConfig(_messages.Message):
-  r"""Configuration of a restore. Next id: 14
+  r"""Configuration of a restore.
 
   Enums:
     ClusterResourceConflictPolicyValueValuesEnum: Optional. Defines the
@@ -2635,7 +2634,7 @@ class RestoreOrder(_messages.Message):
 
 class RestorePlan(_messages.Message):
   r"""The configuration of a potential series of Restore operations to be
-  performed against Backups belong to a particular BackupPlan. Next id: 13
+  performed against Backups belong to a particular BackupPlan.
 
   Enums:
     StateValueValuesEnum: Output only. State of the RestorePlan. This State
@@ -2772,7 +2771,7 @@ class RetentionPolicy(_messages.Message):
 
 class RpoConfig(_messages.Message):
   r"""Defines RPO scheduling configuration for automatically creating Backups
-  via this BackupPlan. Next id: 3
+  via this BackupPlan.
 
   Fields:
     exclusionWindows: Optional. User specified time windows during which
@@ -3076,7 +3075,7 @@ class TransformationRuleAction(_messages.Message):
 class VolumeBackup(_messages.Message):
   r"""Represents the backup of a specific persistent volume as a component of
   a Backup - both the record of the operation and a pointer to the underlying
-  storage-specific artifacts. Next id: 14
+  storage-specific artifacts.
 
   Enums:
     FormatValueValuesEnum: Output only. The format used for the volume backup.
@@ -3267,8 +3266,7 @@ class VolumeDataRestorePolicyOverride(_messages.Message):
 
 
 class VolumeRestore(_messages.Message):
-  r"""Represents the operation of restoring a volume from a VolumeBackup. Next
-  id: 13
+  r"""Represents the operation of restoring a volume from a VolumeBackup.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of this

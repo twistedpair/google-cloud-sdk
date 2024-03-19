@@ -59,7 +59,7 @@ oauth_client:
       The following scopes are currently supported:
 
       * `https://www.googleapis.com/auth/cloud-platform`: View, edit, configure, and delete your
-                                                          Google Cloud data and view the email
+                                                          Google Cloud data, and view the email
                                                           address for your Google Account.
 
       * `openid`: Associate you with your personal info on Google Cloud.

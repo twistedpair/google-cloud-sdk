@@ -108,19 +108,22 @@ class Secrets(Client):
     super(Secrets, self).__init__(client, messages)
     self.service = self.client.projects_secrets
 
-  def Create(self,
-             secret_ref,
-             policy,
-             locations,
-             labels,
-             expire_time=None,
-             ttl=None,
-             keys=None,
-             next_rotation_time=None,
-             rotation_period=None,
-             topics=None,
-             annotations=None,
-             regional_kms_key_name=None):
+  def Create(
+      self,
+      secret_ref,
+      policy,
+      locations,
+      labels,
+      expire_time=None,
+      ttl=None,
+      keys=None,
+      next_rotation_time=None,
+      rotation_period=None,
+      topics=None,
+      annotations=None,
+      regional_kms_key_name=None,
+      version_destroy_ttl=None,
+  ):
     """Create a secret."""
     keys = keys or []
     replication = _MakeReplicationMessage(self.messages, policy, locations,
@@ -162,7 +165,11 @@ class Secrets(Client):
                 topics=topics_message_list,
                 annotations=new_annotations,
                 rotation=rotation,
-                customerManagedEncryption=customer_managed_encryption)))
+                customerManagedEncryption=customer_managed_encryption,
+                versionDestroyTtl=version_destroy_ttl,
+            ),
+        )
+    )
 
   def Delete(self, secret_ref, etag=None):
     """Delete a secret."""
@@ -205,18 +212,21 @@ class Secrets(Client):
                 data=data, dataCrc32c=data_crc32c)))
     return self.service.AddVersion(request)
 
-  def Update(self,
-             secret_ref,
-             labels,
-             update_mask,
-             etag=None,
-             expire_time=None,
-             ttl=None,
-             topics=None,
-             version_aliases=None,
-             annotations=None,
-             next_rotation_time=None,
-             rotation_period=None):
+  def Update(
+      self,
+      secret_ref,
+      labels,
+      update_mask,
+      etag=None,
+      expire_time=None,
+      ttl=None,
+      topics=None,
+      version_aliases=None,
+      annotations=None,
+      next_rotation_time=None,
+      rotation_period=None,
+      version_destroy_ttl=None,
+  ):
     """Update a secret."""
 
     rotation = None
@@ -251,6 +261,7 @@ class Secrets(Client):
                 ttl=ttl,
                 topics=topics_message_list,
                 rotation=rotation,
+                versionDestroyTtl=version_destroy_ttl,
             ),
             updateMask=_FormatUpdateMask(update_mask),
         )

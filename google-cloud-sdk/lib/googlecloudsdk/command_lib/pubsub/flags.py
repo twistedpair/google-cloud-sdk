@@ -26,6 +26,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.pubsub import resource_args
 from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 # Maximum number of attributes you can specify for a message.
 MAX_ATTRIBUTES = 100
@@ -293,7 +294,7 @@ def AddAckDeadlineFlag(parser, required=False):
 
 
 def AddSubscriptionMessageRetentionFlags(parser, is_update):
-  """Adds flags subscription's messsage retention properties to the parser."""
+  """Adds flags subscription's message retention properties to the parser."""
   if is_update:
     retention_parser = ParseSubscriptionRetentionDurationWithDefault
     retention_default_help = 'Specify "default" to use the default value.'
@@ -867,7 +868,6 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
             'Specify either --clear-ingestion-data-source-settings or a new'
             ' ingestion source.'
         ),
-        hidden=True,
     )
     AddBooleanFlag(
         parser=clear_settings_group,
@@ -880,22 +880,19 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
     )
     current_group = clear_settings_group
 
-  ingestion_source_types_group = current_group.add_mutually_exclusive_group(
-      hidden=(not is_update)
-  )
+  ingestion_source_types_group = current_group.add_mutually_exclusive_group()
 
   aws_kinesis_group = ingestion_source_types_group.add_argument_group(
       help=(
-          'The flags for specifying an Amazon Web Services (AWS) Kinesis'
-          ' Ingestion Topic'
+          'The following flags are for specifying ingestion settings for an'
+          ' import topic from Amazon Web Services (AWS) Kinesis Data Streams'
       )
   )
   aws_kinesis_group.add_argument(
       '--kinesis-ingestion-stream-arn',
       default=None,
       help=(
-          'The Kinesis data stream Amazon Resource Name (ARN) to ingest data'
-          ' from.'
+          'The Kinesis data stream ARN from which to ingest data.'
       ),
       required=True,
   )
@@ -912,8 +909,8 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
       '--kinesis-ingestion-role-arn',
       default=None,
       help=(
-          'AWS role Amazon Resource Name (ARN) to be used for Federated'
-          ' Identity authentication with Kinesis.'
+          'AWS role ARN to be used for Federated Identity authentication with'
+          ' Kinesis.'
       ),
       required=True,
   )
@@ -921,8 +918,8 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
       '--kinesis-ingestion-service-account',
       default=None,
       help=(
-          'The GCP service account to be used for Federated Identity'
-          ' authentication with Kinesis.'
+          'The service account to be used for Federated Identity authentication'
+          ' with Kinesis.'
       ),
       required=True,
   )
@@ -1099,4 +1096,36 @@ def ValidateDeadLetterPolicy(args):
   if args.max_delivery_attempts and not args.dead_letter_topic:
     raise exceptions.RequiredArgumentException(
         'DEAD_LETTER_TOPIC', '--dead-letter-topic'
+    )
+
+
+def ValidateSubscriptionArgsUseUniverseSupportedFeatures(args):
+  """Raises an exception if args has unsupported features in non default universe.
+
+  Args:
+    args (argparse.Namespace): Parsed arguments
+
+  Raises:
+    InvalidArgumentException: if invalid flags are set in current universe.
+  """
+  if properties.IsDefaultUniverse():
+    return
+  universe_domain = properties.GetUniverseDomain()
+  if hasattr(args, 'enable_message_ordering') and args.enable_message_ordering:
+    raise exceptions.InvalidArgumentException(
+        'ENABLE_MESSAGE_ORDERING',
+        '--enable-message-ordering is not available in universe_domain ' +
+        universe_domain
+    )
+  if args.enable_exactly_once_delivery:
+    raise exceptions.InvalidArgumentException(
+        'ENABLE_EXACTLY_ONCE_DELIVERY',
+        '--enable-exactly-once-delivery is not available in universe_domain ' +
+        universe_domain
+    )
+  if args.min_retry_delay or args.max_retry_delay:
+    raise exceptions.InvalidArgumentException(
+        'RETRY_POLICY',
+        '--retry-policy is not available in universe_domain ' +
+        universe_domain
     )

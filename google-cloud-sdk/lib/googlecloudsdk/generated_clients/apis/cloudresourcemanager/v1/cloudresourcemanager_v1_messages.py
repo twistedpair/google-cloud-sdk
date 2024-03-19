@@ -1604,7 +1604,7 @@ class Project(_messages.Message):
     TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
       to this project. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
 
   Fields:
     createTime: Creation time. Read-only.
@@ -1635,7 +1635,7 @@ class Project(_messages.Message):
     tags: Optional. Input only. Immutable. Tag keys/values directly bound to
       this project. Each item in the map must be expressed as " : ". For
       example: "123/environment" : "production", "123/costCenter" :
-      "marketing"
+      "marketing" Note: Currently this field is in Preview.
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -1692,6 +1692,7 @@ class Project(_messages.Message):
     r"""Optional. Input only. Immutable. Tag keys/values directly bound to
     this project. Each item in the map must be expressed as " : ". For
     example: "123/environment" : "production", "123/costCenter" : "marketing"
+    Note: Currently this field is in Preview.
 
     Messages:
       AdditionalProperty: An additional property for a TagsValue object.

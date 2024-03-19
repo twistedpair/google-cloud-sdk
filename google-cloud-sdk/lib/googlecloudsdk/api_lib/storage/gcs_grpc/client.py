@@ -70,23 +70,47 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
 
   def delete_object(self, object_url, request_config):
     """See super class."""
-    pass
+    # S3 requires a string, but GCS uses an int for generation.
+    if object_url.generation is not None:
+      generation = int(object_url.generation)
+    else:
+      generation = None
+
+    self._get_gapic_client()
+
+    request = self._gapic_client.types.DeleteObjectRequest(
+        bucket=object_url.bucket_name,
+        object=object_url.object_name,
+        generation=generation,
+        if_generation_match=request_config.precondition_generation_match,
+        if_metageneration_match=request_config.precondition_metageneration_match,
+    )
+    # Success returns an empty body.
+    self._gapic_client.storage.delete_object(request)
 
   def restore_object(self, url, request_config):
     """See super class."""
-    pass
+    if request_config.resource_args:
+      preserve_acl = request_config.resource_args.preserve_acl
+    else:
+      preserve_acl = None
 
-  def bulk_restore_objects(
-      self,
-      bucket_url,
-      object_globs,
-      request_config,
-      allow_overwrite=False,
-      deleted_after_time=None,
-      deleted_before_time=None,
-  ):
-    """See super class."""
-    pass
+    self._get_gapic_client()
+
+    object_metadata = self._gapic_client.storage.restore_object(
+        self._gapic_client.types.RestoreObjectRequest(
+            bucket=url.bucket_name,
+            object=url.object_name,
+            generation=int(url.generation),
+            if_generation_match=request_config.precondition_generation_match,
+            if_metageneration_match=(
+                request_config.precondition_metageneration_match
+            ),
+            copy_source_acl=preserve_acl,
+        )
+    )
+
+    return metadata_util.get_object_resource_from_grpc_object(object_metadata)
 
   def download_object(
       self,

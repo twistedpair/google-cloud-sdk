@@ -45141,7 +45141,8 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
 
   Enums:
     TypeValueValuesEnum: [Output Only] The type of the firewall policy. Can be
-      one of HIERARCHY, NETWORK, NETWORK_REGIONAL.
+      one of HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL,
+      SYSTEM_REGIONAL.
 
   Fields:
     displayName: [Output Only] Deprecated, please use short name instead. The
@@ -45150,12 +45151,12 @@ class InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy(_messages.Me
     rules: The rules that apply to the network.
     shortName: [Output Only] The short name of the firewall policy.
     type: [Output Only] The type of the firewall policy. Can be one of
-      HIERARCHY, NETWORK, NETWORK_REGIONAL.
+      HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The type of the firewall policy. Can be one of
-    HIERARCHY, NETWORK, NETWORK_REGIONAL.
+    HIERARCHY, NETWORK, NETWORK_REGIONAL, SYSTEM_GLOBAL, SYSTEM_REGIONAL.
 
     Values:
       HIERARCHY: <no description>

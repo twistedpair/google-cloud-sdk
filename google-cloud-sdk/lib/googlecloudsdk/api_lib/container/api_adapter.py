@@ -2490,6 +2490,15 @@ class APIAdapter(object):
           self.messages,
       )
 
+      if (
+          node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled
+          is not None
+          and options.enable_insecure_kubelet_readonly_port is None
+      ):
+        options.enable_insecure_kubelet_readonly_port = (
+            node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled
+        )
+
     self.ParseAdvancedMachineFeatures(options, node_config)
 
     if options.gvnic is not None:

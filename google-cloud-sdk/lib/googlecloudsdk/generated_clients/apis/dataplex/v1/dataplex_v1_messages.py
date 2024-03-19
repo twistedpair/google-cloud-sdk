@@ -364,6 +364,23 @@ class DataplexProjectsLocationsDataScansDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest
+  object.
+
+  Fields:
+    googleCloudDataplexV1GenerateDataQualityRulesRequest: A
+      GoogleCloudDataplexV1GenerateDataQualityRulesRequest resource to be
+      passed as the request body.
+    name: Required. The name should be either * the name of a datascan with at
+      least one successful completed data profiling job, or * the name of a
+      successful completed data profiling datascan job.
+  """
+
+  googleCloudDataplexV1GenerateDataQualityRulesRequest = _messages.MessageField('GoogleCloudDataplexV1GenerateDataQualityRulesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DataplexProjectsLocationsDataScansGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsDataScansGetIamPolicyRequest object.
 
@@ -417,6 +434,23 @@ class DataplexProjectsLocationsDataScansGetRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest
+  object.
+
+  Fields:
+    googleCloudDataplexV1GenerateDataQualityRulesRequest: A
+      GoogleCloudDataplexV1GenerateDataQualityRulesRequest resource to be
+      passed as the request body.
+    name: Required. The name should be either * the name of a datascan with at
+      least one successful completed data profiling job, or * the name of a
+      successful completed data profiling datascan job.
+  """
+
+  googleCloudDataplexV1GenerateDataQualityRulesRequest = _messages.MessageField('GoogleCloudDataplexV1GenerateDataQualityRulesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsDataScansJobsGetRequest(_messages.Message):
@@ -6415,6 +6449,20 @@ class GoogleCloudDataplexV1EnvironmentSessionStatus(_messages.Message):
   """
 
   active = _messages.BooleanField(1)
+
+
+class GoogleCloudDataplexV1GenerateDataQualityRulesRequest(_messages.Message):
+  r"""Generate recommended DataQualityRules request."""
+
+
+class GoogleCloudDataplexV1GenerateDataQualityRulesResponse(_messages.Message):
+  r"""Generate recommended DataQualityRules response.
+
+  Fields:
+    rule: Generated recommended {@link DataQualityRule}s.
+  """
+
+  rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
 
 
 class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):

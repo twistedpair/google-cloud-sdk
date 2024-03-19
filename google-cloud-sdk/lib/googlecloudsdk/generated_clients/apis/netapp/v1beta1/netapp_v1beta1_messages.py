@@ -27,8 +27,6 @@ class ActiveDirectory(_messages.Message):
     LabelsValue: Labels for the active directory.
 
   Fields:
-    administrators: Optional. Users to be added to the Built-in
-      Admininstrators group.
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
     backupOperators: Optional. Users to be added to the Built-in Backup
@@ -108,28 +106,27 @@ class ActiveDirectory(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  administrators = _messages.StringField(1, repeated=True)
-  aesEncryption = _messages.BooleanField(2)
-  backupOperators = _messages.StringField(3, repeated=True)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  dns = _messages.StringField(6)
-  domain = _messages.StringField(7)
-  encryptDcConnections = _messages.BooleanField(8)
-  kdcHostname = _messages.StringField(9)
-  kdcIp = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  ldapSigning = _messages.BooleanField(12)
-  name = _messages.StringField(13)
-  netBiosPrefix = _messages.StringField(14)
-  nfsUsersWithLdap = _messages.BooleanField(15)
-  organizationalUnit = _messages.StringField(16)
-  password = _messages.StringField(17)
-  securityOperators = _messages.StringField(18, repeated=True)
-  site = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  stateDetails = _messages.StringField(21)
-  username = _messages.StringField(22)
+  aesEncryption = _messages.BooleanField(1)
+  backupOperators = _messages.StringField(2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  dns = _messages.StringField(5)
+  domain = _messages.StringField(6)
+  encryptDcConnections = _messages.BooleanField(7)
+  kdcHostname = _messages.StringField(8)
+  kdcIp = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  ldapSigning = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  netBiosPrefix = _messages.StringField(13)
+  nfsUsersWithLdap = _messages.BooleanField(14)
+  organizationalUnit = _messages.StringField(15)
+  password = _messages.StringField(16)
+  securityOperators = _messages.StringField(17, repeated=True)
+  site = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateDetails = _messages.StringField(20)
+  username = _messages.StringField(21)
 
 
 class Backup(_messages.Message):
@@ -2399,8 +2396,8 @@ class StoragePool(_messages.Message):
     name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
-    psaRange: Optional. Name of the Private Service Access allocated range. If
-      not provided, any available range will be chosen.
+    psaRange: Optional. This field is currently not implemented. Currently
+      values provided in this field will be ignored.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2601,8 +2598,8 @@ class Volume(_messages.Message):
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
-    psaRange: Output only. Name of the Private Service Access allocated range.
-      This is optional. If not provided, any available range will be chosen.
+    psaRange: Output only. This field is currently not implemented. Currently
+      values provided in this field will be ignored.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
     restrictedActions: Optional. List of actions that are restricted on this

@@ -4017,6 +4017,7 @@ class MonitoringComponentConfig(_messages.Message):
       STATEFULSET: Statefulset
       CADVISOR: CADVISOR
       KUBELET: KUBELET
+      DCGM: NVIDIA Data Center GPU Manager (DCGM)
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -4033,6 +4034,7 @@ class MonitoringComponentConfig(_messages.Message):
     STATEFULSET = 12
     CADVISOR = 13
     KUBELET = 14
+    DCGM = 15
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 

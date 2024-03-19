@@ -7737,9 +7737,9 @@ class ServiceMeshCondition(_messages.Message):
       CODE_UNSPECIFIED: Default Unspecified code
       MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
       CNI_CONFIG_UNSUPPORTED: CNI config unsupported error code
-      SECURITY_SANDBOX_UNSUPPORTED: Security sandbox unsupported error code
-      NODEPOOL_WORKLOAD_IDENTITY_REQUIRED: Nodepool workload identity required
-        error code
+      GKE_SANDBOX_UNSUPPORTED: GKE sandbox unsupported error code
+      NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED: Nodepool workload
+        identity federation required error code
       CNI_INSTALLATION_FAILED: CNI installation failed error code
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
@@ -7748,8 +7748,8 @@ class ServiceMeshCondition(_messages.Message):
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
     CNI_CONFIG_UNSUPPORTED = 2
-    SECURITY_SANDBOX_UNSUPPORTED = 3
-    NODEPOOL_WORKLOAD_IDENTITY_REQUIRED = 4
+    GKE_SANDBOX_UNSUPPORTED = 3
+    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 4
     CNI_INSTALLATION_FAILED = 5
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7

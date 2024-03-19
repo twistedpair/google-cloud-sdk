@@ -252,21 +252,6 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
-class AlloydbProjectsLocationsClustersGenerateClientCertificateRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersGenerateClientCertificateRequest
-  object.
-
-  Fields:
-    generateClientCertificateRequest: A GenerateClientCertificateRequest
-      resource to be passed as the request body.
-    parent: Required. The name of the parent resource. The required format is:
-      * projects/{project}/locations/{location}/clusters/{cluster}
-  """
-
-  generateClientCertificateRequest = _messages.MessageField('GenerateClientCertificateRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersGetRequest object.
 
@@ -880,6 +865,16 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class AuthorizedNetwork(_messages.Message):
+  r"""AuthorizedNetwork contains metadata for an authorized network.
+
+  Fields:
+    cidrRange: CIDR range for one authorzied network of the instance.
+  """
+
+  cidrRange = _messages.StringField(1)
+
+
 class AutomatedBackupPolicy(_messages.Message):
   r"""Message describing the user-specified automated backup policy. All
   fields in the automated backup policy are optional. Defaults for each field
@@ -1450,11 +1445,15 @@ class ConnectionInfo(_messages.Message):
     name: The name of the ConnectionInfo singleton resource, e.g.: projects/{p
       roject}/locations/{location}/clusters/*/instances/*/connectionInfo This
       field currently has no semantic meaning.
+    publicIpAddress: Output only. The public IP addresses for the Instance.
+      This is available ONLY when enable_public_ip is set. This is the
+      connection endpoint for an end-user application.
   """
 
   instanceUid = _messages.StringField(1)
   ipAddress = _messages.StringField(2)
   name = _messages.StringField(3)
+  publicIpAddress = _messages.StringField(4)
 
 
 class ContinuousBackupConfig(_messages.Message):
@@ -1615,53 +1614,6 @@ class FailoverInstanceRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
-
-
-class GenerateClientCertificateRequest(_messages.Message):
-  r"""Message for requests to generate a client certificate signed by the
-  Cluster CA.
-
-  Fields:
-    certDuration: Optional. An optional hint to the endpoint to generate the
-      client certificate with the requested duration. The duration can be from
-      1 hour to 24 hours. The endpoint may or may not honor the hint. If the
-      hint is left unspecified or is not honored, then the endpoint will pick
-      an appropriate default duration.
-    publicKey: Optional. The public key from the client.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    useMetadataExchange: Optional. An optional hint to the endpoint to
-      generate a client ceritificate that can be used by AlloyDB connectors to
-      exchange additional metadata with the server after TLS handshake.
-  """
-
-  certDuration = _messages.StringField(1)
-  publicKey = _messages.StringField(2)
-  requestId = _messages.StringField(3)
-  useMetadataExchange = _messages.BooleanField(4)
-
-
-class GenerateClientCertificateResponse(_messages.Message):
-  r"""Message returned by a GenerateClientCertificate operation.
-
-  Fields:
-    caCert: Optional. The pem-encoded cluster ca X.509 certificate.
-    pemCertificateChain: Output only. The pem-encoded chain that may be used
-      to verify the X.509 certificate. Expected to be in issuer-to-root order
-      according to RFC 5246.
-  """
-
-  caCert = _messages.StringField(1)
-  pemCertificateChain = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -1896,8 +1848,12 @@ class Instance(_messages.Message):
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
+    networkConfig: Optional. Instance level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    publicIpAddress: Output only. The public IP addresses for the Instance.
+      This is available ONLY when enable_public_ip is set. This is the
+      connection endpoint for an end-user application.
     queryInsightsConfig: Configuration for query insights.
     readPoolConfig: Read pool instance configuration. This is required if the
       value of instanceType is READ_POOL.
@@ -2081,15 +2037,30 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   machineConfig = _messages.MessageField('MachineConfig', 13)
   name = _messages.StringField(14)
-  nodes = _messages.MessageField('Node', 15, repeated=True)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
-  reconciling = _messages.BooleanField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  writableNode = _messages.MessageField('Node', 23)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 15)
+  nodes = _messages.MessageField('Node', 16, repeated=True)
+  publicIpAddress = _messages.StringField(17)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 18)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  writableNode = _messages.MessageField('Node', 25)
+
+
+class InstanceNetworkConfig(_messages.Message):
+  r"""Metadata related to instance level network configuration.
+
+  Fields:
+    authorizedExternalNetworks: Optional. A list of external network
+      authorized to access this instance.
+    enablePublicIp: Optional. Enabling public ip for the instance.
+  """
+
+  authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
+  enablePublicIp = _messages.BooleanField(2)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -3189,6 +3160,16 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         authorized networks.
       SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
         policy restrict public ip.
+      SIGNAL_TYPE_QUOTA_LIMIT: Cluster nearing quota limit
+      SIGNAL_TYPE_NO_PASSWORD_POLICY: No password policy set on resources
+      SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT: Performance impact of
+        connections settings
+      SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT: Performance impact of
+        temporary tables settings
+      SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT: Performance impact of
+        transaction logs settings
+      SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
+        without indexes
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3251,6 +3232,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
     SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
     SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+    SIGNAL_TYPE_QUOTA_LIMIT = 61
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -3737,6 +3724,16 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         authorized networks.
       SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP: Represents violate org
         policy restrict public ip.
+      SIGNAL_TYPE_QUOTA_LIMIT: Cluster nearing quota limit
+      SIGNAL_TYPE_NO_PASSWORD_POLICY: No password policy set on resources
+      SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT: Performance impact of
+        connections settings
+      SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT: Performance impact of
+        temporary tables settings
+      SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT: Performance impact of
+        transaction logs settings
+      SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
+        without indexes
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3799,6 +3796,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
     SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
     SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
+    SIGNAL_TYPE_QUOTA_LIMIT = 61
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

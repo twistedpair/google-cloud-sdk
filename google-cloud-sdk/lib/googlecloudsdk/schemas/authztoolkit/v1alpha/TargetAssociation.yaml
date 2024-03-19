@@ -58,8 +58,3 @@ properties:
     type: array
     items:
       $ref: PolicyConfig.yaml
-  tdWorkload:
-    description: |-
-      Immutable. Traffic Director based workloads. Authorization Toolkit
-      auto configures the authorization settings on the workload.
-    $ref: TrafficDirector.yaml

@@ -32,6 +32,15 @@ _POSIX_SOURCE_OR_DESTINATION_HELP_TEXT = (
     '* posix:///path/directory/\n\n'
     'A file transfer agent must be installed on the POSIX filesystem, and you'
     ' need an agent pool flag on this `jobs` command to activate the agent.')
+_HDFS_SOURCE_HELP_TEXT = (
+    'Hadoop Distributed File System (HDFS) - Specify the `hdfs://` scheme'
+    ' followed by the absolute path to the desired directory, starting from the'
+    ' root of the file system (denoted by a leading slash). For example:\n'
+    '* hdfs:///path/directory/\n\n'
+    'Namenode details should not be included in the path specification, as they'
+    ' are required separately during the agent installation process.\n\n'
+    'A file transfer agent must be installed, and you need an agent pool flag'
+    ' on this `jobs` command to activate the agent.')
 _SOURCE_HELP_TEXT = (
     'The source of your data. Available sources and formatting information:\n\n'
     'Public clouds -\n'
@@ -40,10 +49,11 @@ _SOURCE_HELP_TEXT = (
     '* [Azure Blob Storage or Data Lake Storage] http://examplestorageaccount.'
     'blob.core.windows.net/examplecontainer/examplefolder\n\n'
     '{}\n\n'
+    '{}\n\n'
     'Publicly-accessible objects - Specify the URL of a TSV file containing a'
     ' list of URLs of publicly-accessible objects. For example:\n'
     '* http://example.com/tsvfile'
-).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT)
+).format(_POSIX_SOURCE_OR_DESTINATION_HELP_TEXT, _HDFS_SOURCE_HELP_TEXT)
 _DESTINATION_HELP_TEXT = (
     'The destination of your transferred data. Available destinations and '
     ' formatting information:\n\n'

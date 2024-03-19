@@ -1872,7 +1872,8 @@ class TaskSpec(_messages.Message):
     maxRetryCount: Maximum number of retries on failures. The default, 0,
       which means never retry. The valid value range is [0, 10].
     maxRunDuration: Maximum duration the task should run. The task will be
-      killed and marked as FAILED if over this limit.
+      killed and marked as FAILED if over this limit. The valid value range
+      for max_run_duration in seconds is [0, 315576000000.999999999],
     runnables: The sequence of scripts or containers to run for this Task.
       Each Task using this TaskSpec executes its list of runnables in order.
       The Task succeeds if all of its runnables either exit with a zero status

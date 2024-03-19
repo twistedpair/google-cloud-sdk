@@ -42,6 +42,14 @@ LIST_FORMAT = """
     )
 """
 
+MEM_LIST_FORMAT = """
+    table(
+      name.basename():label=NAME,
+      unique_id:label=UNIQUE_ID,
+      name.scope().segment(-3):label=LOCATION
+    )
+"""
+
 SC_LIST_FORMAT = """
     table(
       name.segment(5):sort=1:label=NAME,

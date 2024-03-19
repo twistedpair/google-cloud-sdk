@@ -62,6 +62,19 @@ managementServer:
     help: The ID of the Managment Server.
   disable_auto_completers: false
 
+backupPlans:
+  name: backupPlans
+  collection: backupdr.projects.locations.backupPlans
+  request_id_field: backupPlansId
+  attributes:
+  - *project
+  - *location
+  - &backupPlansId
+    parameter_name: backupPlansId
+    attribute_name: backup_plan
+    help: The ID of the Backup Plan
+  disable_auto_completers: false
+
 backupVault:
   name: backupVault
   collection: backupdr.projects.locations.backupVaults
@@ -73,4 +86,34 @@ backupVault:
     parameter_name: backupVaultsId
     attribute_name: backup_vault
     help: The ID of the Backup Vault.
+  disable_auto_completers: false
+
+backupVaultDefault:
+  name: backupVault
+  collection: backupdr.projects.locations.backupVaults
+  request_id_field: backupVaultId
+  attributes:
+  - *project
+  - *location
+  - &backupVaultDefault
+    parameter_name: backupVaultsId
+    attribute_name: backup_vault
+    help: The ID of the Backup Vault.
+    fallthroughs:
+    - hook: googlecloudsdk.command_lib.backupdr.util:SetDefaultBackupVault
+      hint: |
+        use all vaults in all locations
+
+dataSource:
+  name: dataSource
+  collection: backupdr.projects.locations.backupVaults.dataSources
+  request_id_field: dataSourceId
+  attributes:
+  - *project
+  - *location
+  - *backupVaultId
+  - &dataSourceId
+    parameter_name: dataSourcesId
+    attribute_name: data_source
+    help: The ID of the Data Source.
   disable_auto_completers: false

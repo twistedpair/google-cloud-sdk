@@ -58,3 +58,7 @@ properties:
     - ARCHITECTURAL
     - STANDARD
     - ENHANCED
+  enableWatchdogTimer:
+    description: |-
+      Whether to enable watchdog timer device during instance creation.
+    type: boolean

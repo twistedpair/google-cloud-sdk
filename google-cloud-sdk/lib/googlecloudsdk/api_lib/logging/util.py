@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
-
 from googlecloudsdk.api_lib.resource_manager import folders
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
@@ -34,6 +33,8 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 
+DEFAULT_API_VERSION = 'v2'
+
 
 class Error(exceptions.Error):
   """Base error for this module."""
@@ -45,19 +46,20 @@ class InvalidJSONValueError(Error):
 
 def GetClient():
   """Returns the client for the logging API."""
-  return core_apis.GetClientInstance('logging', 'v2')
+  return core_apis.GetClientInstance('logging', DEFAULT_API_VERSION)
 
 
 def GetMessages():
   """Returns the messages for the logging API."""
-  return core_apis.GetMessagesModule('logging', 'v2')
+  return core_apis.GetMessagesModule('logging', DEFAULT_API_VERSION)
 
 
 def GetCurrentProjectParent():
   """Returns the relative resource path to the current project."""
   project = properties.VALUES.core.project.Get(required=True)
   project_ref = resources.REGISTRY.Parse(
-      project, collection='cloudresourcemanager.projects')
+      project, collection='cloudresourcemanager.projects'
+  )
   return project_ref.RelativeName()
 
 
@@ -66,7 +68,8 @@ def GetSinkReference(sink_name, args):
   return resources.REGISTRY.Parse(
       sink_name,
       params={GetIdFromArgs(args): GetParentResourceFromArgs(args).Name()},
-      collection=GetCollectionFromArgs(args, 'sinks'))
+      collection=GetCollectionFromArgs(args, 'sinks'),
+  )
 
 
 def GetOperationReference(operation_name, args):
@@ -77,7 +80,8 @@ def GetOperationReference(operation_name, args):
           GetIdFromArgs(args): GetParentResourceFromArgs(args).Name(),
           'locationsId': args.location,
       },
-      collection=GetCollectionFromArgs(args, 'locations.operations'))
+      collection=GetCollectionFromArgs(args, 'locations.operations'),
+  )
 
 
 def FormatTimestamp(timestamp):
@@ -109,21 +113,30 @@ def AddParentArgs(parser, help_string):
   """
   entity_group = parser.add_mutually_exclusive_group()
   entity_group.add_argument(
-      '--organization', required=False, metavar='ORGANIZATION_ID',
+      '--organization',
+      required=False,
+      metavar='ORGANIZATION_ID',
       completer=completers.OrganizationCompleter,
-      help='Organization of the {0}.'.format(help_string))
+      help='Organization of the {0}.'.format(help_string),
+  )
 
   entity_group.add_argument(
-      '--folder', required=False, metavar='FOLDER_ID',
-      help='Folder of the {0}.'.format(help_string))
+      '--folder',
+      required=False,
+      metavar='FOLDER_ID',
+      help='Folder of the {0}.'.format(help_string),
+  )
 
   entity_group.add_argument(
-      '--billing-account', required=False, metavar='BILLING_ACCOUNT_ID',
-      help='Billing account of the {0}.'.format(help_string))
+      '--billing-account',
+      required=False,
+      metavar='BILLING_ACCOUNT_ID',
+      help='Billing account of the {0}.'.format(help_string),
+  )
 
   common_args.ProjectArgument(
-      help_text_to_prepend='Project of the {0}.'.format(
-          help_string)).AddToParser(entity_group)
+      help_text_to_prepend='Project of the {0}.'.format(help_string)
+  ).AddToParser(entity_group)
 
 
 def AddBucketLocationArg(parser, required, help_string):
@@ -138,16 +151,20 @@ def AddBucketLocationArg(parser, required, help_string):
   # error message from the API can be confusing. We leave the rest of the
   # validation to the API.
   parser.add_argument(
-      '--location', required=required, metavar='LOCATION',
+      '--location',
+      required=required,
+      metavar='LOCATION',
       type=arg_parsers.RegexpValidator(r'.+', 'must be non-empty'),
-      help=help_string)
+      help=help_string,
+  )
 
 
 def GetProjectResource(project):
   """Returns the resource for the current project."""
   return resources.REGISTRY.Parse(
       project or properties.VALUES.core.project.Get(required=True),
-      collection='cloudresourcemanager.projects')
+      collection='cloudresourcemanager.projects',
+  )
 
 
 def GetOrganizationResource(organization):
@@ -160,7 +177,8 @@ def GetOrganizationResource(organization):
     The resource.
   """
   return resources.REGISTRY.Parse(
-      organization, collection='cloudresourcemanager.organizations')
+      organization, collection='cloudresourcemanager.organizations'
+  )
 
 
 def GetFolderResource(folder):
@@ -173,7 +191,8 @@ def GetFolderResource(folder):
     The resource.
   """
   return folders.FoldersRegistry().Parse(
-      folder, collection='cloudresourcemanager.folders')
+      folder, collection='cloudresourcemanager.folders'
+  )
 
 
 def GetBillingAccountResource(billing_account):
@@ -186,7 +205,8 @@ def GetBillingAccountResource(billing_account):
     The resource.
   """
   return resources.REGISTRY.Parse(
-      billing_account, collection='cloudbilling.billingAccounts')
+      billing_account, collection='cloudbilling.billingAccounts'
+  )
 
 
 def GetParentResourceFromArgs(args):
@@ -293,7 +313,8 @@ def CreateResourceName(parent, collection, resource_id):
   # requirement of the Cloud Logging API that each component of a resource
   # name must have no slashes.
   return '{0}/{1}/{2}'.format(
-      parent, collection, resource_id.replace('/', '%2F'))
+      parent, collection, resource_id.replace('/', '%2F')
+  )
 
 
 def CreateLogResourceName(parent, log_id):
@@ -343,7 +364,8 @@ def IndexTypeToEnum(index_type):
   return arg_utils.ChoiceToEnum(
       index_type,
       GetMessages().IndexConfig.TypeValueValuesEnum,
-      valid_choices=['INDEX_TYPE_STRING', 'INDEX_TYPE_INTEGER'])
+      valid_choices=['INDEX_TYPE_STRING', 'INDEX_TYPE_INTEGER'],
+  )
 
 
 def PrintPermissionInstructions(destination, writer_identity):
@@ -359,23 +381,29 @@ def PrintPermissionInstructions(destination, writer_identity):
     grantee = 'the group `cloud-logs@google.com`'
 
   if destination.startswith('bigquery'):
-    sdk_log.status.Print('Please remember to grant {0} the BigQuery Data '
-                         'Editor role on the dataset.'.format(grantee))
+    sdk_log.status.Print(
+        'Please remember to grant {0} the BigQuery Data '
+        'Editor role on the dataset.'.format(grantee)
+    )
   elif destination.startswith('storage'):
-    sdk_log.status.Print('Please remember to grant {0} the Storage Object '
-                         'Creator role on the bucket.'.format(grantee))
+    sdk_log.status.Print(
+        'Please remember to grant {0} the Storage Object '
+        'Creator role on the bucket.'.format(grantee)
+    )
   elif destination.startswith('pubsub'):
-    sdk_log.status.Print('Please remember to grant {0} the Pub/Sub Publisher '
-                         'role on the topic.'.format(grantee))
-  sdk_log.status.Print('More information about sinks can be found at https://'
-                       'cloud.google.com/logging/docs/export/configure_export')
+    sdk_log.status.Print(
+        'Please remember to grant {0} the Pub/Sub Publisher '
+        'role on the topic.'.format(grantee)
+    )
+  sdk_log.status.Print(
+      'More information about sinks can be found at https://'
+      'cloud.google.com/logging/docs/export/configure_export'
+  )
 
 
-def CreateLogMetric(metric_name,
-                    description=None,
-                    log_filter=None,
-                    bucket_name=None,
-                    data=None):
+def CreateLogMetric(
+    metric_name, description=None, log_filter=None, bucket_name=None, data=None
+):
   """Returns a LogMetric message based on a data stream or a description/filter.
 
   Args:
@@ -391,23 +419,21 @@ def CreateLogMetric(metric_name,
   messages = GetMessages()
   if data:
     contents = yaml.load(data)
-    metric_msg = encoding.DictToMessage(contents,
-                                        messages.LogMetric)
+    metric_msg = encoding.DictToMessage(contents, messages.LogMetric)
     metric_msg.name = metric_name
   else:
     metric_msg = messages.LogMetric(
         name=metric_name,
         description=description,
         filter=log_filter,
-        bucketName=bucket_name)
+        bucketName=bucket_name,
+    )
   return metric_msg
 
 
-def UpdateLogMetric(metric,
-                    description=None,
-                    log_filter=None,
-                    bucket_name=None,
-                    data=None):
+def UpdateLogMetric(
+    metric, description=None, log_filter=None, bucket_name=None, data=None
+):
   """Updates a LogMetric message given description, filter, and/or data.
 
   Args:
@@ -434,3 +460,31 @@ def UpdateLogMetric(metric,
     for field_name in update_data:
       setattr(metric, field_name, getattr(metric_diff, field_name))
   return metric
+
+
+def GetIamPolicy(view):
+  """Get IAM policy, for a given view."""
+
+  get_iam_policy_request = (
+      GetMessages().LoggingProjectsLocationsBucketsViewsGetIamPolicyRequest(
+          resource=view
+      )
+  )
+  return GetClient().projects_locations_buckets_views.GetIamPolicy(
+      get_iam_policy_request
+  )
+
+
+def SetIamPolicy(view, policy):
+  """Set IAM policy, for a given view."""
+  messages = GetMessages()
+
+  set_iam_policy_request = (
+      messages.LoggingProjectsLocationsBucketsViewsSetIamPolicyRequest(
+          resource=view,
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
+      )
+  )
+  return GetClient().projects_locations_buckets_views.SetIamPolicy(
+      set_iam_policy_request
+  )

@@ -253,6 +253,10 @@ integrations:
   service_type: backing
   visible: false
   eta_in_min: 5
+  cta: |-
+    The Vertex AI User (roles/aiplatform.user) IAM role has been added to the service acount of your service.
+    You can explore how to use Vertex Generative AI in your application code here: https://cloud.google.com/vertex-ai/docs/generative-ai/start/quickstarts/quickstart-multimodal
+    You can also use the Generative AI Studio to explore: https://console.cloud.google.com/vertex-ai/generative
   parameters: []
   required_apis:
   - aiplatform.googleapis.com

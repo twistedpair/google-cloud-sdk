@@ -730,9 +730,13 @@ class Posture(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -853,9 +857,13 @@ class PostureDeployment(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -949,9 +957,13 @@ class PostureTemplate(_messages.Message):
     Values:
       CATEGORY_UNSPECIFIED: Unspecified Category.
       AI: AI Category.
+      AWS: Posture contains AWS policies.
+      GCP: Posture contains GCP policies.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
+    AWS = 2
+    GCP = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.

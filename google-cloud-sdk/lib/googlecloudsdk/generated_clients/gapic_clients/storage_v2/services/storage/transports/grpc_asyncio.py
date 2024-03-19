@@ -446,11 +446,14 @@ class StorageGrpcAsyncIOTransport(StorageTransport):
             Awaitable[iam_policy_pb2.TestIamPermissionsResponse]]:
         r"""Return a callable for the test iam permissions method over gRPC.
 
-        Tests a set of permissions on the given bucket or object to see
-        which, if any, are held by the caller. The ``resource`` field in
-        the request should be ``projects/_/buckets/{bucket}`` for a
-        bucket or ``projects/_/buckets/{bucket}/objects/{object}`` for
-        an object.
+        Tests a set of permissions on the given bucket, object, or
+        managed folder to see which, if any, are held by the caller. The
+        ``resource`` field in the request should be
+        ``projects/_/buckets/{bucket}`` for a bucket,
+        ``projects/_/buckets/{bucket}/objects/{object}`` for an object,
+        or
+        ``projects/_/buckets/{bucket}/managedFolders/{managedFolder}``
+        for a managed folder.
 
         Returns:
             Callable[[~.TestIamPermissionsRequest],

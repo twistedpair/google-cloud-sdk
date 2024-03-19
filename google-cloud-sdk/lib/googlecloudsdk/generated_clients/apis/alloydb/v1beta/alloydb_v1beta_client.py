@@ -709,33 +709,6 @@ class AlloydbV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GenerateClientCertificate(self, request, global_params=None):
-      r"""Generate a client certificate signed by a Cluster CA. The sole purpose of this endpoint is to support AlloyDB connectors and the Auth Proxy client. The endpoint's behavior is subject to change without notice, so do not rely on its behavior remaining constant. Future changes will not break AlloyDB connectors or the Auth Proxy client.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersGenerateClientCertificateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GenerateClientCertificateResponse) The response message.
-      """
-      config = self.GetMethodConfig('GenerateClientCertificate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateClientCertificate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateClientCertificate',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.generateClientCertificate',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1beta/{+parent}:generateClientCertificate',
-        request_field='generateClientCertificateRequest',
-        request_type_name='AlloydbProjectsLocationsClustersGenerateClientCertificateRequest',
-        response_type_name='GenerateClientCertificateResponse',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 

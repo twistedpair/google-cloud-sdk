@@ -102,125 +102,6 @@ class AuthztoolkitProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class AuthztoolkitProjectsLocationsPoliciesBindingsCreateRequest(_messages.Message):
-  r"""A AuthztoolkitProjectsLocationsPoliciesBindingsCreateRequest object.
-
-  Fields:
-    binding: A Binding resource to be passed as the request body.
-    bindingId: Required. The unique ID of the binding to be created.
-    parent: Required. Value for parent. Example:
-      projects/{project)/locations/{location}/policies/{policy}
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  binding = _messages.MessageField('Binding', 1)
-  bindingId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class AuthztoolkitProjectsLocationsPoliciesBindingsDeleteRequest(_messages.Message):
-  r"""A AuthztoolkitProjectsLocationsPoliciesBindingsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class AuthztoolkitProjectsLocationsPoliciesBindingsGetRequest(_messages.Message):
-  r"""A AuthztoolkitProjectsLocationsPoliciesBindingsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AuthztoolkitProjectsLocationsPoliciesBindingsListRequest(_messages.Message):
-  r"""A AuthztoolkitProjectsLocationsPoliciesBindingsListRequest object.
-
-  Fields:
-    filter: Query filter. Filters must adhere to the following rules: *
-      Boolean values must be unquoted "true" or "false" string literals. *
-      String values must be double-quoted. * Wildcard character("*") is
-      limited to use with the has operator (":"), and can be used only at the
-      end of a string literal. * Timestamps must be quoted strings in the
-      RFC3339 format. Example : filter=create_time>"2022-05-09T22:28:28Z"
-      Filters support logical operators - AND, OR, NOT (Note: OR has higher
-      precedence than AND)
-    orderBy: Currently supported fields for ordering - name and create_time.
-      Example: order_by="name desc,create_time desc".
-    pageSize: Requested page size. Server may return fewer items than
-      requested. The maximum allowed value is 50, values above this will be
-      coerced to 50. Default value: 50
-    pageToken: Next page token, received from a previous bindings.list call.
-      When paginating, all other input parameters (except page_token) provided
-      to bindings.list call must remain the same.
-    parent: Required. Parent value for ListBindingsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class AuthztoolkitProjectsLocationsPoliciesBindingsPatchRequest(_messages.Message):
-  r"""A AuthztoolkitProjectsLocationsPoliciesBindingsPatchRequest object.
-
-  Fields:
-    binding: A Binding resource to be passed as the request body.
-    name: Name of resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the Binding resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user provides the
-      value '*', all fields will be updated.
-  """
-
-  binding = _messages.MessageField('Binding', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class AuthztoolkitProjectsLocationsPoliciesCreateRequest(_messages.Message):
   r"""A AuthztoolkitProjectsLocationsPoliciesCreateRequest object.
 
@@ -466,28 +347,6 @@ class AuthztoolkitProjectsLocationsTargetAssociationsPatchRequest(_messages.Mess
   updateMask = _messages.StringField(4)
 
 
-class Binding(_messages.Message):
-  r"""Message describing Binding object
-
-  Fields:
-    createTime: Output only. Create timestamp
-    displayName: An arbitrary user-provided name for binding. The display name
-      should adhere to the following format. * Must be 6 to 63 characters in
-      length. * Can only contain lowercase letters, numbers, and hyphens. *
-      Must start with a letter.
-    name: Name of resource
-    selectors: Required. List of selectors. The service currently supports
-      only one selector in the input.
-    updateTime: Output only. Update timestamp
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  selectors = _messages.MessageField('Selector', 4, repeated=True)
-  updateTime = _messages.StringField(5)
-
-
 class CELPolicy(_messages.Message):
   r"""Authorization policy schema. A policy is composed of a set of Rules that
   specifies the conditions that need to be met in order for an authorization
@@ -523,22 +382,6 @@ class From(_messages.Message):
   """
 
   principals = _messages.StringField(1, repeated=True)
-
-
-class ListBindingsResponse(_messages.Message):
-  r"""Response returned by bindings.list method.
-
-  Fields:
-    bindings: The list of Bindings.
-    nextPageToken: Next page token. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters (except page_size) provided
-      to bindings.list must match the call that provided the page token.
-    unreachable: Represents missing potential additional resources.
-  """
-
-  bindings = _messages.MessageField('Binding', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -894,17 +737,6 @@ class RuleBlock(_messages.Message):
   rules = _messages.MessageField('Rule', 2, repeated=True)
 
 
-class Selector(_messages.Message):
-  r"""Selector contains a logical grouping of workloads against which an
-  authorization policy is to be applied.
-
-  Fields:
-    tdTarget: Immutable. Grouping for Traffic Director-based workloads.
-  """
-
-  tdTarget = _messages.MessageField('TrafficDirectorTarget', 1)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1042,8 +874,6 @@ class TargetAssociation(_messages.Message):
     name: Identifier. name of resource
     policies: Optional. List of policies with full policy name and its
       configuration
-    tdWorkload: Immutable. Traffic Director based workloads. Authorization
-      Toolkit auto configures the authorization settings on the workload.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1072,8 +902,7 @@ class TargetAssociation(_messages.Message):
   enableAuthorizationDebugLog = _messages.EnumField('EnableAuthorizationDebugLogValueValuesEnum', 5)
   name = _messages.StringField(6)
   policies = _messages.MessageField('PolicyConfig', 7, repeated=True)
-  tdWorkload = _messages.MessageField('TrafficDirector', 8)
-  updateTime = _messages.StringField(9)
+  updateTime = _messages.StringField(8)
 
 
 class To(_messages.Message):
@@ -1091,26 +920,6 @@ class To(_messages.Message):
   methods = _messages.StringField(2, repeated=True)
   paths = _messages.StringField(3, repeated=True)
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
-
-
-class TrafficDirector(_messages.Message):
-  r"""Message describing Traffic Director based workload object.
-
-  Fields:
-    serviceAccount: Immutable. workload ID = IAM Service account
-  """
-
-  serviceAccount = _messages.StringField(1)
-
-
-class TrafficDirectorTarget(_messages.Message):
-  r"""A TrafficDirectorTarget object.
-
-  Fields:
-    iamServiceAccount: Immutable. IAM service account of the workload.
-  """
-
-  iamServiceAccount = _messages.StringField(1)
 
 
 class When(_messages.Message):

@@ -686,7 +686,7 @@ class Lexer(object):
       lex = Lexer(arg)
       if not lex.IsCharacter('('):
         raise resource_exceptions.ExpressionSyntaxError(
-            '(...) args expected in synthesizer() transform')
+            '(...) args expected in synthesize() transform')
       schema = []
       for attr in lex.Args():
         if ':' in attr:

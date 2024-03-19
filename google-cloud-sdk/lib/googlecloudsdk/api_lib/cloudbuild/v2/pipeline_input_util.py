@@ -143,6 +143,8 @@ def _PipelineSpecTransform(spec):
     for task in finally_tasks:
       _TaskTransform(task)
     spec["finallyTasks"] = finally_tasks
+  for pipeline_result in spec.get("results", []):
+    input_util.PipelineResultTransform(pipeline_result)
 
 
 def _TaskSpecTransform(spec):
@@ -186,4 +188,7 @@ def _ServiceAccountTransformPipelineSpec(spec):
 
 def _ServiceAccountTransformTaskSpec(spec):
   if "serviceAccountName" in spec:
-    spec["serviceAccount"] = spec.pop("serviceAccountName")
+    sa = spec.pop("serviceAccountName")
+    spec["serviceAccount"] = sa
+    security = spec.setdefault("security", {})
+    security["serviceAccount"] = sa
