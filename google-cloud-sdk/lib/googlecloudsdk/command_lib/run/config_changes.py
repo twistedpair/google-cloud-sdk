@@ -1353,6 +1353,24 @@ class NoTrafficChange(NonTemplateConfigChanger):
     return resource
 
 
+# TODO(b/322180968): Once worker specific intance split API/message is ready,
+# switch from service traffic to worker instance split reference.
+class NoPromoteChange(NonTemplateConfigChanger):
+  """Represents the user intent to block instance assignment for a new worker revision."""
+
+  def Adjust(self, resource):
+    """Removes LATEST from the workers instance assignments."""
+    if not resource.generation:
+      raise exceptions.ConfigurationError(
+          '--no-promote not supported when creating a new worker.'
+      )
+
+    resource.spec_traffic.ZeroLatestTraffic(
+        resource.status.latestReadyRevisionName
+    )
+    return resource
+
+
 @dataclasses.dataclass(frozen=True)
 class TrafficChanges(NonTemplateConfigChanger):
   """Represents the user intent to change a service's traffic assignments.

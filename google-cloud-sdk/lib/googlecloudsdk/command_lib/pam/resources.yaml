@@ -108,3 +108,31 @@ grant:
     - *entitlement
     - *grant
     disable_auto_completers: true
+
+operation:
+  name: operation
+  resources:
+  - name: operation
+    collection: privilegedaccessmanager.projects.locations.operations
+    attributes:
+    - *project
+    - *location
+    - &operation
+      parameter_name: operationsId
+      attribute_name: operation
+      help: The operation id
+    disable_auto_completers: true
+  - name: operation
+    collection: privilegedaccessmanager.folders.locations.operations
+    attributes:
+    - *folder
+    - *location
+    - *operation
+    disable_auto_completers: true
+  - name: operation
+    collection: privilegedaccessmanager.organizations.locations.operations
+    attributes:
+    - *organization
+    - *location
+    - *operation
+    disable_auto_completers: true

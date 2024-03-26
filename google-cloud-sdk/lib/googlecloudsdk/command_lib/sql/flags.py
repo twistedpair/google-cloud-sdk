@@ -2524,12 +2524,12 @@ def AddSqlServerSsrs(parser):
   )
 
 
-def AddEnableGoogleMLIntegration(parser):
+def AddEnableGoogleMLIntegration(parser, hidden=False):
   """Adds --enable-google-ml-integration flag."""
   parser.add_argument(
       '--enable-google-ml-integration',
       required=False,
-      hidden=True,
+      hidden=hidden,
       help=(
           'Enable Vertex AI integration for Google Cloud SQL. '
           'Currently, only PostgreSQL is supported.'

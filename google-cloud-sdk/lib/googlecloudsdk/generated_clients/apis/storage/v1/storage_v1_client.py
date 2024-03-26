@@ -1052,7 +1052,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.managedFolders.delete',
         ordered_params=['bucket', 'managedFolder'],
         path_params=['bucket', 'managedFolder'],
-        query_params=['ifMetagenerationMatch', 'ifMetagenerationNotMatch'],
+        query_params=['allowNonEmpty', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch'],
         relative_path='b/{bucket}/managedFolders/{managedFolder}',
         request_field='',
         request_type_name='StorageManagedFoldersDeleteRequest',
@@ -1771,7 +1771,7 @@ class StorageV1(base_api.BaseApiClient):
     Restore.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',
         method_id='storage.objects.restore',
-        ordered_params=['bucket', 'object'],
+        ordered_params=['bucket', 'object', 'generation'],
         path_params=['bucket', 'object'],
         query_params=['copySourceAcl', 'generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
         relative_path='b/{bucket}/o/{object}/restore',

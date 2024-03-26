@@ -17,7 +17,6 @@ class AuditReport(_messages.Message):
   r"""Represents an audit report.
 
   Fields:
-    auditScopeReport: Output only. Audit Scope Report.
     complianceStandard: Output only. Compliance Standard.
     controlDetails: Output only. The overall status of controls
     createTime: Output only. Creation time of the audit report.
@@ -31,15 +30,14 @@ class AuditReport(_messages.Message):
     scope: Output only. The parent scope on which the report was generated.
   """
 
-  auditScopeReport = _messages.MessageField('AuditScopeReport', 1)
-  complianceStandard = _messages.StringField(2)
-  controlDetails = _messages.MessageField('ControlDetails', 3, repeated=True)
-  createTime = _messages.StringField(4)
-  destinationDetails = _messages.MessageField('DestinationDetails', 5)
-  name = _messages.StringField(6)
-  operationId = _messages.StringField(7)
-  reportSummary = _messages.MessageField('ReportSummary', 8)
-  scope = _messages.StringField(9)
+  complianceStandard = _messages.StringField(1)
+  controlDetails = _messages.MessageField('ControlDetails', 2, repeated=True)
+  createTime = _messages.StringField(3)
+  destinationDetails = _messages.MessageField('DestinationDetails', 4)
+  name = _messages.StringField(5)
+  operationId = _messages.StringField(6)
+  reportSummary = _messages.MessageField('ReportSummary', 7)
+  scope = _messages.StringField(8)
 
 
 class AuditScopeReport(_messages.Message):
@@ -53,6 +51,40 @@ class AuditScopeReport(_messages.Message):
 
   name = _messages.StringField(1)
   scopeReportContents = _messages.BytesField(2)
+
+
+class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest(_messages.Message):
+  r"""A
+  AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Format projects/{project-id}/locations/{location}/auditRep
+      orts/{auditReportName}/controlReports/{controlId}/findings/{finding},
+      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}/
+      controlReports/{controlId}/findings/{finding}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
+  r"""A
+  AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. Format projects/{project-
+      id}/locations/{location}/controlReports/{controlId}, folders/{folder-
+      id}/locations/{location}/controlReports/{controlId}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class AuditmanagerFoldersLocationsAuditReportsControlReportsGetRequest(_messages.Message):
@@ -268,6 +300,40 @@ class AuditmanagerOrganizationsLocationsStandardsControlsListRequest(_messages.M
     parent: Required. Format projects/{project-
       id}/locations/{location}/standards/{compliance-standard},
       folders/{folder-id}/locations/{location}/standards/{compliance-standard}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest(_messages.Message):
+  r"""A
+  AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest
+  object.
+
+  Fields:
+    name: Required. Format projects/{project-id}/locations/{location}/auditRep
+      orts/{auditReportName}/controlReports/{controlId}/findings/{finding},
+      folders/{folder-id}/locations/{location}/auditReports/{auditReportName}/
+      controlReports/{controlId}/findings/{finding}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest(_messages.Message):
+  r"""A
+  AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of resources to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. Format projects/{project-
+      id}/locations/{location}/controlReports/{controlId}, folders/{folder-
+      id}/locations/{location}/controlReports/{controlId}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -685,6 +751,106 @@ class Control(_messages.Message):
       NIST_R4_AC_20_02: <no description>
       NIST_R4_AC_21: <no description>
       NIST_R4_AC_22: <no description>
+      GR_AI_R1_AR_CO_6_1: <no description>
+      GR_AI_R1_AR_CO_6_2: <no description>
+      GR_AI_R1_BQ_CO_6_1: <no description>
+      GR_AI_R1_BQ_CO_6_2: <no description>
+      GR_AI_R1_CBD_CO_6_1: <no description>
+      GR_AI_R1_CBD_CO_6_2: <no description>
+      GR_AI_R1_CBD_CO_6_3: <no description>
+      GR_AI_R1_CF_CO_4_1: <no description>
+      GR_AI_R1_CF_CO_4_2: <no description>
+      GR_AI_R1_CF_CO_4_3: <no description>
+      GR_AI_R1_CF_CO_4_4: <no description>
+      GR_AI_R1_CI_CO_6_1: <no description>
+      GR_AI_R1_CI_CO_6_2: <no description>
+      GR_AI_R1_CI_CO_6_4: <no description>
+      GR_AI_R1_CI_CO_6_5: <no description>
+      GR_AI_R1_CI_CO_6_7: <no description>
+      GR_AI_R1_CI_CO_6_8: <no description>
+      GR_AI_R1_COM_CO_1_1: <no description>
+      GR_AI_R1_COM_CO_2_2: <no description>
+      GR_AI_R1_COM_CO_2_3: <no description>
+      GR_AI_R1_COM_CO_2_4: <no description>
+      GR_AI_R1_COM_CO_2_5: <no description>
+      GR_AI_R1_COM_CO_2_6: <no description>
+      GR_AI_R1_COM_CO_2_7: <no description>
+      GR_AI_R1_COM_CO_4_1: <no description>
+      GR_AI_R1_COM_CO_5_1: <no description>
+      GR_AI_R1_COM_CO_7_1: <no description>
+      GR_AI_R1_COM_CO_7_2: <no description>
+      GR_AI_R1_COM_CO_7_3: <no description>
+      GR_AI_R1_COM_CO_7_4: <no description>
+      GR_AI_R1_COM_CO_7_5: <no description>
+      GR_AI_R1_COM_CO_7_8: <no description>
+      GR_AI_R1_COM_CO_8_1: <no description>
+      GR_AI_R1_COM_CO_8_2: <no description>
+      GR_AI_R1_DNS_CO_6_1: <no description>
+      GR_AI_R1_DNS_CO_7_1: <no description>
+      GR_AI_R1_GCS_CO_4_1: <no description>
+      GR_AI_R1_GCS_CO_4_2: <no description>
+      GR_AI_R1_GCS_CO_6_1: <no description>
+      GR_AI_R1_GCS_CO_6_11: <no description>
+      GR_AI_R1_GCS_CO_6_12: <no description>
+      GR_AI_R1_GCS_CO_6_13: <no description>
+      GR_AI_R1_GCS_CO_6_14: <no description>
+      GR_AI_R1_GCS_CO_6_15: <no description>
+      GR_AI_R1_GCS_CO_6_16: <no description>
+      GR_AI_R1_GCS_CO_6_17: <no description>
+      GR_AI_R1_GCS_CO_6_18: <no description>
+      GR_AI_R1_GCS_CO_6_2: <no description>
+      GR_AI_R1_GCS_CO_6_3: <no description>
+      GR_AI_R1_GCS_CO_6_4: <no description>
+      GR_AI_R1_GCS_CO_6_5: <no description>
+      GR_AI_R1_GCS_CO_6_6: <no description>
+      GR_AI_R1_GCS_CO_6_7: <no description>
+      GR_AI_R1_GCS_CO_6_8: <no description>
+      GR_AI_R1_GCS_CO_6_9: <no description>
+      GR_AI_R1_GCS_CO_7_1: <no description>
+      GR_AI_R1_GCS_CO_7_2: <no description>
+      GR_AI_R1_GCS_CO_7_3: <no description>
+      GR_AI_R1_GCS_CO_7_4: <no description>
+      GR_AI_R1_IAM_CO_4_1: <no description>
+      GR_AI_R1_IAM_CO_4_2: <no description>
+      GR_AI_R1_IAM_CO_4_3: <no description>
+      GR_AI_R1_IAM_CO_6_1: <no description>
+      GR_AI_R1_IAM_CO_7_1: <no description>
+      GR_AI_R1_LOG_CO_6_1: <no description>
+      GR_AI_R1_LOG_CO_6_2: <no description>
+      GR_AI_R1_LOG_CO_6_3: <no description>
+      GR_AI_R1_LOG_CO_6_4: <no description>
+      GR_AI_R1_LOG_CO_6_6: <no description>
+      GR_AI_R1_OPS_CO_6_1: <no description>
+      GR_AI_R1_PS_CO_6_1: <no description>
+      GR_AI_R1_RM_CO_4_1: <no description>
+      GR_AI_R1_RM_CO_4_2: <no description>
+      GR_AI_R1_SM_CO_6_1: <no description>
+      GR_AI_R1_SM_CO_6_2: <no description>
+      GR_AI_R1_SM_CO_6_3: <no description>
+      GR_AI_R1_SCC_CO_6_1: <no description>
+      GR_AI_R1_SCC_CO_6_2: <no description>
+      GR_AI_R1_SCC_CO_6_3: <no description>
+      GR_AI_R1_SCC_CO_6_4: <no description>
+      GR_AI_R1_SCC_CO_6_5: <no description>
+      GR_AI_R1_SCC_CO_6_6: <no description>
+      GR_AI_R1_SCC_CO_6_7: <no description>
+      GR_AI_R1_SCC_CO_6_8: <no description>
+      GR_AI_R1_SCC_CO_7_1: <no description>
+      GR_AI_R1_VPC_CO_6_1: <no description>
+      GR_AI_R1_VPC_CO_6_2: <no description>
+      GR_AI_R1_VPC_CO_6_3: <no description>
+      GR_AI_R1_VPC_CO_6_4: <no description>
+      GR_AI_R1_VPC_CO_6_5: <no description>
+      GR_AI_R1_VPC_CO_6_6: <no description>
+      GR_AI_R1_VAI_CO_4_1: <no description>
+      GR_AI_R1_VAI_CO_4_2: <no description>
+      GR_AI_R1_VAI_CO_4_3: <no description>
+      GR_AI_R1_VAI_CO_4_4: <no description>
+      GR_AI_R1_VAI_CO_4_5: <no description>
+      GR_AI_R1_VAI_CO_4_6: <no description>
+      GR_AI_R1_VAI_CO_4_7: <no description>
+      GR_AI_R1_VAI_CO_4_8: <no description>
+      GR_AI_R1_CB_CO_6_1: <no description>
     """
     REGULATORY_CONTROL_ID_UNSPECIFIED = 0
     REGULATORY_CONTROL_ID_TEST = 1
@@ -825,6 +991,106 @@ class Control(_messages.Message):
     NIST_R4_AC_20_02 = 136
     NIST_R4_AC_21 = 137
     NIST_R4_AC_22 = 138
+    GR_AI_R1_AR_CO_6_1 = 139
+    GR_AI_R1_AR_CO_6_2 = 140
+    GR_AI_R1_BQ_CO_6_1 = 141
+    GR_AI_R1_BQ_CO_6_2 = 142
+    GR_AI_R1_CBD_CO_6_1 = 143
+    GR_AI_R1_CBD_CO_6_2 = 144
+    GR_AI_R1_CBD_CO_6_3 = 145
+    GR_AI_R1_CF_CO_4_1 = 146
+    GR_AI_R1_CF_CO_4_2 = 147
+    GR_AI_R1_CF_CO_4_3 = 148
+    GR_AI_R1_CF_CO_4_4 = 149
+    GR_AI_R1_CI_CO_6_1 = 150
+    GR_AI_R1_CI_CO_6_2 = 151
+    GR_AI_R1_CI_CO_6_4 = 152
+    GR_AI_R1_CI_CO_6_5 = 153
+    GR_AI_R1_CI_CO_6_7 = 154
+    GR_AI_R1_CI_CO_6_8 = 155
+    GR_AI_R1_COM_CO_1_1 = 156
+    GR_AI_R1_COM_CO_2_2 = 157
+    GR_AI_R1_COM_CO_2_3 = 158
+    GR_AI_R1_COM_CO_2_4 = 159
+    GR_AI_R1_COM_CO_2_5 = 160
+    GR_AI_R1_COM_CO_2_6 = 161
+    GR_AI_R1_COM_CO_2_7 = 162
+    GR_AI_R1_COM_CO_4_1 = 163
+    GR_AI_R1_COM_CO_5_1 = 164
+    GR_AI_R1_COM_CO_7_1 = 165
+    GR_AI_R1_COM_CO_7_2 = 166
+    GR_AI_R1_COM_CO_7_3 = 167
+    GR_AI_R1_COM_CO_7_4 = 168
+    GR_AI_R1_COM_CO_7_5 = 169
+    GR_AI_R1_COM_CO_7_8 = 170
+    GR_AI_R1_COM_CO_8_1 = 171
+    GR_AI_R1_COM_CO_8_2 = 172
+    GR_AI_R1_DNS_CO_6_1 = 173
+    GR_AI_R1_DNS_CO_7_1 = 174
+    GR_AI_R1_GCS_CO_4_1 = 175
+    GR_AI_R1_GCS_CO_4_2 = 176
+    GR_AI_R1_GCS_CO_6_1 = 177
+    GR_AI_R1_GCS_CO_6_11 = 178
+    GR_AI_R1_GCS_CO_6_12 = 179
+    GR_AI_R1_GCS_CO_6_13 = 180
+    GR_AI_R1_GCS_CO_6_14 = 181
+    GR_AI_R1_GCS_CO_6_15 = 182
+    GR_AI_R1_GCS_CO_6_16 = 183
+    GR_AI_R1_GCS_CO_6_17 = 184
+    GR_AI_R1_GCS_CO_6_18 = 185
+    GR_AI_R1_GCS_CO_6_2 = 186
+    GR_AI_R1_GCS_CO_6_3 = 187
+    GR_AI_R1_GCS_CO_6_4 = 188
+    GR_AI_R1_GCS_CO_6_5 = 189
+    GR_AI_R1_GCS_CO_6_6 = 190
+    GR_AI_R1_GCS_CO_6_7 = 191
+    GR_AI_R1_GCS_CO_6_8 = 192
+    GR_AI_R1_GCS_CO_6_9 = 193
+    GR_AI_R1_GCS_CO_7_1 = 194
+    GR_AI_R1_GCS_CO_7_2 = 195
+    GR_AI_R1_GCS_CO_7_3 = 196
+    GR_AI_R1_GCS_CO_7_4 = 197
+    GR_AI_R1_IAM_CO_4_1 = 198
+    GR_AI_R1_IAM_CO_4_2 = 199
+    GR_AI_R1_IAM_CO_4_3 = 200
+    GR_AI_R1_IAM_CO_6_1 = 201
+    GR_AI_R1_IAM_CO_7_1 = 202
+    GR_AI_R1_LOG_CO_6_1 = 203
+    GR_AI_R1_LOG_CO_6_2 = 204
+    GR_AI_R1_LOG_CO_6_3 = 205
+    GR_AI_R1_LOG_CO_6_4 = 206
+    GR_AI_R1_LOG_CO_6_6 = 207
+    GR_AI_R1_OPS_CO_6_1 = 208
+    GR_AI_R1_PS_CO_6_1 = 209
+    GR_AI_R1_RM_CO_4_1 = 210
+    GR_AI_R1_RM_CO_4_2 = 211
+    GR_AI_R1_SM_CO_6_1 = 212
+    GR_AI_R1_SM_CO_6_2 = 213
+    GR_AI_R1_SM_CO_6_3 = 214
+    GR_AI_R1_SCC_CO_6_1 = 215
+    GR_AI_R1_SCC_CO_6_2 = 216
+    GR_AI_R1_SCC_CO_6_3 = 217
+    GR_AI_R1_SCC_CO_6_4 = 218
+    GR_AI_R1_SCC_CO_6_5 = 219
+    GR_AI_R1_SCC_CO_6_6 = 220
+    GR_AI_R1_SCC_CO_6_7 = 221
+    GR_AI_R1_SCC_CO_6_8 = 222
+    GR_AI_R1_SCC_CO_7_1 = 223
+    GR_AI_R1_VPC_CO_6_1 = 224
+    GR_AI_R1_VPC_CO_6_2 = 225
+    GR_AI_R1_VPC_CO_6_3 = 226
+    GR_AI_R1_VPC_CO_6_4 = 227
+    GR_AI_R1_VPC_CO_6_5 = 228
+    GR_AI_R1_VPC_CO_6_6 = 229
+    GR_AI_R1_VAI_CO_4_1 = 230
+    GR_AI_R1_VAI_CO_4_2 = 231
+    GR_AI_R1_VAI_CO_4_3 = 232
+    GR_AI_R1_VAI_CO_4_4 = 233
+    GR_AI_R1_VAI_CO_4_5 = 234
+    GR_AI_R1_VAI_CO_4_6 = 235
+    GR_AI_R1_VAI_CO_4_7 = 236
+    GR_AI_R1_VAI_CO_4_8 = 237
+    GR_AI_R1_CB_CO_6_1 = 238
 
   class FamilyValueValuesEnum(_messages.Enum):
     r"""Output only. Group where the control belongs. E.g. Access Control.
@@ -850,7 +1116,6 @@ class ControlDetails(_messages.Message):
     complianceState: Output only. Overall status of the findings for the
       control.
     control: The control for which the findings are being reported.
-    findings: Findings for the control.
   """
 
   class ComplianceStateValueValuesEnum(_messages.Enum):
@@ -871,7 +1136,6 @@ class ControlDetails(_messages.Message):
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
   control = _messages.MessageField('Control', 2)
-  findings = _messages.MessageField('Finding', 3, repeated=True)
 
 
 class ControlReport(_messages.Message):
@@ -962,6 +1226,7 @@ class Finding(_messages.Message):
   Fields:
     complianceState: Output only. Status of the finding.
     evidencePath: Evidence path of the finding.
+    name: Identifier. The name of this Finding.
     overview: Overview of the finding.
   """
 
@@ -983,7 +1248,8 @@ class Finding(_messages.Message):
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
   evidencePath = _messages.StringField(2)
-  overview = _messages.StringField(3)
+  name = _messages.StringField(3)
+  overview = _messages.StringField(4)
 
 
 class GenerateAuditReportRequest(_messages.Message):
@@ -1084,6 +1350,19 @@ class ListControlsResponse(_messages.Message):
   """
 
   controls = _messages.MessageField('Control', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListFindingsResponse(_messages.Message):
+  r"""Response message with all the findings for a control.
+
+  Fields:
+    findings: Output only. The findings for the control.
+    nextPageToken: Output only. The token to retrieve the next page of
+      results.
+  """
+
+  findings = _messages.MessageField('Finding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

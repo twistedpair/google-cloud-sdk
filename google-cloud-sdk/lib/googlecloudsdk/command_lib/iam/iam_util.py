@@ -69,6 +69,16 @@ encoding.AddCustomJsonFieldMapping(
     'options.requestedPolicyVersion',
 )
 
+secrets_message_beta = core_apis.GetMessagesModule('secretmanager', 'v1beta2')
+encoding.AddCustomJsonFieldMapping(
+    secrets_message_beta.SecretmanagerProjectsSecretsGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    secrets_message_beta.SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest,
+    'options_requestedPolicyVersion',
+    'options.requestedPolicyVersion',
+)
+
 msgs = core_apis.GetMessagesModule('iam', 'v1')
 encoding.AddCustomJsonFieldMapping(
     msgs.IamProjectsServiceAccountsGetIamPolicyRequest,

@@ -75,6 +75,20 @@ backupPlans:
     help: The ID of the Backup Plan
   disable_auto_completers: false
 
+
+backupPlanAssociations:
+  name: backupPlanAssociations
+  collection: backupdr.projects.locations.backupPlanAssociations
+  request_id_field: backupPlanAssociationsId
+  attributes:
+  - *project
+  - *location
+  - &backupPlanAssociationsId
+    parameter_name: backupPlanAssociationsId
+    attribute_name: backup_plan_association
+    help: The ID of the Backup Plan Association
+  disable_auto_completers: false
+
 backupVault:
   name: backupVault
   collection: backupdr.projects.locations.backupVaults

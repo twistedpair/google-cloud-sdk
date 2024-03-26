@@ -568,7 +568,7 @@ def GetTaskResourceSpec(prompt=False):
 def GetWorkerResourceSpec(prompt=False):
   return concepts.ResourceSpec(
       'run.namespaces.services',
-      namespacesId=NamespaceAttributeConfig(),
+      namespacesId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       servicesId=WorkerAttributeConfig(prompt),
       resource_name='worker',
       api_version='v1',

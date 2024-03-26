@@ -13,6 +13,18 @@ from apitools.base.py import extra_types
 package = 'certificatemanager'
 
 
+class AllowlistedCertificate(_messages.Message):
+  r"""Defines an allowlisted certificate.
+
+  Fields:
+    pemCertificate: Required. PEM certificate that is allowlisted. The
+      certificate can be up to 5k bytes, and must be a parseable X.509
+      certificate.
+  """
+
+  pemCertificate = _messages.StringField(1)
+
+
 class AuthorizationAttemptInfo(_messages.Message):
   r"""State of the latest attempt to authorize a domain for certificate
   issuance.
@@ -466,7 +478,7 @@ class CertificatemanagerProjectsLocationsCertificateIssuanceConfigsListRequest(_
     filter: Filter expression to restrict the Certificates Configs returned.
     orderBy: A list of Certificate Config field names used to specify the
       order of the returned results. The default sorting order is ascending.
-      To specify descending order for a field, add a suffix " desc".
+      To specify descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of certificate configs to return per call.
     pageToken: The value returned by the last
       `ListCertificateIssuanceConfigsResponse`. Indicates that this is a
@@ -536,7 +548,7 @@ class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesLis
       Entries.
     orderBy: A list of Certificate Map Entry field names used to specify the
       order of the returned results. The default sorting order is ascending.
-      To specify descending order for a field, add a suffix " desc".
+      To specify descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of certificate map entries to return. The service
       may return fewer than this value. If unspecified, at most 50 certificate
       map entries will be returned. The maximum value is 1000; values above
@@ -624,7 +636,7 @@ class CertificatemanagerProjectsLocationsCertificateMapsListRequest(_messages.Me
     filter: Filter expression to restrict the Certificates Maps returned.
     orderBy: A list of Certificate Map field names used to specify the order
       of the returned results. The default sorting order is ascending. To
-      specify descending order for a field, add a suffix " desc".
+      specify descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of certificate maps to return per call.
     pageToken: The value returned by the last `ListCertificateMapsResponse`.
       Indicates that this is a continuation of a prior `ListCertificateMaps`
@@ -703,7 +715,7 @@ class CertificatemanagerProjectsLocationsCertificatesListRequest(_messages.Messa
     filter: Filter expression to restrict the Certificates returned.
     orderBy: A list of Certificate field names used to specify the order of
       the returned results. The default sorting order is ascending. To specify
-      descending order for a field, add a suffix " desc".
+      descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of certificates to return per call.
     pageToken: The value returned by the last `ListCertificatesResponse`.
       Indicates that this is a continuation of a prior `ListCertificates`
@@ -786,7 +798,7 @@ class CertificatemanagerProjectsLocationsDnsAuthorizationsListRequest(_messages.
     filter: Filter expression to restrict the Dns Authorizations returned.
     orderBy: A list of Dns Authorization field names used to specify the order
       of the returned results. The default sorting order is ascending. To
-      specify descending order for a field, add a suffix " desc".
+      specify descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of dns authorizations to return per call.
     pageToken: The value returned by the last `ListDnsAuthorizationsResponse`.
       Indicates that this is a continuation of a prior `ListDnsAuthorizations`
@@ -951,7 +963,7 @@ class CertificatemanagerProjectsLocationsTrustConfigsListRequest(_messages.Messa
     filter: Filter expression to restrict the TrustConfigs returned.
     orderBy: A list of TrustConfig field names used to specify the order of
       the returned results. The default sorting order is ascending. To specify
-      descending order for a field, add a suffix " desc".
+      descending order for a field, add a suffix `" desc"`.
     pageSize: Maximum number of TrustConfigs to return per call.
     pageToken: The value returned by the last `ListTrustConfigsResponse`.
       Indicates that this is a continuation of a prior `ListTrustConfigs`
@@ -1716,6 +1728,10 @@ class TrustConfig(_messages.Message):
     LabelsValue: Set of labels associated with a TrustConfig.
 
   Fields:
+    allowlistedCertificates: Optional. A certificate matching an allowlisted
+      certificate is always considered valid as long as the certificate is
+      parseable, proof of private key possession is established, and
+      constraints on the certificate's SAN field are met.
     createTime: Output only. The creation timestamp of a TrustConfig.
     description: One or more paragraphs of text description of a TrustConfig.
     etag: This checksum is computed by the server based on the value of other
@@ -1756,13 +1772,14 @@ class TrustConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  trustStores = _messages.MessageField('TrustStore', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  allowlistedCertificates = _messages.MessageField('AllowlistedCertificate', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  trustStores = _messages.MessageField('TrustStore', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class TrustStore(_messages.Message):

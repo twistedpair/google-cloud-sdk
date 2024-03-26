@@ -397,6 +397,8 @@ def ModifyUpdateAuthorizedViewRequest(original_ref, args, req):
   # The name field should be ignored and omitted from the request as it is
   # taken from the command line.
   req.authorizedView.name = None
+  if args.ignore_warnings:
+    req.ignoreWarnings = True
 
   return req
 

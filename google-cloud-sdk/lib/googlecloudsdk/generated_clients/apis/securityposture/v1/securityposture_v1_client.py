@@ -584,7 +584,7 @@ class SecuritypostureV1(base_api.BaseApiClient):
           }
 
     def CreateIaCValidationReport(self, request, global_params=None):
-      r"""========================== Reports ========================== Validates the provided IaC and creates a validation report as a result. Validation is only performed on modified assets. This API currently only supports terraform plan file as IaC source.
+      r"""Validates the provided IaC and creates a validation report as a result. Validation is only performed on modified assets. This API currently only supports terraform plan file as IaC source.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest) input message
@@ -607,6 +607,60 @@ class SecuritypostureV1(base_api.BaseApiClient):
         request_field='createIaCValidationReportRequest',
         request_type_name='SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a report in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Report) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/reports/{reportsId}',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.reports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsReportsGetRequest',
+        response_type_name='Report',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists reports in a given organization and location.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/reports',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.reports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/reports',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsReportsListRequest',
+        response_type_name='ListReportsResponse',
         supports_download=False,
     )
 

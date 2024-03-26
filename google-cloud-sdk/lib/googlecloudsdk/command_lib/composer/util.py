@@ -100,6 +100,9 @@ SUBCOMMAND_ALLOWLIST = {
                 'check':
                     SupportedAirflowVersion(
                         from_version='2.3.0', to_version='3.0.0'),
+                'trim':
+                    SupportedAirflowVersion(
+                        from_version='2.6.3', to_version='3.0.0'),
             }),
     'dag_state':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),

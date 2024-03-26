@@ -27,7 +27,6 @@ import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import errors_util
@@ -244,7 +243,7 @@ def add_cp_mv_rsync_flags(parser):
   )
 
 
-def add_cp_and_mv_flags(parser, release_track):
+def add_cp_and_mv_flags(parser):
   """Adds flags to cp, mv, or other cp-based commands."""
   parser.add_argument('source', nargs='*', help='The source path(s) to copy.')
   parser.add_argument('destination', help='The destination path.')
@@ -268,9 +267,7 @@ def add_cp_and_mv_flags(parser, release_track):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
-  # TODO(b/304524534): Remove this condition.
-  if release_track is base.ReleaseTrack.ALPHA:
-    add_include_managed_folders_flag(parser)
+  add_include_managed_folders_flag(parser)
   symlinks_group = parser.add_group(
       mutex=True,
       help=(
@@ -350,7 +347,7 @@ def validate_include_managed_folders(
 ):
   """Validates that arguments are consistent with managed folder operations."""
   # TODO(b/304524534): Replace with args.include_managed_folders.
-  if not getattr(args, 'include_managed_folders', False):
+  if not args.include_managed_folders:
     return
 
   if isinstance(raw_destination_url, storage_url.FileUrl):
@@ -538,7 +535,7 @@ def run_cp(args, delete_source=False):
   url_found_match_tracker = collections.OrderedDict()
 
   # TODO(b/304524534): Replace with args.include_managed_folders.
-  if getattr(args, 'include_managed_folders', False):
+  if args.include_managed_folders:
     source_expansion_iterator = _get_managed_folder_iterator(
         args, url_found_match_tracker
     )
@@ -594,11 +591,7 @@ def run_cp(args, delete_source=False):
       source_expansion_iterator=source_expansion_iterator,
   )
 
-  if (
-      delete_source
-      # TODO(b/304524534): Replace with args.include_managed_folders.
-      and getattr(args, 'include_managed_folders', False)
-  ):
+  if delete_source and args.include_managed_folders:
     managed_folder_expansion_iterator = name_expansion.NameExpansionIterator(
         args.source,
         managed_folder_setting=folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,

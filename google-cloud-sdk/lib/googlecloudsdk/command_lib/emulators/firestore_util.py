@@ -65,7 +65,10 @@ def StartFirestoreEmulator(args, log_file=None):
   start_args.append('--port={0}'.format(args.host_port.port))
   if args.rules:
     start_args.append('--rules={0}'.format(args.rules))
-  start_args.append('--database-mode={0}'.format(args.database_mode))
+  if args.use_firestore_in_datastore_mode:
+    start_args.append('--database-mode=datastore-mode')
+  else:
+    start_args.append('--database-mode={0}'.format(args.database_mode))
   exec_args = ArgsForFirestoreEmulator(start_args)
 
   log.status.Print('Executing: {0}'.format(' '.join(exec_args)))

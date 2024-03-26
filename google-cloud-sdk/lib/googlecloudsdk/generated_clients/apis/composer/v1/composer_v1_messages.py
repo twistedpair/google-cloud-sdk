@@ -711,7 +711,7 @@ class DataRetentionConfig(_messages.Message):
 
   Fields:
     airflowMetadataRetentionConfig: Optional. The retention policy for airflow
-      metadata database. Details: go/composer-database-retention-2
+      metadata database.
     taskLogsRetentionConfig: Optional. The configuration settings for task
       logs retention
   """

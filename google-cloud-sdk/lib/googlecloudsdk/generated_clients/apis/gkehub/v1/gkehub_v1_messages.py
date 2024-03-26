@@ -3198,6 +3198,51 @@ class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsScopesListMembershipsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListMembershipsRequest object.
+
+  Fields:
+    filter: Optional. Lists Memberships that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160. Currently,
+      filtering can be done only based on Memberships's `name`, `labels`,
+      `create_time`, `update_time`, and `unique_id`.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned. Pagination is currently not supported;
+      therefore, setting this field does not have any impact for now.
+    pageToken: Optional. Token returned by previous call to
+      `ListBoundMemberships` which specifies the position in the list from
+      where to continue listing the resources.
+    scopeName: Required. Name of the Scope, in the format
+      `projects/*/locations/global/scopes/*`, to which the Memberships are
+      bound.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  scopeName = _messages.StringField(4, required=True)
+
+
+class GkehubProjectsLocationsScopesListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListPermittedRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListPermittedScopes` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Scope will
+      be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsScopesListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesListRequest object.
 
@@ -4052,6 +4097,23 @@ class KubernetesResource(_messages.Message):
   resourceOptions = _messages.MessageField('ResourceOptions', 4)
 
 
+class ListBoundMembershipsResponse(_messages.Message):
+  r"""List of Memberships bound to a Scope.
+
+  Fields:
+    memberships: The list of Memberships bound to the given Scope.
+    nextPageToken: A token to request the next page of resources from the
+      `ListBoundMemberships` method. The value of an empty string means that
+      there are no more resources to return.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  memberships = _messages.MessageField('Membership', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListFeatures` method.
 
@@ -4135,6 +4197,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPermittedScopesResponse(_messages.Message):
+  r"""List of permitted Scopes.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListPermittedScopes` method. The value of an empty string means that
+      there are no more resources to return.
+    scopes: The list of permitted Scopes
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopes = _messages.MessageField('Scope', 2, repeated=True)
 
 
 class ListReferencesRequest(_messages.Message):

@@ -684,9 +684,12 @@ def AddMigResourceManagerTagsFlags(parser):
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE',
       action=arg_parsers.UpdateAction,
-      help="""\
-      Specifies a list of resource manager tags to apply to the managed instance group.
-      """,
+      help=(
+          'Specifies a list of resource manager tags to apply to the managed'
+          ' instance group. A resource manager tag is a key-value pair. You'
+          ' can attach exactly one value to a MIG for a given key. A MIG can'
+          ' have a maximum of 50 key-value pairs attached.'
+      ),
   )
 
 
@@ -730,9 +733,7 @@ def AddInstanceFlexibilityPolicyArgs(
         type=arg_parsers.ArgList(),
         metavar='INSTANCE_SELECTION_NAME',
         hidden=True,
-        help=(
-            'Remove instance selections from the instance flexibility policy.'
-        ),
+        help='Remove instance selections from the instance flexibility policy.',
     )
 
 

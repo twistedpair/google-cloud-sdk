@@ -326,16 +326,16 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
       organizations/{organization_id}/locations/{location}/policyBindings/{pol
       icy_binding_id}`
-    policy: Immutable. The resource name of the policy to be bound. The
-      binding parent and policy must belong to the same Organization (or
+    policy: Required. Immutable. The resource name of the policy to be bound.
+      The binding parent and policy must belong to the same Organization (or
       Project).
     policyKind: Immutable. The kind of the policy to attach in this binding: +
       When the policy is empty, this field must be set. + When the policy is
       set, this field + can be left empty and will be set to the policy kind,
       or + must set to the input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
-    target: Immutable. Target is the full resource name of the resource to
-      which the policy will be bound. Immutable once set.
+    target: Required. Immutable. Target is the full resource name of the
+      resource to which the policy will be bound. Immutable once set.
     uid: Output only. The globally unique ID of the policy binding. Assigned
       when the policy binding is created.
     updateTime: Output only. The time when the policy binding was most

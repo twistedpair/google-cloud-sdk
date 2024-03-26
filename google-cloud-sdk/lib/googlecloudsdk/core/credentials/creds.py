@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 import base64
+import collections
 import copy
 import datetime
 import enum
@@ -34,7 +35,6 @@ from google.auth import credentials as google_auth_creds
 from google.auth import exceptions as google_auth_exceptions
 from google.auth import external_account as google_auth_external_account
 from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
-
 from google.auth import impersonated_credentials as google_auth_impersonated
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
@@ -251,6 +251,68 @@ def WithAccount(creds, account):
   return creds
 
 
+class _AccountIdFormatter(object):
+  """Account ID formatter.
+
+  In this file, when we say "account id" or "account_id", it means principal;
+  when we say "formatted_account_id" or "formatted account id", it means:
+    - the account_id or principal, if the universe domain is GDU
+    - the "account_id#universe_domain" string, otherwise
+
+  In credentials and access token sqlite3 database, the account_id column saves
+  the formatted account id.
+
+  This class provides utility functions to handle the formatting.
+  """
+
+  @staticmethod
+  def GetAccountIdAndUniverseDomain(formatted_account_id):
+    """Get account_id/principal and universe domain from formatted account id.
+
+    Args:
+      formatted_account_id: str, the formatted account id string.
+
+    Returns:
+      tuple: The principal and universe domain tuple.
+    """
+    splits = formatted_account_id.split('#')
+    principal = splits[0]
+    if len(splits) == 1:
+      universe_domain = properties.VALUES.core.universe_domain.default
+    else:
+      universe_domain = splits[1]
+    return principal, universe_domain
+
+  @staticmethod
+  def GetFormattedAccountId(account_id, credentials=None):
+    """Calculate the formatted account id.
+
+    If the universe_domain is GDU, return the account_id as is; otherwise,
+    return "account_id#universe_domain". Here the universe_domain value comes
+    from the credentials if it's provided, otherwise it comes from the
+    core/universe_domain property.
+
+    Args:
+      account_id: str, the account id or principal string.
+      credentials: google.auth.credentials.Credentials, The optional credentials
+        provided to derive the universe_domain value.
+
+    Returns:
+      str: The formatted account id.
+    """
+    universe_domain_property = properties.VALUES.core.universe_domain
+
+    if credentials and hasattr(credentials, 'universe_domain'):
+      universe_domain = credentials.universe_domain
+    else:
+      universe_domain = universe_domain_property.Get()
+
+    if universe_domain == universe_domain_property.default:
+      return account_id
+    else:
+      return account_id + '#' + universe_domain
+
+
 @six.add_metaclass(abc.ABCMeta)
 class CredentialStore(object):
   """Abstract definition of credential store."""
@@ -319,67 +381,161 @@ class SqliteCredentialStore(CredentialStore):
         'CREATE TABLE IF NOT EXISTS "{}" '
         '(account_id TEXT PRIMARY KEY, value BLOB)'
         .format(_CREDENTIAL_TABLE_NAME))
+    config_store = config.GetConfigStore()
+    if not config_store.Get('cred_token_store_formatted'):
+      self.FormatAccountIdColumn()
 
   def _Execute(self, *args):
     with self._cursor as cur:
       return cur.Execute(*args)
 
-  def GetAccounts(self):
+  def FormatAccountIdColumn(self):
+    """Format the account id column.
+
+    Before we introduce the formatted account id concept, the existing table
+    uses the account id value as the key. Therefore we need to load the table
+    and replace these account ids with formatted account ids.
+    """
     with self._cursor as cur:
-      return set(key[0] for key in cur.Execute(
-          'SELECT account_id FROM "{}" ORDER BY rowid'
-          .format(_CREDENTIAL_TABLE_NAME)))
+      table = cur.Execute(
+          'SELECT account_id, value FROM "{}"'.format(_CREDENTIAL_TABLE_NAME)
+      ).fetchall()
+
+      for row in table:
+        account_id, cred_json = row[0], row[1]
+
+        if '#' not in account_id:
+          creds = FromJsonGoogleAuth(cred_json)
+          formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
+              account_id, creds
+          )
+
+          if account_id != formatted_account_id:
+            # We need to change the account id with formatted account id.
+            cur.Execute(
+                'DELETE FROM "{}" WHERE account_id = ?'.format(
+                    _CREDENTIAL_TABLE_NAME
+                ),
+                (account_id,),
+            )
+            cur.Execute(
+                'INSERT INTO "{}" (account_id, value) VALUES (?,?)'.format(
+                    _CREDENTIAL_TABLE_NAME
+                ),
+                (formatted_account_id, cred_json),
+            )
+
+      config_store = config.GetConfigStore()
+      config_store.Set('cred_token_store_formatted', True)
+
+  def GetAccounts(self):
+    """Get all accounts.
+
+    Returns:
+      set[str], A set of account ids.
+    """
+    with self._cursor as cur:
+      accounts = set()
+      for (formatted_account_id,) in cur.Execute(
+          'SELECT account_id FROM "{}" ORDER BY rowid'.format(
+              _CREDENTIAL_TABLE_NAME
+          )
+      ):
+        account_id, _ = _AccountIdFormatter.GetAccountIdAndUniverseDomain(
+            formatted_account_id
+        )
+        accounts.add(account_id)
+    return accounts
 
   def GetAccountsWithUniverseDomain(self):
     """Get all accounts and their corresponding universe domains.
 
     Returns:
-      dict[str, str], A dictionary where the key is the account and the value is
-        the universe domain.
+      collections.defaultdict, A dictionary where the key is the account_id and
+        the value is the universe domain list.
     """
-    accounts_dict = {}
+    accounts_dict = collections.defaultdict(list)
     with self._cursor as cur:
-      for account_id_and_cred_json_tuple in cur.Execute(
-          'SELECT account_id, value FROM "{}" ORDER BY rowid'.format(
+      for formatted_account_id in cur.Execute(
+          'SELECT account_id FROM "{}" ORDER BY rowid'.format(
               _CREDENTIAL_TABLE_NAME
           )
       ):
-        account_id = account_id_and_cred_json_tuple[0]
-        cred_json_string = account_id_and_cred_json_tuple[1]
-        cred_json = json.loads(cred_json_string)
-        accounts_dict[account_id] = cred_json.get(
-            'universe_domain', properties.VALUES.core.universe_domain.default
+        account_id, universe_domain = (
+            _AccountIdFormatter.GetAccountIdAndUniverseDomain(
+                formatted_account_id[0]
+            )
         )
+        accounts_dict[account_id].append(universe_domain)
     return accounts_dict
 
   def Load(self, account_id, use_google_auth=True):
+    """Load the credentials for the account_id.
+
+    Args:
+      account_id: str, The account_id of the credential to load.
+      use_google_auth: bool, Whether google-auth lib should be used. Default is
+        True.
+
+    Returns:
+      google.auth.credentials.Credentials or client.OAuth2Credentials, The
+        loaded credentials.
+
+    Raises:
+      googlecloudsdk.core.credentials.creds.InvalidCredentialsError: If problem
+        happens when loading credentials.
+    """
+    if not use_google_auth:
+      with self._cursor as cur:
+        cred_json = cur.Execute(
+            'SELECT value FROM "{}" WHERE account_id = ?'.format(
+                _CREDENTIAL_TABLE_NAME
+            ),
+            (account_id,),
+        ).fetchone()
+      if cred_json is None:
+        return None
+      return FromJson(cred_json[0])
+
     with self._cursor as cur:
-      item = cur.Execute(
-          'SELECT value FROM "{}" WHERE account_id = ?'
-          .format(_CREDENTIAL_TABLE_NAME), (account_id,)).fetchone()
-    if item is None:
+      table = cur.Execute(
+          'SELECT account_id, value FROM "{}" WHERE account_id = ? OR'
+          ' account_id LIKE ?'.format(_CREDENTIAL_TABLE_NAME),
+          (account_id, account_id + '#%'),
+      ).fetchall()
+
+    if not table:
       return None
 
-    if use_google_auth:
-      creds = FromJsonGoogleAuth(item[0])
-      universe_domain_from_property = (
-          properties.VALUES.core.universe_domain.Get()
-      )
-      if creds.universe_domain != universe_domain_from_property:
-        raise InvalidCredentialsError(
-            'Your credentials are from "%(universe_from_cred)s", but your'
-            ' [core/universe_domain] property is set to'
-            ' "%(universe_from_property)s". Update your active account to an'
-            ' account from "%(universe_from_property)s" or update the'
-            ' [core/universe_domain] property to "%(universe_from_cred)s".'
-            % {
-                'universe_from_cred': creds.universe_domain,
-                'universe_from_property': universe_domain_from_property,
-            }
-        )
-      return creds
+    universe_domain_property = properties.VALUES.core.universe_domain
 
-    return FromJson(item[0])
+    # Pick the creds that matches the core/universe_domain property.
+    universe_domains = []
+    creds = None
+    for formatted_account_id, cred_json in table:
+      _, universe_domain = _AccountIdFormatter.GetAccountIdAndUniverseDomain(
+          formatted_account_id
+      )
+      universe_domains.append(universe_domain)
+      if universe_domain == universe_domain_property.Get():
+        creds = FromJsonGoogleAuth(cred_json)
+
+    if not creds:
+      raise InvalidCredentialsError(
+          'The account [{account_id}] is available in the following '
+          'universe domain(s): [{universe_domains}], but it is not '
+          'available in [{universe_property}] which is specified by the '
+          '[core/universe_domain] property. Update your active account to an'
+          ' account from {universe_property} or update the'
+          ' [core/universe_domain] property to one of [{universe_domains}].'
+          .format(
+              account_id=account_id,
+              universe_property=universe_domain_property.Get(),
+              universe_domains=(', ').join(universe_domains),
+          )
+      )
+
+    return creds
 
   def Store(self, account_id, credentials):
     """Stores the input credentials to the record of account_id in the cache.
@@ -391,23 +547,50 @@ class SqliteCredentialStore(CredentialStore):
     """
     if IsOauth2ClientCredentials(credentials):
       value = ToJson(credentials)
+      self._Execute(
+          'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'.format(
+              _CREDENTIAL_TABLE_NAME
+          ),
+          (account_id, value),
+      )
     else:
       value = ToJsonGoogleAuth(credentials)
-    self._Execute(
-        'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'
-        .format(_CREDENTIAL_TABLE_NAME), (account_id, value))
+      formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
+          account_id, credentials
+      )
+      self._Execute(
+          'REPLACE INTO "{}" (account_id, value) VALUES (?,?)'.format(
+              _CREDENTIAL_TABLE_NAME
+          ),
+          (formatted_account_id, value),
+      )
 
   def Remove(self, account_id):
+    formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
+        account_id, None
+    )
     self._Execute(
-        'DELETE FROM "{}" WHERE account_id = ?'
-        .format(_CREDENTIAL_TABLE_NAME), (account_id,))
+        'DELETE FROM "{}" WHERE account_id = ?'.format(_CREDENTIAL_TABLE_NAME),
+        (formatted_account_id,),
+    )
 
 
 _ACCESS_TOKEN_TABLE = 'access_tokens'
 
 
 class AccessTokenCache(object):
-  """Sqlite implementation of for access token cache."""
+  """Sqlite implementation of for access token cache.
+
+  AccessTokenCache uses formatted_account_id instead of account_id in its APIs.
+  The reason is that AccessTokenCache is used by AccessTokenStoreGoogleAuth,
+  which is tied to a specific credential object. Either we let
+  AccessTokenStoreGoogleAuth pass the credential's universe_domain to
+  AccessTokenCache, or pass the formatted account id (which contains
+  universe_domain). The latter is better since it is backward compatible and
+  there is no need to introduce a new universe_domain parameter to all
+  AccessTokenCache Load/Store/Remove APIs.
+  See go/gcloud-multi-universe-auth-cache section 3.2, 3.3 for more details.
+  """
 
   def __init__(self, store_file):
     self._cursor = _SqlCursor(store_file)
@@ -432,29 +615,66 @@ class AccessTokenCache(object):
     with self._cursor as cur:
       cur.Execute(*args)
 
-  def Load(self, account_id):
+  def Load(self, formatted_account_id):
+    """Load the tokens from the access token cache.
+
+    Args:
+      formatted_account_id: str, The formatted account id.
+
+    Returns:
+      tuple: The access_token, token_expiry, rapt_token, id_token tuple.
+    """
     with self._cursor as cur:
       return cur.Execute(
           'SELECT access_token, token_expiry, rapt_token, id_token '
-          'FROM "{}" WHERE account_id = ?'
-          .format(_ACCESS_TOKEN_TABLE), (account_id,)).fetchone()
+          'FROM "{}" WHERE account_id = ?'.format(_ACCESS_TOKEN_TABLE),
+          (formatted_account_id,),
+      ).fetchone()
 
-  def Store(self, account_id, access_token, token_expiry, rapt_token, id_token):
+  def Store(
+      self,
+      formatted_account_id,
+      access_token,
+      token_expiry,
+      rapt_token,
+      id_token,
+  ):
+    """Stores the tokens into the access token cache.
+
+    Args:
+      formatted_account_id: str, The formatted account id.
+      access_token: str, The access token string to store.
+      token_expiry: datetime.datetime, The token expiry.
+      rapt_token: str, The rapt token string to store.
+      id_token: str, The ID token string to store.
+    """
     try:
       self._Execute(
           'REPLACE INTO "{}" '
           '(account_id, access_token, token_expiry, rapt_token, id_token) '
-          'VALUES (?,?,?,?,?)'
-          .format(_ACCESS_TOKEN_TABLE),
-          (account_id, access_token, token_expiry, rapt_token, id_token))
+          'VALUES (?,?,?,?,?)'.format(_ACCESS_TOKEN_TABLE),
+          (
+              formatted_account_id,
+              access_token,
+              token_expiry,
+              rapt_token,
+              id_token,
+          ),
+      )
     except sqlite3.OperationalError as e:
       log.warning('Could not store access token in cache: {}'.format(str(e)))
 
-  def Remove(self, account_id):
+  def Remove(self, formatted_account_id):
+    """Removes the tokens from the access token cache.
+
+    Args:
+      formatted_account_id: str, The formatted account id to remove.
+    """
     try:
       self._Execute(
-          'DELETE FROM "{}" WHERE account_id = ?'
-          .format(_ACCESS_TOKEN_TABLE), (account_id,))
+          'DELETE FROM "{}" WHERE account_id = ?'.format(_ACCESS_TOKEN_TABLE),
+          (formatted_account_id,),
+      )
     except sqlite3.OperationalError as e:
       log.warning('Could not delete access token from cache: {}'.format(str(e)))
 
@@ -532,7 +752,9 @@ class AccessTokenStoreGoogleAuth(object):
         of account_id.
     """
     self._access_token_cache = access_token_cache
-    self._account_id = account_id
+    self._formatted_account_id = _AccountIdFormatter.GetFormattedAccountId(
+        account_id, credentials
+    )
     self._credentials = credentials
 
   def Get(self):
@@ -544,7 +766,7 @@ class AccessTokenStoreGoogleAuth(object):
     Returns:
        google.auth.credentials.Credentials
     """
-    token_data = self._access_token_cache.Load(self._account_id)
+    token_data = self._access_token_cache.Load(self._formatted_account_id)
     if token_data:
       access_token, token_expiry, rapt_token, id_token = token_data
       if UseSelfSignedJwt(self._credentials):
@@ -586,16 +808,16 @@ class AccessTokenStoreGoogleAuth(object):
       access_token = None
       expiry = None
       rapt_token = None
-      token_data = self._access_token_cache.Load(self._account_id)
+      token_data = self._access_token_cache.Load(self._formatted_account_id)
       if token_data:
         access_token, expiry, rapt_token, _ = token_data
     self._access_token_cache.Store(
-        self._account_id, access_token, expiry, rapt_token, id_token
+        self._formatted_account_id, access_token, expiry, rapt_token, id_token
     )
 
   def Delete(self):
     """Removes the tokens of the account from the internal cache."""
-    self._access_token_cache.Remove(self._account_id)
+    self._access_token_cache.Remove(self._formatted_account_id)
 
 
 def MaybeAttachAccessTokenCacheStore(credentials,
@@ -790,7 +1012,9 @@ class CredentialStoreWithCache(CredentialStore):
   def Remove(self, account_id):
     """Removes credentials of account_id from the cache."""
     self._credential_store.Remove(account_id)
-    self._access_token_cache.Remove(account_id)
+    self._access_token_cache.Remove(
+        _AccountIdFormatter.GetFormattedAccountId(account_id)
+    )
 
 
 def GetCredentialStore(store_file=None,

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
@@ -29,7 +30,8 @@ def GetProjectSpec():
   return concepts.ResourceSpec(
       'dataplex.projects',
       resource_name='projects',
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetLakeResourceSpec():
@@ -39,7 +41,8 @@ def GetLakeResourceSpec():
       resource_name='lakes',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      lakesId=LakeAttributeConfig())
+      lakesId=LakeAttributeConfig(),
+  )
 
 
 def GetZoneResourceSpec():
@@ -50,7 +53,8 @@ def GetZoneResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
-      zonesId=ZoneAttributeConfig())
+      zonesId=ZoneAttributeConfig(),
+  )
 
 
 def GetAssetResourceSpec():
@@ -62,7 +66,8 @@ def GetAssetResourceSpec():
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
       zonesId=ZoneAttributeConfig(),
-      assetsId=AssetAttributeConfig())
+      assetsId=AssetAttributeConfig(),
+  )
 
 
 def GetContentitemResourceSpec():
@@ -73,7 +78,8 @@ def GetContentitemResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
-      contentitemsId=ContentAttributeConfig())
+      contentitemsId=ContentAttributeConfig(),
+  )
 
 
 def GetTaskResourceSpec():
@@ -84,7 +90,8 @@ def GetTaskResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
-      tasksId=TaskAttributeConfig())
+      tasksId=TaskAttributeConfig(),
+  )
 
 
 def GetEnvironmentResourceSpec():
@@ -95,7 +102,8 @@ def GetEnvironmentResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       lakesId=LakeAttributeConfig(),
-      environmentsId=EnvironmentAttributeConfig())
+      environmentsId=EnvironmentAttributeConfig(),
+  )
 
 
 def GetDatascanResourceSpec():
@@ -105,7 +113,8 @@ def GetDatascanResourceSpec():
       resource_name='datascan',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      dataScansId=DatascanAttributeConfig())
+      dataScansId=DatascanAttributeConfig(),
+  )
 
 
 def GetDataTaxonomyResourceSpec():
@@ -115,7 +124,8 @@ def GetDataTaxonomyResourceSpec():
       resource_name='data taxonomy',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      dataTaxonomiesId=DataTaxonomyAttributeConfig())
+      dataTaxonomiesId=DataTaxonomyAttributeConfig(),
+  )
 
 
 def GetDataAttributeBindingResourceSpec():
@@ -125,7 +135,8 @@ def GetDataAttributeBindingResourceSpec():
       resource_name='data attribute binding',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      dataAttributeBindingsId=DataAttributeBindingAttributeConfig())
+      dataAttributeBindingsId=DataAttributeBindingAttributeConfig(),
+  )
 
 
 def GetDataAttributeResourceSpec():
@@ -136,7 +147,33 @@ def GetDataAttributeResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       dataTaxonomiesId=DataTaxonomyAttributeConfig(),
-      attributesId=DataAttributeConfig())
+      attributesId=DataAttributeConfig(),
+  )
+
+
+def GetEntryTypeResourceSpec():
+  """Gets EntryType resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.entryTypes',
+      resource_name='entry type',
+      projectsId=EntryTypeProjectAttributeConfig(),
+      locationsId=EntryTypeLocationAttributeConfig(),
+      entryTypesId=EntryTypeConfig(),
+  )
+
+
+def EntryTypeProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry-type-project',
+      help_text='The project of the EntryType resource.',
+  )
+
+
+def EntryTypeLocationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry-type-location',
+      help_text='The location of the EntryType resource.',
+  )
 
 
 def LocationAttributeConfig():
@@ -145,52 +182,68 @@ def LocationAttributeConfig():
       fallthroughs=[
           deps.PropertyFallthrough(properties.FromString('dataplex/location'))
       ],
-      help_text='The location of the Dataplex resource.')
+      help_text='The location of the Dataplex resource.',
+  )
 
 
 def LakeAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='lake', help_text='The identifier of the Dataplex lake resource.')
+      name='lake', help_text='The identifier of the Dataplex lake resource.'
+  )
 
 
 def ZoneAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='zone', help_text='The identifier of the Dataplex zone resource.')
+      name='zone', help_text='The identifier of the Dataplex zone resource.'
+  )
 
 
 def AssetAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='asset', help_text='The identifier of the Dataplex asset resource.')
+      name='asset', help_text='The identifier of the Dataplex asset resource.'
+  )
 
 
 def ContentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='content', help_text='The name of the {resource} to use.')
+      name='content', help_text='The name of the {resource} to use.'
+  )
 
 
 def EnvironmentAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='environment', help_text='The name of {resource} to use.')
+      name='environment', help_text='The name of {resource} to use.'
+  )
 
 
 def DataTaxonomyAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='data_taxonomy', help_text='The name of {resource} to use.')
+      name='data_taxonomy', help_text='The name of {resource} to use.'
+  )
 
 
 def DataAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='data_attribute', help_text='The name of {resource} to use.')
+      name='data_attribute', help_text='The name of {resource} to use.'
+  )
 
 
 def DataAttributeBindingAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='data_attribute_binding', help_text='The name of {resource} to use.')
+      name='data_attribute_binding', help_text='The name of {resource} to use.'
+  )
 
 
 def DatascanAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='dataScans', help_text='The name of {resource} to use.')
+      name='dataScans', help_text='The name of {resource} to use.'
+  )
+
+
+def EntryTypeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry_type', help_text='The name of {resource} to use.'
+  )
 
 
 def AddDatascanResourceArg(parser, verb, positional=True):
@@ -201,7 +254,8 @@ def AddDatascanResourceArg(parser, verb, positional=True):
       GetDatascanResourceSpec(),
       'Arguments and flags that define the Dataplex datascan you want {}'
       .format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddProjectArg(parser, verb, positional=True):
@@ -211,12 +265,14 @@ def AddProjectArg(parser, verb, positional=True):
       name,
       GetProjectSpec(),
       'Arguments and flags that define the project you want {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def TaskAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='task', help_text='The identifier of the Dataplex task resource.')
+      name='task', help_text='The identifier of the Dataplex task resource.'
+  )
 
 
 def AddLakeResourceArg(parser, verb, positional=True):
@@ -226,8 +282,10 @@ def AddLakeResourceArg(parser, verb, positional=True):
       name,
       GetLakeResourceSpec(),
       'Arguments and flags that define the Dataplex lake you want {}'.format(
-          verb),
-      required=True).AddToParser(parser)
+          verb
+      ),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddZoneResourceArg(parser, verb, positional=True):
@@ -237,8 +295,10 @@ def AddZoneResourceArg(parser, verb, positional=True):
       name,
       GetZoneResourceSpec(),
       'Arguments and flags that define the Dataplex zone you want {}'.format(
-          verb),
-      required=True).AddToParser(parser)
+          verb
+      ),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAssetResourceArg(parser, verb, positional=True):
@@ -248,8 +308,10 @@ def AddAssetResourceArg(parser, verb, positional=True):
       name,
       GetAssetResourceSpec(),
       'Arguments and flags that define the Dataplex asset you want {}'.format(
-          verb),
-      required=True).AddToParser(parser)
+          verb
+      ),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddContentitemResourceArg(parser, verb, positional=True):
@@ -259,7 +321,8 @@ def AddContentitemResourceArg(parser, verb, positional=True):
       name,
       GetContentitemResourceSpec(),
       'The Content {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddTaskResourceArg(parser, verb, positional=True):
@@ -269,8 +332,10 @@ def AddTaskResourceArg(parser, verb, positional=True):
       name,
       GetTaskResourceSpec(),
       'Arguments and flags that define the Dataplex task you want {}'.format(
-          verb),
-      required=True).AddToParser(parser)
+          verb
+      ),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddEnvironmentResourceArg(parser, verb, positional=True):
@@ -280,7 +345,8 @@ def AddEnvironmentResourceArg(parser, verb, positional=True):
       name,
       GetEnvironmentResourceSpec(),
       'The Environment {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddDataTaxonomyResourceArg(parser, verb, positional=True):
@@ -290,7 +356,8 @@ def AddDataTaxonomyResourceArg(parser, verb, positional=True):
       name,
       GetDataTaxonomyResourceSpec(),
       'The DataTaxonomy {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddAttributeResourceArg(parser, verb, positional=True):
@@ -300,7 +367,8 @@ def AddAttributeResourceArg(parser, verb, positional=True):
       name,
       GetDataAttributeResourceSpec(),
       'The DataAttribute {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddDataAttributeBindingResourceArg(parser, verb, positional=True):
@@ -310,4 +378,51 @@ def AddDataAttributeBindingResourceArg(parser, verb, positional=True):
       name,
       GetDataAttributeBindingResourceSpec(),
       'The DataAttributeBinding {}'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddEntryTypeResourceArg(parser):
+  """Adds a resource argument for a Dataplex EntryType."""
+  return concept_parsers.ConceptParser.ForResource(
+      '--entry-type',
+      GetEntryTypeResourceSpec(),
+      'Arguments and flags that define the Dataplex EntryType you want to'
+      ' reference.',
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddEntryResourceArg(parser):
+  """Adds a resource argument for a Dataplex Entry."""
+  entry_data = yaml_data.ResourceYAMLData.FromPath('dataplex.entry')
+  return concept_parsers.ConceptParser.ForResource(
+      'entry',
+      concepts.ResourceSpec.FromYaml(entry_data.GetData(), is_positional=True),
+      'Arguments and flags that define the Dataplex Entry you want to'
+      ' reference.',
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddParentEntryResourceArg(parser):
+  """Adds a resource argument for a Dataplex Entry parent."""
+  entry_data = yaml_data.ResourceYAMLData.FromPath('dataplex.entry')
+  return concept_parsers.ConceptParser.ForResource(
+      '--parent-entry',
+      concepts.ResourceSpec.FromYaml(entry_data.GetData()),
+      'Arguments and flags that define the parent Entry you want to reference.',
+      # Parent Entry has to belong to the same EntryGroup as the Entry,
+      # therefore we disable the location and entry_group flags for the parent
+      # entry resource and set fallthrougs to use the same location and
+      # entry_group as for the Entry.
+      command_level_fallthroughs={
+          'location': ['--location'],
+          'entry_group': ['--entry_group'],
+      },
+      flag_name_overrides={
+          'location': '',
+          'entry_group': '',
+      },
+  ).AddToParser(parser)
+

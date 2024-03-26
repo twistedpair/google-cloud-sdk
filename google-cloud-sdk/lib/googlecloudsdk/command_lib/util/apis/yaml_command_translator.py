@@ -956,7 +956,7 @@ class WaitCommandGenerator(BaseCommandGenerator):
         self.spec, resource_ref if extract_resource_result else None, args,
         operation_ref.GetCollectionInfo().full_name,
         method)
-    return self._WaitForOperationWithPoller(poller, operation_ref, resource_ref)
+    return self._WaitForOperationWithPoller(poller, operation_ref, args=args)
 
   def _Generate(self):
     """Generates a wait command for polling operations.

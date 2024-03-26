@@ -47,8 +47,7 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       basis.
     functionTarget: Optional. Name of the function target if the source is a
       function source. Required for function builds.
-    runtime: Optional. The runtime name, e.g. 'go113'. Leave blank for generic
-      builds.
+    runtime: The runtime name, e.g. 'go113'. Leave blank for generic builds.
   """
 
   baseImage = _messages.StringField(1)

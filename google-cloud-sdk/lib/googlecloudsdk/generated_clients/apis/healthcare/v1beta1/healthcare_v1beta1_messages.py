@@ -2789,8 +2789,8 @@ class FhirStore(_messages.Message):
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
     name: Output only. Identifier. Resource name of the FHIR store, of the
-      form `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store
-      _id}`.
+      form `projects/{project_id}/locations/{location}/datasets/{dataset_id}/f
+      hirStores/{fhir_store_id}`.
     notificationConfig: Deprecated. Use `notification_configs` instead. If
       non-empty, publish all resource modifications of this FHIR store to this
       destination. The Pub/Sub message attributes contain a map with a string
@@ -6073,8 +6073,8 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   Fields:
     fhirStore: A FhirStore resource to be passed as the request body.
     name: Output only. Identifier. Resource name of the FHIR store, of the
-      form `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store
-      _id}`.
+      form `projects/{project_id}/locations/{location}/datasets/{dataset_id}/f
+      hirStores/{fhir_store_id}`.
     updateMask: Required. The update mask applies to the resource. For the
       `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask

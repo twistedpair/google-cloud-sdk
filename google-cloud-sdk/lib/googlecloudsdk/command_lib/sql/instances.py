@@ -395,6 +395,9 @@ class _BaseInstances(object):
           sql_messages, args.ssl_mode
       )
 
+    if args.enable_google_ml_integration is not None:
+      settings.enableGoogleMlIntegration = args.enable_google_ml_integration
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -422,9 +425,6 @@ class _BaseInstances(object):
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
         )
-
-      if args.enable_google_ml_integration is not None:
-        settings.enableGoogleMlIntegration = args.enable_google_ml_integration
 
     return settings
 

@@ -1,0 +1,288 @@
+# A template for a single VMM OS policy that uninstalls the given agent major version.
+id: goog-ops-agent-policy
+mode: ENFORCEMENT
+allowNoResourceGroupMatch: true
+resourceGroups:
+- inventoryFilters:
+  - osShortName: centos
+    osVersion: '7'
+  - osShortName: rhel
+    osVersion: '7.*'
+  resources:
+  # TODO: b/329895431 - Consider removing add-repo steps in this policy
+  - id: add-repo
+    repository:
+      yum:
+        id: google-cloud-ops-agent
+        displayName: Google Cloud Ops Agent Repository
+        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-el7-x86_64-$agent_version
+        gpgKeys:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      yum:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: centos
+    osVersion: '8'
+  - osShortName: rocky
+    osVersion: '8.*'
+  - osShortName: rhel
+    osVersion: '8.*'
+  resources:
+  - id: add-repo
+    repository:
+      yum:
+        id: google-cloud-ops-agent
+        displayName: Google Cloud Ops Agent Repository
+        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-el8-x86_64-$agent_version
+        gpgKeys:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      yum:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: rocky
+    osVersion: '9.*'
+  - osShortName: rhel
+    osVersion: '9.*'
+  resources:
+  - id: add-repo
+    repository:
+      yum:
+        id: google-cloud-ops-agent
+        displayName: Google Cloud Ops Agent Repository
+        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-el9-x86_64-$agent_version
+        gpgKeys:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      yum:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: sles
+    osVersion: '12.*'
+  resources:
+  - id: add-repo
+    repository:
+      zypper:
+        id: google-cloud-ops-agent
+        displayName: Google Cloud Ops Agent Repository
+        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-sles12-x86_64-$agent_version
+        gpgKeys:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  - id: import-key
+    exec:
+      validate:
+        script: "rpm --import https://packages.cloud.google.com/yum/doc/yum-key.gpg; rpm --import https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      zypper:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: sles
+    osVersion: '15.*'
+  - osShortName: opensuse-leap
+    osVersion: '15.*'
+  resources:
+  - id: add-repo
+    repository:
+      zypper:
+        id: google-cloud-ops-agent
+        displayName: Google Cloud Ops Agent Repository
+        baseUrl: https://packages.cloud.google.com/yum/repos/google-cloud-ops-agent-sles15-x86_64-$agent_version
+        gpgKeys:
+        - https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        - https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      zypper:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: debian
+    osVersion: '10'
+  resources:
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-buster-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: debian
+    osVersion: '11'
+  resources:
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-bullseye-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: debian
+    osVersion: '12'
+  resources:
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-bookworm-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '18.04'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-bionic-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '20.04'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-focal-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '22.04'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-jammy-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '23.10'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-mantic-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
+  - osShortName: windows
+    osVersion: '10.*'
+  - osShortName: windows
+    osVersion: '6.*'
+  resources:
+  - id: add-repo
+    repository:
+      goo:
+        name: Google Cloud Ops Agent
+        url: https://packages.cloud.google.com/yuck/repos/google-cloud-ops-agent-windows-$agent_version
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      googet:
+        name: google-cloud-ops-agent

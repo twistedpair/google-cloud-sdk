@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import constants
-from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core.console import console_io
 
@@ -29,7 +28,7 @@ from googlecloudsdk.core.console import console_io
 class PersistentResourcesClient(object):
   """Client used for interacting with the PersistentResource endpoint."""
 
-  def __init__(self, version=constants.BETA_VERSION):
+  def __init__(self, version=constants.GA_VERSION):
     client = apis.GetClientInstance(constants.AI_PLATFORM_API_NAME,
                                     constants.AI_PLATFORM_API_VERSION[version])
     self._messages = client.MESSAGES_MODULE
@@ -103,16 +102,21 @@ class PersistentResourcesClient(object):
                   enableCustomServiceAccount=True,
                   serviceAccount=service_account)))
 
-    if self._version == constants.BETA_VERSION:
+    if self._version == constants.GA_VERSION:
       return self._service.Create(
           self._messages.AiplatformProjectsLocationsPersistentResourcesCreateRequest(
               parent=parent,
-              googleCloudAiplatformV1beta1PersistentResource=persistent_resource,
+              googleCloudAiplatformV1PersistentResource=persistent_resource,
               persistentResourceId=persistent_resource_id,
           )
       )
-    else:
-      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
+    return self._service.Create(
+        self._messages.AiplatformProjectsLocationsPersistentResourcesCreateRequest(
+            parent=parent,
+            googleCloudAiplatformV1beta1PersistentResource=persistent_resource,
+            persistentResourceId=persistent_resource_id,
+        )
+    )
 
   def List(self, limit=None, region=None):
     """Constructs a list request and sends it to the Persistent Resources endpoint.
@@ -125,36 +129,27 @@ class PersistentResourcesClient(object):
       A Persistent Resource list response message.
 
     """
-    if self._version == constants.BETA_VERSION:
-      return list_pager.YieldFromList(
-          self._service,
-          self._messages.AiplatformProjectsLocationsPersistentResourcesListRequest(
-              parent=region
-          ),
-          field='persistentResources',
-          batch_size_attribute='pageSize',
-          limit=limit,
-      )
-    else:
-      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
+    return list_pager.YieldFromList(
+        self._service,
+        self._messages.AiplatformProjectsLocationsPersistentResourcesListRequest(
+            parent=region
+        ),
+        field='persistentResources',
+        batch_size_attribute='pageSize',
+        limit=limit,
+    )
 
   def Get(self, name):
-    if self._version == constants.BETA_VERSION:
-      request = self._messages.AiplatformProjectsLocationsPersistentResourcesGetRequest(
-          name=name
-      )
-      return self._service.Get(request)
-    else:
-      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
+    request = (self._messages
+               .AiplatformProjectsLocationsPersistentResourcesGetRequest(
+                   name=name))
+    return self._service.Get(request)
 
   def Delete(self, name):
-    if self._version == constants.BETA_VERSION:
-      request = self._messages.AiplatformProjectsLocationsPersistentResourcesDeleteRequest(
-          name=name
-      )
-      return self._service.Delete(request)
-    else:
-      raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
+    request = self._messages.AiplatformProjectsLocationsPersistentResourcesDeleteRequest(
+        name=name
+    )
+    return self._service.Delete(request)
 
   def ImportResourceMessage(self, yaml_file, message_name):
     """Import a messages class instance typed by name from a YAML file."""

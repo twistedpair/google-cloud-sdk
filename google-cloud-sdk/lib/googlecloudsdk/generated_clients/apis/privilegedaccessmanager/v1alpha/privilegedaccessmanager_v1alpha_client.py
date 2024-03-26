@@ -372,6 +372,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: - All immutable fields - Entitlement name - Resource name - Resource type - Adding an approval workflow in an entitlement which previously had no approval workflow. - Deleting the approval workflow from an entitlement. - Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updations *ARE* allowed on the list of approvers in an approval workflow step.
+
+      Args:
+        request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/entitlements/{entitlementsId}',
+        http_method='PATCH',
+        method_id='privilegedaccessmanager.folders.locations.entitlements.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='entitlement',
+        request_type_name='PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
 
@@ -499,6 +526,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
       super(PrivilegedaccessmanagerV1alpha.FoldersLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckOnboardingStatus(self, request, global_params=None):
+      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+
+      Args:
+        request: (PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckOnboardingStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckOnboardingStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckOnboardingStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}:checkOnboardingStatus',
+        http_method='GET',
+        method_id='privilegedaccessmanager.folders.locations.checkOnboardingStatus',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:checkOnboardingStatus',
+        request_field='',
+        request_type_name='PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest',
+        response_type_name='CheckOnboardingStatusResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
@@ -908,6 +962,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: - All immutable fields - Entitlement name - Resource name - Resource type - Adding an approval workflow in an entitlement which previously had no approval workflow. - Deleting the approval workflow from an entitlement. - Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updations *ARE* allowed on the list of approvers in an approval workflow step.
+
+      Args:
+        request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/entitlements/{entitlementsId}',
+        http_method='PATCH',
+        method_id='privilegedaccessmanager.organizations.locations.entitlements.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='entitlement',
+        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
 
@@ -1035,6 +1116,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
       super(PrivilegedaccessmanagerV1alpha.OrganizationsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckOnboardingStatus(self, request, global_params=None):
+      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+
+      Args:
+        request: (PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckOnboardingStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckOnboardingStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckOnboardingStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}:checkOnboardingStatus',
+        http_method='GET',
+        method_id='privilegedaccessmanager.organizations.locations.checkOnboardingStatus',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:checkOnboardingStatus',
+        request_field='',
+        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest',
+        response_type_name='CheckOnboardingStatusResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
@@ -1444,6 +1552,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: - All immutable fields - Entitlement name - Resource name - Resource type - Adding an approval workflow in an entitlement which previously had no approval workflow. - Deleting the approval workflow from an entitlement. - Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updations *ARE* allowed on the list of approvers in an approval workflow step.
+
+      Args:
+        request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/entitlements/{entitlementsId}',
+        http_method='PATCH',
+        method_id='privilegedaccessmanager.projects.locations.entitlements.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='entitlement',
+        request_type_name='PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
 
@@ -1571,6 +1706,33 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
       super(PrivilegedaccessmanagerV1alpha.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckOnboardingStatus(self, request, global_params=None):
+      r"""CheckOnboardingStatus reports the onboarding status for a project/folder/organization. Any findings reported by this API need to be fixed before PAM can be used on the resource.
+
+      Args:
+        request: (PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CheckOnboardingStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckOnboardingStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckOnboardingStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:checkOnboardingStatus',
+        http_method='GET',
+        method_id='privilegedaccessmanager.projects.locations.checkOnboardingStatus',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:checkOnboardingStatus',
+        request_field='',
+        request_type_name='PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest',
+        response_type_name='CheckOnboardingStatusResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.

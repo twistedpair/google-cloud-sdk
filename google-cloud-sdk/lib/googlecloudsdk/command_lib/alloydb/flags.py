@@ -753,6 +753,48 @@ def AddContinuousBackupConfigFlags(parser, release_track, update=False):
   )
 
 
+def AddContinuousBackupConfigFlagsForCreateSecondary(parser):
+  """Adds Continuous backup configuration flags.
+
+  Args:
+    parser: argparse.ArgumentParser: Parser object for command line inputs.
+  """
+  group = parser.add_group(
+      mutex=False,
+      help=(
+          'Continuous Backup configuration. If unspecified, continuous backups'
+          ' are copied from the associated primary cluster.'
+      ),
+  )
+
+  group.add_argument(
+      '--enable-continuous-backup',
+      action='store_true',
+      default=None,
+      help='Enables Continuous Backups on the cluster.',
+  )
+  group.add_argument(
+      '--continuous-backup-recovery-window-days',
+      metavar='RECOVERY_PERIOD',
+      type=int,
+      help=(
+          'Recovery window of the log files and backups saved to support '
+          'Continuous Backups.'
+      ),
+  )
+
+  kms_resource_args.AddKmsKeyResourceArg(
+      group,
+      'continuous backup',
+      flag_overrides=GetContinuousBackupKmsFlagOverrides(),
+      permission_info=(
+          "The 'AlloyDB Service Agent's service account must hold permission"
+          " 'Cloud KMS CryptoKey Encrypter/Decrypter'"
+      ),
+      name='--continuous-backup-encryption-key',
+  )
+
+
 def AddInsightsConfigQueryStringLength(parser):
   parser.add_argument(
       '--insights-config-query-string-length',

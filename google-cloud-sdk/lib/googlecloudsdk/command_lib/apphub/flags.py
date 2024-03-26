@@ -450,7 +450,8 @@ def AddLookupDiscoveredServiceFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
   parser.add_argument(
       '--uri',
-      dest='uri',
+      metavar='URI',
+      dest='resource_uri',
       required=True,
       help='Google Cloud Platform resource URI to look up service for.',
   )
@@ -476,7 +477,8 @@ def AddLookupDiscoveredWorkloadFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
   parser.add_argument(
       '--uri',
-      dest='uri',
+      metavar='URI',
+      dest='resource_uri',
       required=True,
       help='Google Cloud Platform resource URI to look up workload for.',
   )

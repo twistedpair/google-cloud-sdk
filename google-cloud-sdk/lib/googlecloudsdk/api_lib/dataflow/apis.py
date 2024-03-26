@@ -1056,6 +1056,7 @@ class Templates:
           arg_revision=None,
           arg_git_source_dir=None,
           arg_git_source_revision=None,
+          arg_service_account=None,
           buildpack=None,
       )
       log.status.Print('Pushing flex template container image to GCR...')

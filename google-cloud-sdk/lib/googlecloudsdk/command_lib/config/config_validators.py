@@ -142,22 +142,23 @@ def WarnIfSettingUniverseDomainOutsideOfConfigAccountUniverse(
   """
   config_account = properties.VALUES.core.account.Get()
   all_cred_accounts = c_store.AllAccountsWithUniverseDomains()
+  cred_universe_domains = []
 
   for cred_account in all_cred_accounts:
     if cred_account.account == config_account:
-      cred_universe_domain = cred_account.universe_domain
-      break
-  else:
-    cred_universe_domain = None
-  if cred_universe_domain and cred_universe_domain != universe_domain:
+      cred_universe_domains.append(cred_account.universe_domain)
+
+  if cred_universe_domains and universe_domain not in cred_universe_domains:
+    cred_universe_domain_list = ', '.join(cred_universe_domains)
     log.warning(
-        f'The config account [{config_account}] is from the universe domain'
-        f' [{cred_universe_domain}] which does not match the'
-        f' [core/universe_domain] property [{universe_domain}] provided. Update'
+        f'The config account [{config_account}] is available in the following '
+        f'universe domain(s): [{cred_universe_domain_list}], but it is not '
+        f'available in [{universe_domain}] which is specified by the '
+        '[core/universe_domain] property. Update'
         ' them to match or create a new gcloud configuration for this universe'
         ' domain using `gcloud config configurations create` with the'
-        ' `--universe-domain` flag or switch to a configuration associated with'
-        f' [{cred_universe_domain}].'
+        ' `--universe-domain` flag or switch to a configuration associated'
+        f' with [{cred_universe_domain_list}].'
     )
     return True
   return False

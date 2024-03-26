@@ -5535,16 +5535,19 @@ class GoogleCloudApigeeV1ApiDoc(_messages.Message):
 
   Fields:
     anonAllowed: Optional. Boolean flag that manages user access to the
-      catalog item. When true, the catalog item can be viewed anonymously;
-      otherwise, only registered users may view it. Note: when the parent
-      portal is enrolled in the [audience management
+      catalog item. When true, the catalog item has public visibility and can
+      be viewed anonymously; otherwise, only registered users may view it.
+      Note: when the parent portal is enrolled in the [audience management
       feature](https://cloud.google.com/apigee/docs/api-
       platform/publish/portal/portal-audience#enrolling_in_the_beta_release_of
-      _the_audience_management_feature), this flag is ignored; instead
-      visibility must be further managed in the management UI (see [Manage the
-      visibility of an API in your
-      portal](https://cloud.google.com/apigee/docs/api-
-      platform/publish/portal/publish-apis#visibility)).
+      _the_audience_management_feature), and this flag is set to false,
+      visibility is set to an indeterminate state and must be explicitly
+      specified in the management UI (see [Manage the visibility of an API in
+      your portal](https://cloud.google.com/apigee/docs/api-
+      platform/publish/portal/publish-apis#visibility)). Additionally, when
+      enrolled in the audience management feature, updates to this flag will
+      be ignored as visibility permissions must be updated in the management
+      UI.
     apiProductName: Required. Immutable. The `name` field of the associated
       [API product](/apigee/docs/reference/apis/apigee/rest/v1/organizations.a
       piproducts). A portal may have only one catalog item associated with a
@@ -5571,12 +5574,13 @@ class GoogleCloudApigeeV1ApiDoc(_messages.Message):
       portal or is in a draft state. When the parent portal is enrolled in the
       [audience management feature](https://cloud.google.com/apigee/docs/api-
       platform/publish/portal/portal-audience#enrolling_in_the_beta_release_of
-      _the_audience_management_feature), the visibility must be further
-      managed in the management UI (see [Manage the visibility of an API in
-      your portal](https://cloud.google.com/apigee/docs/api-
+      _the_audience_management_feature), the visibility can be set to public
+      on creation by setting the anonAllowed flag to true or further managed
+      in the management UI (see [Manage the visibility of an API in your
+      portal](https://cloud.google.com/apigee/docs/api-
       platform/publish/portal/publish-apis#visibility)) before it can be
       visible to any users. If not enrolled in the audience management
-      feature, the visibility is further managed by the `anonAllowed` flag.
+      feature, the visibility is managed by the `anonAllowed` flag.
     requireCallbackUrl: Optional. Whether a callback URL is required when this
       catalog item's API product is enabled in a developer app. When true, a
       portal user will be required to input a URL when managing the app (this
@@ -6460,8 +6464,7 @@ class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArr
 
 
 class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArrayResource(_messages.Message):
-  r"""LINT.IfChange(resource_definition_1) Resource for which we are computing
-  security assessment.
+  r"""Resource for which we are computing security assessment.
 
   Enums:
     TypeValueValuesEnum: Required. Type of this resource.
@@ -11493,8 +11496,7 @@ class GoogleCloudApigeeV1SecurityAssessmentResult(_messages.Message):
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
-  r"""LINT.IfChange(resource_definition_2) Resource for which we are computing
-  security assessment.
+  r"""Resource for which we are computing security assessment.
 
   Enums:
     TypeValueValuesEnum: Required. Type of this resource.
@@ -11551,12 +11553,16 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message
       MEDIUM: Severity is medium.
       HIGH: Severity is high.
       NONE: Severity is none.
+      NO_RISK: Severity represents no risk
+      MINIMAL: Severity is minimal
     """
     SEVERITY_UNSPECIFIED = 0
     LOW = 1
     MEDIUM = 2
     HIGH = 3
     NONE = 4
+    NO_RISK = 5
+    MINIMAL = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AssessmentRecommendationsValue(_messages.Message):

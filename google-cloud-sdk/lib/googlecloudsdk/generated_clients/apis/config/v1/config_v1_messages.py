@@ -833,8 +833,8 @@ class ConfigProjectsLocationsTerraformVersionsListRequest(_messages.Message):
     pageToken: Optional. Token returned by previous call to
       'ListTerraformVersions' which specifies the position in the list from
       where to continue listing the resources.
-    parent: Required. The parent in whose context the Deployments are listed.
-      The parent value is in the format:
+    parent: Required. The parent in whose context the TerraformVersions are
+      listed. The parent value is in the format:
       'projects/{project_id}/locations/{location}'.
   """
 

@@ -467,7 +467,6 @@ SUBNETWORK_FLAG = base.Argument(
 
 NETWORK_ATTACHMENT = base.Argument(
     '--network-attachment',
-    hidden=True,
     help="""\
     Cloud Composer Network Attachment, which provides connectivity with a user's VPC network,
     supported in Composer {} environments or greater.
@@ -554,7 +553,6 @@ SUPPORT_WEB_SERVER_PLUGINS = base.Argument(
     '--support-web-server-plugins',
     action='store_true',
     default=None,
-    hidden=True,
     help="""\
     Enable the support for web server plugins, supported in Composer {}
     or greater.
@@ -566,7 +564,6 @@ ENABLE_PRIVATE_BUILDS_ONLY = base.Argument(
     action='store_const',
     default=None,
     const=True,
-    hidden=True,
     help="""\
     Builds performed during operations that install Python
     packages have only private connectivity to Google services,
@@ -579,7 +576,6 @@ DISABLE_PRIVATE_BUILDS_ONLY = base.Argument(
     action='store_const',
     default=None,
     const=True,
-    hidden=True,
     help="""\
     Builds performed during operations that install Python
     packages have an access to the internet
@@ -881,7 +877,6 @@ CLOUD_SQL_PREFERRED_ZONE = base.Argument(
 DISABLE_VPC_CONNECTIVITY = base.Argument(
     '--disable-vpc-connectivity',
     default=None,
-    hidden=True,
     const=True,
     action='store_const',
     help="""\
@@ -894,7 +889,6 @@ DISABLE_VPC_CONNECTIVITY = base.Argument(
 ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     '--enable-private-environment',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     Disable internet connection from any Composer component,
@@ -906,7 +900,6 @@ ENABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
 DISABLE_PRIVATE_ENVIRONMENT_UPDATE_FLAG = base.Argument(
     '--disable-private-environment',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     Enable internet connection from any Composer component,
@@ -1277,7 +1270,6 @@ COMPOSER_INTERNAL_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR = (
 COMPOSER_INTERNAL_IPV4_CIDR_FLAG = base.Argument(
     '--composer-internal-ipv4-cidr-block',
     default=None,
-    hidden=True,
     type=COMPOSER_INTERNAL_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     action=V2ExclusiveStoreAction,
     help="""\
@@ -1366,7 +1358,6 @@ MAINTENANCE_WINDOW_END_FLAG = base.Argument(
 CLEAR_MAINTENANCE_WINDOW_FLAG = base.Argument(
     '--clear-maintenance-window',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     Clears the maintenance window settings.
@@ -1804,7 +1795,6 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   if release_track != base.ReleaseTrack.GA:
     dag_processor_params_group = update_group.add_argument_group(
         DAG_PROCESSOR_PARAMETERS_FLAG_GROUP_DESCRIPTION,
-        hidden=True,
     )
     DAG_PROCESSOR_CPU.AddToParser(dag_processor_params_group)
     DAG_PROCESSOR_COUNT.AddToParser(dag_processor_params_group)
@@ -1883,13 +1873,13 @@ def AddComposer3FlagsToGroup(update_type_group):
   SUPPORT_WEB_SERVER_PLUGINS.AddToParser(update_type_group)
 
   private_builds_only_group = update_type_group.add_argument_group(
-      mutex=True, hidden=True
+      mutex=True
   )
   ENABLE_PRIVATE_BUILDS_ONLY.AddToParser(private_builds_only_group)
   DISABLE_PRIVATE_BUILDS_ONLY.AddToParser(private_builds_only_group)
 
   vpc_connectivity_group = update_type_group.add_argument_group(
-      hidden=True, mutex=True
+      mutex=True
   )
   NETWORK_ATTACHMENT.AddToParser(vpc_connectivity_group)
   DISABLE_VPC_CONNECTIVITY.AddToParser(vpc_connectivity_group)

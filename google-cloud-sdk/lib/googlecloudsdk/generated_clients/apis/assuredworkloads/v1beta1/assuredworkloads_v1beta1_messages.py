@@ -361,6 +361,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
+      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -381,6 +382,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     IL5 = 16
     IL2 = 17
     JP_REGIONS_AND_SUPPORT = 18
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -827,6 +829,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
+      KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -847,6 +850,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     IL5 = 16
     IL2 = 17
     JP_REGIONS_AND_SUPPORT = 18
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

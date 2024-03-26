@@ -13,6 +13,20 @@ from apitools.base.py import extra_types
 package = 'securityposture'
 
 
+class AssetDetails(_messages.Message):
+  r"""A AssetDetails object.
+
+  Fields:
+    asset: JSON string representing CAI asset. Format/representation may
+      change, thus clients should not depend.
+    assetType: Type of asset. See CAI asset type for GCP assets:
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types.
+  """
+
+  asset = _messages.StringField(1)
+  assetType = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -326,6 +340,16 @@ class IaC(_messages.Message):
   tfPlan = _messages.BytesField(1)
 
 
+class IaCValidationReport(_messages.Message):
+  r"""Details of an IaC Validation report.
+
+  Fields:
+    violations: List of violations found in the provided IaC.
+  """
+
+  violations = _messages.MessageField('Violation', 1, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -405,6 +429,21 @@ class ListPosturesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   postures = _messages.MessageField('Posture', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListReportsResponse(_messages.Message):
+  r"""Message for response to listing Report.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    reports: The list of Reports.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  reports = _messages.MessageField('Report', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -669,6 +708,39 @@ class Policy(_messages.Message):
   policyId = _messages.StringField(4)
 
 
+class PolicyDetails(_messages.Message):
+  r"""A PolicyDetails object.
+
+  Enums:
+    ConstraintTypeValueValuesEnum: Type of policy constraint.
+
+  Fields:
+    complianceStandards: Compliance standards that the policy maps to. E.g.
+      CIS-2.0 1.15
+    constraint: JSON string representing policy constraint.
+      Format/representation may change, thus clients should not depend.
+    constraintType: Type of policy constraint.
+    description: Description of the policy.
+  """
+
+  class ConstraintTypeValueValuesEnum(_messages.Enum):
+    r"""Type of policy constraint.
+
+    Values:
+      CONSTRAINT_TYPE_UNSPECIFIED: <no description>
+      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
+      ORG_POLICY_CUSTOM: <no description>
+    """
+    CONSTRAINT_TYPE_UNSPECIFIED = 0
+    SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 1
+    ORG_POLICY_CUSTOM = 2
+
+  complianceStandards = _messages.StringField(1, repeated=True)
+  constraint = _messages.StringField(2)
+  constraintType = _messages.EnumField('ConstraintTypeValueValuesEnum', 3)
+  description = _messages.StringField(4)
+
+
 class PolicySet(_messages.Message):
   r"""PolicySet representation.
 
@@ -930,6 +1002,30 @@ class PostureDeployment(_messages.Message):
   updateTime = _messages.StringField(15)
 
 
+class PostureDetails(_messages.Message):
+  r"""Details of a posture deployment.
+
+  Fields:
+    policySet: ID of the above posture's policy set to which this policy
+      belongs.
+    posture: Posture name in the format of organizations/{organization_id}/loc
+      ations/{location_id}/postures/{postureID}.
+    postureDeployment: Posture deployment name in one of the following formats
+      organizations/{organization_id}/locations/{location_id}/postureDeploymen
+      ts/{postureDeploymentID}
+    postureDeploymentTargetResource: Target resource where the Posture is
+      deployed. Can be one of: projects/projectNumber, folders/folderNumber,
+      organizations/organizationNumber.
+    postureRevisionId: Posture revision ID.
+  """
+
+  policySet = _messages.StringField(1)
+  posture = _messages.StringField(2)
+  postureDeployment = _messages.StringField(3)
+  postureDeploymentTargetResource = _messages.StringField(4)
+  postureRevisionId = _messages.StringField(5)
+
+
 class PostureTemplate(_messages.Message):
   r"""========================== PostureTemplates ==========================
   Message describing PostureTemplate object.
@@ -999,6 +1095,24 @@ class Property(_messages.Message):
 
   name = _messages.StringField(1)
   valueExpression = _messages.MessageField('Expr', 2)
+
+
+class Report(_messages.Message):
+  r"""========================== Reports ========================== Definition
+  of the resource 'Report'.
+
+  Fields:
+    createTime: Output only. The timestamp when the report was created.
+    iacValidationReport: A IaCValidationReport attribute.
+    name: Required. The name of this Report resource, in the format of
+      organizations/{organization}/locations/{location}/reports/{reportID}.
+    updateTime: Output only. The timestamp when the report was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  iacValidationReport = _messages.MessageField('IaCValidationReport', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class ResourceSelector(_messages.Message):
@@ -1405,6 +1519,38 @@ class SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportReque
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritypostureOrganizationsLocationsReportsGetRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsReportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource. The format of this value is as
+      follows:
+      `organizations/{organization}/locations/{location}/reports/{reportID}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritypostureOrganizationsLocationsReportsListRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsReportsListRequest object.
+
+  Fields:
+    filter: Optional. Filter to be applied on the resource, defined by EBNF
+      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListReportsRequest. The format of this
+      value is as follows: `organizations/{organization}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1517,6 +1663,49 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Violation(_messages.Message):
+  r"""Details of violation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the violation.
+
+  Fields:
+    assetId: Asset which violated some policy.
+    nextSteps: Next steps or recommendations to act upon this violation.
+    policyId: Policy which was violated by the asset.
+    severity: Severity of the violation.
+    violatedAsset: Details of the asset which got violated.
+    violatedPolicy: Details of the policy which got violated.
+    violatedPosture: Posture details if the violated policy belongs to a
+      posture deployment.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the violation.
+
+    Values:
+      SEVERITY_UNSPECIFIED: This is the default severity if the severity is
+        unknown.
+      CRITICAL: <no description>
+      HIGH: <no description>
+      MEDIUM: <no description>
+      LOW: <no description>
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  assetId = _messages.StringField(1)
+  nextSteps = _messages.StringField(2)
+  policyId = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  violatedAsset = _messages.MessageField('AssetDetails', 5)
+  violatedPolicy = _messages.MessageField('PolicyDetails', 6)
+  violatedPosture = _messages.MessageField('PostureDetails', 7)
 
 
 encoding.AddCustomJsonFieldMapping(

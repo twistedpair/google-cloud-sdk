@@ -17,14 +17,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+_API_NAME = 'spanner'
+_API_VERSION = 'v1'
 
 
 def Await(operation, message):
   """Wait for the specified operation."""
-  client = apis.GetClientInstance('spanner', 'v1')
+  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   poller = waiter.CloudOperationPoller(
       client.projects_instances_instancePartitions,
       client.projects_instances_instancePartitions_operations,
@@ -34,3 +39,45 @@ def Await(operation, message):
       collection='spanner.projects.instances.instancePartitions.operations',
   )
   return waiter.WaitFor(poller, ref, message)
+
+
+def ListGeneric(instance_partition, instance):
+  """List operations on an instance partition with generic LRO API."""
+  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  ref = resources.REGISTRY.Parse(
+      instance_partition,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancesId': instance,
+      },
+      collection='spanner.projects.instances.instancePartitions',
+  )
+  req = msgs.SpannerProjectsInstancesInstancePartitionsOperationsListRequest(
+      name=ref.RelativeName() + '/operations'
+  )
+  return list_pager.YieldFromList(
+      client.projects_instances_instancePartitions_operations,
+      req,
+      field='operations',
+      batch_size_attribute='pageSize',
+  )
+
+
+def Cancel(instance_partition, instance, operation):
+  """Cancel the specified operation."""
+  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  ref = resources.REGISTRY.Parse(
+      operation,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancePartitionsId': instance_partition,
+          'instancesId': instance,
+      },
+      collection='spanner.projects.instances.instancePartitions.operations',
+  )
+  req = msgs.SpannerProjectsInstancesInstancePartitionsOperationsCancelRequest(
+      name=ref.RelativeName()
+  )
+  return client.projects_instances_instancePartitions_operations.Cancel(req)

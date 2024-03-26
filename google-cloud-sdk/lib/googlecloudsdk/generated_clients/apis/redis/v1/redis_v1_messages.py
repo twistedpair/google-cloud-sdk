@@ -14,6 +14,36 @@ from apitools.base.py import extra_types
 package = 'redis'
 
 
+class AOFConfig(_messages.Message):
+  r"""Configuration of the AOF based persistence.
+
+  Enums:
+    AppendFsyncValueValuesEnum: Optional. fsync configuration.
+
+  Fields:
+    appendFsync: Optional. fsync configuration.
+  """
+
+  class AppendFsyncValueValuesEnum(_messages.Enum):
+    r"""Optional. fsync configuration.
+
+    Values:
+      APPEND_FSYNC_UNSPECIFIED: Not set. Default: EVERYSEC
+      NO: Never fsync. Normally Linux will flush data every 30 seconds with
+        this configuration, but it's up to the kernel's exact tuning.
+      EVERYSEC: fsync every second. Fast enough, and you may lose 1 second of
+        data if there is a disaster
+      ALWAYS: fsync every time new commands are appended to the AOF. It has
+        the best data loss protection at the cost of performance
+    """
+    APPEND_FSYNC_UNSPECIFIED = 0
+    NO = 1
+    EVERYSEC = 2
+    ALWAYS = 3
+
+  appendFsync = _messages.EnumField('AppendFsyncValueValuesEnum', 1)
+
+
 class AvailabilityConfiguration(_messages.Message):
   r"""Configuration for availability of database instance
 
@@ -144,6 +174,10 @@ class Cluster(_messages.Message):
       for the Redis cluster. If not provided, encryption is disabled for the
       cluster.
 
+  Messages:
+    RedisConfigsValue: Optional. Key/Value pairs of customer overrides for
+      mutable Redis Configs
+
   Fields:
     authorizationMode: Optional. The authorization mode of the Redis cluster.
       If not provided, auth feature is disabled for the cluster.
@@ -155,11 +189,15 @@ class Cluster(_messages.Message):
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+    persistenceConfig: Optional. Persistence config (RDB, AOF) for the
+      cluster.
     pscConfigs: Required. Each PscConfig configures the consumer network where
       IPs will be designated to the cluster for client access through Private
       Service Connect Automation. Currently, only one PscConfig is supported.
     pscConnections: Output only. PSC connections for discovery of the cluster
       topology and accessing the cluster.
+    redisConfigs: Optional. Key/Value pairs of customer overrides for mutable
+      Redis Configs
     replicaCount: Optional. The number of replica nodes per shard.
     shardCount: Required. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster
@@ -217,19 +255,80 @@ class Cluster(_messages.Message):
     TRANSIT_ENCRYPTION_MODE_DISABLED = 1
     TRANSIT_ENCRYPTION_MODE_SERVER_AUTHENTICATION = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RedisConfigsValue(_messages.Message):
+    r"""Optional. Key/Value pairs of customer overrides for mutable Redis
+    Configs
+
+    Messages:
+      AdditionalProperty: An additional property for a RedisConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RedisConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RedisConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
   name = _messages.StringField(4)
-  pscConfigs = _messages.MessageField('PscConfig', 5, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 6, repeated=True)
-  replicaCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateInfo = _messages.MessageField('StateInfo', 11)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 12)
-  uid = _messages.StringField(13)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 5)
+  pscConfigs = _messages.MessageField('PscConfig', 6, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 7, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 8)
+  replicaCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateInfo = _messages.MessageField('StateInfo', 13)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+
+
+class ClusterPersistenceConfig(_messages.Message):
+  r"""Configuration of the persistence functionality.
+
+  Enums:
+    ModeValueValuesEnum: Optional. The mode of persistence.
+
+  Fields:
+    aofConfig: Optional. AOF configuration. This field will be ignored if mode
+      is not AOF.
+    mode: Optional. The mode of persistence.
+    rdbConfig: Optional. RDB configuration. This field will be ignored if mode
+      is not RDB.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of persistence.
+
+    Values:
+      PERSISTENCE_MODE_UNSPECIFIED: Not set.
+      DISABLED: Persistence is disabled, and any snapshot data is deleted.
+      RDB: RDB based persistence is enabled.
+      AOF: AOF based persistence is enabled.
+    """
+    PERSISTENCE_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    RDB = 2
+    AOF = 3
+
+  aofConfig = _messages.MessageField('AOFConfig', 1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+  rdbConfig = _messages.MessageField('RDBConfig', 3)
 
 
 class Compliance(_messages.Message):
@@ -2434,6 +2533,39 @@ class PscConnection(_messages.Message):
   network = _messages.StringField(3)
   projectId = _messages.StringField(4)
   pscConnectionId = _messages.StringField(5)
+
+
+class RDBConfig(_messages.Message):
+  r"""Configuration of the RDB based persistence.
+
+  Enums:
+    RdbSnapshotPeriodValueValuesEnum: Optional. Period between RDB snapshots.
+
+  Fields:
+    rdbSnapshotPeriod: Optional. Period between RDB snapshots.
+    rdbSnapshotStartTime: Optional. The time that the first snapshot was/will
+      be attempted, and to which future snapshots will be aligned. If not
+      provided, the current time will be used.
+  """
+
+  class RdbSnapshotPeriodValueValuesEnum(_messages.Enum):
+    r"""Optional. Period between RDB snapshots.
+
+    Values:
+      SNAPSHOT_PERIOD_UNSPECIFIED: Not set.
+      ONE_HOUR: One hour.
+      SIX_HOURS: Six hours.
+      TWELVE_HOURS: Twelve hours.
+      TWENTY_FOUR_HOURS: Twenty four hours.
+    """
+    SNAPSHOT_PERIOD_UNSPECIFIED = 0
+    ONE_HOUR = 1
+    SIX_HOURS = 2
+    TWELVE_HOURS = 3
+    TWENTY_FOUR_HOURS = 4
+
+  rdbSnapshotPeriod = _messages.EnumField('RdbSnapshotPeriodValueValuesEnum', 1)
+  rdbSnapshotStartTime = _messages.StringField(2)
 
 
 class ReconciliationOperationMetadata(_messages.Message):

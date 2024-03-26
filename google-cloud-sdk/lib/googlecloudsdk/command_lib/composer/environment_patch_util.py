@@ -42,19 +42,20 @@ def _ConstructAirflowDatabaseRetentionDaysPatch(airflow_database_retention_days,
   """
   messages = api_util.GetMessagesModule(release_track=release_track)
   config = messages.EnvironmentConfig()
-  retention_mode = (
-      messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_ENABLED
-  )
+
   if airflow_database_retention_days == 0:
-    retention_mode = (
-        messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_DISABLED
+    config.dataRetentionConfig = messages.DataRetentionConfig(
+        airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicyConfig(
+            retentionMode=messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_DISABLED,
+        )
     )
-  config.dataRetentionConfig = messages.DataRetentionConfig(
-      airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicyConfig(
-          retentionDays=airflow_database_retention_days,
-          retentionMode=retention_mode,
-      )
-  )
+  else:
+    config.dataRetentionConfig = messages.DataRetentionConfig(
+        airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicyConfig(
+            retentionDays=airflow_database_retention_days,
+            retentionMode=messages.AirflowMetadataRetentionPolicyConfig.RetentionModeValueValuesEnum.RETENTION_MODE_ENABLED,
+        )
+    )
   return (
       'config.data_retention_configuration.airflow_metadata_retention_config',
       messages.Environment(config=config),

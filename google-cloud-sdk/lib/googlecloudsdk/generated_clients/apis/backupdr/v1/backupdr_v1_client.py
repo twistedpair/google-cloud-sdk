@@ -167,6 +167,33 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TriggerBackup(self, request, global_params=None):
+      r"""Triggers a new Backup.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('TriggerBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TriggerBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupPlanAssociations/{backupPlanAssociationsId}:triggerBackup',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupPlanAssociations.triggerBackup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:triggerBackup',
+        request_field='triggerBackupRequest',
+        request_type_name='BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBackupPlansService(base_api.BaseApiService):
     """Service class for the projects_locations_backupPlans resource."""
 

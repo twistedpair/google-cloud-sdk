@@ -60,6 +60,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_AUDITREPORTS_CONTROLREPORTS_FINDINGS = (
+      'folders.locations.auditReports.controlReports.findings',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/auditReports/'
+              '{auditReportsId}/controlReports/{controlReportsId}/findings/'
+              '{findingsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_OPERATIONDETAILS = (
       'folders.locations.operationDetails',
       '{+name}',
@@ -128,6 +140,18 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/auditReports/'
               '{auditReportsId}/controlReports/{controlReportsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_AUDITREPORTS_CONTROLREPORTS_FINDINGS = (
+      'projects.locations.auditReports.controlReports.findings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/auditReports/'
+              '{auditReportsId}/controlReports/{controlReportsId}/findings/'
+              '{findingsId}',
       },
       ['name'],
       True

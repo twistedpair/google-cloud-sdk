@@ -1363,7 +1363,8 @@ class ExtensionChainMatchCondition(_messages.Message):
     celExpression: Required. A Common Expression Language (CEL) expression
       that is used to match requests for which the extension chain is
       executed. For more information, see [CEL matcher language
-      reference](/service-extensions/docs/cel-matcher-language-reference).
+      reference](https://cloud.google.com/service-extensions/docs/cel-matcher-
+      language-reference).
   """
 
   celExpression = _messages.StringField(1)
@@ -2656,8 +2657,8 @@ class LbRouteExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbRouteExtension` resource. The format must comply with [the
-      requirements for labels](/compute/docs/labeling-resources#requirements)
-      for Google Cloud resources.
+      requirements for labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2674,8 +2675,8 @@ class LbRouteExtension(_messages.Message):
       forwarding rule.
     labels: Optional. Set of labels associated with the `LbRouteExtension`
       resource. The format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-      resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2709,8 +2710,8 @@ class LbRouteExtension(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbRouteExtension`
     resource. The format must comply with [the requirements for
-    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-    resources.
+    labels](https://cloud.google.com/compute/docs/labeling-
+    resources#requirements) for Google Cloud resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2758,8 +2759,8 @@ class LbTrafficExtension(_messages.Message):
   Messages:
     LabelsValue: Optional. Set of labels associated with the
       `LbTrafficExtension` resource. The format must comply with [the
-      requirements for labels](/compute/docs/labeling-resources#requirements)
-      for Google Cloud resources.
+      requirements for labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2776,8 +2777,8 @@ class LbTrafficExtension(_messages.Message):
       per forwarding rule.
     labels: Optional. Set of labels associated with the `LbTrafficExtension`
       resource. The format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-      resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
@@ -2811,8 +2812,8 @@ class LbTrafficExtension(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""Optional. Set of labels associated with the `LbTrafficExtension`
     resource. The format must comply with [the requirements for
-    labels](/compute/docs/labeling-resources#requirements) for Google Cloud
-    resources.
+    labels](https://cloud.google.com/compute/docs/labeling-
+    resources#requirements) for Google Cloud resources.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

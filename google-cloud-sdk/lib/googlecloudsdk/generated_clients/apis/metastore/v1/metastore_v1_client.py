@@ -43,7 +43,6 @@ class MetastoreV1(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_services_backups = self.ProjectsLocationsServicesBackupsService(self)
     self.projects_locations_services_metadataImports = self.ProjectsLocationsServicesMetadataImportsService(self)
-    self.projects_locations_services_migrationExecutions = self.ProjectsLocationsServicesMigrationExecutionsService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -678,43 +677,6 @@ class MetastoreV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='metadataImport',
         request_type_name='MetastoreProjectsLocationsServicesMetadataImportsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsServicesMigrationExecutionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_services_migrationExecutions resource."""
-
-    _NAME = 'projects_locations_services_migrationExecutions'
-
-    def __init__(self, client):
-      super(MetastoreV1.ProjectsLocationsServicesMigrationExecutionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single migration execution.
-
-      Args:
-        request: (MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/migrationExecutions/{migrationExecutionsId}',
-        http_method='DELETE',
-        method_id='metastore.projects.locations.services.migrationExecutions.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )

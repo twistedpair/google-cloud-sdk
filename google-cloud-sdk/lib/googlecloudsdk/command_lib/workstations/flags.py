@@ -505,6 +505,7 @@ def AddContainerImageField(parser, use_default=True):
           'goland': 'GoLand',
           'clion': 'CLion',
           'base-image': 'Base image - no IDE',
+          'codeoss-cuda': 'Code OSS + CUDA toolkit',
       },
       default='codeoss' if use_default else None,
       help=predefined_image_help_text,
@@ -678,6 +679,49 @@ def AddAcceleratorFields(parser):
   """
   group.add_argument(
       '--accelerator-count', type=int, help=help_text, required=True
+  )
+
+
+def AddBoostConfigs(parser):
+  """Adds a --boost-config flag to the given parser."""
+  help_text = """\
+  Boost Configuration(s) that workstations running with this configuration can
+  boost up to. This includes id (required), machine-type, accelerator-type, and
+  accelerator-count.
+
+  Example:
+
+    $ {command} --boost-config=id=boost1,machine-type=n1-standard-4,accelerator-type=nvidia-tesla-t4,accelerator-count=1"""
+  parser.add_argument(
+      '--boost-config',
+      metavar='BOOST_CONFIG',
+      type=arg_parsers.ArgObject(
+          spec={
+              'id': str,
+              'machine-type': str,
+              'accelerator-type': str,
+              'accelerator-count': int,
+          },
+          required_keys=['id'],
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text,
+  )
+
+
+def AddBoost(parser):
+  """Adds a --boost flag to the given parser."""
+  help_text = """\
+  Id of a boost configuration to start a workstations with.
+
+  Example:
+
+    $ {command} --boost=boost1"""
+  parser.add_argument(
+      '--boost',
+      metavar='BOOST',
+      type=str,
+      help=help_text,
   )
 
 

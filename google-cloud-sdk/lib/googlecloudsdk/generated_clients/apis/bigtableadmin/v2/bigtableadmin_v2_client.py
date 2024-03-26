@@ -835,6 +835,33 @@ class BigtableadminV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a Table or Backup resource. Returns an empty policy if the resource exists but does not have a policy set.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}:getIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v2/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all AuthorizedViews from a specific table.
 
@@ -886,6 +913,60 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='authorizedView',
         request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on a Table or Backup resource. Replaces any existing policy.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}:setIamPolicy',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v2/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that the caller has on the specified Table or Backup resource.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}:testIamPermissions',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v2/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

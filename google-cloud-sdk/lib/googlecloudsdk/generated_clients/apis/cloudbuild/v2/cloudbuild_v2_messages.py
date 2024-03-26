@@ -543,7 +543,7 @@ class CloudbuildProjectsLocationsConnectionsRepositoriesFetchGitRefsRequest(_mes
 
   Fields:
     pageSize: Optional. Number of results to return in the list. Default to
-      100.
+      20.
     pageToken: Optional. Page start.
     refType: Type of refs to fetch
     repository: Required. The resource name of the repository in the format

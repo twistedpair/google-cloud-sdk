@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.api_lib.workstations.util import GetClientInstance
 from googlecloudsdk.api_lib.workstations.util import GetMessagesModule
@@ -27,17 +29,24 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 import six
 
+
 IMAGE_URL_MAP = {
-    'codeoss': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
-    'intellij': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest',
-    'pycharm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest',
-    'rider': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest',
-    'webstorm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest',
-    'phpstorm': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest',
-    'rubymine': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest',
-    'goland': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest',
-    'clion': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest',
-    'base-image': 'us-central1-docker.pkg.dev/cloud-workstations-images/predefined/base:latest',
+    'base-image': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/base:latest',
+    'clion': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/clion:latest',
+    'codeoss': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss:latest',
+    'codeoss-cuda': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/code-oss-cuda:latest',
+    'goland': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/goland:latest',
+    'intellij': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/intellij-ultimate:latest',
+    'phpstorm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/phpstorm:latest',
+    'pycharm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/pycharm:latest',
+    'rider': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rider:latest',
+    'rubymine': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/rubymine:latest',
+    'webstorm': '{location}-docker.pkg.dev/cloud-workstations-images/predefined/webstorm:latest',
+}
+
+BOOST_CONFIG_MAP = {
+    'id': 'id',
+    'machine-type': 'machineType',
 }
 
 
@@ -64,6 +73,9 @@ class Configs:
     """
     config_name = args.CONCEPTS.config.Parse().RelativeName()
     parent = config_name.split('/workstationConfigs/')[0]
+    location = re.search(r'/locations/(?P<location>[^/]+)/', config_name).group(
+        'location'
+    )
     config_id = config_name.split('/workstationConfigs/')[1]
 
     config = self.messages.WorkstationConfig()
@@ -111,11 +123,7 @@ class Configs:
     )
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
     config.host.gceInstance.disableSsh = args.disable_ssh_to_vm
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.accelerator_type
-        and args.accelerator_count
-    ):
+    if args.accelerator_type and args.accelerator_count:
       accelerators = [
           self.messages.Accelerator(
               type=args.accelerator_type,
@@ -123,6 +131,24 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
+
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.boost_config
+    ):
+      for boost_config in args.boost_config:
+        desired_boost_config = self.messages.BoostConfig()
+        for key, value in boost_config.items():
+          if key == 'accelerator-type' or key == 'accelerator-count':
+            desired_boost_config.accelerators = [
+                self.messages.Accelerator(
+                    type=boost_config.get('accelerator-type', ''),
+                    count=boost_config.get('accelerator-count', 0),
+                )
+            ]
+          else:
+            setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
+        config.host.gceInstance.boostConfigs.append(desired_boost_config)
 
     # Persistent directory
     pd = self.messages.PersistentDirectory()
@@ -164,7 +190,7 @@ class Configs:
     elif args.container_predefined_image:
       config.container.image = IMAGE_URL_MAP.get(
           args.container_predefined_image
-      )
+      ).format(location=location)
     if args.container_command:
       config.container.command = args.container_command
     if args.container_args:
@@ -235,6 +261,9 @@ class Configs:
       Workstation configuration that was updated.
     """
     config_name = args.CONCEPTS.config.Parse().RelativeName()
+    location = re.search(r'/locations/(?P<location>[^/]+)/', config_name).group(
+        'location'
+    )
     config_id = config_name.split('/workstationConfigs/')[1]
 
     config = self.messages.WorkstationConfig()
@@ -355,9 +384,8 @@ class Configs:
         gce_shielded_instance_config
     )
 
-    if self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA) and (
-        args.IsSpecified('accelerator_type')
-        or args.IsSpecified('accelerator_count')
+    if args.IsSpecified('accelerator_type') or args.IsSpecified(
+        'accelerator_count'
     ):
       accelerators = [
           self.messages.Accelerator(
@@ -366,9 +394,26 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
-      update_mask.append(
-          'host.gce_instance.accelerators'
-      )
+      update_mask.append('host.gce_instance.accelerators')
+
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.IsSpecified('boost_config')
+    ):
+      for boost_config in args.boost_config:
+        desired_boost_config = self.messages.BoostConfig()
+        for key, value in boost_config.items():
+          if key == 'accelerator-type' or key == 'accelerator-count':
+            desired_boost_config.accelerators = [
+                self.messages.Accelerator(
+                    type=boost_config['accelerator-type'],
+                    count=boost_config['accelerator-count'],
+                )
+            ]
+          else:
+            setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
+        config.host.gceInstance.boostConfigs.append(desired_boost_config)
+      update_mask.append('host.gce_instance.boost_configs')
 
     # Container
     config.container = self.messages.Container()
@@ -378,7 +423,7 @@ class Configs:
     elif args.IsSpecified('container_predefined_image'):
       config.container.image = IMAGE_URL_MAP.get(
           args.container_predefined_image
-      )
+      ).format(location=location)
       update_mask.append('container.image')
 
     if args.IsSpecified('container_command'):

@@ -474,12 +474,17 @@ class EncryptionConfig(_messages.Message):
 
   Fields:
     kmsKey: The fully qualified customer provided Cloud KMS key name to use
-      for customer data encryption, in the following form:projects/{project_nu
-      mber}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/{crypto_
-      key_id}.
+      for customer data encryption, in the following format:projects/{project_
+      number}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/{crypt
+      o_key_id}.
+    kmsKeys: Optional. The list of fully qualified customer provided Cloud KMS
+      key names for the multi-regional service. Each key must be in the
+      following format:projects/{project_number}/locations/{location_id}/keyRi
+      ngs/{key_ring_id}/cryptoKeys/{crypto_key_id}.
   """
 
   kmsKey = _messages.StringField(1)
+  kmsKeys = _messages.StringField(2, repeated=True)
 
 
 class ErrorDetails(_messages.Message):
@@ -1929,30 +1934,6 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest(_messages.Message):
-  r"""A MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The relative resource name of the migrationExecution to
-      delete, in the following form:projects/{project_number}/locations/{locat
-      ion_id}/services/{service_id}/migrationExecutions/{migration_execution_i
-      d}.
-    requestId: Optional. A request ID. Specify a unique request ID to allow
-      the server to ignore the request if it has completed. The server will
-      ignore subsequent requests that provide a duplicate request ID for at
-      least 60 minutes after the first request.For example, if an initial
-      request times out, followed by another request with the same request ID,
-      the server ignores the second request to prevent the creation of
-      duplicate commitments.The request ID must be a valid UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
-      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
 
 
 class MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest(_messages.Message):

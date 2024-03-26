@@ -56,7 +56,7 @@ CERTIFICATE_DIR = os.path.join('~', '.ssh', 'google_compute_engine_cert')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 OSLOGIN_ENABLE_2FA_METADATA_KEY = 'enable-oslogin-2fa'
 OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
-OSLOGIN_REQUIRE_CERTIFICATES_METADATA_KEY = 'require-oslogin-certificates'
+OSLOGIN_ENABLE_CERTIFICATES_METADATA_KEY = 'enable-oslogin-certificates'
 
 
 class InvalidKeyError(core_exceptions.Error):
@@ -1134,7 +1134,7 @@ def GetOsloginState(
   oslogin_state.require_certificates = FeatureEnabledInMetadata(
       instance,
       project,
-      OSLOGIN_REQUIRE_CERTIFICATES_METADATA_KEY,
+      OSLOGIN_ENABLE_CERTIFICATES_METADATA_KEY,
       instance_override=instance_require_certificates,
   )
 

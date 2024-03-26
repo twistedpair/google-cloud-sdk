@@ -500,6 +500,10 @@ apis:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+  connectgateway:
+    v1alpha1:
+      discovery_doc: connectgateway_v1alpha1.json
+      default: true
   container:
     v1:
       discovery_doc: container_v1.json
@@ -862,6 +866,9 @@ apis:
       discovery_doc: osconfig_v1beta.json
     v1:
       discovery_doc: osconfig_v1.json
+      resources:
+        projects.locations.global:
+          path: projects/{projectsId}/locations/global
       default: true
   iam:
     v1beta:
@@ -1170,6 +1177,8 @@ apis:
     v1alpha:
       discovery_doc: privilegedaccessmanager_v1alpha.json
       default: true
+    v1beta:
+      discovery_doc: privilegedaccessmanager_v1beta.json
   publicca:
     v1:
       default: true
@@ -1349,8 +1358,6 @@ apis:
     v1:
       discovery_doc: serviceusage_v1.json
       default: true
-    v2:
-      discovery_doc: serviceusage_v2.json
     v2alpha:
       discovery_doc: serviceusage_v2alpha.json
   cloudquotas:
@@ -1800,6 +1807,9 @@ canonical_surfaces:
   inframanager:
     name: config
     command: infra-manager
+  connectgateway:
+    name: connectgateway
+    hidden: true
   container:
     name: container
     command: container

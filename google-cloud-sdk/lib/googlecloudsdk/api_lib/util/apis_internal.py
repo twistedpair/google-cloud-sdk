@@ -209,11 +209,14 @@ def _GetGapicClientClass(api_name,
   return getattr(module_obj, client_class_name)
 
 
-def _GetGapicClientInstance(api_name,
-                            api_version,
-                            credentials,
-                            address_override_func=None,
-                            transport_choice=apis_util.GapicTransport.GRPC):
+def _GetGapicClientInstance(
+    api_name,
+    api_version,
+    credentials,
+    address_override_func=None,
+    transport_choice=apis_util.GapicTransport.GRPC,
+    attempt_direct_path=False,
+):
   """Returns an instance of the GAPIC API client specified in the args.
 
   For apitools API clients, the API endpoint override is something like
@@ -229,6 +232,8 @@ def _GetGapicClientInstance(api_name,
       host. It takes a single argument which is the original host.
     transport_choice: apis_util.GapicTransport, The transport to be used by the
       client.
+    attempt_direct_path: bool, True if we want to attempt direct path gRPC where
+      possible.
 
   Returns:
     An instance of the specified GAPIC API client.
@@ -257,7 +262,9 @@ def _GetGapicClientInstance(api_name,
   return client_class(
       credentials,
       address_override_func=AddressOverride,
-      mtls_enabled=_MtlsEnabled(api_name, api_version))
+      mtls_enabled=_MtlsEnabled(api_name, api_version),
+      attempt_direct_path=attempt_direct_path,
+  )
 
 
 def UniversifyAddress(address):

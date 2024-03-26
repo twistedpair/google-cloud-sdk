@@ -1201,6 +1201,7 @@ class _SectionApiEndpointOverrides(_Section):
         'For Private Service Connect usage, see '
         'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
     )
+    self.connectgateway = self._Add('connectgateway', hidden=True)
     self.container = self._Add('container', command='gcloud container')
     self.containeranalysis = self._Add('containeranalysis', hidden=True)
     self.datacatalog = self._Add('datacatalog', command='gcloud data-catalog')
@@ -2136,8 +2137,6 @@ class _SectionCore(_Section):
         help_text='Token used to route traces of service requests for '
         'investigation of issues. This token will be provided by Google '
         'support.')
-    self.trace_email = self._Add('trace_email', hidden=True)
-    self.trace_log = self._Add('trace_log', default=False, hidden=True)
     self.request_reason = self._Add('request_reason', hidden=True)
     self.pass_credentials_to_gsutil = self._AddBool(
         'pass_credentials_to_gsutil',

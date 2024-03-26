@@ -2396,8 +2396,8 @@ class StoragePool(_messages.Message):
     name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
-    psaRange: Optional. This field is currently not implemented. Currently
-      values provided in this field will be ignored.
+    psaRange: Optional. This field is not implemented. The values provided in
+      this field are ignored.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2598,8 +2598,8 @@ class Volume(_messages.Message):
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
-    psaRange: Output only. This field is currently not implemented. Currently
-      values provided in this field will be ignored.
+    psaRange: Output only. This field is not implemented. The values provided
+      in this field are ignored.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
     restrictedActions: Optional. List of actions that are restricted on this
@@ -2667,7 +2667,7 @@ class Volume(_messages.Message):
     Values:
       SECURITY_STYLE_UNSPECIFIED: SecurityStyle is unspecified
       NTFS: SecurityStyle uses NTFS
-      UNIX: SecurityStyle uses NTFS
+      UNIX: SecurityStyle uses UNIX
     """
     SECURITY_STYLE_UNSPECIFIED = 0
     NTFS = 1

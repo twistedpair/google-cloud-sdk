@@ -339,11 +339,18 @@ def CreatePersistentCreateDiskMessages(
 
     auto_delete = disk.get('auto-delete', True)
     disk_size_gb = utils.BytesToGb(disk.get('size'))
+    replica_zones = disk.get('replica-zones', [])
     disk_type = disk.get('type')
     if disk_type:
       if use_disk_type_uri:
-        disk_type_ref = instance_utils.ParseDiskType(resources, disk_type,
-                                                     project, location, scope)
+        disk_type_ref = instance_utils.ParseDiskType(
+            resources,
+            disk_type,
+            project,
+            location,
+            scope,
+            replica_zone_cnt=len(replica_zones),
+        )
         disk_type = disk_type_ref.SelfLink()
     else:
       disk_type = None
@@ -387,7 +394,6 @@ def CreatePersistentCreateDiskMessages(
         diskType=disk_type,
         sourceImageEncryptionKey=image_key)
 
-    replica_zones = disk.get('replica-zones')
     if support_replica_zones and replica_zones:
       normalized_zones = []
       for zone in replica_zones:

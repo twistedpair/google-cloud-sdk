@@ -653,7 +653,7 @@ class DeviceSession(_messages.Message):
       session_state message including the current session state.
     ttl: Optional. The amount of time that a device will be initially
       allocated for. This can eventually be extended with the
-      UpdateDeviceSession RPC. Default: 30 minutes.
+      UpdateDeviceSession RPC. Default: 15 minutes.
   """
 
   class StateValueValuesEnum(_messages.Enum):

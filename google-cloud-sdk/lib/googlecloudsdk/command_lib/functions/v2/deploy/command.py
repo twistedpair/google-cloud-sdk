@@ -1195,18 +1195,19 @@ def Run(
 
   existing_function = client.GetFunction(function_ref.RelativeName())
 
+  gen2_runtimes = {
+      r.name: {'warnings': r.warnings}
+      for r in client.ListRuntimes(function_ref.locationsId).runtimes
+      if str(r.environment) == 'GEN_2'
+  }
+
   is_new_function = existing_function is None
   if is_new_function and not args.runtime:
     if not console_io.CanPrompt():
       raise calliope_exceptions.RequiredArgumentException(
           'runtime', 'Flag `--runtime` is required for new functions.'
       )
-
-    runtimes = [
-        r.name
-        for r in client.ListRuntimes(function_ref.locationsId).runtimes
-        if str(r.environment) == 'GEN_2'
-    ]
+    runtimes = sorted(gen2_runtimes.keys())
     idx = console_io.PromptChoice(
         runtimes, message='Please select a runtime:\n'
     )
@@ -1225,6 +1226,10 @@ def Run(
         '--gen2',
         "Function already exists in 1st gen, can't change the environment.",
     )
+  runtime = args.runtime or existing_function.buildConfig.runtime
+  if runtime in gen2_runtimes and gen2_runtimes[runtime]['warnings']:
+    for w in gen2_runtimes[runtime]['warnings']:
+      log.warning(w)
 
   if existing_function and existing_function.serviceConfig:
     has_all_traffic_on_latest_revision = (

@@ -70,6 +70,17 @@ class Workstations:
         args, 'workstation', use_defaults=True)
     start_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsStartRequest(
         name=workstation_name)
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.boost
+    ):
+      start_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstationsStartRequest(
+          name=workstation_name,
+          startWorkstationRequest=self.messages.StartWorkstationRequest(
+              boostConfig=args.boost
+          )
+      )
+
     op_ref = self._service.Start(start_req)
 
     log.status.Print(

@@ -75,6 +75,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_notebookRuntimeTemplates = self.ProjectsLocationsNotebookRuntimeTemplatesService(self)
     self.projects_locations_notebookRuntimes = self.ProjectsLocationsNotebookRuntimesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_persistentResources = self.ProjectsLocationsPersistentResourcesService(self)
     self.projects_locations_pipelineJobs = self.ProjectsLocationsPipelineJobsService(self)
     self.projects_locations_publishers_models = self.ProjectsLocationsPublishersModelsService(self)
     self.projects_locations_publishers = self.ProjectsLocationsPublishersService(self)
@@ -6147,6 +6148,178 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsPersistentResourcesService(base_api.BaseApiService):
+    """Service class for the projects_locations_persistentResources resource."""
+
+    _NAME = 'projects_locations_persistentResources'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsPersistentResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.persistentResources.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['persistentResourceId'],
+        relative_path='v1/{+parent}/persistentResources',
+        request_field='googleCloudAiplatformV1PersistentResource',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.persistentResources.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1PersistentResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.persistentResources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1PersistentResource',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PersistentResources in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListPersistentResourcesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.persistentResources.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/persistentResources',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListPersistentResourcesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.persistentResources.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudAiplatformV1PersistentResource',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Reboot(self, request, global_params=None):
+      r"""Reboots a PersistentResource.
+
+      Args:
+        request: (AiplatformProjectsLocationsPersistentResourcesRebootRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Reboot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reboot.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/persistentResources/{persistentResourcesId}:reboot',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.persistentResources.reboot',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:reboot',
+        request_field='googleCloudAiplatformV1RebootPersistentResourceRequest',
+        request_type_name='AiplatformProjectsLocationsPersistentResourcesRebootRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPipelineJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_pipelineJobs resource."""
 
@@ -6156,6 +6329,60 @@ class AiplatformV1(base_api.BaseApiClient):
       super(AiplatformV1.ProjectsLocationsPipelineJobsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchCancel(self, request, global_params=None):
+      r"""Batch cancel PipelineJobs. Firstly the server will check if all the jobs are in non-terminal states, and skip the jobs that are already terminated. If the operation failed, none of the pipeline jobs are cancelled. The server will poll the states of all the pipeline jobs periodically to check the cancellation status. This operation will return an LRO.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsBatchCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs:batchCancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.batchCancel',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pipelineJobs:batchCancel',
+        request_field='googleCloudAiplatformV1BatchCancelPipelineJobsRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsBatchCancelRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def BatchDelete(self, request, global_params=None):
+      r"""Batch deletes PipelineJobs The Operation is atomic. If it fails, none of the PipelineJobs are deleted. If it succeeds, all of the PipelineJobs are deleted.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs:batchDelete',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/pipelineJobs:batchDelete',
+        request_field='googleCloudAiplatformV1BatchDeletePipelineJobsRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def Cancel(self, request, global_params=None):
       r"""Cancels a PipelineJob. Starts asynchronous cancellation on the PipelineJob. The server makes a best effort to cancel the pipeline, but success is not guaranteed. Clients can use PipelineService.GetPipelineJob or other methods to check whether the cancellation succeeded or whether the pipeline completed despite cancellation. On successful cancellation, the PipelineJob is not deleted; instead it becomes a pipeline with a PipelineJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and PipelineJob.state is set to `CANCELLED`.

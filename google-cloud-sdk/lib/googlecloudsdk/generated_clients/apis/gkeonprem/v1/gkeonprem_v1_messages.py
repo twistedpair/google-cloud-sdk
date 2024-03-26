@@ -6014,6 +6014,8 @@ class VmwareAdminCluster(_messages.Message):
     uid: Output only. The unique identifier of the VMware admin cluster.
     updateTime: Output only. The time at which VMware admin cluster was last
       updated.
+    validationCheck: Output only. ValidationCheck represents the result of the
+      preflight check job.
     vcenter: The VMware admin cluster VCenter configuration.
   """
 
@@ -6099,7 +6101,8 @@ class VmwareAdminCluster(_messages.Message):
   status = _messages.MessageField('ResourceStatus', 23)
   uid = _messages.StringField(24)
   updateTime = _messages.StringField(25)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 26)
+  validationCheck = _messages.MessageField('ValidationCheck', 26)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 27)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):

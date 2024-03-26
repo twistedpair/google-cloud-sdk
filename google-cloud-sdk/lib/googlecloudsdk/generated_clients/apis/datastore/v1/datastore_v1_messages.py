@@ -650,6 +650,89 @@ class EntityResult(_messages.Message):
   version = _messages.IntegerField(5)
 
 
+class ExecutionStats(_messages.Message):
+  r"""Execution statistics for the query.
+
+  Messages:
+    DebugStatsValue: Debugging statistics from the execution of the query.
+      Note that the debugging stats are subject to change as Firestore
+      evolves. It could include: { "indexes_entries_scanned": "1000",
+      "documents_scanned": "20", "billing_details" : { "documents_billable":
+      "20", "index_entries_billable": "1000", "min_query_cost": "0" } }
+
+  Fields:
+    debugStats: Debugging statistics from the execution of the query. Note
+      that the debugging stats are subject to change as Firestore evolves. It
+      could include: { "indexes_entries_scanned": "1000", "documents_scanned":
+      "20", "billing_details" : { "documents_billable": "20",
+      "index_entries_billable": "1000", "min_query_cost": "0" } }
+    executionDuration: Total time to execute the query in the backend.
+    readOperations: Total billable read operations.
+    resultsReturned: Total number of results returned, including documents,
+      projections, aggregation results, keys.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DebugStatsValue(_messages.Message):
+    r"""Debugging statistics from the execution of the query. Note that the
+    debugging stats are subject to change as Firestore evolves. It could
+    include: { "indexes_entries_scanned": "1000", "documents_scanned": "20",
+    "billing_details" : { "documents_billable": "20",
+    "index_entries_billable": "1000", "min_query_cost": "0" } }
+
+    Messages:
+      AdditionalProperty: An additional property for a DebugStatsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DebugStatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  debugStats = _messages.MessageField('DebugStatsValue', 1)
+  executionDuration = _messages.StringField(2)
+  readOperations = _messages.IntegerField(3)
+  resultsReturned = _messages.IntegerField(4)
+
+
+class ExplainMetrics(_messages.Message):
+  r"""Explain metrics for the query.
+
+  Fields:
+    executionStats: Aggregated stats from the execution of the query. Only
+      present when ExplainOptions.analyze is set to true.
+    planSummary: Planning phase information for the query.
+  """
+
+  executionStats = _messages.MessageField('ExecutionStats', 1)
+  planSummary = _messages.MessageField('PlanSummary', 2)
+
+
+class ExplainOptions(_messages.Message):
+  r"""Explain options for the query.
+
+  Fields:
+    analyze: Optional. Whether to execute this query. When false (the
+      default), the query will be planned, returning only metrics from the
+      planning stages. When true, the query will be planned and executed,
+      returning the full query results along with both planning and execution
+      stage metrics.
+  """
+
+  analyze = _messages.BooleanField(1)
+
+
 class Filter(_messages.Message):
   r"""A holder for any type of filter.
 
@@ -1734,12 +1817,18 @@ class LookupRequest(_messages.Message):
       '(default)' is not allowed; please use empty string '' to refer the
       default database.
     keys: Required. Keys of entities to look up.
+    propertyMask: The properties to return. Defaults to returning all
+      properties. If this field is set and an entity has a property not
+      referenced in the mask, it will be absent from
+      LookupResponse.found.entity.properties. The entity's key is always
+      returned.
     readOptions: The options for this lookup request.
   """
 
   databaseId = _messages.StringField(1)
   keys = _messages.MessageField('Key', 2, repeated=True)
-  readOptions = _messages.MessageField('ReadOptions', 3)
+  propertyMask = _messages.MessageField('PropertyMask', 3)
+  readOptions = _messages.MessageField('ReadOptions', 4)
 
 
 class LookupResponse(_messages.Message):
@@ -1779,6 +1868,12 @@ class Mutation(_messages.Message):
       exist. Must have a complete key path and must not be reserved/read-only.
     insert: The entity to insert. The entity must not already exist. The
       entity key's final path element may be incomplete.
+    propertyMask: The properties to write in this mutation. None of the
+      properties in the mask may have a reserved name, except for `__key__`.
+      This field is ignored for `delete`. If the entity already exists, only
+      properties referenced in the mask are updated, others are left
+      untouched. Properties referenced in the mask but not in the entity are
+      deleted.
     update: The entity to update. The entity must already exist. Must have a
       complete key path.
     updateTime: The update time of the entity that this mutation is being
@@ -1791,9 +1886,10 @@ class Mutation(_messages.Message):
   baseVersion = _messages.IntegerField(1)
   delete = _messages.MessageField('Key', 2)
   insert = _messages.MessageField('Entity', 3)
-  update = _messages.MessageField('Entity', 4)
-  updateTime = _messages.StringField(5)
-  upsert = _messages.MessageField('Entity', 6)
+  propertyMask = _messages.MessageField('PropertyMask', 4)
+  update = _messages.MessageField('Entity', 5)
+  updateTime = _messages.StringField(6)
+  upsert = _messages.MessageField('Entity', 7)
 
 
 class MutationResult(_messages.Message):
@@ -1875,6 +1971,46 @@ class PathElement(_messages.Message):
   name = _messages.StringField(3)
 
 
+class PlanSummary(_messages.Message):
+  r"""Planning phase information for the query.
+
+  Messages:
+    IndexesUsedValueListEntry: A IndexesUsedValueListEntry object.
+
+  Fields:
+    indexesUsed: The indexes selected for the query. For example: [
+      {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+      {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"} ]
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexesUsedValueListEntry(_messages.Message):
+    r"""A IndexesUsedValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IndexesUsedValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexesUsedValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  indexesUsed = _messages.MessageField('IndexesUsedValueListEntry', 1, repeated=True)
+
+
 class Projection(_messages.Message):
   r"""A representation of a property in a projection.
 
@@ -1940,6 +2076,22 @@ class PropertyFilter(_messages.Message):
   op = _messages.EnumField('OpValueValuesEnum', 1)
   property = _messages.MessageField('PropertyReference', 2)
   value = _messages.MessageField('Value', 3)
+
+
+class PropertyMask(_messages.Message):
+  r"""The set of arbitrarily nested property paths used to restrict an
+  operation to only a subset of properties in an entity.
+
+  Fields:
+    paths: The paths to the properties covered by this mask. A path is a list
+      of property names separated by dots (`.`), for example `foo.bar` means
+      the property `bar` inside the entity property `foo` inside the entity
+      associated with this path. If a property name contains a dot `.` or a
+      backslash `\`, then that name must be escaped. A path must not be empty,
+      and may not reference a value inside an array value.
+  """
+
+  paths = _messages.StringField(1, repeated=True)
 
 
 class PropertyOrder(_messages.Message):
@@ -2214,6 +2366,9 @@ class RunAggregationQueryRequest(_messages.Message):
     databaseId: The ID of the database against which to make the request.
       '(default)' is not allowed; please use empty string '' to refer the
       default database.
+    explainOptions: Optional. Explain options for the query. If set,
+      additional query statistics will be returned. If not, only query results
+      will be returned.
     gqlQuery: The GQL query to run. This query must be an aggregation query.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
@@ -2223,9 +2378,10 @@ class RunAggregationQueryRequest(_messages.Message):
 
   aggregationQuery = _messages.MessageField('AggregationQuery', 1)
   databaseId = _messages.StringField(2)
-  gqlQuery = _messages.MessageField('GqlQuery', 3)
-  partitionId = _messages.MessageField('PartitionId', 4)
-  readOptions = _messages.MessageField('ReadOptions', 5)
+  explainOptions = _messages.MessageField('ExplainOptions', 3)
+  gqlQuery = _messages.MessageField('GqlQuery', 4)
+  partitionId = _messages.MessageField('PartitionId', 5)
+  readOptions = _messages.MessageField('ReadOptions', 6)
 
 
 class RunAggregationQueryResponse(_messages.Message):
@@ -2233,6 +2389,9 @@ class RunAggregationQueryResponse(_messages.Message):
 
   Fields:
     batch: A batch of aggregation results. Always present.
+    explainMetrics: Query explain metrics. This is only present when the
+      RunAggregationQueryRequest.explain_options is provided, and it is sent
+      only once with the last response in the stream.
     query: The parsed form of the `GqlQuery` from the request, if it was set.
     transaction: The identifier of the transaction that was started as part of
       this RunAggregationQuery request. Set only when
@@ -2241,8 +2400,9 @@ class RunAggregationQueryResponse(_messages.Message):
   """
 
   batch = _messages.MessageField('AggregationResultBatch', 1)
-  query = _messages.MessageField('AggregationQuery', 2)
-  transaction = _messages.BytesField(3)
+  explainMetrics = _messages.MessageField('ExplainMetrics', 2)
+  query = _messages.MessageField('AggregationQuery', 3)
+  transaction = _messages.BytesField(4)
 
 
 class RunQueryRequest(_messages.Message):
@@ -2252,20 +2412,27 @@ class RunQueryRequest(_messages.Message):
     databaseId: The ID of the database against which to make the request.
       '(default)' is not allowed; please use empty string '' to refer the
       default database.
+    explainOptions: Optional. Explain options for the query. If set,
+      additional query statistics will be returned. If not, only query results
+      will be returned.
     gqlQuery: The GQL query to run. This query must be a non-aggregation
       query.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
       ID is normalized with the standard default context partition ID.
+    propertyMask: The properties to return. This field must not be set for a
+      projection query. See LookupRequest.property_mask.
     query: The query to run.
     readOptions: The options for this query.
   """
 
   databaseId = _messages.StringField(1)
-  gqlQuery = _messages.MessageField('GqlQuery', 2)
-  partitionId = _messages.MessageField('PartitionId', 3)
-  query = _messages.MessageField('Query', 4)
-  readOptions = _messages.MessageField('ReadOptions', 5)
+  explainOptions = _messages.MessageField('ExplainOptions', 2)
+  gqlQuery = _messages.MessageField('GqlQuery', 3)
+  partitionId = _messages.MessageField('PartitionId', 4)
+  propertyMask = _messages.MessageField('PropertyMask', 5)
+  query = _messages.MessageField('Query', 6)
+  readOptions = _messages.MessageField('ReadOptions', 7)
 
 
 class RunQueryResponse(_messages.Message):
@@ -2273,6 +2440,9 @@ class RunQueryResponse(_messages.Message):
 
   Fields:
     batch: A batch of query results (always present).
+    explainMetrics: Query explain metrics. This is only present when the
+      RunQueryRequest.explain_options is provided, and it is sent only once
+      with the last response in the stream.
     query: The parsed form of the `GqlQuery` from the request, if it was set.
     transaction: The identifier of the transaction that was started as part of
       this RunQuery request. Set only when ReadOptions.new_transaction was set
@@ -2280,8 +2450,9 @@ class RunQueryResponse(_messages.Message):
   """
 
   batch = _messages.MessageField('QueryResultBatch', 1)
-  query = _messages.MessageField('Query', 2)
-  transaction = _messages.BytesField(3)
+  explainMetrics = _messages.MessageField('ExplainMetrics', 2)
+  query = _messages.MessageField('Query', 3)
+  transaction = _messages.BytesField(4)
 
 
 class StandardQueryParameters(_messages.Message):

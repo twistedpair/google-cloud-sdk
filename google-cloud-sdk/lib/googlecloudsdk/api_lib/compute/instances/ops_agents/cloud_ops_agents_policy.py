@@ -18,9 +18,9 @@ import dataclasses
 import enum
 import json
 import sys
-from typing import Any, Mapping
+from typing import Any, Mapping, Optional
+
 from apitools.base.py import encoding
-from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.generated_clients.apis.osconfig.v1 import osconfig_v1_messages
 
 
@@ -57,23 +57,25 @@ class OpsAgentsPolicy(object):
       INSTALLED = 'installed'
       REMOVED = 'removed'
 
-    version: str = 'latest'
+    version: Optional[str]
     package_state: PackageState = PackageState.INSTALLED
 
     def __repr__(self) -> str:
-      """Generate JSON with camel-cased keys."""
+      """JSON single line format string."""
+      return self.ToJson()
 
-      key_camel_cased_dict = {
-          resource_property.ConvertToCamelCase(key): value
-          for key, value in self.__dict__.items()
-      }
-      return json.dumps(key_camel_cased_dict, default=str, sort_keys=True)
+    def ToJson(self) -> str:
+      """JSON single line format string."""
+
+      return json.dumps(
+          self.__dict__, separators=(',', ':'), default=str, sort_keys=True
+      )
 
   agents_rule: AgentsRule
   instance_filter: osconfig_v1_messages.OSPolicyAssignmentInstanceFilter
 
   def __repr__(self) -> str:
-    """JSON format string representation for testing."""
+    """JSON single line format string representation for testing."""
 
     policy_map = {
         'agents_rule': self.agents_rule,
@@ -83,8 +85,7 @@ class OpsAgentsPolicy(object):
     return json.dumps(
         policy_map,
         default=lambda o: o.__dict__,
-        indent=2,
-        separators=(',', ': '),
+        separators=(',', ':'),
         sort_keys=True,
     )
 
@@ -101,11 +102,19 @@ def CreateAgentsRule(
   Returns:
     An OpsAgentPolicy.AgentsRule object.
   """
-  if not agents_rule or agents_rule.keys() != {'version', 'package_state'}:
-    raise ValueError('agents_rule must contain version and package_state')
+  if not agents_rule or 'package_state' not in agents_rule:
+    raise ValueError('agents_rule must contain package_state')
+  if (
+      agents_rule['package_state'] == 'installed'
+      and 'version' not in agents_rule
+  ):
+    raise ValueError('version is required when installing agents')
+  extra_keys = set(agents_rule) - {'package_state', 'version'}
+  if extra_keys:
+    raise ValueError('unknown keys in agents_rule: %s' % extra_keys)
 
   return OpsAgentsPolicy.AgentsRule(
-      version=agents_rule['version'],
+      version=agents_rule.get('version'),
       package_state=OpsAgentsPolicy.AgentsRule.PackageState(
           agents_rule['package_state']
       ),

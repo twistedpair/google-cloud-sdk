@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1alpha ManualApprovals export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  requireApproverJustification:
+    description: |-
+      Do the approvers need to provide a justification for their actions?
+    type: boolean
+  steps:
+    description: |-
+      List of approval steps in this workflow. These steps would be followed in
+      the specified order sequentially. Only 1 step is supported for now.
+    type: array
+    items:
+      $ref: Step.yaml

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.iam import iam_util
 
 
@@ -70,16 +71,16 @@ def _MakeReplicationMessage(messages, policy, locations, keys):
 class Client(object):
   """Base class for all clients."""
 
-  def __init__(self, client=None, messages=None):
-    self.client = client or GetClient()
+  def __init__(self, client=None, messages=None, api_version=None):
+    self.client = client or GetClient(version=api_version)
     self.messages = messages or self.client.MESSAGES_MODULE
 
 
 class Locations(Client):
   """High-level client for locations."""
 
-  def __init__(self, client=None, messages=None):
-    super(Locations, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, api_version=None):
+    super(Locations, self).__init__(client, messages, api_version)
     self.service = self.client.projects_locations
 
   def Get(self, location_ref):
@@ -104,7 +105,8 @@ class Locations(Client):
 class Secrets(Client):
   """High-level client for secrets."""
 
-  def __init__(self, client=None, messages=None):
+  def __init__(self, client=None, messages=None, api_version=None):
+    client = client or GetClient(version=api_version)
     super(Secrets, self).__init__(client, messages)
     self.service = self.client.projects_secrets
 
@@ -123,6 +125,7 @@ class Secrets(Client):
       annotations=None,
       regional_kms_key_name=None,
       version_destroy_ttl=None,
+      secret_location=None,
   ):
     """Create a secret."""
     keys = keys or []
@@ -152,10 +155,9 @@ class Secrets(Client):
 
       # For regional requests, replication should not be there.
       replication = None
-
     return self.service.Create(
         self.messages.SecretmanagerProjectsSecretsCreateRequest(
-            parent=secret_ref.Parent().RelativeName(),
+            parent=GetParentRelativeNameForSecret(secret_ref, secret_location),
             secretId=secret_ref.Name(),
             secret=self.messages.Secret(
                 labels=labels,
@@ -171,23 +173,26 @@ class Secrets(Client):
         )
     )
 
-  def Delete(self, secret_ref, etag=None):
+  def Delete(self, secret_ref, etag=None, secret_location=None):
     """Delete a secret."""
     return self.service.Delete(
         self.messages.SecretmanagerProjectsSecretsDeleteRequest(
-            etag=etag,
-            name=secret_ref.RelativeName()))
+            etag=etag, name=GetRelativeName(secret_ref, secret_location)
+        )
+    )
 
-  def Get(self, secret_ref):
+  def Get(self, secret_ref, secret_location=None):
     """Get the secret with the given name."""
     return self.service.Get(
         self.messages.SecretmanagerProjectsSecretsGetRequest(
-            name=secret_ref.RelativeName()))
+            name=GetRelativeName(secret_ref, secret_location)
+        )
+    )
 
-  def GetOrNone(self, secret_ref):
+  def GetOrNone(self, secret_ref, secret_location=None):
     """Attempt to get the secret, returning None if the secret does not exist."""
     try:
-      return self.Get(secret_ref=secret_ref)
+      return self.Get(secret_ref=secret_ref, secret_location=secret_location)
     except apitools_exceptions.HttpNotFoundError:
       return None
 
@@ -203,13 +208,16 @@ class Secrets(Client):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def AddVersion(self, secret_ref, data, data_crc32c):
+  def AddVersion(self, secret_ref, data, data_crc32c, secret_location=None):
     """Adds a new version of an existing secret."""
     request = self.messages.SecretmanagerProjectsSecretsAddVersionRequest(
-        parent=secret_ref.RelativeName(),
+        parent=GetRelativeName(secret_ref, secret_location),
         addSecretVersionRequest=self.messages.AddSecretVersionRequest(
             payload=self.messages.SecretPayload(
-                data=data, dataCrc32c=data_crc32c)))
+                data=data, dataCrc32c=data_crc32c
+            )
+        ),
+    )
     return self.service.AddVersion(request)
 
   def Update(
@@ -226,6 +234,8 @@ class Secrets(Client):
       next_rotation_time=None,
       rotation_period=None,
       version_destroy_ttl=None,
+      secret_location=None,
+      regional_kms_key_name=None,
   ):
     """Update a secret."""
 
@@ -249,9 +259,15 @@ class Secrets(Client):
     if annotations:
       for annotation_pair in annotations:
         new_annotations.additionalProperties.append(annotation_pair)
+
+    customer_managed_encryption = None
+    if regional_kms_key_name:
+      customer_managed_encryption = self.messages.CustomerManagedEncryption(
+          kmsKeyName=regional_kms_key_name
+      )
     return self.service.Patch(
         self.messages.SecretmanagerProjectsSecretsPatchRequest(
-            name=secret_ref.RelativeName(),
+            name=GetRelativeName(secret_ref, secret_location),
             secret=self.messages.Secret(
                 labels=labels,
                 versionAliases=new_version_aliases,
@@ -262,6 +278,7 @@ class Secrets(Client):
                 topics=topics_message_list,
                 rotation=rotation,
                 versionDestroyTtl=version_destroy_ttl,
+                customerManagedEncryption=customer_managed_encryption,
             ),
             updateMask=_FormatUpdateMask(update_mask),
         )
@@ -280,50 +297,50 @@ class Secrets(Client):
         )
     )
 
-  def GetIamPolicy(self, resource_ref):
+  def GetIamPolicy(self, resource_ref, secret_location=None):
     """Get iam policy request.
 
     Args:
       resource_ref: Multitype resource (regional or global secret resource)
+      secret_location: location of the secret, None if global
 
     Returns:
       Operation response
     """
     # check the secret type
-    is_regional = resource_ref.concept_type.name == 'regional secret'
-    secret_ref = resource_ref.result
-    if is_regional:
+    if secret_location:
       self.service = self.client.projects_locations_secrets
       req = self.messages.SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest(
-          resource=secret_ref.RelativeName(),
+          resource=GetRelativeName(resource_ref, secret_location),
           options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION,
       )
     else:
       self.service = self.client.projects_secrets
       req = self.messages.SecretmanagerProjectsSecretsGetIamPolicyRequest(
           options_requestedPolicyVersion=iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION,
-          resource=secret_ref.RelativeName(),
+          resource=GetRelativeName(resource_ref, secret_location),
       )
     return self.service.GetIamPolicy(req)
 
-  def SetIamPolicy(self, resource_ref, policy, update_mask=None):
+  def SetIamPolicy(
+      self, secret_ref, policy, update_mask=None, secret_location=None
+  ):
     """Set iam policy request.
 
     Args:
-      resource_ref: Multitype resource (regional or global secret resource)
+      secret_ref: secret resource
       policy: policy to be set
       update_mask: update mask
+      secret_location: location of the secret, None if global
 
     Returns:
       Operation response
     """
     # check the secret type
-    is_regional = resource_ref.concept_type.name == 'regional secret'
-    secret_ref = resource_ref.result
-    if is_regional:
+    if secret_location:
       self.service = self.client.projects_locations_secrets
       req = self.messages.SecretmanagerProjectsLocationsSecretsSetIamPolicyRequest(
-          resource=secret_ref.RelativeName(),
+          resource=GetRelativeName(secret_ref, secret_location),
           setIamPolicyRequest=self.messages.SetIamPolicyRequest(
               policy=policy, updateMask=update_mask
           ),
@@ -331,16 +348,18 @@ class Secrets(Client):
     else:
       self.service = self.client.projects_secrets
       req = self.messages.SecretmanagerProjectsSecretsSetIamPolicyRequest(
-          resource=secret_ref.RelativeName(),
+          resource=GetRelativeName(secret_ref, secret_location),
           setIamPolicyRequest=self.messages.SetIamPolicyRequest(
               policy=policy, updateMask=update_mask
           ),
       )
     return self.service.SetIamPolicy(req)
 
-  def AddIamPolicyBinding(self, resorce_ref, member, role, condition=None):
+  def AddIamPolicyBinding(
+      self, resorce_ref, member, role, condition=None, secret_location=None
+  ):
     """Add iam policy binding request."""
-    policy = self.GetIamPolicy(resorce_ref)
+    policy = self.GetIamPolicy(resorce_ref, secret_location=secret_location)
     policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
     iam_util.AddBindingToIamPolicyWithCondition(
         self.messages.Binding,
@@ -350,11 +369,15 @@ class Secrets(Client):
         role,
         condition=condition,
     )
-    return self.SetIamPolicy(resorce_ref, policy)
+    return self.SetIamPolicy(
+        resorce_ref, policy, secret_location=secret_location
+    )
 
-  def RemoveIamPolicyBinding(self, resorce_ref, member, role, condition=None):
+  def RemoveIamPolicyBinding(
+      self, resorce_ref, member, role, condition=None, secret_location=None
+  ):
     """Remove iam policy binding request."""
-    policy = self.GetIamPolicy(resorce_ref)
+    policy = self.GetIamPolicy(resorce_ref, secret_location=secret_location)
     policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
     iam_util.RemoveBindingFromIamPolicyWithCondition(
         policy,
@@ -362,79 +385,99 @@ class Secrets(Client):
         role,
         condition=condition,
     )
-    return self.SetIamPolicy(resorce_ref, policy)
+    return self.SetIamPolicy(
+        resorce_ref, policy, secret_location=secret_location
+    )
 
 
 class SecretsLatest(Client):
   """High-level client for latest secrets."""
 
-  def __init__(self, client=None, messages=None):
-    super(SecretsLatest, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, api_versions=None):
+    super(SecretsLatest, self).__init__(client, messages, api_versions)
     self.service = self.client.projects_secrets_latest
 
-  def Access(self, secret_ref):
+  def Access(self, secret_ref, secret_location=None):
     """Access the latest version of a secret."""
     return self.service.Access(
         self.messages.SecretmanagerProjectsSecretsLatestAccessRequest(
-            name=secret_ref.RelativeName()))
+            name=GetRelativeName(secret_ref, secret_location)
+        )
+    )
 
 
 class Versions(Client):
   """High-level client for secret versions."""
 
-  def __init__(self, client=None, messages=None):
-    super(Versions, self).__init__(client, messages)
+  def __init__(self, client=None, messages=None, api_version=None):
+    super(Versions, self).__init__(client, messages, api_version)
     self.service = self.client.projects_secrets_versions
 
-  def Access(self, version_ref):
+  def Access(self, version_ref, secret_location=None):
     """Access a specific version of a secret."""
     return self.service.Access(
         self.messages.SecretmanagerProjectsSecretsVersionsAccessRequest(
-            name=version_ref.RelativeName()))
+            name=GetRelativeName(version_ref, secret_location)
+        )
+    )
 
-  def Destroy(self, version_ref, etag=None):
+  def Destroy(self, version_ref, etag=None, secret_location=None):
     """Destroy a secret version."""
     destroy_secret_version_request = self.messages.DestroySecretVersionRequest(
         etag=etag)
     return self.service.Destroy(
         self.messages.SecretmanagerProjectsSecretsVersionsDestroyRequest(
             destroySecretVersionRequest=destroy_secret_version_request,
-            name=version_ref.RelativeName()))
+            name=GetRelativeName(version_ref, secret_location),
+        )
+    )
 
-  def Disable(self, version_ref, etag=None):
+  def Disable(self, version_ref, etag=None, secret_location=None):
     """Disable a secret version."""
     disable_secret_version_request = self.messages.DisableSecretVersionRequest(
         etag=etag)
     return self.service.Disable(
         self.messages.SecretmanagerProjectsSecretsVersionsDisableRequest(
             disableSecretVersionRequest=disable_secret_version_request,
-            name=version_ref.RelativeName()))
+            name=GetRelativeName(version_ref, secret_location),
+        )
+    )
 
-  def Enable(self, version_ref, etag=None):
+  def Enable(self, version_ref, etag=None, secret_location=None):
     """Enable a secret version."""
     enable_secret_version_request = self.messages.EnableSecretVersionRequest(
         etag=etag)
     return self.service.Enable(
         self.messages.SecretmanagerProjectsSecretsVersionsEnableRequest(
             enableSecretVersionRequest=enable_secret_version_request,
-            name=version_ref.RelativeName()))
+            name=GetRelativeName(version_ref, secret_location),
+        )
+    )
 
-  def Get(self, version_ref):
+  def Get(self, version_ref, secret_location=None):
     """Get the secret version with the given name."""
     return self.service.Get(
         self.messages.SecretmanagerProjectsSecretsVersionsGetRequest(
-            name=version_ref.RelativeName()))
+            name=GetRelativeName(version_ref, secret_location)
+        )
+    )
 
-  def List(self, secret_ref, limit):
+  def List(self, secret_ref, limit, secret_location=None):
     """List secrets and return an array."""
     request = self.messages.SecretmanagerProjectsSecretsVersionsListRequest(
-        parent=secret_ref.RelativeName(), pageSize=limit)
+        parent=GetRelativeName(secret_ref, secret_location), pageSize=limit
+    )
     return self.service.List(request)
 
-  def ListWithPager(self, secret_ref, limit, request_filter=None):
+  def ListWithPager(
+      self, secret_ref, limit, request_filter=None, secret_location=None
+  ):
     """List secrets returning a pager object."""
     request = self.messages.SecretmanagerProjectsSecretsVersionsListRequest(
-        parent=secret_ref.RelativeName(), filter=request_filter, pageSize=0)
+        parent=GetRelativeName(secret_ref, secret_location),
+        filter=request_filter,
+        pageSize=0,
+    )
     return list_pager.YieldFromList(
         service=self.service,
         request=request,
@@ -442,3 +485,26 @@ class Versions(Client):
         limit=limit,
         batch_size=0,
         batch_size_attribute='pageSize')
+
+
+def GetApiFromTrack(track):
+  """Returns api version based on the track."""
+  if track == base.ReleaseTrack.BETA:
+    return 'v1beta2'
+  elif track == base.ReleaseTrack.GA:
+    return 'v1'
+
+
+def GetRelativeName(resource, location):
+  if location:
+    resource_uri = resource.RelativeName()
+    split = resource_uri.split('/')
+    return '/'.join(split[:2]) + f'/locations/{location}/' + '/'.join(split[2:])
+  return resource.RelativeName()
+
+
+def GetParentRelativeNameForSecret(resource, location):
+  if location:
+    resource_uri = resource.Parent().RelativeName()
+    return resource_uri + f'/locations/{location}'
+  return resource.Parent().RelativeName()

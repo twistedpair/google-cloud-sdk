@@ -79,6 +79,14 @@ class Backup(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
+    backupSchedules: Output only. List of backup schedule URIs that are
+      associated with creating this backup. This is only applicable for
+      scheduled backups, and is empty for on-demand backups. To optimize for
+      storage, whenever possible, multiple schedules are collapsed together to
+      create one backup. In such cases, this field captures the list of all
+      backup schedule URIs that are associated with creating this backup. If
+      collapsing is not done, then this field captures the single backup
+      schedule URI associated with creating this backup.
     createTime: Output only. The time the CreateBackup request is received. If
       the request does not specify `version_time`, the `version_time` of the
       backup will be equivalent to the `create_time`.
@@ -162,19 +170,20 @@ class Backup(_messages.Message):
     CREATING = 1
     READY = 2
 
-  createTime = _messages.StringField(1)
-  database = _messages.StringField(2)
-  databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 3)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 4)
-  encryptionInformation = _messages.MessageField('EncryptionInfo', 5, repeated=True)
-  expireTime = _messages.StringField(6)
-  maxExpireTime = _messages.StringField(7)
-  name = _messages.StringField(8)
-  referencingBackups = _messages.StringField(9, repeated=True)
-  referencingDatabases = _messages.StringField(10, repeated=True)
-  sizeBytes = _messages.IntegerField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  versionTime = _messages.StringField(13)
+  backupSchedules = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  database = _messages.StringField(3)
+  databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 4)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 5)
+  encryptionInformation = _messages.MessageField('EncryptionInfo', 6, repeated=True)
+  expireTime = _messages.StringField(7)
+  maxExpireTime = _messages.StringField(8)
+  name = _messages.StringField(9)
+  referencingBackups = _messages.StringField(10, repeated=True)
+  referencingDatabases = _messages.StringField(11, repeated=True)
+  sizeBytes = _messages.IntegerField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  versionTime = _messages.StringField(14)
 
 
 class BackupInfo(_messages.Message):
@@ -466,11 +475,11 @@ class CommitRequest(_messages.Message):
   r"""The request for Commit.
 
   Fields:
-    maxCommitDelay: Optional. The amount of latency this request is willing to
-      incur in order to improve throughput. If this field is not set, Spanner
-      assumes requests are relatively latency sensitive and automatically
-      determines an appropriate delay time. You can specify a batching delay
-      value between 0 and 500 ms.
+    maxCommitDelay: Optional. The amount of latency this request is configured
+      to incur in order to improve throughput. If this field is not set,
+      Spanner assumes requests are relatively latency sensitive and
+      automatically determines an appropriate delay time. You can specify a
+      commit delay value between 0 and 500 ms.
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
     requestOptions: Common options for this request.

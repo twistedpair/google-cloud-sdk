@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://testing.googleapis.com/v1/'
-DOCS_URL = 'https://developers.google.com/cloud-test-lab/'
+DOCS_URL = 'https://firebase.google.com/docs/test-lab/'
 
 
 class Collections(enum.Enum):

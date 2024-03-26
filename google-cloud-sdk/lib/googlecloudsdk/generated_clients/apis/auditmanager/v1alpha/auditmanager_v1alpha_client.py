@@ -39,6 +39,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders_locations_auditReports_controlReports_findings = self.FoldersLocationsAuditReportsControlReportsFindingsService(self)
     self.folders_locations_auditReports_controlReports = self.FoldersLocationsAuditReportsControlReportsService(self)
     self.folders_locations_auditReports = self.FoldersLocationsAuditReportsService(self)
     self.folders_locations_auditScopeReports = self.FoldersLocationsAuditScopeReportsService(self)
@@ -55,6 +56,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
     self.organizations_locations_standards = self.OrganizationsLocationsStandardsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.projects_locations_auditReports_controlReports_findings = self.ProjectsLocationsAuditReportsControlReportsFindingsService(self)
     self.projects_locations_auditReports_controlReports = self.ProjectsLocationsAuditReportsControlReportsService(self)
     self.projects_locations_auditReports = self.ProjectsLocationsAuditReportsService(self)
     self.projects_locations_auditScopeReports = self.ProjectsLocationsAuditScopeReportsService(self)
@@ -66,6 +68,70 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
     self.projects_locations_standards = self.ProjectsLocationsStandardsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersLocationsAuditReportsControlReportsFindingsService(base_api.BaseApiService):
+    """Service class for the folders_locations_auditReports_controlReports_findings resource."""
+
+    _NAME = 'folders_locations_auditReports_controlReports_findings'
+
+    def __init__(self, client):
+      super(AuditmanagerV1alpha.FoldersLocationsAuditReportsControlReportsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the finding from a control report.
+
+      Args:
+        request: (AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/auditReports/{auditReportsId}/controlReports/{controlReportsId}/findings/{findingsId}',
+        http_method='GET',
+        method_id='auditmanager.folders.locations.auditReports.controlReports.findings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsGetRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Fetches all findings under the control report.
+
+      Args:
+        request: (AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/auditReports/{auditReportsId}/controlReports/{controlReportsId}/findings',
+        http_method='GET',
+        method_id='auditmanager.folders.locations.auditReports.controlReports.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/findings',
+        request_field='',
+        request_type_name='AuditmanagerFoldersLocationsAuditReportsControlReportsFindingsListRequest',
+        response_type_name='ListFindingsResponse',
+        supports_download=False,
+    )
 
   class FoldersLocationsAuditReportsControlReportsService(base_api.BaseApiService):
     """Service class for the folders_locations_auditReports_controlReports resource."""
@@ -631,6 +697,70 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
       super(AuditmanagerV1alpha.OrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsAuditReportsControlReportsFindingsService(base_api.BaseApiService):
+    """Service class for the projects_locations_auditReports_controlReports_findings resource."""
+
+    _NAME = 'projects_locations_auditReports_controlReports_findings'
+
+    def __init__(self, client):
+      super(AuditmanagerV1alpha.ProjectsLocationsAuditReportsControlReportsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the finding from a control report.
+
+      Args:
+        request: (AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/auditReports/{auditReportsId}/controlReports/{controlReportsId}/findings/{findingsId}',
+        http_method='GET',
+        method_id='auditmanager.projects.locations.auditReports.controlReports.findings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsGetRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Fetches all findings under the control report.
+
+      Args:
+        request: (AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/auditReports/{auditReportsId}/controlReports/{controlReportsId}/findings',
+        http_method='GET',
+        method_id='auditmanager.projects.locations.auditReports.controlReports.findings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/findings',
+        request_field='',
+        request_type_name='AuditmanagerProjectsLocationsAuditReportsControlReportsFindingsListRequest',
+        response_type_name='ListFindingsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsAuditReportsControlReportsService(base_api.BaseApiService):
     """Service class for the projects_locations_auditReports_controlReports resource."""

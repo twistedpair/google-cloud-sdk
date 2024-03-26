@@ -654,12 +654,17 @@ class EncryptionConfig(_messages.Message):
 
   Fields:
     kmsKey: The fully qualified customer provided Cloud KMS key name to use
-      for customer data encryption, in the following form:projects/{project_nu
-      mber}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/{crypto_
-      key_id}.
+      for customer data encryption, in the following format:projects/{project_
+      number}/locations/{location_id}/keyRings/{key_ring_id}/cryptoKeys/{crypt
+      o_key_id}.
+    kmsKeys: Optional. The list of fully qualified customer provided Cloud KMS
+      key names for the multi-regional service. Each key must be in the
+      following format:projects/{project_number}/locations/{location_id}/keyRi
+      ngs/{key_ring_id}/cryptoKeys/{crypto_key_id}.
   """
 
   kmsKey = _messages.StringField(1)
+  kmsKeys = _messages.StringField(2, repeated=True)
 
 
 class ErrorDetails(_messages.Message):

@@ -339,21 +339,30 @@ def AllAccountsWithUniverseDomains():
     # from the static provider again.
     if account not in accounts_dict:
       creds = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
-      accounts_dict[account] = (
+      accounts_dict[account] = [
           creds.universe_domain
           if hasattr(creds, 'universe_domain')
           else properties.VALUES.core.universe_domain.default
-      )
+      ]
 
   # Now we have all the accounts, sort them and mark the current active account.
   accounts_dict = dict(sorted(accounts_dict.items()))
   active_account = properties.VALUES.core.account.Get()
-  result = [
-      AcctInfoWithUniverseDomain(
-          account, account == active_account, accounts_dict[account]
+  universe_domain_property = properties.VALUES.core.universe_domain.Get()
+  result = []
+  for account in accounts_dict:
+    for universe_domain in accounts_dict[account]:
+      is_active = (
+          account == active_account
+          and universe_domain_property == universe_domain
       )
-      for account in accounts_dict
-  ]
+      result.append(
+          AcctInfoWithUniverseDomain(
+              account,
+              is_active,
+              universe_domain,
+          )
+      )
 
   return result
 

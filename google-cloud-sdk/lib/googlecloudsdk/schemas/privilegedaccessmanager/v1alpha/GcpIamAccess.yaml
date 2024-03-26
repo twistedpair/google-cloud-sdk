@@ -1,0 +1,42 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1alpha GcpIamAccess export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- resource
+- resourceType
+- roleBindings
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  resource:
+    description: Name of the resource.
+    type: string
+  resourceType:
+    description: The type of this resource.
+    type: string
+  roleBindings:
+    description: Role bindings to be created on successful grant.
+    type: array
+    items:
+      $ref: RoleBinding.yaml

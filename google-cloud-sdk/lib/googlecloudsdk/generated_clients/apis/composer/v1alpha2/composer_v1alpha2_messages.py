@@ -1173,7 +1173,7 @@ class DataRetentionConfig(_messages.Message):
       retention mechanism is enabled this value must be a positive integer
       otherwise, value should be set to 0.
     airflowMetadataRetentionConfig: Optional. The retention policy for airflow
-      metadata database. Details: go/composer-database-retention-2
+      metadata database.
     taskLogsRetentionConfig: Optional. The configuration settings for task
       logs retention
     taskLogsRetentionDays: Optional. The number of days to retain task logs in

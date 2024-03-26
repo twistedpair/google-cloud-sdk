@@ -604,7 +604,7 @@ class IapV1(base_api.BaseApiClient):
     )
 
     def ValidateAttributeExpression(self, request, global_params=None):
-      r"""Validates a given CEL expression conforms to IAP restrictions.
+      r"""Validates that a given CEL expression conforms to IAP restrictions.
 
       Args:
         request: (IapValidateAttributeExpressionRequest) input message

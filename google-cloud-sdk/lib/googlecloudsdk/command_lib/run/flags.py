@@ -387,6 +387,26 @@ def AddNoTrafficFlag(parser):
   )
 
 
+def AddNoPromoteFlag(parser):
+  """Adds flag to deploy a worker revision with/without instance assignment."""
+  parser.add_argument(
+      '--no-promote',
+      default=False,
+      action='store_true',
+      help=(
+          'True to avoid assign instances to the worker revision being'
+          ' deployed. Setting this flag assigns any instances assigned to the'
+          ' LATEST revision to the specific revision bound to LATEST before the'
+          ' deployment. The effect is that the revision being deployed will not'
+          ' receive instance split.\n\nAfter a deployment with this flag the'
+          ' LATEST revision will not receive instances on future deployments.'
+          ' To restore assinging instances to the LATEST revision by default,'
+          ' run the `gcloud run workers update-instance-split` command with'
+          ' `--to-latest`.'
+      ),
+  )
+
+
 def AddCpuThrottlingFlag(parser):
   """Adds flag for deploying a Cloud Run service with CPU throttling."""
   parser.add_argument(
@@ -2837,6 +2857,8 @@ def GetWorkerConfigurationChanges(
   changes.extend(_GetWorkerScalingChanges(args))
   if _HasInstanceSplitChanges(args):
     changes.append(_GetInstanceSplitChanges(args))
+  if 'no_promote' in args and args.no_promote:
+    changes.append(config_changes.NoPromoteChange())
   if 'update_annotations' in args and args.update_annotations:
     for key, value in args.update_annotations.items():
       changes.append(config_changes.SetAnnotationChange(key, value))

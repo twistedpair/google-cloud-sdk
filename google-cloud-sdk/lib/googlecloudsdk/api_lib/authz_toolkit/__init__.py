@@ -24,6 +24,7 @@ from googlecloudsdk.core import resources
 
 API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha',
+    base.ReleaseTrack.GA: 'v1',
 }
 API_NAME = 'authztoolkit'
 

@@ -312,3 +312,10 @@ def LogOutOperationCommandForAsyncResponse(response, args):
     log.out.Print(
         GetOperationDescribeCommandFormat(args).format(response.name))
   return response
+
+
+# TODO(b/261183749): Remove modify_request_hook when singleton resource args
+# are enabled in declarative.
+def UpdateProjectFeatureSettingsResource(unused_ref, unused_args, req):
+  req.name = req.name + '/projectFeatureSettings'
+  return req

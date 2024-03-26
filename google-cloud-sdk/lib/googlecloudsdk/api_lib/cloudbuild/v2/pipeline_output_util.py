@@ -73,9 +73,11 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
       pr["status"]["startTime"] = internal.pop("startTime")
     if "completionTime" in internal:
       pr["status"]["completionTime"] = internal.pop("completionTime")
+    # We set the resolvedPipelineSpec as status in Tekton
     if "resolvedPipelineSpec" in internal:
       rps = internal.pop("resolvedPipelineSpec")
       pr["status"]["pipelineSpec"] = _TransformPipelineSpec(rps)
+    # PipelineRunResults
     if "results" in internal:
       pr["status"]["results"] = _TransformPipelineRunResults(
           internal.pop("results")
@@ -124,17 +126,21 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
       tr["status"]["startTime"] = internal.pop("startTime")
     if "completionTime" in internal:
       tr["status"]["completionTime"] = internal.pop("completionTime")
+    # We set the resolvedTaskSpec as the Status field in Tekton
     if "resolvedTaskSpec" in internal:
       rts = internal.pop("resolvedTaskSpec")
       tr["status"]["taskSpec"] = _TransformTaskSpec(rts)
+    # StepState
     if "steps" in internal:
       tr["status"]["steps"] = internal.pop("steps")
+    # TaskRunResults
     if "results" in internal:
       tr["status"]["results"] = _TransformTaskRunResults(
           internal.pop("results")
       )
+    # SidecarState
     if "sidecars" in internal:
-      tr["status"]["sidecar"] = internal.pop("sidecars")
+      tr["status"]["sidecars"] = internal.pop("sidecars")
     return tr
 
 
@@ -185,7 +191,7 @@ def _TransformTaskSpec(ts):
   if "results" in ts:
     task_spec["results"] = _TransformTaskResults(ts.pop("results"))
   if "sidecars" in ts:
-    task_spec["sidecar"] = ts.pop("sidecars")
+    task_spec["sidecars"] = ts.pop("sidecars")
   if "workspaces" in ts:
     task_spec["workspaces"] = ts.pop("workspaces")
   return task_spec
@@ -267,8 +273,8 @@ def _TransformTaskRunResults(rs):
     result = {}
     if "name" in r:
       result["name"] = r.pop("name")
-    if "value" in r:
-      result["value"] = _TransformResultValue(r.pop("value"))
+    if "resultValue" in r:
+      result["value"] = _TransformResultValue(r.pop("resultValue"))
     results.append(result)
   return results
 

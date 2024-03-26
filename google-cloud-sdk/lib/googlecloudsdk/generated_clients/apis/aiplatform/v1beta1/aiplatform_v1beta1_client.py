@@ -4228,6 +4228,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Query(self, request, global_params=None):
+      r"""Queries an extension with a default controller.
+
+      Args:
+        request: (AiplatformProjectsLocationsExtensionsQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1QueryExtensionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Query.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/extensions/{extensionsId}:query',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.extensions.query',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:query',
+        request_field='googleCloudAiplatformV1beta1QueryExtensionRequest',
+        request_type_name='AiplatformProjectsLocationsExtensionsQueryRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1QueryExtensionResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFeatureGroupsFeaturesOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_featureGroups_features_operations resource."""
 
@@ -5186,6 +5213,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleIamV1SetIamPolicyRequest',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def StreamingFetchFeatureValues(self, request, global_params=None):
+      r"""Bidirectional streaming RPC to fetch feature values under a FeatureView. Requests may not have a one-to-one mapping to responses and responses may be returned out-of-order to reduce latency.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsStreamingFetchFeatureValuesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1StreamingFetchFeatureValuesResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamingFetchFeatureValues')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamingFetchFeatureValues.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}:streamingFetchFeatureValues',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.streamingFetchFeatureValues',
+        ordered_params=['featureView'],
+        path_params=['featureView'],
+        query_params=[],
+        relative_path='v1beta1/{+featureView}:streamingFetchFeatureValues',
+        request_field='googleCloudAiplatformV1beta1StreamingFetchFeatureValuesRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsStreamingFetchFeatureValuesRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1StreamingFetchFeatureValuesResponse',
         supports_download=False,
     )
 
@@ -16458,6 +16512,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def GetCacheConfig(self, request, global_params=None):
+      r"""Gets a GenAI cache config.
+
+      Args:
+        request: (AiplatformProjectsGetCacheConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CacheConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetCacheConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetCacheConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/cacheConfig',
+        http_method='GET',
+        method_id='aiplatform.projects.getCacheConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsGetCacheConfigRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CacheConfig',
+        supports_download=False,
+    )
+
+    def UpdateCacheConfig(self, request, global_params=None):
+      r"""Updates a cache config.
+
+      Args:
+        request: (GoogleCloudAiplatformV1beta1CacheConfig) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateCacheConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateCacheConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/cacheConfig',
+        http_method='PATCH',
+        method_id='aiplatform.projects.updateCacheConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1beta1CacheConfig',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class PublishersModelsService(base_api.BaseApiService):
     """Service class for the publishers_models resource."""

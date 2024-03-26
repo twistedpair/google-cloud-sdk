@@ -132,7 +132,7 @@ integrations:
       bindings:
       - target: cloudsql/cloudsql-1
   service_type: backing
-  visible: false
+  visible: true
   eta_in_min: 15
   cta: >-
     To connect to the CloudSQL instance utilize the environment variables DB_NAME, INSTANCE_HOST,
@@ -251,7 +251,7 @@ integrations:
     resources:
     - id: vertex-genai/gemini
   service_type: backing
-  visible: false
+  visible: true
   eta_in_min: 5
   cta: |-
     The Vertex AI User (roles/aiplatform.user) IAM role has been added to the service acount of your service.

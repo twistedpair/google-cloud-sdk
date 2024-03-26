@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Shared request hooks for the Dataplex surface."""
+
+from __future__ import annotations
+
 from typing import Any
 from googlecloudsdk.generated_clients.apis.dataplex.v1 import dataplex_v1_messages as messages
 

@@ -860,8 +860,13 @@ def _GetAddress(client_class, address_override_func, mtls_enabled):
   return address
 
 
-def MakeTransport(client_class, credentials, address_override_func,
-                  mtls_enabled=False):
+def MakeTransport(
+    client_class,
+    credentials,
+    address_override_func,
+    mtls_enabled=False,
+    attempt_direct_path=False,
+):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class()
   address = _GetAddress(client_class, address_override_func, mtls_enabled)
@@ -870,7 +875,9 @@ def MakeTransport(client_class, credentials, address_override_func,
       host=address,
       credentials=credentials,
       ssl_credentials=GetSSLCredentials(mtls_enabled),
-      options=MakeChannelOptions())
+      options=MakeChannelOptions(),
+      attempt_direct_path=attempt_direct_path,
+  )
 
   interceptors = []
   interceptors.append(RequestReasonInterceptor())
@@ -890,8 +897,13 @@ def MakeTransport(client_class, credentials, address_override_func,
       host=address)
 
 
-def MakeAsyncTransport(client_class, credentials, address_override_func,
-                       mtls_enabled=False):
+def MakeAsyncTransport(
+    client_class,
+    credentials,
+    address_override_func,
+    mtls_enabled=False,
+    attempt_direct_path=False,
+):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class('grpc_asyncio')
   address = _GetAddress(client_class, address_override_func, mtls_enabled)
@@ -908,7 +920,9 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
       credentials=credentials,
       ssl_credentials=GetSSLCredentials(mtls_enabled),
       options=MakeChannelOptions(),
-      interceptors=interceptors)
+      attempt_direct_path=attempt_direct_path,
+      interceptors=interceptors,
+  )
 
   return transport_class(
       channel=channel,

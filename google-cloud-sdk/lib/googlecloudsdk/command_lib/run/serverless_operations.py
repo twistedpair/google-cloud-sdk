@@ -1004,6 +1004,9 @@ class ServerlessOperations(object):
     """
     return self.ListRevisions(namespace_ref, worker_name, limit, page_size)
 
+  def DeleteWorkerRevision(self, revision_ref):
+    return self.DeleteRevision(revision_ref)
+
   def ListExecutions(
       self, namespace_ref, label_selector='', limit=None, page_size=100
   ):

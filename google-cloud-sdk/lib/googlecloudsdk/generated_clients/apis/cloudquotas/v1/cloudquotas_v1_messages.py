@@ -823,15 +823,13 @@ class QuotaPreference(_messages.Message):
       "provider" is a service specific dimension.
 
   Fields:
-    contactEmail: Input only. An email address that can be used for quota
-      related communication between the Google Cloud and the user in case the
-      Google Cloud needs further information to make a decision on whether the
-      user preferred quota can be granted. The email address is optional for
-      decrease quota preferences. In another word, QuotaConfig.preferred_value
-      is smaller than the QuotaDetails.reset_value. It is required for
-      increase quota preferences. The Google account for the email address
-      must have quota update permission for the project, folder or
-      organization this quota preference is for.
+    contactEmail: Input only. An email address that can be used to contact the
+      the user, in case Google Cloud needs more information to make a decision
+      before additional quota can be granted. When requesting a quota
+      increase, the email address is required. When requesting a quota
+      decrease, the email address is optional. For example, the email address
+      is optional when the `QuotaConfig.preferred_value` is smaller than the
+      `QuotaDetails.reset_value`.
     createTime: Output only. Create time stamp
     dimensions: Immutable. The dimensions that this quota preference applies
       to. The key of the map entry is the name of a dimension, such as

@@ -4190,6 +4190,33 @@ class NetworksecurityProjectsLocationsPartnerSSEGatewaysListRequest(_messages.Me
   parent = _messages.StringField(5, required=True)
 
 
+class NetworksecurityProjectsLocationsPartnerSSEGatewaysPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEGatewaysPatchRequest object.
+
+  Fields:
+    name: Immutable. name of resource
+    partnerSSEGateway: A PartnerSSEGateway resource to be passed as the
+      request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: The list of fields to update
+  """
+
+  name = _messages.StringField(1, required=True)
+  partnerSSEGateway = _messages.MessageField('PartnerSSEGateway', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsPartnerSSERealmsCreateRequest object.
 
@@ -4899,34 +4926,6 @@ class NetworksecurityProjectsLocationsTlsInspectionPoliciesPatchRequest(_message
   updateMask = _messages.StringField(3)
 
 
-class NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest
-  object.
-
-  Fields:
-    name: Immutable. name of resource
-    partnerSSEGateway: A PartnerSSEGateway resource to be passed as the
-      request body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: The list of fields to update
-  """
-
-  name = _messages.StringField(1, required=True)
-  partnerSSEGateway = _messages.MessageField('PartnerSSEGateway', 2)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class NetworksecurityProjectsLocationsUrlListsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsUrlListsCreateRequest object.
 
@@ -5242,9 +5241,19 @@ class PartnerSSEGateway(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    country: Output only. ISO-3166 alpha 2 country code used for localization.
+      Filled from the customer SSEGateway, and only for PartnerSSEGateways
+      associated with Symantec today.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
+    maxBandwidthMbps: Output only. Not an enforced cap. Filled from the
+      customer SSEGateway, and only for PartnerSSEGateways associated with
+      Symantec today.
     name: Immutable. name of resource
+    partnerSseEnvironment: Output only. [Output Only] Full URI of the partner
+      environment this PartnerSSEGateway is connected to. Filled from the
+      customer SSEGateway, and only for PartnerSSEGateways associated with
+      Symantec today.
     partnerSseRealm: Output only. [Output Only] name of PartnerSSERealm owning
       the PartnerSSEGateway
     partnerSubnetRange: Optional. Subnet range of the partner-owned subnet.
@@ -5254,6 +5263,13 @@ class PartnerSSEGateway(_messages.Message):
     sseBgpIps: Output only. [Output Only] IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
       with this PartnerSSEGateway
+    sseNetwork: Output only. [Output Only] The ID of the network in
+      sse_project containing sse_subnet_range. This is also known as the
+      partnerFacingNetwork. Only filled for PartnerSSEGateways associated with
+      Symantec today.
+    sseProject: Output only. [Output Only] The project owning
+      partner_facing_network. Only filled for PartnerSSEGateways associated
+      with Symantec today.
     sseSubnetRange: Optional. Subnet range where SSE GW instances are
       deployed. Default value is set to "100.88.255.0/24". The CIDR suffix
       should be less than or equal to 24.
@@ -5267,6 +5283,9 @@ class PartnerSSEGateway(_messages.Message):
       partner traffic should be routed to. This field is deprecated. Use
       sse_target_ip instead.
     symantecOptions: Optional. Required iff Partner is Symantec.
+    timezone: Output only. tzinfo identifier used for localization. Filled
+      from the customer SSEGateway, and only for PartnerSSEGateways associated
+      with Symantec today.
     updateTime: Output only. [Output only] Update time stamp
     vni: Optional. Virtual Network Identifier to use in NCG. Today the only
       partner that depends on it is Symantec.
@@ -5296,22 +5315,28 @@ class PartnerSSEGateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  partnerSseRealm = _messages.StringField(4)
-  partnerSubnetRange = _messages.StringField(5)
-  partnerVpcSubnetRange = _messages.StringField(6)
-  sseBgpAsn = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(8, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(9)
-  sseSubnetRange = _messages.StringField(10)
-  sseTargetIp = _messages.StringField(11)
-  sseVpcSubnetRange = _messages.StringField(12)
-  sseVpcTargetIp = _messages.StringField(13)
-  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 14)
-  updateTime = _messages.StringField(15)
-  vni = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  country = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  maxBandwidthMbps = _messages.IntegerField(4)
+  name = _messages.StringField(5)
+  partnerSseEnvironment = _messages.StringField(6)
+  partnerSseRealm = _messages.StringField(7)
+  partnerSubnetRange = _messages.StringField(8)
+  partnerVpcSubnetRange = _messages.StringField(9)
+  sseBgpAsn = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(11, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(12)
+  sseNetwork = _messages.StringField(13)
+  sseProject = _messages.StringField(14)
+  sseSubnetRange = _messages.StringField(15)
+  sseTargetIp = _messages.StringField(16)
+  sseVpcSubnetRange = _messages.StringField(17)
+  sseVpcTargetIp = _messages.StringField(18)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 19)
+  timezone = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  vni = _messages.IntegerField(22, variant=_messages.Variant.INT32)
 
 
 class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
@@ -5320,12 +5345,18 @@ class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
   Fields:
     symantecLocationUuid: Output only. UUID of the Symantec Location created
       on the customer's behalf.
+    symantecSite: Output only. Symantec data center identifier that this SSEGW
+      will connect to. Filled from the customer SSEGateway, and only for
+      PartnerSSEGateways associated with Symantec today.
     symantecSiteTargetHost: Optional. Target for the NCGs to send traffic to
-      on the Symantec side. Only supports DNS hostname today.
+      on the Symantec side. Only supports DNS hostname today. Generally this
+      is the hostname associated with symantec_site, but eventually we will
+      support hardcoding a hostname or IP.
   """
 
   symantecLocationUuid = _messages.StringField(1)
-  symantecSiteTargetHost = _messages.StringField(2)
+  symantecSite = _messages.StringField(2)
+  symantecSiteTargetHost = _messages.StringField(3)
 
 
 class PartnerSSERealm(_messages.Message):
@@ -5481,7 +5512,7 @@ class SSEGateway(_messages.Message):
     name: Immutable. name of resource
     sseProject: Output only. [Output Only] The project owning
       app_facing_network and untrusted_facing_network
-    sseRealm: Required. name of SSERealm owning the SSEGateway
+    sseRealm: Required. ID of SSERealm owning the SSEGateway
     symantecOptions: Optional. Required iff the associated realm is of type
       SYMANTEC_CLOUD_SWG.
     timezone: Optional. tzinfo identifier used for localization. Only used for

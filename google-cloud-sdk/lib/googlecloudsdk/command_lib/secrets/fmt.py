@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import parser_arguments
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.secrets import args as secrets_args
+
 
 _LOCATION_TABLE = """
 table(
@@ -91,48 +94,76 @@ def _TransformLocations(r):
     return ','.join(locations)
   return 'ERROR'
 
+
 _SECRET_TRANSFORMS = {
     'policy_transform': _TransformReplicationPolicy,
-    'locations_transform': _TransformLocations
+    'locations_transform': _TransformLocations,
 }
 
 
-def UseLocationTable(parser):
+def UseLocationTable(
+    parser: parser_arguments.ArgumentInterceptor, api_version: str = 'v1'
+):
+  """Table format to display locations.
+
+  Args:
+    parser: arguments interceptor
+    api_version: api version to be included in resource name
+  """
   parser.display_info.AddFormat(_LOCATION_TABLE)
   parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseLocationRef(r.name).SelfLink())
+      secrets_args.MakeGetUriFunc(
+          'secretmanager.projects.locations', api_version=api_version
+      )
+  )
 
 
-def UseSecretTable(parser):
+def UseSecretTable(parser: parser_arguments.ArgumentInterceptor):
+  """Table format to display secrets.
+
+  Args:
+    parser: arguments interceptor
+  """
   parser.display_info.AddFormat(_SECRET_TABLE)
   parser.display_info.AddTransforms(_SECRET_TRANSFORMS)
   parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseSecretRef(r.name).SelfLink())
-
-
-def SecretTableUsingArgument(args):
-  """Table format to display global secrets.
-
-  Args:
-    args: arguments interceptor
-  """
-  args.GetDisplayInfo().AddFormat(_SECRET_TABLE)
-  args.GetDisplayInfo().AddTransforms(_SECRET_TRANSFORMS)
-  args.GetDisplayInfo().AddUriFunc(
       lambda r: secrets_args.ParseSecretRef(r.name).SelfLink()
   )
 
 
-def RegionalSecretTableUsingArgument(args):
+def SecretTableUsingArgument(
+    args: parser_extensions.Namespace, api_version: str = 'v1'
+):
+  """Table format to display global secrets.
+
+  Args:
+    args: arguments interceptor
+    api_version: api version to be included in resource name
+  """
+  args.GetDisplayInfo().AddFormat(_SECRET_TABLE)
+  args.GetDisplayInfo().AddTransforms(_SECRET_TRANSFORMS)
+  args.GetDisplayInfo().AddUriFunc(
+      secrets_args.MakeGetUriFunc(
+          'secretmanager.projects.secrets', api_version=api_version
+      )
+  )
+
+
+def RegionalSecretTableUsingArgument(
+    args: parser_extensions.Namespace, api_version: str = 'v1'
+):
   """Table format to display regional secrets.
 
   Args:
     args: arguments interceptor
+    api_version: api version to be included in resource name
   """
   args.GetDisplayInfo().AddFormat(_REGIONAL_SECRET_TABLE)
   args.GetDisplayInfo().AddTransforms(_SECRET_TRANSFORMS)
   args.GetDisplayInfo().AddUriFunc(
-      lambda r: secrets_args.ParseRegionalSecretRef(r.name).SelfLink()
+      secrets_args.MakeGetUriFunc(
+          'secretmanager.projects.locations.secrets', api_version=api_version
+      )
   )
 
 
@@ -140,8 +171,72 @@ def UseSecretData(parser):
   parser.display_info.AddFormat(_SECRET_DATA)
 
 
-def UseVersionTable(parser):
+def UseVersionTable(
+    parser: parser_arguments.ArgumentInterceptor, api_version='v1'
+):
+  """Table format to display secret versions.
+
+  Args:
+    parser: arguments interceptor
+    api_version: api version to be included in resource name
+  """
   parser.display_info.AddFormat(_VERSION_TABLE)
   parser.display_info.AddTransforms(_VERSION_STATE_TRANSFORMS)
-  parser.display_info.AddUriFunc(
-      lambda r: secrets_args.ParseVersionRef(r.name).SelfLink())
+  secrets_args.MakeGetUriFunc(
+      'secretmanager.projects.locations.secrets.versions',
+      api_version=api_version,
+  )
+
+
+def UseRegionalVersionTable(
+    parser: parser_arguments.ArgumentInterceptor, api_version='v1'
+):
+  """Table format to display regional secret versions.
+
+  Args:
+    parser: arguments interceptor
+    api_version: api version to be included in resource name
+  """
+  parser.display_info.AddFormat(_VERSION_TABLE)
+  parser.display_info.AddTransforms(_VERSION_STATE_TRANSFORMS)
+  secrets_args.MakeGetUriFunc(
+      'secretmanager.projects.locations.secrets.versions',
+      api_version=api_version,
+  )
+
+
+def SecretVersionTableUsingArgument(
+    args: parser_extensions.Namespace, api_version: str = 'v1'
+):
+  """Table format to display global secret version.
+
+  Args:
+    args: arguments interceptor
+    api_version: api version to be included in resource name
+  """
+  args.GetDisplayInfo().AddFormat(_VERSION_TABLE)
+  args.GetDisplayInfo().AddTransforms(_VERSION_STATE_TRANSFORMS)
+  args.GetDisplayInfo().AddUriFunc(
+      secrets_args.MakeGetUriFunc(
+          'secretmanager.projects.secrets.versions', api_version=api_version
+      )
+  )
+
+
+def RegionalSecretVersionTableUsingArgument(
+    args: parser_extensions.Namespace, api_version: str = 'v1'
+):
+  """Table format to display regional secrets.
+
+  Args:
+    args: arguments interceptor
+    api_version: api version to be included in resource name
+  """
+  args.GetDisplayInfo().AddFormat(_VERSION_TABLE)
+  args.GetDisplayInfo().AddTransforms(_VERSION_STATE_TRANSFORMS)
+  args.GetDisplayInfo().AddUriFunc(
+      secrets_args.MakeGetUriFunc(
+          'secretmanager.projects.locations.secrets.versions',
+          api_version=api_version,
+      )
+  )

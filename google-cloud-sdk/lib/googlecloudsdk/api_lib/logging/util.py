@@ -479,12 +479,12 @@ def SetIamPolicy(view, policy):
   """Set IAM policy, for a given view."""
   messages = GetMessages()
 
-  set_iam_policy_request = (
+  policy_request = (
       messages.LoggingProjectsLocationsBucketsViewsSetIamPolicyRequest(
           resource=view,
           setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
       )
   )
   return GetClient().projects_locations_buckets_views.SetIamPolicy(
-      set_iam_policy_request
+      policy_request
   )

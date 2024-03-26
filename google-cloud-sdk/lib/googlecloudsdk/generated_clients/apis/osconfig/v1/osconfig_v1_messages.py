@@ -1962,6 +1962,36 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OsconfigProjectsLocationsGlobalGetProjectFeatureSettingsRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalGetProjectFeatureSettingsRequest
+  object.
+
+  Fields:
+    name: Required. Name of the billing config.
+      "projects//locations/global/projectFeatureSettings"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsGlobalUpdateProjectFeatureSettingsRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsGlobalUpdateProjectFeatureSettingsRequest
+  object.
+
+  Fields:
+    name: Required. Immutable. Name of the config, e.g.
+      projects/12345/locations/global/projectFeatureSettings
+    projectFeatureSettings: A ProjectFeatureSettings resource to be passed as
+      the request body.
+    updateMask: Optional. Field mask that controls which fields of the
+      ProjectFeatureSettings should be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  projectFeatureSettings = _messages.MessageField('ProjectFeatureSettings', 2)
+  updateMask = _messages.StringField(3)
+
+
 class OsconfigProjectsLocationsInstancesInventoriesGetRequest(_messages.Message):
   r"""A OsconfigProjectsLocationsInstancesInventoriesGetRequest object.
 
@@ -2888,6 +2918,36 @@ class PatchRollout(_messages.Message):
 
 class PausePatchDeploymentRequest(_messages.Message):
   r"""A request message for pausing a patch deployment."""
+
+
+class ProjectFeatureSettings(_messages.Message):
+  r"""ProjectFeatureSettings represents the features settings for the VM
+  Manager. The project features settings can be set for a project.
+
+  Enums:
+    PatchAndConfigFeatureSetValueValuesEnum: Currently set
+      PatchAndConfigFeatureSet for name.
+
+  Fields:
+    name: Required. Immutable. Name of the config, e.g.
+      projects/12345/locations/global/projectFeatureSettings
+    patchAndConfigFeatureSet: Currently set PatchAndConfigFeatureSet for name.
+  """
+
+  class PatchAndConfigFeatureSetValueValuesEnum(_messages.Enum):
+    r"""Currently set PatchAndConfigFeatureSet for name.
+
+    Values:
+      PATCH_AND_CONFIG_FEATURE_SET_UNSPECIFIED: Not specified placeholder
+      OSCONFIG_B: Basic feature set. Enables only the basic set of features.
+      OSCONFIG_C: Classic set of functionality.
+    """
+    PATCH_AND_CONFIG_FEATURE_SET_UNSPECIFIED = 0
+    OSCONFIG_B = 1
+    OSCONFIG_C = 2
+
+  name = _messages.StringField(1)
+  patchAndConfigFeatureSet = _messages.EnumField('PatchAndConfigFeatureSetValueValuesEnum', 2)
 
 
 class RecurringSchedule(_messages.Message):

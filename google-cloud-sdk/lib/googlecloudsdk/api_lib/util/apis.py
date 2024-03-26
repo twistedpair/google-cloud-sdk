@@ -313,10 +313,13 @@ def GetGapicClientClass(api_name,
       api_name, api_version, transport_choice=transport)
 
 
-def GetGapicClientInstance(api_name,
-                           api_version,
-                           address_override_func=None,
-                           transport=apis_util.GapicTransport.GRPC):
+def GetGapicClientInstance(
+    api_name,
+    api_version,
+    address_override_func=None,
+    transport=apis_util.GapicTransport.GRPC,
+    attempt_direct_path=False,
+):
   """Returns an instance of the GAPIC API client specified in the args.
 
   Args:
@@ -325,6 +328,8 @@ def GetGapicClientInstance(api_name,
     address_override_func: function, function to call to override the client
       host. It takes a single argument which is the original host.
     transport: apis_util.GapicTransport, The transport to be used by the client.
+    attempt_direct_path: bool, True if we want to attempt direct path gRPC where
+      possible.
 
   Raises:
     GapicRestUnsupportedError: If transport is REST.
@@ -341,7 +346,9 @@ def GetGapicClientInstance(api_name,
       api_version,
       credentials,
       address_override_func=address_override_func,
-      transport_choice=transport)
+      transport_choice=transport,
+      attempt_direct_path=attempt_direct_path,
+  )
 
 
 def GetEffectiveApiEndpoint(api_name, api_version, client_class=None):

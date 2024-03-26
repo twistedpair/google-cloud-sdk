@@ -105,6 +105,21 @@ class AuditTrail(_messages.Message):
   accessRemoveTime = _messages.StringField(2)
 
 
+class CheckOnboardingStatusResponse(_messages.Message):
+  r"""Response message for `CheckOnboardingStatus` method.
+
+  Fields:
+    findings: List of issues that are preventing PAM from functioning for this
+      resource and need to be fixed to complete onboarding. Not all issues
+      might be detected and reported.
+    serviceAccount: The service account that PAM will use to act on this
+      resource.
+  """
+
+  findings = _messages.MessageField('Finding', 1, repeated=True)
+  serviceAccount = _messages.StringField(2)
+
+
 class Denied(_messages.Message):
   r"""An event representing that the Grant was denied.
 
@@ -151,6 +166,13 @@ class Entitlement(_messages.Message):
     createTime: Output only. Create time stamp.
     eligibleUsers: Optional. Who can create Grants using this Entitlement.
       This list should contain at most one entry.
+    etag: `etag` is used for optimistic concurrency control as a way to
+      prevent simultaneous updates to the same Entitlement. An`etag` is
+      returned in the response to `GetEntitlement` and the caller should put
+      the etag in the request to `UpdateEntitlement` so that their change is
+      applied on the same version. If this field is omitted or if there is a
+      mismatch while updating an entitlement, then the server will reject the
+      request.
     maxRequestDuration: Required. The maximum amount of time for which access
       would be granted for a request. A requester can choose to ask for access
       for less than this duration but never more.
@@ -191,12 +213,13 @@ class Entitlement(_messages.Message):
   approvalWorkflow = _messages.MessageField('ApprovalWorkflow', 2)
   createTime = _messages.StringField(3)
   eligibleUsers = _messages.MessageField('AccessControlEntry', 4, repeated=True)
-  maxRequestDuration = _messages.StringField(5)
-  name = _messages.StringField(6)
-  privilegedAccess = _messages.MessageField('PrivilegedAccess', 7)
-  requesterJustificationConfig = _messages.MessageField('RequesterJustificationConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  etag = _messages.StringField(5)
+  maxRequestDuration = _messages.StringField(6)
+  name = _messages.StringField(7)
+  privilegedAccess = _messages.MessageField('PrivilegedAccess', 8)
+  requesterJustificationConfig = _messages.MessageField('RequesterJustificationConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class Event(_messages.Message):
@@ -243,6 +266,18 @@ class ExternallyModified(_messages.Message):
   modified externally.
   """
 
+
+
+class Finding(_messages.Message):
+  r"""Finding represents an issue which prevents PAM from functioning properly
+  for this resource.
+
+  Fields:
+    iamAccessDenied: PAM's service account is being denied access by Cloud
+      IAM.
+  """
+
+  iamAccessDenied = _messages.MessageField('IAMAccessDenied', 1)
 
 
 class GcpIamAccess(_messages.Message):
@@ -350,6 +385,19 @@ class Grant(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
   timeline = _messages.MessageField('Timeline', 10)
   updateTime = _messages.StringField(11)
+
+
+class IAMAccessDenied(_messages.Message):
+  r"""PAM's service account is being denied access by Cloud IAM. This can be
+  fixed by granting a role that contains the missing permissions to the
+  service account or exempting it from deny policies if they are blocking the
+  access.
+
+  Fields:
+    missingPermissions: List of permissions that are being denied.
+  """
+
+  missingPermissions = _messages.StringField(1, repeated=True)
 
 
 class Justification(_messages.Message):
@@ -677,6 +725,21 @@ class PrivilegedAccess(_messages.Message):
   gcpIamAccess = _messages.MessageField('GcpIamAccess', 1)
 
 
+class PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsCheckOnboardingStatusRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the onboarding status should be
+      checked. Should be in one of the following formats: *
+      "projects/{project-number|project-id}/locations/{region}" *
+      "folders/{folder-number}/locations/{region}" *
+      "organizations/{organization-number}/locations/{region}"
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest
   object.
@@ -917,6 +980,34 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest(_messages.M
   parent = _messages.StringField(5, required=True)
 
 
+class PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest
+  object.
+
+  Fields:
+    entitlement: A Entitlement resource to be passed as the request body.
+    name: Identifier. Name of the Entitlement. Possible formats: *
+      "organizations/{organization-
+      number}/locations/{region}/entitlements/{entitlement-id}" *
+      "folders/{folder-number}/locations/{region}/entitlements/{entitlement-
+      id}" * "projects/{project-id|project-
+      number}/locations/{region}/entitlements/{entitlement-id}"
+    updateMask: Required. The list of fields to update. A field will be
+      overwritten if, and only if, it is in the mask. Any immutable fields set
+      in the mask will be ignored by the server. Repeated fields and map
+      fields are only allowed in the last position of a `paths` string and
+      will overwrite the existing values. Hence an update to a repeated field
+      or a map should contain the entire list of values. The fields specified
+      in the update_mask are relative to the resource and not to the request.
+      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
+      value of '*' for this field refers to full replacement of the resource.
+  """
+
+  entitlement = _messages.MessageField('Entitlement', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class PrivilegedaccessmanagerFoldersLocationsEntitlementsSearchRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerFoldersLocationsEntitlementsSearchRequest
   object.
@@ -1040,6 +1131,22 @@ class PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest(_messages.Messa
 
   parent = _messages.StringField(1, required=True)
   setupServiceRequest = _messages.MessageField('SetupServiceRequest', 2)
+
+
+class PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest(_messages.Message):
+  r"""A
+  PrivilegedaccessmanagerOrganizationsLocationsCheckOnboardingStatusRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the onboarding status should be
+      checked. Should be in one of the following formats: *
+      "projects/{project-number|project-id}/locations/{region}" *
+      "folders/{folder-number}/locations/{region}" *
+      "organizations/{organization-number}/locations/{region}"
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsCreateRequest(_messages.Message):
@@ -1289,6 +1396,34 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest(_mess
   parent = _messages.StringField(5, required=True)
 
 
+class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest
+  object.
+
+  Fields:
+    entitlement: A Entitlement resource to be passed as the request body.
+    name: Identifier. Name of the Entitlement. Possible formats: *
+      "organizations/{organization-
+      number}/locations/{region}/entitlements/{entitlement-id}" *
+      "folders/{folder-number}/locations/{region}/entitlements/{entitlement-
+      id}" * "projects/{project-id|project-
+      number}/locations/{region}/entitlements/{entitlement-id}"
+    updateMask: Required. The list of fields to update. A field will be
+      overwritten if, and only if, it is in the mask. Any immutable fields set
+      in the mask will be ignored by the server. Repeated fields and map
+      fields are only allowed in the last position of a `paths` string and
+      will overwrite the existing values. Hence an update to a repeated field
+      or a map should contain the entire list of values. The fields specified
+      in the update_mask are relative to the resource and not to the request.
+      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
+      value of '*' for this field refers to full replacement of the resource.
+  """
+
+  entitlement = _messages.MessageField('Entitlement', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsSearchRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerOrganizationsLocationsEntitlementsSearchRequest
   object.
@@ -1416,6 +1551,21 @@ class PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest(_messages
 
   parent = _messages.StringField(1, required=True)
   setupServiceRequest = _messages.MessageField('SetupServiceRequest', 2)
+
+
+class PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerProjectsLocationsCheckOnboardingStatusRequest
+  object.
+
+  Fields:
+    parent: Required. The resource for which the onboarding status should be
+      checked. Should be in one of the following formats: *
+      "projects/{project-number|project-id}/locations/{region}" *
+      "folders/{folder-number}/locations/{region}" *
+      "organizations/{organization-number}/locations/{region}"
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class PrivilegedaccessmanagerProjectsLocationsEntitlementsCreateRequest(_messages.Message):
@@ -1662,6 +1812,34 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsListRequest(_messages.
   parent = _messages.StringField(5, required=True)
 
 
+class PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest
+  object.
+
+  Fields:
+    entitlement: A Entitlement resource to be passed as the request body.
+    name: Identifier. Name of the Entitlement. Possible formats: *
+      "organizations/{organization-
+      number}/locations/{region}/entitlements/{entitlement-id}" *
+      "folders/{folder-number}/locations/{region}/entitlements/{entitlement-
+      id}" * "projects/{project-id|project-
+      number}/locations/{region}/entitlements/{entitlement-id}"
+    updateMask: Required. The list of fields to update. A field will be
+      overwritten if, and only if, it is in the mask. Any immutable fields set
+      in the mask will be ignored by the server. Repeated fields and map
+      fields are only allowed in the last position of a `paths` string and
+      will overwrite the existing values. Hence an update to a repeated field
+      or a map should contain the entire list of values. The fields specified
+      in the update_mask are relative to the resource and not to the request.
+      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
+      value of '*' for this field refers to full replacement of the resource.
+  """
+
+  entitlement = _messages.MessageField('Entitlement', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class PrivilegedaccessmanagerProjectsLocationsEntitlementsSearchRequest(_messages.Message):
   r"""A PrivilegedaccessmanagerProjectsLocationsEntitlementsSearchRequest
   object.
@@ -1843,11 +2021,19 @@ class RoleBinding(_messages.Message):
   r"""IAM Role bindings that will be created on a successful grant.
 
   Fields:
+    conditionExpression: Optional. The expression field of the IAM condition
+      to be associated with the role. If specified, a user with an active
+      grant for this entitlement would be able to access the resource only if
+      this condition evaluates to true for their request. This field uses the
+      same CEL format as that of IAM and supports all attributes that IAM
+      supports, except tags. https://cloud.google.com/iam/docs/conditions-
+      overview#attributes.
     role: Required. IAM role to be granted.
       https://cloud.google.com/iam/docs/roles-overview.
   """
 
-  role = _messages.StringField(1)
+  conditionExpression = _messages.StringField(1)
+  role = _messages.StringField(2)
 
 
 class Scheduled(_messages.Message):

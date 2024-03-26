@@ -2483,6 +2483,62 @@ class DestinationTableProperties(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
 
 
+class DifferentialPrivacyPolicy(_messages.Message):
+  r"""Represents privacy policy associated with "differential privacy" method.
+
+  Fields:
+    deltaBudget: Optional. The total delta budget for all queries against the
+      privacy-protected view. Each subscriber query against this view charges
+      the amount of delta that is pre-defined by the contributor through the
+      privacy policy delta_per_query field. If there is sufficient budget,
+      then the subscriber query attempts to complete. It might still fail due
+      to other reasons, in which case the charge is refunded. If there is
+      insufficient budget the query is rejected. There might be multiple
+      charge attempts if a single query references multiple views. In this
+      case there must be sufficient budget for all charges or the query is
+      rejected and charges are refunded in best effort. The budget does not
+      have a refresh policy and can only be updated via ALTER VIEW or
+      circumvented by creating a new view that can be queried with a fresh
+      budget.
+    deltaPerQuery: Optional. The delta value that is used per query. Delta
+      represents the probability that any row will fail to be epsilon
+      differentially private. Indicates the risk associated with exposing
+      aggregate rows in the result of a query.
+    epsilonBudget: Optional. The total epsilon budget for all queries against
+      the privacy-protected view. Each subscriber query against this view
+      charges the amount of epsilon they request in their query. If there is
+      sufficient budget, then the subscriber query attempts to complete. It
+      might still fail due to other reasons, in which case the charge is
+      refunded. If there is insufficient budget the query is rejected. There
+      might be multiple charge attempts if a single query references multiple
+      views. In this case there must be sufficient budget for all charges or
+      the query is rejected and charges are refunded in best effort. The
+      budget does not have a refresh policy and can only be updated via ALTER
+      VIEW or circumvented by creating a new view that can be queried with a
+      fresh budget.
+    maxEpsilonPerQuery: Optional. The maximum epsilon value that a query can
+      consume. If the subscriber specifies epsilon as a parameter in a SELECT
+      query, it must be less than or equal to this value. The epsilon
+      parameter controls the amount of noise that is added to the groups - a
+      higher epsilon means less noise.
+    maxGroupsContributed: Optional. The maximum groups contributed value that
+      is used per query. Represents the maximum number of groups to which each
+      protected entity can contribute. Changing this value does not improve or
+      worsen privacy. The best value for accuracy and utility depends on the
+      query and data.
+    privacyUnitColumn: Optional. The privacy unit column associated with this
+      policy. Differential privacy policies can only have one privacy unit
+      column per data source object (table, view).
+  """
+
+  deltaBudget = _messages.FloatField(1)
+  deltaPerQuery = _messages.FloatField(2)
+  epsilonBudget = _messages.FloatField(3)
+  maxEpsilonPerQuery = _messages.FloatField(4)
+  maxGroupsContributed = _messages.IntegerField(5)
+  privacyUnitColumn = _messages.StringField(6)
+
+
 class DimensionalityReductionMetrics(_messages.Message):
   r"""Model evaluation metrics for dimensionality reduction models.
 
@@ -4928,6 +4984,46 @@ class JobStatus(_messages.Message):
   state = _messages.StringField(3)
 
 
+class JoinRestrictionPolicy(_messages.Message):
+  r"""Represents privacy policy associated with "join restrictions". Join
+  restriction gives data providers the ability to enforce joins on the
+  'join_allowed_columns' when data is queried from a privacy protected view.
+
+  Enums:
+    JoinConditionValueValuesEnum: Optional. Specifies if a join is required or
+      not on queries for the view. Default is JOIN_CONDITION_UNSPECIFIED.
+
+  Fields:
+    joinAllowedColumns: Optional. The only columns that joins are allowed on.
+      This field is must be specified for join_conditions JOIN_ANY and
+      JOIN_ALL and it cannot be set for JOIN_BLOCKED.
+    joinCondition: Optional. Specifies if a join is required or not on queries
+      for the view. Default is JOIN_CONDITION_UNSPECIFIED.
+  """
+
+  class JoinConditionValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies if a join is required or not on queries for the
+    view. Default is JOIN_CONDITION_UNSPECIFIED.
+
+    Values:
+      JOIN_CONDITION_UNSPECIFIED: A join is neither required nor restricted on
+        any column. Default value.
+      JOIN_ANY: A join is required on at least one of the specified columns.
+      JOIN_ALL: A join is required on all specified columns.
+      JOIN_NOT_REQUIRED: A join is not required, but if present it is only
+        permitted on 'join_allowed_columns'
+      JOIN_BLOCKED: Joins are blocked for all queries.
+    """
+    JOIN_CONDITION_UNSPECIFIED = 0
+    JOIN_ANY = 1
+    JOIN_ALL = 2
+    JOIN_NOT_REQUIRED = 3
+    JOIN_BLOCKED = 4
+
+  joinAllowedColumns = _messages.StringField(1, repeated=True)
+  joinCondition = _messages.EnumField('JoinConditionValueValuesEnum', 2)
+
+
 @encoding.MapUnrecognizedFields('additionalProperties')
 class JsonObject(_messages.Message):
   r"""Represents a single JSON object.
@@ -5593,6 +5689,16 @@ class ParquetOptions(_messages.Message):
   enumAsString = _messages.BooleanField(2)
 
 
+class PartitionSkew(_messages.Message):
+  r"""Partition skew detailed information.
+
+  Fields:
+    skewSources: Output only. Source stages which produce skewed data.
+  """
+
+  skewSources = _messages.MessageField('SkewSource', 1, repeated=True)
+
+
 class PartitionedColumn(_messages.Message):
   r"""The partitioning column information.
 
@@ -5741,9 +5847,17 @@ class PrivacyPolicy(_messages.Message):
   Fields:
     aggregationThresholdPolicy: Optional. Policy used for aggregation
       thresholds.
+    differentialPrivacyPolicy: Optional. Policy used for differential privacy.
+    joinRestrictionPolicy: Optional. Join restriction policy is outside of the
+      one of policies, since this policy can be set along with other policies.
+      This policy gives data providers the ability to enforce joins on the
+      'join_allowed_columns' when data is queried from a privacy protected
+      view.
   """
 
   aggregationThresholdPolicy = _messages.MessageField('AggregationThresholdPolicy', 1)
+  differentialPrivacyPolicy = _messages.MessageField('DifferentialPrivacyPolicy', 2)
+  joinRestrictionPolicy = _messages.MessageField('JoinRestrictionPolicy', 3)
 
 
 class ProjectList(_messages.Message):
@@ -6904,6 +7018,16 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkewSource(_messages.Message):
+  r"""Details about source stages which produce skewed data.
+
+  Fields:
+    stageId: Output only. Stage id of the skew source stage.
+  """
+
+  stageId = _messages.IntegerField(1)
+
+
 class SnapshotDefinition(_messages.Message):
   r"""Information about base table and snapshot time of the snapshot.
 
@@ -7110,6 +7234,7 @@ class StagePerformanceStandaloneInsight(_messages.Message):
     highCardinalityJoins: Output only. High cardinality joins in the stage.
     insufficientShuffleQuota: Output only. True if the stage has insufficient
       shuffle quota.
+    partitionSkew: Output only. Partition skew in the stage.
     slotContention: Output only. True if the stage has a slot contention
       issue.
     stageId: Output only. The stage id that the insight mapped to.
@@ -7118,8 +7243,9 @@ class StagePerformanceStandaloneInsight(_messages.Message):
   biEngineReasons = _messages.MessageField('BiEngineReason', 1, repeated=True)
   highCardinalityJoins = _messages.MessageField('HighCardinalityJoin', 2, repeated=True)
   insufficientShuffleQuota = _messages.BooleanField(3)
-  slotContention = _messages.BooleanField(4)
-  stageId = _messages.IntegerField(5)
+  partitionSkew = _messages.MessageField('PartitionSkew', 4)
+  slotContention = _messages.BooleanField(5)
+  stageId = _messages.IntegerField(6)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -9268,7 +9394,7 @@ class UndeleteDatasetRequest(_messages.Message):
 
   Fields:
     deletionTime: Optional. The exact time when the dataset was deleted. If
-      not specified, it will undelete the most recently deleted version.
+      not specified, the most recently deleted version is undeleted.
   """
 
   deletionTime = _messages.StringField(1)

@@ -5,6 +5,134 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 470.0.0 (2024-03-26)
+
+### Breaking Changes
+
+*   **(App Hub)** Fixed issue where `gcloud apphub discovered-services lookup --location=LOCATION --uri=URI` was formatting result as list to stdout.
+*   **(App Hub)** Fixed issue where `gcloud apphub discovered-workloads lookup  --location=LOCATION --uri=URI` was formatting result as list to stdout.
+
+
+### AlloyDB
+
+* Updated `gcloud beta alloydb clusters create-secondary` to support continuous
+backup configuration.
+
+### App Engine
+
+* Updated the Python `devappserver` to version 1.9.111.
+
+### Artifact Registry
+
+*   Fixed issue where `gcloud artifacts docker upgrade migrate` returned wrong IAM policy bindings.
+
+### BigQuery
+
+* Added `use_google_auth` to use the Google Auth libraries for authentication.
+
+### Cloud Bigtable
+
+*    Promoted `gcloud bigtable authorized-views create` to GA.
+*    Promoted `gcloud bigtable authorized-views describe` to GA.
+*    Promoted `gcloud bigtable authorized-views list` to GA.
+*    Promoted `gcloud bigtable authorized-views update` to GA.
+*    Promoted `gcloud bigtable authorized-views delete` to GA.
+*    Promoted `gcloud bigtable authorized-views get-iam-policy` to GA.
+*    Promoted `gcloud bigtable authorized-views set-iam-policy` to GA.
+*    Promoted `gcloud bigtable authorized-views add-iam-policy-binding` to GA.
+*    Promoted `gcloud bigtable authorized-views remove-iam-policy-binding` to GA.
+
+### Cloud Build
+
+* Add `--service-account` option to `gcloud builds submit`.
+
+### Cloud Composer
+
+* Added `--network-attachment` to `gcloud composer beta environments create` to specify network attachment.
+* Added `--support-web-server-plugins` to `gcloud composer beta environments create` to enable/disable the support for web server plugins.
+* Added `--enable-private-builds-only` to `gcloud composer beta environments create/update` to enable only private connectivity to Google services for Python packages.
+* Added `--disable-private-builds-only` to `gcloud composer beta environments create/update` to disable only private connectivity to Google services for Python packages.
+* Added `--disable-vpc-connectivity` to `gcloud composer beta environments create/update` to disable connectivity with a user's VPC network.
+* Added `--enable-private-environment` to `gcloud composer beta environments create/update` to disable internet connection from any Composer component.
+* Added `--disable-private-environment` to `gcloud composer beta environments create/update` to enable internet connection from any Composer component.
+* Added `--composer-internal-ipv4-cidr-block` to `gcloud composer beta environments create/update` to specify the IP range in CIDR notation to use internally by Cloud Composer.
+* Added `--clear-maintenance-window` to `gcloud composer beta environments update` to clear the maintenance window settings.
+* Added `--dag-processor-storage` to `gcloud composer beta environments create/update` to specify the storage allocated to Airflow dag processor.
+* Added `--dag-processor-count` to `gcloud composer beta environments create/update` to specify the number of dag processors.
+* Added `--dag-processor-cpu` to `gcloud composer beta environments create/update` to specify the CPU allocated to Airflow dag processor.
+* Added `--dag-processor-memory` to `gcloud composer beta environments create/update` to specify the memory allocated to Airflow dag processor.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.4
+  * Fixes minor reserve ids bug in Datastore Mode
+  * Add `reset` endpoint for Datastore Mode
+
+### Cloud Logging
+
+* Add `include-children` flag to `gcloud logging sinks update` command to export logs from descendant resources.
+* Add `intercept-children` flag to `gcloud logging sinks create` command to intercept logs from descendant resources.
+* Add `intercept-children` flag to `gcloud logging sinks update` command to intercept logs from descendant resources.
+* Add `sink-filter` flag to `gcloud logging sinks list` command.
+
+### Cloud Memorystore
+
+* Add `redis_7_2` enum to `gcloud redis instances create` and
+    `gcloud redis instances upgrade` to support redis version 7.2 instance
+    create/upgrade.
+* Add `--redis-config` flag to `redis clusters create` to add the ability to specify Redis config when creating a redis cluster.
+* Add `--update-redis-config` flag to `redis clusters update` to update Redis config for existing clusters.
+* Add `--remove-redis-config` flag to `redis clusters update` to remove Redis config for existing clusters.
+
+### Cloud Run
+
+* Added `vertex-genai` integration type to `gcloud beta run integrations`
+  command group.
+* Added `cloudsql` integration type to `gcloud beta run integrations`
+  command group.
+
+### Cloud SQL
+
+* Added `--[no-]enable-google-ml-integration` flag to `gcloud sql instances create`
+    and `gcloud sql instances patch` to support Vertex AI Integration
+    for Cloud SQL. This is currently only supported in Postgres instances.
+
+### Cloud Storage
+
+* Promoted `managed-folders` command group to GA.
+* Promoted `--include-managed-folders` flag for `cp`, `mv`, and `rsync` to GA.
+* Promoted `--exclude-managed-folders` flag for `rm` to GA.
+
+### Cloud Workstations
+
+*   Added `--boost-configs` flag to `beta workstations configs create` and `beta workstations configs update` and `--boost` flag to `beta workstations start`.
+* Promoted `--accelerator-count` and `--accelerator-type` flags of
+`gcloud workstations configs create` and `gcloud workstations configs update` to
+GA.
+
+### Compute Engine
+
+* Promoted `--resource-manager-tags` flag of `compute instance-groups managed create`
+  to beta. Flag allows creating Managed Instance Group with Resource Manager Tags.
+* Promoted `--image-zone` flag of `gcloud compute images list` to beta.
+* Changed OS Login metadata for certificates to `enable-oslogin-certificates` instead of `require-oslogin-certificates`.
+* Promoted `--no-address` flag in `--network-interface` of `gcloud compute instances bulk create` to GA.
+* Fixed a bug when parsing the scope of the disk type if `replica-zones`
+  contains two values in `--create-disk` flag of `gcloud compute instances create`.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.26.14 to 1.26.15.
+* Additional kubectl versions:
+  * kubectl.1.26 (1.26.15)
+  * kubectl.1.27 (1.27.12)
+  * kubectl.1.28 (1.28.8)
+  * kubectl.1.29 (1.29.3)
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 469.0.0 (2024-03-19)
 
 ### Google Cloud CLI

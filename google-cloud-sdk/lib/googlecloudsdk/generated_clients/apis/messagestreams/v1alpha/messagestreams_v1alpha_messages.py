@@ -34,6 +34,17 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Conversion(_messages.Message):
+  r"""Conversion defines how to transform an incoming message payload from one
+  format to another.
+
+  Fields:
+    outputDataFormat: Required. The output data format of the conversion.
+  """
+
+  outputDataFormat = _messages.MessageField('DataFormat', 1)
+
+
 class CreateReferenceRequest(_messages.Message):
   r"""The CreateReferenceRequest request.
 
@@ -59,6 +70,35 @@ class CreateReferenceRequest(_messages.Message):
   reference = _messages.MessageField('Reference', 2)
   referenceId = _messages.StringField(3)
   requestId = _messages.StringField(4)
+
+
+class DataFormat(_messages.Message):
+  r"""The data format of a message payload.
+
+  Enums:
+    TypeValueValuesEnum: Required. The format type of a message payload.
+
+  Fields:
+    schema: Optional. The schema of a message payload.
+    type: Required. The format type of a message payload.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The format type of a message payload.
+
+    Values:
+      TYPE_UNSPECIFIED: FORMAT types unspecified.
+      JSON: JSON
+      PROTOCOL_BUFFERS: PROTO
+      AVRO: AVRO
+    """
+    TYPE_UNSPECIFIED = 0
+    JSON = 1
+    PROTOCOL_BUFFERS = 2
+    AVRO = 3
+
+  schema = _messages.MessageField('Schema', 1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -169,6 +209,35 @@ class GoogleOidc(_messages.Message):
 
   audience = _messages.StringField(1)
   serviceAccount = _messages.StringField(2)
+
+
+class KafkaAuthenticationConfig(_messages.Message):
+  r"""Authentication configuration.
+
+  Fields:
+    saslAuth: A SaslAuthConfig attribute.
+  """
+
+  saslAuth = _messages.MessageField('SaslAuthConfig', 1)
+
+
+class KafkaSource(_messages.Message):
+  r"""Kafka Source configuration.
+
+  Fields:
+    brokerUris: Required. The Kafka broker URIs. e.g. 10.12.34.56:8080
+    consumerGroupId: Required. The consumer group ID used by the Kafka broker
+      to track the offsets of all topic partitions being read by this Stream.
+    kafkaAuthenticationConfig: Optional. Authentication configuration used to
+      authenticate the Kafka client with the Kafka broker, and authorize to
+      read the topic(s).
+    topics: Required. The Kafka topics to read from.
+  """
+
+  brokerUris = _messages.StringField(1, repeated=True)
+  consumerGroupId = _messages.StringField(2)
+  kafkaAuthenticationConfig = _messages.MessageField('KafkaAuthenticationConfig', 3)
+  topics = _messages.StringField(4, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -332,12 +401,15 @@ class Mediation(_messages.Message):
     bindAttributesAsRawHeaders: Optional. If bind_attributes_as_raw_headers
       set true, we will bind the attributes of an incoming cloud event as raw
       HTTP headers.
+    conversion: Optional. Conversion defines the way to convert an incoming
+      message payload from one format to another.
     transformation: Optional. Transformation defines the way to transform an
       incoming message.
   """
 
   bindAttributesAsRawHeaders = _messages.BooleanField(1)
-  transformation = _messages.MessageField('Transformation', 2)
+  conversion = _messages.MessageField('Conversion', 2)
+  transformation = _messages.MessageField('Transformation', 3)
 
 
 class MessagestreamsProjectsLocationsGetRequest(_messages.Message):
@@ -746,14 +818,66 @@ class Reference(_messages.Message):
   type = _messages.StringField(6)
 
 
+class SaslAuthConfig(_messages.Message):
+  r"""SASL/Plain or SASL/SCRAM mechanism configuration.
+
+  Enums:
+    MechanismValueValuesEnum:
+
+  Fields:
+    authzId: Optional. Optional authorization identity (identity to act as),
+      if different from the username.
+    mechanism: A MechanismValueValuesEnum attribute.
+    passwordSecret: Required. The password for the authentication identity may
+      be loaded from Secret Manager.
+    username: Required. The SASL authentication identity (username).
+  """
+
+  class MechanismValueValuesEnum(_messages.Enum):
+    r"""MechanismValueValuesEnum enum type.
+
+    Values:
+      AUTH_MECHANISM_UNSPECIFIED: <no description>
+      PLAIN: <no description>
+      SHA_256: <no description>
+      SHA_512: <no description>
+    """
+    AUTH_MECHANISM_UNSPECIFIED = 0
+    PLAIN = 1
+    SHA_256 = 2
+    SHA_512 = 3
+
+  authzId = _messages.StringField(1)
+  mechanism = _messages.EnumField('MechanismValueValuesEnum', 2)
+  passwordSecret = _messages.StringField(3)
+  username = _messages.StringField(4)
+
+
+class Schema(_messages.Message):
+  r"""The value of a schema, either a schema definition or a schema uri. For
+  now only schema definition is supported.
+
+  Fields:
+    schemaDefinition: Optional. The entire schema definition is stored in this
+      field.
+  """
+
+  schemaDefinition = _messages.StringField(1)
+
+
 class Source(_messages.Message):
   r"""Represents the source where we stream data from.
 
   Fields:
+    kafka: A KafkaSource attribute.
+    networkConfig: Optional. Network config is used to configure how Message
+      Streams resolves and connect to a source.
     pubsubSubscription: A string attribute.
   """
 
-  pubsubSubscription = _messages.StringField(1)
+  kafka = _messages.MessageField('KafkaSource', 1)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  pubsubSubscription = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -894,6 +1018,11 @@ class Stream(_messages.Message):
       details of the final HTTP response of a message stream and is sent to
       the message bus that the message was received from. Ignored if the
       message did not come from a bus.
+    inputDataFormat: Optional. An input data format must be set if there is a
+      Conversion or Transformation mediation, otherwise it is optional. An
+      input schema is required if the payload is in AVRO or PROTOCOL_BINDING
+      content types. An input schema is not required for JSON, and XML content
+      types but will be used if specified.
     labels: Optional. Labels as key value pairs
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
@@ -1003,15 +1132,16 @@ class Stream(_messages.Message):
   etag = _messages.StringField(4)
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
   generateReplies = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  mediations = _messages.MessageField('Mediation', 8, repeated=True)
-  name = _messages.StringField(9)
-  source = _messages.MessageField('Source', 10)
-  streamAction = _messages.MessageField('StreamAction', 11)
-  streamIdentityOverride = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  useSharedPool = _messages.BooleanField(15)
+  inputDataFormat = _messages.MessageField('DataFormat', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  mediations = _messages.MessageField('Mediation', 9, repeated=True)
+  name = _messages.StringField(10)
+  source = _messages.MessageField('Source', 11)
+  streamAction = _messages.MessageField('StreamAction', 12)
+  streamIdentityOverride = _messages.StringField(13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  useSharedPool = _messages.BooleanField(16)
 
 
 class StreamAction(_messages.Message):

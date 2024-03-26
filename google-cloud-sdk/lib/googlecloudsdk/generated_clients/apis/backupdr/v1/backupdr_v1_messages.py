@@ -271,18 +271,9 @@ class Backup(_messages.Message):
     etag: Optional. Server specified ETag to prevent updates from overwriting
       each other.
     expireTime: Optional. When this backup is automatically expired.
-    finalizeTime: Output only. The time when this backup object was finalized
-      (if none, backup is not finalized).
-    generationId: Output only. The numeric generation ID of the backup
-      (monotonically increasing).
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
-    locks: Optional. Deprecated. use backup_appliance_locks instead.
     name: Output only. Name of the resource.
-    recoveryRangeEndTime: Optional. The latest timestamp of data available in
-      this Backup.
-    recoveryRangeStartTime: Optional. The earliest timestamp of data available
-      in this Backup.
     serviceLocks: Output only. The list of BackupLocks taken by the service to
       prevent the deletion of the backup.
     state: Output only. The Backup resource instance state.
@@ -352,16 +343,11 @@ class Backup(_messages.Message):
   enforcedRetentionEndTime = _messages.StringField(8)
   etag = _messages.StringField(9)
   expireTime = _messages.StringField(10)
-  finalizeTime = _messages.StringField(11)
-  generationId = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 13)
-  locks = _messages.MessageField('BackupLock', 14, repeated=True)
-  name = _messages.StringField(15)
-  recoveryRangeEndTime = _messages.StringField(16)
-  recoveryRangeStartTime = _messages.StringField(17)
-  serviceLocks = _messages.MessageField('BackupLock', 18, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  serviceLocks = _messages.MessageField('BackupLock', 13, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -512,7 +498,7 @@ class BackupPlan(_messages.Message):
     adminScope: Optional. TODO b/325560313: Deprecated and field will be
       removed after UI integration change. The resource name of AdminScope
       with which this `BackupPlan` is associated. Format :
-      projects/{project}/locations/{region}/adminScopes/{admin_scope}
+      projects/{project}/locations/{location}/adminScopes/{admin_scope}
     backupRules: Required. The backup rules for this `BackupPlan`. There must
       be at least one `BackupRule` message.
     createTime: Output only. When the `BackupPlan` was created.
@@ -530,7 +516,7 @@ class BackupPlan(_messages.Message):
     labels: Optional. This collection of key/value pairs allows for custom
       labels to be supplied by the user. Example, {"tag": "Weekly"}.
     name: Output only. The resource name of the `BackupPlan`. Format:
-      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+      `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     resourceType: Required. The resource type to which the `BackupPlan` will
       be applied. Examples include, "compute.googleapis.com/Instance" and
       "storage.googleapis.com/Bucket".
@@ -548,12 +534,14 @@ class BackupPlan(_messages.Message):
       DELETING: The resource is being deleted.
       READY: TODO b/325560313: Deprecated and field will be removed after UI
         integration change. The resource has been created.
+      INACTIVE: The resource has been created but is not usable.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     READY = 4
+    INACTIVE = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -608,11 +596,11 @@ class BackupPlanAssociation(_messages.Message):
       to redirect to AGM UI from the pantheon to show a list of backups.
     backupPlan: Required. Resource name of backup plan which needs to be
       applied on workload. Format:
-      projects/{project}/locations/{region}/backupPlans/{backupPlanId}
+      projects/{project}/locations/{location}/backupPlans/{backupPlanId}
     createTime: Output only. The time when the instance was created.
     name: Output only. The resource name of BackupPlanAssociation in below
-      format Format : projects/{project}/locations/{region}/backupPlanAssociat
-      ions/{backupPlanAssociationId}
+      format Format : projects/{project}/locations/{location}/backupPlanAssoci
+      ations/{backupPlanAssociationId}
     resource: Required. Immutable. Resource name of workload on which
       backupplan is applied
     resourceType: Output only. Output Only. Resource type of workload on which
@@ -635,12 +623,14 @@ class BackupPlanAssociation(_messages.Message):
       DELETING: The resource is being deleted.
       READY: TODO b/325560313: Deprecated and field will be removed after UI
         integration change. The resource has been created and is fully usable.
+      INACTIVE: The resource has been created but is not usable.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     READY = 4
+    INACTIVE = 5
 
   backupCollectionId = _messages.StringField(1)
   backupPlan = _messages.StringField(2)
@@ -739,7 +729,7 @@ class BackupVault(_messages.Message):
       characters or less).
     effectiveTime: Optional. Time after which the BackupVault resource is
       locked.
-    enforcedRetentionDuration: Optional. The default retention period for each
+    enforcedRetentionDuration: Required. The default retention period for each
       backup in the backup vault.
     etag: Optional. Server specified ETag for the backup vault resource to
       prevent simultaneous updates from overwiting each other.
@@ -880,7 +870,9 @@ class BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest(_messages.Mes
   r"""A BackupdrProjectsLocationsBackupPlanAssociationsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the backup plan association resource, in the
+      format `projects/{project}/locations/{location}/backupPlanAssociations/{
+      backupPlanAssociationId}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -903,8 +895,8 @@ class BackupdrProjectsLocationsBackupPlanAssociationsGetRequest(_messages.Messag
 
   Fields:
     name: Required. Name of the backup plan association resource, in the
-      format `projects/{project_id}/locations/{location}/backupPlanAssociation
-      s/{resource_name}`
+      format `projects/{project}/locations/{location}/backupPlanAssociations/{
+      backupPlanAssociationId}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -931,6 +923,22 @@ class BackupdrProjectsLocationsBackupPlanAssociationsListRequest(_messages.Messa
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest
+  object.
+
+  Fields:
+    name: Required. Name of the backup plan association resource, in the
+      format `projects/{project}/locations/{location}/backupPlanAssociations/{
+      backupPlanAssociationId}`
+    triggerBackupRequest: A TriggerBackupRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  triggerBackupRequest = _messages.MessageField('TriggerBackupRequest', 2)
 
 
 class BackupdrProjectsLocationsBackupPlansCreateRequest(_messages.Message):
@@ -969,7 +977,7 @@ class BackupdrProjectsLocationsBackupPlansDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the `BackupPlan` to delete. Format:
-      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+      `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -992,7 +1000,7 @@ class BackupdrProjectsLocationsBackupPlansGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the `BackupPlan` to retrieve. Format:
-      `projects/{project}/locations/{region}/backupPlans/{backup_plan}`
+      `projects/{project}/locations/{location}/backupPlans/{backup_plan}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1016,9 +1024,9 @@ class BackupdrProjectsLocationsBackupPlansListRequest(_messages.Message):
       token.
     parent: Required. The project and location for which to retrieve
       `BackupPlans` information. Format:
-      `projects/{project}/locations/{region}`. In Cloud BackupDR, locations
+      `projects/{project}/locations/{location}`. In Cloud BackupDR, locations
       map to GCP regions, for e.g. **us-central1**. To retrieve backup plans
-      for all locations, use "-" for the `{region}` value.
+      for all locations, use "-" for the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -3343,9 +3351,9 @@ class StandardSchedule(_messages.Message):
     recurrenceType: Required. Specifies the `RecurrenceType` for the schedule.
     repeatInterval: Required. TODO b/325560313: Deprecated and field will be
       removed after UI integration change. Repeat interval
-    timeZone: Optional. This will be supported in GA not in PP. The time zone
-      to be used when interpreting the schedule. The value of this field must
-      be a time zone name from the IANA tz database. See
+    timeZone: Optional. The time zone to be used when interpreting the
+      schedule. The value of this field must be a time zone name from the IANA
+      tz database. See
       https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the
       list of valid timezone names. The default value is UTC. For e.g.,
       Europe/Paris.
@@ -3546,6 +3554,28 @@ class TimeOfDay(_messages.Message):
   minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class TriggerBackupRequest(_messages.Message):
+  r"""Request message for triggering a backup.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    ruleId: Required. backup rule_id for which a backup needs to be triggered.
+  """
+
+  requestId = _messages.StringField(1)
+  ruleId = _messages.StringField(2)
 
 
 class WeekDayOfMonth(_messages.Message):

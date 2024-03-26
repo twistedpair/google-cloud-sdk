@@ -49,6 +49,12 @@ class NetworkDiagnostic(diagnostic_base.Diagnostic):
         intro=intro, title='Network diagnostic',
         checklist=[ReachabilityChecker()])
 
+  def RunChecks(self):
+    if not properties.IsDefaultUniverse():
+      # Skip network reachability checks on non-default universes.
+      return True
+    return super().RunChecks()
+
 
 def DefaultUrls():
   """Returns a list of hosts whose reachability is essential for the Cloud SDK.

@@ -185,44 +185,55 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
         Handler(AppendToHeader('user-agent', gcloud_ua))
     ]
 
-    trace_value = GetTraceValue()
+    trace_value = properties.VALUES.core.trace_token.Get()
     if trace_value:
-      handlers.append(Handler(AddQueryParam('trace', trace_value)))
+      handlers.append(Handler(SetHeader('Cookie', trace_value)))
 
     request_reason = properties.VALUES.core.request_reason.Get()
     if request_reason:
       handlers.append(
-          Handler(SetHeader('X-Goog-Request-Reason', request_reason)))
+          Handler(SetHeader('X-Goog-Request-Reason', request_reason))
+      )
 
-    request_org_restriction_headers = properties.VALUES.resource_policy.org_restriction_header.Get(
+    request_org_restriction_headers = (
+        properties.VALUES.resource_policy.org_restriction_header.Get()
     )
     if request_org_restriction_headers:
       handlers.append(
           Handler(
-              SetHeader('X-Goog-Allowed-Resources',
-                        request_org_restriction_headers)))
+              SetHeader(
+                  'X-Goog-Allowed-Resources', request_org_restriction_headers
+              )
+          )
+      )
 
     # Do this one last so that it sees the effects of the other modifiers.
     if properties.VALUES.core.log_http.GetBool():
       redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
       show_request_body = (
-          properties.VALUES.core.log_http_show_request_body.GetBool())
+          properties.VALUES.core.log_http_show_request_body.GetBool()
+      )
       handlers.append(
           Handler(
-              LogRequest(redact_token,
-                         redact_request_body_reason if not show_request_body
-                         else None),
-              LogResponse(streaming_response_body)))
+              LogRequest(
+                  redact_token,
+                  redact_request_body_reason if not show_request_body else None,
+              ),
+              LogResponse(streaming_response_body),
+          )
+      )
 
     self.WrapRequest(http_client, handlers, response_encoding=response_encoding)
     return http_client
 
-  def WrapRequest(self,
-                  http_client,
-                  handlers,
-                  exc_handler=None,
-                  exc_type=Exception,
-                  response_encoding=None):
+  def WrapRequest(
+      self,
+      http_client,
+      handlers,
+      exc_handler=None,
+      exc_type=Exception,
+      response_encoding=None,
+  ):
     """Wraps an http client with request modifiers.
 
     Args:
@@ -635,24 +646,6 @@ def MakeUserAgentString(cmd_path=None):
 
 def GetDefaultTimeout():
   return properties.VALUES.core.http_timeout.GetInt() or 300
-
-
-def GetTraceValue():
-  """Return a value to be used for the trace header."""
-  # Token to be used to route service request traces.
-  trace_token = properties.VALUES.core.trace_token.Get()
-  # Username to which service request traces should be sent.
-  trace_email = properties.VALUES.core.trace_email.Get()
-  # Enable/disable server side logging of service requests.
-  trace_log = properties.VALUES.core.trace_log.GetBool()
-
-  if trace_token:
-    return 'token:{0}'.format(trace_token)
-  elif trace_email:
-    return 'email:{0}'.format(trace_email)
-  elif trace_log:
-    return 'log'
-  return None
 
 
 def IsTokenUri(uri):

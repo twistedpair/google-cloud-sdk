@@ -1575,9 +1575,11 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       MAC_EXECUTION_UNSPECIFIED: Default value, if not explicitly set.
         Equivalent to FORBIDDEN.
       MAC_EXECUTION_FORBIDDEN: Mac actions and worker pools are forbidden.
+      MAC_EXECUTION_UNRESTRICTED: No restrictions on execution of Mac actions.
     """
     MAC_EXECUTION_UNSPECIFIED = 0
     MAC_EXECUTION_FORBIDDEN = 1
+    MAC_EXECUTION_UNRESTRICTED = 2
 
   class VmVerificationValueValuesEnum(_messages.Enum):
     r"""Whether to verify CreateBotSession and UpdateBotSession from the bot.

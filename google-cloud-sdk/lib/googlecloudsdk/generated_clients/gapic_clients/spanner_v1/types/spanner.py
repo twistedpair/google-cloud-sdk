@@ -1445,12 +1445,12 @@ class CommitRequest(proto.Message):
             Default value is ``false``.
         max_commit_delay (google.protobuf.duration_pb2.Duration):
             Optional. The amount of latency this request
-            is willing to incur in order to improve
+            is configured to incur in order to improve
             throughput. If this field is not set, Spanner
             assumes requests are relatively latency
             sensitive and automatically determines an
-            appropriate delay time. You can specify a
-            batching delay value between 0 and 500 ms.
+            appropriate delay time. You can specify a commit
+            delay value between 0 and 500 ms.
         request_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions):
             Common options for this request.
     """

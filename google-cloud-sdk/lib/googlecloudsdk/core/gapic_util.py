@@ -127,8 +127,13 @@ def MakeRestClient(client_class,
       transport=transport_class(host=address, credentials=credentials))
 
 
-def MakeClient(client_class, credentials, address_override_func=None,
-               mtls_enabled=False):
+def MakeClient(
+    client_class,
+    credentials,
+    address_override_func=None,
+    mtls_enabled=False,
+    attempt_direct_path=False,
+):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
   grpc cannot be packaged like our other Python dependencies, due to platform
@@ -140,8 +145,10 @@ def MakeClient(client_class, credentials, address_override_func=None,
     client_class: a gapic client class.
     credentials: google.auth.credentials.Credentials, the credentials to use.
     address_override_func: function, function to call to override the client
-        host. It takes a single argument which is the original host.
+      host. It takes a single argument which is the original host.
     mtls_enabled: bool, True if mTLS is enabled for this client.
+    attempt_direct_path: bool, True if we want to attempt direct path gRPC where
+      possible
 
   Returns:
     A gapic API client.
@@ -151,11 +158,22 @@ def MakeClient(client_class, credentials, address_override_func=None,
 
   return client_class(
       transport=gapic_util_internal.MakeTransport(
-          client_class, credentials, address_override_func, mtls_enabled))
+          client_class,
+          credentials,
+          address_override_func,
+          mtls_enabled,
+          attempt_direct_path,
+      )
+  )
 
 
-def MakeAsyncClient(client_class, credentials, address_override_func=None,
-                    mtls_enabled=False):
+def MakeAsyncClient(
+    client_class,
+    credentials,
+    address_override_func=None,
+    mtls_enabled=False,
+    attempt_direct_path=False,
+):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
   grpc cannot be packaged like our other Python dependencies, due to platform
@@ -167,8 +185,10 @@ def MakeAsyncClient(client_class, credentials, address_override_func=None,
     client_class: a gapic client class.
     credentials: google.auth.credentials.Credentials, the credentials to use.
     address_override_func: function, function to call to override the client
-        host. It takes a single argument which is the original host.
+      host. It takes a single argument which is the original host.
     mtls_enabled: bool, True if mTLS is enabled for this client.
+    attempt_direct_path: bool, True if we want to attempt direct path gRPC where
+      possible
 
   Returns:
     A gapic API client.
@@ -178,4 +198,10 @@ def MakeAsyncClient(client_class, credentials, address_override_func=None,
 
   return client_class(
       transport=gapic_util_internal.MakeAsyncTransport(
-          client_class, credentials, address_override_func, mtls_enabled))
+          client_class,
+          credentials,
+          address_override_func,
+          mtls_enabled,
+          attempt_direct_path,
+      )
+  )

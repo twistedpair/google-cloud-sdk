@@ -212,9 +212,11 @@ class Backup(_messages.Message):
   r"""A backup of a Cloud Bigtable table.
 
   Enums:
+    BackupTypeValueValuesEnum: Indicates the backup type of the backup.
     StateValueValuesEnum: Output only. The current state of the backup.
 
   Fields:
+    backupType: Indicates the backup type of the backup.
     encryptionInfo: Output only. The encryption information for the backup.
     endTime: Output only. `end_time` is the time that the backup was finished.
       The row data in the backup will be no newer than this timestamp.
@@ -246,6 +248,23 @@ class Backup(_messages.Message):
     state: Output only. The current state of the backup.
   """
 
+  class BackupTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates the backup type of the backup.
+
+    Values:
+      BACKUP_TYPE_UNSPECIFIED: Not specified.
+      STANDARD: The default type for Cloud Bigtable managed backups. Supported
+        for backups created in both HDD and SSD instances. Requires
+        optimization when restored to a table in an SSD instance.
+      HOT: A backup type with faster restore to SSD performance. Only
+        supported for backups created in SSD instances. A new SSD table
+        restored from a hot backup reaches production performance more quickly
+        than a standard backup.
+    """
+    BACKUP_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    HOT = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
 
@@ -259,15 +278,16 @@ class Backup(_messages.Message):
     CREATING = 1
     READY = 2
 
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 1)
-  endTime = _messages.StringField(2)
-  expireTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sizeBytes = _messages.IntegerField(5)
-  sourceBackup = _messages.StringField(6)
-  sourceTable = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
+  backupType = _messages.EnumField('BackupTypeValueValuesEnum', 1)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 2)
+  endTime = _messages.StringField(3)
+  expireTime = _messages.StringField(4)
+  name = _messages.StringField(5)
+  sizeBytes = _messages.IntegerField(6)
+  sourceBackup = _messages.StringField(7)
+  sourceTable = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class BackupInfo(_messages.Message):
@@ -828,6 +848,23 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsDeleteRequest(_messages
   name = _messages.StringField(2, required=True)
 
 
+class BigtableadminProjectsInstancesTablesAuthorizedViewsGetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest object.
 
@@ -935,6 +972,41 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest(_messages.
   ignoreWarnings = _messages.BooleanField(2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsSetIamPolicyRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BigtableadminProjectsInstancesTablesCheckConsistencyRequest(_messages.Message):
@@ -1538,12 +1610,15 @@ class CheckConsistencyResponse(_messages.Message):
 
 class Cluster(_messages.Message):
   r"""A resizable group of nodes in a particular cloud location, capable of
+
   serving all Tables in the parent Instance.
 
   Enums:
     DefaultStorageTypeValueValuesEnum: Immutable. The type of storage used by
       this cluster to serve its parent instance's tables, unless explicitly
       overridden.
+    NodeScalingFactorValueValuesEnum: Immutable. The node scaling factor of
+      this cluster.
     StateValueValuesEnum: Output only. The current state of the cluster.
 
   Fields:
@@ -1558,6 +1633,7 @@ class Cluster(_messages.Message):
       should be of the form `projects/{project}/locations/{zone}`.
     name: The unique name of the cluster. Values are of the form
       `projects/{project}/instances/{instance}/clusters/a-z*`.
+    nodeScalingFactor: Immutable. The node scaling factor of this cluster.
     serveNodes: The number of nodes in the cluster. If no value is set, Cloud
       Bigtable automatically allocates nodes based on your data footprint and
       optimized for 50% storage utilization.
@@ -1576,6 +1652,23 @@ class Cluster(_messages.Message):
     STORAGE_TYPE_UNSPECIFIED = 0
     SSD = 1
     HDD = 2
+
+  class NodeScalingFactorValueValuesEnum(_messages.Enum):
+    r"""Immutable. The node scaling factor of this cluster.
+
+    Values:
+      NODE_SCALING_FACTOR_UNSPECIFIED: No node scaling specified. Defaults to
+        NODE_SCALING_FACTOR_1X.
+      NODE_SCALING_FACTOR_1X: The cluster is running with a scaling factor of
+        1.
+      NODE_SCALING_FACTOR_2X: The cluster is running with a scaling factor of
+        2. All node count values must be in increments of 2 with this scaling
+        factor enabled, otherwise an INVALID_ARGUMENT error will be returned.
+    """
+
+    NODE_SCALING_FACTOR_UNSPECIFIED = 0
+    NODE_SCALING_FACTOR_1X = 1
+    NODE_SCALING_FACTOR_2X = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the cluster.
@@ -1606,8 +1699,9 @@ class Cluster(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
   location = _messages.StringField(4)
   name = _messages.StringField(5)
-  serveNodes = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
+  nodeScalingFactor = _messages.EnumField('NodeScalingFactorValueValuesEnum', 6)
+  serveNodes = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class ClusterAutoscalingConfig(_messages.Message):
@@ -2091,7 +2185,6 @@ class DataBoostReadLocalWrites(_messages.Message):
   """
 
 
-
 class DropRowRangeRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.DropRowRange
@@ -2113,7 +2206,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -2236,7 +2328,6 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
-
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -3356,7 +3447,6 @@ class RowAffinity(_messages.Message):
   """
 
 
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3498,7 +3588,6 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated are
   replicated in every cluster and readable.
   """
-
 
 
 class Status(_messages.Message):
@@ -3840,7 +3929,6 @@ class UndeleteTableRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
   """
-
 
 
 class Union(_messages.Message):

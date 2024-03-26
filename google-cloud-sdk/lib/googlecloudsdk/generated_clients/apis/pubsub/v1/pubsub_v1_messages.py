@@ -371,7 +371,9 @@ class CloudStorageConfig(_messages.Message):
       prefix like "gs://". See the [bucket naming requirements]
       (https://cloud.google.com/storage/docs/buckets#naming).
     filenameDatetimeFormat: Optional. User-provided format string specifying
-      how to represent datetimes in Cloud Storage filenames.
+      how to represent datetimes in Cloud Storage filenames. See the [datetime
+      format guidance](https://cloud.google.com/pubsub/docs/create-
+      cloudstorage-subscription#file_names).
     filenamePrefix: Optional. User-provided prefix for Cloud Storage filename.
       See the [object naming
       requirements](https://cloud.google.com/storage/docs/objects#naming).

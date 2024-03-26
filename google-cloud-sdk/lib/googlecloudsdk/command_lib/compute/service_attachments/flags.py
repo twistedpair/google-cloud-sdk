@@ -183,17 +183,19 @@ def AddPropagatedConnectionLimit(parser):
       '--propagated-connection-limit',
       type=int,
       help="""\
-    Per-consumer limit on the number of consumer Network Connectivity Center
-    spokes that Private Service Connect connectivity can be propagated to. This
-    flag lets a producer limit how many propagated Private Service Connect
-    connections can be established by a single consumer to the producer's
-    service attachment.
+    The number of consumer spokes that connected Private Service Connect
+    endpoints can be propagated to through Network Connectivity Center. This
+    limit lets the service producer limit how many propagated Private Service
+    Connect connections can be established to this service attachment from a
+    single consumer.
 
-    If the service attachment connection preference is set to ACCEPT_AUTOMATIC
-    or the accept and reject lists are project-based, then this limit is scoped
-    per consumer project. If the service attachment accept and reject lists are
-    network-based, then this limit is scoped to the consumer network where the
-    endpoint is deployed.
+    If the connection preference of the service attachment is ACCEPT_MANUAL, the
+    limit applies to each project or network that is listed in the consumer
+    accept list. If the connection preference of the service attachment is
+    ACCEPT_AUTOMATIC, the limit applies to each project that contains a
+    connected endpoint.
+
+    If unspecified, the default propagated connection limit is 250.
     """,
   )
 

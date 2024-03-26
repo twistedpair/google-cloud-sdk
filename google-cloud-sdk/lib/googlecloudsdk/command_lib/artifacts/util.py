@@ -914,11 +914,10 @@ def CheckRedirectionPermission(projects):
             f" {','.join(ar_requests.REDIRECT_PERMISSIONS)} permission(s) on"
             f" each project to migrate, including {project}."
         )
-      user = properties.VALUES.core.account.Get()
       log.status.Print(
           "You can set this permission with the following command:"
           f"\n  gcloud projects add-iam-policy-binding {project} "
-          f"--member={user} --role='roles/storage.admin'"
+          f"--member=<account> --role='roles/storage.admin'"
       )
       return False
   return True

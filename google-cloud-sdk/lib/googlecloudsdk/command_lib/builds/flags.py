@@ -330,3 +330,19 @@ def GetDefaultBuckestBehavior(buckets_behavior_flag):
   return GetDefaultBucketsBehaviorFlagMapper().GetEnumForChoice(
       buckets_behavior_flag
   )
+
+
+def AddServiceAccountFlag(parser, hidden=False, required=False):
+  """Adds a flag to define a service account to run the build with.
+
+  Args:
+    parser: The argparse parser to add the arg to.
+    hidden: If true, retain help but do not display it.
+    required: If true, the field must be set or will raise an exception.
+  """
+  parser.add_argument(
+      '--service-account',
+      hidden=hidden,
+      required=required,
+      help='The service account to use with this build. \n'
+      'If unset, the default service account will be used.')

@@ -3610,6 +3610,10 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
         name.
       TYPE_BIGNUMERIC: Decimal type.
       TYPE_JSON: Json type.
+      TYPE_INTERVAL: Interval type.
+      TYPE_RANGE_DATE: Range type.
+      TYPE_RANGE_DATETIME: Range type.
+      TYPE_RANGE_TIMESTAMP: Range type.
     """
     COLUMN_DATA_TYPE_UNSPECIFIED = 0
     TYPE_INT64 = 1
@@ -3626,6 +3630,10 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
     TYPE_RECORD = 12
     TYPE_BIGNUMERIC = 13
     TYPE_JSON = 14
+    TYPE_INTERVAL = 15
+    TYPE_RANGE_DATE = 16
+    TYPE_RANGE_DATETIME = 17
+    TYPE_RANGE_TIMESTAMP = 18
 
   class EstimatedNullPercentageValueValuesEnum(_messages.Enum):
     r"""Approximate percentage of entries being null in the column.

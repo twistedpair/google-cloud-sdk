@@ -743,7 +743,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
 
 
 class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):
-  r"""Response to request to list firewall policies belonging to a key.
+  r"""Response to request to list firewall policies belonging to a project.
 
   Fields:
     firewallPolicies: Policy details.

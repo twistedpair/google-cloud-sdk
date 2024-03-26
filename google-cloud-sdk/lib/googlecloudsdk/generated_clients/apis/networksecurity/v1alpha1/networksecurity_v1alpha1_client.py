@@ -3198,6 +3198,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a single PartnerSSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsPartnerSSEGatewaysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways/{partnerSSEGatewaysId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.partnerSSEGateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='partnerSSEGateway',
+        request_type_name='NetworksecurityProjectsLocationsPartnerSSEGatewaysPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsPartnerSSERealmsService(base_api.BaseApiService):
     """Service class for the projects_locations_partnerSSERealms resource."""
 
@@ -4537,33 +4564,6 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
-        supports_download=False,
-    )
-
-    def UpdatePartnerSSEGateways(self, request, global_params=None):
-      r"""Updates a single PartnerSSEGateway.
-
-      Args:
-        request: (NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdatePartnerSSEGateways')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdatePartnerSSEGateways.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/partnerSSEGateways',
-        http_method='PATCH',
-        method_id='networksecurity.projects.locations.updatePartnerSSEGateways',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}/partnerSSEGateways',
-        request_field='partnerSSEGateway',
-        request_type_name='NetworksecurityProjectsLocationsUpdatePartnerSSEGatewaysRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

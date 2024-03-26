@@ -589,6 +589,62 @@ class Empty(_messages.Message):
 
 
 
+class ExecutionStats(_messages.Message):
+  r"""Execution statistics for the query.
+
+  Messages:
+    DebugStatsValue: Debugging statistics from the execution of the query.
+      Note that the debugging stats are subject to change as Firestore
+      evolves. It could include: { "indexes_entries_scanned": "1000",
+      "documents_scanned": "20", "billing_details" : { "documents_billable":
+      "20", "index_entries_billable": "1000", "min_query_cost": "0" } }
+
+  Fields:
+    debugStats: Debugging statistics from the execution of the query. Note
+      that the debugging stats are subject to change as Firestore evolves. It
+      could include: { "indexes_entries_scanned": "1000", "documents_scanned":
+      "20", "billing_details" : { "documents_billable": "20",
+      "index_entries_billable": "1000", "min_query_cost": "0" } }
+    executionDuration: Total time to execute the query in the backend.
+    readOperations: Total billable read operations.
+    resultsReturned: Total number of results returned, including documents,
+      projections, aggregation results, keys.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DebugStatsValue(_messages.Message):
+    r"""Debugging statistics from the execution of the query. Note that the
+    debugging stats are subject to change as Firestore evolves. It could
+    include: { "indexes_entries_scanned": "1000", "documents_scanned": "20",
+    "billing_details" : { "documents_billable": "20",
+    "index_entries_billable": "1000", "min_query_cost": "0" } }
+
+    Messages:
+      AdditionalProperty: An additional property for a DebugStatsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DebugStatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  debugStats = _messages.MessageField('DebugStatsValue', 1)
+  executionDuration = _messages.StringField(2)
+  readOperations = _messages.IntegerField(3)
+  resultsReturned = _messages.IntegerField(4)
+
+
 class ExistenceFilter(_messages.Message):
   r"""A digest of all the documents that match a given target.
 
@@ -616,6 +672,33 @@ class ExistenceFilter(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   targetId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   unchangedNames = _messages.MessageField('BloomFilter', 3)
+
+
+class ExplainMetrics(_messages.Message):
+  r"""Explain metrics for the query.
+
+  Fields:
+    executionStats: Aggregated stats from the execution of the query. Only
+      present when ExplainOptions.analyze is set to true.
+    planSummary: Planning phase information for the query.
+  """
+
+  executionStats = _messages.MessageField('ExecutionStats', 1)
+  planSummary = _messages.MessageField('PlanSummary', 2)
+
+
+class ExplainOptions(_messages.Message):
+  r"""Explain options for the query.
+
+  Fields:
+    analyze: Optional. Whether to execute this query. When false (the
+      default), the query will be planned, returning only metrics from the
+      planning stages. When true, the query will be planned and executed,
+      returning the full query results along with both planning and execution
+      stage metrics.
+  """
+
+  analyze = _messages.BooleanField(1)
 
 
 class FieldFilter(_messages.Message):
@@ -802,8 +885,8 @@ class FirestoreProjectsDatabasesBackupSchedulesDeleteRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesBackupSchedulesDeleteRequest object.
 
   Fields:
-    name: Required. The name of backup schedule. Format `projects/{project}/da
-      tabases/{database}/backupSchedules/{backup_schedule}`
+    name: Required. The name of the backup schedule. Format `projects/{project
+      }/databases/{database}/backupSchedules/{backup_schedule}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1669,7 +1752,7 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
 
 
 class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
-  r"""Represent a recurring schedule that runs at a specific time every day.
+  r"""Represents a recurring schedule that runs at a specific time every day.
   The time zone is UTC.
   """
 
@@ -3170,6 +3253,46 @@ class PartitionQueryResponse(_messages.Message):
   partitions = _messages.MessageField('Cursor', 2, repeated=True)
 
 
+class PlanSummary(_messages.Message):
+  r"""Planning phase information for the query.
+
+  Messages:
+    IndexesUsedValueListEntry: A IndexesUsedValueListEntry object.
+
+  Fields:
+    indexesUsed: The indexes selected for the query. For example: [
+      {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+      {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"} ]
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IndexesUsedValueListEntry(_messages.Message):
+    r"""A IndexesUsedValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        IndexesUsedValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IndexesUsedValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  indexesUsed = _messages.MessageField('IndexesUsedValueListEntry', 1, repeated=True)
+
+
 class Precondition(_messages.Message):
   r"""A precondition on a document, used for conditional operations.
 
@@ -3251,6 +3374,9 @@ class RunAggregationQueryRequest(_messages.Message):
   r"""The request for Firestore.RunAggregationQuery.
 
   Fields:
+    explainOptions: Optional. Explain options for the query. If set,
+      additional query statistics will be returned. If not, only query results
+      will be returned.
     newTransaction: Starts a new transaction as part of the query, defaulting
       to read-only. The new transaction ID will be returned as the first
       response in the stream.
@@ -3263,16 +3389,20 @@ class RunAggregationQueryRequest(_messages.Message):
       value here is the opaque transaction ID to execute the query in.
   """
 
-  newTransaction = _messages.MessageField('TransactionOptions', 1)
-  readTime = _messages.StringField(2)
-  structuredAggregationQuery = _messages.MessageField('StructuredAggregationQuery', 3)
-  transaction = _messages.BytesField(4)
+  explainOptions = _messages.MessageField('ExplainOptions', 1)
+  newTransaction = _messages.MessageField('TransactionOptions', 2)
+  readTime = _messages.StringField(3)
+  structuredAggregationQuery = _messages.MessageField('StructuredAggregationQuery', 4)
+  transaction = _messages.BytesField(5)
 
 
 class RunAggregationQueryResponse(_messages.Message):
   r"""The response for Firestore.RunAggregationQuery.
 
   Fields:
+    explainMetrics: Query explain metrics. This is only present when the
+      RunAggregationQueryRequest.explain_options is provided, and it is sent
+      only once with the last response in the stream.
     readTime: The time at which the aggregate result was computed. This is
       always monotonically increasing; in this case, the previous
       AggregationResult in the result stream are guaranteed not to have
@@ -3286,15 +3416,19 @@ class RunAggregationQueryResponse(_messages.Message):
       new transaction.
   """
 
-  readTime = _messages.StringField(1)
-  result = _messages.MessageField('AggregationResult', 2)
-  transaction = _messages.BytesField(3)
+  explainMetrics = _messages.MessageField('ExplainMetrics', 1)
+  readTime = _messages.StringField(2)
+  result = _messages.MessageField('AggregationResult', 3)
+  transaction = _messages.BytesField(4)
 
 
 class RunQueryRequest(_messages.Message):
   r"""The request for Firestore.RunQuery.
 
   Fields:
+    explainOptions: Optional. Explain options for the query. If set,
+      additional query statistics will be returned. If not, only query results
+      will be returned.
     newTransaction: Starts a new transaction and reads the documents. Defaults
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
@@ -3307,10 +3441,11 @@ class RunQueryRequest(_messages.Message):
       here is the opaque transaction ID to execute the query in.
   """
 
-  newTransaction = _messages.MessageField('TransactionOptions', 1)
-  readTime = _messages.StringField(2)
-  structuredQuery = _messages.MessageField('StructuredQuery', 3)
-  transaction = _messages.BytesField(4)
+  explainOptions = _messages.MessageField('ExplainOptions', 1)
+  newTransaction = _messages.MessageField('TransactionOptions', 2)
+  readTime = _messages.StringField(3)
+  structuredQuery = _messages.MessageField('StructuredQuery', 4)
+  transaction = _messages.BytesField(5)
 
 
 class RunQueryResponse(_messages.Message):
@@ -3320,6 +3455,9 @@ class RunQueryResponse(_messages.Message):
     document: A query result, not set when reporting partial progress.
     done: If present, Firestore has completely finished the request and no
       more documents will be returned.
+    explainMetrics: Query explain metrics. This is only present when the
+      RunQueryRequest.explain_options is provided, and it is sent only once
+      with the last response in the stream.
     readTime: The time at which the document was read. This may be
       monotonically increasing; in this case, the previous documents in the
       result stream are guaranteed not to have changed between their
@@ -3336,9 +3474,10 @@ class RunQueryResponse(_messages.Message):
 
   document = _messages.MessageField('Document', 1)
   done = _messages.BooleanField(2)
-  readTime = _messages.StringField(3)
-  skippedResults = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  transaction = _messages.BytesField(5)
+  explainMetrics = _messages.MessageField('ExplainMetrics', 3)
+  readTime = _messages.StringField(4)
+  skippedResults = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  transaction = _messages.BytesField(6)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -1089,6 +1089,27 @@ class PosixFilesystem(_messages.Message):
   rootDirectory = _messages.StringField(1)
 
 
+class ReplicationSpec(_messages.Message):
+  r"""Specifies the configuration for running a replication job.
+
+  Fields:
+    gcsDataSink: Specifies cloud Storage data sink.
+    gcsDataSource: Specifies cloud Storage data source.
+    objectConditions: Specifies the object conditions to only include objects
+      that satisfy these conditions in the set of data source objects. Object
+      conditions based on objects' "last modification time" do not exclude
+      objects in a data sink.
+    transferOptions: Specifies the actions to be performed on the object
+      during replication. Delete options are not supported for replication and
+      when specified, the request fails with an INVALID_ARGUMENT error.
+  """
+
+  gcsDataSink = _messages.MessageField('GcsData', 1)
+  gcsDataSource = _messages.MessageField('GcsData', 2)
+  objectConditions = _messages.MessageField('ObjectConditions', 3)
+  transferOptions = _messages.MessageField('TransferOptions', 4)
+
+
 class ResumeTransferOperationRequest(_messages.Message):
   r"""Request passed to ResumeTransferOperation."""
 
@@ -1748,6 +1769,7 @@ class TransferJob(_messages.Message):
     notificationConfig: Notification configuration. This is not supported for
       transfers involving PosixFilesystem.
     projectId: The ID of the Google Cloud project that owns the job.
+    replicationSpec: Replication specification.
     schedule: Specifies schedule for the transfer job. This is an optional
       field. When the field is not set, the job never executes a transfer,
       unless you invoke RunTransferJob or update the job to have a non-empty
@@ -1793,9 +1815,10 @@ class TransferJob(_messages.Message):
   name = _messages.StringField(8)
   notificationConfig = _messages.MessageField('NotificationConfig', 9)
   projectId = _messages.StringField(10)
-  schedule = _messages.MessageField('Schedule', 11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  transferSpec = _messages.MessageField('TransferSpec', 13)
+  replicationSpec = _messages.MessageField('ReplicationSpec', 11)
+  schedule = _messages.MessageField('Schedule', 12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  transferSpec = _messages.MessageField('TransferSpec', 14)
 
 
 class TransferManifest(_messages.Message):

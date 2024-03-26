@@ -572,6 +572,23 @@ def _SetDefaultLogsBucketBehavior(
   return build_config
 
 
+def _SetServiceAccount(build_config, arg_service_account):
+  """Sets the service account to run the build in.
+
+  Args:
+    build_config: apitools.base.protorpclite.messages.Message, The Build message
+      to analyze.
+    arg_service_account: The service account behavior flag.
+
+  Returns:
+    build_config: apitools.base.protorpclite.messages.Message, The Build message
+      to analyze.
+  """
+  if arg_service_account is not None:
+    build_config.serviceAccount = arg_service_account
+  return build_config
+
+
 def CreateBuildConfig(
     tag,
     no_cache,
@@ -591,6 +608,7 @@ def CreateBuildConfig(
     arg_revision,
     arg_git_source_dir,
     arg_git_source_revision,
+    arg_service_account,
     buildpack,
     hide_logs=False,
     arg_bucket_behavior=None,
@@ -634,6 +652,7 @@ def CreateBuildConfig(
   build_config = _SetDefaultLogsBucketBehavior(
       build_config, messages, arg_bucket_behavior
   )
+  build_config = _SetServiceAccount(build_config, arg_service_account)
 
   return build_config
 

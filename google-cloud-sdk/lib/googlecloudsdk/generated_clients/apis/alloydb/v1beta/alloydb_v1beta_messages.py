@@ -1255,6 +1255,9 @@ class Cluster(_messages.Message):
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
+    maintenanceSchedule: Output only. The maintenance schedule for the
+      cluster, generated for a specific rollout if a maintenance window is
+      set.
     maintenanceUpdatePolicy: Optional. The maintenance update policy
       determines when to allow or deny updates.
     migrationSource: Output only. Cluster created via DMS migration.
@@ -1271,7 +1274,6 @@ class Cluster(_messages.Message):
       `projects/{project}/global/networks/{network_id}`. This is required to
       create a cluster. Deprecated, use network_config.network instead.
     networkConfig: A NetworkConfig attribute.
-    omniConfig: Optional. Configuration specific to AlloyDB Omni clusters.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
     pscConfig: Optional. The configuration for Private Service Connect (PSC)
@@ -1427,12 +1429,12 @@ class Cluster(_messages.Message):
   geminiConfig = _messages.MessageField('GeminiClusterConfig', 14)
   initialUser = _messages.MessageField('UserPassword', 15)
   labels = _messages.MessageField('LabelsValue', 16)
-  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 17)
-  migrationSource = _messages.MessageField('MigrationSource', 18)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  networkConfig = _messages.MessageField('NetworkConfig', 21)
-  omniConfig = _messages.MessageField('OmniClusterConfig', 22)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 17)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 18)
+  migrationSource = _messages.MessageField('MigrationSource', 19)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  networkConfig = _messages.MessageField('NetworkConfig', 22)
   primaryConfig = _messages.MessageField('PrimaryConfig', 23)
   pscConfig = _messages.MessageField('PscConfig', 24)
   reconciling = _messages.BooleanField(25)
@@ -1959,7 +1961,6 @@ class Instance(_messages.Message):
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
     observabilityConfig: Configuration for observability.
-    omniConfig: Optional. The configuration of the Omni instance.
     pscInstanceConfig: Optional. The configuration for Private Service Connect
       (PSC) for the instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
@@ -2157,18 +2158,17 @@ class Instance(_messages.Message):
   networkConfig = _messages.MessageField('InstanceNetworkConfig', 17)
   nodes = _messages.MessageField('Node', 18, repeated=True)
   observabilityConfig = _messages.MessageField('ObservabilityInstanceConfig', 19)
-  omniConfig = _messages.MessageField('OmniInstanceConfig', 20)
-  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 21)
-  publicIpAddress = _messages.StringField(22)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 23)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 24)
-  reconciling = _messages.BooleanField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  uid = _messages.StringField(28)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 29)
-  updateTime = _messages.StringField(30)
-  writableNode = _messages.MessageField('Node', 31)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 20)
+  publicIpAddress = _messages.StringField(21)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 22)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  uid = _messages.StringField(27)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 28)
+  updateTime = _messages.StringField(29)
+  writableNode = _messages.MessageField('Node', 30)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2292,6 +2292,20 @@ class MachineConfig(_messages.Message):
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class MaintenanceSchedule(_messages.Message):
+  r"""MaintenanceSchedule stores the maintenance schedule generated from the
+  MaintenanceUpdatePolicy, once a maintenance rollout is triggered, if
+  MaintenanceWindow is set, and if there is no conflicting DenyPeriod. The
+  schedule is cleared once the update takes place. This field cannot be
+  manually changed; modify the MaintenanceUpdatePolicy instead.
+
+  Fields:
+    startTime: Output only. The scheduled start time for the maintenance.
+  """
+
+  startTime = _messages.StringField(1)
+
+
 class MaintenanceUpdatePolicy(_messages.Message):
   r"""MaintenanceUpdatePolicy defines the policy for system updates.
 
@@ -2406,7 +2420,6 @@ class Node(_messages.Message):
   Fields:
     id: The identifier of the VM e.g. "test-read-0601-407e52be-ms3l".
     ip: The private IP address of the VM e.g. "10.57.0.34".
-    omniMachineConfig: Machine configuration for AlloyDB Omni.
     state: Determined by state of the compute VM and postgres-service health.
       Compute VM state can have values listed in
       https://cloud.google.com/compute/docs/instances/instance-life-cycle and
@@ -2416,9 +2429,8 @@ class Node(_messages.Message):
 
   id = _messages.StringField(1)
   ip = _messages.StringField(2)
-  omniMachineConfig = _messages.MessageField('OmniMachineConfig', 3)
-  state = _messages.StringField(4)
-  zoneId = _messages.StringField(5)
+  state = _messages.StringField(3)
+  zoneId = _messages.StringField(4)
 
 
 class ObservabilityInstanceConfig(_messages.Message):
@@ -2455,70 +2467,6 @@ class ObservabilityInstanceConfig(_messages.Message):
   trackActiveQueries = _messages.BooleanField(6)
   trackWaitEventTypes = _messages.BooleanField(7)
   trackWaitEvents = _messages.BooleanField(8)
-
-
-class OmniClusterConfig(_messages.Message):
-  r"""Configuration for the AlloyDB Omni cluster. This should be set if and
-  only if the cluster is an AlloyDB Omni cluster.
-
-  Enums:
-    HostTypeValueValuesEnum: Determines the management plane of the Omni
-      Cluster.
-
-  Fields:
-    displayLocation: User-settable and human-readable display location for the
-      Omni Cluster.
-    hostType: Determines the management plane of the Omni Cluster.
-  """
-
-  class HostTypeValueValuesEnum(_messages.Enum):
-    r"""Determines the management plane of the Omni Cluster.
-
-    Values:
-      HOST_TYPE_UNSPECIFIED: The type of the host is unknown.
-      DOCKER: AlloyDB Omni on VMs.
-      KUBERNETES: AlloyDB Omni on Kubernetes.
-    """
-    HOST_TYPE_UNSPECIFIED = 0
-    DOCKER = 1
-    KUBERNETES = 2
-
-  displayLocation = _messages.StringField(1)
-  hostType = _messages.EnumField('HostTypeValueValuesEnum', 2)
-
-
-class OmniInstanceConfig(_messages.Message):
-  r"""Contains Omni related configuration at an instance level. This should be
-  set if and only if the instance is an AlloyDB Omni instance.
-
-  Fields:
-    displayLocation: User-settable and human-readable display location for the
-      Omni Instance.
-    versionInfo: Version information for the Omni instance.
-  """
-
-  displayLocation = _messages.StringField(1)
-  versionInfo = _messages.MessageField('VersionInfo', 2)
-
-
-class OmniMachineConfig(_messages.Message):
-  r"""OmniMachineConfig describes the configuration of a machine specific to
-  AlloyDB Omni. On Kubernetes, this describes the pod running Omni. On VMs,
-  this represents the pg-service container running on Docker.
-
-  Fields:
-    cpuCount: The number of CPUs.
-    memorySizeBytes: Memory size in bytes.
-    storageClass: Optional. Storage class for Omni on Kubernetes. Not
-      applicable for Omni on VMs. This value can be an arbitrary Storage Class
-      name. https://kubernetes.io/docs/concepts/storage/storage-classes/
-    storageSizeBytes: Storage size in bytes.
-  """
-
-  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  memorySizeBytes = _messages.IntegerField(2)
-  storageClass = _messages.StringField(3)
-  storageSizeBytes = _messages.IntegerField(4)
 
 
 class Operation(_messages.Message):
@@ -4597,18 +4545,6 @@ class UserPassword(_messages.Message):
 
   password = _messages.StringField(1)
   user = _messages.StringField(2)
-
-
-class VersionInfo(_messages.Message):
-  r"""VersionInfo contains version related information for the Omni instance.
-
-  Fields:
-    controlPlaneVersion: Omni control plane version.
-    dataPlaneVersion: Omni data plane version.
-  """
-
-  controlPlaneVersion = _messages.StringField(1)
-  dataPlaneVersion = _messages.StringField(2)
 
 
 class WeeklySchedule(_messages.Message):

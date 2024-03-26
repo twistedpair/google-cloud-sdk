@@ -46,7 +46,6 @@ _GOOGLE_CATEGORY_RESOURCE = 'categories/google'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
 _V1_VERSION = 'v1'
-_V2_VERSION = 'v2'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
 _V2ALPHA_VERSION = 'v2alpha'
@@ -923,31 +922,6 @@ def GetOperation(name):
     return client.operations.Get(request)
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e, exceptions.OperationErrorException)
-
-
-def GetOperationV2(name):
-  """Make API call to get an operation.
-
-  Args:
-    name: The name of operation.
-
-  Raises:
-    exceptions.OperationErrorException: when the getting operation API fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The result of the operation
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-  request = messages.ServiceusageOperationsGetRequest(name=name)
-  try:
-    return client.operations.Get(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 

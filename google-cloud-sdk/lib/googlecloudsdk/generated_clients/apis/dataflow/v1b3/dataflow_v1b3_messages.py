@@ -2182,13 +2182,13 @@ class DataflowProjectsLocationsTemplatesLaunchRequest(_messages.Message):
   r"""A DataflowProjectsLocationsTemplatesLaunchRequest object.
 
   Fields:
-    dynamicTemplate_gcsPath: Path to dynamic template spec file on Cloud
-      Storage. The file must be a Json serialized DynamicTemplateFieSpec
-      object.
+    dynamicTemplate_gcsPath: Path to the dynamic template specification file
+      on Cloud Storage. The file must be a JSON serialized
+      `DynamicTemplateFileSpec` object.
     dynamicTemplate_stagingLocation: Cloud Storage path for staging
       dependencies. Must be a valid Cloud Storage URL, beginning with `gs://`.
-    gcsPath: A Cloud Storage path to the template from which to create the
-      job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    gcsPath: A Cloud Storage path to the template to use to create the job.
+      Must be valid Cloud Storage URL, beginning with `gs://`.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
       as the request body.
     location: The [regional endpoint]
@@ -2323,13 +2323,13 @@ class DataflowProjectsTemplatesLaunchRequest(_messages.Message):
   r"""A DataflowProjectsTemplatesLaunchRequest object.
 
   Fields:
-    dynamicTemplate_gcsPath: Path to dynamic template spec file on Cloud
-      Storage. The file must be a Json serialized DynamicTemplateFieSpec
-      object.
+    dynamicTemplate_gcsPath: Path to the dynamic template specification file
+      on Cloud Storage. The file must be a JSON serialized
+      `DynamicTemplateFileSpec` object.
     dynamicTemplate_stagingLocation: Cloud Storage path for staging
       dependencies. Must be a valid Cloud Storage URL, beginning with `gs://`.
-    gcsPath: A Cloud Storage path to the template from which to create the
-      job. Must be valid Cloud Storage URL, beginning with 'gs://'.
+    gcsPath: A Cloud Storage path to the template to use to create the job.
+      Must be valid Cloud Storage URL, beginning with `gs://`.
     launchTemplateParameters: A LaunchTemplateParameters resource to be passed
       as the request body.
     location: The [regional endpoint]
@@ -5895,7 +5895,7 @@ class RollbackDeploymentRequest(_messages.Message):
 
 
 class RuntimeEnvironment(_messages.Message):
-  r"""The environment values to set at runtime.
+  r"""The environment values to set at runtime. LINT.IfChange
 
   Enums:
     IpConfigurationValueValuesEnum: Optional. Configuration for VM IPs.

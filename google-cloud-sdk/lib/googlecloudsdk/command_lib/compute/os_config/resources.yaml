@@ -9,6 +9,12 @@ project:
     help: |
       Project of the {resource}.
 
+project_global:
+  name: project_global
+  collection: osconfig.projects.locations.global
+  attributes:
+  - *project
+
 location:
   name: location
   collection: osconfig.projects.locations

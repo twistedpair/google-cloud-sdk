@@ -1315,7 +1315,7 @@ def ValidateImageFlags(args):
         '[--image-project] flag.')
 
 
-def _ValidateNetworkInterfaceStackType(stack_type_input):
+def ValidateNetworkInterfaceStackType(stack_type_input):
   """Validates stack type field, throws exception if invalid."""
   stack_type = stack_type_input.upper()
   if stack_type in constants.NETWORK_INTERFACE_STACK_TYPE_CHOICES:
@@ -1326,7 +1326,7 @@ def _ValidateNetworkInterfaceStackType(stack_type_input):
         'Invalid value for stack-type [%s].' % stack_type)
 
 
-def _ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported(stack_type_input):
+def ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported(stack_type_input):
   """Validates stack type field, throws exception if invalid."""
   stack_type = stack_type_input.upper()
   if (stack_type in constants.NETWORK_INTERFACE_STACK_TYPE_CHOICES and
@@ -1455,10 +1455,10 @@ def AddAddressArgs(parser,
     multiple_network_interface_cards_spec['ipv6-public-ptr-domain'] = str
     if support_ipv6_only:
       multiple_network_interface_cards_spec[
-          'stack-type'] = _ValidateNetworkInterfaceStackType
+          'stack-type'] = ValidateNetworkInterfaceStackType
     else:
       multiple_network_interface_cards_spec[
-          'stack-type'] = _ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
+          'stack-type'] = ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
     multiple_network_interface_cards_spec[
         'ipv6-network-tier'] = _ValidateNetworkInterfaceIpv6NetworkTier
     network_interface_help_texts.append("""\

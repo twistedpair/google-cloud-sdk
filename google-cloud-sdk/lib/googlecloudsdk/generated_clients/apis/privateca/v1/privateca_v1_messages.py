@@ -622,7 +622,7 @@ class CertificateConfigKeyId(_messages.Message):
   key.
 
   Fields:
-    keyId: Optional. The value of this KeyId encoded in lowercase hexadecimal.
+    keyId: Required. The value of this KeyId encoded in lowercase hexadecimal.
       This is most likely the 160 bit SHA-1 hash of the public key.
   """
 
