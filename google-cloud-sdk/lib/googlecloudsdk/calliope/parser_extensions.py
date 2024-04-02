@@ -81,8 +81,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.document_renderers import render_document
-from googlecloudsdk.core.updater import update_manager
 import six
 
 
@@ -821,6 +819,10 @@ class ArgumentParser(argparse.ArgumentParser):
     Raises:
       argparse.ArgumentError: If the action and value don't work together.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.updater import update_manager
+    # pylint: enable=g-import-not-at-top
+
     is_subparser = isinstance(action, CloudSDKSubParsersAction)
 
     # When using tab completion, argcomplete monkey patches various parts of
@@ -1118,6 +1120,9 @@ class ArgumentParser(argparse.ArgumentParser):
           }
         # Otherwise print out usage string.
         elif 'Command name argument expected.' == message:
+          # pylint: disable=g-import-not-at-top
+          from googlecloudsdk.core.document_renderers import render_document
+          # pylint: enable=g-import-not-at-top
           usage_string = self._calliope_command.GetCategoricalUsage()
           # The next if clause is executed if there were no categories to
           # display.

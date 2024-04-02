@@ -456,6 +456,10 @@ class Instance(_messages.Message):
     oauthConfig: Looker instance OAuth login settings.
     platformEdition: Platform edition.
     privateIpEnabled: Whether private IP is enabled on the Looker instance.
+    pscConfig: Optional. PSC configuration. Used when `psc_enabled` is true.
+    pscEnabled: Optional. Whether to use Private Service Connect (PSC) for
+      private IP connectivity. If true, neither `public_ip_enabled` nor
+      `private_ip_enabled` can be true.
     publicIpEnabled: Whether public IP is enabled on the Looker instance.
     reservedRange: Name of a reserved IP address range within the
       Instance.consumer_network, to be used for private services access
@@ -527,11 +531,13 @@ class Instance(_messages.Message):
   oauthConfig = _messages.MessageField('OAuthConfig', 17)
   platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 18)
   privateIpEnabled = _messages.BooleanField(19)
-  publicIpEnabled = _messages.BooleanField(20)
-  reservedRange = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  userMetadata = _messages.MessageField('UserMetadata', 24)
+  pscConfig = _messages.MessageField('PscConfig', 20)
+  pscEnabled = _messages.BooleanField(21)
+  publicIpEnabled = _messages.BooleanField(22)
+  reservedRange = _messages.StringField(23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
+  userMetadata = _messages.MessageField('UserMetadata', 26)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -1245,8 +1251,68 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PscConfig(_messages.Message):
+  r"""Information for Private Service Connect (PSC) setup for a Looker
+  instance.
+
+  Fields:
+    allowedVpcs: Optional. List of VPCs that are allowed ingress into looker.
+      Format: projects/{project}/global/networks/{network}
+    lookerServiceAttachmentUri: Output only. URI of the Looker service
+      attachment.
+    serviceAttachments: Optional. List of egress service attachment
+      configurations.
+  """
+
+  allowedVpcs = _messages.StringField(1, repeated=True)
+  lookerServiceAttachmentUri = _messages.StringField(2)
+  serviceAttachments = _messages.MessageField('ServiceAttachment', 3, repeated=True)
+
+
 class RestartInstanceRequest(_messages.Message):
   r"""Request options for restarting an instance."""
+
+
+class ServiceAttachment(_messages.Message):
+  r"""Service attachment configuration.
+
+  Enums:
+    ConnectionStatusValueValuesEnum: Output only. Connection status.
+
+  Fields:
+    connectionStatus: Output only. Connection status.
+    localFqdn: Required. Fully qualified domain name that will be used in the
+      private DNS record created for the service attachment.
+    targetServiceAttachmentUri: Required. URI of the service attachment to
+      connect to. Format: projects/{project}/regions/{region}/serviceAttachmen
+      ts/{service_attachment}
+  """
+
+  class ConnectionStatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Connection status.
+
+    Values:
+      UNKNOWN: Connection status is unspecified.
+      ACCEPTED: Connection is established and functioning normally.
+      PENDING: Connection is not established (Looker tenant project hasn't
+        been allowlisted).
+      REJECTED: Connection is not established (Looker tenant project is
+        explicitly in reject list).
+      NEEDS_ATTENTION: Issue with target service attachment, e.g. NAT subnet
+        is exhausted.
+      CLOSED: Target service attachment does not exist. This status is a
+        terminal state.
+    """
+    UNKNOWN = 0
+    ACCEPTED = 1
+    PENDING = 2
+    REJECTED = 3
+    NEEDS_ATTENTION = 4
+    CLOSED = 5
+
+  connectionStatus = _messages.EnumField('ConnectionStatusValueValuesEnum', 1)
+  localFqdn = _messages.StringField(2)
+  targetServiceAttachmentUri = _messages.StringField(3)
 
 
 class SetIamPolicyRequest(_messages.Message):

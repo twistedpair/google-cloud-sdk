@@ -3,8 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: certificatemanager v1 AllowlistedCertificate export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-# TODO: b/289174140 - Remove on public launch.
-hidden: true
 additionalProperties: false
 properties:
   COMMENT:

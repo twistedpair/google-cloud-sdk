@@ -238,14 +238,14 @@ def AddOperation(parser):
       help='AlloyDB operation ID')
 
 
-def AddEnablePrivateServicesConnect(parser):
-  """Adds the `--enable-private-services-connect` flag to the parser."""
+def AddEnablePrivateServiceConnect(parser):
+  """Adds the `--enable-private-service-connect` flag to the parser."""
   parser.add_argument(
-      '--enable-private-services-connect',
+      '--enable-private-service-connect',
       required=False,
       action='store_true',
-      help=('Enable Private Services Connect (PSC) connectivity for the '
-            'cluster.'))
+      help='Enable Private Service Connect (PSC) connectivity for the cluster.',
+  )
 
 
 def AddAllowedPSCProjects(parser):
@@ -257,7 +257,7 @@ def AddAllowedPSCProjects(parser):
       metavar='ALLOWED_PSC_PROJECTS',
       help=(
           'Comma-separated list of allowed consumer projects to create'
-          ' endpoints for Private Services Connect (PSC) connectivity for the'
+          ' endpoints for Private Service Connect (PSC) connectivity for the'
           ' instance. Only instances in PSC-enabled clusters are allowed to set'
           ' this field.(e.g.,'
           ' `--allowed-psc-projects=project1,12345678,project2)'
@@ -922,7 +922,7 @@ def ValidateContinuousBackupFlags(args, update=False):
   ):
     raise exceptions.ConflictingArgumentsException(
         '--no-enable-continuous-backup',
-        '--continuous-backup-recovery-days',
+        '--continuous-backup-recovery-window-days',
         '--continuous-backup-encryption-key',
         '--clear-continuous-backup-encryption-key',
     )
@@ -932,14 +932,14 @@ def ValidateContinuousBackupFlags(args, update=False):
 def ValidateConnectivityFlags(args):
   """Validate the arguments for connectivity, ensure the correct set of flags are passed."""
   # TODO(b/310733501) Move this to create.yaml or update.yaml files.
-  if (args.enable_private_services_connect and args.network):
+  if args.enable_private_service_connect and args.network:
     raise exceptions.ConflictingArgumentsException(
-        '--enable-private-services-connect',
+        '--enable-private-service-connect',
         '--network',
     )
-  if (args.enable_private_services_connect and args.allocated_ip_range_name):
+  if args.enable_private_service_connect and args.allocated_ip_range_name:
     raise exceptions.ConflictingArgumentsException(
-        '--enable-private-services-connect',
+        '--enable-private-service-connect',
         '--allocated-ip-range-name',
     )
 

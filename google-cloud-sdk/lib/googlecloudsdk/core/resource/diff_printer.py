@@ -19,7 +19,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import difflib
 import io
 
 from googlecloudsdk.core.resource import resource_printer_base
@@ -63,6 +62,10 @@ class DiffPrinter(resource_printer_base.ResourcePrinter):
       old: The old original resource.
       new: The new changed resource.
     """
+    # pylint: disable=g-import-not-at-top
+    import difflib
+    # pylint: enable=g-import-not-at-top
+
     # Fill a buffer with the object as rendered originally.
     buf_old = io.StringIO()
     printer = self.Printer(self._print_format, out=buf_old)

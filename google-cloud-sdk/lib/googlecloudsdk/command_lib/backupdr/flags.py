@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 def LocationAttributeConfig(arg_name='location'):
@@ -39,6 +40,30 @@ def GetManagementServerResourceSpec():
   )
 
 
+def GetBackupPlanResourceSpec():
+  return concepts.ResourceSpec(
+      'backupdr.projects.locations.backupPlans',
+      resource_name='Backup Plan',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      backupPlansId=concepts.ResourceParameterAttributeConfig(
+          name='backup_plan',
+          help_text='some help text',
+      ),
+      disable_auto_completers=False,
+  )
+
+
+def GetBackupPlanAssociationResourceSpec():
+  return concepts.ResourceSpec(
+      'backupdr.projects.locations.backupPlanAssociations',
+      resource_name='Backup Plan Association',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
 def AddManagementServerResourceArg(parser, help_text):
   """Adds an argument for management server to parser."""
   name = 'management_server'
@@ -48,6 +73,42 @@ def AddManagementServerResourceArg(parser, help_text):
       help_text,
       required=True,
   ).AddToParser(parser)
+
+
+def AddCreateBackupPlanAssociationFlags(parser):
+  """Adds flags required to create a backup plan association."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'BACKUP_PLAN_ASSOCIATION',
+              GetBackupPlanAssociationResourceSpec(),
+              'Name of the backup plan association to be created',
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--backup-plan',
+              GetBackupPlanResourceSpec(),
+              'Name of the backup plan to be applied to the specified'
+              ' resource.',
+              # This hides the location flag for backup plan.
+              flag_name_overrides={
+                  'location': '',
+                  'project': '',
+              },
+              required=True,
+          ),
+      ],
+      command_level_fallthroughs={
+          '--backup-plan.location': ['BACKUP_PLAN_ASSOCIATION.location'],
+      },
+  ).AddToParser(parser)
+
+  parser.add_argument(
+      '--resource',
+      required=True,
+      type=str,
+      help='Resource to which the Backup Plan will be applied.',
+  )
 
 
 def AddNetwork(parser, required=True):

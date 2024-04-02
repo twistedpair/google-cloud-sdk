@@ -43,6 +43,34 @@ DURATION_HELP_STR = (
     'respectively. If the unit is omitted, seconds is assumed.'
 )
 
+# Mapping of flag name to the feature of subscription
+NON_GDU_DISABLED_SUBSCRIPION_FLAG_FEATURE_MAP = {
+    'enable_message_ordering': 'ENABLE_MESSAGE_ORDERING',
+    'enable_exactly_once_delivery': 'ENABLE_EXACTLY_ONCE_DELIVERY',
+    'min_retry_delay': 'RETRY_POLICY',
+    'max_retry_delay': 'RETRY_POLICY',
+    'dead_letter_topic': 'DEAD_LETTER_TOPIC',
+    'bigquery_table': 'BIGQUERY_TABLE',
+    'cloud_storage_bucket': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_file_prefix': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_file_suffix': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_file_datetime_format': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_max_bytes': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_max_duration': 'CLOUD_STORAGE_CONFIG',
+    'cloud_storage_write_metadata': 'CLOUD_STORAGE_CONFIG',
+    'message_filter': 'MESSAGE_FILTER',
+    'clear_dead_letter_policy': 'CLEAR_DEAD_LETTER_POLICY',
+    'clear_retry_policy': 'CLEAR_RETRY_POLICY',
+    'clear_bigquery_config': 'CLEAR_BIGQUERY_CONFIG',
+    'clear_cloud_storage_config': 'CLEAR_CLOUD_STORAGE_CONFIG',
+    'snapshot': 'SNAPSHOT',
+}
+
+# Mapping of flag name to the feature of topic
+NON_GDU_DISABLED_TOPIC_FLAG_FEATURE_MAP = {
+    'schema': 'SCHEMA',
+}
+
 
 def NegativeBooleanFlagHelpText(flag_name):
   return f'Use --no-{flag_name} to disable this flag.'
@@ -433,9 +461,7 @@ def AddBigQueryConfigFlags(
   )
 
 
-def AddCloudStorageConfigFlags(
-    parser, is_update, enable_cps_gcs_file_datetime_format
-):
+def AddCloudStorageConfigFlags(parser, is_update):
   """Adds Cloud Storage config flags to parser."""
   current_group = parser
   cloud_storage_config_group_help = """Cloud Storage Config Options. The Cloud
@@ -478,15 +504,15 @@ def AddCloudStorageConfigFlags(
       default=None,
       help='The suffix for Cloud Storage filename.',
   )
-  if enable_cps_gcs_file_datetime_format:
-    # TODO(b/317043091): Link flag help text to docs describing allowed datetime
-    # formats once they are available.
-    cloud_storage_config_group.add_argument(
-        '--cloud-storage-file-datetime-format',
-        default=None,
-        hidden=True,
-        help='The custom datetime format string for Cloud Storage filename.',
-    )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-file-datetime-format',
+      default=None,
+      help=(
+          'The custom datetime format string for Cloud Storage filename. See'
+          ' the [datetime format'
+          ' guidance](https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names).'
+      ),
+  )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-max-bytes',
       type=arg_parsers.BinarySize(
@@ -609,7 +635,6 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
-    enable_cps_gcs_file_datetime_format=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -618,8 +643,6 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: whether or not to enable Pubsub Export config flags
       support.
-    enable_cps_gcs_file_datetime_format: whether or not to enable GCS file
-      datetime format flags support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -629,9 +652,7 @@ def AddSubscriptionSettingsFlags(
 
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
-  AddCloudStorageConfigFlags(
-      mutex_group, is_update, enable_cps_gcs_file_datetime_format
-  )
+  AddCloudStorageConfigFlags(mutex_group, is_update)
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
@@ -1099,6 +1120,18 @@ def ValidateDeadLetterPolicy(args):
     )
 
 
+def _RaiseExceptionIfContains(args, universe_domain, feature_map):
+  for flag_name, exception_str in feature_map.items():
+    if getattr(args, flag_name, False):
+      raise exceptions.InvalidArgumentException(
+          exception_str,
+          '--'
+          + str.replace(flag_name, '_', '-')
+          + ' is not available in universe_domain '
+          + universe_domain,
+      )
+
+
 def ValidateSubscriptionArgsUseUniverseSupportedFeatures(args):
   """Raises an exception if args has unsupported features in non default universe.
 
@@ -1111,21 +1144,42 @@ def ValidateSubscriptionArgsUseUniverseSupportedFeatures(args):
   if properties.IsDefaultUniverse():
     return
   universe_domain = properties.GetUniverseDomain()
-  if hasattr(args, 'enable_message_ordering') and args.enable_message_ordering:
-    raise exceptions.InvalidArgumentException(
-        'ENABLE_MESSAGE_ORDERING',
-        '--enable-message-ordering is not available in universe_domain ' +
-        universe_domain
-    )
-  if args.enable_exactly_once_delivery:
-    raise exceptions.InvalidArgumentException(
-        'ENABLE_EXACTLY_ONCE_DELIVERY',
-        '--enable-exactly-once-delivery is not available in universe_domain ' +
-        universe_domain
-    )
-  if args.min_retry_delay or args.max_retry_delay:
-    raise exceptions.InvalidArgumentException(
-        'RETRY_POLICY',
-        '--retry-policy is not available in universe_domain ' +
-        universe_domain
-    )
+  _RaiseExceptionIfContains(
+      args, universe_domain, NON_GDU_DISABLED_SUBSCRIPION_FLAG_FEATURE_MAP
+  )
+
+
+def ValidateTopicArgsUseUniverseSupportedFeatures(args):
+  """Raises an exception if args has unsupported features in non default universe.
+
+  Args:
+    args (argparse.Namespace): Parsed arguments
+
+  Raises:
+    InvalidArgumentException: if invalid flags are set in current universe.
+  """
+  if properties.IsDefaultUniverse():
+    return
+  universe_domain = properties.GetUniverseDomain()
+  _RaiseExceptionIfContains(
+      args, universe_domain, NON_GDU_DISABLED_TOPIC_FLAG_FEATURE_MAP
+  )
+
+
+def ValidateIsDefaultUniverse(command):
+  """Raises an exception if it's not in default universe.
+
+  Args:
+    command: Parsed command
+
+  Raises:
+    InvalidArgumentException: if the command is disabled in current universe.
+  """
+  if properties.IsDefaultUniverse():
+    return
+  universe_domain = properties.GetUniverseDomain()
+  raise exceptions.InvalidArgumentException(
+      str.upper(command),
+      command + ' is not available in universe_domain ' +
+      universe_domain
+  )

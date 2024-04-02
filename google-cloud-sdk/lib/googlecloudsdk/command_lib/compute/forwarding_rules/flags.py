@@ -517,71 +517,93 @@ def AddSetTargetArgs(parser,
           'Only for --load-balancing-scheme=INTERNAL and '
           '--load-balancing-scheme=INTERNAL_MANAGED) Subnetwork that this '
           'forwarding rule applies to. If the network is auto mode, this flag '
-          'is optional. If the network is custom mode, this flag is required.'),
-      action=CreateDeprecationAction('--subnet'))
+          'is optional. If the network is custom mode, this flag is required.'
+      ),
+      action=CreateDeprecationAction('--subnet'),
+  )
 
   parser.add_argument(
       '--subnet-region',
       required=False,
-      help=('Region of the subnetwork to operate on. If not specified, the '
-            'region is set to the region of the forwarding rule. Overrides '
-            'the default compute/region property value for this command '
-            'invocation.'),
-      action=CreateDeprecationAction('--subnet-region'))
+      help=(
+          'Region of the subnetwork to operate on. If not specified, the '
+          'region is set to the region of the forwarding rule. Overrides '
+          'the default compute/region property value for this command '
+          'invocation.'
+      ),
+      action=CreateDeprecationAction('--subnet-region'),
+  )
 
   AddLoadBalancingScheme(
       parser,
       include_psc_google_apis=include_psc_google_apis,
       include_target_service_attachment=include_target_service_attachment,
       include_regional_tcp_proxy=include_regional_tcp_proxy,
-      deprecation_action=CreateDeprecationAction('--load-balancing-scheme'))
+      deprecation_action=CreateDeprecationAction('--load-balancing-scheme'),
+  )
 
 
-def AddLoadBalancingScheme(parser,
-                           include_psc_google_apis=False,
-                           include_target_service_attachment=False,
-                           include_regional_tcp_proxy=False,
-                           deprecation_action=None):
+def AddLoadBalancingScheme(
+    parser,
+    include_psc_google_apis=False,
+    include_target_service_attachment=False,
+    include_regional_tcp_proxy=False,
+    deprecation_action=None,
+):
   """Adds the load-balancing-scheme flag."""
-  td_proxies = ('--target-http-proxy, --target-https-proxy, '
-                '--target-grpc-proxy, --target-tcp-proxy')
-  ilb_proxies = ('--target-http-proxy, --target-https-proxy')
+  td_proxies = (
+      '--target-http-proxy, --target-https-proxy, '
+      '--target-grpc-proxy, --target-tcp-proxy'
+  )
+  ilb_proxies = '--target-http-proxy, --target-https-proxy'
   if include_regional_tcp_proxy:
-    ilb_proxies += (', --target-tcp-proxy')
+    ilb_proxies += ', --target-tcp-proxy'
   load_balancing_choices = {
-      'EXTERNAL':
+      'EXTERNAL': (
           'Classic Application Load Balancers, global external proxy Network '
           ' Load Balancers, external passthrough Network Load Balancers or '
           ' protocol forwarding, used with one of '
           '--target-http-proxy, --target-https-proxy, --target-tcp-proxy, '
           '--target-ssl-proxy, --target-pool, --target-vpn-gateway, '
-          '--target-instance.',
-      'EXTERNAL_MANAGED':
+          '--target-instance.'
+      ),
+      'EXTERNAL_MANAGED': (
           'Global and regional external Application Load Balancers, and '
           'regional external proxy Network Load Balancers, used with '
-          '--target-http-proxy, --target-https-proxy, --target-tcp-proxy.',
-      'INTERNAL':
+          '--target-http-proxy, --target-https-proxy, --target-tcp-proxy.'
+      ),
+      'INTERNAL': (
           'Internal passthrough Network Load Balancers or protocol '
-          'forwarding, used with --backend-service.',
-      'INTERNAL_SELF_MANAGED':
-          'Traffic Director, used with {0}.'.format(td_proxies),
-      'INTERNAL_MANAGED':
+          'forwarding, used with --backend-service.'
+      ),
+      'INTERNAL_SELF_MANAGED': 'Traffic Director, used with {0}.'.format(
+          td_proxies
+      ),
+      'INTERNAL_MANAGED': (
           'Internal Application Load Balancers and internal proxy Network '
           'Load Balancers, used with {0}.'.format(ilb_proxies)
+      ),
   }
 
   # There isn't a default load-balancing-scheme for PSC forwarding rules.
   # But the default is EXTERNAL for non-PSC forwarding rules.
-  include_psc = (include_psc_google_apis or include_target_service_attachment)
+  include_psc = include_psc_google_apis or include_target_service_attachment
+  help_text_with_psc = (
+      'This defines the forwarding rule\'s load balancing scheme. Note that it '
+      'defaults to EXTERNAL and is not applicable for Private Service Connect '
+      'forwarding rules.'
+  )
+  help_text_disabled_psc = (
+      "This defines the forwarding rule's load balancing scheme."
+  )
   parser.add_argument(
       '--load-balancing-scheme',
       choices=load_balancing_choices,
       type=lambda x: x.replace('-', '_').upper(),
       default=None if include_psc else 'EXTERNAL',
-      help="This defines the forwarding rule's load balancing scheme. Note that it defaults to EXTERNAL and is not applicable for Private Service Connect forwarding rules."
-      if include_psc else
-      "This defines the forwarding rule's load balancing scheme.",
-      action=deprecation_action)
+      help=help_text_with_psc if include_psc else help_text_disabled_psc,
+      action=deprecation_action,
+  )
 
 
 def SourceIpRangesParser(string_value):

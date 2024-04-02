@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Any
+
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 import six
@@ -82,13 +84,15 @@ class Walker(object):
         return None
     return current
 
-  def Walk(self, hidden=False, restrict=None):
+  def Walk(self, hidden=False, universe_compatible=False, restrict=None):
     """Calls self.Visit() on each node in the CLI tree.
 
     The walk is DFS, ordered by command name for reproducability.
 
     Args:
       hidden: Include hidden groups and commands if True.
+      universe_compatible: Exclusively include commands which are marked
+        universe compatible.
       restrict: Restricts the walk to the command/group dotted paths in this
         list. For example, restrict=['gcloud.alpha.test', 'gcloud.topic']
         restricts the walk to the 'gcloud topic' and 'gcloud alpha test'
@@ -99,6 +103,17 @@ class Walker(object):
     Returns:
       The return value of the top level Visit() call.
     """
+    def _IsUniverseCompatible(command: Any) -> bool:
+      """Determines if a command is universe compatible.
+
+      Args:
+        command: CommandCommon command node.
+
+      Returns:
+        True if command is universe compatible.
+      """
+      return not isinstance(command, dict) and (command.IsUniverseCompatible())
+
     def _Include(command, traverse=False):
       """Determines if command should be included in the walk.
 
@@ -110,6 +125,8 @@ class Walker(object):
         True if command should be included in the walk.
       """
       if not hidden and command.IsHidden():
+        return False
+      if universe_compatible and not _IsUniverseCompatible(command):
         return False
       if not restrict:
         return True

@@ -1483,6 +1483,18 @@ def AddRemoveRegionsArg(parser):
   )
 
 
+def AddDomainArg(parser):
+  parser.add_argument(
+      '--domain',
+      hidden=True,
+      help=(
+          'Optional domain name to create a multi-regional load-balancer. This'
+          ' requires both the Serverless Integrations (RunApps) and Compute '
+          'APIs to be enabled.'
+      ),
+  )
+
+
 def AddClientNameAndVersionFlags(parser):
   """Add flags for specifying the client name and version annotations."""
   parser.add_argument(
@@ -2754,6 +2766,10 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     base_image_changes = _GetBaseImageChanges(args)
     if base_image_changes:
       changes.extend(base_image_changes)
+  if FlagIsExplicitlySet(args, 'domain'):
+    changes.append(
+        config_changes.MultiRegionDomainNameChange(domain_name=args.domain)
+    )
   return changes
 
 
@@ -3007,6 +3023,11 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   if FlagIsExplicitlySet(args, 'default_url') and not args.default_url:
     return None
 
+  if (
+      FlagIsExplicitlySet(args, 'invoker_iam_check')
+      and not args.invoker_iam_check
+  ):
+    return None
   if prompt:
     # Need to check if the user has permissions before we prompt
     assert client is not None and service_ref is not None

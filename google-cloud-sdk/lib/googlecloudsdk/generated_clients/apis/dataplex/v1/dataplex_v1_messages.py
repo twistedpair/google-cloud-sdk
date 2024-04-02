@@ -1048,14 +1048,17 @@ class DataplexProjectsLocationsEntryGroupsEntriesListRequest(_messages.Message):
   Fields:
     filter: Optional. A filter on the entries to return. Filters are case-
       sensitive. The request can be filtered by the following fields:
-      entry_type, display_name. The comparison operators are =, !=, <, >, <=,
-      >= (strings are compared according to lexical order) The logical
-      operators AND, OR, NOT can be used in the filter. Example filter
-      expressions: "display_name=AnExampleDisplayName"
+      entry_type, entry_source.display_name. The comparison operators are =,
+      !=, <, >, <=, >= (strings are compared according to lexical order) The
+      logical operators AND, OR, NOT can be used in the filter. Wildcard "*"
+      can be used, but for entry_type the full project id or number needs to
+      be provided. Example filter expressions:
+      "entry_source.display_name=AnExampleDisplayName"
       "entry_type=projects/example-
       project/locations/global/entryTypes/example-entry_type"
-      "entry_type=projects/a* OR "entry_type=projects/k*" "NOT
-      display_name=AnotherExampleDisplayName"
+      "entry_type=projects/example-project/locations/us/entryTypes/a* OR
+      entry_type=projects/another-project/locations/*" "NOT
+      entry_source.display_name=AnotherExampleDisplayName"
     pageSize: A integer attribute.
     pageToken: Optional. The pagination token returned by a previous request.
     parent: Required. The resource name of the parent Entry Group:
@@ -1378,40 +1381,6 @@ class DataplexProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class DataplexProjectsLocationsGovernanceRulesCreateRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsGovernanceRulesCreateRequest object.
-
-  Fields:
-    googleCloudDataplexV1GovernanceRule: A GoogleCloudDataplexV1GovernanceRule
-      resource to be passed as the request body.
-    governanceRuleId: Required. GovernanceRule identifier. * Must contain only
-      lowercase letters, numbers and hyphens. * Must start with a letter. *
-      Must be between 1-63 characters. * Must end with a number or a letter. *
-      Must be unique within the Project.
-    parent: Required. The resource name of the governance rule location, of
-      the form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
-  """
-
-  googleCloudDataplexV1GovernanceRule = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1)
-  governanceRuleId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
-
-
-class DataplexProjectsLocationsGovernanceRulesDeleteRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsGovernanceRulesDeleteRequest object.
-
-  Fields:
-    name: Required. The resource name of the GovernanceRule. projects/{project
-      _number}/locations/{location_id}/governanceRules/{governance_rule_id}
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest object.
 
@@ -1434,60 +1403,6 @@ class DataplexProjectsLocationsGovernanceRulesGetIamPolicyRequest(_messages.Mess
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsGovernanceRulesGetRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsGovernanceRulesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the GovernanceRule: projects/{project
-      _number}/locations/{location_id}/governanceRules/{governance_rule_id}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class DataplexProjectsLocationsGovernanceRulesListRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsGovernanceRulesListRequest object.
-
-  Fields:
-    filter: Optional. Filter request.
-    pageSize: Optional. Maximum number of GovernanceRules to return. The
-      service may return fewer than this value. If unspecified, at most 10
-      GovernanceRules will be returned. The maximum value is 1000; values
-      above 1000 will be coerced to 1000.
-    pageToken: Optional. Page token received from a previous
-      ListGovernanceRules call. Provide this to retrieve the subsequent page.
-      When paginating, all other parameters provided to ListGovernanceRules
-      must match the call that provided the page token.
-    parent: Required. The resource name of the GovernanceRule location, of the
-      form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
-class DataplexProjectsLocationsGovernanceRulesPatchRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsGovernanceRulesPatchRequest object.
-
-  Fields:
-    googleCloudDataplexV1GovernanceRule: A GoogleCloudDataplexV1GovernanceRule
-      resource to be passed as the request body.
-    name: Output only. The relative resource name of the Rule, of the form:
-      projects/{project_number}/locations/{location}/rules/{rule_id}
-    updateMask: Required. Mask of fields to update.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
-  """
-
-  googleCloudDataplexV1GovernanceRule = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsGovernanceRulesSetIamPolicyRequest(_messages.Message):
@@ -4652,6 +4567,8 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
       in a table passes the specified condition.
     setExpectation: Row-level rule which evaluates whether each column value
       is contained by a specified set.
+    sqlAssertion: Aggregate rule which evaluates the number of rows returned
+      for the provided statement.
     statisticRangeExpectation: Aggregate rule which evaluates whether the
       column aggregate statistic lies between a specified range.
     tableConditionExpectation: Aggregate rule which evaluates whether the
@@ -4673,10 +4590,11 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
   regexExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRegexExpectation', 8)
   rowConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation', 9)
   setExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSetExpectation', 10)
-  statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 11)
-  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 12)
-  threshold = _messages.FloatField(13)
-  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 14)
+  sqlAssertion = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleSqlAssertion', 11)
+  statisticRangeExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation', 12)
+  tableConditionExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleTableConditionExpectation', 13)
+  threshold = _messages.FloatField(14)
+  uniquenessExpectation = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleUniquenessExpectation', 15)
 
 
 class GoogleCloudDataplexV1DataQualityRuleNonNullExpectation(_messages.Message):
@@ -4723,6 +4641,9 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
   results.
 
   Fields:
+    assertionRowCount: Output only. The number of rows returned by the sql
+      statement in the SqlAssertion rule.This field is only valid for
+      SqlAssertion rules.
     evaluatedCount: The number of rows a rule was evaluated against.This field
       is only valid for row-level type rules.Evaluated count can be configured
       to either include all rows (default) - with null rows automatically
@@ -4739,13 +4660,14 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
     rule: The rule specified in the DataQualitySpec, as is.
   """
 
-  evaluatedCount = _messages.IntegerField(1)
-  failingRowsQuery = _messages.StringField(2)
-  nullCount = _messages.IntegerField(3)
-  passRatio = _messages.FloatField(4)
-  passed = _messages.BooleanField(5)
-  passedCount = _messages.IntegerField(6)
-  rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 7)
+  assertionRowCount = _messages.IntegerField(1)
+  evaluatedCount = _messages.IntegerField(2)
+  failingRowsQuery = _messages.StringField(3)
+  nullCount = _messages.IntegerField(4)
+  passRatio = _messages.FloatField(5)
+  passed = _messages.BooleanField(6)
+  passedCount = _messages.IntegerField(7)
+  rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 8)
 
 
 class GoogleCloudDataplexV1DataQualityRuleRowConditionExpectation(_messages.Message):
@@ -4768,6 +4690,21 @@ class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
   """
 
   values = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDataplexV1DataQualityRuleSqlAssertion(_messages.Message):
+  r"""Queries for rows returned by the provided SQL statement. If any rows are
+  are returned, this rule fails.The SQL statement needs to use BigQuery
+  standard SQL syntax, and must not contain any semicolons.${data()} can be
+  used to reference the rows being evaluated, i.e. the table after all
+  additional filters (row filters, incremental data filters, sampling) are
+  applied.Example: SELECT * FROM ${data()} WHERE price < 0
+
+  Fields:
+    sqlStatement: Optional. The SQL statement.
+  """
+
+  sqlStatement = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1DataQualityRuleStatisticRangeExpectation(_messages.Message):
@@ -5930,16 +5867,18 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
   various metadata.
 
   Messages:
-    AspectsValue: Optional. The Aspects attached to the Entry. The key is
-      either the resource name of the aspect type (if the aspect is attached
-      directly to the entry) or "aspectType@path" if the aspect is attached to
-      an entry's path.
+    AspectsValue: Optional. The Aspects attached to the Entry. The format for
+      the key can be one of the following: 1.
+      {projectId}.{locationId}.{aspectTypeId} (if the aspect is attached
+      directly to the entry) 2. {projectId}.{locationId}.{aspectTypeId}@{path}
+      (if the aspect is attached to an entry's path)
 
   Fields:
-    aspects: Optional. The Aspects attached to the Entry. The key is either
-      the resource name of the aspect type (if the aspect is attached directly
-      to the entry) or "aspectType@path" if the aspect is attached to an
-      entry's path.
+    aspects: Optional. The Aspects attached to the Entry. The format for the
+      key can be one of the following: 1.
+      {projectId}.{locationId}.{aspectTypeId} (if the aspect is attached
+      directly to the entry) 2. {projectId}.{locationId}.{aspectTypeId}@{path}
+      (if the aspect is attached to an entry's path)
     createTime: Output only. The time when the Entry was created.
     entrySource: Optional. Source system related information for an entry.
     entryType: Required. Immutable. The resource name of the EntryType used to
@@ -5955,10 +5894,11 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AspectsValue(_messages.Message):
-    r"""Optional. The Aspects attached to the Entry. The key is either the
-    resource name of the aspect type (if the aspect is attached directly to
-    the entry) or "aspectType@path" if the aspect is attached to an entry's
-    path.
+    r"""Optional. The Aspects attached to the Entry. The format for the key
+    can be one of the following: 1. {projectId}.{locationId}.{aspectTypeId}
+    (if the aspect is attached directly to the entry) 2.
+    {projectId}.{locationId}.{aspectTypeId}@{path} (if the aspect is attached
+    to an entry's path)
 
     Messages:
       AdditionalProperty: An additional property for a AspectsValue object.
@@ -6555,149 +6495,6 @@ class GoogleCloudDataplexV1GovernanceEventEntity(_messages.Message):
   entityType = _messages.EnumField('EntityTypeValueValuesEnum', 2)
 
 
-class GoogleCloudDataplexV1GovernanceRule(_messages.Message):
-  r"""Governance Rules are used to specify governance intent at scale. A rule
-  comprises of a query and the list of 'specs' to be applied on the resources
-  matching the query. Additionally, specs can also be applied on the sub-
-  resources using 'DynamicPaths'. A rule can also be used to specify
-  governance intent on a single resource, by applying specs explicitly.
-
-  Messages:
-    LabelsValue: Optional. User-defined labels for the Rule.
-
-  Fields:
-    createTime: Output only. The time when the Rule was created.
-    description: Optional. Description of the Rule.
-    displayName: Optional. User friendly display name.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding. Etags must be used
-      when calling the DeleteRule and the UpdateRule method.
-    labels: Optional. User-defined labels for the Rule.
-    name: Output only. The relative resource name of the Rule, of the form:
-      projects/{project_number}/locations/{location}/rules/{rule_id}
-    paths: Optional. The list of 'path' to specify the column identifiers to
-      apply specs on the columns in the matched resources.
-    query: Optional. Query is used to identify resources in a logical
-      container using filters and apply specs.
-    specs: Optional. Specs to be associated with the resource.
-    uid: Output only. System generated globally unique ID for the Rule. This
-      ID will be different if the Rule is deleted and re-created with the same
-      name.
-    updateTime: Output only. The time when the Rule was last updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. User-defined labels for the Rule.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  paths = _messages.MessageField('GoogleCloudDataplexV1GovernanceRulePath', 7, repeated=True)
-  query = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleQuery', 8)
-  specs = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleSpecs', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-
-
-class GoogleCloudDataplexV1GovernanceRulePath(_messages.Message):
-  r"""Path specifies the column identifiers to apply specs on the columns in
-  the matched resources.
-
-  Fields:
-    aspect: A string attribute.
-    specs: Required. Specs to be associated with the path of the resource.
-  """
-
-  aspect = _messages.StringField(1)
-  specs = _messages.MessageField('GoogleCloudDataplexV1GovernanceRuleSpecs', 2)
-
-
-class GoogleCloudDataplexV1GovernanceRuleQuery(_messages.Message):
-  r"""Query is used for governing data at scale. They can be used to identify
-  resources in a logical container using filters.
-
-  Enums:
-    TypeValueValuesEnum: Required. The metastore system to execute query on.
-
-  Fields:
-    entryTypes: Required. The list of entry types to apply the filter on.
-      Entry Type format will be as defined below 1. For Dataplex-defined entry
-      types: EntryTypeID 2. For user-defined entry types in global region:
-      ProjectID.EntryTypeID 3. For user-defined entry types in a specific
-      region (must match region of governance rule):
-      ProjectID.LocationID.EntryTypeID For Dataplex-defined entry allowed
-      types are 'bigquery-table', 'bigquery-dataset' , 'bigquery-view',
-      'storage-bucket' and 'storage-folder'
-    expression: Required. The query string to match the resources. All the
-      resources which are returned as response from the querySystem for this
-      filter will have the attributes applied. Expression Format : 1. Query
-      expression does only supports aspect facet. a) Aspect type it should be
-      fully Qualified aspect aspect:... b) For Dataplex-defined aspect types:
-      projectId will be 'dataplex-types' and location will be 'global'. 2.
-      Will accept logical and bracketed expressions (AND, NOT, OR)
-    scopes: Optional. The full resource name of the resource logical
-      container. Should either be organizations/ or projects/. If scope is not
-      provided, will be defaulted to project in which rule is ben created.
-      Only a single scope can be specified at this time.
-    type: Required. The metastore system to execute query on.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The metastore system to execute query on.
-
-    Values:
-      TYPE_UNSPECIFIED: DATA_CATALOG is the default system used for querying,
-        when unspecified.
-      DATAPLEX: <no description>
-    """
-    TYPE_UNSPECIFIED = 0
-    DATAPLEX = 1
-
-  entryTypes = _messages.StringField(1, repeated=True)
-  expression = _messages.StringField(2)
-  scopes = _messages.StringField(3, repeated=True)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
-
-
-class GoogleCloudDataplexV1GovernanceRuleSpecs(_messages.Message):
-  r"""Specs hold the governance intent to be applied on resources.
-
-  Fields:
-    dataAccess: Optional. Specified when applied to data stored on the
-      resource (eg: rows, columns in BigQuery Tables).
-    resourceAccess: Optional. Specified when applied to a resource (eg: Cloud
-      Storage bucket, BigQuery dataset, BigQuery table).
-  """
-
-  dataAccess = _messages.MessageField('GoogleCloudDataplexV1DataAccessSpec', 1)
-  resourceAccess = _messages.MessageField('GoogleCloudDataplexV1ResourceAccessSpec', 2)
-
-
 class GoogleCloudDataplexV1Job(_messages.Message):
   r"""A job represents an instance of a task.
 
@@ -7232,19 +7029,6 @@ class GoogleCloudDataplexV1ListEnvironmentsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class GoogleCloudDataplexV1ListGovernanceRulesResponse(_messages.Message):
-  r"""List GovernanceRules response.
-
-  Fields:
-    governanceRules: GovernanceRules under the given parent location.
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-  """
-
-  governanceRules = _messages.MessageField('GoogleCloudDataplexV1GovernanceRule', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class GoogleCloudDataplexV1ListJobsResponse(_messages.Message):
   r"""List jobs response.
 
@@ -7753,27 +7537,13 @@ class GoogleCloudDataplexV1SearchEntriesResult(_messages.Message):
 
   Fields:
     dataplexEntry: Entry format of the result.
-    description: Entry description.
-    displayName: Display name.
-    entry: Resource name of the entry.
-    entryType: The entry type.
-    fullyQualifiedName: Fully qualified name.
     linkedResource: Linked resource name.
-    modifyTime: The last modification timestamp.
-    relativeResource: Relative resource name.
     snippets: Snippets.
   """
 
   dataplexEntry = _messages.MessageField('GoogleCloudDataplexV1Entry', 1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  entry = _messages.StringField(4)
-  entryType = _messages.StringField(5)
-  fullyQualifiedName = _messages.StringField(6)
-  linkedResource = _messages.StringField(7)
-  modifyTime = _messages.StringField(8)
-  relativeResource = _messages.StringField(9)
-  snippets = _messages.MessageField('GoogleCloudDataplexV1SearchEntriesResultSnippets', 10)
+  linkedResource = _messages.StringField(2)
+  snippets = _messages.MessageField('GoogleCloudDataplexV1SearchEntriesResultSnippets', 3)
 
 
 class GoogleCloudDataplexV1SearchEntriesResultSnippets(_messages.Message):

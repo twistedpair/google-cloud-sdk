@@ -14,14 +14,18 @@
 # limitations under the License.
 """Resource parsing helpers."""
 
+# TODO(b/331622809): Review and fix any violations of naming conventions.
+
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
 import re
 from typing import Any
 
 from googlecloudsdk.calliope import exceptions
+
 
 STRING_MAX_LENGTH = 1000
 METASTORE_TYPE_DICT = {
@@ -110,6 +114,206 @@ def ValidateStringField(arg_name):
         ),
     )
   return arg_name
+
+
+def ValidateCloudSqlInstanceConnectionName(connection_name):
+  """Validates the connection name of a CloudSQL instance, must be in the form '{project_id}:{region}:{instance_id}'.
+
+  Args:
+    connection_name: The CloudSQL instance connection name string.
+
+  Returns:
+    The connection name string.
+  Raises:
+    BadArgumentException: when the input string does not match the pattern.
+  """
+  pattern = re.compile(r'^([^:]+:){2}[^:]+$')
+  if not pattern.match(connection_name):
+    raise exceptions.BadArgumentException(
+        '--instance-connection-name',
+        'The instance connection name should be in the format'
+        ' project_id:region:instance_id',
+    )
+  return connection_name
+
+
+def ValidateNetworkResourceName(arg_name):
+  """Validates the resource name of a compute network, must be in the form 'projects/{project_id}/global/networks/{network_id}'."""
+
+  def Process(resource_name):
+    pattern = re.compile(r'^projects/[^/]+/global/networks/[^/]+$')
+    if not pattern.match(resource_name):
+      raise exceptions.BadArgumentException(
+          arg_name,
+          'The network resource name should be in the format'
+          ' projects/<project_id>/global/networks/<network_id>',
+      )
+    return resource_name
+
+  return Process
+
+
+def ValidateSubnetworkResourceName(arg_name):
+  """Validates the resource name of a compute subnetwork, must be in the form 'projects/{project_id}/regions/{region_id}/subnetworks/{subnetwork_id}'."""
+
+  def Process(resource_name):
+    pattern = re.compile(r'^projects/[^/]+/regions/[^/]+/subnetworks/[^/]+$')
+    if not pattern.match(resource_name):
+      raise exceptions.BadArgumentException(
+          arg_name,
+          'The subnetwork resource name should be in the format'
+          ' projects/{project_id}/regions/{region_id}/subnetworks/{subnetwork_id}',
+      )
+    return resource_name
+
+  return Process
+
+
+def ValidateHiveDatabaseName(db_name):
+  """Validates the hive database name.
+
+  Args:
+    db_name: the hive database name.
+
+  Returns:
+    the hive database name.
+  Raises:
+    BadArgumentException: when the database name doesn't conform to the pattern
+    or is longer than 64 characters.
+  """
+
+  pattern = re.compile(r'^[0-9a-zA-Z$_-]+$')
+  if not pattern.match(db_name):
+    raise exceptions.BadArgumentException(
+        '--hive-database-name',
+        'hive database name must start with an alphanumeric character, and'
+        ' contain only the following characters: letters, numbers, dashes (-),'
+        ' and underscores (_).',
+    )
+  if len(db_name) > 64:
+    raise exceptions.BadArgumentException(
+        '--hive-database-name',
+        'hive database name must be less than 64 characters.',
+    )
+  return db_name
+
+
+def ValidateCloudSqlIpAddress(ip_address):
+  """Validates the Cloud SQL IP address.
+
+  Args:
+    ip_address: the Cloud SQL IP address.
+
+  Returns:
+    the IP address.
+  Raises:
+    BadArgumentException: when the IP address is invalid.
+  """
+
+  try:
+    ipaddress.IPv4Address(ip_address)
+    return ip_address
+  except ValueError:
+    raise exceptions.BadArgumentException(
+        '--ip-address',
+        'Invalid IP address.',
+    )
+
+
+def ValidateSubnetIpRange(cidr):
+  """Validates the subnet IP range.
+
+  Args:
+    cidr: the CIDR range for the subnet.
+
+  Returns:
+    the CIDR range.
+  Raises:
+    BadArgumentException: when the CIDR range is invalid.
+  """
+
+  def IsCidrWithinValidRanges(cidr):
+    """Checks if a given CIDR block is contained within a list of valid CIDR ranges."""
+
+    # Valid CIDR ranges
+    rfc_1918_spaces = ['10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16']
+    rfc_6598_spaces = ['100.64.0.0/10']
+    rfc_6890_spaces = ['192.0.0.0/24']
+    rfc_5737_spaces = ['192.0.2.0/24', '198.51.100.0/24', '203.0.113.0/24']
+    rfc_7526_spaces = ['192.88.99.0/24']
+    rfc_2544_spaces = ['198.18.0.0/15']
+
+    valid_cidr_ranges = (
+        rfc_1918_spaces
+        + rfc_6598_spaces
+        + rfc_6890_spaces
+        + rfc_5737_spaces
+        + rfc_7526_spaces
+        + rfc_2544_spaces
+    )
+    cidr_block = ipaddress.IPv4Network(cidr)
+    for valid_range in valid_cidr_ranges:
+      if cidr_block.subnet_of(ipaddress.IPv4Network(valid_range)):
+        return True
+    return False
+
+  try:
+    if not IsCidrWithinValidRanges(cidr):
+      raise exceptions.BadArgumentException(
+          '--subnet-ip-range',
+          'The subnet IP range is invalid, see'
+          ' https://cloud.google.com/vpc/docs/subnets.md#valid-ranges',
+      )
+  except ValueError:
+    raise exceptions.BadArgumentException(
+        '--subnet-ip-range',
+        'Invalid CIDR address block.',
+    )
+
+  return cidr
+
+
+def ValidateMigrationBucketName(bucket_name):
+  """Validates the Cloud Storage bucket name used for CDC during migration, should not start with 'gs://'.
+
+  Args:
+    bucket_name: the Cloud Storage bucket name.
+
+  Returns:
+    the Cloud Storage bucket name.
+  Raises:
+    BadArgumentException: when the Cloud Storage bucket name doesn't conform to
+    the pattern.
+  """
+
+  pattern = re.compile(r'^(?!gs://)([a-z0-9\._-]+)$')
+  if not pattern.match(bucket_name):
+    raise exceptions.BadArgumentException(
+        '--bucket',
+        'Invalid bucket name',
+    )
+  return bucket_name
+
+
+def ValidateMigrationRootPath(root_path):
+  """Validates the root path inside the Cloud Storage bucket used for CDC during migration, must start with a forward slash ('/') character.
+
+  Args:
+    root_path: the root path inside the Cloud Storage bucket.
+
+  Returns:
+    the root path.
+  Raises:
+    BadArgumentException: when the root path is invalid.
+  """
+
+  pattern = re.compile(r'^/([^\n\r]*)$')
+  if not pattern.match(root_path):
+    raise exceptions.BadArgumentException(
+        '--root-path',
+        'Invalid root path',
+    )
+  return root_path
 
 
 def ValidateServiceMutexConfig(unused_ref, unused_args, req):

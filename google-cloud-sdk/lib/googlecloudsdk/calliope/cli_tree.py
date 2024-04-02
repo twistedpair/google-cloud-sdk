@@ -107,6 +107,10 @@ class SdkRootNotFoundError(Error):
   """Raised if SDK root is not found."""
 
 
+class SdkConfigNotFoundError(Error):
+  """Raised if SDK root config/ does not exist."""
+
+
 class SdkDataCliNotFoundError(Error):
   """Raised if SDK root data/cli/ does not exist."""
 
@@ -248,7 +252,8 @@ class FlagOrPositional(Argument):
       return
     self.default = None
     match = re.match(
-        r'(.*\.) The default (value )?is ', self.description, re.DOTALL)
+        r'(.*\.) The default (value )?is ', self.description, re.DOTALL
+    )
     if match:
       self.description = match.group(1)
 
@@ -280,8 +285,9 @@ class Flag(FlagOrPositional):
       self.type = 'bool'
       self.default = bool(flag.default)
     else:
-      if (isinstance(flag.type, six.integer_types) or
-          isinstance(flag.default, six.integer_types)):
+      if isinstance(flag.type, six.integer_types) or isinstance(
+          flag.default, six.integer_types
+      ):
         self.type = 'int'
       elif isinstance(flag.type, float) or isinstance(flag.default, float):
         self.type = 'float'
@@ -358,7 +364,8 @@ class Constraint(Group):
     super(Constraint, self).__init__(
         group,
         arguments=[item[1] for item in order],
-        key=order[0][0] if order else '')
+        key=order[0][0] if order else '',
+    )
 
 
 class Command(object):
@@ -396,7 +403,8 @@ class Command(object):
     command_path_string = ' '.join(self.path)
     parent_path_string = ' '.join(parent.path) if parent else ''
     self.release, capsule = self.__Release(
-        command, self.release, getattr(command, 'short_help', ''))
+        command, self.release, getattr(command, 'short_help', '')
+    )
 
     # This code block must be meticulous on when and where LazyFormat expansion
     # is applied to the markdown snippets. First, no expanded text should be
@@ -406,7 +414,8 @@ class Command(object):
     capsule = _NormalizeDescription(capsule)
     sections = {}
     self.release, description = self.__Release(
-        command, self.release, getattr(command, 'long_help', ''))
+        command, self.release, getattr(command, 'long_help', '')
+    )
     detailed_help = getattr(command, 'detailed_help', {})
     sections.update(detailed_help)
     description = _NormalizeDescription(description)
@@ -425,14 +434,16 @@ class Command(object):
               command=command_path_string,
               index=capsule,
               description=description,
-              parent_command=parent_path_string)
+              parent_command=parent_path_string,
+          )
     self.capsule = console_io.LazyFormat(
         capsule,
         command=command_path_string,
         man_name='.'.join(self.path),
         top_command=self.path[0] if self.path else '',
         parent_command=parent_path_string,
-        **sections)
+        **sections
+    )
 
     # _parent is explicitly private so it won't appear in serialized output.
     self._parent = parent
@@ -684,9 +695,8 @@ def _DumpToFile(tree, f):
   from googlecloudsdk.core.resource import resource_projector
 
   resource_printer.Print(
-      resource_projector.MakeSerializable(_Serialize(tree)),
-      'json',
-      out=f)
+      resource_projector.MakeSerializable(_Serialize(tree)), 'json', out=f
+  )
 
 
 def CliTreeDir():
@@ -706,14 +716,14 @@ def CliTreeDir():
   if paths.sdk_root is None:
     raise SdkRootNotFoundError(
         'SDK root not found for this installation. CLI tree cannot be '
-        'loaded or generated.')
-  directory = os.path.join(paths.sdk_root,
-                           'data',
-                           'cli')
+        'loaded or generated.'
+    )
+  directory = os.path.join(paths.sdk_root, 'data', 'cli')
   if not os.path.isdir(directory):
     raise SdkDataCliNotFoundError(
         'SDK root data CLI directory [{}] not found for this installation. '
-        'CLI tree cannot be loaded or generated.'.format(directory))
+        'CLI tree cannot be loaded or generated.'.format(directory)
+    )
   return directory
 
 
@@ -723,15 +733,35 @@ def CliTreeConfigDir():
   This directory is part of the user config directory its contents are stable
   across releases/installations/updates.
 
+  Raises:
+    SdkConfigNotFoundError: If the SDK config directory does not exist.
+
   Returns:
     The directory path.
   """
-  return os.path.join(config.Paths().global_config_dir, 'cli')
+  global_config_dir = config.Paths().global_config_dir
+  cli_tree_config_dir = os.path.join(global_config_dir, 'cli')
+  if os.path.isdir(global_config_dir):
+    if not os.path.isdir(cli_tree_config_dir):
+      os.makedirs(cli_tree_config_dir, exist_ok=True)
+  else:
+    raise SdkConfigNotFoundError(
+        'CLI config directory [{}] not found for this installation. '
+        'CLI tree cannot be loaded or generated.'.format(
+            global_config_dir
+        )
+    )
+  return cli_tree_config_dir
 
 
 def CliTreePath(name=DEFAULT_CLI_NAME, directory=None):
   """Returns the CLI tree file path for name, default if directory is None."""
   return os.path.join(directory or CliTreeDir(), name + '.json')
+
+
+def CliTreeConfigPath(name=DEFAULT_CLI_NAME, directory=None):
+  """Returns the CLI tree config file path for name, default if directory is None."""
+  return os.path.join(directory or CliTreeConfigDir(), name + '.json')
 
 
 def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
@@ -744,7 +774,8 @@ def _GenerateRoot(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
     message = 'Generating the {} CLI and caching in [{}]'.format(name, path)
   else:
     message = 'Generating the {} CLI for one-time use (no SDK root)'.format(
-        name)
+        name
+    )
   with progress_tracker.ProgressTracker(message):
     tree = CliTreeGenerator(cli, branch=branch).Walk(hidden=True)
     setattr(tree, LOOKUP_VERSION, VERSION)
@@ -760,8 +791,8 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
 
   Args:
     cli: The CLI.
-    path: The JSON file path to dump to, the standard output if '-', the
-      default CLI tree path if None.
+    path: The JSON file path to dump to, the standard output if '-', the default
+      CLI tree path if None.
     name: The CLI name.
     branch: The path of the CLI subtree to generate.
 
@@ -769,7 +800,7 @@ def Dump(cli, path=None, name=DEFAULT_CLI_NAME, branch=None):
     The generated CLI tree.
   """
   if path is None:
-    path = CliTreePath()
+    path = CliTreeConfigPath()
   tree = _GenerateRoot(cli=cli, path=path, name=name, branch=branch)
   if path == '-':
     _DumpToFile(tree, sys.stdout)
@@ -805,27 +836,36 @@ def _IsUpToDate(tree, path, ignore_errors, verbose):
     if not ignore_errors:
       raise CliCommandVersionError(
           'CLI tree [{}] version is [{}], expected [{}]'.format(
-              path, actual_tree_version, expected_tree_version))
+              path, actual_tree_version, expected_tree_version
+          )
+      )
     return False
 
   expected_command_version = _GetDefaultCliCommandVersion()
   actual_command_version = tree.get(LOOKUP_CLI_VERSION)
   test_versions = (TEST_CLI_VERSION_HEAD, TEST_CLI_VERSION_TEST)
-  if (actual_command_version in test_versions or
-      expected_command_version in test_versions):
+  if (
+      actual_command_version in test_versions
+      or expected_command_version in test_versions
+  ):
     pass
   elif actual_command_version != expected_command_version:
     if not ignore_errors:
       raise CliCommandVersionError(
           'CLI tree [{}] command version is [{}], expected [{}]'.format(
-              path, actual_command_version, expected_command_version))
+              path, actual_command_version, expected_command_version
+          )
+      )
     return False
 
   if verbose:
     from googlecloudsdk.core import log
 
-    log.status.Print('[{}] CLI tree version [{}] is up to date.'.format(
-        DEFAULT_CLI_NAME, expected_command_version))
+    log.status.Print(
+        '[{}] CLI tree version [{}] is up to date.'.format(
+            DEFAULT_CLI_NAME, expected_command_version
+        )
+    )
   return True
 
 
@@ -866,7 +906,8 @@ def _Deserialize(tree):
           arguments[i] = all_flags_list[arg]
       elif arg.get(LOOKUP_IS_GROUP, False):
         _ReplaceConstraintIndexWithArgReference(
-            arg.get(LOOKUP_ARGUMENTS), positionals)
+            arg.get(LOOKUP_ARGUMENTS), positionals
+        )
 
   def _ReplaceIndexWithFlagReference(command):
     flags = command[LOOKUP_FLAGS]
@@ -874,7 +915,8 @@ def _Deserialize(tree):
       flags[name] = all_flags_list[index]
     arguments = command[LOOKUP_CONSTRAINTS][LOOKUP_ARGUMENTS]
     _ReplaceConstraintIndexWithArgReference(
-        arguments, command[LOOKUP_POSITIONALS])
+        arguments, command[LOOKUP_POSITIONALS]
+    )
     for subcommand in command[LOOKUP_COMMANDS].values():
       _ReplaceIndexWithFlagReference(subcommand)
 
@@ -883,13 +925,14 @@ def _Deserialize(tree):
   return tree
 
 
-def Load(path=None, cli=None, force=False, one_time_use_ok=False,
-         verbose=False):
+def Load(
+    path=None, cli=None, force=False, one_time_use_ok=False, verbose=False
+):
   """Loads the default CLI tree from the json file path.
 
   Args:
-    path: The path name of the JSON file the CLI tree was dumped to. None
-      for the default CLI tree path.
+    path: The path name of the JSON file the CLI tree was dumped to. None for
+      the default CLI tree path.
     cli: The CLI. If not None and path fails to import, a new CLI tree is
       generated, written to path, and returned.
     force: Update an existing tree by forcing it to be out of date if True.
@@ -906,8 +949,8 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
   """
   if path is None:
     try:
-      path = CliTreePath()
-    except SdkRootNotFoundError:
+      path = CliTreeConfigPath()
+    except SdkConfigNotFoundError:
       if cli and one_time_use_ok:
         from googlecloudsdk.core.resource import resource_projector
 
@@ -925,8 +968,15 @@ def Load(path=None, cli=None, force=False, one_time_use_ok=False,
   return _Deserialize(tree)
 
 
-def Node(command=None, commands=None, constraints=None, flags=None, path=None,
-         positionals=None, description=None):
+def Node(
+    command=None,
+    commands=None,
+    constraints=None,
+    flags=None,
+    path=None,
+    positionals=None,
+    description=None,
+):
   """Creates and returns a CLI tree node dict."""
   path = []
   if command:

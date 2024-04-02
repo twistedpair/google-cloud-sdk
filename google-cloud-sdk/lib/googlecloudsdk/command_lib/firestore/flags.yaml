@@ -99,7 +99,6 @@ field_config_alpha:
   - api_field: vectorConfig
     arg_name: vector-config
     help_text: Specifies the vector config.
-    hidden: true
   help_text: |
     Configuration for a field.
 

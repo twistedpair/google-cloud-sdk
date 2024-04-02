@@ -123,8 +123,8 @@ class MigrationJobsClient(object):
   def _GetType(self, mj_type, type_value):
     return mj_type.TypeValueValuesEnum.lookup_by_name(type_value)
 
-  def _GetDumpType(self, dump_type, type_value):
-    return dump_type.DumpTypeValueValuesEnum.lookup_by_name(type_value)
+  def _GetDumpType(self, dump_type, dump_type_value):
+    return dump_type.DumpTypeValueValuesEnum.lookup_by_name(dump_type_value)
 
   def _GetVpcPeeringConnectivity(self, args):
     return self.messages.VpcPeeringConnectivity(vpc=args.peer_vpc)
@@ -363,6 +363,11 @@ class MigrationJobsClient(object):
     if args.IsKnownAndSpecified('dump_parallel_level'):
       migration_job_obj.performanceConfig = self._GetPerformanceConfig(args)
 
+    if args.IsKnownAndSpecified('dump_type'):
+      migration_job_obj.dumpType = self._GetDumpType(
+          self.messages.MigrationJob, args.dump_type
+      )
+
     if args.IsKnownAndSpecified('sqlserver_databases'):
       migration_job_obj.sqlserverHomogeneousMigrationJobConfig = (
           self._GetSqlserverHomogeneousMigrationJobConfig(args)
@@ -406,6 +411,8 @@ class MigrationJobsClient(object):
       update_fields.append('vpcPeeringConnectivity.vpc')
     if args.IsKnownAndSpecified('dump_parallel_level'):
       update_fields.append('performanceConfig.dumpParallelLevel')
+    if args.IsKnownAndSpecified('dump_type'):
+      update_fields.append('dumpType')
     if args.IsKnownAndSpecified('filter'):
       update_fields.append('filter')
     if args.IsKnownAndSpecified('commit_id') or args.IsKnownAndSpecified(

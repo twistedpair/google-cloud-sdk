@@ -28,3 +28,20 @@ def GetFieldAndLogUnreachable(message, attribute):
         'The following instances were unreachable: {}.'
         .format(', '.join(message.unreachable)))
   return getattr(message, attribute)
+
+
+def GetFieldAndLogUnreachableInstancePartitions(message, attribute):
+  """Response callback to log unreachable while generating fields of the message."""
+  warning_text = 'The following instance partitions were unreachable: {}.'
+  if hasattr(message, 'unreachable') and message.unreachable:
+    # if the `message` is `ListInstancePartitionsResponse`.
+    log.warning(warning_text.format(', '.join(message.unreachable)))
+  elif (
+      hasattr(message, 'unreachableInstancePartitions')
+      and message.unreachableInstancePartitions
+  ):
+    # If the `message` is `ListInstancePartitionOperationsResponse`.
+    log.warning(
+        warning_text.format(', '.join(message.unreachableInstancePartitions))
+    )
+  return getattr(message, attribute)

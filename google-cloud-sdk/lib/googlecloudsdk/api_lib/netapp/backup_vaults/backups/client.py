@@ -33,6 +33,8 @@ class BackupsClient(object):
   def __init__(self, release_track=base.ReleaseTrack.BETA):
     if release_track == base.ReleaseTrack.BETA:
       self._adapter = BetaBackupsAdapter()
+    elif release_track == base.ReleaseTrack.GA:
+      self._adapter = BackupsAdapter()
     else:
       raise ValueError('[{}] is not a valid API version.'.format(
           netapp_util.VERSION_MAP[release_track]))
@@ -208,11 +210,11 @@ class BackupsClient(object):
     )
 
 
-class BetaBackupsAdapter(object):
-  """Adapter for the Beta Cloud NetApp Files API for Backups."""
+class BackupsAdapter(object):
+  """Adapter for the GA Cloud NetApp Files API for Backups."""
 
   def __init__(self):
-    self.release_track = base.ReleaseTrack.BETA
+    self.release_track = base.ReleaseTrack.GA
     self.client = netapp_util.GetClientInstance(
         release_track=self.release_track
     )
@@ -243,3 +245,17 @@ class BetaBackupsAdapter(object):
     update_op = self.client.projects_locations_backupVaults_backups.Patch(
         update_request)
     return update_op
+
+
+class BetaBackupsAdapter(BackupsAdapter):
+  """Adapter for the Beta Cloud NetApp Files API for Backups."""
+
+  def __init__(self):
+    super(BetaBackupsAdapter, self).__init__()
+    self.release_track = base.ReleaseTrack.BETA
+    self.client = netapp_util.GetClientInstance(
+        release_track=self.release_track
+    )
+    self.messages = netapp_util.GetMessagesModule(
+        release_track=self.release_track
+    )

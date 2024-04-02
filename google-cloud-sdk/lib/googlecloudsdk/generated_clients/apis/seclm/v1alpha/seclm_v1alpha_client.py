@@ -173,7 +173,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Workbench in a given project and location.
+      r"""Creates a new SecLM Workbench in a given project and location.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesCreateRequest) input message
@@ -200,7 +200,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Workbench.
+      r"""Deletes a single SecLM Workbench.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesDeleteRequest) input message
@@ -227,7 +227,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Workbench.
+      r"""Gets details of a single SecLM Workbench.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesGetRequest) input message
@@ -254,7 +254,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Workbenches in a given project and location.
+      r"""Lists SecLM Workbenches in a given project and location.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesListRequest) input message
@@ -281,7 +281,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Workbench.
+      r"""Updates the parameters of a single SecLM Workbench.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesPatchRequest) input message
@@ -308,7 +308,7 @@ class SeclmV1alpha(base_api.BaseApiClient):
     )
 
     def Query(self, request, global_params=None):
-      r"""WorkbenchQuery is a custom pass-through verb that returns a single workbench.
+      r"""WorkbenchQuery is a custom pass-through verb that returns a single SecLM Workbench.
 
       Args:
         request: (SeclmProjectsLocationsWorkbenchesQueryRequest) input message

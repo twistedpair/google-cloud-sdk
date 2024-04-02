@@ -2377,10 +2377,12 @@ def AddClusterDNSFlags(
             """,
       hidden=hidden,
   )
-  AddAdditiveVPCScopeFlags(group, release_track=release_track)
+  AddAdditiveVPCScopeFlags(group, release_track=release_track, hidden=hidden)
 
 
-def AddAdditiveVPCScopeFlags(parser, release_track=base.ReleaseTrack.GA):
+def AddAdditiveVPCScopeFlags(
+    parser, release_track=base.ReleaseTrack.GA, hidden=False
+):
   """Adds flags related to DNS Additive VPC scope to parser.
 
   This includes:
@@ -2390,22 +2392,23 @@ def AddAdditiveVPCScopeFlags(parser, release_track=base.ReleaseTrack.GA):
   Args:
     parser: A given parser.
     release_track: Release track the flags are being added to.
+    hidden: Indicates that the flags are hidden.
   """
   if release_track != base.ReleaseTrack.GA:
     mutex = parser.add_argument_group(
-        'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=True, mutex=True
+        'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=hidden, mutex=True
     )
     mutex.add_argument(
         '--disable-additive-vpc-scope',
         default=None,
         action='store_true',
-        hidden=True,
+        hidden=hidden,
         help='Disables Additive VPC Scope.',
     )
     mutex.add_argument(
         '--additive-vpc-scope-dns-domain',
         default=None,
-        hidden=True,
+        hidden=hidden,
         help=(
             'The domain used in Additive VPC scope. Only works with Cluster'
             ' Scope.'
@@ -3936,11 +3939,14 @@ def AddSecurityPostureEnumFlag(parser):
   """Adds Kubernetes Security Posture's enablement flag to the parser."""
   parser.add_argument(
       '--security-posture',
-      choices=['disabled', 'standard'],
+      choices=['disabled', 'standard', 'enterprise'],
       default=None,
       hidden=False,
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's off-cluster features.
+
+      To enable advanced mode explicitly set the flag to
+      `--security-posture=enterprise`.
 
       To enable in standard mode explicitly set the flag to
       `--security-posture=standard`

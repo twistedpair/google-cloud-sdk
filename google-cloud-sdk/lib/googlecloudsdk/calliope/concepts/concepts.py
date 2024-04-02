@@ -44,7 +44,6 @@ import re
 from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.calliope.concepts import deps_map_util
 from googlecloudsdk.calliope.concepts import util as format_util
-from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
@@ -236,6 +235,9 @@ class ResourceSpec(ConceptSpec):
     Returns:
       A ResourceSpec object.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.apis import registry
+    # pylint: enable=g-import-not-at-top
     collection = registry.GetAPICollection(
         yaml_data['collection'], api_version=api_version)
     attributes = ParseAttributesFromData(

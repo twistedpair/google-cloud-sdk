@@ -37,6 +37,8 @@ class BlockchainValidatorConfig(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
+    existingSeedPhraseReference: Optional. An existing seed phrase, read from
+      Secret Manager.
     keySource: Immutable. The source of the voting key for the blockchain
       validator.
     labels: Optional. Labels as key value pairs
@@ -48,8 +50,8 @@ class BlockchainValidatorConfig(_messages.Message):
       characters in length, and it must not start with `"goog"`.
     remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
       service to use for signing attestations and blocks.
-    seedPhraseReference: Optional. Location in Secret Manager to read/write
-      seed phrase, encryption passphrase, etc.
+    seedPhraseReference: Optional. A new seed phrase, optionally written to
+      Secret Manager.
     updateTime: Output only. [Output only] Update time stamp
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
@@ -84,11 +86,14 @@ class BlockchainValidatorConfig(_messages.Message):
         should be.
       REMOTE_WEB3_SIGNER: The voting key is stored in a remote signing service
         (Web3Signer) and signing requests are delegated.
-      SEED_PHRASE_REFERENCE: Derive voting keys from seed material.
+      SEED_PHRASE_REFERENCE: Derive voting keys from new seed material.
+      EXISTING_SEED_PHRASE_REFERENCE: Derive voting keys from existing seed
+        material.
     """
     KEY_SOURCE_UNSPECIFIED = 0
     REMOTE_WEB3_SIGNER = 1
     SEED_PHRASE_REFERENCE = 2
+    EXISTING_SEED_PHRASE_REFERENCE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -118,14 +123,15 @@ class BlockchainValidatorConfig(_messages.Message):
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
   ethereumProtocolDetails = _messages.MessageField('EthereumDetails', 4)
-  keySource = _messages.EnumField('KeySourceValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 8)
-  seedPhraseReference = _messages.MessageField('SeedPhraseReference', 9)
-  updateTime = _messages.StringField(10)
-  validationWorkEnabled = _messages.BooleanField(11)
-  votingPublicKey = _messages.StringField(12)
+  existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReference', 5)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 9)
+  seedPhraseReference = _messages.MessageField('SeedPhraseReference', 10)
+  updateTime = _messages.StringField(11)
+  validationWorkEnabled = _messages.BooleanField(12)
+  votingPublicKey = _messages.StringField(13)
 
 
 class BlockchainValidatorConfigTemplate(_messages.Message):
@@ -148,14 +154,16 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
       validator.
     existingBlockchainNodeSource: Configuration for deploying blockchain
       validators to an existing blockchain node.
+    existingSeedPhraseReference: Optional. An existing seed phrase, read from
+      Secret Manager.
     keySource: Immutable. The source of the voting key for the blockchain
       validator.
     newBlockchainNodeSource: Configuration for creating a new blockchain node
       to deploy the blockchain validator(s) to.
-    remoteWeb3Signer: Connection details of a remote Web3Signer service to use
-      for signing attestations and blocks.
-    seedPhraseReference: Location in Secret Manager to read/write seed phrase,
-      encryption passphrase, etc.
+    remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
+      service to use for signing attestations and blocks.
+    seedPhraseReference: Optional. A new seed phrase, optionally written to
+      Secret Manager.
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
       This does NOT define whether the blockchain expects work to occur, only
@@ -198,21 +206,25 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
         should be.
       REMOTE_WEB3_SIGNER: The voting key is stored in a remote signing service
         (Web3Signer) and signing requests are delegated.
-      SEED_PHRASE_REFERENCE: Derive voting keys from seed material.
+      SEED_PHRASE_REFERENCE: Derive voting keys from new seed material.
+      EXISTING_SEED_PHRASE_REFERENCE: Derive voting keys from existing seed
+        material.
     """
     KEY_SOURCE_UNSPECIFIED = 0
     REMOTE_WEB3_SIGNER = 1
     SEED_PHRASE_REFERENCE = 2
+    EXISTING_SEED_PHRASE_REFERENCE = 3
 
   blockchainNodeSource = _messages.EnumField('BlockchainNodeSourceValueValuesEnum', 1)
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
   ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 3)
   existingBlockchainNodeSource = _messages.MessageField('ExistingBlockchainNodeSource', 4)
-  keySource = _messages.EnumField('KeySourceValueValuesEnum', 5)
-  newBlockchainNodeSource = _messages.MessageField('NewBlockchainNodeSource', 6)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 7)
-  seedPhraseReference = _messages.MessageField('SeedPhraseReferenceTemplate', 8)
-  validationWorkEnabled = _messages.BooleanField(9)
+  existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReferenceTemplate', 5)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
+  newBlockchainNodeSource = _messages.MessageField('NewBlockchainNodeSource', 7)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 8)
+  seedPhraseReference = _messages.MessageField('SeedPhraseReferenceTemplate', 9)
+  validationWorkEnabled = _messages.BooleanField(10)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
@@ -629,6 +641,44 @@ class ExistingBlockchainNodeSource(_messages.Message):
   blockchainNodeId = _messages.StringField(1)
 
 
+class ExistingSeedPhraseReference(_messages.Message):
+  r"""Location of existing seed material, and derivation path used to generate
+  the voting key.
+
+  Fields:
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key.
+    derivationIndex: Immutable. The index to derive the voting key at, used as
+      part of a derivation path. The derivation path is built from this as
+      "m/12381/3600//0/0" See also
+      https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  depositTxData = _messages.StringField(1)
+  derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  seedPhraseSecret = _messages.StringField(3)
+
+
+class ExistingSeedPhraseReferenceTemplate(_messages.Message):
+  r"""Location of the seed material, and derivation path used to generate the
+  voting key.
+
+  Fields:
+    derivationBase: Optional. The first derivation index to use when deriving
+      keys. Must be 0 or greater.
+    keyCount: Required. Number of keys (and therefore validators) to derive
+      from the seed phrase. Must be between 1 and 1,000.
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  derivationBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  seedPhraseSecret = _messages.StringField(3)
+
+
 class GenerateBlockchainValidatorConfigsRequest(_messages.Message):
   r"""Generate a number of validator configurations from a common template.
 
@@ -972,11 +1022,8 @@ class RemoteWeb3SignerTemplate(_messages.Message):
 
 
 class SeedPhraseReference(_messages.Message):
-  r"""Location of the seed material, and derivation path used to generate the
-  voting key.
-
-  Enums:
-    SeedPhraseSourceValueValuesEnum: Immutable. Origin of the seed phrase.
+  r"""Derivation path used to generate the voting key, and optionally Secret
+  Manager secret to backup the seed phrase to.
 
   Fields:
     depositTxData: Output only. The deposit transaction data corresponding to
@@ -985,73 +1032,34 @@ class SeedPhraseReference(_messages.Message):
       part of a derivation path. The derivation path is built from this as
       "m/12381/3600//0/0" See also
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
+    exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
+      Secret Manager.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
-    seedPhraseSource: Immutable. Origin of the seed phrase.
   """
-
-  class SeedPhraseSourceValueValuesEnum(_messages.Enum):
-    r"""Immutable. Origin of the seed phrase.
-
-    Values:
-      SEED_PHRASE_SOURCE_UNSPECIFIED: Seed phrase source is not specified.
-      CREATE_NO_EXPORT: The seed phrase was generated inside GCP and never
-        exported.
-      CREATE_AND_EXPORT: The seed phrase was generated inside GCP and
-        exported.
-      IMPORTED: The seed phrase was imported from outside GCP.
-    """
-    SEED_PHRASE_SOURCE_UNSPECIFIED = 0
-    CREATE_NO_EXPORT = 1
-    CREATE_AND_EXPORT = 2
-    IMPORTED = 3
 
   depositTxData = _messages.StringField(1)
   derivationIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  seedPhraseSecret = _messages.StringField(3)
-  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 4)
+  exportSeedPhrase = _messages.BooleanField(3)
+  seedPhraseSecret = _messages.StringField(4)
 
 
 class SeedPhraseReferenceTemplate(_messages.Message):
-  r"""Location of the seed material, and derivation path used to generate the
-  voting key.
-
-  Enums:
-    SeedPhraseSourceValueValuesEnum: Immutable. Origin of the seed phrase.
+  r"""Configuration for creating voting keys from a new seed phrase, and
+  optionally location to back it up to, in Secret Manager.
 
   Fields:
-    derivationBase: Immutable. The index of the first voting key, used as part
-      of a derivation path. Further voting keys are then generated
-      sequentially from this index. The derivation path is built from this as
-      "m/12381/3600//0/0" See also
-      https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
+    exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
+      Secret Manager.
     keyCount: Required. Number of keys (and therefore validators) to derive
       from the seed phrase. Must be between 1 and 1,000.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
-    seedPhraseSource: Immutable. Origin of the seed phrase.
   """
 
-  class SeedPhraseSourceValueValuesEnum(_messages.Enum):
-    r"""Immutable. Origin of the seed phrase.
-
-    Values:
-      SEED_PHRASE_SOURCE_UNSPECIFIED: Seed phrase source is not specified.
-      CREATE_NO_EXPORT: The seed phrase was generated inside GCP and never
-        exported.
-      CREATE_AND_EXPORT: The seed phrase was generated inside GCP and
-        exported.
-      IMPORTED: The seed phrase was imported from outside GCP.
-    """
-    SEED_PHRASE_SOURCE_UNSPECIFIED = 0
-    CREATE_NO_EXPORT = 1
-    CREATE_AND_EXPORT = 2
-    IMPORTED = 3
-
-  derivationBase = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  exportSeedPhrase = _messages.BooleanField(1)
   keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   seedPhraseSecret = _messages.StringField(3)
-  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 4)
 
 
 class StandardQueryParameters(_messages.Message):

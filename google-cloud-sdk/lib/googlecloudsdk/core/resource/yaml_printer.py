@@ -25,8 +25,6 @@ import io
 from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_transform
-from googlecloudsdk.core.yaml import dict_like
-from googlecloudsdk.core.yaml import list_like
 
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
@@ -128,6 +126,11 @@ class YamlPrinter(resource_printer_base.ResourcePrinter):
     Returns:
       An updated version of val.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.yaml import dict_like
+    from googlecloudsdk.core.yaml import list_like
+    # pylint: enable=g-import-not-at-top
+
     if isinstance(val, six.string_types) and '\n' in val:
       return YamlPrinter._LiteralLines(val)
     if list_like(val):

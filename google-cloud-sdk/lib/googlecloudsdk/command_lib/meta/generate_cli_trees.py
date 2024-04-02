@@ -1307,7 +1307,7 @@ def UpdateCliTrees(cli=None, commands=None, directory=None, tarball=None,
           return 0
 
       # Update the CLI tree.
-      cli_tree_path = cli_tree.CliTreePath(directory=directories[0])
+      cli_tree_path = cli_tree.CliTreeConfigPath(directory=directories[-1])
       cli_tree.Load(cli=cli, path=cli_tree_path, force=force, verbose=verbose)
 
       # Update the static completion CLI tree if older than the CLI tree. To

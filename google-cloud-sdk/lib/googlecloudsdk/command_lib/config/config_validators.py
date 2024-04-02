@@ -24,9 +24,9 @@ import os
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.compute import base_classes
-from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.util import exceptions as api_lib_util_exceptions
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.projects import util as command_lib_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
@@ -43,28 +43,39 @@ def WarnIfSettingNonExistentRegionZone(value, zonal=True):
                   'to get all regions.'.format(value))
   holder = base_classes.ComputeApiHolder(base.ReleaseTrack.GA)
   client = holder.client
-  # pylint: disable=protected-access
-  request_data = lister._Frontend(None, None, lister.GlobalScope([
-      holder.resources.Parse(
-          properties.VALUES.core.project.GetOrFail(),
-          collection='compute.projects')
-  ]))
 
-  list_implementation = lister.GlobalLister(
-      client, client.apitools_client.zones if zonal
-      else client.apitools_client.regions)
+  zone_request = [(
+      client.apitools_client.zones,
+      'Get',
+      client.messages.ComputeZonesGetRequest(
+          project=properties.VALUES.core.project.GetOrFail(), zone=value
+      ),
+  )]
+  region_request = [(
+      client.apitools_client.regions,
+      'Get',
+      client.messages.ComputeRegionsGetRequest(
+          project=properties.VALUES.core.project.GetOrFail(), region=value
+      ),
+  )]
   try:
-    response = lister.Invoke(request_data, list_implementation)
-    zones = [i['name'] for i in list(response)]
-    if value not in zones:
+    errors = []
+    client.MakeRequests(zone_request if zonal else region_request, errors)
+    if errors and 404 in errors[0]:
       log.warning(zonal_msg if zonal else regional_msg)
       return True
-  except (lister.ListException,
-          apitools_exceptions.HttpError,
-          c_store.NoCredentialsForAccountException,
-          api_lib_util_exceptions.HttpException):
-    log.warning('Property validation for compute/{} was skipped.'.format(
-        'zone' if zonal else 'region'))
+  except (
+      calliope_exceptions.ToolException,
+      apitools_exceptions.HttpError,
+      c_store.NoCredentialsForAccountException,
+      api_lib_util_exceptions.HttpException,
+  ):
+    pass
+  log.warning(
+      'Property validation for compute/{} was skipped.'.format(
+          'zone' if zonal else 'region'
+      )
+  )
   return False
 
 

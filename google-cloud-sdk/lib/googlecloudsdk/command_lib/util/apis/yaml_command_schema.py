@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from enum import Enum
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 
 
@@ -30,6 +29,9 @@ class CommandData(object):
   """A general holder object for yaml command schema."""
 
   def __init__(self, name, data):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.apis import yaml_arg_schema
+    # pylint: enable=g-import-not-at-top
     self.hidden = data.get('hidden', False)
     self.universe_compatible = data.get('universe_compatible', None)
     self.release_tracks = [

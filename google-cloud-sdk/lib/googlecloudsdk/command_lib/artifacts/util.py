@@ -445,6 +445,14 @@ def UnescapePackageName(response, unused_args):
   return ret
 
 
+def AppendRuleDataToRequest(rule_ref, unused_args, request):
+  """Adds rule data to CreateRuleRequest."""
+  parts = request.parent.split("/")
+  request.parent = "/".join(parts[: len(parts) - 2])
+  request.ruleId = rule_ref.rulesId
+  return request
+
+
 def AppendParentInfoToListReposResponse(response, args):
   """Adds log to clarify parent resources for ListRepositoriesRequest."""
   log.status.Print("Listing items under project {}, location {}.\n".format(
@@ -466,6 +474,15 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
       "Listing items under project {}, location {}, repository {}, "
       "package {}.\n".format(
           GetProject(args), GetLocation(args), GetRepo(args), args.package))
+  return response
+
+
+def AppendParentInfoToListRulesResponse(response, args):
+  """Adds log to clarify parent resources for ListRulesRequest."""
+  log.status.Print(
+      f"Listing items under project {GetProject(args)}, location"
+      f" {GetLocation(args)}, repository {GetRepo(args)}.\n"
+  )
   return response
 
 
@@ -914,10 +931,15 @@ def CheckRedirectionPermission(projects):
             f" {','.join(ar_requests.REDIRECT_PERMISSIONS)} permission(s) on"
             f" each project to migrate, including {project}."
         )
+      user = properties.VALUES.core.account.Get()
+      if user.endswith("gserviceaccount.com"):
+        prefix = "serviceAccount"
+      else:
+        prefix = "user"
       log.status.Print(
           "You can set this permission with the following command:"
           f"\n  gcloud projects add-iam-policy-binding {project} "
-          f"--member=<account> --role='roles/storage.admin'"
+          f"--member={prefix}:{user} --role='roles/storage.admin'"
       )
       return False
   return True
@@ -1316,6 +1338,12 @@ def MigrateToArtifactRegistry(unused_ref, args):
     if len(s) != 2:
       log.status.Print("--to-pkg-dev must be of the form {project}/{repo}")
     ar_project, ar_repo = s
+    if "gcr.io" in ar_repo:
+      log.status.Print(
+          "--to-pkg-dev is only used for pkg.dev repos. Use --projects to"
+          " migrate to a gcr.io repo"
+      )
+      return None
     if gcr_host not in _ALLOWED_GCR_REPO_LOCATION.keys():
       log.status.Print(
           "{gcr_host} is not a valid gcr host. Valid hosts: {hosts}".format(

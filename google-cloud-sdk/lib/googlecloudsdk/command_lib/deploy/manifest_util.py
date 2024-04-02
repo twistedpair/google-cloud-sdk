@@ -73,6 +73,7 @@ REPAIR_MODE_FIELD = 'repairModes'
 BACKOFF_MODE_FIELD = 'backoffMode'
 BACKOFF_CHOICES = ['BACKOFF_MODE_LINEAR', 'BACKOFF_MODE_EXPONENTIAL']
 BACKOFF_CHOICES_SHORT = ['LINEAR', 'EXPONENTIAL']
+TARGETS_FIELD = 'targets'
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -253,7 +254,7 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         for stage in stages:
           SetDeployParametersForPipelineStage(messages, resource_ref, stage)
       if field == SELECTOR_FIELD and kind == AUTOMATION_KIND:
-        SetAutomationSelector(messages, resource, resource_ref, value)
+        SetAutomationSelector(messages, resource, value)
         continue
       if field == RULES_FIELD and kind == AUTOMATION_KIND:
         SetAutomationRules(messages, resource, resource_ref, value)
@@ -571,44 +572,27 @@ def SetCustomTarget(target, custom_target, project, region):
   target.customTarget = custom_target
 
 
-def SetAutomationSelector(messages, automation, automation_ref, selectors):
+def SetAutomationSelector(messages, automation, selectors):
   """Sets the selectors field of cloud deploy automation resource message.
 
   Args:
     messages: module containing the definitions of messages for Cloud Deploy.
     automation:  googlecloudsdk.generated_clients.apis.clouddeploy.Automation
       message.
-    automation_ref: protorpc.messages.Message, automation resource object.
     selectors:
       [googlecloudsdk.generated_clients.apis.clouddeploy.TargetAttributes], list
       of TargetAttributes messages.
   """
 
-  _EnsureIsType(
-      selectors,
-      list,
-      'failed to parse automation {}, selectors are defined incorrectly'.format(
-          automation_ref.Name()
-      ),
-  )
-
   automation.selector = messages.AutomationResourceSelector()
-  for selector in selectors:
-    target_attribute = messages.TargetAttribute()
-    message = selector.get(TARGET_FIELD)
-    for field in message:
-      value = message.get(field)
-      if field == ID_FIELD:
-        setattr(target_attribute, field, value)
-      if field == LABELS_FIELD:
-        deploy_util.SetMetadata(
-            messages,
-            target_attribute,
-            deploy_util.ResourceType.TARGET_ATTRIBUTE,
-            None,
-            value,
-        )
-    automation.selector.targets.append(target_attribute)
+  # check this first because it's the recommended format for selector.
+  if not isinstance(selectors, list):
+    for target_attribute in selectors.get(TARGETS_FIELD):
+      _AddTargetAttribute(messages, automation.selector, target_attribute)
+  else:
+    for selector in selectors:
+      message = selector.get(TARGET_FIELD)
+      _AddTargetAttribute(messages, automation.selector, message)
 
 
 def SetAutomationRules(messages, automation, automation_ref, rules):
@@ -632,27 +616,33 @@ def SetAutomationRules(messages, automation, automation_ref, rules):
 
   for rule in rules:
     automation_rule = messages.AutomationRule()
-    if rule.get(PROMOTE_RELEASE_FIELD):
-      message = rule.get(PROMOTE_RELEASE_FIELD)
+    if rule.get(PROMOTE_RELEASE_RULE_FIELD) or rule.get(PROMOTE_RELEASE_FIELD):
+      message = rule.get(PROMOTE_RELEASE_RULE_FIELD) or rule.get(
+          PROMOTE_RELEASE_FIELD
+      )
       promote_release = messages.PromoteReleaseRule(
-          id=message.get(NAME_FIELD),
+          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
           wait=_WaitMinToSec(message.get(WAIT_FIELD)),
           destinationTargetId=message.get(DESTINATION_TARGET_ID_FIELD),
           destinationPhase=message.get(DESTINATION_PHASE_FIELD),
       )
       automation_rule.promoteReleaseRule = promote_release
-    if rule.get(ADVANCE_ROLLOUT_FIELD):
-      message = rule.get(ADVANCE_ROLLOUT_FIELD)
+    if rule.get(ADVANCE_ROLLOUT_RULE_FIELD) or rule.get(ADVANCE_ROLLOUT_FIELD):
+      message = rule.get(ADVANCE_ROLLOUT_RULE_FIELD) or rule.get(
+          ADVANCE_ROLLOUT_FIELD
+      )
       advance_rollout = messages.AdvanceRolloutRule(
-          id=message.get(NAME_FIELD),
+          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
           wait=_WaitMinToSec(message.get(WAIT_FIELD)),
           sourcePhases=message.get(SOURCE_PHASES_FIELD) or [],
       )
       automation_rule.advanceRolloutRule = advance_rollout
-    if rule.get(REPAIR_ROLLOUT_FIELD):
-      message = rule.get(REPAIR_ROLLOUT_FIELD)
+    if rule.get(REPAIR_ROLLOUT_RULE_FIELD) or rule.get(REPAIR_ROLLOUT_FIELD):
+      message = rule.get(REPAIR_ROLLOUT_RULE_FIELD) or rule.get(
+          REPAIR_ROLLOUT_FIELD
+      )
       automation_rule.repairRolloutRule = messages.RepairRolloutRule(
-          id=message.get(NAME_FIELD),
+          id=message.get(ID_FIELD) or message.get(NAME_FIELD),
           sourcePhases=message.get(SOURCE_PHASES_FIELD) or [],
           jobs=message.get(JOBS_FIELD) or [],
           repairModes=_ParseRepairMode(
@@ -818,3 +808,21 @@ def _ExportRepairMode(repair_modes):
     modes.append(mode)
 
   return modes
+
+
+def _AddTargetAttribute(messages, resource_selector, message):
+  """Add a new TargetAttribute to the resource selector resource."""
+  target_attribute = messages.TargetAttribute()
+  for field in message:
+    value = message.get(field)
+    if field == ID_FIELD:
+      setattr(target_attribute, field, value)
+    if field == LABELS_FIELD:
+      deploy_util.SetMetadata(
+          messages,
+          target_attribute,
+          deploy_util.ResourceType.TARGET_ATTRIBUTE,
+          None,
+          value,
+      )
+    resource_selector.targets.append(target_attribute)

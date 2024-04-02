@@ -24,7 +24,6 @@ import sys
 import traceback
 
 from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import platforms
 
 import six
 
@@ -80,6 +79,10 @@ class RequiresAdminRightsError(Error):
   """
 
   def __init__(self, sdk_root):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.util import platforms
+    # pylint: enable=g-import-not-at-top
+
     message = (
         'You cannot perform this action because you do not have permission '
         'to modify the Google Cloud SDK installation directory [{root}].\n\n'

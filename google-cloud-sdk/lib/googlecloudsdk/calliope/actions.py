@@ -26,13 +26,11 @@ import os
 import sys
 
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.document_renderers import render_document
 import six
 
 
@@ -431,6 +429,10 @@ def RenderDocumentAction(command, default_style=None):
       Raises:
         parser_errors.ArgumentError: For unknown flag value attribute name.
       """
+      # pylint: disable=g-import-not-at-top
+      from googlecloudsdk.calliope import markdown
+      from googlecloudsdk.core.document_renderers import render_document
+      # pylint: enable=g-import-not-at-top
       base.LogCommand(parser.prog, namespace)
       if default_style:
         # --help
@@ -484,6 +486,9 @@ def RenderDocumentAction(command, default_style=None):
 
 
 def GetCommandMetaData(command):
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.document_renderers import render_document
+  # pylint: enable=g-import-not-at-top
   command_metadata = render_document.CommandMetaData()
   for arg in command.GetAllAvailableFlags():
     for arg_name in arg.option_strings:

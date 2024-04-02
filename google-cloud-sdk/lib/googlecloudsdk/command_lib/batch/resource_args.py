@@ -25,7 +25,7 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
-INVALIDJOBID = '!@#$%^'
+INVALIDID = '!@#$%^'
 
 
 def LocationAttributeConfig():
@@ -83,7 +83,7 @@ def GetSubmitJobResourceSpec():
           # the input and the underlaying client would generate a valid one.
           fallthroughs=[
               deps.ValueFallthrough(
-                  INVALIDJOBID,
+                  INVALIDID,
                   hint=(
                       'job ID is optional and will be generated if not'
                       ' specified'
@@ -201,3 +201,90 @@ def AddTaskResourceArgs(parser):
   ]
 
   concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def AddResourceAllowanceResourceArgs(parser):
+  """Add the resource allowance resource argument as positional.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'RESOURCE_ALLOWANCE',
+          GetResourceAllowanceResourceSpec(),
+          (
+              'The Batch resource allowance resource. If --location not'
+              ' specified,the current batch/location is used.'
+          ),
+          required=True,
+      ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def ResourceAllowanceAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='resource_allowance',
+      help_text='The resource allowance ID for the {resource}.',
+  )
+
+
+def GetResourceAllowanceResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations.resourceAllowances',
+      api_version='v1alpha',
+      resource_name='resourceAllowance',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      resourceAllowancesId=ResourceAllowanceAttributeConfig(),
+  )
+
+
+def AddCreateResourceAllowanceResourceArgs(parser):
+  """Add the resource allowance resource argument as positional.
+
+  Args:
+    parser: the parser for the command.
+  """
+  arg_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          'RESOURCE_ALLOWANCE',
+          GetCreateResourceAllowanceResourceSpec(),
+          (
+              'The Batch resource allowance resource. If --location not'
+              ' specified,the current batch/location is used.'
+          ),
+          required=True,
+      ),
+  ]
+
+  concept_parsers.ConceptParser(arg_specs).AddToParser(parser)
+
+
+def GetCreateResourceAllowanceResourceSpec():
+  return concepts.ResourceSpec(
+      'batch.projects.locations.resourceAllowances',
+      resource_name='resourceAllowance',
+      api_version='v1alpha',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      resourceAllowancesId=concepts.ResourceParameterAttributeConfig(
+          name='resource_allowance',
+          help_text='The resource allowance ID for the {resource}.',
+          # Adding invalid resource_allowance_id to keep resource allowance
+          # in the right format, this invalid value will be removed
+          # if no resource_allowance_id is specified from
+          # the input and the underlaying client would generate a valid one.
+          fallthroughs=[
+              deps.ValueFallthrough(
+                  INVALIDID,
+                  hint=(
+                      'resource allowance ID is optional and will be generated'
+                      ' if not specified'
+                  ),
+              )
+          ],
+      ),
+  )

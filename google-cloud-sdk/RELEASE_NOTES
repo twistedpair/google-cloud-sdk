@@ -5,6 +5,156 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 471.0.0 (2024-04-02)
+
+### AI
+
+* Modified `--region` flag of `gcloud ai endpoints` to include new online
+  prediction regions.
+* Modified `--region` flag of `gcloud ai models` to include new online
+  prediction regions.
+
+### AlloyDB
+
+* Added flag `--assign-inbound-public-ip` to enable or disable public IP for an
+instance to the following commands in the GA track:
+   * `gcloud alloydb instances create`
+   * `gcloud alloydb instances update`
+
+* Added flag `--authorized-external-networks` to set a list of authorized
+external networks on an instance to `gcloud alloydb instances update` in the
+GA track.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.26 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.26>.
+
+### BigQuery
+
+* Downgraded urllib3 to version `1.26.9` be compatible with the request lib.
+
+### Certificate Authority Service
+
+* Added Subject Key Id field to arguments `gcloud privateca roots create` to
+allow usage of a custom subject key id for root certificate authorities.
+* Added Subject Key Id field to arguments `gcloud privateca subordinates create` to
+allow usage of a custom subject key id for subordinate certificate authorities.
+* Added Subject Key Id field to arguments `gcloud privateca certificates create` to
+allow usage of a custom subject key id for certificates.
+* Added maximum lifetime argument to `gcloud privateca templates create` to
+allow configuring maximum lifetime restriction using certificate templates.
+
+### Certificate Manager
+
+* Added `allowlistedCertificates` property to `certificate-manager trust-configs import` and `certificate-manager trust-configs export`.
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with google.golang.org/protobuf version 1.33.0 which fixed CVE-2024-24786.
+
+### Cloud Bigtable Emulator
+
+* Rebuilt cbt cli with google.golang.org/protobuf version 1.33.0 which fixed CVE-2024-24786.
+
+### Cloud Composer
+
+* Added `gcloud beta composer environments list-workloads` to display Composer workloads list.
+* Added `gcloud beta composer environments user-workloads-config-maps create` to create a user workloads ConfigMap.
+* Added `gcloud beta composer environments user-workloads-config-maps delete` to delete a user workloads ConfigMap.
+* Added `gcloud beta composer environments user-workloads-config-maps describe` to get details about a user workloads ConfigMap.
+* Added `gcloud beta composer environments user-workloads-config-maps list` to list user workloads ConfigMaps.
+* Added `gcloud beta composer environments user-workloads-config-maps update` to update a user workloads ConfigMap.
+* Added `gcloud beta composer environments user-workloads-secrets create` to create a user workloads Secret.
+* Added `gcloud beta composer environments user-workloads-secrets delete` to delete a user workloads Secret.
+* Added `gcloud beta composer environments user-workloads-secrets describe` to get details about a user workloads Secret.
+* Added `gcloud beta composer environments user-workloads-secrets list` to list user user workloads Secrets.
+* Added `gcloud beta composer environments user-workloads-secrets update` to update a user workloads Secret.
+
+### Cloud Deploy
+
+* Updated `gcloud deploy apply` to accept the Automation resource YAML configuration with the field names in the API proto.
+
+### Cloud Infrastructure Manager
+
+*   Added `--file` flag to `gcloud infra-manager deployments export-statefile`
+    to download statefile with a custom file name/path or by default to a file
+    named `statefile` if only file path is provided.
+
+### Cloud Memorystore
+
+* Add `--node-type` flag to `redis clusters create` to add the ability to
+create clusters with different node types.
+
+### Cloud NetApp
+
+*   Added `--backup-config` and `--source-backup` to `gcloud netapp volumes` to allow scheduled backups and create volume from backup workflow.
+
+### Cloud Pub/Sub
+
+*   Promoted `--cloud-storage-file-datetime-format` flag of
+    `gcloud pubsub subscriptions create` to GA. Added the ability to set custom
+    Cloud Storage filename datetimes in Cloud Pub/Sub to Cloud Storage
+    subscriptions. For more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names>.
+*   Promoted `--cloud-storage-file-datetime-format` flag of
+    `gcloud pubsub subscriptions update` to GA. Added the ability to update
+    custom Cloud Storage filename datetimes in Cloud Pub/Sub to Cloud Storage
+    subscriptions. For more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#file_names>.
+
+### Cloud Run
+
+* Updated integration name generation logic to use the integration type followed
+by 4 digit hash.
+
+### Cloud SQL
+
+* Support for designating a disaster recovery replica in `gcloud sql instances
+  patch` command using `--failover-dr-replica-name` flag is in beta.
+
+### Compute Engine
+
+* Added `gcloud compute storage-pools` and `gcloud compute storage-pools-types`
+command groups which can read Compute storage pools and storage pool types.
+Documentation of the storage pools will be available at
+<https://cloud.google.com/compute/docs/disks/storage-pools>.
+
+### Compute OS Config
+
+* Added `gcloud compute os-config project-feature-settings` commands that allow
+  to view and change the project feature settings.
+
+### Database Migration
+
+* Added `gcloud database-migrate connection-profiles create sqlserver` which creates a Database Migration Service connection profile for SQL Server.
+* Updated `gcloud database-migrate migration-jobs create` to create Database Migration Service migration job for SQL Server to Cloud SQL-SQL Server migrations.
+* Added `--dump-type` to `gcloud database-migrate migration-jobs create` to allow creating a migration job with PHYSICAL or LOGICAL dump type.
+* Added `--dump-type` to  `gcloud database-migrate migration-jobs update` to allow updating a migration job with PHYSICAL or LOGICAL dump type.
+
+### GKE Hub
+
+*   Updated `gcloud container fleet scopes list` to return Fleet Scopes permitted to be viewed by the caller.
+*   Added `gcloud container fleet scopes list-memberships SCOPE` to return Fleet Memberships bound to SCOPE.
+
+### Kubernetes Engine
+
+* Added `--additive-vpc-scope-dns-domain` and `--disable-additive-vpc-scope` flags
+  to `gcloud container clusters` `create`, `create-auto` and `update`.
+* Added `--security-posture=enterprise` flag to `gcloud container clusters create`, `gcloud container clusters create-auto`, and `gcloud container clusters update` to enable GKE Threat Detection.
+
+### Regional Endpoints
+
+* Add optional `address` input flag to `gcloud beta networkconnectivity regional-endpoints create`.
+
+### Workbench
+
+* Fixed issue with `gcloud workbench instances` failing when `accelerator-type` flag is set to `NVIDIA_A100_80GB`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 470.0.0 (2024-03-26)
 
 ### Breaking Changes

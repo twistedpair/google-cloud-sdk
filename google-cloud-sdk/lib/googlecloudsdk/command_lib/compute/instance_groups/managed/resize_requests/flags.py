@@ -24,7 +24,7 @@ from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
 
-DEFAULT_CREATE_OR_LIST_FORMAT_BETA = """\
+DEFAULT_CREATE_OR_LIST_FORMAT = """\
     table(
       name,
       location():label=LOCATION,
@@ -48,7 +48,8 @@ DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA = """\
 """
 
 _RELEASE_TRACK_TO_LIST_FORMAT = {
-    base.ReleaseTrack.BETA: DEFAULT_CREATE_OR_LIST_FORMAT_BETA,
+    base.ReleaseTrack.GA: DEFAULT_CREATE_OR_LIST_FORMAT,
+    base.ReleaseTrack.BETA: DEFAULT_CREATE_OR_LIST_FORMAT,
     base.ReleaseTrack.ALPHA: DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA,
 }
 

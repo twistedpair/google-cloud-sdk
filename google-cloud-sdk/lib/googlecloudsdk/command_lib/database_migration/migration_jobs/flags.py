@@ -170,7 +170,6 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser):
           'The SQL Server homogeneous migration config. This is used only for'
           ' SQL Server to CloudSQL SQL Server migrations.'
       ),
-      hidden=True,
   )
   AddSqlServerBackupFilePattern(sqlserver_homogeneous_migration_config)
   AddSqlServerDatabasesFlag(sqlserver_homogeneous_migration_config)

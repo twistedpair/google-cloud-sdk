@@ -21,7 +21,9 @@ from googlecloudsdk.command_lib.run import exceptions
 
 GCR_BUILDER_URL = 'gcr.io/gae-runtimes/buildpacks/google-gae-{builder_version}/{runtime}/builder:public-image-current'
 
-RUNTIME_FROM_BASE_IMAGE_PATTERN = r'/gae-runtimes/([^/]+):.+'
+# Based off of http://cs/s:baseImageRegex%20f:runtime%2Fconfig
+# modified to exclude ':' at the end
+RUNTIME_FROM_BASE_IMAGE_PATTERN = r'(?:gcr.io|docker.pkg.dev)\/(?:gae-runtimes|serverless-runtimes)(?:-private)?\/(?:google-\d\d[^\/]*\/)?([^\/:]+)'
 
 # TODO(b/310732246) support php and ruby
 # LINT.IfChange
@@ -53,7 +55,7 @@ BUILDER_18 = frozenset({
     # 'ruby30',
     # 'php81',
 })
-# LINT.ThenChange(../../tests/unit/command_lib/run/sourcedeploys/builders_test.py)
+# LINT.ThenChange(../../../tests/unit/command_lib/run/sourcedeploys/builders_test.py)
 
 
 def FunctionBuilder(base_image: str) -> str:

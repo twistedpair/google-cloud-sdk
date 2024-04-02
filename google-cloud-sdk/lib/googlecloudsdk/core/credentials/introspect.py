@@ -24,7 +24,6 @@ from google.oauth2 import utils as oauth2_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import requests as core_requests
 
 from six.moves import http_client
 from six.moves import urllib
@@ -137,6 +136,9 @@ def GetExternalAccountId(creds):
     TokenIntrospectionError: If an error is encountered while calling the
       token introspection endpoint.
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import requests as core_requests
+  # pylint: enable=g-import-not-at-top
   # Use basic client authentication.
   client_authentication = oauth2_utils.ClientAuthentication(
       oauth2_utils.ClientAuthType.basic, config.CLOUDSDK_CLIENT_ID,

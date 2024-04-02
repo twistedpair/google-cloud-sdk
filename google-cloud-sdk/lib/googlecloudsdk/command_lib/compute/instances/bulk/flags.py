@@ -498,6 +498,7 @@ def AddCommonBulkInsertArgs(
 
   if support_max_run_duration:
     instances_flags.AddMaxRunDurationVmArgs(parser)
+    instances_flags.AddDiscardLocalSsdVmArgs(parser)
 
   if support_enable_target_shape:
     AddDistributionTargetShapeArgs(parser)

@@ -871,9 +871,17 @@ class Deployment(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the deployment.
 
   Messages:
+    AnnotationsValue: Optional. Arbitrary key-value metadata storage e.g. to
+      help client tools identifiy deployments during automation. See
+      https://google.aip.dev/148#annotations for details on format and size
+      limitations.
     LabelsValue: User-defined metadata for the deployment.
 
   Fields:
+    annotations: Optional. Arbitrary key-value metadata storage e.g. to help
+      client tools identifiy deployments during automation. See
+      https://google.aip.dev/148#annotations for details on format and size
+      limitations.
     artifactsGcsBucket: Optional. User-defined location of Cloud Build logs
       and artifacts in Google Cloud Storage. Format: `gs://{bucket}/{folder}`
       A default bucket will be bootstrapped if the field is not set or empty.
@@ -1024,6 +1032,34 @@ class Deployment(_messages.Message):
     DELETED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Arbitrary key-value metadata storage e.g. to help client
+    tools identifiy deployments during automation. See
+    https://google.aip.dev/148#annotations for details on format and size
+    limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""User-defined metadata for the deployment.
 
@@ -1047,28 +1083,29 @@ class Deployment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  artifactsGcsBucket = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  deleteBuild = _messages.StringField(3)
-  deleteLogs = _messages.StringField(4)
-  deleteResults = _messages.MessageField('ApplyResults', 5)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 6)
-  errorLogs = _messages.StringField(7)
-  importExistingResources = _messages.BooleanField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  latestRevision = _messages.StringField(10)
-  lockState = _messages.EnumField('LockStateValueValuesEnum', 11)
-  name = _messages.StringField(12)
-  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 13)
-  serviceAccount = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateDetail = _messages.StringField(16)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 17)
-  tfErrors = _messages.MessageField('TerraformError', 18, repeated=True)
-  tfVersion = _messages.StringField(19)
-  tfVersionConstraint = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  workerPool = _messages.StringField(22)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  artifactsGcsBucket = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteBuild = _messages.StringField(4)
+  deleteLogs = _messages.StringField(5)
+  deleteResults = _messages.MessageField('ApplyResults', 6)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 7)
+  errorLogs = _messages.StringField(8)
+  importExistingResources = _messages.BooleanField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  latestRevision = _messages.StringField(11)
+  lockState = _messages.EnumField('LockStateValueValuesEnum', 12)
+  name = _messages.StringField(13)
+  quotaValidation = _messages.EnumField('QuotaValidationValueValuesEnum', 14)
+  serviceAccount = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateDetail = _messages.StringField(17)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 18)
+  tfErrors = _messages.MessageField('TerraformError', 19, repeated=True)
+  tfVersion = _messages.StringField(20)
+  tfVersionConstraint = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  workerPool = _messages.StringField(23)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -2429,8 +2466,8 @@ class TerraformVersion(_messages.Message):
 
   Fields:
     deprecateTime: Output only. When the version is deprecated.
-    name: Identifier. The version name, which is the version string, for
-      example "1.3.10".
+    name: Identifier. The version name is in the format: 'projects/{project_id
+      }/locations/{location}/terraformVersions/{terraform_version}'.
     obsoleteTime: Output only. When the version is obsolete.
     state: Output only. The state of the version, ACTIVE, DEPRECATED or
       OBSOLETE.

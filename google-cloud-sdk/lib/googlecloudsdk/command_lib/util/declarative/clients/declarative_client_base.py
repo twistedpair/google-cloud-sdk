@@ -28,7 +28,6 @@ import re
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.asset import client_util
 from googlecloudsdk.command_lib.asset import utils as asset_utils
-from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
 from googlecloudsdk.command_lib.util.resource_map.declarative import resource_name_translator
 from googlecloudsdk.core import exceptions as c_except
 from googlecloudsdk.core import execution_utils
@@ -37,7 +36,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
-from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.resource import resource_filter
 from googlecloudsdk.core.util import files
 
@@ -322,6 +320,9 @@ class DeclarativeClientBase(object):
     pass
 
   def __init__(self, gcp_account=None, impersonated=False):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.anthos import binary_operations as bin_ops
+    # pylint: enable=g-import-not-at-top
     if not gcp_account:
       gcp_account = properties.VALUES.core.account.Get()
     try:
@@ -333,6 +334,9 @@ class DeclarativeClientBase(object):
     self._account = gcp_account
 
   def _GetToken(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import store
+    # pylint: enable=g-import-not-at-top
     try:
       return store.GetFreshAccessToken(
           account=self._account,

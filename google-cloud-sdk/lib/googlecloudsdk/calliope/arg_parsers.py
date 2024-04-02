@@ -62,7 +62,6 @@ from dateutil import tz
 from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
-from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -1557,6 +1556,10 @@ class ArgObject(ArgDict):
       Dictionary [str: str] where the value is a json string or other String
         value
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import yaml
+    # pylint: enable=g-import-not-at-top
+
     file_path_pattern = r'^\S*\.(yaml|json)$'
     if re.match(file_path_pattern, arg_value):
       arg_value = FileContents()(arg_value)
@@ -2253,6 +2256,9 @@ class YAMLFileContents(object):
     self.validator = validator
 
   def _AssertJsonLike(self, yaml_data):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import yaml
+    # pylint: enable=g-import-not-at-top
     if not (yaml.dict_like(yaml_data) or yaml.list_like(yaml_data)):
       raise ArgumentTypeError('Invalid YAML/JSON Data [{}]'.format(yaml_data))
 
@@ -2274,6 +2280,9 @@ class YAMLFileContents(object):
     Returns:
       The contents of the file parsed as a YAML data object.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import yaml
+    # pylint: enable=g-import-not-at-top
     if name == '-':
       stdin = console_io.ReadStdin()  # Save to potentially reuse below
       yaml_data = yaml.load_all(stdin)
@@ -2309,6 +2318,9 @@ class YAMLFileContents(object):
         object.
       ValueError: If file content fails validation.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core import yaml
+    # pylint: enable=g-import-not-at-top
     try:
       yaml_data = self._LoadSingleYamlDocument(name)
       self._AssertJsonLike(yaml_data)

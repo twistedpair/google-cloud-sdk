@@ -702,40 +702,42 @@ workforce_pool_provider:
     arg_name: extra-attributes-issuer-uri
     hidden: true
     help_text: |-
-       The OIDC identity provider's issuer URI. Must be a valid URI using the 'https' scheme.
-       Required to get the OIDC discovery document.
+      The OIDC identity provider's issuer URI. Must be a valid URI using the 'https' scheme.
+      Required to get the OIDC discovery document.
 
   extra_attributes_client_id: &extra_attributes_client_id
     api_field: workforcePoolProvider.extraAttributesOauth2Client.clientId
     arg_name: extra-attributes-client-id
     hidden: true
     help_text: |-
-       The OAuth 2.0 client ID for retrieving extra attributes from the identity provider. Required
-       to get the Access Token using client credentials grant flow.
+      The OAuth 2.0 client ID for retrieving extra attributes from the identity provider. Required
+      to get the Access Token using client credentials grant flow.
 
   extra_attributes_client_secret_value: &extra_attributes_client_secret_value
     api_field: workforcePoolProvider.extraAttributesOauth2Client.clientSecret.value.plainText
     arg_name: extra-attributes-client-secret-value
     hidden: true
     help_text: |-
-        The OAuth 2.0 client secret for retrieving extra attributes from the identity provider.
-        Required to get the Access Token using client credentials grant flow.
+      The OAuth 2.0 client secret for retrieving extra attributes from the identity provider.
+      Required to get the Access Token using client credentials grant flow.
 
   extra_attributes_type: &extra_attributes_type
     api_field: workforcePoolProvider.extraAttributesOauth2Client.attributesType
     arg_name: extra-attributes-type
     hidden: true
     help_text: |-
-        Represents the identity provider and type of claims that should be fetched.
+      Represents the identity provider and type of claims that should be fetched.
 
   extra_attributes_filter: &extra_attributes_filter
     api_field: workforcePoolProvider.extraAttributesOauth2Client.queryParameters.filter
     arg_name: extra-attributes-filter
     hidden: true
     help_text: |-
-        The OData filter used to request specific groups for users from the authorization server.
-        By default all the groups associated with the user are fetched. See
-        https://learn.microsoft.com/en-us/graph/filter-query-parameter for more details.
+      The filter used to request specific records from IdP. In case of attributes type as
+      AZURE_AD_GROUPS_MAIL, it represents the filter used to request specific groups for users from
+      IdP. By default all the groups associated with the user are fetched. The groups that are used
+      should be mail enabled and security enabled. See
+      https://learn.microsoft.com/en-us/graph/search-query-parameter for more details.
 
   create_extra_attributes_group:
     group:

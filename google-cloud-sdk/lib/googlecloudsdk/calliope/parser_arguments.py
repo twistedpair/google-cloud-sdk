@@ -26,9 +26,7 @@ import argparse
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import display_info
-from googlecloudsdk.calliope import parser_completer
 from googlecloudsdk.calliope import parser_errors
-from googlecloudsdk.command_lib.concepts import concept_managers
 from googlecloudsdk.core.cache import completion_cache
 
 
@@ -252,6 +250,9 @@ class ArgumentInterceptor(Argument):
 
   def add_concepts(self, handler):  # pylint: disable=invalid-name
     # RuntimeParser is the v2 concepts handler.
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.concepts import concept_managers
+    # pylint: enable=g-import-not-at-top
     if isinstance(handler, concept_managers.RuntimeParser):
       self.data.concepts = handler
       return
@@ -510,7 +511,8 @@ class ArgumentInterceptor(Argument):
     # go/gcloud-project-flag-overwritable
     # Do not add global --project if command already has --project
     # argument in parser
-    for flag in ['--project', '--billing-project', '--format']:
+    for flag in ['--project', '--billing-project', '--universe-domain',
+                 '--format']:
       if self._FlagArgExists(flag) and flag in action.option_strings:
         return
     # pylint:disable=protected-access, simply no other way to do this.
@@ -630,6 +632,9 @@ class ArgumentInterceptor(Argument):
       completer: The completer Completer class or argcomplete function object.
       positional: True if argument is a positional.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.calliope import parser_completer
+    # pylint: enable=g-import-not-at-top
     if not completer:
       return
     if isinstance(completer, type):

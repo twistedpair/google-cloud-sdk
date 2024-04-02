@@ -1268,7 +1268,7 @@ def ParseAndSubstituteSSHFlags(
   extra_flags = []
   if args.ssh_flag:
     for flag in args.ssh_flag:
-      if flag:  # Skip any empty flags.
+      if flag and flag != '--':  # Skip any empty flags.
         for flag_part in flag.split():  # We want grouping here
           deref_flag = flag_part
 

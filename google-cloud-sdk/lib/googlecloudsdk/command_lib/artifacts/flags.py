@@ -228,10 +228,13 @@ def GetOptionalLocationFlag():
 def GetIncludeTagsFlag():
   return base.Argument(
       '--include-tags',
-      help=('If specified, all tags associated with each image digest are '
-            'displayed.'),
+      help=(
+          'If specified, tags associated with each image digest are displayed'
+          ' up to a maximum of 100 tags per version.'
+      ),
       action='store_true',
-      required=False)
+      required=False,
+  )
 
 
 def GetDeleteTagsFlag():

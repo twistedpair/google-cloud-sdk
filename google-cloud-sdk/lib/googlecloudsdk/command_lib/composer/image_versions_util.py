@@ -37,6 +37,9 @@ COMPOSER_LATEST_VERSION_PLACEHOLDER = '2.1.12'
 UpgradeValidator = collections.namedtuple('UpgradeValidator',
                                           ['upgrade_valid', 'error'])
 
+# Major version that is used as a replacement for the 'latest' alias.
+COMPOSER_LATEST_MAJOR_VERSION = 2
+
 
 class InvalidImageVersionError(command_util.Error):
   """Class for errors raised when an invalid image version is encountered."""
@@ -296,8 +299,13 @@ def _BuildUpgradeCandidateList(location_ref,
 
   available_upgrades = []
   # Checks if current composer version meets minimum threshold.
-  if (CompareVersions(MIN_UPGRADEABLE_COMPOSER_VER,
-                      image_version_item.composer_ver) <= 0):
+  if (
+      IsVersionComposer3Compatible(image_version_id)
+      or CompareVersions(
+          MIN_UPGRADEABLE_COMPOSER_VER, image_version_item.composer_ver
+      )
+      <= 0
+  ):
     # If so, builds list of eligible upgrades.
     for version in image_version_service.List(location_ref):
       if _ValidateCandidateImageVersionId(
@@ -312,6 +320,32 @@ def _BuildUpgradeCandidateList(location_ref,
         'This environment does not support upgrades.')
 
   return available_upgrades
+
+
+def _GetComposerMajorVersion(composer_ver_alias):
+  if composer_ver_alias == 'latest':
+    return COMPOSER_LATEST_MAJOR_VERSION
+  return int(composer_ver_alias)
+
+
+def _IsComposerMajorOnlyVersionUpgradeCompatible(parsed_curr, parsed_cand):
+  """Validates whether Composer major only version upgrade is compatible."""
+
+  if parsed_curr.composer_contains_alias:
+    major_version_curr = _GetComposerMajorVersion(
+        parsed_curr.composer_contains_alias[0]
+    )
+  else:
+    major_version_curr = semver.SemVer(parsed_curr.composer_ver).major
+  if parsed_cand.composer_contains_alias:
+    major_version_cand = _GetComposerMajorVersion(
+        parsed_cand.composer_contains_alias[0]
+    )
+  else:
+    major_version_cand = semver.SemVer(parsed_cand.composer_ver).major
+  # TODO(b/331195978): update to less or equal
+  # when support for upgrades from C2 to C3 will be available.
+  return UpgradeValidator(major_version_curr == major_version_cand, None)
 
 
 def _ValidateCandidateImageVersionId(current_image_version_id,
@@ -337,11 +371,22 @@ def _ValidateCandidateImageVersionId(current_image_version_id,
   parsed_curr = _ImageVersionItem(image_ver=current_image_version_id)
   parsed_cand = _ImageVersionItem(image_ver=candidate_image_version_id)
 
+  has_alias_or_major_only_composer_ver = (
+      parsed_cand.composer_contains_alias
+      or parsed_curr.composer_contains_alias
+  )
+
   # Checks Composer versions.
-  if upgrade_validator.upgrade_valid and not parsed_cand.composer_contains_alias:
-    upgrade_validator = _IsVersionUpgradeCompatible(parsed_curr.composer_ver,
-                                                    parsed_cand.composer_ver,
-                                                    'Composer')
+  if has_alias_or_major_only_composer_ver:
+    upgrade_validator = _IsComposerMajorOnlyVersionUpgradeCompatible(
+        parsed_curr, parsed_cand
+    )
+  elif (
+      upgrade_validator.upgrade_valid
+  ):
+    upgrade_validator = _IsVersionUpgradeCompatible(
+        parsed_curr.composer_ver, parsed_cand.composer_ver, 'Composer'
+    )
 
   # Checks Airflow versions.
   if upgrade_validator.upgrade_valid and not parsed_cand.airflow_contains_alias:

@@ -27,8 +27,6 @@ import time
 from typing import Dict
 import uuid
 
-from google.auth import _cloud_sdk
-from google.auth import environment_vars
 import googlecloudsdk
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
@@ -606,9 +604,14 @@ class Paths(object):
 
   CLOUDSDK_STATE_DIR = '.install'
   CLOUDSDK_PROPERTIES_NAME = 'properties'
+  _global_config_dir = None
 
   def __init__(self):
-    self.global_config_dir = _GetGlobalConfigDir()
+    self._global_config_dir = _GetGlobalConfigDir()
+
+  @property
+  def global_config_dir(self):
+    return self._global_config_dir
 
   @property
   def sdk_root(self):
@@ -938,6 +941,9 @@ def CertConfigDefaultFilePath():
     str, The default path to the config file.
     exist.
   """
+  # pylint: disable=g-import-not-at-top
+  from google.auth import _cloud_sdk
+  # pylint: enable=g-import-not-at-top
   # pylint:disable=protected-access
   config_path = os.path.join(
       _cloud_sdk.get_config_path(), 'certificate_config.json'
@@ -951,6 +957,9 @@ def ADCFilePath():
   Returns:
     str, The path to the default ADC file.
   """
+  # pylint: disable=g-import-not-at-top
+  from google.auth import _cloud_sdk
+  # pylint: enable=g-import-not-at-top
   # pylint:disable=protected-access
   return _cloud_sdk.get_application_default_credentials_path()
 
@@ -961,6 +970,9 @@ def ADCEnvVariable():
   Returns:
     str, The value of the env var or None if unset.
   """
+  # pylint: disable=g-import-not-at-top
+  from google.auth import environment_vars
+  # pylint: enable=g-import-not-at-top
   return encoding.GetEncodedValue(
       os.environ, environment_vars.CREDENTIALS, None
   )

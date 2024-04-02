@@ -1298,146 +1298,6 @@ class BigtableadminProjectsInstancesTablesUndeleteRequest(_messages.Message):
   undeleteTableRequest = _messages.MessageField('UndeleteTableRequest', 2)
 
 
-class BigtableadminProjectsInstancesTablesViewsCreateRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsCreateRequest object.
-
-  Fields:
-    parent: Required. This is the name of the table the view belongs to.
-      Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}`.
-    view: A View resource to be passed as the request body.
-    viewId: Required. The id of the view to create. This view must not already
-      exist. The `view_id` appended to `parent` forms the full view name of
-      the form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  view = _messages.MessageField('View', 2)
-  viewId = _messages.StringField(3)
-
-
-class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsDeleteRequest object.
-
-  Fields:
-    etag: Optional. The current etag of the view. If an etag is provided and
-      does not match the current etag of the view, deletion will be blocked
-      and an ABORTED error will be returned.
-    name: Required. The unique name of the view to be deleted. Values are of
-      the form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class BigtableadminProjectsInstancesTablesViewsGetRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsGetRequest object.
-
-  Enums:
-    ViewValueValuesEnum: The resource_view to be applied to the returned
-      views' fields. Default to BASIC.
-
-  Fields:
-    name: Required. The unique name of the requested view. Values are of the
-      form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
-    view: The resource_view to be applied to the returned views' fields.
-      Default to BASIC.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""The resource_view to be applied to the returned views' fields. Default
-    to BASIC.
-
-    Values:
-      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
-        documented in the request
-      NAME_ONLY: Only populates `name`.
-      BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, etag.
-      FULL: Populates every fields
-    """
-    RESPONSE_VIEW_UNSPECIFIED = 0
-    NAME_ONLY = 1
-    BASIC = 2
-    FULL = 3
-
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
-
-
-class BigtableadminProjectsInstancesTablesViewsListRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsListRequest object.
-
-  Enums:
-    ViewValueValuesEnum: The resource_view to be applied to the returned
-      views' fields. Default to NAME_ONLY.
-
-  Fields:
-    pageSize: Maximum number of results per page. A page_size of zero lets the
-      server choose the number of items to return. A page_size which is
-      strictly positive will return at most that many items. A negative
-      page_size will cause an error. Following the first request, subsequent
-      paginated calls are not required to pass a page_size. If a page_size is
-      set in subsequent calls, it must match the page_size given in the first
-      request.
-    pageToken: The value of `next_page_token` returned by a previous call.
-    parent: Required. The unique name of the table for which views should be
-      listed. Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}`.
-    view: The resource_view to be applied to the returned views' fields.
-      Default to NAME_ONLY.
-  """
-
-  class ViewValueValuesEnum(_messages.Enum):
-    r"""The resource_view to be applied to the returned views' fields. Default
-    to NAME_ONLY.
-
-    Values:
-      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
-        documented in the request
-      NAME_ONLY: Only populates `name`.
-      BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, etag.
-      FULL: Populates every fields
-    """
-    RESPONSE_VIEW_UNSPECIFIED = 0
-    NAME_ONLY = 1
-    BASIC = 2
-    FULL = 3
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
-
-
-class BigtableadminProjectsInstancesTablesViewsPatchRequest(_messages.Message):
-  r"""A BigtableadminProjectsInstancesTablesViewsPatchRequest object.
-
-  Fields:
-    ignoreWarnings: Optional. If true, ignore the safety checks when updating
-      the view.
-    name: The name of the view. Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
-    updateMask: Optional. The list of fields to update. A mask specifying
-      which fields in the View resource should be updated. This mask is
-      relative to the View resource, not to the request message. A field will
-      be overwritten if it is in the mask. If empty, all fields set in the
-      request will be overwritten. A special value `*` means to overwrite all
-      fields (including fields not set in the request).
-    view: A View resource to be passed as the request body.
-  """
-
-  ignoreWarnings = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
-  view = _messages.MessageField('View', 4)
-
-
 class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTestIamPermissionsRequest object.
 
@@ -1610,7 +1470,6 @@ class CheckConsistencyResponse(_messages.Message):
 
 class Cluster(_messages.Message):
   r"""A resizable group of nodes in a particular cloud location, capable of
-
   serving all Tables in the parent Instance.
 
   Enums:
@@ -1665,7 +1524,6 @@ class Cluster(_messages.Message):
         2. All node count values must be in increments of 2 with this scaling
         factor enabled, otherwise an INVALID_ARGUMENT error will be returned.
     """
-
     NODE_SCALING_FACTOR_UNSPECIFIED = 0
     NODE_SCALING_FACTOR_1X = 1
     NODE_SCALING_FACTOR_2X = 2
@@ -2106,41 +1964,6 @@ class CreateTableRequest(_messages.Message):
   tableId = _messages.StringField(3)
 
 
-class CreateViewMetadata(_messages.Message):
-  r"""The metadata for the Operation returned by CreateView.
-
-  Fields:
-    finishTime: The time at which the operation failed or was completed
-      successfully.
-    originalRequest: The request that prompted the initiation of this
-      CreateInstance operation.
-    requestTime: The time at which the original request was received.
-  """
-
-  finishTime = _messages.StringField(1)
-  originalRequest = _messages.MessageField('CreateViewRequest', 2)
-  requestTime = _messages.StringField(3)
-
-
-class CreateViewRequest(_messages.Message):
-  r"""The request for CreateView
-
-  Fields:
-    parent: Required. This is the name of the table the view belongs to.
-      Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}`.
-    view: Required. The view to create.
-    viewId: Required. The id of the view to create. This view must not already
-      exist. The `view_id` appended to `parent` forms the full view name of
-      the form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
-  """
-
-  parent = _messages.StringField(1)
-  view = _messages.MessageField('View', 2)
-  viewId = _messages.StringField(3)
-
-
 class DataBoostIsolationReadOnly(_messages.Message):
   r"""Data Boost is a serverless compute capability that lets you run high-
   throughput read jobs on your Bigtable data, without impacting the
@@ -2185,6 +2008,7 @@ class DataBoostReadLocalWrites(_messages.Message):
   """
 
 
+
 class DropRowRangeRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.DropRowRange
@@ -2206,6 +2030,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -2328,6 +2153,7 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
+
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2521,65 +2347,6 @@ class GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes(_messages.Message):
   """
 
   bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 1)
-
-
-class GoogleBigtableAdminV2ViewFamilySubsets(_messages.Message):
-  r"""Subsets of a column family that are included in this View.
-
-  Fields:
-    qualifierPrefixes: Prefixes for qualifiers to be included in the View.
-      Every qualifier starting with one of these prefixes is included in the
-      View. To provide access to all qualifiers, include the empty string as a
-      prefix ("").
-    qualifiers: Individual exact column qualifiers to be included in the View.
-  """
-
-  qualifierPrefixes = _messages.BytesField(1, repeated=True)
-  qualifiers = _messages.BytesField(2, repeated=True)
-
-
-class GoogleBigtableAdminV2ViewSubsetView(_messages.Message):
-  r"""Defines a simple view that is a subset of the underlying Table.
-
-  Messages:
-    FamilySubsetsValue: Map from column family name to the columns in this
-      family to be included in the view.
-
-  Fields:
-    familySubsets: Map from column family name to the columns in this family
-      to be included in the view.
-    rowPrefixes: Row prefixes to be included in the View. To provide access to
-      all rows, include the empty string as a prefix ("").
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FamilySubsetsValue(_messages.Message):
-    r"""Map from column family name to the columns in this family to be
-    included in the view.
-
-    Messages:
-      AdditionalProperty: An additional property for a FamilySubsetsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type FamilySubsetsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FamilySubsetsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleBigtableAdminV2ViewFamilySubsets attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleBigtableAdminV2ViewFamilySubsets', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
-  rowPrefixes = _messages.BytesField(2, repeated=True)
 
 
 class HotTablet(_messages.Message):
@@ -2881,21 +2648,6 @@ class ListTablesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tables = _messages.MessageField('Table', 2, repeated=True)
-
-
-class ListViewsResponse(_messages.Message):
-  r"""Response message for
-  google.bigtable.admin.v2.BigtableTableAdmin.ListViews
-
-  Fields:
-    nextPageToken: Set if not all tables could be returned in a single
-      response. Pass this value to `page_token` in another request to get the
-      next page of results.
-    views: The views present in the requested table.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  views = _messages.MessageField('View', 2, repeated=True)
 
 
 class Location(_messages.Message):
@@ -3447,6 +3199,7 @@ class RowAffinity(_messages.Message):
   """
 
 
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3588,6 +3341,7 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated are
   replicated in every cluster and readable.
   """
+
 
 
 class Status(_messages.Message):
@@ -3931,6 +3685,7 @@ class UndeleteTableRequest(_messages.Message):
   """
 
 
+
 class Union(_messages.Message):
   r"""A GcRule which deletes cells matching any of the given rules.
 
@@ -4029,65 +3784,6 @@ class UpdateTableMetadata(_messages.Message):
   endTime = _messages.StringField(1)
   name = _messages.StringField(2)
   startTime = _messages.StringField(3)
-
-
-class UpdateViewMetadata(_messages.Message):
-  r"""Metadata for the google.longrunning.Operation returned by UpdateView.
-
-  Fields:
-    finishTime: The time at which the operation failed or was completed
-      successfully.
-    originalRequest: The request that prompted the initiation of this
-      UpdateView operation.
-    requestTime: The time at which the original request was received.
-  """
-
-  finishTime = _messages.StringField(1)
-  originalRequest = _messages.MessageField('UpdateViewRequest', 2)
-  requestTime = _messages.StringField(3)
-
-
-class UpdateViewRequest(_messages.Message):
-  r"""The request for UpdateView.
-
-  Fields:
-    ignoreWarnings: Optional. If true, ignore the safety checks when updating
-      the view.
-    updateMask: Optional. The list of fields to update. A mask specifying
-      which fields in the View resource should be updated. This mask is
-      relative to the View resource, not to the request message. A field will
-      be overwritten if it is in the mask. If empty, all fields set in the
-      request will be overwritten. A special value `*` means to overwrite all
-      fields (including fields not set in the request).
-    view: Required. The view to update. The `name` in `view` is used to
-      identify the view. View name must in this format
-      projects//instances//tables//views/
-  """
-
-  ignoreWarnings = _messages.BooleanField(1)
-  updateMask = _messages.StringField(2)
-  view = _messages.MessageField('View', 3)
-
-
-class View(_messages.Message):
-  r"""Placeholder for admin API work while we work out the internals.
-
-  Fields:
-    deletionProtection: Set to true to make the view protected against
-      deletion. The parent Table and containing Instance cannot be deleted if
-      a View has this bit set.
-    etag: The etag for this View. If this is provided on update, it must match
-      the server's etag. The server returns ABORTED error on a mismatched
-      etag.
-    name: The name of the view. Values are of the form
-      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
-    subsetView: A view permitting access to an explicit subset of a Table.
-  """
-
-  deletionProtection = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3)
-  subsetView = _messages.MessageField('GoogleBigtableAdminV2ViewSubsetView', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -525,7 +525,8 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
-  if release_track == calliope_base.ReleaseTrack.BETA:
+  if (release_track == calliope_base.ReleaseTrack.BETA or
+      release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   if (release_track == calliope_base.ReleaseTrack.ALPHA or
@@ -569,7 +570,8 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
-  if release_track == calliope_base.ReleaseTrack.BETA:
+  if (release_track == calliope_base.ReleaseTrack.BETA or
+      release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
   labels_util.AddUpdateLabelsFlags(parser)

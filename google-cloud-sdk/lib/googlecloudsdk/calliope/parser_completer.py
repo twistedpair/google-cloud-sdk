@@ -23,7 +23,6 @@ import os
 
 from googlecloudsdk.core.cache import resource_cache
 from googlecloudsdk.core.console import console_attr
-from googlecloudsdk.core.console import progress_tracker
 import six
 
 
@@ -37,6 +36,9 @@ class ArgumentCompleter(object):
   """
 
   def __init__(self, completer_class, parsed_args=None, argument=None):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.console import progress_tracker
+    # pylint: enable=g-import-not-at-top
     self._completer_class = completer_class
     self._argument = argument
     self._parsed_args = parsed_args

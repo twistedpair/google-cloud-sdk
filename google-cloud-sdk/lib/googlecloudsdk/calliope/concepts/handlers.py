@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import parser_errors
-from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.core import exceptions
 import six
@@ -75,6 +74,9 @@ class RuntimeHandler(object):
       RepeatedConceptName: If the given "name" has already been used with a
         concept.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.calliope.concepts import concepts
+    # pylint: enable=g-import-not-at-top
 
     class LazyParse(object):
       """Class provided when accessing a concept to lazily parse from args."""

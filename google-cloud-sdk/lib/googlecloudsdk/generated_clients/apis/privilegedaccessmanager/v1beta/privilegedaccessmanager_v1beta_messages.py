@@ -1100,9 +1100,8 @@ class PrivilegedaccessmanagerFoldersLocationsOperationsGetRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
-class PrivilegedaccessmanagerFoldersLocationsOperationsListOperationsRequest(_messages.Message):
-  r"""A PrivilegedaccessmanagerFoldersLocationsOperationsListOperationsRequest
-  object.
+class PrivilegedaccessmanagerFoldersLocationsOperationsListRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerFoldersLocationsOperationsListRequest object.
 
   Fields:
     filter: The standard list filter.
@@ -1502,9 +1501,8 @@ class PrivilegedaccessmanagerOrganizationsLocationsOperationsGetRequest(_message
   name = _messages.StringField(1, required=True)
 
 
-class PrivilegedaccessmanagerOrganizationsLocationsOperationsListOperationsRequest(_messages.Message):
-  r"""A
-  PrivilegedaccessmanagerOrganizationsLocationsOperationsListOperationsRequest
+class PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest
   object.
 
   Fields:

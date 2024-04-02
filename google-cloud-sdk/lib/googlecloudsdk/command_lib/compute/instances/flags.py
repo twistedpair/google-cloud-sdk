@@ -1876,6 +1876,46 @@ def AddMaxRunDurationVmArgs(parser, is_update=False):
     )
 
 
+def AddDiscardLocalSsdVmArgs(parser, is_update=False):
+  """Set arguments for specifing discard-local-ssds-at-termination-timestamp flag."""
+  discard_local_ssds_at_termination_timestamp_help_text = """\
+        Required and only allowed for VMs that have one or more local SSDs,
+        use --termination-action=STOP (default), and use either
+        --max-run-duration or --termination-time. This flag indicates whether
+        you want Compute Engine to discard (true) or preserve (false) local SSD
+        data when the VM's terminationTimestamp is reached.
+
+        If set to false, Compute Engine will preserve local SSD data by
+        including the --discard-local-ssd=false flag in the automatic
+        termination command. The --discard-local-ssd=false flag preserves local
+        SSD data by migrating it to persistent storage until you rerun the VM.
+        Importantly, preserving local SSD data incurs costs and is subject to
+        restrictions. For more information, see https://cloud.google.com/compute/docs/disks/local-ssd#stop_instance.
+      """
+  if is_update:
+    discard_local_ssds_at_termination_timestamp_group = parser.add_group(
+        'Discard Local SSDs At Termination Timestamp', mutex=True
+    )
+    discard_local_ssds_at_termination_timestamp_group.add_argument(
+        '--clear-discard-local-ssds-at-termination-timestamp',
+        action='store_true',
+        help="""\
+        Removes the discard-local-ssds-at-termination-timestamp field from the scheduling options.
+        """,
+    )
+    discard_local_ssds_at_termination_timestamp_group.add_argument(
+        '--discard-local-ssds-at-termination-timestamp',
+        type=arg_parsers.ArgBoolean(),
+        help=discard_local_ssds_at_termination_timestamp_help_text,
+    )
+  else:
+    parser.add_argument(
+        '--discard-local-ssds-at-termination-timestamp',
+        type=arg_parsers.ArgBoolean(),
+        help=discard_local_ssds_at_termination_timestamp_help_text,
+    )
+
+
 def AddHostErrorTimeoutSecondsArgs(parser):
   parser.add_argument(
       '--host-error-timeout-seconds',
@@ -2278,9 +2318,10 @@ def AddIpv6PublicPtrDomainArg(parser):
       default=None,
       help="""\
       Assigns a custom PTR domain for the external IPv6 in the IPv6 access
-      configuration of instance. If its value is not specified, the default
-      PTR record will be used. This option can only be specified for the default
-      network interface, ``nic0''.""")
+      configuration of instance. If unspecified or specified to be an empty
+      string, the default PTR record will be used. This option can only be
+      specified for the default network interface, ``nic0''.""",
+  )
 
 
 def AddIpv6PublicPtrArgs(parser):

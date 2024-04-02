@@ -101,12 +101,12 @@ def Upload(
     )
     if not hide_logs:
       log.status.Print(
-          'Creating temporary tarball archive of {num_files} file(s)'
+          'Creating temporary archive of {num_files} file(s)'
           ' totalling {size} before compression.'.format(
               num_files=len(source_snapshot.files), size=size_str
           )
       )
-    return source_snapshot.CopyTarballToGCS(
+    return source_snapshot.CopyArchiveToGCS(
         gcs_client,
         gcs_source_staging,
         ignore_file=ignore_file,

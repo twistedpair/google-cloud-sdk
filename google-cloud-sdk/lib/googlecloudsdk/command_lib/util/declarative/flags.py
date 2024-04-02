@@ -23,7 +23,6 @@ import os
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
-from googlecloudsdk.command_lib.util.declarative.clients import declarative_client_base
 from googlecloudsdk.core.util import files
 
 
@@ -137,6 +136,9 @@ def AddBulkExportArgs(parser):
 
 
 def ValidateAllPathArgs(args):
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.command_lib.util.declarative.clients import declarative_client_base
+  # pylint: enable=g-import-not-at-top
   if args.IsSpecified('all'):
     if args.IsSpecified('path') and not os.path.isdir(args.path):
       raise declarative_client_base.ClientException(

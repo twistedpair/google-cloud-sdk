@@ -961,8 +961,8 @@ AIRFLOW_DATABASE_RETENTION_DAYS = base.Argument(
     type=int,
     default=None,
     help="""\
-    The number of retention
-      days for airflow database retention mechanism.
+    The number of days for the Airflow database retention period.
+      If set to 0, the Airflow database retention mechanism will be disabled.
     """)
 
 ENABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(

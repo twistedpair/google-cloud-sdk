@@ -44,7 +44,6 @@ import io
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
 
 
@@ -137,6 +136,10 @@ class ResourcePrinter(object):
         to match out.
       retain_none_values: Retain resurce dict entries with None values.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.resource import resource_projector
+    # pylint: enable=g-import-not-at-top
+
     self._console_attr = console_attr
     self._empty = True
     self._heading = None

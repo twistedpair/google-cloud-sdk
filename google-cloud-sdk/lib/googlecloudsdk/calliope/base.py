@@ -473,6 +473,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   _universe_compatible = None
   _valid_release_tracks = None
   _notices = None
+  _is_deprecated = False
 
   def __init__(self, is_group=False):
     self.exit_code = 0
@@ -555,6 +556,14 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
     if tag in cls._notices and preserve_existing:
       return
     cls._notices[tag] = msg
+
+  @classmethod
+  def Deprecated(cls):
+    return cls._is_deprecated
+
+  @classmethod
+  def SetDeprecated(cls, is_deprecated):
+    cls._is_deprecated = is_deprecated
 
   @classmethod
   def GetCLIGenerator(cls):
@@ -949,6 +958,7 @@ def Deprecate(is_removed=True,
       deprecation_tag = '{0}(DEPRECATED){0} '.format(MARKDOWN_BOLD)
 
     cmd_class.AddNotice(deprecation_tag, msg)
+    cmd_class.SetDeprecated(True)
 
     def RunDecorator(run_func):
       @wraps(run_func)

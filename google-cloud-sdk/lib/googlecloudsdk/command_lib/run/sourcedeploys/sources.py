@@ -70,8 +70,7 @@ def _GetOrCreateBucket(gcs_client, region):
 
 def _GetObject(source, resource_ref):
   """Gets the object name for a source to be uploaded."""
-  # TODO(b/322274312) switch to .zip
-  suffix = '.tgz'
+  suffix = '.zip'
   if source.startswith('gs://') or os.path.isfile(source):
     _, suffix = os.path.splitext(source)
 

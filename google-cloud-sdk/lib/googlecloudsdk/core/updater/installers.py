@@ -28,11 +28,9 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import local_file_adapter
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import exceptions as creds_exceptions
-from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_encoding
 from googlecloudsdk.core.util import retry
@@ -97,6 +95,9 @@ def MakeRequest(url, command_path):
   Returns:
     requests.Response object
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import store
+  # pylint: enable=g-import-not-at-top
   if url.startswith(ComponentInstaller.GCS_BROWSER_DL_URL):
     url = url.replace(ComponentInstaller.GCS_BROWSER_DL_URL,
                       ComponentInstaller.GCS_API_DL_URL, 1)
@@ -186,6 +187,9 @@ def _ExecuteRequestAndRaiseExceptions(url, headers, timeout):
   Raises:
     requests.exceptions.HTTPError in the case of a client or server error.
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import requests as core_requests
+  # pylint: enable=g-import-not-at-top
   requests_session = core_requests.GetSession()
   if url.startswith('file://'):
     requests_session.mount('file://', local_file_adapter.LocalFileAdapter())

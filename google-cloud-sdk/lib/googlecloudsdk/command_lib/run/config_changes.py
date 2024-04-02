@@ -513,6 +513,23 @@ class RegionsChangeAnnotationChange(NonTemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class MultiRegionDomainNameChange(NonTemplateConfigChanger):
+  """Sets a multi-region domain name annotation on the service.
+
+  Attributes:
+    domain_name: The sandbox annotation value to set.
+  """
+
+  domain_name: str
+
+  def Adjust(self, resource):
+    resource.annotations[k8s_object.GCLB_DOMAIN_NAME_ANNOTATION] = (
+        self.domain_name
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class SetClientNameAndVersionAnnotationChange(ConfigChanger):
   """Sets the client name and version annotations.
 

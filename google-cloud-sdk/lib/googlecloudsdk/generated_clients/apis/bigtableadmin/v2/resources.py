@@ -108,13 +108,10 @@ class Collections(enum.Enum):
   )
   PROJECTS_INSTANCES_TABLES_VIEWS = (
       'projects.instances.tables.views',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/instances/{instancesId}/tables/'
-              '{tablesId}/views/{viewsId}',
-      },
-      ['name'],
+      'projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/'
+      '{viewsId}',
+      {},
+      ['projectsId', 'instancesId', 'tablesId', 'viewsId'],
       True
   )
 

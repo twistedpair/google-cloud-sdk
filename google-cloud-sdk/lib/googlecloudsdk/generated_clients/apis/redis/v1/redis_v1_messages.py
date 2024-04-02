@@ -168,6 +168,9 @@ class Cluster(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
       Redis cluster. If not provided, auth feature is disabled for the
       cluster.
+    NodeTypeValueValuesEnum: Optional. The type of a redis node in the
+      cluster. NodeType determines the underlying machine-type of a redis
+      node.
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
     TransitEncryptionModeValueValuesEnum: Optional. The in-transit encryption
@@ -189,8 +192,12 @@ class Cluster(_messages.Message):
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+    nodeType: Optional. The type of a redis node in the cluster. NodeType
+      determines the underlying machine-type of a redis node.
     persistenceConfig: Optional. Persistence config (RDB, AOF) for the
       cluster.
+    preciseSizeGb: Output only. Precise value of redis memory size in GB for
+      the entire cluster.
     pscConfigs: Required. Each PscConfig configures the consumer network where
       IPs will be designated to the cluster for client access through Private
       Service Connect Automation. Currently, only one PscConfig is supported.
@@ -223,6 +230,23 @@ class Cluster(_messages.Message):
     AUTH_MODE_UNSPECIFIED = 0
     AUTH_MODE_IAM_AUTH = 1
     AUTH_MODE_DISABLED = 2
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of a redis node in the cluster. NodeType determines
+    the underlying machine-type of a redis node.
+
+    Values:
+      NODE_TYPE_UNSPECIFIED: <no description>
+      REDIS_SHARED_CORE_NANO: Redis shared core nano node_type.
+      REDIS_HIGHMEM_MEDIUM: Redis highmem medium node_type.
+      REDIS_HIGHMEM_XLARGE: Redis highmem xlarge node_type.
+      REDIS_STANDARD_SMALL: Redis standard small node_type.
+    """
+    NODE_TYPE_UNSPECIFIED = 0
+    REDIS_SHARED_CORE_NANO = 1
+    REDIS_HIGHMEM_MEDIUM = 2
+    REDIS_HIGHMEM_XLARGE = 3
+    REDIS_STANDARD_SMALL = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this cluster. Can be CREATING,
@@ -285,17 +309,19 @@ class Cluster(_messages.Message):
   createTime = _messages.StringField(2)
   discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
   name = _messages.StringField(4)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 5)
-  pscConfigs = _messages.MessageField('PscConfig', 6, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 7, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 8)
-  replicaCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateInfo = _messages.MessageField('StateInfo', 13)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 14)
-  uid = _messages.StringField(15)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 5)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 6)
+  preciseSizeGb = _messages.FloatField(7)
+  pscConfigs = _messages.MessageField('PscConfig', 8, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 9, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 10)
+  replicaCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateInfo = _messages.MessageField('StateInfo', 15)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 16)
+  uid = _messages.StringField(17)
 
 
 class ClusterPersistenceConfig(_messages.Message):

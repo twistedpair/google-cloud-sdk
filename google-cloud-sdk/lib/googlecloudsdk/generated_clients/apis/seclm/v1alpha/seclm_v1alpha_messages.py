@@ -17,6 +17,58 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Candidate(_messages.Message):
+  r"""A response candidate generated from the model.
+
+  Enums:
+    FinishReasonValueValuesEnum: Optional. Output only. The reason why the
+      model stopped generating tokens. If empty, the model has not stopped
+      generating the tokens.
+
+  Fields:
+    citationMetadata: Output only. Citation information for model-generated
+      candidate. This field may be populated with recitation information for
+      any text included in the `content`. These are passages that are
+      "recited" from copyrighted material in the foundational LLM's training
+      data.
+    content: Output only. Generated content returned from the model.
+    finishReason: Optional. Output only. The reason why the model stopped
+      generating tokens. If empty, the model has not stopped generating the
+      tokens.
+    index: Output only. Index of the candidate in the list of candidates.
+    safetyRatings: List of ratings for the safety of a response candidate.
+      There is at most one rating per category.
+    tokenCount: Output only. Token count for this candidate.
+  """
+
+  class FinishReasonValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. The reason why the model stopped generating
+    tokens. If empty, the model has not stopped generating the tokens.
+
+    Values:
+      FINISH_REASON_UNSPECIFIED: Default value. This value is unused.
+      STOP: Natural stop point of the model or provided stop sequence.
+      MAX_TOKENS: The maximum number of tokens as specified in the request was
+        reached.
+      SAFETY: The candidate content was flagged for safety reasons.
+      RECITATION: The candidate content was flagged for recitation reasons.
+      OTHER: Unknown reason.
+    """
+    FINISH_REASON_UNSPECIFIED = 0
+    STOP = 1
+    MAX_TOKENS = 2
+    SAFETY = 3
+    RECITATION = 4
+    OTHER = 5
+
+  citationMetadata = _messages.MessageField('CitationMetadata', 1)
+  content = _messages.MessageField('Content', 2)
+  finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 3)
+  index = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  safetyRatings = _messages.MessageField('SafetyRating', 5, repeated=True)
+  tokenCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class Citation(_messages.Message):
   r"""Metadata of one citation.
 
@@ -57,6 +109,24 @@ class CitationMetadata(_messages.Message):
   """
 
   citations = _messages.MessageField('Citation', 1, repeated=True)
+
+
+class Content(_messages.Message):
+  r"""The base structured datatype containing multi-part content of a message.
+  A `Content` includes a `role` field designating the producer of the
+  `Content` and a `parts` field containing multi-part data that contains the
+  content of the message turn.
+
+  Fields:
+    parts: Required. Ordered `Parts` that constitute a single message. Parts
+      may have different IANA MIME types.
+    role: Optional. The producer of the content. Must be either 'user' or
+      'model'. Useful to set for multi-turn conversations, otherwise can be
+      left blank or unset.
+  """
+
+  parts = _messages.MessageField('Part', 1, repeated=True)
+  role = _messages.StringField(2)
 
 
 class Empty(_messages.Message):
@@ -322,6 +392,127 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Part(_messages.Message):
+  r"""A datatype containing media that is part of a multi-part `Content`
+  message. A `Part` consists of data which has an associated datatype. A
+  `Part` can only contain one of the accepted types in `Part.data`.
+
+  Fields:
+    text: Optional. Text part (can be code).
+  """
+
+  text = _messages.StringField(1)
+
+
+class SafetyRating(_messages.Message):
+  r"""Safety rating for a piece of content. The safety rating contains the
+  category of harm and the harm probability level in that category for a piece
+  of content. Content is classified for safety across a number of harm
+  categories and the probability of the harm classification is included here.
+
+  Enums:
+    CategoryValueValuesEnum: Required. The category for this rating.
+    ProbabilityValueValuesEnum: Required. The probability of harm for this
+      content.
+
+  Fields:
+    blocked: Was this content blocked because of this rating?
+    category: Required. The category for this rating.
+    probability: Required. The probability of harm for this content.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Required. The category for this rating.
+
+    Values:
+      HARM_CATEGORY_UNSPECIFIED: The harm category is unspecified.
+      HARM_CATEGORY_HATE_SPEECH: The harm category is hate speech.
+      HARM_CATEGORY_DANGEROUS_CONTENT: The harm category is dangerous content.
+      HARM_CATEGORY_HARASSMENT: The harm category is harassment.
+      HARM_CATEGORY_SEXUALLY_EXPLICIT: The harm category is sexually explicit
+        content.
+    """
+    HARM_CATEGORY_UNSPECIFIED = 0
+    HARM_CATEGORY_HATE_SPEECH = 1
+    HARM_CATEGORY_DANGEROUS_CONTENT = 2
+    HARM_CATEGORY_HARASSMENT = 3
+    HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
+
+  class ProbabilityValueValuesEnum(_messages.Enum):
+    r"""Required. The probability of harm for this content.
+
+    Values:
+      HARM_PROBABILITY_UNSPECIFIED: Probability is unspecified.
+      NEGLIGIBLE: Content has a negligible chance of being unsafe.
+      LOW: Content has a low chance of being unsafe.
+      MEDIUM: Content has a medium chance of being unsafe.
+      HIGH: Content has a high chance of being unsafe.
+    """
+    HARM_PROBABILITY_UNSPECIFIED = 0
+    NEGLIGIBLE = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+
+  blocked = _messages.BooleanField(1)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  probability = _messages.EnumField('ProbabilityValueValuesEnum', 3)
+
+
+class SafetySetting(_messages.Message):
+  r"""Safety setting, affecting the safety-blocking behavior. Passing a safety
+  setting for a category changes the allowed proability that content is
+  blocked.
+
+  Enums:
+    CategoryValueValuesEnum: Required. The category for this setting.
+    ThresholdValueValuesEnum: Required. Controls the probability threshold at
+      which harm is blocked.
+
+  Fields:
+    category: Required. The category for this setting.
+    threshold: Required. Controls the probability threshold at which harm is
+      blocked.
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""Required. The category for this setting.
+
+    Values:
+      HARM_CATEGORY_UNSPECIFIED: The harm category is unspecified.
+      HARM_CATEGORY_HATE_SPEECH: The harm category is hate speech.
+      HARM_CATEGORY_DANGEROUS_CONTENT: The harm category is dangerous content.
+      HARM_CATEGORY_HARASSMENT: The harm category is harassment.
+      HARM_CATEGORY_SEXUALLY_EXPLICIT: The harm category is sexually explicit
+        content.
+    """
+    HARM_CATEGORY_UNSPECIFIED = 0
+    HARM_CATEGORY_HATE_SPEECH = 1
+    HARM_CATEGORY_DANGEROUS_CONTENT = 2
+    HARM_CATEGORY_HARASSMENT = 3
+    HARM_CATEGORY_SEXUALLY_EXPLICIT = 4
+
+  class ThresholdValueValuesEnum(_messages.Enum):
+    r"""Required. Controls the probability threshold at which harm is blocked.
+
+    Values:
+      HARM_BLOCK_THRESHOLD_UNSPECIFIED: Threshold is unspecified.
+      BLOCK_LOW_AND_ABOVE: Content with NEGLIGIBLE will be allowed.
+      BLOCK_MEDIUM_AND_ABOVE: Content with NEGLIGIBLE and LOW will be allowed.
+      BLOCK_ONLY_HIGH: Content with NEGLIGIBLE, LOW, and MEDIUM will be
+        allowed.
+      BLOCK_NONE: All content will be allowed.
+    """
+    HARM_BLOCK_THRESHOLD_UNSPECIFIED = 0
+    BLOCK_LOW_AND_ABOVE = 1
+    BLOCK_MEDIUM_AND_ABOVE = 2
+    BLOCK_ONLY_HIGH = 3
+    BLOCK_NONE = 4
+
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  threshold = _messages.EnumField('ThresholdValueValuesEnum', 2)
 
 
 class SeclmProjectsLocationsGetRequest(_messages.Message):
@@ -687,23 +878,33 @@ class WorkbenchQueryRequest(_messages.Message):
   r"""Message for querying a Workbench
 
   Fields:
+    contents: Optional. The content of the current conversation with the
+      model. For single-turn queries, this is a single instance. For multi-
+      turn queries, this is a repeated field that contains conversation
+      history + latest request.
     query: Required. The query from user.
+    safetySettings: Optional. Per request settings for blocking unsafe
+      content. Enforced on GenerateContentResponse.candidates.
   """
 
-  query = _messages.StringField(1)
+  contents = _messages.MessageField('Content', 1, repeated=True)
+  query = _messages.StringField(2)
+  safetySettings = _messages.MessageField('SafetySetting', 3, repeated=True)
 
 
 class WorkbenchQueryResponse(_messages.Message):
   r"""Response to querying a Workbench
 
   Fields:
+    candidates: Output only. Candidate responses from the model.
     citationMetadata: Output only. Citation metadata. Contains citation
       information of `content`.
     response: Output only. Response to the user's query.
   """
 
-  citationMetadata = _messages.MessageField('CitationMetadata', 1)
-  response = _messages.StringField(2)
+  candidates = _messages.MessageField('Candidate', 1, repeated=True)
+  citationMetadata = _messages.MessageField('CitationMetadata', 2)
+  response = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

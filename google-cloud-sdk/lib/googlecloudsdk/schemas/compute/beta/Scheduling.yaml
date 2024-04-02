@@ -87,6 +87,11 @@ properties:
     enum:
     - MIGRATE
     - TERMINATE
+  onInstanceStopAction:
+    description: |-
+        Defines the behaviour for instances at termination timestamp when used with auto termination
+        and instance_termination_action STOP
+    $ref: OnInstanceStopAction.yaml
   preemptible:
     description: |-
       Defines whether the instance is preemptible. This can only be set
@@ -99,6 +104,7 @@ properties:
     type: string
     enum:
     - SPOT
+    - STANDARD
   terminationTime:
     description: |-
       Specifies the timestamp, when the instance will be terminated, in

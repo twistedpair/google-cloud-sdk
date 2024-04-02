@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import os
 import os.path
 import tarfile
+import zipfile
 
 from googlecloudsdk.api_lib.cloudbuild import metric_names
 from googlecloudsdk.api_lib.storage import storage_util
@@ -78,12 +79,20 @@ class Snapshot(storage_util.Snapshot):
       log.debug('Added [%s]', path)
     return tf
 
-  def CopyTarballToGCS(self,
-                       storage_client,
-                       gcs_object,
-                       ignore_file=None,
-                       hide_logs=False):
-    """Copy a tarball of the snapshot to GCS.
+  def _MakeZipFile(self, archive_path):
+    zip_file = zipfile.ZipFile(archive_path, 'w', zipfile.ZIP_DEFLATED)
+    try:
+      for dpath in self.dirs:
+        zip_file.write(dpath)
+      for path in self.files:
+        zip_file.write(path)
+    finally:
+      zip_file.close()
+
+  def CopyArchiveToGCS(
+      self, storage_client, gcs_object, ignore_file=None, hide_logs=False
+  ):
+    """Copy an archive of the snapshot to GCS.
 
     Args:
       storage_client: storage_api.StorageClient, The storage client to use for
@@ -98,9 +107,13 @@ class Snapshot(storage_util.Snapshot):
     with metrics.RecordDuration(metric_names.UPLOAD_SOURCE):
       with files.ChDir(self.src_dir):
         with files.TemporaryDirectory() as tmp:
-          archive_path = os.path.join(tmp, 'file.tgz')
-          tf = self._MakeTarball(archive_path)
-          tf.close()
+          if gcs_object.Name().endswith('.zip'):
+            archive_path = os.path.join(tmp, 'file.zip')
+            self._MakeZipFile(archive_path)
+          else:
+            archive_path = os.path.join(tmp, 'file.tgz')
+            tf = self._MakeTarball(archive_path)
+            tf.close()
           ignore_file_path = os.path.join(
               self.src_dir, ignore_file or gcloudignore.IGNORE_FILE_NAME)
           if self.any_files_ignored:
@@ -110,11 +123,16 @@ class Snapshot(storage_util.Snapshot):
               log.status.Print(
                   _IGNORED_FILE_MESSAGE.format(log_file=log.GetLogFilePath()))
           if not hide_logs:
+            file_type = (
+                'zipfile' if gcs_object.Name().endswith('.zip') else 'tarball'
+            )
             log.status.write(
-                'Uploading tarball of [{src_dir}] to '
+                'Uploading {file_type} of [{src_dir}] to '
                 '[gs://{bucket}/{object}]\n'.format(
+                    file_type=file_type,
                     src_dir=self.src_dir,
                     bucket=gcs_object.bucket,
                     object=gcs_object.object,
-                ),)
+                ),
+            )
           return storage_client.CopyFileToGCS(archive_path, gcs_object)

@@ -168,7 +168,9 @@ class Cluster(_messages.Message):
     AuthorizationModeValueValuesEnum: Optional. The authorization mode of the
       Redis cluster. If not provided, auth feature is disabled for the
       cluster.
-    NodeTypeValueValuesEnum:
+    NodeTypeValueValuesEnum: Optional. The type of a redis node in the
+      cluster. NodeType determines the underlying machine-type of a redis
+      node.
     StateValueValuesEnum: Output only. The current state of this cluster. Can
       be CREATING, READY, UPDATING, DELETING and SUSPENDED
     TransitEncryptionModeValueValuesEnum: Optional. The in-transit encryption
@@ -196,7 +198,8 @@ class Cluster(_messages.Message):
     name: Required. Unique name of the resource in this scope including
       project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
-    nodeType: A NodeTypeValueValuesEnum attribute.
+    nodeType: Optional. The type of a redis node in the cluster. NodeType
+      determines the underlying machine-type of a redis node.
     persistenceConfig: Optional. Persistence config (RDB, AOF) for the
       cluster.
     preciseSizeGb: Output only. Precise value of redis memory size in GB for
@@ -238,7 +241,8 @@ class Cluster(_messages.Message):
     AUTH_MODE_DISABLED = 2
 
   class NodeTypeValueValuesEnum(_messages.Enum):
-    r"""NodeTypeValueValuesEnum enum type.
+    r"""Optional. The type of a redis node in the cluster. NodeType determines
+    the underlying machine-type of a redis node.
 
     Values:
       NODE_TYPE_UNSPECIFIED: <no description>

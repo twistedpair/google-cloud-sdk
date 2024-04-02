@@ -259,7 +259,7 @@ Invalid managed config type '{type}' for argument --managed-config. Valid values
 """
 
 SECURITY_POSTURE_MODE_NOT_SUPPORTED = """\
-Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard').
+Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard', 'enterprise').
 """
 
 WORKLOAD_VULNERABILITY_SCANNING_MODE_NOT_SUPPORTED = """\
@@ -2311,7 +2311,11 @@ class APIAdapter(object):
     if options.security_posture is not None:
       if cluster.securityPostureConfig is None:
         cluster.securityPostureConfig = self.messages.SecurityPostureConfig()
-      if options.security_posture.lower() == 'standard':
+      if options.security_posture.lower() == 'enterprise':
+        cluster.securityPostureConfig.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.ENTERPRISE
+        )
+      elif options.security_posture.lower() == 'standard':
         cluster.securityPostureConfig.mode = (
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
         )
@@ -3711,7 +3715,11 @@ class APIAdapter(object):
 
     if options.security_posture is not None:
       security_posture_config = self.messages.SecurityPostureConfig()
-      if options.security_posture.lower() == 'standard':
+      if options.security_posture.lower() == 'enterprise':
+        security_posture_config.mode = (
+            self.messages.SecurityPostureConfig.ModeValueValuesEnum.ENTERPRISE
+        )
+      elif options.security_posture.lower() == 'standard':
         security_posture_config.mode = (
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.BASIC
         )

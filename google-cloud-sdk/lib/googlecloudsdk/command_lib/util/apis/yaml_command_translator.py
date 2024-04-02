@@ -36,17 +36,13 @@ from apitools.base.py.exceptions import HttpBadRequestError
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import command_loading
-from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.util import completers
-from googlecloudsdk.command_lib.util.apis import arg_marshalling
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import registry
-from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util
 from googlecloudsdk.command_lib.util.args import labels_util
-from googlecloudsdk.command_lib.util.declarative import flags as declarative_config_flags
-from googlecloudsdk.command_lib.util.declarative import python_command_util
+
 
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -315,6 +311,10 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
   def InitializeGeneratorForCommand(self):
     """Initializes the arg_generator for command."""
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.apis import arg_marshalling
+    # pylint: enable=g-import-not-at-top
+
     if self.has_request_method:
       self.methods = self._GetMethods()
     else:
@@ -615,6 +615,10 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     return self._FindPopulatedAttribute(obj, attributes[1:])
 
   def _GetExistingResource(self, args):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.apis import arg_marshalling
+    # pylint: enable=g-import-not-at-top
+
     get_methods = self._GetMethods('get')
     specified = (
         self.arg_generator.GetPrimaryResource(get_methods, args))
@@ -1016,6 +1020,9 @@ class UpdateCommandGenerator(BaseCommandGenerator):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.apis import update
+    # pylint: enable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -1089,6 +1096,9 @@ class GetIamPolicyCommandGenerator(BaseCommandGenerator):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util  # pylint: disable=unused-import
+    # pylint: enable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -1161,6 +1171,9 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util
+    # pylint: enable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -1284,6 +1297,10 @@ class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
     Returns:
       IAM policy.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util
+    # pylint: enable=g-import-not-at-top
+
     method = self.arg_generator.GetPrimaryResource(self.methods, args).method
     binding_message_type = method.GetMessageByName('Binding')
     if add_condition:
@@ -1310,6 +1327,9 @@ class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util
+    # pylint: enable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -1379,6 +1399,9 @@ class RemoveIamPolicyBindingCommandGenerator(
     Returns:
       IAM policy.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util
+    # pylint: enable=g-import-not-at-top
     if add_condition:
       condition = iam_util.ValidateAndExtractCondition(args)
       policy = self._GetIamPolicy(args)
@@ -1400,6 +1423,9 @@ class RemoveIamPolicyBindingCommandGenerator(
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.iam import iam_util
+    # pylint: enable=g-import-not-at-top
 
     # pylint: disable=no-self-argument, The class closure throws off the linter
     # a bit. We want to use the generator class, not the class being generated.
@@ -1635,6 +1661,10 @@ class ConfigExportCommandGenerator(BaseCommandGenerator):
     Returns:
       calliope.base.Command, The command that implements the spec.
     """
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.command_lib.util.declarative import flags as declarative_config_flags
+    from googlecloudsdk.command_lib.util.declarative import python_command_util
+    # pylint: enable=g-import-not-at-top
 
     class Command(base.Command):
       # pylint: disable=missing-docstring

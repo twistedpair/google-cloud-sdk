@@ -1,0 +1,79 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1beta Entitlement export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- maxRequestDuration
+- requesterJustificationConfig
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  additionalNotificationTargets:
+    description: |-
+      Additional email addresses who will be notified based on actions taken.
+    $ref: AdditionalNotificationTargets.yaml
+  approvalWorkflow:
+    description: |-
+      The approvals needed before access will be granted to a requester. No
+      approvals will be needed if this field is null.
+    $ref: ApprovalWorkflow.yaml
+  eligibleUsers:
+    description: |-
+      Who can create Grants using this Entitlement. This list should contain at
+      most one entry.
+    type: array
+    items:
+      $ref: AccessControlEntry.yaml
+  etag:
+    description: |-
+      `etag` is used for optimistic concurrency control as a way to prevent
+      simultaneous updates to the same Entitlement. An`etag` is returned in
+      the response to `GetEntitlement` and the caller should put the etag in
+      the request to `UpdateEntitlement` so that their change is applied on
+      the same version. If this field is omitted or if there is a mismatch
+      while updating an entitlement, then the server will reject the
+      request.
+    type: string
+  maxRequestDuration:
+    description: |-
+      The maximum amount of time for which access would be granted for a
+      request. A requester can choose to ask for access for less than this
+      duration but never more.
+    type: string
+  name:
+    description: |-
+      Identifier. Name of the Entitlement. Possible formats: *
+      "organizations/{organization-
+      number}/locations/{region}/entitlements/{entitlement-id}" *
+      "folders/{folder-number}/locations/{region}/entitlements/{entitlement-
+      id}" * "projects/{project-id|project-
+      number}/locations/{region}/entitlements/{entitlement-id}"
+    type: string
+  privilegedAccess:
+    description: The access granted to a requester on successful approval.
+    $ref: PrivilegedAccess.yaml
+  requesterJustificationConfig:
+    description: |-
+      The manner in which the requester should provide a justification for
+      requesting access.
+    $ref: RequesterJustificationConfig.yaml

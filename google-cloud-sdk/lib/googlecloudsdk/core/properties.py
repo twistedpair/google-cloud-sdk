@@ -31,12 +31,10 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
-from googlecloudsdk.core.feature_flags import config as feature_flags_config
 from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import scaled_integer
-from googlecloudsdk.core.util import times
 from googlecloudsdk.generated_clients.apis import apis_map
 import six
 
@@ -162,6 +160,10 @@ def _BooleanValidator(property_name, property_value):
 
 def _BuildTimeoutValidator(timeout):
   """Validates build timeouts."""
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.util import times
+  # pylint: enable=g-import-not-at-top
+
   if timeout is None:
     return
   seconds = times.ParseDuration(timeout, default_suffix='s').total_seconds
@@ -4309,6 +4311,9 @@ def GetValueFromFeatureFlag(prop):
   Returns:
     str, the value of the property, or None if it is not set.
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.feature_flags import config as feature_flags_config
+  # pylint: enable=g-import-not-at-top
   ff_config = feature_flags_config.GetFeatureFlagsConfig(
       VALUES.core.account.Get(), VALUES.core.project.Get())
   if ff_config:

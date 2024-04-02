@@ -163,7 +163,7 @@ def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
   flags.ValidateConnectivityFlags(args)
   cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
-  if args.enable_private_services_connect:
+  if args.enable_private_service_connect:
     cluster.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
   return cluster
 
@@ -277,7 +277,7 @@ def _ConstructClusterResourceForRestoreRequestAlpha(alloydb_messages, args):
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
       alloydb_messages, args
   )
-  if args.enable_private_services_connect:
+  if args.enable_private_service_connect:
     cluster_resource.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
 
   return cluster_resource

@@ -49,6 +49,7 @@ class HiddenPropertiesChecker(check_base.Checker):
 
   _ALLOWLIST = (
       'metrics/environment',
+      'core/universe_domain',
   )
 
   def __init__(self, ignore_hidden_property_allowlist):

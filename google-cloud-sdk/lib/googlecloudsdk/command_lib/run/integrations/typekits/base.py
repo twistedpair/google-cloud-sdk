@@ -19,8 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import re
 from typing import Dict, Iterable, List, Optional, Set, TypedDict
+import uuid
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import types_utils
@@ -385,22 +385,27 @@ class TypeKit(object):
     Returns:
       str, a new name for the integration.
     """
-    name = '{}-{}'.format(self.integration_type, 1)
+    name = self._GenerateIntegrationNameCandidate(self.integration_type)
     existing_names = {
         res.id.name
         for res in appconfig.resourceList
         if (res.id.type == self.resource_type)
     }
     while name in existing_names:
-      # If name already taken, tries adding an integer suffix to it.
-      # If suffixed name also exists, tries increasing the number until finding
-      # an available one.
-      count = 1
-      match = re.search(r'(.+)-(\d+)$', name)
-      if match:
-        name = match.group(1)
-        count = int(match.group(2)) + 1
-      name = '{}-{}'.format(name, count)
+      name = self._GenerateIntegrationNameCandidate(self.integration_type)
+    return name
+
+  def _GenerateIntegrationNameCandidate(self, integration_type: str) -> str:
+    """Generates a suffix for a new integration.
+
+    Args:
+      integration_type: str, name of integration.
+
+    Returns:
+      str, a new name for the integration.
+    """
+    integration_suffix = str(uuid.uuid4())[:4]
+    name = '{}-{}'.format(integration_type, integration_suffix)
     return name
 
   def GetCreateSelectors(self, integration_name) -> List[Selector]:

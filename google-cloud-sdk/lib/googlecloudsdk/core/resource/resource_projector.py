@@ -67,9 +67,6 @@ from googlecloudsdk.core.util import encoding
 import six
 from six.moves import range  # pylint: disable=redefined-builtin
 
-if six.PY3:
-  import proto  # pylint: disable=g-import-not-at-top
-
 
 def MakeSerializable(resource):
   """Returns resource or a JSON-serializable copy of resource.
@@ -433,6 +430,7 @@ class Projector(object):
     else:
       self._been_here_done_that.add(objid)
       from cloudsdk.google.protobuf import message as protobuf_message  # pylint: disable=g-import-not-at-top
+      import proto  # pylint: disable=g-import-not-at-top
       if isinstance(obj, protorpc_message.Message):
         # protorpc message
         obj = protorpc_encoding.MessageToDict(obj)
@@ -440,7 +438,7 @@ class Projector(object):
         # protobuf message
         from cloudsdk.google.protobuf import json_format as protobuf_encoding  # pylint: disable=g-import-not-at-top
         obj = protobuf_encoding.MessageToDict(obj)
-      elif six.PY3 and isinstance(obj, proto.Message):
+      elif isinstance(obj, proto.Message):
         # proto message
         obj = obj.__class__.to_dict(obj)
       elif not hasattr(obj, '__iter__') or hasattr(obj, '_fields'):

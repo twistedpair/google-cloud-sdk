@@ -766,7 +766,7 @@ def AddFailoverReplicaName(parser, hidden=False):
   )
 
 
-def AddFailoverDrReplicaName(parser, hidden=True):
+def AddFailoverDrReplicaName(parser, hidden=False):
   parser.add_argument(
       '--failover-dr-replica-name',
       required=False,
@@ -779,7 +779,7 @@ def AddFailoverDrReplicaName(parser, hidden=True):
   )
 
 
-def AddClearFailoverDrReplicaName(parser, hidden=True):
+def AddClearFailoverDrReplicaName(parser, hidden=False):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--clear-failover-dr-replica-name',

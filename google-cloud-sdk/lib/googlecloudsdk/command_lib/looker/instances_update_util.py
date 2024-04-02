@@ -41,6 +41,65 @@ def _WarnForAdminSettingsUpdate():
   )
 
 
+def _WarnForPscAllowedVpcsUpdate():
+  """Adds prompt that warns about allowed vpcs update."""
+  message = (
+      'Change to instance PSC allowed Virtual Private Cloud networks'
+      ' requested. '
+  )
+  message += (
+      'Updating the allowed VPC networks from cli means the value provided'
+      ' will be considered as the entire list and not an amendment to the'
+      ' existing list of allowed vpcs.'
+  )
+  console_io.PromptContinue(
+      message=message,
+      prompt_string='Do you want to proceed with update?',
+      cancel_on_no=True,
+  )
+
+
+def _WarnForPscAllowedVpcsRemovalUpdate():
+  """Adds prompt that warns about allowed vpcs removal."""
+  message = 'Removal of instance PSC allowed vpcs requested. '
+
+  console_io.PromptContinue(
+      message=message,
+      prompt_string=(
+          'Do you want to proceed with removal of PSC allowed vpcs?'
+      ),
+      cancel_on_no=True,
+  )
+
+
+def _WarnForPscServiceAttachmentsUpdate():
+  """Adds prompt that warns about service attachments update."""
+  message = 'Change to instance PSC service attachments requested. '
+  message += (
+      'Updating the PSC service attachments from cli means the value provided'
+      ' will be considered as the entire list and not an amendment to the'
+      ' existing list of PSC service attachments'
+  )
+  console_io.PromptContinue(
+      message=message,
+      prompt_string='Do you want to proceed with update?',
+      cancel_on_no=True,
+  )
+
+
+def _WarnForPscServiceAttachmentsRemovalUpdate():
+  """Adds prompt that warns about service attachments removal."""
+  message = 'Removal of instance PSC service attachments requested. '
+
+  console_io.PromptContinue(
+      message=message,
+      prompt_string=(
+          'Do you want to proceed with removal of service attachments?'
+      ),
+      cancel_on_no=True,
+  )
+
+
 def AddFieldToUpdateMask(field, patch_request):
   """Adds fields to the update mask of the patch request.
 
@@ -153,4 +212,37 @@ def UpdateCustomDomain(unused_instance_ref, args, patch_request):
   """Hook to update custom domain to the update mask of the request."""
   if args.IsSpecified('custom_domain'):
     patch_request = AddFieldToUpdateMask('custom_domain', patch_request)
+  return patch_request
+
+
+def UpdatePscAllowedVpcs(unused_instance_ref, args, patch_request):
+  """Hook to update psc confing allowed vpcs to the update mask of the request."""
+  if args.IsSpecified('psc_allowed_vpcs'):
+    # Changing allowed email domains means this list will be overwritten in the
+    # DB and not amended and users should be warned before proceeding.
+    _WarnForPscAllowedVpcsUpdate()
+    patch_request.instance.pscConfig.allowedVpcs = args.psc_allowed_vpcs
+    patch_request = AddFieldToUpdateMask(
+        'psc_config.allowed_vpcs', patch_request
+    )
+  elif args.IsSpecified('clear_psc_allowed_vpcs'):
+    _WarnForPscAllowedVpcsRemovalUpdate()
+    patch_request = AddFieldToUpdateMask(
+        'psc_config.allowed_vpcs', patch_request
+    )
+  return patch_request
+
+
+def UpdatePscServiceAttachments(unused_instance_ref, args, patch_request):
+  """Hook to update psc confing service attachments to the update mask of the request."""
+  if args.IsSpecified('psc_service_attachment'):
+    _WarnForPscServiceAttachmentsUpdate()
+    patch_request = AddFieldToUpdateMask(
+        'psc_config.service_attachments', patch_request
+    )
+  elif args.IsSpecified('clear_psc_service_attachments'):
+    _WarnForPscServiceAttachmentsRemovalUpdate()
+    patch_request = AddFieldToUpdateMask(
+        'psc_config.service_attachments', patch_request
+    )
   return patch_request

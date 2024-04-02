@@ -52,7 +52,6 @@ from googlecloudsdk.core.resource import resource_lex
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.resource import resource_projection_spec
-from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.resource import table_printer
@@ -228,6 +227,10 @@ def Printer(print_format, out=None, defaults=None, console_attr=None):
   Returns:
     An initialized ResourcePrinter class or None if printing is disabled.
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.resource import resource_projector
+  # pylint: enable=g-import-not-at-top
+
   default_format_property = core_properties.VALUES.core.default_format.Get()
   # Detect 'default' print format and ensure that
   # core/default_format is used instead of YAML if specified.

@@ -317,11 +317,11 @@ def _CreateAndUploadTarball(gcs_client,
   source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
   size_str = resource_transform.TransformSize(source_snapshot.uncompressed_size)
   if not hide_logs:
-    log.status.Print('Creating temporary tarball archive of {num_files} file(s)'
+    log.status.Print('Creating temporary archive of {num_files} file(s)'
                      ' totalling {size} before compression.'.format(
                          num_files=len(source_snapshot.files), size=size_str))
   # This makes a tarball of the snapshot and then copies to GCS.
-  staged_source_obj = source_snapshot.CopyTarballToGCS(
+  staged_source_obj = source_snapshot.CopyArchiveToGCS(
       gcs_client,
       gcs_source_staging,
       ignore_file=ignore_file,

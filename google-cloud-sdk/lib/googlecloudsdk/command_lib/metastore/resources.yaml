@@ -121,3 +121,16 @@ table:
     parameter_name: tablesId
     attribute_name: table
     help: The identifier of the table under Database.
+
+migration:
+  name: migration
+  collection: metastore.projects.locations.services.migrationExecutions
+  request_id_field: migrationExecutionId
+  attributes:
+  - *project
+  - *location
+  - *service
+  - &migration
+    parameter_name: migrationExecutionsId
+    attribute_name: migration
+    help: The identifier of the migration for a Dataproc Metastore service.

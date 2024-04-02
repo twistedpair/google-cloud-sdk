@@ -161,7 +161,7 @@ def List(instance_ref):
       req,
       field='instancePartitions',
       batch_size_attribute='pageSize',
-      get_field_func=response_util.GetFieldAndLogUnreachable,
+      get_field_func=response_util.GetFieldAndLogUnreachableInstancePartitions,
   )
 
 

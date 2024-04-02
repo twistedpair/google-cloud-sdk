@@ -69,17 +69,36 @@ def Connect(args, release_track):
   Yields:
     A RunAppsOperations instance.
   """
-  # pylint: disable=protected-access
-  client = apis.GetClientInstance(_RUN_APPS_API_NAME, _RUN_APPS_API_VERSION)
 
   region = run_flags.GetRegion(args, prompt=True)
   service_account = flags.GetServiceAccount(args)
+  yield _GetRunAppsOperations(region, service_account, release_track)
+
+
+@contextlib.contextmanager
+def ConnectWithRegion(region, service_account, release_track):
+  """Provide a RunAppsOperations instance to use.
+
+  Arguments:
+    region: Region to connect to.
+    service_account: Service account to use.
+    release_track: the release track of the command.
+
+  Yields:
+    A RunAppsOperations instance.
+  """
+  # pylint: disable=protected-access
+  yield _GetRunAppsOperations(region, service_account, release_track)
+
+
+def _GetRunAppsOperations(region, service_account, release_track):
+  client = apis.GetClientInstance(_RUN_APPS_API_NAME, _RUN_APPS_API_VERSION)
   if not region:
     raise exceptions.ArgumentError(
         'You must specify a region. Either use the `--region` flag '
         'or set the run/region property.'
     )
-  yield RunAppsOperations(
+  return RunAppsOperations(
       client,
       _RUN_APPS_API_VERSION,
       region,
@@ -397,6 +416,23 @@ class RunAppsOperations(object):
     raise exceptions.IntegrationNotFoundError(
         'Integration [{}] cannot be found'.format(name)
     )
+
+  def MaybeGetIntegrationGeneric(
+      self,
+      name: str,
+      res_type: Optional[str] = None,
+  ) -> Optional[runapps_v1alpha1_messages.Resource]:
+    """Get an integration, or None if not found.
+
+    Args:
+      name: the name of the resource.
+      res_type: type of the resource. If empty, will match any type.
+
+    Returns:
+      The integration config, if found.
+    """
+    appconfig = self.GetDefaultApp().config
+    return self._FindResource(appconfig, name, res_type)
 
   def _FindResource(
       self,

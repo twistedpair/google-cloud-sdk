@@ -490,29 +490,29 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListOperations(self, request, global_params=None):
+    def List(self, request, global_params=None):
       r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
-        request: (PrivilegedaccessmanagerFoldersLocationsOperationsListOperationsRequest) input message
+        request: (PrivilegedaccessmanagerFoldersLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListOperationsResponse) The response message.
       """
-      config = self.GetMethodConfig('ListOperations')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    ListOperations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/folders/{foldersId}/locations/{locationsId}/operations',
         http_method='GET',
-        method_id='privilegedaccessmanager.folders.locations.operations.listOperations',
+        method_id='privilegedaccessmanager.folders.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1beta/{+name}',
+        relative_path='v1beta/{+name}/operations',
         request_field='',
-        request_type_name='PrivilegedaccessmanagerFoldersLocationsOperationsListOperationsRequest',
+        request_type_name='PrivilegedaccessmanagerFoldersLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
@@ -1053,29 +1053,29 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def ListOperations(self, request, global_params=None):
+    def List(self, request, global_params=None):
       r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
 
       Args:
-        request: (PrivilegedaccessmanagerOrganizationsLocationsOperationsListOperationsRequest) input message
+        request: (PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (ListOperationsResponse) The response message.
       """
-      config = self.GetMethodConfig('ListOperations')
+      config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    ListOperations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/operations/{operationsId}',
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/organizations/{organizationsId}/locations/{locationsId}/operations',
         http_method='GET',
-        method_id='privilegedaccessmanager.organizations.locations.operations.listOperations',
+        method_id='privilegedaccessmanager.organizations.locations.operations.list',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1beta/{+name}',
+        relative_path='v1beta/{+name}/operations',
         request_field='',
-        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsOperationsListOperationsRequest',
+        request_type_name='PrivilegedaccessmanagerOrganizationsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )

@@ -43,7 +43,7 @@ from googlecloudsdk.core.credentials import creds_context_managers
 from googlecloudsdk.core.credentials import devshell as c_devshell
 from googlecloudsdk.core.survey import survey_check
 from googlecloudsdk.core.updater import local_state
-from googlecloudsdk.core.updater import update_manager
+
 from googlecloudsdk.core.util import keyboard_interrupt
 from googlecloudsdk.core.util import platforms
 import surface
@@ -57,6 +57,7 @@ if not config.Paths().sdk_root:
 
 
 def UpdateCheck(command_path, **unused_kwargs):
+  from googlecloudsdk.core.updater import update_manager
   try:
     update_manager.UpdateManager.PerformUpdateCheck(command_path=command_path)
   # pylint:disable=broad-except, We never want this to escape, ever. Only

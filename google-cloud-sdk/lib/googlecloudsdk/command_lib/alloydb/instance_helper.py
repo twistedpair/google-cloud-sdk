@@ -155,6 +155,12 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       args.require_connectors,
   )
 
+  instance_resource.networkConfig = _NetworkConfig(
+      alloydb_messages,
+      args.assign_inbound_public_ip,
+      None,
+  )
+
   return instance_resource
 
 
@@ -170,11 +176,6 @@ def _ConstructInstanceFromArgsBeta(client, alloydb_messages, args):
     An AlloyDB instance to create with the specified command line arguments.
   """
   instance_resource = _ConstructInstanceFromArgs(client, alloydb_messages, args)
-  instance_resource.networkConfig = _NetworkConfig(
-      alloydb_messages,
-      args.assign_inbound_public_ip,
-      None,
-  )
   return instance_resource
 
 
@@ -306,6 +307,26 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     instance_resource.clientConnectionConfig = _ClientConnectionConfig(
         alloydb_messages, args.ssl_mode, args.require_connectors
     )
+
+  if (args.assign_inbound_public_ip or
+      args.authorized_external_networks is not None):
+    instance_resource.networkConfig = _NetworkConfig(
+        alloydb_messages,
+        args.assign_inbound_public_ip,
+        args.authorized_external_networks,
+    )
+  # If we are disabling public ip then update the whole networkConfig as we
+  # also need to clear the list of authorized networks
+  if (
+      args.assign_inbound_public_ip
+      and not instance_resource.networkConfig.enablePublicIp
+  ):
+    paths.append('networkConfig')
+  else:
+    if args.assign_inbound_public_ip:
+      paths.append('networkConfig.enablePublicIp')
+    if args.authorized_external_networks is not None:
+      paths.append('networkConfig.authorizedExternalNetworks')
 
   return instance_resource, paths
 
@@ -578,24 +599,6 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
     )
     update_mode_path = 'updatePolicy.mode'
     paths.append(update_mode_path)
-
-  if (args.assign_inbound_public_ip
-      or args.authorized_external_networks is not None):
-    instance_resource.networkConfig = _NetworkConfig(
-        alloydb_messages,
-        args.assign_inbound_public_ip,
-        args.authorized_external_networks,
-    )
-    # If we are disabling public ip then update the whole networkConfig as we
-    # also need to clear the list of authorized networks
-    if (args.assign_inbound_public_ip
-        and not instance_resource.networkConfig.enablePublicIp):
-      paths.append('networkConfig')
-    else:
-      if args.assign_inbound_public_ip:
-        paths.append('networkConfig.enablePublicIp')
-      if args.authorized_external_networks is not None:
-        paths.append('networkConfig.authorizedExternalNetworks')
 
   return instance_resource, paths
 

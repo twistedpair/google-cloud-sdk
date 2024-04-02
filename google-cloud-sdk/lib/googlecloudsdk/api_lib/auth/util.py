@@ -24,18 +24,13 @@ import abc
 import json
 import textwrap
 
-from google.auth import external_account_authorized_user
-from google.oauth2 import credentials as oauth2_credentials
 from googlecloudsdk.command_lib.util import check_browser
 from googlecloudsdk.core import config
-from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.credentials import flow as c_flow
-from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.util import files
 import six
 
@@ -112,6 +107,9 @@ def GetCredentialsConfigFromFile(filename):
 
 def _HandleFlowError(exc, default_help_msg):
   """Prints help messages when auth flow throws errors."""
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import context_aware
+  # pylint: enable=g-import-not-at-top
   if context_aware.IsContextAwareAccessDeniedError(exc):
     log.error(context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
   else:
@@ -140,6 +138,9 @@ class FlowRunner(six.with_metaclass(abc.ABCMeta, object)):
     pass
 
   def Run(self, **kwargs):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     try:
       return self._flow.Run(**kwargs)
     except c_flow.Error as e:
@@ -151,6 +152,9 @@ class OobFlowRunner(FlowRunner):
   """A flow runner to run OobFlow."""
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     return c_flow.OobFlow.from_client_config(
         self._client_config,
         self._scopes,
@@ -162,6 +166,9 @@ class NoBrowserFlowRunner(FlowRunner):
   """A flow runner to run NoBrowserFlow."""
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     return c_flow.NoBrowserFlow.from_client_config(
         self._client_config,
         self._scopes,
@@ -173,6 +180,9 @@ class RemoteLoginWithAuthProxyFlowRunner(FlowRunner):
   """A flow runner to run RemoteLoginWithAuthProxyFlow."""
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     return c_flow.RemoteLoginWithAuthProxyFlow.from_client_config(
         self._client_config,
         self._scopes,
@@ -185,6 +195,9 @@ class NoBrowserHelperRunner(FlowRunner):
   """A flow runner to run NoBrowserHelperFlow."""
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     try:
       return c_flow.NoBrowserHelperFlow.from_client_config(
           self._client_config,
@@ -205,6 +218,9 @@ class BrowserFlowWithOobFallbackRunner(FlowRunner):
                           'Try running again with --no-launch-browser.')
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     try:
       return c_flow.FullWebFlow.from_client_config(
           self._client_config,
@@ -228,6 +244,9 @@ class BrowserFlowWithNoBrowserFallbackRunner(FlowRunner):
                           'Try running again with --no-browser.')
 
   def _CreateFlow(self):
+    # pylint: disable=g-import-not-at-top
+    from googlecloudsdk.core.credentials import flow as c_flow
+    # pylint: enable=g-import-not-at-top
     try:
       return c_flow.FullWebFlow.from_client_config(
           self._client_config,
@@ -308,6 +327,12 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     core.credentials.google_auth_credentials.Credentials, The credentials
       obtained from the flow.
   """
+  # pylint: disable=g-import-not-at-top
+  from google.auth import external_account_authorized_user
+  from google.oauth2 import credentials as oauth2_credentials
+  from googlecloudsdk.core.credentials import flow as c_flow
+  # pylint: enable=g-import-not-at-top
+
   if client_id_file:
     AssertClientSecretIsInstalledType(client_id_file)
   if not client_config:
@@ -335,6 +360,9 @@ def DoInstalledAppBrowserFlowGoogleAuth(scopes,
     if isinstance(user_creds, oauth2_credentials.Credentials):
       # c_google_auth.Credentials adds reauth capabilities to oauth2
       # credentials, which is needed as they are long-term credentials.
+      # pylint: disable=g-import-not-at-top
+      from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+      # pylint: enable=g-import-not-at-top
       return c_google_auth.Credentials.FromGoogleAuthUserCredentials(user_creds)
     if isinstance(user_creds, external_account_authorized_user.Credentials):
       return user_creds

@@ -17,11 +17,19 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
+
 from apitools.base.py import list_pager
+from cloudsdk.google.protobuf import timestamp_pb2
+from googlecloudsdk.api_lib.spanner import response_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+
+# Timeout to use in ListInstancePartitionOperations for unreachable instance
+# partitions.
+UNREACHABLE_INSTANCE_PARTITION_TIMEOUT = datetime.timedelta(seconds=20)
 
 _API_NAME = 'spanner'
 _API_VERSION = 'v1'
@@ -64,6 +72,35 @@ def ListGeneric(instance_partition, instance):
   )
 
 
+def List(instance):
+  """List operations on instance partitions under the given instance."""
+  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  tp_proto = timestamp_pb2.Timestamp()
+  tp_proto.FromDatetime(
+      datetime.datetime.now(tz=datetime.timezone.utc)
+      + UNREACHABLE_INSTANCE_PARTITION_TIMEOUT
+  )
+  ref = resources.REGISTRY.Parse(
+      instance,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+      },
+      collection='spanner.projects.instances',
+  )
+  req = msgs.SpannerProjectsInstancesInstancePartitionOperationsListRequest(
+      parent=ref.RelativeName(),
+      instancePartitionDeadline=tp_proto.ToJsonString(),
+  )
+  return list_pager.YieldFromList(
+      client.projects_instances_instancePartitionOperations,
+      req,
+      field='operations',
+      batch_size_attribute='pageSize',
+      get_field_func=response_util.GetFieldAndLogUnreachableInstancePartitions,
+  )
+
+
 def Cancel(instance_partition, instance, operation):
   """Cancel the specified operation."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
@@ -81,3 +118,22 @@ def Cancel(instance_partition, instance, operation):
       name=ref.RelativeName()
   )
   return client.projects_instances_instancePartitions_operations.Cancel(req)
+
+
+def Get(instance_partition, instance, operation):
+  """Get the specified operation."""
+  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
+  msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
+  ref = resources.REGISTRY.Parse(
+      operation,
+      params={
+          'projectsId': properties.VALUES.core.project.GetOrFail,
+          'instancePartitionsId': instance_partition,
+          'instancesId': instance,
+      },
+      collection='spanner.projects.instances.instancePartitions.operations',
+  )
+  req = msgs.SpannerProjectsInstancesInstancePartitionsOperationsGetRequest(
+      name=ref.RelativeName()
+  )
+  return client.projects_instances_instancePartitions_operations.Get(req)

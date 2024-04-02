@@ -260,6 +260,7 @@ def CreateSchedulingMessage(
     local_ssd_recovery_timeout=None,
     availability_domain=None,
     graceful_shutdown=None,
+    discard_local_ssds_at_termination_timestamp=None,
 ):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
@@ -333,6 +334,11 @@ def CreateSchedulingMessage(
 
   if availability_domain:
     scheduling.availabilityDomain = availability_domain
+
+  if discard_local_ssds_at_termination_timestamp:
+    scheduling.onInstanceStopAction = messages.SchedulingOnInstanceStopAction(
+        discardLocalSsd=discard_local_ssds_at_termination_timestamp
+    )
 
   return scheduling
 
@@ -664,6 +670,14 @@ def GetScheduling(
   if support_max_run_duration and hasattr(args, 'termination_time'):
     termination_time = args.termination_time
 
+  discard_local_ssds_at_termination_timestamp = None
+  if support_max_run_duration and hasattr(
+      args, 'discard_local_ssds_at_termination_timestamp'
+  ):
+    discard_local_ssds_at_termination_timestamp = (
+        args.discard_local_ssds_at_termination_timestamp
+    )
+
   # Make sure restart_on_failure always retain user-provided value,
   # but also ignore its default value when asked to skip defaults.
   restart_on_failure = None
@@ -715,6 +729,7 @@ def GetScheduling(
       local_ssd_recovery_timeout=local_ssd_recovery_timeout,
       availability_domain=availability_domain,
       graceful_shutdown=graceful_shutdown,
+      discard_local_ssds_at_termination_timestamp=discard_local_ssds_at_termination_timestamp,
   )
 
 

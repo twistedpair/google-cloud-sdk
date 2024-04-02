@@ -26,7 +26,6 @@ from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import apis_util
 from googlecloudsdk.api_lib.util import exceptions as api_exceptions
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import gapic_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.generated_clients.apis import apis_map
 
@@ -337,6 +336,9 @@ def GetGapicClientInstance(
   Returns:
     An instance of the specified GAPIC API client.
   """
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import gapic_util
+  # pylint: enable=g-import-not-at-top
   if transport == apis_util.GapicTransport.REST:
     raise GapicRestUnsupportedError()
   credentials = gapic_util.GetGapicCredentials()

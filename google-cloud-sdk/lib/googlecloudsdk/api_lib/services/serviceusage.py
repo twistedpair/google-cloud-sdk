@@ -28,7 +28,6 @@ from googlecloudsdk.api_lib.util import http_retry
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
-from googlecloudsdk.core.credentials import transports
 
 _PROJECT_RESOURCE = 'projects/%s'
 _FOLDER_RESOURCE = 'folders/%s'
@@ -1153,6 +1152,9 @@ def _GetClientInstance(version='v1'):
   # this API turned on. We should always use the shared project to do this
   # so we can bootstrap users getting the appropriate APIs enabled. If the user
   # has explicitly set the quota project, then respect that.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import transports
+  # pylint: enable=g-import-not-at-top
   enable_resource_quota = (
       properties.VALUES.billing.quota_project.IsExplicitlySet())
   http_client = transports.GetApitoolsTransport(

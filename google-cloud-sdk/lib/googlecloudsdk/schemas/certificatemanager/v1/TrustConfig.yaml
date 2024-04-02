@@ -58,7 +58,5 @@ properties:
       possession is established, and constraints on the certificate's SAN field
       are met.
     type: array
-    # TODO: b/289174140 - Remove on public launch.
-    hidden: true
     items:
       $ref: AllowlistedCertificate.yaml

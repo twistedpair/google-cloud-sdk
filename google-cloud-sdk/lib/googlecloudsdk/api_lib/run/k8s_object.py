@@ -41,6 +41,7 @@ CLIENT_GROUP = 'client.knative.dev'
 
 GOOGLE_GROUP = 'cloud.googleapis.com'
 RUN_GROUP = 'run.googleapis.com'
+RUNAPPS_GROUP = 'runapps.googleapis.com'
 
 INTERNAL_GROUPS = (
     CLIENT_GROUP,
@@ -75,7 +76,7 @@ GPU_TYPE_NODE_SELECTOR = RUN_GROUP + '/accelerator'
 
 MULTI_REGION_REGIONS_ANNOTATION = RUN_GROUP + '/regions'
 MULTI_REGION_ID_LABEL = RUN_GROUP + '/multi-region-id'
-GCLB_DOMAIN_NAME_ANNOTATION = RUN_GROUP + '/gclb-domain-name'
+GCLB_DOMAIN_NAME_ANNOTATION = RUNAPPS_GROUP + '/gclb-domain-name'
 
 
 def Meta(m):

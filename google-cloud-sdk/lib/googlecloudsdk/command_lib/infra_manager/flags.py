@@ -307,17 +307,12 @@ def AddPreviewModeFlag(parser, hidden=False):
   )
 
 
-def AddFileFlag(parser, hidden=False):
+def AddFileFlag(parser, help_text, hidden=False):
   """Add --file flag."""
   parser.add_argument(
       '--file',
       hidden=hidden,
-      help=(
-          'File name for preview export artifacts. It is optional and if '
-          '--file is specified with a name or complete path, the artifacts '
-          'will be downloaded to either the current directory with files named '
-          'as the name provided or to the complete path.'
-      ),
+      help=help_text,
   )
 
 

@@ -1,0 +1,42 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1beta RoleBinding export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- role
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  conditionExpression:
+    description: |-
+      The expression field of the IAM condition to be associated with the role.
+      If specified, a user with an active grant for this entitlement would be
+      able to access the resource only if this condition evaluates to true for
+      their request. This field uses the same CEL format as that of IAM and
+      supports all attributes that IAM supports, except tags.
+      https://cloud.google.com/iam/docs/conditions- overview#attributes.
+    type: string
+  role:
+    description: |-
+      IAM role to be granted. https://cloud.google.com/iam/docs/roles-overview.
+    type: string

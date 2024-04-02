@@ -1,0 +1,38 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: privilegedaccessmanager v1alpha RequesterJustificationConfig export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  notMandatory:
+    description: |-
+      This option means the requester will not be forced to provide a
+      justification.
+    $ref: NotMandatory.yaml
+  unstructured:
+    description: |-
+      This option means the requester has to necessarily provide a free flowing
+      text as justification. If this is selected the server will allow the
+      requester to provide a justification but will not validate it.
+    $ref: Unstructured.yaml

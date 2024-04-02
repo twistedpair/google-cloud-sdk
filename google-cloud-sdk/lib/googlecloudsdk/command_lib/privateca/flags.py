@@ -250,7 +250,6 @@ def AddSubjectKeyIdFlag(parser):
           'for a public key, whose SKI was not generated using method (1) '
           'described in RFC 5280 section 4.2.1.2.'
       ),
-      hidden=True,
   ).AddToParser(parser)
 
 
@@ -623,6 +622,7 @@ def AddExtensionConstraintsFlags(parser):
           'the certificate.'
       ),
   )
+
   copy_group = extension_group.add_group(
       mutex=False,
       required=False,
@@ -677,10 +677,14 @@ def AddMaximumLifetimeFlag(parser):
   base.Argument(
       '--maximum-lifetime',
       help=(
-          "If this is set, then issued certificate's lifetime "
-          'will be trunctated to the value provided'
+          "If this is set, then issued certificate's lifetime will be truncated"
+          " to the value provided. If the issuing CaPool's IssuancePolicy"
+          ' specifies a maximum lifetime the minimum of the two durations will'
+          ' be the maximum lifetime for the issued certificate. Note that if'
+          " the issuing CertificateAuthority expires before a Certificate's"
+          ' requested maximum_lifetime, the effective lifetime will be'
+          ' explicitly truncated to match it.'
       ),
-      hidden=True,
   ).AddToParser(parser)
 
 
