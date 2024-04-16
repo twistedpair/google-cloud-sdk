@@ -1319,7 +1319,7 @@ class MetastoreV1alpha(base_api.BaseApiClient):
     )
 
     def QueryMetadata(self, request, global_params=None):
-      r"""Query DPMS metadata.
+      r"""Query Dataproc Metastore metadata.
 
       Args:
         request: (MetastoreProjectsLocationsServicesQueryMetadataRequest) input message

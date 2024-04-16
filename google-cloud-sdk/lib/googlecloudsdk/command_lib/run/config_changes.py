@@ -403,7 +403,9 @@ class BaseImagesAnnotationChange(TemplateConfigChanger):
   def _constructBaseImageUrls(
       self, resource: revision.Revision, urls: dict[str, str]
   ):
-    containers = frozenset(resource.template.containers.keys())
+    containers = frozenset(
+        [x or '' for x in resource.template.containers.keys()]
+    )
     base_images_str = ', '.join(
         f'"{key}":"{value}"' for key, value in urls.items() if key in containers
     )
@@ -436,6 +438,34 @@ class BaseImagesAnnotationChange(TemplateConfigChanger):
       ):
         resource.template.spec.runtimeClassName = ''
     return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class IngressContainerBaseImagesAnnotationChange(BaseImagesAnnotationChange):
+  """Represents the user intent to update the 'base-images' template annotation.
+
+  The value of the annotation is a string representation of a json map of
+  container_name -> base_image_url. E.g.: '{"mycontainer":"my_base_image_url"}'.
+
+  This class changes the base image annotation for the default container, which
+  is either the container in a service with one container or the one with a port
+  set in a service with multiple containers.
+
+  Attributes:
+    base_image: url of the base image for the default container or None
+  """
+
+  base_image: str | None = None
+
+  def Adjust(self, resource: revision.Revision):
+    """Updates the revision to use automatic base image updates."""
+
+    if self.base_image:
+      self.updates[resource.template.container.name or ''] = self.base_image
+    else:
+      self.deletes.append(resource.template.container.name or '')
+
+    return super().Adjust(resource)
 
 
 @dataclasses.dataclass(frozen=True)
@@ -1640,7 +1670,7 @@ class HealthCheckChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
-class DefaultUrlChange(TemplateConfigChanger):
+class DefaultUrlChange(NonTemplateConfigChanger):
   """Sets the default-url-disabled annotation on the service.
 
   Attributes:
@@ -1657,7 +1687,7 @@ class DefaultUrlChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
-class InvokerIamChange(TemplateConfigChanger):
+class InvokerIamChange(NonTemplateConfigChanger):
   """Sets the invoker-iam-disabled annotation on the service.
 
   Attributes:

@@ -798,6 +798,7 @@ def Build(
     support_gcl=False,
     suppress_logs=False,
     skip_activation_prompt=False,
+    polling_interval=1,
 ):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
@@ -868,9 +869,10 @@ def Build(
   # Otherwise, logs are streamed from the chosen logging service
   # (defaulted to GCS).
   with execution_utils.CtrlCSection(mash_handler):
-    build = cb_logs.CloudBuildClient(client, messages, support_gcl).Stream(
-        build_ref, out
-    )
+    build = cb_logs.CloudBuildClient(client,
+                                     messages,
+                                     support_gcl,
+                                     polling_interval).Stream(build_ref, out)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
     log.status.Print(

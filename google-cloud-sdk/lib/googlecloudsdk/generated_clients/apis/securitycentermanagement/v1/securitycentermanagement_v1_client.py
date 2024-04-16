@@ -42,18 +42,21 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     self.folders_locations_effectiveEventThreatDetectionCustomModules = self.FoldersLocationsEffectiveEventThreatDetectionCustomModulesService(self)
     self.folders_locations_effectiveSecurityHealthAnalyticsCustomModules = self.FoldersLocationsEffectiveSecurityHealthAnalyticsCustomModulesService(self)
     self.folders_locations_eventThreatDetectionCustomModules = self.FoldersLocationsEventThreatDetectionCustomModulesService(self)
+    self.folders_locations_securityCenterServices = self.FoldersLocationsSecurityCenterServicesService(self)
     self.folders_locations_securityHealthAnalyticsCustomModules = self.FoldersLocationsSecurityHealthAnalyticsCustomModulesService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.organizations_locations_effectiveEventThreatDetectionCustomModules = self.OrganizationsLocationsEffectiveEventThreatDetectionCustomModulesService(self)
     self.organizations_locations_effectiveSecurityHealthAnalyticsCustomModules = self.OrganizationsLocationsEffectiveSecurityHealthAnalyticsCustomModulesService(self)
     self.organizations_locations_eventThreatDetectionCustomModules = self.OrganizationsLocationsEventThreatDetectionCustomModulesService(self)
+    self.organizations_locations_securityCenterServices = self.OrganizationsLocationsSecurityCenterServicesService(self)
     self.organizations_locations_securityHealthAnalyticsCustomModules = self.OrganizationsLocationsSecurityHealthAnalyticsCustomModulesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_effectiveEventThreatDetectionCustomModules = self.ProjectsLocationsEffectiveEventThreatDetectionCustomModulesService(self)
     self.projects_locations_effectiveSecurityHealthAnalyticsCustomModules = self.ProjectsLocationsEffectiveSecurityHealthAnalyticsCustomModulesService(self)
     self.projects_locations_eventThreatDetectionCustomModules = self.ProjectsLocationsEventThreatDetectionCustomModulesService(self)
+    self.projects_locations_securityCenterServices = self.ProjectsLocationsSecurityCenterServicesService(self)
     self.projects_locations_securityHealthAnalyticsCustomModules = self.ProjectsLocationsSecurityHealthAnalyticsCustomModulesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -382,6 +385,97 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         request_field='validateEventThreatDetectionCustomModuleRequest',
         request_type_name='SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesValidateRequest',
         response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsSecurityCenterServicesService(base_api.BaseApiService):
+    """Service class for the folders_locations_securityCenterServices resource."""
+
+    _NAME = 'folders_locations_securityCenterServices'
+
+    def __init__(self, client):
+      super(SecuritycentermanagementV1.FoldersLocationsSecurityCenterServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets service settings for the specified Security Center service.
+
+      Args:
+        request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='GET',
+        method_id='securitycentermanagement.folders.locations.securityCenterServices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest',
+        response_type_name='SecurityCenterService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of all Security Center services for the given parent.
+
+      Args:
+        request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSecurityCenterServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/securityCenterServices',
+        http_method='GET',
+        method_id='securitycentermanagement.folders.locations.securityCenterServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityCenterServices',
+        request_field='',
+        request_type_name='SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest',
+        response_type_name='ListSecurityCenterServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Security Center service using the given update mask.
+
+      Args:
+        request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='PATCH',
+        method_id='securitycentermanagement.folders.locations.securityCenterServices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='securityCenterService',
+        request_type_name='SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest',
+        response_type_name='SecurityCenterService',
         supports_download=False,
     )
 
@@ -931,6 +1025,97 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsSecurityCenterServicesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_securityCenterServices resource."""
+
+    _NAME = 'organizations_locations_securityCenterServices'
+
+    def __init__(self, client):
+      super(SecuritycentermanagementV1.OrganizationsLocationsSecurityCenterServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets service settings for the specified Security Center service.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='GET',
+        method_id='securitycentermanagement.organizations.locations.securityCenterServices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest',
+        response_type_name='SecurityCenterService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of all Security Center services for the given parent.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSecurityCenterServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/securityCenterServices',
+        http_method='GET',
+        method_id='securitycentermanagement.organizations.locations.securityCenterServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityCenterServices',
+        request_field='',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRequest',
+        response_type_name='ListSecurityCenterServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Security Center service using the given update mask.
+
+      Args:
+        request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='PATCH',
+        method_id='securitycentermanagement.organizations.locations.securityCenterServices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='securityCenterService',
+        request_type_name='SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchRequest',
+        response_type_name='SecurityCenterService',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsSecurityHealthAnalyticsCustomModulesService(base_api.BaseApiService):
     """Service class for the organizations_locations_securityHealthAnalyticsCustomModules resource."""
 
@@ -1474,6 +1659,97 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         request_field='validateEventThreatDetectionCustomModuleRequest',
         request_type_name='SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesValidateRequest',
         response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSecurityCenterServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_securityCenterServices resource."""
+
+    _NAME = 'projects_locations_securityCenterServices'
+
+    def __init__(self, client):
+      super(SecuritycentermanagementV1.ProjectsLocationsSecurityCenterServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets service settings for the specified Security Center service.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='GET',
+        method_id='securitycentermanagement.projects.locations.securityCenterServices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest',
+        response_type_name='SecurityCenterService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of all Security Center services for the given parent.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSecurityCenterServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityCenterServices',
+        http_method='GET',
+        method_id='securitycentermanagement.projects.locations.securityCenterServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityCenterServices',
+        request_field='',
+        request_type_name='SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest',
+        response_type_name='ListSecurityCenterServicesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a Security Center service using the given update mask.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SecurityCenterService) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/securityCenterServices/{securityCenterServicesId}',
+        http_method='PATCH',
+        method_id='securitycentermanagement.projects.locations.securityCenterServices.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='securityCenterService',
+        request_type_name='SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest',
+        response_type_name='SecurityCenterService',
         supports_download=False,
     )
 

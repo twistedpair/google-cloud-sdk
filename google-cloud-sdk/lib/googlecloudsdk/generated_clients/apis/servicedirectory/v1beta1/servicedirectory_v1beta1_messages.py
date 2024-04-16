@@ -1529,7 +1529,8 @@ class ServicedirectoryProjectsLocationsNamespacesListRequest(_messages.Message):
       order by ``. If this is left blank, `asc` is used Note that an empty
       `order_by` string results in default order, which is order by `name` in
       ascending order.
-    pageSize: Optional. The maximum number of items to return.
+    pageSize: Optional. The maximum number of items to return. The default
+      value is 100.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The resource name of the project and location whose
@@ -1669,7 +1670,8 @@ class ServicedirectoryProjectsLocationsNamespacesServicesEndpointsListRequest(_m
       ascending or descending order by ``. If this is left blank, `asc` is
       used Note that an empty `order_by` string results in default order,
       which is order by `name` in ascending order.
-    pageSize: Optional. The maximum number of items to return.
+    pageSize: Optional. The maximum number of items to return. The default
+      value is 100.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The resource name of the service whose endpoints you'd
@@ -1755,7 +1757,8 @@ class ServicedirectoryProjectsLocationsNamespacesServicesListRequest(_messages.M
       order by ``. If this is left blank, `asc` is used Note that an empty
       `order_by` string results in default order, which is order by `name` in
       ascending order.
-    pageSize: Optional. The maximum number of items to return.
+    pageSize: Optional. The maximum number of items to return. The default
+      value is 100.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The resource name of the namespace whose services you'd
@@ -1979,7 +1982,8 @@ class ServicedirectoryProjectsLocationsNamespacesWorkloadsListRequest(_messages.
       If this is left blank, `asc` is used Note that an empty `order_by`
       string results in default order, which is order by `name` in ascending
       order.
-    pageSize: Optional. The maximum number of items to return.
+    pageSize: Optional. The maximum number of items to return. The default
+      value is 100.
     pageToken: Optional. The next_page_token value returned from a previous
       List request, if any.
     parent: Required. The resource name of the namespace whose service

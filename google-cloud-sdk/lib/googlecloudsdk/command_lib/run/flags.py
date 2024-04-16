@@ -2599,6 +2599,19 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
           )
       )
 
+  if FlagIsExplicitlySet(args, 'base_image'):
+    changes.append(
+        config_changes.IngressContainerBaseImagesAnnotationChange(
+            base_image=args.base_image
+        )
+    )
+  if FlagIsExplicitlySet(args, 'clear_base_image'):
+    changes.append(
+        config_changes.IngressContainerBaseImagesAnnotationChange(
+            base_image=None
+        )
+    )
+
   return changes
 
 
@@ -2627,6 +2640,13 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
     changes.append(
         config_changes.ResourceChanges(
             memory=container_args.memory, container_name=container_name
+        )
+    )
+  # TODO(b/332909160): Change to IsKnown when gpu flags goes GA
+  if container_args.IsKnownAndSpecified('gpu'):
+    changes.append(
+        config_changes.ResourceChanges(
+            gpu=container_args.gpu, container_name=container_name
         )
     )
   if container_args.IsSpecified('command'):
@@ -2869,6 +2889,8 @@ def GetWorkerConfigurationChanges(
     changes.append(config_changes.HealthCheckChange(health_check=False))
     # disable default url
     changes.append(config_changes.DefaultUrlChange(default_url=False))
+    changes.append(config_changes.SandboxChange('gen2'))
+
   changes.extend(_GetConfigurationChanges(args, release_track=release_track))
   changes.extend(_GetWorkerScalingChanges(args))
   if _HasInstanceSplitChanges(args):

@@ -37,6 +37,8 @@ class BlockchainValidatorConfig(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
+    existingSeedPhraseReference: Optional. An existing seed phrase, read from
+      Secret Manager.
     keySource: Immutable. The source of the voting key for the blockchain
       validator.
     labels: Optional. Labels as key value pairs
@@ -48,6 +50,8 @@ class BlockchainValidatorConfig(_messages.Message):
       characters in length, and it must not start with `"goog"`.
     remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
       service to use for signing attestations and blocks.
+    seedPhraseReference: Optional. A new seed phrase, optionally written to
+      Secret Manager.
     updateTime: Output only. [Output only] Update time stamp
     validationWorkEnabled: Required. True if the blockchain node requests and
       signs attestations and blocks on behalf of this validator, false if not.
@@ -82,9 +86,14 @@ class BlockchainValidatorConfig(_messages.Message):
         should be.
       REMOTE_WEB3_SIGNER: The voting key is stored in a remote signing service
         (Web3Signer) and signing requests are delegated.
+      SEED_PHRASE_REFERENCE: Derive voting keys from new seed material.
+      EXISTING_SEED_PHRASE_REFERENCE: Derive voting keys from existing seed
+        material.
     """
     KEY_SOURCE_UNSPECIFIED = 0
     REMOTE_WEB3_SIGNER = 1
+    SEED_PHRASE_REFERENCE = 2
+    EXISTING_SEED_PHRASE_REFERENCE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -114,13 +123,15 @@ class BlockchainValidatorConfig(_messages.Message):
   blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 2)
   createTime = _messages.StringField(3)
   ethereumProtocolDetails = _messages.MessageField('EthereumDetails', 4)
-  keySource = _messages.EnumField('KeySourceValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 8)
-  updateTime = _messages.StringField(9)
-  validationWorkEnabled = _messages.BooleanField(10)
-  votingPublicKey = _messages.StringField(11)
+  existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReference', 5)
+  keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3Signer', 9)
+  seedPhraseReference = _messages.MessageField('SeedPhraseReference', 10)
+  updateTime = _messages.StringField(11)
+  validationWorkEnabled = _messages.BooleanField(12)
+  votingPublicKey = _messages.StringField(13)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
@@ -389,6 +400,21 @@ class EthereumDetails(_messages.Message):
   graffiti = _messages.StringField(2)
   suggestedFeeRecipient = _messages.StringField(3)
   useBlockBuilderProposals = _messages.BooleanField(4)
+
+
+class ExistingSeedPhraseReference(_messages.Message):
+  r"""Location of existing seed material, and derivation path used to generate
+  the voting key.
+
+  Fields:
+    depositTxData: Output only. Immutable. The deposit transaction data
+      corresponding to the derived key.
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  depositTxData = _messages.StringField(1)
+  seedPhraseSecret = _messages.StringField(2)
 
 
 class ListBlockchainValidatorConfigsResponse(_messages.Message):
@@ -668,6 +694,21 @@ class RemoteWeb3Signer(_messages.Message):
   timeoutDuration = _messages.StringField(1)
   votingPublicKey = _messages.StringField(2)
   web3signerUri = _messages.StringField(3)
+
+
+class SeedPhraseReference(_messages.Message):
+  r"""Derivation path used to generate the voting key, and optionally Secret
+  Manager secret to backup the seed phrase to.
+
+  Fields:
+    depositTxData: Output only. Immutable. The deposit transaction data
+      corresponding to the derived key.
+    seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
+      where the seed phrase is stored.
+  """
+
+  depositTxData = _messages.StringField(1)
+  seedPhraseSecret = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -192,6 +192,10 @@ MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --max-pods-per-node without --enable-ip-alias.
 """
 
+ALPHA_CLUSTER_FEATURE_GATES_WITHOUT_ENABLE_KUBERNETES_ALPHA_ERROR_MSG = """\
+Cannot use --alpha-cluster-feature-gates without --enable-kubernetes-alpha.
+"""
+
 NOTHING_TO_UPDATE_ERROR_MSG = """\
 Nothing to update.
 """
@@ -557,6 +561,7 @@ class CreateClusterOptions(object):
       issue_client_certificate=None,
       max_nodes_per_pool=None,
       enable_kubernetes_alpha=None,
+      alpha_cluster_feature_gates=None,
       enable_cloud_run_alpha=None,
       preemptible=None,
       spot=None,
@@ -765,6 +770,7 @@ class CreateClusterOptions(object):
     self.image_family = image_family
     self.max_nodes_per_pool = max_nodes_per_pool
     self.enable_kubernetes_alpha = enable_kubernetes_alpha
+    self.alpha_cluster_feature_gates = alpha_cluster_feature_gates
     self.enable_cloud_run_alpha = enable_cloud_run_alpha
     self.preemptible = preemptible
     self.spot = spot
@@ -1878,6 +1884,15 @@ class APIAdapter(object):
 
     if options.enable_kubernetes_alpha:
       cluster.enableKubernetesAlpha = options.enable_kubernetes_alpha
+
+    if options.alpha_cluster_feature_gates:
+      if not options.enable_kubernetes_alpha:
+        raise util.Error(
+            ALPHA_CLUSTER_FEATURE_GATES_WITHOUT_ENABLE_KUBERNETES_ALPHA_ERROR_MSG
+        )
+      cluster.alphaClusterFeatureGates = options.alpha_cluster_feature_gates
+    else:
+      cluster.alphaClusterFeatureGates = []
 
     if options.default_max_pods_per_node is not None:
       if not options.enable_ip_alias:

@@ -22,9 +22,12 @@ from googlecloudsdk.api_lib.edge_cloud.container import util
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 GDCE_SYS_ADDONS_CONFIG = 'systemAddonsConfig'
+GDCE_EXTERNAL_LB_CONFIG = 'externalLoadBalancerAddressPools'
 
 
 def ClusterAttributeConfig():
@@ -37,6 +40,28 @@ def LocationAttributeConfig():
       name='location', help_text='Google Cloud location for the {resource}.')
 
 
+def GetLocationsListingResourceSpec():
+  """Gets the location resource spec for listing resources."""
+  fallthroughs = [
+      ## if location is not set, use value from
+      ## gcloud config get-value edge_container/location
+      deps.ArgFallthrough('--location'),
+      deps.PropertyFallthrough(properties.VALUES.edge_container.location),
+  ]
+
+  # TODO(b/332336702): Before this CL, only listing clusters supports the
+  # `edge_container/location` property. All other cluster commands do not use
+  #  it. Validate if this is a bug with current behavior, and fix if so.
+  config = LocationAttributeConfig()
+  config.fallthroughs = fallthroughs
+
+  return concepts.ResourceSpec(
+      'edgecontainer.projects.locations',
+      resource_name='location',
+      locationsId=config,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
 def GetClusterResourceSpec():
   return concepts.ResourceSpec(
       'edgecontainer.projects.locations.clusters',
@@ -44,6 +69,19 @@ def GetClusterResourceSpec():
       clustersId=ClusterAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddLocationOptionalResourceArgForListing(parser):
+  """Adds a resource argument for an Edge Container location.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--location',
+      GetLocationsListingResourceSpec(),
+      'Edge Container location {}.'.format('to list'),
+      required=False).AddToParser(parser)
 
 
 def AddClusterResourceArg(parser, verb, positional=True):
@@ -124,3 +162,78 @@ def SetSystemAddonsConfig(args, request):
 
   if args.IsKnownAndSpecified('system_addons_config'):
     ProcessSystemAddonsConfig(args, request)
+
+
+def CheckAddressPoolNameUniqueness(external_lb_address_pools):
+  """Checks for unique address pool names in the given list of dictionaries.
+
+  Args:
+    external_lb_address_pools: A list of dictionaries representing
+    ExternalLoadBalancerPool messages.
+
+  Returns:
+    str: An error message if a duplicate address pool name is found,
+    otherwise None.
+  """
+
+  address_pool_set = set()
+
+  for pool in external_lb_address_pools:
+    if 'addressPool' in pool and pool['addressPool']:
+      if pool['addressPool'] in address_pool_set:
+        return f"Duplicate address pool name: {pool['addressPool']}"
+      address_pool_set.add(pool['addressPool'])
+
+  return None
+
+
+def ProcessExternalLoadBalancerAddressPoolsConfig(args, req):
+  """Processes the cluster.externalLoadBalancerAddressPools.
+
+  Args:
+    args: command line arguments.
+    req: API request to be issued
+  """
+
+  release_track = args.calliope_command.ReleaseTrack()
+  msgs = util.GetMessagesModule(release_track)
+
+  lbdata = args.external_lb_address_pools
+  if not lbdata:
+    return
+
+  pools = lbdata.get(GDCE_EXTERNAL_LB_CONFIG)
+  if not pools:
+    return
+
+  err = CheckAddressPoolNameUniqueness(pools)
+  if err:
+    raise exceptions.InvalidArgumentException(
+        '--external-lb-address-pools',
+        f'Duplicate address pool found: {err}'
+    )
+
+  mpools = []
+  try:
+    for pool in pools:
+      mpool = messages_util.DictToMessageWithErrorCheck(
+          pool, msgs.ExternalLoadBalancerPool)
+      mpools.append(mpool)
+  except (messages_util.DecodeError, AttributeError, KeyError) as err:
+    raise exceptions.InvalidArgumentException(
+        '--external-lb-address-pools',
+        '\'{}\''.format(err.args[0] if err.args else err))
+  if mpools:
+    req.cluster.externalLoadBalancerAddressPools = mpools
+
+
+def SetExternalLoadBalancerAddressPoolsConfig(args, request):
+  """Sets the cluster.external_lb_address_pools if specified.
+
+  Args:
+    args: command line arguments.
+    request: API request to be issued
+  """
+
+  if args.IsKnownAndSpecified('external_lb_address_pools'):
+    ProcessExternalLoadBalancerAddressPoolsConfig(args, request)

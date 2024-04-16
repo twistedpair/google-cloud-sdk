@@ -463,6 +463,68 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AwsAccount(_messages.Message):
+  r"""An AWS account that is a member of an organization.
+
+  Fields:
+    id: The unique identifier (ID) of the account, containing exactly 12
+      digits.
+    name: The friendly name of this account.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class AwsMetadata(_messages.Message):
+  r"""AWS metadata associated with the resource, only applicable if the
+  finding's cloud provider is Amazon Web Services.
+
+  Fields:
+    account: The AWS account associated with the resource.
+    organization: The AWS organization associated with the resource.
+    organizationalUnits: A list of AWS organizational units associated with
+      the resource, ordered from lowest level (closest to the account) to
+      highest level.
+  """
+
+  account = _messages.MessageField('AwsAccount', 1)
+  organization = _messages.MessageField('AwsOrganization', 2)
+  organizationalUnits = _messages.MessageField('AwsOrganizationalUnit', 3, repeated=True)
+
+
+class AwsOrganization(_messages.Message):
+  r"""An organization is a collection of accounts that are centrally managed
+  together using consolidated billing, organized hierarchically with
+  organizational units (OUs), and controlled with policies.
+
+  Fields:
+    id: The unique identifier (ID) for the organization. The regex pattern for
+      an organization ID string requires "o-" followed by from 10 to 32
+      lowercase letters or digits.
+  """
+
+  id = _messages.StringField(1)
+
+
+class AwsOrganizationalUnit(_messages.Message):
+  r"""An Organizational Unit (OU) is a container of AWS accounts within a root
+  of an organization. Policies that are attached to an OU apply to all
+  accounts contained in that OU and in any child OUs.
+
+  Fields:
+    id: The unique identifier (ID) associated with this OU. The regex pattern
+      for an organizational unit ID string requires "ou-" followed by from 4
+      to 32 lowercase letters or digits (the ID of the root that contains the
+      OU). This string is followed by a second "-" dash and from 8 to 32
+      additional lowercase letters or digits. For example, "ou-ab12-cd34ef56".
+    name: The friendly name of the OU.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class BackupDisasterRecovery(_messages.Message):
   r"""Information related to Google Cloud Backup and DR Service findings.
 
@@ -751,8 +813,13 @@ class ComplianceSnapshot(_messages.Message):
   r"""Result containing the properties and count of a ComplianceSnapshot
   request.
 
+  Enums:
+    CloudProviderValueValuesEnum: The cloud provider for the compliance
+      snapshot.
+
   Fields:
     category: The category of Findings matching.
+    cloudProvider: The cloud provider for the compliance snapshot.
     complianceStandard: The compliance standard (ie CIS).
     complianceVersion: The compliance version (ie 1.3) in CIS 1.3.
     count: Total count of findings for the given properties.
@@ -765,14 +832,29 @@ class ComplianceSnapshot(_messages.Message):
     snapshotTime: The snapshot time of the snapshot.
   """
 
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider for the compliance snapshot.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
   category = _messages.StringField(1)
-  complianceStandard = _messages.StringField(2)
-  complianceVersion = _messages.StringField(3)
-  count = _messages.IntegerField(4)
-  leafContainerResource = _messages.StringField(5)
-  name = _messages.StringField(6)
-  projectDisplayName = _messages.StringField(7)
-  snapshotTime = _messages.StringField(8)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  complianceStandard = _messages.StringField(3)
+  complianceVersion = _messages.StringField(4)
+  count = _messages.IntegerField(5)
+  leafContainerResource = _messages.StringField(6)
+  name = _messages.StringField(7)
+  projectDisplayName = _messages.StringField(8)
+  snapshotTime = _messages.StringField(9)
 
 
 class Connection(_messages.Message):
@@ -1672,6 +1754,7 @@ class Finding(_messages.Message):
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     nextSteps: Steps to address the finding.
+    notebook: Notebook associated with the finding.
     orgPolicies: Contains information about the org policies associated with
       the finding.
     parent: The relative resource name of the source the finding belongs to.
@@ -1927,17 +2010,18 @@ class Finding(_messages.Message):
   muteUpdateTime = _messages.StringField(33)
   name = _messages.StringField(34)
   nextSteps = _messages.StringField(35)
-  orgPolicies = _messages.MessageField('OrgPolicy', 36, repeated=True)
-  parent = _messages.StringField(37)
-  parentDisplayName = _messages.StringField(38)
-  processes = _messages.MessageField('Process', 39, repeated=True)
-  resourceName = _messages.StringField(40)
-  securityMarks = _messages.MessageField('SecurityMarks', 41)
-  securityPosture = _messages.MessageField('SecurityPosture', 42)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 43)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 44)
-  state = _messages.EnumField('StateValueValuesEnum', 45)
-  vulnerability = _messages.MessageField('Vulnerability', 46)
+  notebook = _messages.MessageField('Notebook', 36)
+  orgPolicies = _messages.MessageField('OrgPolicy', 37, repeated=True)
+  parent = _messages.StringField(38)
+  parentDisplayName = _messages.StringField(39)
+  processes = _messages.MessageField('Process', 40, repeated=True)
+  resourceName = _messages.StringField(41)
+  securityMarks = _messages.MessageField('SecurityMarks', 42)
+  securityPosture = _messages.MessageField('SecurityPosture', 43)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 44)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 45)
+  state = _messages.EnumField('StateValueValuesEnum', 46)
+  vulnerability = _messages.MessageField('Vulnerability', 47)
 
 
 class Folder(_messages.Message):
@@ -1952,6 +2036,29 @@ class Folder(_messages.Message):
 
   resourceFolder = _messages.StringField(1)
   resourceFolderDisplayName = _messages.StringField(2)
+
+
+class GcpMetadata(_messages.Message):
+  r"""GCP metadata associated with the resource, only applicable if the
+  finding's cloud provider is Google Cloud Platform.
+
+  Fields:
+    folders: Output only. Contains a Folder message for each folder in the
+      assets ancestry. The first folder is the deepest nested folder, and the
+      last folder is the folder directly under the Organization.
+    organization: The name of the organization that the resource belongs to.
+    parent: The full resource name of resource's parent.
+    parentDisplayName: The human readable name of resource's parent.
+    project: The full resource name of project that the resource belongs to.
+    projectDisplayName: The project ID that the resource belongs to.
+  """
+
+  folders = _messages.MessageField('GoogleCloudSecuritycenterV2Folder', 1, repeated=True)
+  organization = _messages.StringField(2)
+  parent = _messages.StringField(3)
+  parentDisplayName = _messages.StringField(4)
+  project = _messages.StringField(5)
+  projectDisplayName = _messages.StringField(6)
 
 
 class Geolocation(_messages.Message):
@@ -2302,28 +2409,71 @@ class GoogleCloudSecuritycenterV1Property(_messages.Message):
 class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
+  Enums:
+    CloudProviderValueValuesEnum: Indicates which cloud provider the resource
+      resides in.
+
   Fields:
+    awsMetadata: The AWS metadata associated with the finding.
+    cloudProvider: Indicates which cloud provider the resource resides in.
     displayName: The human readable name of the resource.
     folders: Output only. Contains a Folder message for each folder in the
       assets ancestry. The first folder is the deepest nested folder, and the
       last folder is the folder directly under the Organization.
+    location: The region or location of the service (if applicable).
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+    organization: Indicates which organization or tenant in the cloud provider
+      the finding applies to.
     parent: The full resource name of resource's parent.
     parentDisplayName: The human readable name of resource's parent.
     project: The full resource name of project that the resource belongs to.
     projectDisplayName: The project ID that the resource belongs to.
+    resourcePath: Provides the path to the resource within the resource
+      hierarchy.
+    resourcePathString: A string representation of the resource path. For GCP,
+      it has the format of: organizations/{organization_id}/folders/{folder_id
+      }/folders/{folder_id}/projects/{project_id} where there can be any
+      number of folders. For AWS, it has the format of: org/{organization_id}/
+      ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account
+      _id} where there can be any number of organizational units. For Azure,
+      it has the format of: mg/{management_group_id}/mg/{management_group_id}/
+      subscription/{subscription_id}/rg/{resource_group_name} where there can
+      be any number of management groups.
+    service: The parent service or product from which the resource is
+      provided, for example, GKE or SNS.
     type: The full resource type of the resource.
   """
 
-  displayName = _messages.StringField(1)
-  folders = _messages.MessageField('Folder', 2, repeated=True)
-  name = _messages.StringField(3)
-  parent = _messages.StringField(4)
-  parentDisplayName = _messages.StringField(5)
-  project = _messages.StringField(6)
-  projectDisplayName = _messages.StringField(7)
-  type = _messages.StringField(8)
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Indicates which cloud provider the resource resides in.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  awsMetadata = _messages.MessageField('AwsMetadata', 1)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  folders = _messages.MessageField('Folder', 4, repeated=True)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  organization = _messages.StringField(7)
+  parent = _messages.StringField(8)
+  parentDisplayName = _messages.StringField(9)
+  project = _messages.StringField(10)
+  projectDisplayName = _messages.StringField(11)
+  resourcePath = _messages.MessageField('ResourcePath', 12)
+  resourcePathString = _messages.StringField(13)
+  service = _messages.StringField(14)
+  type = _messages.StringField(15)
 
 
 class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
@@ -2341,6 +2491,7 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
   resources to resource values. Used in Attack path simulations.
 
   Enums:
+    CloudProviderValueValuesEnum: Cloud provider this configuration applies to
     ResourceValueValueValuesEnum: Required. Resource value level this
       expression represents
 
@@ -2352,6 +2503,7 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
       managing-labels
 
   Fields:
+    cloudProvider: Cloud provider this configuration applies to
     createTime: Output only. Timestamp this resource value config was created.
     description: Description of the resource value config.
     name: Name for the resource value config
@@ -2380,6 +2532,20 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     updateTime: Output only. Timestamp this resource value config was last
       updated.
   """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Cloud provider this configuration applies to
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
 
   class ResourceValueValueValuesEnum(_messages.Enum):
     r"""Required. Resource value level this expression represents
@@ -2426,16 +2592,17 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-  scope = _messages.StringField(7)
-  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping', 8)
-  tagValues = _messages.StringField(9, repeated=True)
-  updateTime = _messages.StringField(10)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 5)
+  resourceType = _messages.StringField(6)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 7)
+  scope = _messages.StringField(8)
+  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping', 9)
+  tagValues = _messages.StringField(10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -3065,6 +3232,68 @@ class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
   latestCalculationTime = _messages.StringField(5)
   score = _messages.FloatField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class GoogleCloudSecuritycenterV2AwsAccount(_messages.Message):
+  r"""An AWS account that is a member of an organization.
+
+  Fields:
+    id: The unique identifier (ID) of the account, containing exactly 12
+      digits.
+    name: The friendly name of this account.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2AwsMetadata(_messages.Message):
+  r"""AWS metadata associated with the resource, only applicable if the
+  finding's cloud provider is Amazon Web Services.
+
+  Fields:
+    account: The AWS account associated with the resource.
+    organization: The AWS organization associated with the resource.
+    organizationalUnits: A list of AWS organizational units associated with
+      the resource, ordered from lowest level (closest to the account) to
+      highest level.
+  """
+
+  account = _messages.MessageField('GoogleCloudSecuritycenterV2AwsAccount', 1)
+  organization = _messages.MessageField('GoogleCloudSecuritycenterV2AwsOrganization', 2)
+  organizationalUnits = _messages.MessageField('GoogleCloudSecuritycenterV2AwsOrganizationalUnit', 3, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2AwsOrganization(_messages.Message):
+  r"""An organization is a collection of accounts that are centrally managed
+  together using consolidated billing, organized hierarchically with
+  organizational units (OUs), and controlled with policies.
+
+  Fields:
+    id: The unique identifier (ID) for the organization. The regex pattern for
+      an organization ID string requires "o-" followed by from 10 to 32
+      lowercase letters or digits.
+  """
+
+  id = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2AwsOrganizationalUnit(_messages.Message):
+  r"""An Organizational Unit (OU) is a container of AWS accounts within a root
+  of an organization. Policies that are attached to an OU apply to all
+  accounts contained in that OU and in any child OUs.
+
+  Fields:
+    id: The unique identifier (ID) associated with this OU. The regex pattern
+      for an organizational unit ID string requires "ou-" followed by from 4
+      to 32 lowercase letters or digits (the ID of the root that contains the
+      OU). This string is followed by a second "-" dash and from 8 to 32
+      additional lowercase letters or digits. For example, "ou-ab12-cd34ef56".
+    name: The friendly name of the OU.
+  """
+
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV2BackupDisasterRecovery(_messages.Message):
@@ -3982,6 +4211,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       jects/{project_id}/sources/{source_id}/locations/{location_id}/findings/
       {finding_id}`
     nextSteps: Steps to address the finding.
+    notebook: Notebook associated with the finding.
     orgPolicies: Contains information about the org policies associated with
       the finding.
     parent: The relative resource name of the source and location the finding
@@ -4241,17 +4471,32 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   muteUpdateTime = _messages.StringField(32)
   name = _messages.StringField(33)
   nextSteps = _messages.StringField(34)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 35, repeated=True)
-  parent = _messages.StringField(36)
-  parentDisplayName = _messages.StringField(37)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 38, repeated=True)
-  resourceName = _messages.StringField(39)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 40)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 41)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 42)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 43)
-  state = _messages.EnumField('StateValueValuesEnum', 44)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 45)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 35)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 36, repeated=True)
+  parent = _messages.StringField(37)
+  parentDisplayName = _messages.StringField(38)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 39, repeated=True)
+  resourceName = _messages.StringField(40)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 41)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 42)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 43)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 44)
+  state = _messages.EnumField('StateValueValuesEnum', 45)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 46)
+
+
+class GoogleCloudSecuritycenterV2Folder(_messages.Message):
+  r"""Message that contains the resource name and display name of a folder
+  resource.
+
+  Fields:
+    resourceFolder: Full resource name of this folder. See:
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourceFolderDisplayName: The user defined display name for this folder.
+  """
+
+  resourceFolder = _messages.StringField(1)
+  resourceFolderDisplayName = _messages.StringField(2)
 
 
 class GoogleCloudSecuritycenterV2Geolocation(_messages.Message):
@@ -4884,6 +5129,24 @@ class GoogleCloudSecuritycenterV2NodePool(_messages.Message):
   nodes = _messages.MessageField('GoogleCloudSecuritycenterV2Node', 2, repeated=True)
 
 
+class GoogleCloudSecuritycenterV2Notebook(_messages.Message):
+  r"""Represents a Jupyter notebook IPYNB file, such as a [Colab Enterprise
+  notebook](https://cloud.google.com/colab/docs/introduction) file, that is
+  associated with a finding.
+
+  Fields:
+    lastAuthor: The user ID of the latest author to modify the notebook.
+    name: The name of the notebook.
+    notebookUpdateTime: The most recent time the notebook was updated.
+    service: The source notebook service, for example, "Colab Enterprise".
+  """
+
+  lastAuthor = _messages.StringField(1)
+  name = _messages.StringField(2)
+  notebookUpdateTime = _messages.StringField(3)
+  service = _messages.StringField(4)
+
+
 class GoogleCloudSecuritycenterV2NotificationMessage(_messages.Message):
   r"""Cloud SCC's Notification
 
@@ -5066,16 +5329,113 @@ class GoogleCloudSecuritycenterV2Reference(_messages.Message):
 class GoogleCloudSecuritycenterV2Resource(_messages.Message):
   r"""Information related to the Google Cloud resource.
 
+  Enums:
+    CloudProviderValueValuesEnum: Indicates which cloud provider the finding
+      is from.
+
   Fields:
+    awsMetadata: The AWS metadata associated with the finding.
+    cloudProvider: Indicates which cloud provider the finding is from.
     displayName: The human readable name of the resource.
+    gcpMetadata: The GCP metadata associated with the finding.
+    location: The region or location of the service (if applicable).
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+    resourcePath: Provides the path to the resource within the resource
+      hierarchy.
+    resourcePathString: A string representation of the resource path. For GCP,
+      it has the format of: organizations/{organization_id}/folders/{folder_id
+      }/folders/{folder_id}/projects/{project_id} where there can be any
+      number of folders. For AWS, it has the format of: org/{organization_id}/
+      ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account
+      _id} where there can be any number of organizational units. For Azure,
+      it has the format of: mg/{management_group_id}/mg/{management_group_id}/
+      subscription/{subscription_id}/rg/{resource_group_name} where there can
+      be any number of management groups.
+    service: The service or resource provider associated with the resource.
     type: The full resource type of the resource.
   """
 
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Indicates which cloud provider the finding is from.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  awsMetadata = _messages.MessageField('GoogleCloudSecuritycenterV2AwsMetadata', 1)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  gcpMetadata = _messages.MessageField('GcpMetadata', 4)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  resourcePath = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePath', 7)
+  resourcePathString = _messages.StringField(8)
+  service = _messages.StringField(9)
+  type = _messages.StringField(10)
+
+
+class GoogleCloudSecuritycenterV2ResourcePath(_messages.Message):
+  r"""Represents the path of resources leading up to the resource this finding
+  is about.
+
+  Fields:
+    nodes: The list of nodes that make the up resource path, ordered from
+      lowest level to highest level.
+  """
+
+  nodes = _messages.MessageField('GoogleCloudSecuritycenterV2ResourcePathNode', 1, repeated=True)
+
+
+class GoogleCloudSecuritycenterV2ResourcePathNode(_messages.Message):
+  r"""A node within the resource path. Each node represents a resource within
+  the resource hierarchy.
+
+  Enums:
+    NodeTypeValueValuesEnum: The type of resource this node represents.
+
+  Fields:
+    displayName: The display name of the resource this node represents.
+    id: The ID of the resource this node represents.
+    nodeType: The type of resource this node represents.
+  """
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""The type of resource this node represents.
+
+    Values:
+      RESOURCE_PATH_NODE_TYPE_UNSPECIFIED: Node type is unspecified.
+      GCP_ORGANIZATION: The node represents a GCP organization.
+      GCP_FOLDER: The node represents a GCP folder.
+      GCP_PROJECT: The node represents a GCP project.
+      AWS_ORGANIZATION: The node represents an AWS organization.
+      AWS_ORGANIZATIONAL_UNIT: The node represents an AWS organizational unit.
+      AWS_ACCOUNT: The node represents an AWS account.
+      AZURE_MANAGEMENT_GROUP: The node represents an Azure management group.
+      AZURE_SUBSCRIPTION: The node represents an Azure subscription.
+      AZURE_RESOURCE_GROUP: The node represents an Azure resource group.
+    """
+    RESOURCE_PATH_NODE_TYPE_UNSPECIFIED = 0
+    GCP_ORGANIZATION = 1
+    GCP_FOLDER = 2
+    GCP_PROJECT = 3
+    AWS_ORGANIZATION = 4
+    AWS_ORGANIZATIONAL_UNIT = 5
+    AWS_ACCOUNT = 6
+    AZURE_MANAGEMENT_GROUP = 7
+    AZURE_SUBSCRIPTION = 8
+    AZURE_RESOURCE_GROUP = 9
+
   displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  type = _messages.StringField(3)
+  id = _messages.StringField(2)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 3)
 
 
 class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
@@ -5083,6 +5443,7 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
   resources to resource values. Used in Attack path simulations.
 
   Enums:
+    CloudProviderValueValuesEnum: Cloud provider this configuration applies to
     ResourceValueValueValuesEnum: Resource value level this expression
       represents Only required when there is no SDP mapping in the request
 
@@ -5094,6 +5455,7 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
       managing-labels
 
   Fields:
+    cloudProvider: Cloud provider this configuration applies to
     createTime: Output only. Timestamp this resource value config was created.
     description: Description of the resource value config.
     name: Name for the resource value config
@@ -5123,6 +5485,20 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
     updateTime: Output only. Timestamp this resource value config was last
       updated.
   """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Cloud provider this configuration applies to
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
 
   class ResourceValueValueValuesEnum(_messages.Enum):
     r"""Resource value level this expression represents Only required when
@@ -5170,16 +5546,17 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 4)
-  resourceType = _messages.StringField(5)
-  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
-  scope = _messages.StringField(7)
-  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV2SensitiveDataProtectionMapping', 8)
-  tagValues = _messages.StringField(9, repeated=True)
-  updateTime = _messages.StringField(10)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  resourceLabelsSelector = _messages.MessageField('ResourceLabelsSelectorValue', 5)
+  resourceType = _messages.StringField(6)
+  resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 7)
+  scope = _messages.StringField(8)
+  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV2SensitiveDataProtectionMapping', 9)
+  tagValues = _messages.StringField(10, repeated=True)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudSecuritycenterV2Role(_messages.Message):
@@ -6607,6 +6984,24 @@ class NodePool(_messages.Message):
   nodes = _messages.MessageField('Node', 2, repeated=True)
 
 
+class Notebook(_messages.Message):
+  r"""Represents a Jupyter notebook IPYNB file, such as a [Colab Enterprise
+  notebook](https://cloud.google.com/colab/docs/introduction) file, that is
+  associated with a finding.
+
+  Fields:
+    lastAuthor: The user ID of the latest author to modify the notebook.
+    name: The name of the notebook.
+    notebookUpdateTime: The most recent time the notebook was updated.
+    service: The source notebook service, for example, "Colab Enterprise".
+  """
+
+  lastAuthor = _messages.StringField(1)
+  name = _messages.StringField(2)
+  notebookUpdateTime = _messages.StringField(3)
+  service = _messages.StringField(4)
+
+
 class NotificationConfig(_messages.Message):
   r"""Cloud Security Command Center (Cloud SCC) notification configs. A
   notification config is a Cloud SCC resource that contains the configuration
@@ -7036,29 +7431,126 @@ class Resource(_messages.Message):
   r"""Information related to the Google Cloud resource that is associated with
   this finding.
 
+  Enums:
+    CloudProviderValueValuesEnum: Indicates which cloud provider the finding
+      is from.
+
   Fields:
+    awsMetadata: The AWS metadata associated with the finding.
+    cloudProvider: Indicates which cloud provider the finding is from.
     displayName: The human readable name of the resource.
     folders: Contains a Folder message for each folder in the assets ancestry.
       The first folder is the deepest nested folder, and the last folder is
       the folder directly under the Organization.
+    location: The region or location of the service (if applicable).
     name: The full resource name of the resource. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name
+    organization: Indicates which organization / tenant the finding is for.
     parentDisplayName: The human readable name of resource's parent.
     parentName: The full resource name of resource's parent.
     projectDisplayName: The project ID that the resource belongs to.
     projectName: The full resource name of project that the resource belongs
       to.
+    resourcePath: Provides the path to the resource within the resource
+      hierarchy.
+    resourcePathString: A string representation of the resource path. For GCP,
+      it has the format of: org/{organization_id}/folder/{folder_id}/folder/{f
+      older_id}/project/{project_id} where there can be any number of folders.
+      For AWS, it has the format of: org/{organization_id}/ou/{organizational_
+      unit_id}/ou/{organizational_unit_id}/account/{account_id} where there
+      can be any number of organizational units. For Azure, it has the format
+      of: mg/{management_group_id}/mg/{management_group_id}/subscription/{subs
+      cription_id}/rg/{resource_group_name} where there can be any number of
+      management groups.
+    service: The service or resource provider associated with the resource.
     type: The full resource type of the resource.
   """
 
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Indicates which cloud provider the finding is from.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  awsMetadata = _messages.MessageField('AwsMetadata', 1)
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  folders = _messages.MessageField('Folder', 4, repeated=True)
+  location = _messages.StringField(5)
+  name = _messages.StringField(6)
+  organization = _messages.StringField(7)
+  parentDisplayName = _messages.StringField(8)
+  parentName = _messages.StringField(9)
+  projectDisplayName = _messages.StringField(10)
+  projectName = _messages.StringField(11)
+  resourcePath = _messages.MessageField('ResourcePath', 12)
+  resourcePathString = _messages.StringField(13)
+  service = _messages.StringField(14)
+  type = _messages.StringField(15)
+
+
+class ResourcePath(_messages.Message):
+  r"""Represents the path of resources leading up to the resource this finding
+  is about.
+
+  Fields:
+    nodes: The list of nodes that make the up resource path, ordered from
+      lowest level to highest level.
+  """
+
+  nodes = _messages.MessageField('ResourcePathNode', 1, repeated=True)
+
+
+class ResourcePathNode(_messages.Message):
+  r"""A node within the resource path. Each node represents a resource within
+  the resource hierarchy.
+
+  Enums:
+    NodeTypeValueValuesEnum: The type of resource this node represents.
+
+  Fields:
+    displayName: The display name of the resource this node represents.
+    id: The ID of the resource this node represents.
+    nodeType: The type of resource this node represents.
+  """
+
+  class NodeTypeValueValuesEnum(_messages.Enum):
+    r"""The type of resource this node represents.
+
+    Values:
+      RESOURCE_PATH_NODE_TYPE_UNSPECIFIED: Node type is unspecified.
+      GCP_ORGANIZATION: The node represents a GCP organization.
+      GCP_FOLDER: The node represents a GCP folder.
+      GCP_PROJECT: The node represents a GCP project.
+      AWS_ORGANIZATION: The node represents an AWS organization.
+      AWS_ORGANIZATIONAL_UNIT: The node represents an AWS organizational unit.
+      AWS_ACCOUNT: The node represents an AWS account.
+      AZURE_MANAGEMENT_GROUP: The node represents an Azure management group.
+      AZURE_SUBSCRIPTION: The node represents an Azure subscription.
+      AZURE_RESOURCE_GROUP: The node represents an Azure resource group.
+    """
+    RESOURCE_PATH_NODE_TYPE_UNSPECIFIED = 0
+    GCP_ORGANIZATION = 1
+    GCP_FOLDER = 2
+    GCP_PROJECT = 3
+    AWS_ORGANIZATION = 4
+    AWS_ORGANIZATIONAL_UNIT = 5
+    AWS_ACCOUNT = 6
+    AZURE_MANAGEMENT_GROUP = 7
+    AZURE_SUBSCRIPTION = 8
+    AZURE_RESOURCE_GROUP = 9
+
   displayName = _messages.StringField(1)
-  folders = _messages.MessageField('Folder', 2, repeated=True)
-  name = _messages.StringField(3)
-  parentDisplayName = _messages.StringField(4)
-  parentName = _messages.StringField(5)
-  projectDisplayName = _messages.StringField(6)
-  projectName = _messages.StringField(7)
-  type = _messages.StringField(8)
+  id = _messages.StringField(2)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 3)
 
 
 class ResourceValueConfigMetadata(_messages.Message):
@@ -11182,7 +11674,12 @@ class SimulatedResult(_messages.Message):
 class Simulation(_messages.Message):
   r"""Attack path simulation
 
+  Enums:
+    CloudProviderValueValuesEnum: Indicates which cloud provider was used in
+      this simulation.
+
   Fields:
+    cloudProvider: Indicates which cloud provider was used in this simulation.
     createTime: Output only. Time simulation was created
     name: Full resource name of the Simulation:
       organizations/123/simulations/456
@@ -11190,9 +11687,24 @@ class Simulation(_messages.Message):
       in this simulation. Maximum of 100.
   """
 
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  resourceValueConfigsMetadata = _messages.MessageField('ResourceValueConfigMetadata', 3, repeated=True)
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""Indicates which cloud provider was used in this simulation.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceValueConfigsMetadata = _messages.MessageField('ResourceValueConfigMetadata', 4, repeated=True)
 
 
 class Source(_messages.Message):

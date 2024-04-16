@@ -586,10 +586,11 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParam
 
   Fields:
     filter: Optional. The filter used to request specific records from IdP. In
-      case of attributes type as AZURE_AD_GROUPS_MAIL, it represents the OData
+      case of attributes type as AZURE_AD_GROUPS_MAIL, it represents the
       filter used to request specific groups for users from IdP. By default
-      all the groups associated with the user are fetched. See
-      https://learn.microsoft.com/en-us/graph/filter-query-parameter for more
+      all the groups associated with the user are fetched. The groups that are
+      used should be mail enabled and security enabled. See
+      https://learn.microsoft.com/en-us/graph/search-query-parameter for more
       details.
   """
 

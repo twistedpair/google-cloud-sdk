@@ -184,7 +184,8 @@ def GetGatewayIpVersion():
       },
       type=arg_utils.ChoiceToEnumName,
       help="""\
-      The IP family of the gateway IPs for the HA-VPN gateway interfaces. If not
-      specified, `IPV4` will be used.
+      IP version of the HA VPN gateway. You must specify either IPv4 or IPv6. If
+      you do not specify this field, every HA VPN gateway interface will be
+      configured with an IPv4 address.
       """,
   )

@@ -214,6 +214,33 @@ class RunV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportStatus(self, request, global_params=None):
+      r"""Read the status of an image export operation.
+
+      Args:
+        request: (RunProjectsLocationsJobsExecutionsExportStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2ExportStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}/executions/{executionsId}/{executionsId1}:exportStatus',
+        http_method='GET',
+        method_id='run.projects.locations.jobs.executions.exportStatus',
+        ordered_params=['name', 'operationId'],
+        path_params=['name', 'operationId'],
+        query_params=[],
+        relative_path='v2/{+name}/{+operationId}:exportStatus',
+        request_field='',
+        request_type_name='RunProjectsLocationsJobsExecutionsExportStatusRequest',
+        response_type_name='GoogleCloudRunV2ExportStatusResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about an Execution.
 
@@ -676,6 +703,33 @@ class RunV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportStatus(self, request, global_params=None):
+      r"""Read the status of an image export operation.
+
+      Args:
+        request: (RunProjectsLocationsServicesRevisionsExportStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2ExportStatusResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/revisions/{revisionsId}/{revisionsId1}:exportStatus',
+        http_method='GET',
+        method_id='run.projects.locations.services.revisions.exportStatus',
+        ordered_params=['name', 'operationId'],
+        path_params=['name', 'operationId'],
+        query_params=[],
+        relative_path='v2/{+name}/{+operationId}:exportStatus',
+        request_field='',
+        request_type_name='RunProjectsLocationsServicesRevisionsExportStatusRequest',
+        response_type_name='GoogleCloudRunV2ExportStatusResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a Revision.
 
@@ -965,6 +1019,87 @@ class RunV2(base_api.BaseApiClient):
       super(RunV2.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ExportImage(self, request, global_params=None):
+      r"""Export image for a given resource.
+
+      Args:
+        request: (RunProjectsLocationsExportImageRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2ExportImageResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExportImage')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportImage.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/{locationsId1}:exportImage',
+        http_method='POST',
+        method_id='run.projects.locations.exportImage',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:exportImage',
+        request_field='googleCloudRunV2ExportImageRequest',
+        request_type_name='RunProjectsLocationsExportImageRequest',
+        response_type_name='GoogleCloudRunV2ExportImageResponse',
+        supports_download=False,
+    )
+
+    def ExportImageMetadata(self, request, global_params=None):
+      r"""Export image metadata for a given resource.
+
+      Args:
+        request: (RunProjectsLocationsExportImageMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2Metadata) The response message.
+      """
+      config = self.GetMethodConfig('ExportImageMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportImageMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/{locationsId1}:exportImageMetadata',
+        http_method='GET',
+        method_id='run.projects.locations.exportImageMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:exportImageMetadata',
+        request_field='',
+        request_type_name='RunProjectsLocationsExportImageMetadataRequest',
+        response_type_name='GoogleCloudRunV2Metadata',
+        supports_download=False,
+    )
+
+    def ExportMetadata(self, request, global_params=None):
+      r"""Export generated customer metadata for a given resource.
+
+      Args:
+        request: (RunProjectsLocationsExportMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRunV2Metadata) The response message.
+      """
+      config = self.GetMethodConfig('ExportMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/{locationsId1}:exportMetadata',
+        http_method='GET',
+        method_id='run.projects.locations.exportMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:exportMetadata',
+        request_field='',
+        request_type_name='RunProjectsLocationsExportMetadataRequest',
+        response_type_name='GoogleCloudRunV2Metadata',
+        supports_download=False,
+    )
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

@@ -148,6 +148,14 @@ def InstanceAttributeConfig():
       fallthroughs=[deps.PropertyFallthrough(_INSTANCE)])
 
 
+def InstancePartitionAttributeConfig():
+  """Get instance partition resource attribute with default value."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='instance-partition',
+      help_text='The Cloud Spanner instance partition for the {resource}.',
+  )
+
+
 def DatabaseAttributeConfig():
   """Get database resource attribute."""
   return concepts.ResourceParameterAttributeConfig(
@@ -194,6 +202,16 @@ def GetInstanceResourceSpec():
       resource_name='instance',
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetInstancePartitionResourceSpec():
+  return concepts.ResourceSpec(
+      'spanner.projects.instances.instancePartitions',
+      resource_name='instance-partition',
+      instancePartitionsId=InstancePartitionAttributeConfig(),
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
 
 
 def GetDatabaseResourceSpec():
@@ -251,6 +269,26 @@ def AddInstanceResourceArg(parser, verb, positional=True):
       GetInstanceResourceSpec(),
       'The Cloud Spanner instance {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddInstancePartitionResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a Cloud Spanner instance partition.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the instance ID is a positional rather
+      than a flag.
+  """
+  name = 'instance_partition' if positional else '--instance-partition'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetInstancePartitionResourceSpec(),
+      'The Cloud Spanner instance partition {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddDatabaseResourceArg(parser, verb, positional=True):
@@ -428,21 +466,40 @@ def GetRestoreDbEncryptionType(args):
       args.encryption_type)
 
 
-def GetAndValidateKmsKeyName(args):
+class CloudKmsKeyName:
+  """CloudKmsKeyName to encapsulate `kmsKeyName` and `kmsKeyNames` fields.
+
+  Single `kmsKeyName` and repeated `kmsKeyNames` fields are extracted from user
+  input, which are later used in `EncryptionConfig` to pass to Spanner backend.
+  """
+
+  def __init__(self, kms_key_name=None, kms_key_names=None):
+    self.kms_key_name = kms_key_name
+    if kms_key_names is None:
+      self.kms_key_names = []
+    else:
+      self.kms_key_names = kms_key_names
+
+
+def GetAndValidateKmsKeyName(args) -> CloudKmsKeyName:
   """Parse the KMS key resource arg, make sure the key format is correct.
 
-  Returns:
-    str: when --kms-key is used.
-    list: when --kms-keys is used.
+  Args:
+    args: calliope framework gcloud args
 
-  TODO(b/247020647): Rename this function to GetAndValidateKmsKeyNameOrNames.
+  Returns:
+    CloudKmsKeyName: if CMEK.
+    None: if non-CMEK.
   """
   kms_key_name = args.CONCEPTS.kms_key.Parse()
   kms_key_names = args.CONCEPTS.kms_keys.Parse()
+  cloud_kms_key_name = CloudKmsKeyName()
   if kms_key_name:
-    return kms_key_name.RelativeName()
+    cloud_kms_key_name.kms_key_name = kms_key_name.RelativeName()
   elif kms_key_names:
-    return [kms_key_name.RelativeName() for kms_key_name in kms_key_names]
+    cloud_kms_key_name.kms_key_names = [
+        kms_key_name.RelativeName() for kms_key_name in kms_key_names
+    ]
   else:
     # If parsing failed but args were specified, raise error
     for keyword in [
@@ -463,6 +520,7 @@ def GetAndValidateKmsKeyName(args):
             ' qualified KMS key ID with --kms-keys.',
         )
     return None  # User didn't specify KMS key
+  return cloud_kms_key_name
 
 
 def AddInstanceTypeArg(parser):

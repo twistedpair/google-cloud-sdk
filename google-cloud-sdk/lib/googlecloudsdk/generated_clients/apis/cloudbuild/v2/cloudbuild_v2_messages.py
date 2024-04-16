@@ -1200,15 +1200,18 @@ class EventSource(_messages.Message):
   Fields:
     eventSource: Output only. The fully qualified resource name for the event
       source.
+    gitRepositoryLink: Output only. Resource name of Developer Connect
+      GitRepositoryLink.
     id: identification to Resource.
     repository: Output only. Resource name of GCB v2 repo.
     subscription: Output only. Resource name of PubSub subscription.
   """
 
   eventSource = _messages.StringField(1)
-  id = _messages.StringField(2)
-  repository = _messages.StringField(3)
-  subscription = _messages.StringField(4)
+  gitRepositoryLink = _messages.StringField(2)
+  id = _messages.StringField(3)
+  repository = _messages.StringField(4)
+  subscription = _messages.StringField(5)
 
 
 class ExecAction(_messages.Message):
@@ -2758,16 +2761,18 @@ class Resource(_messages.Message):
   r"""Resource referenceable within a workflow.
 
   Fields:
+    gitRepoLink: Developer Connect GitRepositoryLink.
     repo: Resource name of v2 GCB repo.
     secretVersion: Secret manager secret.
     topic: Resource name of PubSub topic.
     url: SCM Repo URL.
   """
 
-  repo = _messages.StringField(1)
-  secretVersion = _messages.StringField(2)
-  topic = _messages.StringField(3)
-  url = _messages.StringField(4)
+  gitRepoLink = _messages.StringField(1)
+  repo = _messages.StringField(2)
+  secretVersion = _messages.StringField(3)
+  topic = _messages.StringField(4)
+  url = _messages.StringField(5)
 
 
 class Result(_messages.Message):

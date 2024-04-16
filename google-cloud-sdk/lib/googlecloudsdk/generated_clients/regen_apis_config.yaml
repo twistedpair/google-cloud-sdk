@@ -134,6 +134,9 @@ apis:
   apigee:
     v1:
       discovery_doc: apigee_v1.json
+      default: true
+    v2alpha:
+      discovery_doc: apigee_v2alpha.json
   apigeeregistry:
     v1:
       discovery_doc: apigeeregistry_v1.json
@@ -249,6 +252,8 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/blockchainNodes/{blockchainNodeId}
         projects.locations.secrets:
           path: projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}
+        projects.secrets:
+          path: projects/{projectsId}/secrets/{secretsId}
     v1:
       discovery_doc: blockchainvalidatormanager_v1.json
       default: false
@@ -257,6 +262,8 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/blockchainNodes/{blockchainNodeId}
         projects.locations.secrets:
           path: projects/{projectsId}/locations/{locationsId}/secrets/{secretsId}
+        projects.secrets:
+          path: projects/{projectsId}/secrets/{secretsId}
   config:
     v1alpha2:
       discovery_doc: config_v1alpha2.json
@@ -500,6 +507,10 @@ apis:
           path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
+  configdelivery:
+    v1alpha:
+      discovery_doc: configdelivery_v1alpha.json
+      default: true
   connectgateway:
     v1alpha1:
       discovery_doc: connectgateway_v1alpha1.json
@@ -743,9 +754,6 @@ apis:
   eventflow:
     v1beta2:
       discovery_doc: eventflow_v1beta2.json
-  events:
-    v1beta1:
-      discovery_doc: events_v1beta1.json
   file:
     v1p1alpha1:
       discovery_doc: file_v1p1alpha1.json
@@ -754,6 +762,10 @@ apis:
       discovery_doc: file_v1beta1.json
     v1:
       discovery_doc: file_v1.json
+  firebasedataconnect:
+    v1alpha:
+      discovery_doc: firebasedataconnect_v1alpha.json
+      default: true
   firestore:
     v1beta2:
       discovery_doc: firestore_v1beta2.json
@@ -1807,6 +1819,9 @@ canonical_surfaces:
   inframanager:
     name: config
     command: infra-manager
+  configdelivery:
+    name: configdelivery
+    command: container fleet packages
   connectgateway:
     name: connectgateway
     hidden: true

@@ -165,6 +165,17 @@ def AddStoragePoolEnableLdapArg(parser):
       help="""Boolean flag indicating whether Storage Pool is a NFS LDAP Storage Pool or not"""
   )
 
+
+def AddStoragePoolAllowAutoTieringArg(parser):
+  """Adds the --allow-auto-tiering arg to the given parser."""
+  parser.add_argument(
+      '--allow-auto-tiering',
+      type=arg_parsers.ArgBoolean(
+          truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
+      help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering""",
+      hidden=True
+  )
+
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
 
 
@@ -185,6 +196,9 @@ def AddStoragePoolCreateArgs(parser, release_track):
   AddStoragePoolActiveDirectoryArg(parser)
   AddStoragePoolKmsConfigArg(parser)
   AddStoragePoolEnableLdapArg(parser)
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
+    AddStoragePoolAllowAutoTieringArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -195,7 +209,7 @@ def AddStoragePoolDeleteArgs(parser):
   flags.AddResourceAsyncFlag(parser)
 
 
-def AddStoragePoolUpdateArgs(parser):
+def AddStoragePoolUpdateArgs(parser, release_track):
   """Add args for updating a Storage Pool."""
   concept_parsers.ConceptParser([
       flags.GetStoragePoolPresentationSpec('The Storage Pool to update.')
@@ -205,3 +219,6 @@ def AddStoragePoolUpdateArgs(parser):
   flags.AddResourceCapacityArg(parser, 'Storage Pool', required=False)
   labels_util.AddUpdateLabelsFlags(parser)
   AddStoragePoolActiveDirectoryArg(parser)
+  if (release_track == base.ReleaseTrack.ALPHA or
+      release_track == base.ReleaseTrack.BETA):
+    AddStoragePoolAllowAutoTieringArg(parser)

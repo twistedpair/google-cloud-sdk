@@ -50,8 +50,9 @@ class AccessConfig(_messages.Message):
       configuring this access
     publicPtrDomainName: Optional. The DNS domain name for the public PTR
       record.
-    setPublicDns: Optional. Specifies whether a public DNS 'A' record should
-      be created for the external IP address of this access configuration.
+    setPublicPtr: Optional. Specifies whether a public DNS 'PTR' record should
+      be created to map the external IP address of the instance to a DNS
+      domain name.
     type: Optional. In accessConfigs (IPv4), the default and only option is
       ONE_TO_ONE_NAT. In ipv6AccessConfigs, the default and only option is
       DIRECT_IPV6.
@@ -92,7 +93,7 @@ class AccessConfig(_messages.Message):
   natIP = _messages.StringField(4)
   networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 5)
   publicPtrDomainName = _messages.StringField(6)
-  setPublicDns = _messages.BooleanField(7)
+  setPublicPtr = _messages.BooleanField(7)
   type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
@@ -158,10 +159,13 @@ class AllocationAffinity(_messages.Message):
       TYPE_UNSPECIFIED: Default value. This value is unused.
       NO_ALLOCATION: Do not consume from any allocated capacity.
       ANY_ALLOCATION: Consume any allocation available.
+      SPECIFIC_ALLOCATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
     """
     TYPE_UNSPECIFIED = 0
     NO_ALLOCATION = 1
     ANY_ALLOCATION = 2
+    SPECIFIC_ALLOCATION = 3
 
   consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -271,9 +275,12 @@ class Backup(_messages.Message):
     etag: Optional. Server specified ETag to prevent updates from overwriting
       each other.
     expireTime: Optional. When this backup is automatically expired.
+    gcpBackupPlanInfo: Output only. Configuration for a GCP resource.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
     name: Output only. Name of the resource.
+    resourceSizeBytes: Output only. source resource size in bytes at the time
+      of the backup.
     serviceLocks: Output only. The list of BackupLocks taken by the service to
       prevent the deletion of the backup.
     state: Output only. The Backup resource instance state.
@@ -343,11 +350,13 @@ class Backup(_messages.Message):
   enforcedRetentionEndTime = _messages.StringField(8)
   etag = _messages.StringField(9)
   expireTime = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  serviceLocks = _messages.MessageField('BackupLock', 13, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  gcpBackupPlanInfo = _messages.MessageField('GCPBackupPlanInfo', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  resourceSizeBytes = _messages.IntegerField(14)
+  serviceLocks = _messages.MessageField('BackupLock', 15, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
 
 
 class BackupApplianceBackupConfig(_messages.Message):
@@ -432,6 +441,8 @@ class BackupConfigInfo(_messages.Message):
     backupApplianceBackupConfig: Configuration for an application backed up by
       a Backup Appliance.
     gcpBackupConfig: Configuration for a GCP resource.
+    lastBackupError: Output only. If the last backup failed, this field has
+      the error message.
     lastBackupState: Output only. The status of the last backup to this
       BackupVault
     lastSuccessfulBackupConsistencyTime: Output only. If the last backup were
@@ -457,8 +468,9 @@ class BackupConfigInfo(_messages.Message):
 
   backupApplianceBackupConfig = _messages.MessageField('BackupApplianceBackupConfig', 1)
   gcpBackupConfig = _messages.MessageField('GcpBackupConfig', 2)
-  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 3)
-  lastSuccessfulBackupConsistencyTime = _messages.StringField(4)
+  lastBackupError = _messages.MessageField('Status', 3)
+  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 4)
+  lastSuccessfulBackupConsistencyTime = _messages.StringField(5)
 
 
 class BackupLock(_messages.Message):
@@ -466,7 +478,6 @@ class BackupLock(_messages.Message):
   lock on a Backup prevents the Backup from being deleted.
 
   Fields:
-    baLockInfo: Deprecated , instead use BackupApplianceLockInfo.
     backupApplianceLockInfo: If the client is a backup and recovery appliance,
       this contains metadata about why the lock exists.
     lockUntilTime: Required. The time after which this lock is not considered
@@ -475,10 +486,9 @@ class BackupLock(_messages.Message):
       GCP native backups.
   """
 
-  baLockInfo = _messages.MessageField('BackupRecoveryApplianceLockInfo', 1)
-  backupApplianceLockInfo = _messages.MessageField('BackupApplianceLockInfo', 2)
-  lockUntilTime = _messages.StringField(3)
-  serviceLockInfo = _messages.MessageField('ServiceLockInfo', 4)
+  backupApplianceLockInfo = _messages.MessageField('BackupApplianceLockInfo', 1)
+  lockUntilTime = _messages.StringField(2)
+  serviceLockInfo = _messages.MessageField('ServiceLockInfo', 3)
 
 
 class BackupPlan(_messages.Message):
@@ -644,34 +654,6 @@ class BackupPlanAssociation(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class BackupRecoveryApplianceLockInfo(_messages.Message):
-  r"""Deprecated. use BackupApplianceLockInfo instead.
-
-  Fields:
-    applianceId: Required. The ID of the backup/recovery appliance that
-      created this lock.
-    backupAppliance: Required. The name of the backup/recovery appliance that
-      created this lock.
-    image: The image name that depends on this Backup.
-    job: The job name on the backup/recovery appliance that created this lock.
-    lockReason: Required. The reason for the lock: e.g.
-      MOUNT/RESTORE/BACKUP/etc. The value of this string is only meaningful to
-      the client and it is not interpreted by the BackupVault service.
-    managementConsoleIp: The IP address of the Management Server.
-    managementServer: The full path to the Management Server Resource name.
-    slaId: The SLA on the backup/recovery appliance that owns the lock.
-  """
-
-  applianceId = _messages.IntegerField(1)
-  backupAppliance = _messages.StringField(2)
-  image = _messages.StringField(3)
-  job = _messages.StringField(4)
-  lockReason = _messages.StringField(5)
-  managementConsoleIp = _messages.StringField(6)
-  managementServer = _messages.StringField(7)
-  slaId = _messages.IntegerField(8)
-
-
 class BackupRule(_messages.Message):
   r"""`BackupRule` binds the backup schedule to a retention policy.
 
@@ -719,9 +701,6 @@ class BackupVault(_messages.Message):
 
   Fields:
     backupCount: Output only. The number of backups in this backup vault.
-    backupInstanceCount: Output only. Number of backup resource instances
-      contained in this backup vault instance. Deprecated. Use backup_count
-      instead.
     createTime: Output only. The time when the instance was created.
     deletable: Output only. Set to true when there are no backups nested under
       this resource.
@@ -740,9 +719,6 @@ class BackupVault(_messages.Message):
       Service for this BackupVault. The user should grant this account
       permissions in their workload project to enable the service to run
       backups and restores there.
-    size: Output only. Size in bytes of the BackupVault. Computed as a sum in
-      bytes of all the child DataSource TotalStoredSpace values. Deprecated.
-      Use total_storage_bytes instead.
     state: Output only. The BackupVault resource instance state.
     totalStoredBytes: Output only. Total size of the storage used by all
       backup resources.
@@ -791,20 +767,18 @@ class BackupVault(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupCount = _messages.IntegerField(1)
-  backupInstanceCount = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  deletable = _messages.BooleanField(4)
-  description = _messages.StringField(5)
-  effectiveTime = _messages.StringField(6)
-  enforcedRetentionDuration = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  serviceAccount = _messages.StringField(11)
-  size = _messages.IntegerField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  totalStoredBytes = _messages.IntegerField(14)
-  updateTime = _messages.StringField(15)
+  createTime = _messages.StringField(2)
+  deletable = _messages.BooleanField(3)
+  description = _messages.StringField(4)
+  effectiveTime = _messages.StringField(5)
+  enforcedRetentionDuration = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  serviceAccount = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  totalStoredBytes = _messages.IntegerField(12)
+  updateTime = _messages.StringField(13)
 
 
 class BackupWindow(_messages.Message):
@@ -815,9 +789,9 @@ class BackupWindow(_messages.Message):
     endHourOfDay: Required. The hour of day (1-24) when the window end for
       e.g. if value of end hour of day is 10 that mean backup window end time
       is 10:00. End hour of day should be greater than start hour of day. 0 <=
-      start_hour_of_day < end_ hour_of_day <= 24 End hour of day is not
-      include in backup window that mean if end_hour_of_day= 10 jobs should
-      start before 10:00.
+      start_hour_of_day < end_hour_of_day <= 24 End hour of day is not include
+      in backup window that mean if end_hour_of_day= 10 jobs should start
+      before 10:00.
     endTime: Optional. TODO b/325560313: Deprecated and field will be removed
       after UI integration change. The end time of the window in which to pick
       backup jobs to run.
@@ -1056,12 +1030,15 @@ class BackupdrProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is `false`.
   """
 
   backupVault = _messages.MessageField('BackupVault', 1)
   backupVaultId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsDeleteRequest(_messages.Message):
@@ -1180,6 +1157,9 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsDeleteRequest object.
 
   Fields:
+    etag: The current etag of the backup vault. If an etag is provided and
+      does not match the current etag of the connection, deletion will be
+      blocked.
     force: Optional. If set to true, any data source from this backup vault
       will also be deleted.
     name: Required. Name of the resource.
@@ -1194,11 +1174,15 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is `false`.
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  etag = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class BackupdrProjectsLocationsBackupVaultsGetRequest(_messages.Message):
@@ -1260,12 +1244,15 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then the request will fail.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is `false`.
   """
 
   backupVault = _messages.MessageField('BackupVault', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
@@ -1664,13 +1651,12 @@ class ComputeInstanceBackupProperties(_messages.Message):
     Values:
       KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
         unused.
-      NONE_ON_KEY_REVOCATION: Indicates user chose no operation.
-      STOP_ON_KEY_REVOCATION: Indicates user chose to opt for VM shutdown on
-        key revocation.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
     """
     KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
-    NONE_ON_KEY_REVOCATION = 1
-    STOP_ON_KEY_REVOCATION = 2
+    NONE = 1
+    STOP = 2
 
   canIpForward = _messages.BooleanField(1)
   description = _messages.StringField(2)
@@ -1730,7 +1716,7 @@ class ComputeInstanceRestoreProperties(_messages.Message):
       against deletion.
     description: Optional. An optional description of this resource. Provide
       this property when you create the resource.
-    disk: Optional. Array of disks associated with this instance. Persistent
+    disks: Optional. Array of disks associated with this instance. Persistent
       disks must be created before you can assign them.
     displayDevice: Optional. Enables display device for the instance.
     guestAccelerators: Optional. A list of the type and count of accelerator
@@ -1780,13 +1766,12 @@ class ComputeInstanceRestoreProperties(_messages.Message):
     Values:
       KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
         unused.
-      NONE_ON_KEY_REVOCATION: Indicates user chose no operation.
-      STOP_ON_KEY_REVOCATION: Indicates user chose to opt for VM shutdown on
-        key revocation.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
     """
     KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
-    NONE_ON_KEY_REVOCATION = 1
-    STOP_ON_KEY_REVOCATION = 2
+    NONE = 1
+    STOP = 2
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""Optional. The private IPv6 google access type for the VM. If not
@@ -1840,7 +1825,7 @@ class ComputeInstanceRestoreProperties(_messages.Message):
   confidentialInstanceConfig = _messages.MessageField('ConfidentialInstanceConfig', 3)
   deletionProtection = _messages.BooleanField(4)
   description = _messages.StringField(5)
-  disk = _messages.MessageField('AttachedDisk', 6, repeated=True)
+  disks = _messages.MessageField('AttachedDisk', 6, repeated=True)
   displayDevice = _messages.MessageField('DisplayDevice', 7)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 8, repeated=True)
   hostname = _messages.StringField(9)
@@ -1909,7 +1894,8 @@ class CustomerEncryptionKey(_messages.Message):
 
 
 class DataSource(_messages.Message):
-  r"""Message describing DataSource object.
+  r"""Message describing DataSource object. Datasource object used to
+  represent Datasource details for both admin and basic view.
 
   Enums:
     ConfigStateValueValuesEnum: The backup configuration state.
@@ -2144,23 +2130,39 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GCPBackupPlanInfo(_messages.Message):
+  r"""GCPBackupPlanInfo captures the plan configuration details of GCP
+  resources at the time of backup.
+
+  Fields:
+    backupPlan: Resource name of backup plan by which workload is protected at
+      the time of the backup. Format:
+      projects/{project}/locations/{location}/backupPlans/{backupPlanId}
+    backupPlanRuleId: The rule id of the backup plan which triggered this
+      backup in case of scheduled backup or used for
+  """
+
+  backupPlan = _messages.StringField(1)
+  backupPlanRuleId = _messages.StringField(2)
+
+
 class GcpBackupConfig(_messages.Message):
   r"""GcpBackupConfig captures the Backup configuration details for GCP
   resources. All GCP resources regardless of type are protected with backup
   plan associations.
 
   Fields:
-    backupplan: The name of the backup plan.
-    backupplanAssociation: The name of the backup plan association.
-    backupplanDescription: The description of the backup plan.
-    backupplanRules: The names of the backup plan rules which point to this
+    backupPlan: The name of the backup plan.
+    backupPlanAssociation: The name of the backup plan association.
+    backupPlanDescription: The description of the backup plan.
+    backupPlanRules: The names of the backup plan rules which point to this
       backupvault
   """
 
-  backupplan = _messages.StringField(1)
-  backupplanAssociation = _messages.StringField(2)
-  backupplanDescription = _messages.StringField(3)
-  backupplanRules = _messages.StringField(4, repeated=True)
+  backupPlan = _messages.StringField(1)
+  backupPlanAssociation = _messages.StringField(2)
+  backupPlanDescription = _messages.StringField(3)
+  backupPlanRules = _messages.StringField(4, repeated=True)
 
 
 class InitializeParams(_messages.Message):
@@ -2459,6 +2461,8 @@ class ManagementServer(_messages.Message):
       the MS is created in migration ready mode.
 
   Fields:
+    baProxyUri: Output only. The hostname or ip address of the exposed AGM
+      endpoints, used by BAs to connect to BA proxy.
     createTime: Output only. The time when the instance was created.
     description: Optional. The description of the ManagementServer instance
       (2048 characters or less).
@@ -2550,19 +2554,20 @@ class ManagementServer(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  managementUri = _messages.MessageField('ManagementURI', 5)
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
-  oauth2ClientId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
-  workforceIdentityBasedManagementUri = _messages.MessageField('WorkforceIdentityBasedManagementURI', 12)
-  workforceIdentityBasedOauth2ClientId = _messages.MessageField('WorkforceIdentityBasedOAuth2ClientID', 13)
+  baProxyUri = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  managementUri = _messages.MessageField('ManagementURI', 6)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
+  oauth2ClientId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+  workforceIdentityBasedManagementUri = _messages.MessageField('WorkforceIdentityBasedManagementURI', 13)
+  workforceIdentityBasedOauth2ClientId = _messages.MessageField('WorkforceIdentityBasedOAuth2ClientID', 14)
 
 
 class ManagementURI(_messages.Message):
@@ -2693,11 +2698,11 @@ class NetworkInterface(_messages.Message):
     gVNIC or VirtioNet.
 
     Values:
-      UNSPECIFIED_NIC_TYPE: Default should be UNSPECIFIED_NIC_TYPE.
+      NIC_TYPE_UNSPECIFIED: Default should be NIC_TYPE_UNSPECIFIED.
       VIRTIO_NET: VIRTIO
       GVNIC: GVNIC
     """
-    UNSPECIFIED_NIC_TYPE = 0
+    NIC_TYPE_UNSPECIFIED = 0
     VIRTIO_NET = 1
     GVNIC = 2
 
@@ -2705,11 +2710,11 @@ class NetworkInterface(_messages.Message):
     r"""The stack type for this network interface.
 
     Values:
-      UNSPECIFIED_STACK_TYPE: Default should be UNSPECIFIED_STACK_TYPE.
+      STACK_TYPE_UNSPECIFIED: Default should be STACK_TYPE_UNSPECIFIED.
       IPV4_ONLY: The network interface will be assigned IPv4 address.
       IPV4_IPV6: The network interface can have both IPv4 and IPv6 addresses.
     """
-    UNSPECIFIED_STACK_TYPE = 0
+    STACK_TYPE_UNSPECIFIED = 0
     IPV4_ONLY = 1
     IPV4_IPV6 = 2
 
@@ -2745,11 +2750,13 @@ class NetworkPerformanceConfig(_messages.Message):
     r"""Optional. The tier of the total egress bandwidth.
 
     Values:
+      TIER_UNSPECIFIED: This value is unused.
       DEFAULT: Default network performance config.
       TIER_1: Tier 1 network performance config.
     """
-    DEFAULT = 0
-    TIER_1 = 1
+    TIER_UNSPECIFIED = 0
+    DEFAULT = 1
+    TIER_1 = 2
 
   totalEgressBandwidthTier = _messages.EnumField('TotalEgressBandwidthTierValueValuesEnum', 1)
 

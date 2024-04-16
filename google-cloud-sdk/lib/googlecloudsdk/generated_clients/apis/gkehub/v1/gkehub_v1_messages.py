@@ -676,6 +676,44 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
 
 
+class CompliancePostureConfig(_messages.Message):
+  r"""CompliancePostureConfig defines the settings needed to enable/disable
+  features for the Compliance Posture.
+
+  Enums:
+    ModeValueValuesEnum: Defines the enablement mode for Compliance Posture.
+
+  Fields:
+    complianceStandards: List of enabled compliance standards.
+    mode: Defines the enablement mode for Compliance Posture.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Defines the enablement mode for Compliance Posture.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Compliance Posture features on the cluster.
+      ENABLED: Enables Compliance Posture features on the cluster.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  complianceStandards = _messages.MessageField('ComplianceStandard', 1, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+
+
+class ComplianceStandard(_messages.Message):
+  r"""A ComplianceStandard object.
+
+  Fields:
+    standard: Name of the compliance standard.
+  """
+
+  standard = _messages.StringField(1)
+
+
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -1767,12 +1805,14 @@ class DefaultClusterConfig(_messages.Message):
   Fields:
     binaryAuthorizationConfig: Optional. Enable/Disable binary authorization
       features for the cluster.
+    compliancePostureConfig: A CompliancePostureConfig attribute.
     securityPostureConfig: Enable/Disable Security Posture features for the
       cluster.
   """
 
   binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
+  compliancePostureConfig = _messages.MessageField('CompliancePostureConfig', 2)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 3)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -6190,6 +6230,69 @@ class SecurityPostureConfig(_messages.Message):
   vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)
 
 
+class ServiceMeshCondition(_messages.Message):
+  r"""Condition being reported.
+
+  Enums:
+    CodeValueValuesEnum: Unique identifier of the condition which describes
+      the condition recognizable to the user.
+    SeverityValueValuesEnum: Severity level of the condition.
+
+  Fields:
+    code: Unique identifier of the condition which describes the condition
+      recognizable to the user.
+    details: A short summary about the issue.
+    documentationLink: Links contains actionable information.
+    severity: Severity level of the condition.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Unique identifier of the condition which describes the condition
+    recognizable to the user.
+
+    Values:
+      CODE_UNSPECIFIED: Default Unspecified code
+      MESH_IAM_PERMISSION_DENIED: Mesh IAM permission denied error code
+      CNI_CONFIG_UNSUPPORTED: CNI config unsupported error code
+      GKE_SANDBOX_UNSUPPORTED: GKE sandbox unsupported error code
+      NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED: Nodepool workload
+        identity federation required error code
+      CNI_INSTALLATION_FAILED: CNI installation failed error code
+      CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
+      UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
+        error code
+    """
+    CODE_UNSPECIFIED = 0
+    MESH_IAM_PERMISSION_DENIED = 1
+    CNI_CONFIG_UNSUPPORTED = 2
+    GKE_SANDBOX_UNSUPPORTED = 3
+    NODEPOOL_WORKLOAD_IDENTITY_FEDERATION_REQUIRED = 4
+    CNI_INSTALLATION_FAILED = 5
+    CNI_POD_UNSCHEDULABLE = 6
+    UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity level of the condition.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity
+      ERROR: Indicates an issue that prevents the mesh from operating
+        correctly
+      WARNING: Indicates a setting is likely wrong, but the mesh is still able
+        to operate
+      INFO: An informational message, not requiring any action
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+    INFO = 3
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  details = _messages.StringField(2)
+  documentationLink = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+
+
 class ServiceMeshControlPlaneManagement(_messages.Message):
   r"""Status of control plane management.
 
@@ -6327,12 +6430,14 @@ class ServiceMeshMembershipState(_messages.Message):
   Service Mesh Hub Controller.
 
   Fields:
+    conditions: Output only. List of condition reporting membership statues
     controlPlaneManagement: Output only. Status of control plane management
     dataPlaneManagement: Output only. Status of data plane management.
   """
 
-  controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 1)
-  dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 2)
+  conditions = _messages.MessageField('ServiceMeshCondition', 1, repeated=True)
+  controlPlaneManagement = _messages.MessageField('ServiceMeshControlPlaneManagement', 2)
+  dataPlaneManagement = _messages.MessageField('ServiceMeshDataPlaneManagement', 3)
 
 
 class ServiceMeshStatusDetails(_messages.Message):

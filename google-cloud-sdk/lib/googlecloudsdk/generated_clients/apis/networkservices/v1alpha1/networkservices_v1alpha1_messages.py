@@ -5467,7 +5467,7 @@ class NetworkservicesProjectsLocationsLbObservabilityExtensionsPatchRequest(_mes
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Used to specify the fields to be overwritten in the
+    updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbObservabilityExtension` resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field is overwritten if it is in the mask. If the user does not specify
@@ -5588,7 +5588,7 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Used to specify the fields to be overwritten in the
+    updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbRouteExtension` resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       is overwritten if it is in the mask. If the user does not specify a
@@ -5713,7 +5713,7 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Used to specify the fields to be overwritten in the
+    updateMask: Optional. Used to specify the fields to be overwritten in the
       `LbTrafficExtension` resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       is overwritten if it is in the mask. If the user does not specify a
@@ -5887,7 +5887,9 @@ class NetworkservicesProjectsLocationsMulticastConsumerAssociationsCreateRequest
     multicastConsumerAssociation: A MulticastConsumerAssociation resource to
       be passed as the request body.
     multicastConsumerAssociationId: Required. A unique name for the multicast
-      consumer association.
+      consumer association. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
     parent: Required. The parent resource of the multicast consumer
       association. Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -6024,7 +6026,9 @@ class NetworkservicesProjectsLocationsMulticastDomainActivationsCreateRequest(_m
     multicastDomainActivation: A MulticastDomainActivation resource to be
       passed as the request body.
     multicastDomainActivationId: Required. A unique name for the multicast
-      domain activation.
+      domain activation. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
     parent: Required. The parent resource of the multicast domain activation.
       Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -6154,7 +6158,10 @@ class NetworkservicesProjectsLocationsMulticastDomainsCreateRequest(_messages.Me
   Fields:
     multicastDomain: A MulticastDomain resource to be passed as the request
       body.
-    multicastDomainId: Required. A unique name for the multicast domain.
+    multicastDomainId: Required. A unique name for the multicast domain. The
+      name is restricted to letters, numbers, and hyphen, with the first
+      character a letter, and the last a letter or a number. The name must not
+      exceed 48 characters.
     parent: Required. The parent resource of the multicast domain. Use the
       following format: `projects/*/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -6278,7 +6285,9 @@ class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreateReq
     multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
       resource to be passed as the request body.
     multicastGroupConsumerActivationId: Required. A unique name for the
-      multicast group consumer activation.
+      multicast group consumer activation. The name is restricted to letters,
+      numbers, and hyphen, with the first character a letter, and the last a
+      letter or a number. The name must not exceed 48 characters.
     parent: Required. The parent resource of the multicast group consumer
       activation. Use the following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -6413,7 +6422,9 @@ class NetworkservicesProjectsLocationsMulticastGroupDefinitionsCreateRequest(_me
     multicastGroupDefinition: A MulticastGroupDefinition resource to be passed
       as the request body.
     multicastGroupDefinitionId: Required. A unique name for the multicast
-      group definition.
+      group definition. The name is restricted to letters, numbers, and
+      hyphen, with the first character a letter, and the last a letter or a
+      number. The name must not exceed 48 characters.
     parent: Required. The parent resource of the multicast group definition.
       Use the following format: `projects/*/locations/global`.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -6543,7 +6554,10 @@ class NetworkservicesProjectsLocationsMulticastGroupsCreateRequest(_messages.Mes
   Fields:
     multicastGroup: A MulticastGroup resource to be passed as the request
       body.
-    multicastGroupId: Required. A unique name for the multicast group.
+    multicastGroupId: Required. A unique name for the multicast group. The
+      name is restricted to letters, numbers, and hyphen, with the first
+      character a letter, and the last a letter or a number. The name must not
+      exceed 48 characters.
     parent: Required. The parent resource of the multicast group. Use the
       following format: `projects/*/locations/*`.
     requestId: Optional. An optional request ID to identify requests. Specify

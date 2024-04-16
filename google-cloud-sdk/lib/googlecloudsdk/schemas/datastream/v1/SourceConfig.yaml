@@ -41,3 +41,6 @@ properties:
       Source connection profile resoource. Format:
       `projects/{project}/locations/{location}/connectionProfiles/{name}`
     type: string
+  sqlServerSourceConfig:
+    description: SQLServer data source configuration.
+    $ref: SqlServerSourceConfig.yaml

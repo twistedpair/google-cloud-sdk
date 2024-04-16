@@ -222,6 +222,75 @@ def AddExternalLbIpv6AddressPools(parser):
   )
 
 
+def AddExternalLoadBalancerAddressPools(parser):
+  """Adds external load balancer address pools.
+  """
+
+  external_lb_config_address_pools_help_text = """
+      Path to a YAML/JSON file containing external load balancer pool configuration.
+      External load balancer pools are used for data plane load balancing of
+      local control plane clusters, with custom config such as address pool
+      name. Either --external-lb-ipv4-address-pools or --external-lb-address-pools
+      should be specified.
+      Existing pools cannot be updated after cluster creation; only adding new
+      pools is allowed currently.
+
+      For example,
+
+      {
+
+        "externalLoadBalancerAddressPools": [
+
+          {
+
+            "addressPool": "MyLoadBalancerPool",
+
+            "ipv4Range": ["10.200.0.200-10.200.0.204","10.200.0.300/30"],
+
+            "avoidBuggyIps": "false",
+
+            "manualAssign": "true"
+
+          }
+
+        ]
+
+      }
+
+      *address_pool*::: Optional. A name that identifies an address pool. If a name is not specified, an auto-generated one will be used.
+
+      *ipv4_range*::: Mandatory. One or more ipv4 address range, each must be specified as one
+      of the following two types of values:
+
+        1. A IPv4 address range, for example, "10.0.0.1-10.0.0.10". A range that contains a single IP (e.g. "10.0.0.1-10.0.0.1") is allowed.
+
+        2. A IPv4 CIDR block, for example, "10.0.0.1/24"
+
+      *ipv6_range*::: Optional. One or more ipv6 address range, each must be specified as one
+      of the following two types of values:
+
+        1. A IPv6 address range, for example, "2001:db8::1-2001:db8::a". A range that contains a single IP (e.g. "2001:db8::1-2001:db8::1") is allowed.
+
+        2. A IPv6 CIDR block, for example, "2001:db8::/120"
+
+      *avoid_buggy_ips*::: Optional. If true, the pool omits IP addresses
+      ending in .0 and .255. Some network hardware drops traffic to these
+      special addresses.
+      Its default value is false.
+
+      *manual_assign*::: Optional. If true, addresses in this pool are not
+      automatically assigned to Kubernetes Services. If true, an IP address in
+      this pool is used only when it is specified explicitly by a service.
+      Its default value is false.
+  """
+
+  parser.add_argument(
+      '--external-lb-address-pools',
+      help=external_lb_config_address_pools_help_text,
+      type=arg_parsers.YAMLFileContents(),
+  )
+
+
 def AddControlPlaneNodeLocation(parser):
   parser.add_argument(
       '--control-plane-node-location',

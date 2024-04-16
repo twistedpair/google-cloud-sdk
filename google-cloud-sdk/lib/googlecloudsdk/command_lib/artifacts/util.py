@@ -1102,7 +1102,7 @@ def RecommendAuthChange(
     else:
       options.append(
           "Do not change permissions for this repo"
-          f" (users may lose access to {repo}/{project})"
+          f" (users may lose access to {repo}/{project.replace(':', '/')})"
       )
       options.append(
           "Skip permission updates for all remaining repos (users may"
@@ -1733,6 +1733,8 @@ def WrappedCopyImagesFromGCR(
     pre_copy=False,
 ):
   """Copies images from GCR for all hosts and handles auth error."""
+  original_project_repo = project_repo
+  project_repo = project_repo.replace(":", "/")
   try:
     results = collections.defaultdict(int)
     if copy_from == "same":
@@ -1815,7 +1817,7 @@ def WrappedCopyImagesFromGCR(
     if not match:
       raise
     con = console_attr.GetConsoleAttr()
-    project = project_repo
+    project = original_project_repo
     if copy_from != "same":
       project = copy_from.split("/")[-1]
     log.status.Print(

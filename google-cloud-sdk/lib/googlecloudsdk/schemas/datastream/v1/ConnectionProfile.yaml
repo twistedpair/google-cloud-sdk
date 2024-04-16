@@ -54,6 +54,9 @@ properties:
   privateConnectivity:
     description: Private connectivity.
     $ref: PrivateConnectivity.yaml
+  sqlServerProfile:
+    description: SQLServer Connection Profile configuration.
+    $ref: SqlServerProfile.yaml
   staticServiceIpConnectivity:
     description: Static Service IP connectivity.
     type: staticserviceipconnectivity

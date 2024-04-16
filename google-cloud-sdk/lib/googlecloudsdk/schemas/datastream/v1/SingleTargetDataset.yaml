@@ -26,5 +26,5 @@ properties:
     items:
       type: string
   datasetId:
-    description: The dataset ID of the target dataset.
+    description: The dataset ID of the target dataset. DatasetIds allowed
     type: string

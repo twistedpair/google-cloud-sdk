@@ -311,3 +311,41 @@ def PromptForPublicContactsAck(domain, contacts, print_format='default'):
   return console_io.PromptContinue(
       message=None, default=False, throw_if_unattended=True, cancel_on_no=True)
   # TODO(b/110398579): Integrate with ARI.
+
+
+def PromptForPublicContactsUpdateAck(domain, contacts, print_format='default'):
+  """Asks a user for Public Contacts Ack when the user updates contact settings.
+
+  Args:
+    domain: Domain name.
+    contacts: Current Contacts. All 3 contacts should be present.
+    print_format: Print format, e.g. 'default' or 'yaml'.
+
+  Returns:
+    Boolean: whether the user accepted the notice or not.
+  """
+  log.status.Print(
+      'You choose to make contact data of domain {} public.\n'
+      'Anyone who looks it up in the WHOIS directory will be able to see info\n'
+      'for the domain owner and administrative and technical contacts.\n'
+      'Make sure it\'s ok with them that their contact data is public.\n'
+      '\n'
+      'Please consider carefully any changes to contact privacy settings when\n'
+      'changing from "redacted-contact-data" to "public-contact-data."\n'
+      'There may be a delay in reflecting updates you make to registrant\n'
+      'contact information such that any changes you make to contact privacy\n'
+      '(including from "redacted-contact-data" to "public-contact-data")\n'
+      'will be applied without delay but changes to registrant contact\n'
+      'information may take a limited time to be publicized. This means that\n'
+      'changes to contact privacy from "redacted-contact-data" to\n'
+      '"public-contact-data" may make the previous registrant contact\n'
+      'data public until the modified registrant contact details are '
+      'published.\n'
+      '\n'
+      'This info will be publicly available:'.format(domain))
+  contacts = _SimplifyContacts(contacts)
+  resource_printer.Print(contacts, print_format, out=sys.stderr)
+
+  return console_io.PromptContinue(
+      message=None, default=False, throw_if_unattended=True, cancel_on_no=True)
+  # TODO(b/110398579): Integrate with ARI.

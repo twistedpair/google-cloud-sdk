@@ -4454,7 +4454,7 @@ class ServiceMeshFeatureState(_messages.Message):
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers
       against member clusters, or the entire mesh.
-    conditions: List of condition reporting membership statues
+    conditions: Output only. List of condition reporting membership statues
     configApiVersion: The API version (i.e. Istio CRD version) for configuring
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.

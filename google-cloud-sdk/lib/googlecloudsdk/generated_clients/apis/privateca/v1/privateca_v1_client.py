@@ -710,7 +710,7 @@ class PrivatecaV1(base_api.BaseApiClient):
     )
 
     def FetchCaCerts(self, request, global_params=None):
-      r"""FetchCaCerts returns the current trust anchor for the CaPool. This will include CA certificate chains for all Certificate Authorities in the ENABLED, DISABLED, or STAGED states.
+      r"""FetchCaCerts returns the current trust anchor for the CaPool. This will include CA certificate chains for all certificate authorities in the ENABLED, DISABLED, or STAGED states.
 
       Args:
         request: (PrivatecaProjectsLocationsCaPoolsFetchCaCertsRequest) input message

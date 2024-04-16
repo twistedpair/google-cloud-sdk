@@ -698,6 +698,19 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListSecurityCenterServicesResponse(_messages.Message):
+  r"""Response message for listing Security Center services.
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    securityCenterServices: The list of services.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityCenterServices = _messages.MessageField('SecurityCenterService', 2, repeated=True)
+
+
 class ListSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
   r"""Response message for listing Security Health Analytics custom modules.
 
@@ -710,6 +723,68 @@ class ListSecurityHealthAnalyticsCustomModulesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityHealthAnalyticsCustomModules = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 2, repeated=True)
+
+
+class ModuleSettings(_messages.Message):
+  r"""The settings for individual modules.
+
+  Enums:
+    EffectiveEnablementStateValueValuesEnum: Output only. The effective
+      enablement state for the module at its level of the resource hierarchy.
+      If the intended state is set to INHERITED, the effective state will be
+      inherited from the enablement state of an ancestor. This state may
+      differ from the intended enablement state due to billing eligibility or
+      onboarding status.
+    IntendedEnablementStateValueValuesEnum: Optional. The intended state of
+      enablement for the module at its level of the resource hierarchy.
+
+  Fields:
+    effectiveEnablementState: Output only. The effective enablement state for
+      the module at its level of the resource hierarchy. If the intended state
+      is set to INHERITED, the effective state will be inherited from the
+      enablement state of an ancestor. This state may differ from the intended
+      enablement state due to billing eligibility or onboarding status.
+    intendedEnablementState: Optional. The intended state of enablement for
+      the module at its level of the resource hierarchy.
+  """
+
+  class EffectiveEnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The effective enablement state for the module at its
+    level of the resource hierarchy. If the intended state is set to
+    INHERITED, the effective state will be inherited from the enablement state
+    of an ancestor. This state may differ from the intended enablement state
+    due to billing eligibility or onboarding status.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource. Not a valid
+        effective enablement state.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  class IntendedEnablementStateValueValuesEnum(_messages.Enum):
+    r"""Optional. The intended state of enablement for the module at its level
+    of the resource hierarchy.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource. Not a valid
+        effective enablement state.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  effectiveEnablementState = _messages.EnumField('EffectiveEnablementStateValueValuesEnum', 1)
+  intendedEnablementState = _messages.EnumField('IntendedEnablementStateValueValuesEnum', 2)
 
 
 class Policy(_messages.Message):
@@ -824,6 +899,118 @@ class ResourceSelector(_messages.Message):
   """
 
   resourceTypes = _messages.StringField(1, repeated=True)
+
+
+class SecurityCenterService(_messages.Message):
+  r"""Represents a particular Security Command Center service. This includes
+  settings information such as top-level enablement in addition to individual
+  module settings. Service settings can be configured at the organization,
+  folder, or project level. Service settings at the organization or folder
+  level are inherited by those in child folders and projects.
+
+  Enums:
+    EffectiveEnablementStateValueValuesEnum: Output only. The effective
+      enablement state for the service at its level of the resource hierarchy.
+      If the intended state is set to INHERITED, the effective state will be
+      inherited from the enablement state of an ancestor. This state may
+      differ from the intended enablement state due to billing eligibility or
+      onboarding status.
+    IntendedEnablementStateValueValuesEnum: Optional. The intended state of
+      enablement for the service at its level of the resource hierarchy. A
+      DISABLED state will override all module enablement_states to DISABLED.
+
+  Messages:
+    ModulesValue: Optional. The configurations including the state of
+      enablement for the service's different modules. The absence of a module
+      in the map implies its configuration is inherited from its parent's.
+
+  Fields:
+    effectiveEnablementState: Output only. The effective enablement state for
+      the service at its level of the resource hierarchy. If the intended
+      state is set to INHERITED, the effective state will be inherited from
+      the enablement state of an ancestor. This state may differ from the
+      intended enablement state due to billing eligibility or onboarding
+      status.
+    intendedEnablementState: Optional. The intended state of enablement for
+      the service at its level of the resource hierarchy. A DISABLED state
+      will override all module enablement_states to DISABLED.
+    modules: Optional. The configurations including the state of enablement
+      for the service's different modules. The absence of a module in the map
+      implies its configuration is inherited from its parent's.
+    name: Identifier. The name of the service Formats: * organizations/{organi
+      zation}/locations/{location}/securityCenterServices/{service} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+    updateTime: Output only. The time the service was last updated.
+  """
+
+  class EffectiveEnablementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The effective enablement state for the service at its
+    level of the resource hierarchy. If the intended state is set to
+    INHERITED, the effective state will be inherited from the enablement state
+    of an ancestor. This state may differ from the intended enablement state
+    due to billing eligibility or onboarding status.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource. Not a valid
+        effective enablement state.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  class IntendedEnablementStateValueValuesEnum(_messages.Enum):
+    r"""Optional. The intended state of enablement for the service at its
+    level of the resource hierarchy. A DISABLED state will override all module
+    enablement_states to DISABLED.
+
+    Values:
+      ENABLEMENT_STATE_UNSPECIFIED: Default value. This value is unused.
+      INHERITED: State is inherited from the parent resource. Not a valid
+        effective enablement state.
+      ENABLED: State is enabled.
+      DISABLED: State is disabled.
+    """
+    ENABLEMENT_STATE_UNSPECIFIED = 0
+    INHERITED = 1
+    ENABLED = 2
+    DISABLED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModulesValue(_messages.Message):
+    r"""Optional. The configurations including the state of enablement for the
+    service's different modules. The absence of a module in the map implies
+    its configuration is inherited from its parent's.
+
+    Messages:
+      AdditionalProperty: An additional property for a ModulesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModulesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModulesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ModuleSettings attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ModuleSettings', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  effectiveEnablementState = _messages.EnumField('EffectiveEnablementStateValueValuesEnum', 1)
+  intendedEnablementState = _messages.EnumField('IntendedEnablementStateValueValuesEnum', 2)
+  modules = _messages.MessageField('ModulesValue', 3)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class SecurityHealthAnalyticsCustomModule(_messages.Message):
@@ -1127,6 +1314,71 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesV
 
   parent = _messages.StringField(1, required=True)
   validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
+
+
+class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest
+  object.
+
+  Fields:
+    name: Required. The Security Center service to retrieve. Formats: * organi
+      zations/{organization}/locations/{location}/securityCenterServices/{serv
+      ice} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in a single
+      response. Default is 10, minimum is 1, maximum is 1000.
+    pageToken: Optional. The value returned by the last call indicating a
+      continuation
+    parent: Required. The name of the parent to list Security Center services.
+      Formats: * organizations/{organization}/locations/{location} *
+      folders/{folder}/locations/{location} *
+      projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. The name of the service Formats: * organizations/{organi
+      zation}/locations/{location}/securityCenterServices/{service} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+    securityCenterService: A SecurityCenterService resource to be passed as
+      the request body.
+    updateMask: Required. The list of fields to be updated.
+    validateOnly: Optional. When set to true, only validations (including IAM
+      checks) will done for the request (service will not be updated). An OK
+      response indicates the request is valid while an error response
+      indicates the request is invalid. Note that a subsequent request to
+      actually update the service could still fail because 1. the state could
+      have changed (e.g. IAM permission lost) or 2. A failure occurred while
+      trying to delete the module.
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityCenterService = _messages.MessageField('SecurityCenterService', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModulesCreateRequest(_messages.Message):
@@ -1519,6 +1771,68 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
 
   parent = _messages.StringField(1, required=True)
   validateEventThreatDetectionCustomModuleRequest = _messages.MessageField('ValidateEventThreatDetectionCustomModuleRequest', 2)
+
+
+class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGe
+  tRequest object.
+
+  Fields:
+    name: Required. The Security Center service to retrieve. Formats: * organi
+      zations/{organization}/locations/{location}/securityCenterServices/{serv
+      ice} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesLi
+  stRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in a single
+      response. Default is 10, minimum is 1, maximum is 1000.
+    pageToken: Optional. The value returned by the last call indicating a
+      continuation
+    parent: Required. The name of the parent to list Security Center services.
+      Formats: * organizations/{organization}/locations/{location} *
+      folders/{folder}/locations/{location} *
+      projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchRequest(_messages.Message):
+  r"""A SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPa
+  tchRequest object.
+
+  Fields:
+    name: Identifier. The name of the service Formats: * organizations/{organi
+      zation}/locations/{location}/securityCenterServices/{service} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+    securityCenterService: A SecurityCenterService resource to be passed as
+      the request body.
+    updateMask: Required. The list of fields to be updated.
+    validateOnly: Optional. When set to true, only validations (including IAM
+      checks) will done for the request (service will not be updated). An OK
+      response indicates the request is valid while an error response
+      indicates the request is invalid. Note that a subsequent request to
+      actually update the service could still fail because 1. the state could
+      have changed (e.g. IAM permission lost) or 2. A failure occurred while
+      trying to delete the module.
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityCenterService = _messages.MessageField('SecurityCenterService', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCustomModulesCreateRequest(_messages.Message):
@@ -1941,6 +2255,71 @@ class SecuritycentermanagementProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest
+  object.
+
+  Fields:
+    name: Required. The Security Center service to retrieve. Formats: * organi
+      zations/{organization}/locations/{location}/securityCenterServices/{serv
+      ice} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return in a single
+      response. Default is 10, minimum is 1, maximum is 1000.
+    pageToken: Optional. The value returned by the last call indicating a
+      continuation
+    parent: Required. The name of the parent to list Security Center services.
+      Formats: * organizations/{organization}/locations/{location} *
+      folders/{folder}/locations/{location} *
+      projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest(_messages.Message):
+  r"""A
+  SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest
+  object.
+
+  Fields:
+    name: Identifier. The name of the service Formats: * organizations/{organi
+      zation}/locations/{location}/securityCenterServices/{service} *
+      folders/{folder}/locations/{location}/securityCenterServices/{service} *
+      projects/{project}/locations/{location}/securityCenterServices/{service}
+    securityCenterService: A SecurityCenterService resource to be passed as
+      the request body.
+    updateMask: Required. The list of fields to be updated.
+    validateOnly: Optional. When set to true, only validations (including IAM
+      checks) will done for the request (service will not be updated). An OK
+      response indicates the request is valid while an error response
+      indicates the request is invalid. Note that a subsequent request to
+      actually update the service could still fail because 1. the state could
+      have changed (e.g. IAM permission lost) or 2. A failure occurred while
+      trying to delete the module.
+  """
+
+  name = _messages.StringField(1, required=True)
+  securityCenterService = _messages.MessageField('SecurityCenterService', 2)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesCreateRequest(_messages.Message):

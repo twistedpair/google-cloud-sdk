@@ -41,6 +41,9 @@ def WarnIfSettingNonExistentRegionZone(value, zonal=True):
                'get all zones.'.format(value))
   regional_msg = ('{} is not a valid region. Run `gcloud compute regions list`'
                   'to get all regions.'.format(value))
+  if not value:
+    log.warning(zonal_msg if zonal else regional_msg)
+    return True
   holder = base_classes.ComputeApiHolder(base.ReleaseTrack.GA)
   client = holder.client
 

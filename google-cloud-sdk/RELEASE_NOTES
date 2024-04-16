@@ -5,6 +5,125 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 472.0.0 (2024-04-16)
+
+### AI
+
+*   Promoted `gcloud ai persistent-resources` to GA.
+*   Added `gcloud ai persistent-resources reboot` which allows a user to reboot
+    a Persistent Resource.
+*   Promoted `--persistent-resource-id` flag of `gcloud ai custom-jobs create`
+    to GA.
+
+### AlloyDB
+
+* Added flag `--enable-private-service-connect` to enable Private Service Connect for a cluster to the following commands in the GA track:
+  * `gcloud alloydb clusters create`
+  * `gcloud alloydb clusters restore`
+
+* Added flag `--allowed-psc-projects` to set a list of allowed consumer projects on an instance in a cluster with Private Service Connect enabled to the following commands in the GA track:
+  * `gcloud alloydb instances create`
+  * `gcloud alloydb instances update`
+
+### App Engine
+
+* Updated dependencies to latest versions.
+* Removed obsolete python2 support code fragments.
+* Fixed an issue with local images API emulator in devappserver.
+
+### Artifact Registry
+
+* Added support for domain-scoped projects to `gcloud artifacts docker upgrade migrate`.
+
+### BigQuery
+
+* Fixed incorrect help text of `mk` and `update`.
+* Added `--null_marker` flag for creating external tables.
+* Fixed a bug when using `--use_google_auth` on Windows.
+* Switched to using Google Auth by default for users authenticating with P12 service account keys. To revert to the old behavior, run the command with `--nouse_google_auth`. Note that the P12 key format has been deprecated and the new JSON key format is recommended. For more information, see <https://cloud.google.com/sdk/crypto>.
+
+### Certificate Manager
+
+* Added `--allowlisted-certificates` flag to `gcloud certificate-manager trust-configs create`.
+* Added `--add-allowlisted-certificates`, `--remove-allowlisted-certificates` and `--clear-allowlisted-certificates` flags to `gcloud certificate-manager trust-configs update`.
+
+### Cloud Build
+
+* Added `--polling-interval` argument to `gcloud builds submit`.
+
+### Cloud Datastream
+
+* Fix list connection profiles to show all connection profile types.
+* Updated `BigQueryDestinationConfig` with new fields (currently experimental).
+* Updated schemas.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.5
+  * Import and export entities now supported in gCloud CLI for Datastore Mode.
+
+### Cloud Infrastructure Manager
+
+*   Added `--file` flag to `gcloud infra-manager deployments import-statefile`
+    to upload statefile for a deployment.
+
+### Cloud NetApp
+
+* Fixed bug during `gcloud netapp volumes update --backup-config=enable-scheduled-backups=false` that wasn't correctly updating update mask.
+
+### Cloud SQL
+
+* Published Cloud SQL Auth Proxy v2 binary as new `cloud-sql-proxy` Cloud SDK
+component. `cloud-sql-proxy` contains utilities for connecting securely to
+your Cloud SQL instances. It may be installed with
+`gcloud components install cloud-sql-proxy` and is recommended over
+`cloud_sql_proxy` (v1) which will be removed at a later date. See
+<https://github.com/GoogleCloudPlatform/cloud-sql-proxy/blob/main/migration-guide.md>
+for help migrating.
+
+### Cloud Spanner
+
+* Added flag `target-config` to support moving instance to a different instance config in `gcloud` CLI and introduced `gcloud spanner instances move` command. Promoted the same to GA.
+
+### Compute Engine
+
+* Modified `location` flag from `gcloud compute connect-to-serial-port` command to use region from `zone` flag as location if `location` is unspecified.
+* Added `target-service` argument when creating PSC service attachments and treated as a mutually exclusive group with the existing argument `producer-forwarding-rule`.
+* Promoted `--gateway-ip-version` flag of `gcloud compute vpn-gateways create` to GA.
+* Promoted `--interface` to use IPv6 address flag of `gcloud compute external-vpn-gateways create` to GA.
+* Now all `gcloud compute` commands allow regions down and return the partial results by default when sending an AggregatedList requests. Users can turn off this feature by setting `compute/allow_partial_error` property to false.
+
+### Database Migration
+
+* Added `--skip-validation` param to `gcloud database-migration migration-jobs resume`
+  to allow resuming migration jobs without running validations.
+
+### Dataproc Metastore
+
+* Added `gcloud metastore services migrations` command group to manage the migration to a Dataproc Metastore service.
+  * `gcloud metastore services migrations start`
+  * `gcloud metastore services migrations complete`
+  * `gcloud metastore services migrations cancel`
+  * `gcloud metastore services migrations describe`
+  * `gcloud metastore services migrations list`
+  * `gcloud metastore services migrations delete`
+
+* Added `--min-scaling-factor`, `--max-scaling-factor`, and `--autoscaling-enabled` flags to `gcloud metastore services create` and `gcloud metastore services update` alpha and beta release track to allow updating the autoscaling configuration of a Dataproc Metastore instance.
+
+* Updated `--scaling-factor` help text.
+
+### Eventarc
+
+*  Removed `gcloud beta eventarc`. User are expected to use `gcloud eventarc` instead.
+
+### Workbench
+
+* Added `NVIDIA_L4` option to `--accelerator-type` flag of `workbench instances`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 471.0.0 (2024-04-02)
 
 ### AI

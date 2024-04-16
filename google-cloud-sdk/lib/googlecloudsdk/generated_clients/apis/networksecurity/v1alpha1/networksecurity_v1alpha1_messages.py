@@ -336,6 +336,18 @@ class CloneAddressGroupItemsRequest(_messages.Message):
   sourceAddressGroup = _messages.StringField(2)
 
 
+class CustomMirroringProfile(_messages.Message):
+  r"""CustomMirroringProfile defines an action for mirroring traffic to a
+  collector's EndpointGroup
+
+  Fields:
+    mirroringEndpointGroup: Required. The MirroringEndpointGroup to which
+      traffic associated with the SP should be mirrored.
+  """
+
+  mirroringEndpointGroup = _messages.StringField(1)
+
+
 class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
@@ -5349,9 +5361,7 @@ class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
       will connect to. Filled from the customer SSEGateway, and only for
       PartnerSSEGateways associated with Symantec today.
     symantecSiteTargetHost: Optional. Target for the NCGs to send traffic to
-      on the Symantec side. Only supports DNS hostname today. Generally this
-      is the hostname associated with symantec_site, but eventually we will
-      support hardcoding a hostname or IP.
+      on the Symantec side. Only supports IP address today.
   """
 
   symantecLocationUuid = _messages.StringField(1)
@@ -5585,8 +5595,9 @@ class SSEGatewayReference(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
-    partnerSseRealm: Required. PartnerSSERealm owning the PartnerSSEGateway
+    partnerSseRealm: Output only. PartnerSSERealm owning the PartnerSSEGateway
       that this SSEGateway intends to connect with
+    proberSubnetRanges: Output only. Subnet ranges for Google probe packets.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -5618,7 +5629,8 @@ class SSEGatewayReference(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   partnerSseRealm = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  proberSubnetRanges = _messages.StringField(5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 class SSEGatewaySSEGatewaySymantecOptions(_messages.Message):
@@ -5768,7 +5780,7 @@ class SSERealmSSERealmSymantecOptions(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 9
+  ProfileTypes. Next ID: 10
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -5779,6 +5791,8 @@ class SecurityProfile(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customMirroringProfile: The custom Packet Mirroring v2 configuration for
+      the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
       512 characters.
     etag: Output only. This checksum is computed by the server based on the
@@ -5802,9 +5816,11 @@ class SecurityProfile(_messages.Message):
     Values:
       PROFILE_TYPE_UNSPECIFIED: Profile type not specified.
       THREAT_PREVENTION: Profile type for threat prevention.
+      CUSTOM_MIRRORING: Profile type for packet mirroring v2
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
+    CUSTOM_MIRRORING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5831,24 +5847,27 @@ class SecurityProfile(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 8
+  ProfileTypes. Next ID: 9
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customMirroringProfile: Optional. Reference to a SecurityProfile with the
+      CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
       length 2048 characters.
     etag: Output only. This checksum is computed by the server based on the
@@ -5888,12 +5907,13 @@ class SecurityProfileGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  etag = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  threatPreventionProfile = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  customMirroringProfile = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  threatPreventionProfile = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ServerTlsPolicy(_messages.Message):

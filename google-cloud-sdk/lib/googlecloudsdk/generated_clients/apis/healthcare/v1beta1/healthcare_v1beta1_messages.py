@@ -2250,9 +2250,12 @@ class ExplainDataAccessConsentInfo(_messages.Message):
       policy. Each resource has the following format: `projects/{project_id}/l
       ocations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/
       fhir/{resource_type}/{resource_id}`
-    consentResource: The resource name of this consent resource. Format: `proj
-      ects/{projectId}/locations/{locationId}/datasets/{datasetId}/fhirStores/
-      {fhirStoreId}/fhir/{resourceType}/{id}`.
+    consentResource: The versioned resource name of this consent resource, in
+      the format: `projects/{project_id}/locations/{location}/datasets/{datase
+      t_id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}/_history/{ve
+      rsion_id}`. For FHIR stores with `disable_resource_versioning=true`, the
+      format is `projects/{project_id}/locations/{location}/datasets/{dataset_
+      id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}`.
     enforcementTime: Last enforcement timestamp of this consent resource.
     matchingAccessorScopes: A list of all the matching accessor scopes of this
       consent policy that enforced

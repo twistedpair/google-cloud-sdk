@@ -16,9 +16,6 @@ package = 'dataprocgdc'
 class ApplicationEnvironment(_messages.Message):
   r"""Represents the ApplicationEnvironment resource.
 
-  Enums:
-    StateValueValuesEnum: Output only. The current state.
-
   Messages:
     AnnotationsValue: Optional. The annotations to associate with this
       application environment. Annotations may be used to store client
@@ -41,41 +38,13 @@ class ApplicationEnvironment(_messages.Message):
       e_instance}/applicationEnvironments/{application_environment_id}
     namespace: Optional. The name of the namespace in which to create this
       ApplicationEnvironment. This namespace must already exist in the cluster
-    reconciling: Output only. Whether the application environment is currently
-      reconciling. True if the current state of the resource does not match
-      the intended state, and the system is working to reconcile them, whether
-      or not the change was user initiated. Required by
-      aip.dev/128#reconciliation
     sparkApplicationEnvironmentConfig: Optional. The engine-specific
       configurations for this ApplicationEnvironment.
-    state: Output only. The current state.
-    stateMessage: Output only. A message explaining the current state.
     uid: Output only. System generated unique identifier for this application
       environment, formatted as UUID4.
     updateTime: Output only. The timestamp when the resource was most recently
       updated.
   """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state.
-
-    Values:
-      STATE_UNSPECIFIED: The application environment state is unknown.
-      CREATING: The application environment is being created and is not yet
-        ready to accept requests.
-      ACTIVE: The application environment is ready for application
-        submissions.
-      DELETING: The application environment is being deleted.
-      UPDATING: The application environment is being updated
-      FAILED: The application environment has encountered an unrecoverable
-        error.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    ACTIVE = 2
-    DELETING = 3
-    UPDATING = 4
-    FAILED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -135,12 +104,9 @@ class ApplicationEnvironment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   namespace = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  sparkApplicationEnvironmentConfig = _messages.MessageField('SparkApplicationEnvironmentConfig', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stateMessage = _messages.StringField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  sparkApplicationEnvironmentConfig = _messages.MessageField('SparkApplicationEnvironmentConfig', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class AuxiliaryServicesConfig(_messages.Message):

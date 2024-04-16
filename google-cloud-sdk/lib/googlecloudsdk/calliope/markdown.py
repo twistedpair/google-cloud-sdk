@@ -579,6 +579,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     # print the informartion
     self._out(info_body)
 
+    # print UNIVERSE ADDITIONAL INFO section
+    self.PrintSectionIfExists('UNIVERSE ADDITIONAL INFO')
+
   def PrintNameSection(self, disable_header=False):
     """Prints the command line name section.
 
@@ -807,7 +810,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       disable_header: Disable printing the section header if True.
     """
-    excluded_sections = set(self._final_sections + ['NOTES'])
+    excluded_sections = set(
+        self._final_sections + ['NOTES', 'UNIVERSE ADDITIONAL INFO'])
     for section in sorted(self._sections):
       if section.isupper() and section not in excluded_sections:
         self.PrintSectionIfExists(section, disable_header=disable_header)

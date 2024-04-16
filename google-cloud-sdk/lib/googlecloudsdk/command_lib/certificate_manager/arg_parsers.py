@@ -43,22 +43,45 @@ class PemCertificatesFile(arg_parsers.FileContents):
     return [{'pemCertificate': cert} for cert in certs]
 
 
-class PemCertificatesFilesList(arg_parsers.ArgList):
+class SemicolonSeparatedPemCertificatesFilesList(arg_parsers.ArgList):
   """Reads PEM certificates from all provided files."""
 
-  def __init__(self, custom_delim_char=';', **kwargs):
+  def __init__(self, **kwargs):
     """Initialize the parser.
 
     Args:
-      custom_delim_char: What to split filenames list by.
       **kwargs: Passed verbatim to ArgList.
     """
-    super(PemCertificatesFilesList, self).__init__(
+    super(SemicolonSeparatedPemCertificatesFilesList, self).__init__(
         element_type=PemCertificatesFile(),
-        custom_delim_char=custom_delim_char,
+        custom_delim_char=';',
         **kwargs
     )
 
   def __call__(self, arg_value):
-    value = super(PemCertificatesFilesList, self).__call__(arg_value)
+    value = super(SemicolonSeparatedPemCertificatesFilesList, self).__call__(
+        arg_value
+    )
+    return list(itertools.chain.from_iterable(value))  # flatten
+
+
+class CommaSeparatedPemCertificatesFilesList(arg_parsers.ArgList):
+  """Reads PEM certificates from all provided files."""
+
+  def __init__(self, **kwargs):
+    """Initialize the parser.
+
+    Args:
+      **kwargs: Passed verbatim to ArgList.
+    """
+    super(CommaSeparatedPemCertificatesFilesList, self).__init__(
+        element_type=PemCertificatesFile(),
+        custom_delim_char=',',
+        **kwargs
+    )
+
+  def __call__(self, arg_value):
+    value = super(CommaSeparatedPemCertificatesFilesList, self).__call__(
+        arg_value
+    )
     return list(itertools.chain.from_iterable(value))  # flatten

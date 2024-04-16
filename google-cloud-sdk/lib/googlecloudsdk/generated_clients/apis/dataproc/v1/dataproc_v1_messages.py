@@ -780,6 +780,7 @@ class Batch(_messages.Message):
     operation: Output only. The resource name of the operation associated with
       this batch.
     pysparkBatch: Optional. PySpark batch config.
+    rayBatch: Optional. Ray batch config.
     runtimeConfig: Optional. Runtime configuration for the batch execution.
     runtimeInfo: Output only. Runtime information about batch execution.
     sparkBatch: Optional. Spark batch config.
@@ -850,16 +851,17 @@ class Batch(_messages.Message):
   name = _messages.StringField(5)
   operation = _messages.StringField(6)
   pysparkBatch = _messages.MessageField('PySparkBatch', 7)
-  runtimeConfig = _messages.MessageField('RuntimeConfig', 8)
-  runtimeInfo = _messages.MessageField('RuntimeInfo', 9)
-  sparkBatch = _messages.MessageField('SparkBatch', 10)
-  sparkRBatch = _messages.MessageField('SparkRBatch', 11)
-  sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateHistory = _messages.MessageField('StateHistory', 14, repeated=True)
-  stateMessage = _messages.StringField(15)
-  stateTime = _messages.StringField(16)
-  uuid = _messages.StringField(17)
+  rayBatch = _messages.MessageField('RayBatch', 8)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 9)
+  runtimeInfo = _messages.MessageField('RuntimeInfo', 10)
+  sparkBatch = _messages.MessageField('SparkBatch', 11)
+  sparkRBatch = _messages.MessageField('SparkRBatch', 12)
+  sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateHistory = _messages.MessageField('StateHistory', 15, repeated=True)
+  stateMessage = _messages.StringField(16)
+  stateTime = _messages.StringField(17)
+  uuid = _messages.StringField(18)
 
 
 class BatchOperationMetadata(_messages.Message):
@@ -1876,12 +1878,17 @@ class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest
     parent: Required. Parent (Batch) resource reference.
     stageAttemptId: Required. Stage Attempt ID
     stageId: Required. Stage ID
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   name = _messages.StringField(1, required=True)
   parent = _messages.StringField(2)
   stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   stageId = _messages.IntegerField(4)
+  summaryMetricsMask = _messages.StringField(5)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
@@ -2162,6 +2169,10 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsReques
       the subsequent page.
     parent: Required. Parent (Batch) resource reference.
     stageId: Required. Stage ID for which attempts are to be fetched
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   name = _messages.StringField(1, required=True)
@@ -2169,6 +2180,7 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsReques
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
   stageId = _messages.IntegerField(5)
+  summaryMetricsMask = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_messages.Message):
@@ -2190,6 +2202,10 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_mess
       subsequent page.
     parent: Required. Parent (Batch) resource reference.
     stageStatus: Optional. List only stages in the given state.
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   class StageStatusValueValuesEnum(_messages.Enum):
@@ -2215,6 +2231,7 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_mess
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
   stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
+  summaryMetricsMask = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
@@ -2600,12 +2617,17 @@ class DataprocProjectsLocationsSessionsSparkApplicationsAccessStageAttemptReques
     parent: Required. Parent (Session) resource reference.
     stageAttemptId: Required. Stage Attempt ID
     stageId: Required. Stage ID
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   name = _messages.StringField(1, required=True)
   parent = _messages.StringField(2)
   stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   stageId = _messages.IntegerField(4)
+  summaryMetricsMask = _messages.StringField(5)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
@@ -2888,6 +2910,10 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsReque
       retrieve the subsequent page.
     parent: Required. Parent (Session) resource reference.
     stageId: Required. Stage ID for which attempts are to be fetched
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   name = _messages.StringField(1, required=True)
@@ -2895,6 +2921,7 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStageAttemptsReque
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
   stageId = _messages.IntegerField(5)
+  summaryMetricsMask = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_messages.Message):
@@ -2916,6 +2943,10 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_mes
       the subsequent page.
     parent: Required. Parent (Session) resource reference.
     stageStatus: Optional. List only stages in the given state.
+    summaryMetricsMask: Optional. The list of summary metrics fields to
+      include. Empty list will default to skip all summary metrics fields.
+      Example, if the response should include TaskQuantileMetrics, the request
+      should have task_quantile_metrics in summary_metrics_mask field
   """
 
   class StageStatusValueValuesEnum(_messages.Enum):
@@ -2941,6 +2972,7 @@ class DataprocProjectsLocationsSessionsSparkApplicationsSearchStagesRequest(_mes
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
   stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
+  summaryMetricsMask = _messages.StringField(6)
 
 
 class DataprocProjectsLocationsSessionsSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
@@ -5662,18 +5694,6 @@ class InjectSessionCredentialsRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
-class InputMetricDistributions(_messages.Message):
-  r"""A InputMetricDistributions object.
-
-  Fields:
-    bytesRead: A number attribute.
-    recordsRead: A number attribute.
-  """
-
-  bytesRead = _messages.FloatField(1, repeated=True)
-  recordsRead = _messages.FloatField(2, repeated=True)
-
-
 class InputMetrics(_messages.Message):
   r"""Metrics about the input data read by the task.
 
@@ -5684,6 +5704,18 @@ class InputMetrics(_messages.Message):
 
   bytesRead = _messages.IntegerField(1)
   recordsRead = _messages.IntegerField(2)
+
+
+class InputQuantileMetrics(_messages.Message):
+  r"""A InputQuantileMetrics object.
+
+  Fields:
+    bytesRead: A Quantiles attribute.
+    recordsRead: A Quantiles attribute.
+  """
+
+  bytesRead = _messages.MessageField('Quantiles', 1)
+  recordsRead = _messages.MessageField('Quantiles', 2)
 
 
 class InstanceFlexibilityPolicy(_messages.Message):
@@ -7460,18 +7492,6 @@ class OrderedJob(_messages.Message):
   trinoJob = _messages.MessageField('TrinoJob', 14)
 
 
-class OutputMetricDistributions(_messages.Message):
-  r"""A OutputMetricDistributions object.
-
-  Fields:
-    bytesWritten: A number attribute.
-    recordsWritten: A number attribute.
-  """
-
-  bytesWritten = _messages.FloatField(1, repeated=True)
-  recordsWritten = _messages.FloatField(2, repeated=True)
-
-
 class OutputMetrics(_messages.Message):
   r"""Metrics about the data written by the task.
 
@@ -7482,6 +7502,18 @@ class OutputMetrics(_messages.Message):
 
   bytesWritten = _messages.IntegerField(1)
   recordsWritten = _messages.IntegerField(2)
+
+
+class OutputQuantileMetrics(_messages.Message):
+  r"""A OutputQuantileMetrics object.
+
+  Fields:
+    bytesWritten: A Quantiles attribute.
+    recordsWritten: A Quantiles attribute.
+  """
+
+  bytesWritten = _messages.MessageField('Quantiles', 1)
+  recordsWritten = _messages.MessageField('Quantiles', 2)
 
 
 class ParameterValidation(_messages.Message):
@@ -8054,6 +8086,29 @@ class PySparkJob(_messages.Message):
   pythonFileUris = _messages.StringField(8, repeated=True)
 
 
+class Quantiles(_messages.Message):
+  r"""Quantile metrics data related to Tasks. Units can be seconds, bytes,
+  milliseconds, etc depending on the message type.
+
+  Fields:
+    count: A string attribute.
+    maximum: A string attribute.
+    minimum: A string attribute.
+    percentile25: A string attribute.
+    percentile50: A string attribute.
+    percentile75: A string attribute.
+    sum: A string attribute.
+  """
+
+  count = _messages.IntegerField(1)
+  maximum = _messages.IntegerField(2)
+  minimum = _messages.IntegerField(3)
+  percentile25 = _messages.IntegerField(4)
+  percentile50 = _messages.IntegerField(5)
+  percentile75 = _messages.IntegerField(6)
+  sum = _messages.IntegerField(7)
+
+
 class QueryList(_messages.Message):
   r"""A list of queries to run on a cluster.
 
@@ -8067,6 +8122,21 @@ class QueryList(_messages.Message):
   """
 
   queries = _messages.StringField(1, repeated=True)
+
+
+class RayBatch(_messages.Message):
+  r"""A configuration for running an Ray Job
+  (https://docs.ray.io/en/latest/cluster/running-applications/job-
+  submission/index.html) workload.
+
+  Fields:
+    args: Optional. The arguments to pass to the Ray job script.
+    mainPythonFileUri: Required. The HCFS URI of the main Python file to use
+      as the Ray job. Must be a .py file.
+  """
+
+  args = _messages.StringField(1, repeated=True)
+  mainPythonFileUri = _messages.StringField(2)
 
 
 class RddDataDistribution(_messages.Message):
@@ -9168,32 +9238,6 @@ class ShieldedInstanceConfig(_messages.Message):
   enableVtpm = _messages.BooleanField(3)
 
 
-class ShufflePushReadMetricDistributions(_messages.Message):
-  r"""A ShufflePushReadMetricDistributions object.
-
-  Fields:
-    corruptMergedBlockChunks: A number attribute.
-    localMergedBlocksFetched: A number attribute.
-    localMergedBytesRead: A number attribute.
-    localMergedChunksFetched: A number attribute.
-    mergedFetchFallbackCount: A number attribute.
-    remoteMergedBlocksFetched: A number attribute.
-    remoteMergedBytesRead: A number attribute.
-    remoteMergedChunksFetched: A number attribute.
-    remoteMergedReqsDuration: A number attribute.
-  """
-
-  corruptMergedBlockChunks = _messages.FloatField(1, repeated=True)
-  localMergedBlocksFetched = _messages.FloatField(2, repeated=True)
-  localMergedBytesRead = _messages.FloatField(3, repeated=True)
-  localMergedChunksFetched = _messages.FloatField(4, repeated=True)
-  mergedFetchFallbackCount = _messages.FloatField(5, repeated=True)
-  remoteMergedBlocksFetched = _messages.FloatField(6, repeated=True)
-  remoteMergedBytesRead = _messages.FloatField(7, repeated=True)
-  remoteMergedChunksFetched = _messages.FloatField(8, repeated=True)
-  remoteMergedReqsDuration = _messages.FloatField(9, repeated=True)
-
-
 class ShufflePushReadMetrics(_messages.Message):
   r"""A ShufflePushReadMetrics object.
 
@@ -9220,33 +9264,30 @@ class ShufflePushReadMetrics(_messages.Message):
   remoteMergedReqsDuration = _messages.IntegerField(9)
 
 
-class ShuffleReadMetricDistributions(_messages.Message):
-  r"""A ShuffleReadMetricDistributions object.
+class ShufflePushReadQuantileMetrics(_messages.Message):
+  r"""A ShufflePushReadQuantileMetrics object.
 
   Fields:
-    fetchWaitTimeMillis: A number attribute.
-    localBlocksFetched: A number attribute.
-    readBytes: A number attribute.
-    readRecords: A number attribute.
-    remoteBlocksFetched: A number attribute.
-    remoteBytesRead: A number attribute.
-    remoteBytesReadToDisk: A number attribute.
-    remoteReqsDuration: A number attribute.
-    shufflePushReadMetricsDist: A ShufflePushReadMetricDistributions
-      attribute.
-    totalBlocksFetched: A number attribute.
+    corruptMergedBlockChunks: A Quantiles attribute.
+    localMergedBlocksFetched: A Quantiles attribute.
+    localMergedBytesRead: A Quantiles attribute.
+    localMergedChunksFetched: A Quantiles attribute.
+    mergedFetchFallbackCount: A Quantiles attribute.
+    remoteMergedBlocksFetched: A Quantiles attribute.
+    remoteMergedBytesRead: A Quantiles attribute.
+    remoteMergedChunksFetched: A Quantiles attribute.
+    remoteMergedReqsDuration: A Quantiles attribute.
   """
 
-  fetchWaitTimeMillis = _messages.FloatField(1, repeated=True)
-  localBlocksFetched = _messages.FloatField(2, repeated=True)
-  readBytes = _messages.FloatField(3, repeated=True)
-  readRecords = _messages.FloatField(4, repeated=True)
-  remoteBlocksFetched = _messages.FloatField(5, repeated=True)
-  remoteBytesRead = _messages.FloatField(6, repeated=True)
-  remoteBytesReadToDisk = _messages.FloatField(7, repeated=True)
-  remoteReqsDuration = _messages.FloatField(8, repeated=True)
-  shufflePushReadMetricsDist = _messages.MessageField('ShufflePushReadMetricDistributions', 9)
-  totalBlocksFetched = _messages.FloatField(10, repeated=True)
+  corruptMergedBlockChunks = _messages.MessageField('Quantiles', 1)
+  localMergedBlocksFetched = _messages.MessageField('Quantiles', 2)
+  localMergedBytesRead = _messages.MessageField('Quantiles', 3)
+  localMergedChunksFetched = _messages.MessageField('Quantiles', 4)
+  mergedFetchFallbackCount = _messages.MessageField('Quantiles', 5)
+  remoteMergedBlocksFetched = _messages.MessageField('Quantiles', 6)
+  remoteMergedBytesRead = _messages.MessageField('Quantiles', 7)
+  remoteMergedChunksFetched = _messages.MessageField('Quantiles', 8)
+  remoteMergedReqsDuration = _messages.MessageField('Quantiles', 9)
 
 
 class ShuffleReadMetrics(_messages.Message):
@@ -9275,18 +9316,32 @@ class ShuffleReadMetrics(_messages.Message):
   shufflePushReadMetrics = _messages.MessageField('ShufflePushReadMetrics', 9)
 
 
-class ShuffleWriteMetricDistributions(_messages.Message):
-  r"""A ShuffleWriteMetricDistributions object.
+class ShuffleReadQuantileMetrics(_messages.Message):
+  r"""A ShuffleReadQuantileMetrics object.
 
   Fields:
-    writeBytes: A number attribute.
-    writeRecords: A number attribute.
-    writeTimeNanos: A number attribute.
+    fetchWaitTimeMillis: A Quantiles attribute.
+    localBlocksFetched: A Quantiles attribute.
+    readBytes: A Quantiles attribute.
+    readRecords: A Quantiles attribute.
+    remoteBlocksFetched: A Quantiles attribute.
+    remoteBytesRead: A Quantiles attribute.
+    remoteBytesReadToDisk: A Quantiles attribute.
+    remoteReqsDuration: A Quantiles attribute.
+    shufflePushReadMetrics: A ShufflePushReadQuantileMetrics attribute.
+    totalBlocksFetched: A Quantiles attribute.
   """
 
-  writeBytes = _messages.FloatField(1, repeated=True)
-  writeRecords = _messages.FloatField(2, repeated=True)
-  writeTimeNanos = _messages.FloatField(3, repeated=True)
+  fetchWaitTimeMillis = _messages.MessageField('Quantiles', 1)
+  localBlocksFetched = _messages.MessageField('Quantiles', 2)
+  readBytes = _messages.MessageField('Quantiles', 3)
+  readRecords = _messages.MessageField('Quantiles', 4)
+  remoteBlocksFetched = _messages.MessageField('Quantiles', 5)
+  remoteBytesRead = _messages.MessageField('Quantiles', 6)
+  remoteBytesReadToDisk = _messages.MessageField('Quantiles', 7)
+  remoteReqsDuration = _messages.MessageField('Quantiles', 8)
+  shufflePushReadMetrics = _messages.MessageField('ShufflePushReadQuantileMetrics', 9)
+  totalBlocksFetched = _messages.MessageField('Quantiles', 10)
 
 
 class ShuffleWriteMetrics(_messages.Message):
@@ -9301,6 +9356,20 @@ class ShuffleWriteMetrics(_messages.Message):
   bytesWritten = _messages.IntegerField(1)
   recordsWritten = _messages.IntegerField(2)
   writeTimeNanos = _messages.IntegerField(3)
+
+
+class ShuffleWriteQuantileMetrics(_messages.Message):
+  r"""A ShuffleWriteQuantileMetrics object.
+
+  Fields:
+    writeBytes: A Quantiles attribute.
+    writeRecords: A Quantiles attribute.
+    writeTimeNanos: A Quantiles attribute.
+  """
+
+  writeBytes = _messages.MessageField('Quantiles', 1)
+  writeRecords = _messages.MessageField('Quantiles', 2)
+  writeTimeNanos = _messages.MessageField('Quantiles', 3)
 
 
 class SinkProgress(_messages.Message):
@@ -10301,7 +10370,8 @@ class StageData(_messages.Message):
     stageMetrics: A StageMetrics attribute.
     status: A StatusValueValuesEnum attribute.
     submissionTime: A string attribute.
-    taskMetricsDistributions: A TaskMetricDistributions attribute.
+    taskQuantileMetrics: Summary metrics fields. These are included in
+      response only if present in summary_metrics_mask field in request
     tasks: A TasksValue attribute.
   """
 
@@ -10453,7 +10523,7 @@ class StageData(_messages.Message):
   stageMetrics = _messages.MessageField('StageMetrics', 29)
   status = _messages.EnumField('StatusValueValuesEnum', 30)
   submissionTime = _messages.StringField(31)
-  taskMetricsDistributions = _messages.MessageField('TaskMetricDistributions', 32)
+  taskQuantileMetrics = _messages.MessageField('TaskQuantileMetrics', 32)
   tasks = _messages.MessageField('TasksValue', 33)
 
 
@@ -11231,50 +11301,6 @@ class TaskData(_messages.Message):
   taskMetrics = _messages.MessageField('TaskMetrics', 21)
 
 
-class TaskMetricDistributions(_messages.Message):
-  r"""Distribution data of the task metrics according to selected quantiles.
-
-  Fields:
-    diskBytesSpilled: A number attribute.
-    durationMillis: A number attribute.
-    executorCpuTimeNanos: A number attribute.
-    executorDeserializeCpuTimeNanos: A number attribute.
-    executorDeserializeTimeMillis: A number attribute.
-    executorRunTimeMillis: A number attribute.
-    gettingResultTimeMillis: A number attribute.
-    inputMetrics: A InputMetricDistributions attribute.
-    jvmGcTimeMillis: A number attribute.
-    memoryBytesSpilled: A number attribute.
-    outputMetrics: A OutputMetricDistributions attribute.
-    peakExecutionMemoryBytes: A number attribute.
-    quantiles: A number attribute.
-    resultSerializationTimeMillis: A number attribute.
-    resultSize: A number attribute.
-    schedulerDelayMillis: A number attribute.
-    shuffleReadMetrics: A ShuffleReadMetricDistributions attribute.
-    shuffleWriteMetrics: A ShuffleWriteMetricDistributions attribute.
-  """
-
-  diskBytesSpilled = _messages.FloatField(1, repeated=True)
-  durationMillis = _messages.FloatField(2, repeated=True)
-  executorCpuTimeNanos = _messages.FloatField(3, repeated=True)
-  executorDeserializeCpuTimeNanos = _messages.FloatField(4, repeated=True)
-  executorDeserializeTimeMillis = _messages.FloatField(5, repeated=True)
-  executorRunTimeMillis = _messages.FloatField(6, repeated=True)
-  gettingResultTimeMillis = _messages.FloatField(7, repeated=True)
-  inputMetrics = _messages.MessageField('InputMetricDistributions', 8)
-  jvmGcTimeMillis = _messages.FloatField(9, repeated=True)
-  memoryBytesSpilled = _messages.FloatField(10, repeated=True)
-  outputMetrics = _messages.MessageField('OutputMetricDistributions', 11)
-  peakExecutionMemoryBytes = _messages.FloatField(12, repeated=True)
-  quantiles = _messages.FloatField(13, repeated=True)
-  resultSerializationTimeMillis = _messages.FloatField(14, repeated=True)
-  resultSize = _messages.FloatField(15, repeated=True)
-  schedulerDelayMillis = _messages.FloatField(16, repeated=True)
-  shuffleReadMetrics = _messages.MessageField('ShuffleReadMetricDistributions', 17)
-  shuffleWriteMetrics = _messages.MessageField('ShuffleWriteMetricDistributions', 18)
-
-
 class TaskMetrics(_messages.Message):
   r"""Executor Task Metrics
 
@@ -11309,6 +11335,48 @@ class TaskMetrics(_messages.Message):
   resultSize = _messages.IntegerField(12)
   shuffleReadMetrics = _messages.MessageField('ShuffleReadMetrics', 13)
   shuffleWriteMetrics = _messages.MessageField('ShuffleWriteMetrics', 14)
+
+
+class TaskQuantileMetrics(_messages.Message):
+  r"""A TaskQuantileMetrics object.
+
+  Fields:
+    diskBytesSpilled: A Quantiles attribute.
+    durationMillis: A Quantiles attribute.
+    executorCpuTimeNanos: A Quantiles attribute.
+    executorDeserializeCpuTimeNanos: A Quantiles attribute.
+    executorDeserializeTimeMillis: A Quantiles attribute.
+    executorRunTimeMillis: A Quantiles attribute.
+    gettingResultTimeMillis: A Quantiles attribute.
+    inputMetrics: A InputQuantileMetrics attribute.
+    jvmGcTimeMillis: A Quantiles attribute.
+    memoryBytesSpilled: A Quantiles attribute.
+    outputMetrics: A OutputQuantileMetrics attribute.
+    peakExecutionMemoryBytes: A Quantiles attribute.
+    resultSerializationTimeMillis: A Quantiles attribute.
+    resultSize: A Quantiles attribute.
+    schedulerDelayMillis: A Quantiles attribute.
+    shuffleReadMetrics: A ShuffleReadQuantileMetrics attribute.
+    shuffleWriteMetrics: A ShuffleWriteQuantileMetrics attribute.
+  """
+
+  diskBytesSpilled = _messages.MessageField('Quantiles', 1)
+  durationMillis = _messages.MessageField('Quantiles', 2)
+  executorCpuTimeNanos = _messages.MessageField('Quantiles', 3)
+  executorDeserializeCpuTimeNanos = _messages.MessageField('Quantiles', 4)
+  executorDeserializeTimeMillis = _messages.MessageField('Quantiles', 5)
+  executorRunTimeMillis = _messages.MessageField('Quantiles', 6)
+  gettingResultTimeMillis = _messages.MessageField('Quantiles', 7)
+  inputMetrics = _messages.MessageField('InputQuantileMetrics', 8)
+  jvmGcTimeMillis = _messages.MessageField('Quantiles', 9)
+  memoryBytesSpilled = _messages.MessageField('Quantiles', 10)
+  outputMetrics = _messages.MessageField('OutputQuantileMetrics', 11)
+  peakExecutionMemoryBytes = _messages.MessageField('Quantiles', 12)
+  resultSerializationTimeMillis = _messages.MessageField('Quantiles', 13)
+  resultSize = _messages.MessageField('Quantiles', 14)
+  schedulerDelayMillis = _messages.MessageField('Quantiles', 15)
+  shuffleReadMetrics = _messages.MessageField('ShuffleReadQuantileMetrics', 16)
+  shuffleWriteMetrics = _messages.MessageField('ShuffleWriteQuantileMetrics', 17)
 
 
 class TaskResourceRequest(_messages.Message):

@@ -28,9 +28,58 @@ class BackupPlansClient(util.BackupDrClientBase):
     super(BackupPlansClient, self).__init__()
     self.service = self.client.projects_locations_backupPlans
 
+  def Create(self, resource, resource_type, backup_rules):
+    parent = resource.Parent().RelativeName()
+    backup_plan_id = resource.Name()
+    backup_plan = self.messages.BackupPlan(
+        resourceType=resource_type,
+    )
+    for backup_rule in backup_rules:
+      standard_schedule = self.messages.StandardSchedule()
+      standard_schedule.timeZone = (
+          'UTC' if 'time-zone' not in backup_rule else backup_rule['time-zone']
+      )
+      standard_schedule.backupWindow = self.messages.BackupWindow(
+          startHourOfDay=backup_rule['backup-window-start'],
+          endHourOfDay=backup_rule['backup-window-end'],
+      )
+      standard_schedule.recurrenceType = (
+          self.messages.StandardSchedule.RecurrenceTypeValueValuesEnum(
+              backup_rule['recurrence']
+          )
+      )
+      if 'hourly-frequency' in backup_rule:
+        standard_schedule.hourlyFrequency = backup_rule['hourly-frequency']
+      if 'days-of-week' in backup_rule:
+        standard_schedule.daysOfWeek = [
+            self.messages.StandardSchedule.DaysOfWeekValueListEntryValuesEnum(
+                day
+            )
+            for day in backup_rule['days-of-week']
+        ]
+      if 'days-of-month' in backup_rule:
+        standard_schedule.daysOfMonth = backup_rule['days-of-month']
+      if 'months' in backup_rule:
+        standard_schedule.months = [
+            self.messages.StandardSchedule.MonthsValueListEntryValuesEnum(month)
+            for month in backup_rule['months']
+        ]
+      backup_rule_message = self.messages.BackupRule(
+          ruleId=backup_rule['rule-id'],
+          backupVault=backup_rule['backup-vault'],
+          backupRetentionDays=backup_rule['retention-days'],
+          standardSchedule=standard_schedule,
+      )
+      backup_plan.backupRules.append(backup_rule_message)
+    request = self.messages.BackupdrProjectsLocationsBackupPlansCreateRequest(
+        parent=parent,
+        backupPlan=backup_plan,
+        backupPlanId=backup_plan_id,
+    )
+    return self.service.Create(request)
+
   def Delete(self, resource):
-    request = (
-        self.messages.BackupdrProjectsLocationsBackupPlansDeleteRequest(
-            name=resource.RelativeName())
+    request = self.messages.BackupdrProjectsLocationsBackupPlansDeleteRequest(
+        name=resource.RelativeName()
     )
     return self.service.Delete(request)

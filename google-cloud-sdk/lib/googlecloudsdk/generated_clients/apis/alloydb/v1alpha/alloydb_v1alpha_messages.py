@@ -2701,57 +2701,19 @@ class PscInstanceConfig(_messages.Message):
   level.
 
   Fields:
-    allowedConsumerNetworks: Optional. List of consumer networks that are
-      allowed to create PSC endpoints to service-attachments to this instance.
     allowedConsumerProjects: Optional. List of consumer projects that are
       allowed to create PSC endpoints to service-attachments to this instance.
-    outgoingServiceAttachmentLinks: Optional. List of service attachments that
-      this instance has created endpoints to connect with. Currently, only a
-      single outgoing service attachment is supported per instance.
     pscDnsName: Output only. The DNS name of the instance for PSC
       connectivity. Name convention: ...alloydb-psc.goog
-    pscEnabled: Optional. Whether PSC connectivity is enabled for this
-      instance. This is populated by referencing the value from the parent
-      cluster.
-    pscInterfaceConfigs: Optional. Configurations for setting up PSC
-      interfaces attached to the instance which are used for outbound
-      connectivity. Only primary instances can have PSC interface attached.
-      All the VMs created for the primary instance will share the same
-      configurations. Currently we only support 0 or 1 PSC interface.
     serviceAttachmentLink: Output only. The service attachment created when
       Private Service Connect (PSC) is enabled for the instance. The name of
       the resource will be in the format of
       `projects//regions//serviceAttachments/`
   """
 
-  allowedConsumerNetworks = _messages.StringField(1, repeated=True)
-  allowedConsumerProjects = _messages.StringField(2, repeated=True)
-  outgoingServiceAttachmentLinks = _messages.StringField(3, repeated=True)
-  pscDnsName = _messages.StringField(4)
-  pscEnabled = _messages.BooleanField(5)
-  pscInterfaceConfigs = _messages.MessageField('PscInterfaceConfig', 6, repeated=True)
-  serviceAttachmentLink = _messages.StringField(7)
-
-
-class PscInterfaceConfig(_messages.Message):
-  r"""Configuration for setting up a PSC interface. This information needs to
-  be provided by the customer. PSC interfaces will be created and added to VMs
-  via SLM (adding a network interface will require recreating the VM). For HA
-  instances this will be done via LDTM.
-
-  Fields:
-    consumerEndpointIps: A list of endpoints in the consumer VPC the interface
-      might initiate outbound connections to. This list has to be provided
-      when the PSC interface is created.
-    networkAttachment: The NetworkAttachment resource created in the consumer
-      VPC to which the PSC interface will be linked, in the form of: `projects
-      /${CONSUMER_PROJECT}/regions/${REGION}/networkAttachments/${NETWORK_ATTA
-      CHMENT_NAME}`. NetworkAttachment has to be provided when the PSC
-      interface is created.
-  """
-
-  consumerEndpointIps = _messages.StringField(1, repeated=True)
-  networkAttachment = _messages.StringField(2)
+  allowedConsumerProjects = _messages.StringField(1, repeated=True)
+  pscDnsName = _messages.StringField(2)
+  serviceAttachmentLink = _messages.StringField(3)
 
 
 class QuantityBasedExpiry(_messages.Message):

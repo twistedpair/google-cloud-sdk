@@ -18,11 +18,8 @@ This does not provide client methods for GatewayService, which expects raw HTTP
 requests as provided by e.g. kubectl.
 """
 
-from typing import Union
-
 from googlecloudsdk.api_lib.container.fleet.connectgateway import util
 from googlecloudsdk.calliope import base
-from googlecloudsdk.generated_clients.apis.connectgateway.v1alpha1 import connectgateway_v1alpha1_messages as messages_v1alpha1
 
 
 class GatewayClient:
@@ -37,14 +34,16 @@ class GatewayClient:
     messages: The matching messages module for the client.
   """
 
-  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
-    self.release_track = release_track
+  def __init__(self, release_track: base.ReleaseTrack = util.DEFAULT_TRACK):
+    self.release_track = (
+        release_track if release_track is not None else util.DEFAULT_TRACK
+    )
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
 
   def GenerateCredentials(
       self, name: str, force_use_agent=False, version=None
-  ) -> Union[messages_v1alpha1.GenerateCredentialsResponse]:
+  ) -> util.TYPES.GenerateCredentialsResponse:
     """Retrieve connection information for accessing a membership through Connect Gateway.
 
     Args:

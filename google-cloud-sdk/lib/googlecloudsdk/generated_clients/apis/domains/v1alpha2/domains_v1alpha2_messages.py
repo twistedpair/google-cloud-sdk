@@ -1757,6 +1757,7 @@ class Registration(_messages.Message):
 
   Enums:
     IssuesValueListEntryValuesEnum:
+    ProviderValueValuesEnum: Output only. Current domain management provider.
     RegisterFailureReasonValueValuesEnum: Output only. The reason the domain
       registration failed. Only set for domains in REGISTRATION_FAILED state.
     StateValueValuesEnum: Output only. The state of the `Registration`
@@ -1799,6 +1800,7 @@ class Registration(_messages.Message):
       there are pending updates to the `contact_settings` that have not been
       confirmed. To confirm the changes, the `registrant_contact` must follow
       the instructions in the email they receive.
+    provider: Output only. Current domain management provider.
     registerFailureReason: Output only. The reason the domain registration
       failed. Only set for domains in REGISTRATION_FAILED state.
     state: Output only. The state of the `Registration`
@@ -1834,6 +1836,18 @@ class Registration(_messages.Message):
     CONTACT_SUPPORT = 1
     UNVERIFIED_EMAIL = 2
     PROBLEM_WITH_BILLING = 3
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Output only. Current domain management provider.
+
+    Values:
+      REGISTRAR_UNSPECIFIED: Registrar is not selected.
+      GOOGLE_DOMAINS: Use Google Domains registrar.
+      SQUARESPACE: Use Squarespace registrar
+    """
+    REGISTRAR_UNSPECIFIED = 0
+    GOOGLE_DOMAINS = 1
+    SQUARESPACE = 2
 
   class RegisterFailureReasonValueValuesEnum(_messages.Enum):
     r"""Output only. The reason the domain registration failed. Only set for
@@ -1992,10 +2006,11 @@ class Registration(_messages.Message):
   managementSettings = _messages.MessageField('ManagementSettings', 8)
   name = _messages.StringField(9)
   pendingContactSettings = _messages.MessageField('ContactSettings', 10)
-  registerFailureReason = _messages.EnumField('RegisterFailureReasonValueValuesEnum', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 13, repeated=True)
-  transferFailureReason = _messages.EnumField('TransferFailureReasonValueValuesEnum', 14)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 11)
+  registerFailureReason = _messages.EnumField('RegisterFailureReasonValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 14, repeated=True)
+  transferFailureReason = _messages.EnumField('TransferFailureReasonValueValuesEnum', 15)
 
 
 class ResetAuthorizationCodeRequest(_messages.Message):

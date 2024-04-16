@@ -1070,6 +1070,21 @@ used for production workloads."""
   )
 
 
+def AddAlphaClusterFeatureGatesFlags(parser, hidden=True):
+  """Adds the --alpha-cluster-feature-gates flag to parser."""
+  help_text = """\
+Allow selectively enable or disable Kubernetes alpha/beta feature gates on alpha cluster.
+Alpha clusters are not covered by the Kubernetes Engine SLA and should not be used for production workloads."""
+  parser.add_argument(
+      '--alpha-cluster-feature-gates',
+      type=arg_parsers.ArgList(),
+      default=None,
+      metavar='FEATURE=true|false',
+      hidden=hidden,
+      help=help_text,
+  )
+
+
 def _AddLegacyCloudRunFlag(parser, flag, **kwargs):
   """Adds a flag with the new and old product name for KubeRun."""
   new_kwargs = kwargs.copy()

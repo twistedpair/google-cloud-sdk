@@ -336,6 +336,8 @@ class _Sections(object):
       SDK.
     compute: Section, The section containing compute properties for the Cloud
       SDK.
+    config_delivery: Section, The section containing properties for Config
+      Delivery.
     container: Section, The section containing container properties for the
       Cloud SDK.
     container_attached: Section, The section containing properties for Attached
@@ -473,6 +475,7 @@ class _Sections(object):
     self.component_manager = _SectionComponentManager()
     self.composer = _SectionComposer()
     self.compute = _SectionCompute()
+    self.config_delivery = _SectionConfigDelivery()
     self.container = _SectionContainer()
     self.container_attached = _SectionContainerAttached()
     self.container_aws = _SectionContainerAws()
@@ -554,6 +557,7 @@ class _Sections(object):
         self.component_manager,
         self.composer,
         self.compute,
+        self.config_delivery,
         self.container,
         self.container_attached,
         self.container_aws,
@@ -1203,6 +1207,9 @@ class _SectionApiEndpointOverrides(_Section):
         'For Private Service Connect usage, see '
         'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
     )
+    self.configdelivery = self._Add(
+        'configdelivery', command='gcloud container fleet packages', hidden=True
+    )
     self.connectgateway = self._Add('connectgateway', hidden=True)
     self.container = self._Add('container', command='gcloud container')
     self.containeranalysis = self._Add('containeranalysis', hidden=True)
@@ -1231,7 +1238,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.eventarc = self._Add('eventarc', command='gcloud eventarc')
     self.eventarcpublishing = self._Add(
         'eventarcpublishing', command='gcloud eventarc publish')
-    self.events = self._Add('events', command='gcloud events')
     self.faultinjectiontesting = self._Add(
         'faultinjectiontesting', command='gcloud fault-injection')
     self.file = self._Add('file', command='gcloud filestore')
@@ -1863,6 +1869,32 @@ class _SectionCompute(_Section):
         default=False,
         help_text='Bool that force all requests are sent as batch request',
         hidden=True)
+    self.allow_partial_error = self._AddBool(
+        'allow_partial_error',
+        default=True,
+        help_text=(
+            'Allow AggregatedList to return partial response when there are'
+            ' partial server down'
+        ),
+        hidden=True,
+    )
+
+
+class _SectionConfigDelivery(_Section):
+  """Contains the properties for the 'config_delivery' section.
+
+  Attributes:
+    location: str, The GCP location to use by default e.g., us-central1.
+  """
+
+  def __init__(self):
+    super(_SectionConfigDelivery, self).__init__('config_delivery', hidden=True)
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Fleet Packages '
+        'resources. When a `location` value is required but not provided, the '
+        'command will fall back to this value, if set.')
 
 
 class _SectionContainer(_Section):

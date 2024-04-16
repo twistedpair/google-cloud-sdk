@@ -851,6 +851,8 @@ class Control(_messages.Message):
       GR_AI_R1_VAI_CO_4_7: <no description>
       GR_AI_R1_VAI_CO_4_8: <no description>
       GR_AI_R1_CB_CO_6_1: <no description>
+      GCP_RESTRICT_SERVICE_USAGE: <no description>
+      GCP_RESOURCE_LOCATION: <no description>
     """
     REGULATORY_CONTROL_ID_UNSPECIFIED = 0
     REGULATORY_CONTROL_ID_TEST = 1
@@ -1091,6 +1093,8 @@ class Control(_messages.Message):
     GR_AI_R1_VAI_CO_4_7 = 236
     GR_AI_R1_VAI_CO_4_8 = 237
     GR_AI_R1_CB_CO_6_1 = 238
+    GCP_RESTRICT_SERVICE_USAGE = 239
+    GCP_RESOURCE_LOCATION = 240
 
   class FamilyValueValuesEnum(_messages.Enum):
     r"""Output only. Group where the control belongs. E.g. Access Control.

@@ -866,6 +866,54 @@ class Filter(_messages.Message):
   unaryFilter = _messages.MessageField('UnaryFilter', 3)
 
 
+class FindNearest(_messages.Message):
+  r"""Nearest Neighbors search config.
+
+  Enums:
+    DistanceMeasureValueValuesEnum: Required. The Distance Measure to use,
+      required.
+
+  Fields:
+    distanceMeasure: Required. The Distance Measure to use, required.
+    limit: Required. The number of nearest neighbors to return. Must be a
+      positive integer of no more than 1000.
+    queryVector: Required. The query vector that we are searching on. Must be
+      a vector of no more than 2048 dimensions.
+    vectorField: Required. An indexed vector field to search upon. Only
+      documents which contain vectors whose dimensionality match the
+      query_vector can be returned.
+  """
+
+  class DistanceMeasureValueValuesEnum(_messages.Enum):
+    r"""Required. The Distance Measure to use, required.
+
+    Values:
+      DISTANCE_MEASURE_UNSPECIFIED: Should not be set.
+      EUCLIDEAN: Measures the EUCLIDEAN distance between the vectors. See
+        [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
+        more
+      COSINE: Compares vectors based on the angle between them, which allows
+        you to measure similarity that isn't based on the vectors magnitude.
+        We recommend using DOT_PRODUCT with unit normalized vectors instead of
+        COSINE distance, which is mathematically equivalent with better
+        performance. See [Cosine
+        Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
+        more.
+      DOT_PRODUCT: Similar to cosine but is affected by the magnitude of the
+        vectors. See [Dot Product](https://en.wikipedia.org/wiki/Dot_product)
+        to learn more.
+    """
+    DISTANCE_MEASURE_UNSPECIFIED = 0
+    EUCLIDEAN = 1
+    COSINE = 2
+    DOT_PRODUCT = 3
+
+  distanceMeasure = _messages.EnumField('DistanceMeasureValueValuesEnum', 1)
+  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  queryVector = _messages.MessageField('Value', 3)
+  vectorField = _messages.MessageField('FieldReference', 4)
+
+
 class FirestoreProjectsDatabasesDocumentsBatchGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesDocumentsBatchGetRequest object.
 
@@ -2405,6 +2453,9 @@ class StructuredQuery(_messages.Message):
       position rather than the start position. Requires: * The number of
       values cannot be greater than the number of fields specified in the
       `ORDER BY` clause.
+    findNearest: Optional. A potential Nearest Neighbors Search. Applies after
+      all other filters and ordering. Finds the closest vector embeddings to
+      the given query vector.
     from_: The collections to query.
     limit: The maximum number of results to return. Applies after all other
       constraints. Requires: * The value must be greater than or equal to zero
@@ -2450,13 +2501,14 @@ class StructuredQuery(_messages.Message):
   """
 
   endAt = _messages.MessageField('Cursor', 1)
-  from_ = _messages.MessageField('CollectionSelector', 2, repeated=True)
-  limit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  offset = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  orderBy = _messages.MessageField('Order', 5, repeated=True)
-  select = _messages.MessageField('Projection', 6)
-  startAt = _messages.MessageField('Cursor', 7)
-  where = _messages.MessageField('Filter', 8)
+  findNearest = _messages.MessageField('FindNearest', 2)
+  from_ = _messages.MessageField('CollectionSelector', 3, repeated=True)
+  limit = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  offset = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  orderBy = _messages.MessageField('Order', 6, repeated=True)
+  select = _messages.MessageField('Projection', 7)
+  startAt = _messages.MessageField('Cursor', 8)
+  where = _messages.MessageField('Filter', 9)
 
 
 class Sum(_messages.Message):
@@ -2632,7 +2684,7 @@ class Value(_messages.Message):
 
   Fields:
     arrayValue: An array value. Cannot directly contain another array value,
-      though can contain an map which contains another array.
+      though can contain a map which contains another array.
     booleanValue: A boolean value.
     bytesValue: A bytes value. Must not exceed 1 MiB - 89 bytes. Only the
       first 1,500 bytes are considered by queries.

@@ -642,8 +642,8 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
       and may only contain the following fields: `access_levels`,
-      `dry_run_access_levels`, `restricted_client_applications`. Example:
-      update_mask { paths: "access_levels" }
+      `dry_run_access_levels`, `restricted_client_applications`,
+      `reauth_settings`. Example: update_mask { paths: "access_levels" }
   """
 
   gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
@@ -1182,10 +1182,12 @@ class EgressFrom(_messages.Message):
       this field must be set to `SOURCE_RESTRICTION_ENABLED`.
 
   Fields:
-    identities: A list of identities that are allowed access through this
-      EgressPolicy. Should be in the format of email address. The email
-      address should represent an individual user, service account, or Google
-      group.
+    identities: A list of identities that are allowed access through
+      EgressPolicy. Identities can be an individual user, service account,
+      Google group, or third-party identity. The `v1` identities that have the
+      prefix `user`, `group`, `serviceAccount`, `principal`, and
+      `principalSet` in https://cloud.google.com/iam/docs/principal-
+      identifiers#v1 are supported.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -1434,10 +1436,12 @@ class IngressFrom(_messages.Message):
       members of `identities` field will be allowed access.
 
   Fields:
-    identities: A list of identities that are allowed access through this
-      ingress policy. Should be in the format of email address. The email
-      address should represent an individual user, service account, or Google
-      group.
+    identities: A list of identities that are allowed access through
+      IngressPolicy. Identities can be an individual user, service account,
+      Google group, or third-party identity. The `v1` identities that have the
+      prefix `user`, `group`, `serviceAccount`, `principal`, and
+      `principalSet` in https://cloud.google.com/iam/docs/principal-
+      identifiers#v1 are supported.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.

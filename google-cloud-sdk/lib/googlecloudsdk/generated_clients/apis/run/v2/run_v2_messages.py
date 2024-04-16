@@ -21,16 +21,20 @@ class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
   r"""Settings for Binary Authorization feature.
 
   Fields:
-    breakglassJustification: If present, indicates to use Breakglass using
-      this justification. If use_default is False, then it must be empty. For
-      more information on breakglass, see https://cloud.google.com/binary-
-      authorization/docs/using-breakglass
-    useDefault: If True, indicates to use the default project's binary
-      authorization policy. If False, binary authorization will be disabled.
+    breakglassJustification: Optional. If present, indicates to use Breakglass
+      using this justification. If use_default is False, then it must be
+      empty. For more information on breakglass, see
+      https://cloud.google.com/binary-authorization/docs/using-breakglass
+    policy: Optional. The path to a binary authorization policy. Format:
+      projects/{project}/platforms/cloudRun/{policy-name}
+    useDefault: Optional. If True, indicates to use the default project's
+      binary authorization policy. If False, binary authorization will be
+      disabled.
   """
 
   breakglassJustification = _messages.StringField(1)
-  useDefault = _messages.BooleanField(2)
+  policy = _messages.StringField(2)
+  useDefault = _messages.BooleanField(3)
 
 
 class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
@@ -91,21 +95,24 @@ class GoogleCloudRunV2Condition(_messages.Message):
   r"""Defines a status condition for a resource.
 
   Enums:
-    ExecutionReasonValueValuesEnum: A reason for the execution condition.
-    ReasonValueValuesEnum: A common (service-level) reason for this condition.
-    RevisionReasonValueValuesEnum: A reason for the revision condition.
+    ExecutionReasonValueValuesEnum: Output only. A reason for the execution
+      condition.
+    ReasonValueValuesEnum: Output only. A common (service-level) reason for
+      this condition.
+    RevisionReasonValueValuesEnum: Output only. A reason for the revision
+      condition.
     SeverityValueValuesEnum: How to interpret failures of this condition, one
       of Error, Warning, Info
     StateValueValuesEnum: State of the condition.
 
   Fields:
-    executionReason: A reason for the execution condition.
+    executionReason: Output only. A reason for the execution condition.
     lastTransitionTime: Last time the condition transitioned from one status
       to another.
     message: Human readable message indicating details about the current
       status.
-    reason: A common (service-level) reason for this condition.
-    revisionReason: A reason for the revision condition.
+    reason: Output only. A common (service-level) reason for this condition.
+    revisionReason: Output only. A reason for the revision condition.
     severity: How to interpret failures of this condition, one of Error,
       Warning, Info
     state: State of the condition.
@@ -117,7 +124,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
   """
 
   class ExecutionReasonValueValuesEnum(_messages.Enum):
-    r"""A reason for the execution condition.
+    r"""Output only. A reason for the execution condition.
 
     Values:
       EXECUTION_REASON_UNDEFINED: Default value.
@@ -137,7 +144,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
     DELETED = 5
 
   class ReasonValueValuesEnum(_messages.Enum):
-    r"""A common (service-level) reason for this condition.
+    r"""Output only. A common (service-level) reason for this condition.
 
     Values:
       COMMON_REASON_UNDEFINED: Default value.
@@ -179,7 +186,7 @@ class GoogleCloudRunV2Condition(_messages.Message):
     INTERNAL = 14
 
   class RevisionReasonValueValuesEnum(_messages.Enum):
-    r"""A reason for the revision condition.
+    r"""Output only. A reason for the revision condition.
 
     Values:
       REVISION_REASON_UNDEFINED: Default value.
@@ -809,12 +816,67 @@ class GoogleCloudRunV2ExecutionTemplate(_messages.Message):
   template = _messages.MessageField('GoogleCloudRunV2TaskTemplate', 5)
 
 
-class GoogleCloudRunV2GCSVolumeSource(_messages.Message):
-  r"""Represents a GCS Bucket mounted as a volume.
+class GoogleCloudRunV2ExportImageRequest(_messages.Message):
+  r"""Request message for exporting Cloud Run image.
 
   Fields:
-    bucket: GCS Bucket name
-    readOnly: If true, mount the GCS bucket as read-only
+    destinationRepo: Required. The export destination url (the Artifact
+      Registry repo).
+  """
+
+  destinationRepo = _messages.StringField(1)
+
+
+class GoogleCloudRunV2ExportImageResponse(_messages.Message):
+  r"""ExportImageResponse contains an operation Id to track the image export
+  operation.
+
+  Fields:
+    operationId: An operation ID used to track the status of image exports
+      tied to the original pod ID in the request.
+  """
+
+  operationId = _messages.StringField(1)
+
+
+class GoogleCloudRunV2ExportStatusResponse(_messages.Message):
+  r"""ExportStatusResponse contains the status of image export operation, with
+  the status of each image export job.
+
+  Enums:
+    OperationStateValueValuesEnum: Output only. The state of the overall
+      export operation.
+
+  Fields:
+    imageExportStatuses: The status of each image export job.
+    operationId: The operation id.
+    operationState: Output only. The state of the overall export operation.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the overall export operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: State unspecified.
+      IN_PROGRESS: Operation still in progress.
+      FINISHED: Operation finished.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    FINISHED = 2
+
+  imageExportStatuses = _messages.MessageField('GoogleCloudRunV2ImageExportStatus', 1, repeated=True)
+  operationId = _messages.StringField(2)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 3)
+
+
+class GoogleCloudRunV2GCSVolumeSource(_messages.Message):
+  r"""Represents a volume backed by a Cloud Storage bucket using Cloud Storage
+  FUSE.
+
+  Fields:
+    bucket: Cloud Storage Bucket name.
+    readOnly: If true, the volume will be mounted as read only for all mounts.
   """
 
   bucket = _messages.StringField(1)
@@ -825,10 +887,10 @@ class GoogleCloudRunV2GRPCAction(_messages.Message):
   r"""GRPCAction describes an action involving a GRPC port.
 
   Fields:
-    port: Port number of the gRPC service. Number must be in the range 1 to
-      65535. If not specified, defaults to the exposed port of the container,
-      which is the value of container.ports[0].containerPort.
-    service: Service is the name of the service to place in the gRPC
+    port: Optional. Port number of the gRPC service. Number must be in the
+      range 1 to 65535. If not specified, defaults to the exposed port of the
+      container, which is the value of container.ports[0].containerPort.
+    service: Optional. Service is the name of the service to place in the gRPC
       HealthCheckRequest (see
       https://github.com/grpc/grpc/blob/master/doc/health-checking.md ). If
       this is not specified, the default behavior is defined by gRPC.
@@ -842,12 +904,12 @@ class GoogleCloudRunV2HTTPGetAction(_messages.Message):
   r"""HTTPGetAction describes an action based on HTTP Get requests.
 
   Fields:
-    httpHeaders: Custom headers to set in the request. HTTP allows repeated
-      headers.
-    path: Path to access on the HTTP server. Defaults to '/'.
-    port: Port number to access on the container. Must be in the range 1 to
-      65535. If not specified, defaults to the exposed port of the container,
-      which is the value of container.ports[0].containerPort.
+    httpHeaders: Optional. Custom headers to set in the request. HTTP allows
+      repeated headers.
+    path: Optional. Path to access on the HTTP server. Defaults to '/'.
+    port: Optional. Port number to access on the container. Must be in the
+      range 1 to 65535. If not specified, defaults to the exposed port of the
+      container, which is the value of container.ports[0].containerPort.
   """
 
   httpHeaders = _messages.MessageField('GoogleCloudRunV2HTTPHeader', 1, repeated=True)
@@ -860,11 +922,46 @@ class GoogleCloudRunV2HTTPHeader(_messages.Message):
 
   Fields:
     name: Required. The header field name
-    value: The header field value
+    value: Optional. The header field value
   """
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class GoogleCloudRunV2ImageExportStatus(_messages.Message):
+  r"""The status of an image export job.
+
+  Enums:
+    ExportJobStateValueValuesEnum: Output only. Has the image export job
+      finished (regardless of successful or failure).
+
+  Fields:
+    exportJobState: Output only. Has the image export job finished (regardless
+      of successful or failure).
+    exportedImageDigest: The exported image ID as it will appear in Artifact
+      Registry.
+    status: The status of the export task if done.
+    tag: The image tag as it will appear in Artifact Registry.
+  """
+
+  class ExportJobStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Has the image export job finished (regardless of
+    successful or failure).
+
+    Values:
+      EXPORT_JOB_STATE_UNSPECIFIED: State unspecified.
+      IN_PROGRESS: Job still in progress.
+      FINISHED: Job finished.
+    """
+    EXPORT_JOB_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    FINISHED = 2
+
+  exportJobState = _messages.EnumField('ExportJobStateValueValuesEnum', 1)
+  exportedImageDigest = _messages.StringField(2)
+  status = _messages.MessageField('UtilStatusProto', 3)
+  tag = _messages.StringField(4)
 
 
 class GoogleCloudRunV2Job(_messages.Message):
@@ -1190,12 +1287,23 @@ class GoogleCloudRunV2ListTasksResponse(_messages.Message):
   tasks = _messages.MessageField('GoogleCloudRunV2Task', 2, repeated=True)
 
 
+class GoogleCloudRunV2Metadata(_messages.Message):
+  r"""Metadata represents the JSON encoded generated customer metadata.
+
+  Fields:
+    metadata: JSON encoded Google-generated Customer Metadata for a given
+      resource/project.
+  """
+
+  metadata = _messages.StringField(1)
+
+
 class GoogleCloudRunV2NFSVolumeSource(_messages.Message):
   r"""Represents an NFS mount.
 
   Fields:
     path: Path that is exported by the NFS server.
-    readOnly: If true, mount the NFS volume as read only
+    readOnly: If true, the volume will be mounted as read only for all mounts.
     server: Hostname or IP address of the NFS server
   """
 
@@ -1208,17 +1316,17 @@ class GoogleCloudRunV2NetworkInterface(_messages.Message):
   r"""Direct VPC egress settings.
 
   Fields:
-    network: The VPC network that the Cloud Run resource will be able to send
-      traffic to. At least one of network or subnetwork must be specified. If
-      both network and subnetwork are specified, the given VPC subnetwork must
-      belong to the given VPC network. If network is not specified, it will be
-      looked up from the subnetwork.
-    subnetwork: The VPC subnetwork that the Cloud Run resource will get IPs
-      from. At least one of network or subnetwork must be specified. If both
-      network and subnetwork are specified, the given VPC subnetwork must
-      belong to the given VPC network. If subnetwork is not specified, the
-      subnetwork with the same name with the network will be used.
-    tags: Network tags applied to this Cloud Run resource.
+    network: Optional. The VPC network that the Cloud Run resource will be
+      able to send traffic to. At least one of network or subnetwork must be
+      specified. If both network and subnetwork are specified, the given VPC
+      subnetwork must belong to the given VPC network. If network is not
+      specified, it will be looked up from the subnetwork.
+    subnetwork: Optional. The VPC subnetwork that the Cloud Run resource will
+      get IPs from. At least one of network or subnetwork must be specified.
+      If both network and subnetwork are specified, the given VPC subnetwork
+      must belong to the given VPC network. If subnetwork is not specified,
+      the subnetwork with the same name with the network will be used.
+    tags: Optional. Network tags applied to this Cloud Run resource.
   """
 
   network = _messages.StringField(1)
@@ -1248,26 +1356,26 @@ class GoogleCloudRunV2Probe(_messages.Message):
   determine whether it is alive or ready to receive traffic.
 
   Fields:
-    failureThreshold: Minimum consecutive failures for the probe to be
-      considered failed after having succeeded. Defaults to 3. Minimum value
-      is 1.
-    grpc: GRPC specifies an action involving a gRPC port. Exactly one of
-      httpGet, tcpSocket, or grpc must be specified.
-    httpGet: HTTPGet specifies the http request to perform. Exactly one of
-      httpGet, tcpSocket, or grpc must be specified.
-    initialDelaySeconds: Number of seconds after the container has started
-      before the probe is initiated. Defaults to 0 seconds. Minimum value is
-      0. Maximum value for liveness probe is 3600. Maximum value for startup
-      probe is 240.
-    periodSeconds: How often (in seconds) to perform the probe. Default to 10
-      seconds. Minimum value is 1. Maximum value for liveness probe is 3600.
-      Maximum value for startup probe is 240. Must be greater or equal than
-      timeout_seconds.
-    tcpSocket: TCPSocket specifies an action involving a TCP port. Exactly one
-      of httpGet, tcpSocket, or grpc must be specified.
-    timeoutSeconds: Number of seconds after which the probe times out.
-      Defaults to 1 second. Minimum value is 1. Maximum value is 3600. Must be
-      smaller than period_seconds.
+    failureThreshold: Optional. Minimum consecutive failures for the probe to
+      be considered failed after having succeeded. Defaults to 3. Minimum
+      value is 1.
+    grpc: Optional. GRPC specifies an action involving a gRPC port. Exactly
+      one of httpGet, tcpSocket, or grpc must be specified.
+    httpGet: Optional. HTTPGet specifies the http request to perform. Exactly
+      one of httpGet, tcpSocket, or grpc must be specified.
+    initialDelaySeconds: Optional. Number of seconds after the container has
+      started before the probe is initiated. Defaults to 0 seconds. Minimum
+      value is 0. Maximum value for liveness probe is 3600. Maximum value for
+      startup probe is 240.
+    periodSeconds: Optional. How often (in seconds) to perform the probe.
+      Default to 10 seconds. Minimum value is 1. Maximum value for liveness
+      probe is 3600. Maximum value for startup probe is 240. Must be greater
+      or equal than timeout_seconds.
+    tcpSocket: Optional. TCPSocket specifies an action involving a TCP port.
+      Exactly one of httpGet, tcpSocket, or grpc must be specified.
+    timeoutSeconds: Optional. Number of seconds after which the probe times
+      out. Defaults to 1 second. Minimum value is 1. Maximum value is 3600.
+      Must be smaller than period_seconds.
   """
 
   failureThreshold = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1611,10 +1719,10 @@ class GoogleCloudRunV2RevisionScaling(_messages.Message):
   r"""Settings for revision-level scaling settings.
 
   Fields:
-    maxInstanceCount: Maximum number of serving instances that this resource
-      should have.
-    minInstanceCount: Minimum number of serving instances that this resource
-      should have.
+    maxInstanceCount: Optional. Maximum number of serving instances that this
+      resource should have.
+    minInstanceCount: Optional. Minimum number of serving instances that this
+      resource should have.
   """
 
   maxInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1637,22 +1745,23 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
   from a template.
 
   Enums:
-    ExecutionEnvironmentValueValuesEnum: The sandbox environment to host this
-      Revision.
+    ExecutionEnvironmentValueValuesEnum: Optional. The sandbox environment to
+      host this Revision.
 
   Messages:
-    AnnotationsValue: Unstructured key value map that may be set by external
-      tools to store and arbitrary metadata. They are not queryable and should
-      be preserved when modifying objects. Cloud Run API v2 does not support
-      annotations with `run.googleapis.com`, `cloud.googleapis.com`,
-      `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
-      will be rejected. All system annotations in v1 now have a corresponding
-      field in v2 RevisionTemplate. This field follows Kubernetes annotations'
+    AnnotationsValue: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system annotations in v1 now have a corresponding field in v2
+      RevisionTemplate. This field follows Kubernetes annotations'
       namespacing, limits, and rules.
-    LabelsValue: Unstructured key value map that can be used to organize and
-      categorize objects. User-provided labels are shared with Google's
-      billing system, so they can be used to filter, or break down billing
-      charges by team, component, environment, state, etc. For more
+    LabelsValue: Optional. Unstructured key value map that can be used to
+      organize and categorize objects. User-provided labels are shared with
+      Google's billing system, so they can be used to filter, or break down
+      billing charges by team, component, environment, state, etc. For more
       information, visit https://cloud.google.com/resource-
       manager/docs/creating-managing-labels or
       https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
@@ -1663,24 +1772,26 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       RevisionTemplate.
 
   Fields:
-    annotations: Unstructured key value map that may be set by external tools
-      to store and arbitrary metadata. They are not queryable and should be
-      preserved when modifying objects. Cloud Run API v2 does not support
-      annotations with `run.googleapis.com`, `cloud.googleapis.com`,
-      `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
-      will be rejected. All system annotations in v1 now have a corresponding
-      field in v2 RevisionTemplate. This field follows Kubernetes annotations'
+    annotations: Optional. Unstructured key value map that may be set by
+      external tools to store and arbitrary metadata. They are not queryable
+      and should be preserved when modifying objects. Cloud Run API v2 does
+      not support annotations with `run.googleapis.com`,
+      `cloud.googleapis.com`, `serving.knative.dev`, or
+      `autoscaling.knative.dev` namespaces, and they will be rejected. All
+      system annotations in v1 now have a corresponding field in v2
+      RevisionTemplate. This field follows Kubernetes annotations'
       namespacing, limits, and rules.
     containers: Holds the single container that defines the unit of execution
       for this Revision.
     encryptionKey: A reference to a customer managed encryption key (CMEK) to
       use to encrypt this container image. For more information, go to
       https://cloud.google.com/run/docs/securing/using-cmek
-    executionEnvironment: The sandbox environment to host this Revision.
+    executionEnvironment: Optional. The sandbox environment to host this
+      Revision.
     healthCheckDisabled: Optional. Disables health checking containers during
       deployment.
-    labels: Unstructured key value map that can be used to organize and
-      categorize objects. User-provided labels are shared with Google's
+    labels: Optional. Unstructured key value map that can be used to organize
+      and categorize objects. User-provided labels are shared with Google's
       billing system, so they can be used to filter, or break down billing
       charges by team, component, environment, state, etc. For more
       information, visit https://cloud.google.com/resource-
@@ -1691,26 +1802,27 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
       `autoscaling.knative.dev` namespaces, and they will be rejected. All
       system labels in v1 now have a corresponding field in v2
       RevisionTemplate.
-    maxInstanceRequestConcurrency: Sets the maximum number of requests that
-      each serving instance can receive.
-    revision: The unique name for the revision. If this field is omitted, it
-      will be automatically generated based on the Service name.
-    scaling: Scaling settings for this Revision.
-    serviceAccount: Email address of the IAM service account associated with
-      the revision of the service. The service account represents the identity
-      of the running revision, and determines what permissions the revision
-      has. If not provided, the revision will use the project's default
-      service account.
+    maxInstanceRequestConcurrency: Optional. Sets the maximum number of
+      requests that each serving instance can receive.
+    revision: Optional. The unique name for the revision. If this field is
+      omitted, it will be automatically generated based on the Service name.
+    scaling: Optional. Scaling settings for this Revision.
+    serviceAccount: Optional. Email address of the IAM service account
+      associated with the revision of the service. The service account
+      represents the identity of the running revision, and determines what
+      permissions the revision has. If not provided, the revision will use the
+      project's default service account.
     sessionAffinity: Optional. Enable session affinity.
-    timeout: Max allowed time for an instance to respond to a request.
-    volumes: A list of Volumes to make available to containers.
-    vpcAccess: VPC Access configuration to use for this Revision. For more
-      information, visit
+    timeout: Optional. Max allowed time for an instance to respond to a
+      request.
+    volumes: Optional. A list of Volumes to make available to containers.
+    vpcAccess: Optional. VPC Access configuration to use for this Revision.
+      For more information, visit
       https://cloud.google.com/run/docs/configuring/connecting-vpc.
   """
 
   class ExecutionEnvironmentValueValuesEnum(_messages.Enum):
-    r"""The sandbox environment to host this Revision.
+    r"""Optional. The sandbox environment to host this Revision.
 
     Values:
       EXECUTION_ENVIRONMENT_UNSPECIFIED: Unspecified
@@ -1723,14 +1835,14 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Unstructured key value map that may be set by external tools to store
-    and arbitrary metadata. They are not queryable and should be preserved
-    when modifying objects. Cloud Run API v2 does not support annotations with
-    `run.googleapis.com`, `cloud.googleapis.com`, `serving.knative.dev`, or
-    `autoscaling.knative.dev` namespaces, and they will be rejected. All
-    system annotations in v1 now have a corresponding field in v2
-    RevisionTemplate. This field follows Kubernetes annotations' namespacing,
-    limits, and rules.
+    r"""Optional. Unstructured key value map that may be set by external tools
+    to store and arbitrary metadata. They are not queryable and should be
+    preserved when modifying objects. Cloud Run API v2 does not support
+    annotations with `run.googleapis.com`, `cloud.googleapis.com`,
+    `serving.knative.dev`, or `autoscaling.knative.dev` namespaces, and they
+    will be rejected. All system annotations in v1 now have a corresponding
+    field in v2 RevisionTemplate. This field follows Kubernetes annotations'
+    namespacing, limits, and rules.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1755,10 +1867,10 @@ class GoogleCloudRunV2RevisionTemplate(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Unstructured key value map that can be used to organize and categorize
-    objects. User-provided labels are shared with Google's billing system, so
-    they can be used to filter, or break down billing charges by team,
-    component, environment, state, etc. For more information, visit
+    r"""Optional. Unstructured key value map that can be used to organize and
+    categorize objects. User-provided labels are shared with Google's billing
+    system, so they can be used to filter, or break down billing charges by
+    team, component, environment, state, etc. For more information, visit
     https://cloud.google.com/resource-manager/docs/creating-managing-labels or
     https://cloud.google.com/run/docs/configuring/labels. Cloud Run API v2
     does not support labels with `run.googleapis.com`, `cloud.googleapis.com`,
@@ -1879,14 +1991,15 @@ class GoogleCloudRunV2Service(_messages.Message):
   decisions such as rollout policy and team resource ownership.
 
   Enums:
-    IngressValueValuesEnum: Provides the ingress settings for this Service. On
-      output, returns the currently observed ingress settings, or
+    IngressValueValuesEnum: Optional. Provides the ingress settings for this
+      Service. On output, returns the currently observed ingress settings, or
       INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
-    LaunchStageValueValuesEnum: The launch stage as defined by [Google Cloud
-      Platform Launch Stages](https://cloud.google.com/terms/launch-stages).
-      Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified,
-      GA is assumed. Set the launch stage to a preview stage on input to allow
-      use of preview features in that stage. On read (or output), describes
+    LaunchStageValueValuesEnum: Optional. The launch stage as defined by
+      [Google Cloud Platform Launch
+      Stages](https://cloud.google.com/terms/launch-stages). Cloud Run
+      supports `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is
+      assumed. Set the launch stage to a preview stage on input to allow use
+      of preview features in that stage. On read (or output), describes
       whether the resource uses preview features. For example, if ALPHA is
       provided as input, but only BETA and GA-level features are used, this
       field will be BETA on output.
@@ -1923,7 +2036,8 @@ class GoogleCloudRunV2Service(_messages.Message):
       resources. All system annotations in v1 now have a corresponding field
       in v2 Service. This field follows Kubernetes annotations' namespacing,
       limits, and rules.
-    binaryAuthorization: Settings for the Binary Authorization feature.
+    binaryAuthorization: Optional. Settings for the Binary Authorization
+      feature.
     client: Arbitrary identifier for the API client.
     clientVersion: Arbitrary version identifier for the API client.
     conditions: Output only. The Conditions of all other associated sub-
@@ -1950,8 +2064,8 @@ class GoogleCloudRunV2Service(_messages.Message):
       the user modifies the desired state. Please note that unlike v1, this is
       an int64 value. As with most Google APIs, its JSON representation will
       be a `string` instead of an `integer`.
-    ingress: Provides the ingress settings for this Service. On output,
-      returns the currently observed ingress settings, or
+    ingress: Optional. Provides the ingress settings for this Service. On
+      output, returns the currently observed ingress settings, or
       INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
     labels: Optional. Unstructured key value map that can be used to organize
       and categorize objects. User-provided labels are shared with Google's
@@ -1972,11 +2086,11 @@ class GoogleCloudRunV2Service(_messages.Message):
     latestReadyRevision: Output only. Name of the latest revision that is
       serving traffic. See comments in `reconciling` for additional
       information on reconciliation process in Cloud Run.
-    launchStage: The launch stage as defined by [Google Cloud Platform Launch
-      Stages](https://cloud.google.com/terms/launch-stages). Cloud Run
-      supports `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is
-      assumed. Set the launch stage to a preview stage on input to allow use
-      of preview features in that stage. On read (or output), describes
+    launchStage: Optional. The launch stage as defined by [Google Cloud
+      Platform Launch Stages](https://cloud.google.com/terms/launch-stages).
+      Cloud Run supports `ALPHA`, `BETA`, and `GA`. If no value is specified,
+      GA is assumed. Set the launch stage to a preview stage on input to allow
+      use of preview features in that stage. On read (or output), describes
       whether the resource uses preview features. For example, if ALPHA is
       provided as input, but only BETA and GA-level features are used, this
       field will be BETA on output.
@@ -2016,9 +2130,9 @@ class GoogleCloudRunV2Service(_messages.Message):
       its readiness status, and detailed error information in case it did not
       reach a serving state. See comments in `reconciling` for additional
       information on reconciliation process in Cloud Run.
-    traffic: Specifies how to distribute traffic over a collection of
-      Revisions belonging to the Service. If traffic is empty or not provided,
-      defaults to 100% traffic to the latest `Ready` Revision.
+    traffic: Optional. Specifies how to distribute traffic over a collection
+      of Revisions belonging to the Service. If traffic is empty or not
+      provided, defaults to 100% traffic to the latest `Ready` Revision.
     trafficStatuses: Output only. Detailed status information for
       corresponding traffic targets. See comments in `reconciling` for
       additional information on reconciliation process in Cloud Run.
@@ -2030,9 +2144,9 @@ class GoogleCloudRunV2Service(_messages.Message):
   """
 
   class IngressValueValuesEnum(_messages.Enum):
-    r"""Provides the ingress settings for this Service. On output, returns the
-    currently observed ingress settings, or INGRESS_TRAFFIC_UNSPECIFIED if no
-    revision is active.
+    r"""Optional. Provides the ingress settings for this Service. On output,
+    returns the currently observed ingress settings, or
+    INGRESS_TRAFFIC_UNSPECIFIED if no revision is active.
 
     Values:
       INGRESS_TRAFFIC_UNSPECIFIED: Unspecified
@@ -2049,7 +2163,7 @@ class GoogleCloudRunV2Service(_messages.Message):
     INGRESS_TRAFFIC_NONE = 4
 
   class LaunchStageValueValuesEnum(_messages.Enum):
-    r"""The launch stage as defined by [Google Cloud Platform Launch
+    r"""Optional. The launch stage as defined by [Google Cloud Platform Launch
     Stages](https://cloud.google.com/terms/launch-stages). Cloud Run supports
     `ALPHA`, `BETA`, and `GA`. If no value is specified, GA is assumed. Set
     the launch stage to a preview stage on input to allow use of preview
@@ -2203,9 +2317,9 @@ class GoogleCloudRunV2ServiceScaling(_messages.Message):
   revision level.
 
   Fields:
-    minInstanceCount: total min instances for the service. This number of
-      instances is divided among all revisions with specified traffic based on
-      the percent of traffic they are receiving. (BETA)
+    minInstanceCount: Optional. total min instances for the service. This
+      number of instances is divided among all revisions with specified
+      traffic based on the percent of traffic they are receiving. (BETA)
   """
 
   minInstanceCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2268,9 +2382,9 @@ class GoogleCloudRunV2TCPSocketAction(_messages.Message):
   r"""TCPSocketAction describes an action based on opening a socket
 
   Fields:
-    port: Port number to access on the container. Must be in the range 1 to
-      65535. If not specified, defaults to the exposed port of the container,
-      which is the value of container.ports[0].containerPort.
+    port: Optional. Port number to access on the container. Must be in the
+      range 1 to 65535. If not specified, defaults to the exposed port of the
+      container, which is the value of container.ports[0].containerPort.
   """
 
   port = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2495,8 +2609,8 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
   template.
 
   Enums:
-    ExecutionEnvironmentValueValuesEnum: The execution environment being used
-      to host this Task.
+    ExecutionEnvironmentValueValuesEnum: Optional. The execution environment
+      being used to host this Task.
 
   Fields:
     containers: Holds the single container that defines the unit of execution
@@ -2504,26 +2618,27 @@ class GoogleCloudRunV2TaskTemplate(_messages.Message):
     encryptionKey: A reference to a customer managed encryption key (CMEK) to
       use to encrypt this container image. For more information, go to
       https://cloud.google.com/run/docs/securing/using-cmek
-    executionEnvironment: The execution environment being used to host this
-      Task.
+    executionEnvironment: Optional. The execution environment being used to
+      host this Task.
     maxRetries: Number of retries allowed per Task, before marking this Task
       failed. Defaults to 3.
-    serviceAccount: Email address of the IAM service account associated with
-      the Task of a Job. The service account represents the identity of the
-      running task, and determines what permissions the task has. If not
-      provided, the task will use the project's default service account.
-    timeout: Max allowed time duration the Task may be active before the
-      system will actively try to mark it failed and kill associated
+    serviceAccount: Optional. Email address of the IAM service account
+      associated with the Task of a Job. The service account represents the
+      identity of the running task, and determines what permissions the task
+      has. If not provided, the task will use the project's default service
+      account.
+    timeout: Optional. Max allowed time duration the Task may be active before
+      the system will actively try to mark it failed and kill associated
       containers. This applies per attempt of a task, meaning each retry can
       run for the full timeout. Defaults to 600 seconds.
-    volumes: A list of Volumes to make available to containers.
-    vpcAccess: VPC Access configuration to use for this Task. For more
-      information, visit
+    volumes: Optional. A list of Volumes to make available to containers.
+    vpcAccess: Optional. VPC Access configuration to use for this Task. For
+      more information, visit
       https://cloud.google.com/run/docs/configuring/connecting-vpc.
   """
 
   class ExecutionEnvironmentValueValuesEnum(_messages.Enum):
-    r"""The execution environment being used to host this Task.
+    r"""Optional. The execution environment being used to host this Task.
 
     Values:
       EXECUTION_ENVIRONMENT_UNSPECIFIED: Unspecified
@@ -2690,8 +2805,8 @@ class GoogleCloudRunV2VpcAccess(_messages.Message):
   network, visit https://cloud.google.com/run/docs/configuring/connecting-vpc.
 
   Enums:
-    EgressValueValuesEnum: Traffic VPC egress settings. If not provided, it
-      defaults to PRIVATE_RANGES_ONLY.
+    EgressValueValuesEnum: Optional. Traffic VPC egress settings. If not
+      provided, it defaults to PRIVATE_RANGES_ONLY.
 
   Fields:
     connector: VPC Access connector name. Format:
@@ -2699,14 +2814,14 @@ class GoogleCloudRunV2VpcAccess(_messages.Message):
       {project} can be project id or number. For more information on sending
       traffic to a VPC network via a connector, visit
       https://cloud.google.com/run/docs/configuring/vpc-connectors.
-    egress: Traffic VPC egress settings. If not provided, it defaults to
-      PRIVATE_RANGES_ONLY.
-    networkInterfaces: Direct VPC egress settings. Currently only single
-      network interface is supported.
+    egress: Optional. Traffic VPC egress settings. If not provided, it
+      defaults to PRIVATE_RANGES_ONLY.
+    networkInterfaces: Optional. Direct VPC egress settings. Currently only
+      single network interface is supported.
   """
 
   class EgressValueValuesEnum(_messages.Enum):
-    r"""Traffic VPC egress settings. If not provided, it defaults to
+    r"""Optional. Traffic VPC egress settings. If not provided, it defaults to
     PRIVATE_RANGES_ONLY.
 
     Values:
@@ -4616,6 +4731,10 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Proto2BridgeMessageSet(_messages.Message):
+  r"""This is proto2's version of MessageSet."""
+
+
 class RunProjectsLocationsBuildsSubmitRequest(_messages.Message):
   r"""A RunProjectsLocationsBuildsSubmitRequest object.
 
@@ -4629,6 +4748,52 @@ class RunProjectsLocationsBuildsSubmitRequest(_messages.Message):
 
   googleCloudRunV2SubmitBuildRequest = _messages.MessageField('GoogleCloudRunV2SubmitBuildRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsExportImageMetadataRequest(_messages.Message):
+  r"""A RunProjectsLocationsExportImageMetadataRequest object.
+
+  Fields:
+    name: Required. The name of the resource of which image metadata should be
+      exported. Format: `projects/{project_id_or_number}/locations/{location}/
+      services/{service}/revisions/{revision}` for Revision `projects/{project
+      _id_or_number}/locations/{location}/jobs/{job}/executions/{execution}`
+      for Execution
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class RunProjectsLocationsExportImageRequest(_messages.Message):
+  r"""A RunProjectsLocationsExportImageRequest object.
+
+  Fields:
+    googleCloudRunV2ExportImageRequest: A GoogleCloudRunV2ExportImageRequest
+      resource to be passed as the request body.
+    name: Required. The name of the resource of which image metadata should be
+      exported. Format: `projects/{project_id_or_number}/locations/{location}/
+      services/{service}/revisions/{revision}` for Revision `projects/{project
+      _id_or_number}/locations/{location}/jobs/{job}/executions/{execution}`
+      for Execution
+  """
+
+  googleCloudRunV2ExportImageRequest = _messages.MessageField('GoogleCloudRunV2ExportImageRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class RunProjectsLocationsExportMetadataRequest(_messages.Message):
+  r"""A RunProjectsLocationsExportMetadataRequest object.
+
+  Fields:
+    name: Required. The name of the resource of which metadata should be
+      exported. Format: `projects/{project_id_or_number}/locations/{location}/
+      services/{service}` for Service `projects/{project_id_or_number}/locatio
+      ns/{location}/services/{service}/revisions/{revision}` for Revision `pro
+      jects/{project_id_or_number}/locations/{location}/jobs/{job}/executions/
+      {execution}` for Execution
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class RunProjectsLocationsJobsCreateRequest(_messages.Message):
@@ -4703,6 +4868,22 @@ class RunProjectsLocationsJobsExecutionsDeleteRequest(_messages.Message):
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   validateOnly = _messages.BooleanField(3)
+
+
+class RunProjectsLocationsJobsExecutionsExportStatusRequest(_messages.Message):
+  r"""A RunProjectsLocationsJobsExecutionsExportStatusRequest object.
+
+  Fields:
+    name: Required. The name of the resource of which image export operation
+      status has to be fetched. Format: `projects/{project_id_or_number}/locat
+      ions/{location}/services/{service}/revisions/{revision}` for Revision `p
+      rojects/{project_id_or_number}/locations/{location}/jobs/{job}/execution
+      s/{execution}` for Execution
+    operationId: Required. The operation id returned from ExportImage.
+  """
+
+  name = _messages.StringField(1, required=True)
+  operationId = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsJobsExecutionsGetRequest(_messages.Message):
@@ -4833,9 +5014,9 @@ class RunProjectsLocationsJobsPatchRequest(_messages.Message):
   r"""A RunProjectsLocationsJobsPatchRequest object.
 
   Fields:
-    allowMissing: If set to true, and if the Job does not exist, it will
-      create a new one. Caller must have both create and update permissions
-      for this call if this is set to true.
+    allowMissing: Optional. If set to true, and if the Job does not exist, it
+      will create a new one. Caller must have both create and update
+      permissions for this call if this is set to true.
     googleCloudRunV2Job: A GoogleCloudRunV2Job resource to be passed as the
       request body.
     name: The fully qualified name of this Job. Format:
@@ -5062,9 +5243,9 @@ class RunProjectsLocationsServicesPatchRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesPatchRequest object.
 
   Fields:
-    allowMissing: If set to true, and if the Service does not exist, it will
-      create a new one. The caller must have 'run.services.create' permissions
-      if this is set to true and the Service does not exist.
+    allowMissing: Optional. If set to true, and if the Service does not exist,
+      it will create a new one. The caller must have 'run.services.create'
+      permissions if this is set to true and the Service does not exist.
     googleCloudRunV2Service: A GoogleCloudRunV2Service resource to be passed
       as the request body.
     name: The fully qualified name of this Service. In CreateServiceRequest,
@@ -5099,6 +5280,22 @@ class RunProjectsLocationsServicesRevisionsDeleteRequest(_messages.Message):
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
   validateOnly = _messages.BooleanField(3)
+
+
+class RunProjectsLocationsServicesRevisionsExportStatusRequest(_messages.Message):
+  r"""A RunProjectsLocationsServicesRevisionsExportStatusRequest object.
+
+  Fields:
+    name: Required. The name of the resource of which image export operation
+      status has to be fetched. Format: `projects/{project_id_or_number}/locat
+      ions/{location}/services/{service}/revisions/{revision}` for Revision `p
+      rojects/{project_id_or_number}/locations/{location}/jobs/{job}/execution
+      s/{execution}` for Execution
+    operationId: Required. The operation id returned from ExportImage.
+  """
+
+  name = _messages.StringField(1, required=True)
+  operationId = _messages.StringField(2, required=True)
 
 
 class RunProjectsLocationsServicesRevisionsGetRequest(_messages.Message):
@@ -5226,6 +5423,30 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class UtilStatusProto(_messages.Message):
+  r"""Wire-format for a Status object
+
+  Fields:
+    canonicalCode: The canonical error code (see codes.proto) that most
+      closely corresponds to this status. This may be missing, and in the
+      common case of the generic space, it definitely will be.
+    code: Numeric code drawn from the space specified below. Often, this is
+      the canonical error space, and code is drawn from
+      google3/util/task/codes.proto
+    message: Detail message
+    messageSet: message_set associates an arbitrary proto message with the
+      status.
+    space: The following are usually only present when code != 0 Space to
+      which this status belongs
+  """
+
+  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  message = _messages.StringField(3)
+  messageSet = _messages.MessageField('Proto2BridgeMessageSet', 4)
+  space = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.command_lib.spanner.resource_args import CloudKmsKeyName
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core.credentials import http
 from googlecloudsdk.core.util import times
@@ -71,7 +72,9 @@ def GetBackup(backup_ref):
   return client.projects_instances_backups.Get(req)
 
 
-def CreateBackup(backup_ref, args, encryption_type=None, kms_key=None):
+def CreateBackup(
+    backup_ref, args, encryption_type=None, kms_key: CloudKmsKeyName = None
+):
   """Create a new backup."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -80,16 +83,27 @@ def CreateBackup(backup_ref, args, encryption_type=None, kms_key=None):
   if encryption_type:
     query_params['encryptionConfig.encryptionType'] = encryption_type
   if kms_key:
-    query_params['encryptionConfig.kmsKeyName'] = kms_key
+    if kms_key.kms_key_name:
+      query_params['encryptionConfig.kmsKeyName'] = kms_key.kms_key_name
+    elif kms_key.kms_key_names:
+      query_params['encryptionConfig.kmsKeyNames'] = kms_key.kms_key_names
   parent = backup_ref.Parent().RelativeName()
-  url = '{}v1/{}/backups?{}'.format(client.url, parent,
-                                    urllib.parse.urlencode(query_params))
+  url = '{}v1/{}/backups?{}'.format(
+      client.url, parent, urllib.parse.urlencode(query_params, doseq=True)
+  )
   backup = msgs.Backup(
       database=parent + '/databases/' + args.database,
       expireTime=CheckAndGetExpireTime(args))
   if args.IsSpecified('version_time'):
     backup.versionTime = args.version_time
 
+  # We are not using `SpannerProjectsInstancesBackupsCreateRequest` from
+  # `spanner_v1_messages.py` because `apitools` does not generate nested proto
+  # messages correctly, b/31244944. Here, an `EncryptionConfig` should be a
+  # nested proto, rather than `EncryptionConfig_kmsKeyName` being a
+  # field(http://shortn/_gHieB9ir83). Thus, this workaround is necessary and
+  # will be here to stay since `apitools` is not under active development and
+  # gcloud will continue to support `apitools` http://shortn/_BJJCZbnCFp.
   # Workaround since gcloud cannot handle HttpBody properly (b/31403673).
   response_encoding = None if six.PY2 else 'utf-8'
   # Make an http request directly instead of using the apitools client which
@@ -117,9 +131,16 @@ def CopyBackup(source_backup_ref,
       backupId=destination_backup_ref.Name(),
       sourceBackup=source_backup_ref.RelativeName())
   copy_backup_request.expireTime = CheckAndGetExpireTime(args)
-  if encryption_type or kms_key:
+  if kms_key:
     copy_backup_request.encryptionConfig = msgs.CopyBackupEncryptionConfig(
-        encryptionType=encryption_type, kmsKeyName=kms_key)
+        encryptionType=encryption_type,
+        kmsKeyName=kms_key.kms_key_name,
+        kmsKeyNames=kms_key.kms_key_names,
+    )
+  elif encryption_type:
+    copy_backup_request.encryptionConfig = msgs.CopyBackupEncryptionConfig(
+        encryptionType=encryption_type,
+    )
 
   req = msgs.SpannerProjectsInstancesBackupsCopyRequest(
       parent=destination_backup_ref.Parent().RelativeName(),

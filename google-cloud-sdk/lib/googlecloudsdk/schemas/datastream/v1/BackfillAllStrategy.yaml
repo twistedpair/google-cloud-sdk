@@ -34,3 +34,6 @@ properties:
   postgresqlExcludedObjects:
     description: PostgreSQL data source objects to avoid backfilling.
     $ref: PostgresqlRdbms.yaml
+  sqlServerExcludedObjects:
+    description: SQLServer data source objects to avoid backfilling
+    $ref: SqlServerRdbms.yaml

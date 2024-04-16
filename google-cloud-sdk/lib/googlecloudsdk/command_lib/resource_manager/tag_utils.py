@@ -20,10 +20,13 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.iam import util as iam_api
 from googlecloudsdk.api_lib.resource_manager import tags
 from googlecloudsdk.api_lib.resource_manager.exceptions import ResourceManagerError
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.resource_manager import endpoint_utils as endpoints
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -52,9 +55,7 @@ GetByNamespacedNameRequests = {
 ListRequests = {
     TAG_KEYS: tags.TagMessages().CloudresourcemanagerTagKeysListRequest,
     TAG_VALUES: tags.TagMessages().CloudresourcemanagerTagValuesListRequest,
-    TAG_BINDINGS: (
-        tags.TagMessages().CloudresourcemanagerTagBindingsListRequest
-    ),
+    TAG_BINDINGS: tags.TagMessages().CloudresourcemanagerTagBindingsListRequest,
 }
 
 Services = {
@@ -157,7 +158,28 @@ def GetCanonicalResourceName(resource_name, location, release_track):
 
   Returns:
     resource_name: either the original resource name, or correct canonical name
+
+  Raises:
+    InvalidArgumentException: if the location is not specified
   """
+  service_account_resource_name_pattern = (
+      r'iam.*/projects/[^/]+/serviceAccounts/([^/]+)'
+  )
+  service_account_search = re.search(
+      service_account_resource_name_pattern, resource_name
+  )
+
+  if service_account_search:
+    service_account_name = service_account_search.group(1)
+    # Call IAM's service account describe API to get the service account's
+    # unique id.
+    if re.search('.*@.*.gserviceaccount.com', service_account_name):
+      resource_name = resource_name.replace(
+          'serviceAccounts/%s' % service_account_name,
+          'serviceAccounts/%s'
+          % _GetServiceAccountUniqueId(service_account_name),
+      )
+    return resource_name
 
   # [a-z]([-a-z0-9]*[a-z0-9] is the instance name regex, as per
   # https://cloud.google.com/compute/docs/reference/rest/v1/instances
@@ -190,6 +212,25 @@ def GetCanonicalResourceName(resource_name, location, release_track):
           ),
       )
   return resource_name
+
+
+def _GetServiceAccountUniqueId(service_account_email):
+  """Returns the unique id for the given service account email.
+
+  Args:
+    service_account_email: email of the service account.
+
+  Returns:
+    The unique id of the service account.
+  """
+  client, messages = iam_api.GetClientAndMessages()
+  try:
+    res = client.projects_serviceAccounts.Get(
+        messages.IamProjectsServiceAccountsGetRequest(
+            name=iam_util.EmailToAccountResourceName(service_account_email)))
+    return str(res.uniqueId)
+  except apitools_exceptions.HttpError as e:
+    raise exceptions.HttpException(e)
 
 
 def _GetGceInstanceCanonicalName(

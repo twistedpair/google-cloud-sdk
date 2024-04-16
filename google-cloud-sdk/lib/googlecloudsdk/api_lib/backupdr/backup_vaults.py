@@ -36,7 +36,6 @@ class BackupVaultsClient(util.BackupDrClientBase):
       description,
       labels,
       effective_time,
-      request_id,
   ):
 
     parent = resource.Parent().RelativeName()
@@ -47,39 +46,40 @@ class BackupVaultsClient(util.BackupDrClientBase):
         labels=labels,
         effectiveTime=effective_time,
     )
+    request_id = command_util.GenerateRequestId()
 
-    if request_id:
-      request = (
-          self.messages.BackupdrProjectsLocationsBackupVaultsCreateRequest(
-              backupVault=backup_vault,
-              backupVaultId=backup_vault_id,
-              parent=parent,
-              requestId=command_util.GenerateRequestId(),
-          )
-      )
-    else:
-      request = (
-          self.messages.BackupdrProjectsLocationsBackupVaultsCreateRequest(
-              backupVault=backup_vault,
-              backupVaultId=backup_vault_id,
-              parent=parent,
-          )
-      )
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsCreateRequest(
+        backupVault=backup_vault,
+        backupVaultId=backup_vault_id,
+        parent=parent,
+        requestId=request_id,
+    )
     return self.service.Create(request)
 
-  def Delete(self, resource, force_delete, request_id):
-    if request_id:
-      request = (
-          self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
-              name=resource.RelativeName(),
-              force=force_delete,
-              requestId=command_util.GenerateRequestId(),
-          )
-      )
-    else:
-      request = (
-          self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
-              name=resource.RelativeName(), force=force_delete
-          )
-      )
+  def Delete(self, resource, force_delete):
+    request_id = command_util.GenerateRequestId()
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
+        name=resource.RelativeName(), force=force_delete, requestId=request_id
+    )
+
     return self.service.Delete(request)
+
+  def ParseUpdate(self, description, effective_time, enforced_retention):
+    updated_bv = self.messages.BackupVault()
+    if description is not None:
+      updated_bv.description = description
+    if effective_time is not None:
+      updated_bv.effectiveTime = effective_time
+    if enforced_retention != "Nones":
+      updated_bv.enforcedRetentionDuration = enforced_retention
+    return updated_bv
+
+  def Update(self, resource, backup_vault, update_mask):
+    request_id = command_util.GenerateRequestId()
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsPatchRequest(
+        backupVault=backup_vault,
+        name=resource.RelativeName(),
+        updateMask=update_mask,
+        requestId=request_id,
+    )
+    return self.service.Patch(request)

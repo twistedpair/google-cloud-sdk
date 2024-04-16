@@ -400,7 +400,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table or Backup resource. Returns an empty policy if the resource exists but does not have a policy set.
+      r"""Gets the access control policy for a Bigtable resource. Returns an empty policy if the resource exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsGetIamPolicyRequest) input message
@@ -481,7 +481,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table or Backup resource. Replaces any existing policy.
+      r"""Sets the access control policy on a Bigtable resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsSetIamPolicyRequest) input message
@@ -508,7 +508,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that the caller has on the specified Table or Backup resource.
+      r"""Returns permissions that the caller has on the specified Bigtable resource.
 
       Args:
         request: (BigtableadminProjectsInstancesClustersBackupsTestIamPermissionsRequest) input message
@@ -835,7 +835,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table or Backup resource. Returns an empty policy if the resource exists but does not have a policy set.
+      r"""Gets the access control policy for a Bigtable resource. Returns an empty policy if the resource exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesAuthorizedViewsGetIamPolicyRequest) input message
@@ -916,7 +916,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table or Backup resource. Replaces any existing policy.
+      r"""Sets the access control policy on a Bigtable resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesAuthorizedViewsSetIamPolicyRequest) input message
@@ -943,7 +943,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that the caller has on the specified Table or Backup resource.
+      r"""Returns permissions that the caller has on the specified Bigtable resource.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesAuthorizedViewsTestIamPermissionsRequest) input message
@@ -1142,7 +1142,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a Table or Backup resource. Returns an empty policy if the resource exists but does not have a policy set.
+      r"""Gets the access control policy for a Bigtable resource. Returns an empty policy if the resource exists but does not have a policy set.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesGetIamPolicyRequest) input message
@@ -1277,7 +1277,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on a Table or Backup resource. Replaces any existing policy.
+      r"""Sets the access control policy on a Bigtable resource. Replaces any existing policy.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesSetIamPolicyRequest) input message
@@ -1304,7 +1304,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that the caller has on the specified Table or Backup resource.
+      r"""Returns permissions that the caller has on the specified Bigtable resource.
 
       Args:
         request: (BigtableadminProjectsInstancesTablesTestIamPermissionsRequest) input message

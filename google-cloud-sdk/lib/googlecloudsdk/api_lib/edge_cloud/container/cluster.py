@@ -194,6 +194,7 @@ def PopulateClusterAlphaMessage(req, messages, args):
     req.cluster.survivabilityConfig.offlineRebootTtl = (
         json.dumps(args.offline_reboot_ttl) + 's'
     )
+  resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
 
 
 def IsLCPCluster(args):
@@ -208,7 +209,8 @@ def IsLCPCluster(args):
   if (
       flags.FlagIsExplicitlySet(args, 'control_plane_node_location')
       and flags.FlagIsExplicitlySet(args, 'control_plane_node_count')
-      and flags.FlagIsExplicitlySet(args, 'external_lb_ipv4_address_pools')
+      and (flags.FlagIsExplicitlySet(args, 'external_lb_ipv4_address_pools')
+           or flags.FlagIsExplicitlySet(args, 'external_lb_address_pools'))
   ):
     return True
   return False

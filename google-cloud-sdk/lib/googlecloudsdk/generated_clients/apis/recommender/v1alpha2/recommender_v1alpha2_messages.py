@@ -211,9 +211,9 @@ class GoogleCloudRecommenderV1alpha2Insight(_messages.Message):
       a given subtype.
     lastRefreshTime: Timestamp of the latest data used to generate the
       insight.
-    name: Name of the insight. * A project insight is represented as projects/
-      [PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/ins
-      ights/[insight_id]
+    name: Identifier. Name of the insight. * A project insight is represented
+      as projects/[PROJECT_NUMBER]/locations/[LOCATION]/insightTypes/[INSIGHT_
+      TYPE_ID]/insights/[insight_id]
     observationPeriod: Observation period that led to the insight. The source
       data used to generate the insight ends at last_refresh_time and begins
       at (last_refresh_time - observation_period).
@@ -866,9 +866,9 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
       updating states.
     lastRefreshTime: Last time this recommendation was refreshed by the system
       that created it in the first place.
-    name: Name of recommendation. A project recommendation is represented as p
-      rojects/[PROJECT_NUMBER]/locations/[LOCATION]/recommenders/[RECOMMENDER_
-      ID]/recommendations/[RECOMMENDATION_ID]
+    name: Identifier. Name of recommendation. A project recommendation is
+      represented as projects/[PROJECT_NUMBER]/locations/[LOCATION]/recommende
+      rs/[RECOMMENDER_ID]/recommendations/[RECOMMENDATION_ID]
     primaryImpact: The primary impact that this recommendation can have while
       trying to optimize for one category.
     priority: Recommendation's priority.

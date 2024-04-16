@@ -700,8 +700,8 @@ class BigqueryDatasetsListRequest(_messages.Message):
       The syntax is \"labels.<name>[:<value>]\". Multiple filters can be ANDed
       together by connecting with a space. Example:
       \"labels.department:receiving labels.active\". See [Filtering datasets
-      using labels](/bigquery/docs/labeling-
-      datasets#filtering_datasets_using_labels) for details.
+      using labels](/bigquery/docs/filtering-
+      labels#filtering_datasets_using_labels) for details.
     maxResults: The maximum number of results to return in a single response
       page. Leverage the page tokens to iterate through the entire collection.
     pageToken: Page token, returned by a previous call, to request the next
@@ -2116,6 +2116,10 @@ class Dataset(_messages.Message):
     maxTimeTravelHours: Optional. Defines the time travel window in hours. The
       value can be from 48 to 168 hours (2 to 7 days). The default value is
       168 hours if this is not set.
+    restrictions: Optional. Output only. Restriction config for all tables and
+      dataset. If set, restrict certain accesses on the dataset and all its
+      tables based on the config. See [Data egress](/bigquery/docs/analytics-
+      hub-introduction#data_egress) for more details.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     selfLink: Output only. A URL that can be used to access the resource
@@ -2285,12 +2289,13 @@ class Dataset(_messages.Message):
   linkedDatasetSource = _messages.MessageField('LinkedDatasetSource', 20)
   location = _messages.StringField(21)
   maxTimeTravelHours = _messages.IntegerField(22)
-  satisfiesPzi = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  selfLink = _messages.StringField(25)
-  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 26)
-  tags = _messages.MessageField('TagsValueListEntry', 27, repeated=True)
-  type = _messages.StringField(28)
+  restrictions = _messages.MessageField('RestrictionConfig', 23)
+  satisfiesPzi = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  selfLink = _messages.StringField(26)
+  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 27)
+  tags = _messages.MessageField('TagsValueListEntry', 28, repeated=True)
+  type = _messages.StringField(29)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -5678,15 +5683,35 @@ class MultiClassClassificationMetrics(_messages.Message):
 class ParquetOptions(_messages.Message):
   r"""Parquet Options for load and make external tables.
 
+  Enums:
+    MapTargetTypeValueValuesEnum: Optional. Will indicate how to represent a
+      parquet map if present.
+
   Fields:
     enableListInference: Optional. Indicates whether to use schema inference
       specifically for Parquet LIST logical type.
     enumAsString: Optional. Indicates whether to infer Parquet ENUM logical
       type as STRING instead of BYTES by default.
+    mapTargetType: Optional. Will indicate how to represent a parquet map if
+      present.
   """
+
+  class MapTargetTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Will indicate how to represent a parquet map if present.
+
+    Values:
+      MAP_TARGET_TYPE_UNSPECIFIED: In this mode, we fall back to the default.
+        Currently (3/24) we represent the map as: struct map_field_name {
+        repeated struct key_value { key value } }
+      ARRAY_OF_STRUCT: In this mode, we omit parquet's key_value struct and
+        represent the map as: repeated struct map_field_name { key value }
+    """
+    MAP_TARGET_TYPE_UNSPECIFIED = 0
+    ARRAY_OF_STRUCT = 1
 
   enableListInference = _messages.BooleanField(1)
   enumAsString = _messages.BooleanField(2)
+  mapTargetType = _messages.EnumField('MapTargetTypeValueValuesEnum', 3)
 
 
 class PartitionSkew(_messages.Message):
@@ -6527,6 +6552,32 @@ class RemoteModelInfo(_messages.Message):
   remoteModelVersion = _messages.StringField(4)
   remoteServiceType = _messages.EnumField('RemoteServiceTypeValueValuesEnum', 5)
   speechRecognizer = _messages.StringField(6)
+
+
+class RestrictionConfig(_messages.Message):
+  r"""A RestrictionConfig object.
+
+  Enums:
+    TypeValueValuesEnum: Output only. Specifies the type of dataset/table
+      restriction.
+
+  Fields:
+    type: Output only. Specifies the type of dataset/table restriction.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the type of dataset/table restriction.
+
+    Values:
+      RESTRICTION_TYPE_UNSPECIFIED: Should never be used.
+      RESTRICTED_DATA_EGRESS: Restrict data egress. See [Data
+        egress](/bigquery/docs/analytics-hub-introduction#data_egress) for
+        more details.
+    """
+    RESTRICTION_TYPE_UNSPECIFIED = 0
+    RESTRICTED_DATA_EGRESS = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class Routine(_messages.Message):
@@ -7668,6 +7719,10 @@ class Table(_messages.Message):
       The key is the namespaced friendly name of the tag key, e.g.
       "12345/environment" where 12345 is parent id. The value is the friendly
       short name of the tag value, e.g. "production".
+    restrictions: Optional. Output only. Restriction config for table. If set,
+      restrict certain accesses on the table based on the config. See [Data
+      egress](/bigquery/docs/analytics-hub-introduction#data_egress) for more
+      details.
     schema: Optional. Describes the schema of this table.
     selfLink: Output only. A URL that can be used to access this resource
       again.
@@ -7818,16 +7873,17 @@ class Table(_messages.Message):
   replicas = _messages.MessageField('TableReference', 37, repeated=True)
   requirePartitionFilter = _messages.BooleanField(38, default=False)
   resourceTags = _messages.MessageField('ResourceTagsValue', 39)
-  schema = _messages.MessageField('TableSchema', 40)
-  selfLink = _messages.StringField(41)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 42)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 43)
-  tableConstraints = _messages.MessageField('TableConstraints', 44)
-  tableReference = _messages.MessageField('TableReference', 45)
-  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 46)
-  timePartitioning = _messages.MessageField('TimePartitioning', 47)
-  type = _messages.StringField(48)
-  view = _messages.MessageField('ViewDefinition', 49)
+  restrictions = _messages.MessageField('RestrictionConfig', 40)
+  schema = _messages.MessageField('TableSchema', 41)
+  selfLink = _messages.StringField(42)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 43)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 44)
+  tableConstraints = _messages.MessageField('TableConstraints', 45)
+  tableReference = _messages.MessageField('TableReference', 46)
+  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 47)
+  timePartitioning = _messages.MessageField('TimePartitioning', 48)
+  type = _messages.StringField(49)
+  view = _messages.MessageField('ViewDefinition', 50)
 
 
 class TableCell(_messages.Message):

@@ -25,6 +25,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  appendOnly:
+    description: Append only mode
+    type: appendonly
   dataFreshness:
     description: |-
       The guaranteed data freshness (in seconds) when querying tables created by
@@ -32,6 +35,9 @@ properties:
       future, but existing tables will not be impacted. Lower values mean that
       queries will return fresher data, but may result in higher cost.
     type: string
+  merge:
+    description: The standard mode
+    type: merge
   singleTargetDataset:
     description: Single destination dataset.
     $ref: SingleTargetDataset.yaml

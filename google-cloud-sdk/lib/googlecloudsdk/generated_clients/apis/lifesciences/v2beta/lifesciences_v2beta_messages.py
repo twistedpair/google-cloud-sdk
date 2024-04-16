@@ -20,7 +20,7 @@ class Accelerator(_messages.Message):
 
   Fields:
     count: How many accelerators of this type to attach.
-    type: The accelerator type string (for example, "nvidia-tesla-k80"). Only
+    type: The accelerator type string (for example, "nvidia-tesla-t4"). Only
       NVIDIA GPU accelerators are currently supported. If an NVIDIA GPU is
       attached, the required runtime libraries will be made available to all
       containers under `/usr/local/nvidia`. The driver version to install must

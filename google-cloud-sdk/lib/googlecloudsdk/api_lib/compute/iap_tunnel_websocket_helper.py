@@ -53,10 +53,11 @@ class IapTunnelWebSocketHelper(object):
   """Helper class for common operations on websocket and related metadata."""
 
   def __init__(self, url, headers, ignore_certs, proxy_info, on_data, on_close,
-               should_use_new_websocket):
+               should_use_new_websocket, conn_id=0):
     self._on_data = on_data
     self._on_close = on_close
     self._proxy_info = proxy_info
+    self._conn_id = conn_id
     self._receiving_thread = None
 
     ca_certs = utils.CheckCACertsFile(ignore_certs)
@@ -125,8 +126,8 @@ class IapTunnelWebSocketHelper(object):
       # Needed since the gcloud logging methods will log to file regardless
       # of the verbosity level set by the user.
       if log.GetVerbosity() == logging.DEBUG:
-        log.debug('SEND data_len [%d] send_data[:20] %r', len(send_data),
-                  send_data[:20])
+        log.debug('[%d] SEND data_len [%d] send_data[:20] %r',
+                  self._conn_id, len(send_data), send_data[:20],)
       self._websocket.send(send_data, opcode=websocket.ABNF.OPCODE_BINARY)
     except EnvironmentError:
       self.Close()
@@ -135,7 +136,8 @@ class IapTunnelWebSocketHelper(object):
       self.Close()
       raise WebSocketConnectionClosed()
     except Exception as e:  # pylint: disable=broad-except
-      log.debug('Error during WebSocket send of Data message.', exc_info=True)
+      log.debug('[%d] Error during WebSocket send of Data message.',
+                self._conn_id, exc_info=True)
       # Convert websocket library errors and any others into one based on
       # exceptions.Error
       tb = sys.exc_info()[2]
@@ -154,16 +156,17 @@ class IapTunnelWebSocketHelper(object):
       sock = self._websocket.sock
 
     if sock:
-      log.debug('CLOSE')
+      log.debug('[%d] CLOSE', self._conn_id)
       try:
         sock.send_close()
       except (EnvironmentError,
               websocket.WebSocketConnectionClosedException) as e:
-        log.info('Unable to send WebSocket Close message [%s].',
-                 six.text_type(e))
+        log.info('[%d] Unable to send WebSocket Close message [%s].',
+                 self._conn_id, six.text_type(e))
         self.Close()
       except:  # pylint: disable=bare-except
-        log.info('Error during WebSocket send of Close message.', exc_info=True)
+        log.info('[%d] Error during WebSocket send of Close message.',
+                 self._conn_id, exc_info=True)
         self.Close()
 
   def StartReceivingThread(self):
@@ -183,7 +186,8 @@ class IapTunnelWebSocketHelper(object):
       return
 
     close_msg = '%r: %r' % (close_code, close_reason)
-    log.info('Received WebSocket Close message [%s].', close_msg)
+    log.info('[%d] Received WebSocket Close message [%s].',
+             self._conn_id, close_msg)
     self.Close(msg=close_msg)
 
     if close_code == 4004:
@@ -198,7 +202,8 @@ class IapTunnelWebSocketHelper(object):
     try:
       self._on_close()
     except (EnvironmentError, exceptions.Error):
-      log.info('Error while processing Close message', exc_info=True)
+      log.info('[%d] Error while processing Close message',
+               self._conn_id, exc_info=True)
       raise
 
   def _OnData(self, binary_data, opcode, unused_finished=0):
@@ -206,8 +211,8 @@ class IapTunnelWebSocketHelper(object):
     # Needed since the gcloud logging methods will log to file regardless
     # of the verbosity level set by the user.
     if log.GetVerbosity() == logging.DEBUG:
-      log.debug('RECV opcode [%r] data_len [%d] binary_data[:20] [%r]', opcode,
-                len(binary_data), binary_data[:20])
+      log.debug('[%d] RECV opcode [%r] data_len [%d] binary_data[:20] [%r]',
+                self._conn_id, opcode, len(binary_data), binary_data[:20])
     try:
       # Even though we will only be processing BINARY messages, a bug in the
       # underlying websocket library will report the last opcode in a
@@ -219,11 +224,13 @@ class IapTunnelWebSocketHelper(object):
                                           opcode)
       self._on_data(binary_data)
     except EnvironmentError as e:
-      log.info('Error [%s] while sending to client.', six.text_type(e))
+      log.info('[%d] Error [%s] while sending to client.', self._conn_id,
+               six.text_type(e))
       self.Close()
       raise
     except:  # pylint: disable=bare-except
-      log.info('Error while processing Data message.', exc_info=True)
+      log.info('[%d] Error while processing Data message.', self._conn_id,
+               exc_info=True)
       self.Close()
       raise
 
@@ -231,10 +238,12 @@ class IapTunnelWebSocketHelper(object):
     # Do not call Close() from here as it may generate callbacks in some error
     # conditions that can create a feedback loop with this function.
     if not self._is_closed:
-      log.debug('Error during WebSocket processing.', exc_info=True)
-      log.info('Error during WebSocket processing:\n' +
+      log.debug('[%d] Error during WebSocket processing.',
+                self._conn_id, exc_info=True)
+      log.info('[%d] Error during WebSocket processing:\n' +
                ''.join(traceback.format_exception_only(type(exception_obj),
-                                                       exception_obj)))
+                                                       exception_obj)),
+               self._conn_id)
       self._error_msg = six.text_type(exception_obj)
 
   def _ReceiveFromWebSocket(self):
@@ -259,7 +268,8 @@ class IapTunnelWebSocketHelper(object):
                                     sslopt=self._sslopt)
     except:  # pylint: disable=bare-except
       try:
-        log.info('Error while receiving from WebSocket.', exc_info=True)
+        log.info('[%d] Error while receiving from WebSocket.',
+                 self._conn_id, exc_info=True)
       except:
         # This is a daemon thread, so it could be running while the interpreter
         # is exiting, so logging could fail. At that point the only thing to do
@@ -270,6 +280,7 @@ class IapTunnelWebSocketHelper(object):
       self.Close()
     except:  # pylint: disable=bare-except
       try:
-        log.info('Error while closing in receiving thread.', exc_info=True)
+        log.info('[%d] Error while closing in receiving thread.',
+                 self._conn_id, exc_info=True)
       except:
         pass

@@ -151,6 +151,39 @@ def GetDataAttributeResourceSpec():
   )
 
 
+def GetDataplexEntryGroupResourceSpec():
+  """Gets Entry Group resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.entryGroups',
+      resource_name='entry_group',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      entryGroupsId=EntryGroupAttributeConfig(),
+  )
+
+
+def GetDataplexAspectTypeResourceSpec():
+  """Gets Aspect Type resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.aspectTypes',
+      resource_name='aspect_type',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      entryGroupsId=AspectTypeAttributeConfig(),
+  )
+
+
+def GetDataplexEntryTypeResourceSpec():
+  """Gets Entry Type resource spec."""
+  return concepts.ResourceSpec(
+      'dataplex.projects.locations.entryTypes',
+      resource_name='entry_type',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=LocationAttributeConfig(),
+      entryGroupsId=EntryTypeAttributeConfig(),
+  )
+
+
 def GetEntryTypeResourceSpec():
   """Gets EntryType resource spec."""
   return concepts.ResourceSpec(
@@ -231,6 +264,24 @@ def DataAttributeConfig():
 def DataAttributeBindingAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='data_attribute_binding', help_text='The name of {resource} to use.'
+  )
+
+
+def EntryGroupAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry_group', help_text='The name of {resource} to use.'
+  )
+
+
+def AspectTypeAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='aspect_type', help_text='The name of {resource} to use.'
+  )
+
+
+def EntryTypeAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='entry_type', help_text='The name of {resource} to use.'
   )
 
 
@@ -378,6 +429,42 @@ def AddDataAttributeBindingResourceArg(parser, verb, positional=True):
       name,
       GetDataAttributeBindingResourceSpec(),
       'The DataAttributeBinding {}'.format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddDataplexEntryGroupResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex EntryGroup."""
+  name = 'entry_group' if positional else '--entry_group'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataplexEntryGroupResourceSpec(),
+      'Arguments and flags that define the Dataplex entry group you want {}'
+      .format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddDataplexAspectTypeResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex AspectType."""
+  name = 'aspect_type' if positional else '--aspect_type'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataplexAspectTypeResourceSpec(),
+      'Arguments and flags that define the Dataplex aspect type you want {}'
+      .format(verb),
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddDataplexEntryTypeResourceArg(parser, verb, positional=True):
+  """Adds a resource argument for a Dataplex EntryType."""
+  name = 'entry_type' if positional else '--entry_type'
+  return concept_parsers.ConceptParser.ForResource(
+      name,
+      GetDataplexEntryTypeResourceSpec(),
+      'Arguments and flags that define the Dataplex entry type you want {}'
+      .format(verb),
       required=True,
   ).AddToParser(parser)
 

@@ -151,6 +151,12 @@ class PersistentResourcesClient(object):
     )
     return self._service.Delete(request)
 
+  def Reboot(self, name):
+    request = self._messages.AiplatformProjectsLocationsPersistentResourcesRebootRequest(
+        name=name
+    )
+    return self._service.Reboot(request)
+
   def ImportResourceMessage(self, yaml_file, message_name):
     """Import a messages class instance typed by name from a YAML file."""
     data = console_io.ReadFromFileOrStdin(yaml_file, binary=False)

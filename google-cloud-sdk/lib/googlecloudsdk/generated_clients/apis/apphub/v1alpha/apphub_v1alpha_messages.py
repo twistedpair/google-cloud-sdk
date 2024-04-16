@@ -1034,9 +1034,9 @@ class Criticality(_messages.Message):
   Fields:
     level: Optional. Criticality level. Can contain only lowercase letters,
       numeric characters, underscores, and dashes. Can have a maximum length
-      of 63 characters.
+      of 63 characters. Deprecated: Please refer to type instead.
     missionCritical: Optional. Indicates mission-critical Application,
-      Service, or Workload.
+      Service, or Workload. Deprecated: Please refer to type instead.
     type: Required. Criticality Type.
   """
 
@@ -1128,7 +1128,7 @@ class Environment(_messages.Message):
   Fields:
     environment: Optional. Environment name. Can contain only lowercase
       letters, numeric characters, underscores, and dashes. Can have a maximum
-      length of 63 characters.
+      length of 63 characters. Deprecated: Please refer to type instead.
     type: Required. Environment Type.
   """
 

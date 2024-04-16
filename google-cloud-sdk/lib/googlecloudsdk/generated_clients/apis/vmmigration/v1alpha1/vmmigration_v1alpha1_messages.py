@@ -1471,7 +1471,7 @@ class DiskImageTargetDetails(_messages.Message):
     additionalLicenses: Optional. Additional licenses to assign to the image.
     dataDiskImageImport: Optional. Use to skip OS adaptation process.
     description: Optional. An optional description of the image.
-    encryption: Optional. Immutable. The encryption to apply to the image.
+    encryption: Immutable. The encryption to apply to the image.
     familyName: Optional. The name of the image family to which the new image
       belongs.
     imageName: Required. The name of the image to be created.

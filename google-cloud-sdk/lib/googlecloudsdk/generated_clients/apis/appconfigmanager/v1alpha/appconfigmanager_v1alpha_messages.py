@@ -115,7 +115,8 @@ class AppconfigmanagerProjectsLocationsConfigsPatchRequest(_messages.Message):
       overwritten in the Config resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+      provide a mask then all fields will be overwritten. Empty field_mask is
+      not allowed.
   """
 
   config = _messages.MessageField('Config', 1)
@@ -512,7 +513,8 @@ class ConfigVersion(_messages.Message):
   r"""Message describing ConfigVersion object
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs Labels are not supported
+      for ConfigVersions. They are only supported at the Configs level.
 
   Fields:
     configVersionRender: Output only. Resource identifier to the corresponding
@@ -520,7 +522,8 @@ class ConfigVersion(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     disabled: Optional. Disabled boolean to determine if a ConfigVersion acts
       as a deleted (but recoverable) resource. Default value is False.
-    labels: Optional. Labels as key value pairs
+    labels: Optional. Labels as key value pairs Labels are not supported for
+      ConfigVersions. They are only supported at the Configs level.
     name: Immutable. Identifier. [Output only] The resource name of the
       ConfigVersion in the format `projects/*/configs/*/versions/*`.
     payload: Required. Immutable. Payload content of a ConfigVersion resource.
@@ -533,7 +536,8 @@ class ConfigVersion(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs Labels are not supported for
+    ConfigVersions. They are only supported at the Configs level.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -581,7 +585,8 @@ class ConfigVersionRender(_messages.Message):
   r"""Message describing ConfigVersionRender object
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs Labels are not supported
+      for ConfigVersionRenders. They are only supported at the Configs level.
 
   Fields:
     configVersion: Output only. Resource identifier to the corresponding
@@ -589,7 +594,8 @@ class ConfigVersionRender(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     disabled: Optional. Disabled boolean to determine if a ConfigVersionRender
       acts as a deleted (but recoverable) resource. Default value is False.
-    labels: Optional. Labels as key value pairs
+    labels: Optional. Labels as key value pairs Labels are not supported for
+      ConfigVersionRenders. They are only supported at the Configs level.
     name: Output only. Identifier. [Output only] The resource name of the
       ConfigVersionRender in the format
       `projects/*/configs/*/versionRenders/*`.
@@ -608,7 +614,8 @@ class ConfigVersionRender(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs Labels are not supported for
+    ConfigVersionRenders. They are only supported at the Configs level.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

@@ -155,6 +155,22 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""Represents the autoscaling configuration of a metastore service.
+
+  Fields:
+    autoscalingEnabled: Optional. Whether or not autoscaling is enabled for
+      this service.
+    autoscalingFactor: Output only. The scaling factor of a service with
+      autoscaling enabled.
+    limitConfig: Optional. The LimitConfig of the service.
+  """
+
+  autoscalingEnabled = _messages.BooleanField(1)
+  autoscalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  limitConfig = _messages.MessageField('LimitConfig', 3)
+
+
 class AuxiliaryVersionConfig(_messages.Message):
   r"""Configuration information for the auxiliary service versions.
 
@@ -482,7 +498,8 @@ class CloudSQLConnectionConfig(_messages.Message):
 
 class CloudSQLMigrationConfig(_messages.Message):
   r"""Configuration information for migrating from self-managed hive metastore
-  on GCP using Cloud SQL as the backend database to DPMS.
+  on Google Cloud using Cloud SQL as the backend database to Dataproc
+  Metastore.
 
   Fields:
     cdcConfig: Required. Configuration information to start the Change Data
@@ -1121,6 +1138,20 @@ class LatestBackup(_messages.Message):
   duration = _messages.StringField(2)
   startTime = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class LimitConfig(_messages.Message):
+  r"""Represents the autoscaling limit configuration of a metastore service.
+
+  Fields:
+    maxScalingFactor: Optional. The highest scaling factor that the service
+      should be autoscaled to.
+    minScalingFactor: Optional. The lowest scaling factor that the service
+      should be autoscaled to.
+  """
+
+  maxScalingFactor = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minScalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -2524,8 +2555,8 @@ class MigrationExecution(_messages.Message):
 
   Fields:
     cloudSqlMigrationConfig: Configuration information specific to migrating
-      from self-managed hive metastore on GCP using Cloud SQL as the backend
-      database to DPMS.
+      from self-managed hive metastore on Google Cloud using Cloud SQL as the
+      backend database to Dataproc Metastore.
     createTime: Output only. The time when the migration execution was
       started.
     endTime: Output only. The time when the migration execution finished.
@@ -2551,7 +2582,8 @@ class MigrationExecution(_messages.Message):
       CUTOVER: Cutover phase refers to the migration phase when Dataproc
         Metastore switches to using its own backend database. Migration enters
         this phase when customer is done migrating all their
-        clusters/workloads to DPMS and triggers CompleteMigration.
+        clusters/workloads to Dataproc Metastore and triggers
+        CompleteMigration.
     """
     PHASE_UNSPECIFIED = 0
     REPLICATION = 1
@@ -3006,6 +3038,7 @@ class ScalingConfig(_messages.Message):
       scaling_factor(0.1))
 
   Fields:
+    autoscalingConfig: Optional. The autoscaling configuration.
     instanceSize: An enum of readable instance sizes, with each instance size
       mapping to a float value (e.g. InstanceSize.EXTRA_SMALL =
       scaling_factor(0.1))
@@ -3032,8 +3065,9 @@ class ScalingConfig(_messages.Message):
     LARGE = 4
     EXTRA_LARGE = 5
 
-  instanceSize = _messages.EnumField('InstanceSizeValueValuesEnum', 1)
-  scalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  instanceSize = _messages.EnumField('InstanceSizeValueValuesEnum', 2)
+  scalingFactor = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class ScheduledBackup(_messages.Message):
@@ -3188,6 +3222,7 @@ class Service(_messages.Message):
         used.
       ERROR: The metastore service has encountered an error and cannot be
         used. The metastore service should be deleted.
+      MIGRATING: The metastore service is processing a managed migration.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -3197,6 +3232,7 @@ class Service(_messages.Message):
     UPDATING = 5
     DELETING = 6
     ERROR = 7
+    MIGRATING = 8
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The tier of the service.

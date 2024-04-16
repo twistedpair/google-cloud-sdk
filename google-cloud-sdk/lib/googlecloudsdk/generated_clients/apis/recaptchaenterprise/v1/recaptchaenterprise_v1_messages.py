@@ -354,6 +354,10 @@ class GoogleCloudRecaptchaenterpriseV1EndpointVerificationInfo(_messages.Message
 class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   r"""The event being assessed.
 
+  Enums:
+    FraudPreventionValueValuesEnum: Optional. The Fraud Prevention setting for
+      this assessment.
+
   Fields:
     expectedAction: Optional. The expected action for this type of event. This
       should be the same action provided at token generation time on client-
@@ -365,6 +369,8 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       config assessment. If this flag is enabled, the firewall policy will be
       evaluated and a suggested firewall action will be returned in the
       response.
+    fraudPrevention: Optional. The Fraud Prevention setting for this
+      assessment.
     hashedAccountId: Optional. Deprecated: use `user_info.account_id` instead.
       Unique stable hashed user identifier for the request. The identifier
       must be hashed using hmac-sha256 with stable secret.
@@ -392,20 +398,39 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       enabled key.
   """
 
+  class FraudPreventionValueValuesEnum(_messages.Enum):
+    r"""Optional. The Fraud Prevention setting for this assessment.
+
+    Values:
+      FRAUD_PREVENTION_UNSPECIFIED: Default, unspecified setting. If opted in
+        for automatic detection, `fraud_prevention_assessment` is returned
+        based on the request. Otherwise, `fraud_prevention_assessment` is
+        returned if `transaction_data` is present in the `Event` and Fraud
+        Prevention is enabled in the Google Cloud console.
+      ENABLED: Enable Fraud Prevention for this assessment, if Fraud
+        Prevention is enabled in the Google Cloud console.
+      DISABLED: Disable Fraud Prevention for this assessment, regardless of
+        opt-in status or Google Cloud console settings.
+    """
+    FRAUD_PREVENTION_UNSPECIFIED = 0
+    ENABLED = 1
+    DISABLED = 2
+
   expectedAction = _messages.StringField(1)
   express = _messages.BooleanField(2)
   firewallPolicyEvaluation = _messages.BooleanField(3)
-  hashedAccountId = _messages.BytesField(4)
-  headers = _messages.StringField(5, repeated=True)
-  ja3 = _messages.StringField(6)
-  requestedUri = _messages.StringField(7)
-  siteKey = _messages.StringField(8)
-  token = _messages.StringField(9)
-  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 10)
-  userAgent = _messages.StringField(11)
-  userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 12)
-  userIpAddress = _messages.StringField(13)
-  wafTokenAssessment = _messages.BooleanField(14)
+  fraudPrevention = _messages.EnumField('FraudPreventionValueValuesEnum', 4)
+  hashedAccountId = _messages.BytesField(5)
+  headers = _messages.StringField(6, repeated=True)
+  ja3 = _messages.StringField(7)
+  requestedUri = _messages.StringField(8)
+  siteKey = _messages.StringField(9)
+  token = _messages.StringField(10)
+  transactionData = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TransactionData', 11)
+  userAgent = _messages.StringField(12)
+  userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 13)
+  userIpAddress = _messages.StringField(14)
+  wafTokenAssessment = _messages.BooleanField(15)
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):

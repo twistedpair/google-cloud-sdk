@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import multitype
 from googlecloudsdk.command_lib.secrets import completers as secrets_completers
@@ -265,6 +266,33 @@ def AddUpdateVersionDestroyTTL(parser, positional=False, **kwargs):
       _ArgOrFlag('remove-version-destroy-ttl', False),
       action='store_true',
       help='If set, removes the version destroy TTL from the secret.',
+      **kwargs,
+  )
+
+
+def AddUpdateRegionalKmsKey(
+    parser: parser_arguments.ArgumentInterceptor,
+    positional: bool = False,
+    **kwargs
+)-> None:
+  """Add flags for specifying regional cmek on secret updates.
+
+  Args:
+      parser: Given argument parser.
+      positional : Whether the argument is positional.
+      **kwargs: Extra arguments.
+  """
+  group = parser.add_group(mutex=True, help='regional kms key.', hidden=True)
+  group.add_argument(
+      _ArgOrFlag('regional-kms-key-name', positional),
+      metavar='REGIONAL-KMS-KEY-NAME',
+      help='regional kms key name for regional secret.',
+      **kwargs,
+  )
+  group.add_argument(
+      _ArgOrFlag('remove-regional-kms-key-name', False),
+      action='store_true',
+      help='If set, removes the regional kms key.',
       **kwargs,
   )
 
@@ -616,54 +644,29 @@ def GetRegionalVersionResourceSpec():
 # Resource parsers
 
 
-def ParseProjectRef(ref, **kwargs):
-  kwargs['collection'] = 'secretmanager.projects'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+def ParseSecretRef(ref):
+  return resources.REGISTRY.Parse(
+      ref, collection='secretmanager.projects.secrets'
+  )
 
 
-def ParseLocationRef(ref, **kwargs):
-  kwargs['collection'] = 'secretmanager.projects.locations'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+def ParseVersionRef(ref):
+  return resources.REGISTRY.Parse(
+      ref, collection='secretmanager.projects.secrets.versions'
+  )
 
 
-def ParseSecretRef(ref, **kwargs):
-  kwargs['collection'] = 'secretmanager.projects.secrets'
-  return resources.REGISTRY.Parse(ref, **kwargs)
-
-
-# TODO(b/309085813) Refactor Usage of ParseXRef() with
-# resources.REGISTRY.Parse(ref, collection=...'
-def ParseRegionalSecretRef(ref, **kwargs):
-  """Parses regional section secret into 'secretmanager.projects.locations.secrets' format .
-
-  Args:
-    ref: resource name of regional secret.
-    **kwargs: extra arguments.
-
-  Returns:
-    Parsed secret.
-  """
-  kwargs['collection'] = 'secretmanager.projects.locations.secrets'
-  return resources.REGISTRY.Parse(ref, **kwargs)
-
-
-def ParseVersionRef(ref, **kwargs):
-  kwargs['collection'] = 'secretmanager.projects.secrets.versions'
-  return resources.REGISTRY.Parse(ref, **kwargs)
-
-
-def ParseRegionalVersionRef(ref, **kwargs):
+def ParseRegionalVersionRef(ref):
   """Parses regional section version into 'secretmanager.projects.locations.secrets.versions' format .
 
   Args:
     ref: resource name of regional secret version.
-    **kwargs: extra arguments.
-
   Returns:
     Parsed secret version.
   """
-  kwargs['collection'] = 'secretmanager.projects.locations.secrets.versions'
-  return resources.REGISTRY.Parse(ref, **kwargs)
+  return resources.REGISTRY.Parse(
+      ref, collection='secretmanager.projects.locations.secrets.versions'
+  )
 
 
 def MakeGetUriFunc(collection: str, api_version: str = 'v1'):

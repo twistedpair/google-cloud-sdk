@@ -7698,6 +7698,10 @@ class TemplateMetadata(_messages.Message):
   r"""Metadata describing a template.
 
   Fields:
+    defaultStreamingMode: Optional. Indicates the default streaming mode for a
+      streaming template. Only valid if both supports_at_least_once and
+      supports_exactly_once are true. Possible values: UNSPECIFIED,
+      EXACTLY_ONCE and AT_LEAST_ONCE
     description: Optional. A description of the template.
     name: Required. The name of the template.
     parameters: The parameters for the template.
@@ -7708,12 +7712,13 @@ class TemplateMetadata(_messages.Message):
       supports exactly once mode.
   """
 
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
-  parameters = _messages.MessageField('ParameterMetadata', 3, repeated=True)
-  streaming = _messages.BooleanField(4)
-  supportsAtLeastOnce = _messages.BooleanField(5)
-  supportsExactlyOnce = _messages.BooleanField(6)
+  defaultStreamingMode = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  parameters = _messages.MessageField('ParameterMetadata', 4, repeated=True)
+  streaming = _messages.BooleanField(5)
+  supportsAtLeastOnce = _messages.BooleanField(6)
+  supportsExactlyOnce = _messages.BooleanField(7)
 
 
 class TemplateVersion(_messages.Message):

@@ -134,6 +134,11 @@ def GetGuestPolicyRelativePath(parent, guest_policy):
   return '/'.join([parent, 'guestPolicies', guest_policy])
 
 
+def GetOsPolicyAssignmentRelativePath(parent, os_policy_assignment):
+  """Returns the relative path of an osconfig os policy assignment."""
+  return '/'.join([parent, 'osPolicyAssignments', os_policy_assignment])
+
+
 def GetApiMessage(api_version):
   """Returns the messages module with the given api_version."""
   return apis.GetMessagesModule('osconfig', api_version)

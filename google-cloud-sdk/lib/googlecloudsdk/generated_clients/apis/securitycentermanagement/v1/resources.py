@@ -74,6 +74,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS_SECURITYCENTERSERVICES = (
+      'folders.locations.securityCenterServices',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/'
+              'securityCenterServices/{securityCenterServicesId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_LOCATIONS_SECURITYHEALTHANALYTICSCUSTOMMODULES = (
       'folders.locations.securityHealthAnalyticsCustomModules',
       '{+name}',
@@ -132,6 +143,17 @@ class Collections(enum.Enum):
               'organizations/{organizationsId}/locations/{locationsId}/'
               'eventThreatDetectionCustomModules/'
               '{eventThreatDetectionCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SECURITYCENTERSERVICES = (
+      'organizations.locations.securityCenterServices',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'securityCenterServices/{securityCenterServicesId}',
       },
       ['name'],
       True
@@ -197,6 +219,17 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'eventThreatDetectionCustomModules/'
               '{eventThreatDetectionCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SECURITYCENTERSERVICES = (
+      'projects.locations.securityCenterServices',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'securityCenterServices/{securityCenterServicesId}',
       },
       ['name'],
       True

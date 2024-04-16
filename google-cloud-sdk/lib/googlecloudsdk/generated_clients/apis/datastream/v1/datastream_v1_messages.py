@@ -13,6 +13,13 @@ from apitools.base.py import extra_types
 package = 'datastream'
 
 
+class AppendOnly(_messages.Message):
+  r"""AppendOnly mode defines that all changes to a table will be written to
+  the destination table.
+  """
+
+
+
 class AvroFileFormat(_messages.Message):
   r"""AVRO file format configuration."""
 
@@ -108,18 +115,22 @@ class BigQueryDestinationConfig(_messages.Message):
   r"""BigQuery destination configuration
 
   Fields:
+    appendOnly: Append only mode
     dataFreshness: The guaranteed data freshness (in seconds) when querying
       tables created by the stream. Editing this field will only affect new
       tables created in the future, but existing tables will not be impacted.
       Lower values mean that queries will return fresher data, but may result
       in higher cost.
+    merge: The standard mode
     singleTargetDataset: Single destination dataset.
     sourceHierarchyDatasets: Source hierarchy datasets.
   """
 
-  dataFreshness = _messages.StringField(1)
-  singleTargetDataset = _messages.MessageField('SingleTargetDataset', 2)
-  sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 3)
+  appendOnly = _messages.MessageField('AppendOnly', 1)
+  dataFreshness = _messages.StringField(2)
+  merge = _messages.MessageField('Merge', 3)
+  singleTargetDataset = _messages.MessageField('SingleTargetDataset', 4)
+  sourceHierarchyDatasets = _messages.MessageField('SourceHierarchyDatasets', 5)
 
 
 class BigQueryProfile(_messages.Message):
@@ -1257,6 +1268,13 @@ class LookupStreamObjectRequest(_messages.Message):
   """
 
   sourceObjectIdentifier = _messages.MessageField('SourceObjectIdentifier', 1)
+
+
+class Merge(_messages.Message):
+  r"""Merge mode defines that all changes to a table will be merged at the
+  destination table.
+  """
+
 
 
 class MostRecentStartPosition(_messages.Message):

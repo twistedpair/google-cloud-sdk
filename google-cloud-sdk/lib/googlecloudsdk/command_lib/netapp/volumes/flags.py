@@ -497,6 +497,32 @@ def AddVolumeMultipleEndpointsArg(parser):
       help="""Boolean flag indicating whether Volume is a multiple endpoints Volume or not"""
   )
 
+
+def AddVolumeTieringPolicyArg(parser, messages):
+  """Adds the --tiering-policy arg to the arg parser."""
+  tiering_policy_arg_spec = {
+      'tier-action': messages.TieringPolicy.TierActionValueValuesEnum,
+      'cooling-threshold-days': int,
+  }
+  tiering_policy_help = """\
+      Tiering Policy contains auto tiering policy on a volume.
+
+      Tiering Policy will have the following format
+      --tiering-policy=tier-action=TIER_ACTION,
+      cooling-threshold-days=COOLING_THRESHOLD_DAYS
+
+      tier-action is an enum, supported values are ENABLED or PAUSED,
+cooling-threshold-days is an integer represents time in days to mark the
+volume's data block as cold and make it eligible for tiering,
+can be range from 7-183. Default is 31.
+  """
+  parser.add_argument(
+      '--tiering-policy',
+      type=arg_parsers.ArgDict(spec=tiering_policy_arg_spec),
+      metavar='tier-action=ENABLED|PAUSED',
+      help=tiering_policy_help,
+      hidden=True
+  )
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 
 
@@ -533,6 +559,7 @@ def AddVolumeCreateArgs(parser, release_track):
       release_track == calliope_base.ReleaseTrack.BETA):
     AddVolumeLargeCapacityArg(parser)
     AddVolumeMultipleEndpointsArg(parser)
+    AddVolumeTieringPolicyArg(parser, messages)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -574,4 +601,7 @@ def AddVolumeUpdateArgs(parser, release_track):
       release_track == calliope_base.ReleaseTrack.GA):
     AddVolumeBackupConfigArg(parser)
     AddVolumeSourceBackupArg(parser)
+  if (release_track == calliope_base.ReleaseTrack.ALPHA or
+      release_track == calliope_base.ReleaseTrack.BETA):
+    AddVolumeTieringPolicyArg(parser, messages)
   labels_util.AddUpdateLabelsFlags(parser)

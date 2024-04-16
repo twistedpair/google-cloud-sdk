@@ -2291,127 +2291,6 @@ class BeyondcorpProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class BeyondcorpProjectsLocationsGlobalSecurityGatewaysCreateRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsGlobalSecurityGatewaysCreateRequest object.
-
-  Fields:
-    googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway: A
-      GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway resource to
-      be passed as the request body.
-    parent: Required. The resource project name of the SecurityGateway
-      location using the form: `projects/{project_id}/locations/global`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore request if it has already been completed. The server
-      will guarantee that for at least 60 minutes since the first request.
-    securityGatewayId: Optional. User-settable SecurityGateway resource ID. *
-      Must start with a letter. * Must contain between 4-63 characters from
-      `/a-z-/`. * Must end with a number or letter.
-  """
-
-  googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  securityGatewayId = _messages.StringField(4)
-
-
-class BeyondcorpProjectsLocationsGlobalSecurityGatewaysDeleteRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsGlobalSecurityGatewaysDeleteRequest object.
-
-  Fields:
-    name: Required. BeyondCorp SecurityGateway name using the form: `projects/
-      {project_id}/locations/global/securityGateways/{security_gateway_id}`
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validates request by executing a dry-run
-      which would not alter the resource in any way.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
-
-
-class BeyondcorpProjectsLocationsGlobalSecurityGatewaysGetRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsGlobalSecurityGatewaysGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the PartnerTenant using the form: `pr
-      ojects/{project_id}/locations/global/securityGateway/{security_gateway_i
-      d}`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BeyondcorpProjectsLocationsGlobalSecurityGatewaysListRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsGlobalSecurityGatewaysListRequest object.
-
-  Fields:
-    filter: Optional. A filter specifying constraints of a list operation. All
-      fields in the SecurityGateway message are supported. For example, the
-      following query will return the SecurityGateway with displayName "test-
-      security-gateway" For more information, please refer to
-      https://google.aip.dev/160.
-    orderBy: Optional. Specifies the ordering of results. See [Sorting
-      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
-      r) for more information.
-    pageSize: Optional. The maximum number of items to return. If not
-      specified, a default value of 50 will be used by the service. Regardless
-      of the page_size value, the response may include a partial list and a
-      caller should only rely on response's next_page_token to determine if
-      there are more instances left to be queried.
-    pageToken: Optional. The next_page_token value returned from a previous
-      ListSecurityGatewayRequest, if any.
-    parent: Required. The parent location to which the resources belong.
-      `projects/{project_id}/locations/global/`
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class BeyondcorpProjectsLocationsGlobalSecurityGatewaysPatchRequest(_messages.Message):
-  r"""A BeyondcorpProjectsLocationsGlobalSecurityGatewaysPatchRequest object.
-
-  Fields:
-    googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway: A
-      GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway resource to
-      be passed as the request body.
-    name: Identifier. Name of the resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request timed out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mutable fields include: display_name,
-      gateway_regions.
-  """
-
-  googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest object.
 
@@ -2707,6 +2586,128 @@ class BeyondcorpProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest object.
+
+  Fields:
+    googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway: A
+      GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway resource to
+      be passed as the request body.
+    parent: Required. The resource project name of the SecurityGateway
+      location using the form: `projects/{project_id}/locations/{location_id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore request if it has already been completed. The server
+      will guarantee that for at least 60 minutes since the first request.
+    securityGatewayId: Optional. User-settable SecurityGateway resource ID. *
+      Must start with a letter. * Must contain between 4-63 characters from
+      `/a-z-/`. * Must end with a number or letter.
+  """
+
+  googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway', 1)
+  parent = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  securityGatewayId = _messages.StringField(4)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest object.
+
+  Fields:
+    name: Required. BeyondCorp SecurityGateway name using the form: `projects/
+      {project_id}/locations/{location_id}/securityGateways/{security_gateway_
+      id}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validates request by executing a dry-run
+      which would not alter the resource in any way.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysGetRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the PartnerTenant using the form: `pr
+      ojects/{project_id}/locations/{location_id}/securityGateway/{security_ga
+      teway_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysListRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysListRequest object.
+
+  Fields:
+    filter: Optional. A filter specifying constraints of a list operation. All
+      fields in the SecurityGateway message are supported. For example, the
+      following query will return the SecurityGateway with displayName "test-
+      security-gateway" For more information, please refer to
+      https://google.aip.dev/160.
+    orderBy: Optional. Specifies the ordering of results. See [Sorting
+      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
+      r) for more information.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListSecurityGatewayRequest, if any.
+    parent: Required. The parent location to which the resources belong.
+      `projects/{project_id}/locations/{location_id}/`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest object.
+
+  Fields:
+    googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway: A
+      GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway resource to
+      be passed as the request body.
+    name: Identifier. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request timed out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Mutable fields include: display_name,
+      gateway_regions.
+  """
+
+  googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class CloudPubSubNotificationConfig(_messages.Message):
@@ -4507,20 +4508,6 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse(_
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class GoogleCloudBeyondcorpSecuritygatewaysV1alphaRegionConfig(_messages.Message):
-  r"""Message contains the configuration for each supported region for the
-  securityGateway instance.
-
-  Fields:
-    egressIpAddresses: Output only. External IP addresses that will be used
-      for establishing connection to the egress endpoints.
-    region: Required. The region where the egress connectivity is required.
-  """
-
-  egressIpAddresses = _messages.StringField(1, repeated=True)
-  region = _messages.StringField(2)
-
-
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Message):
   r"""Information about a BeyoncCorp SecurityGateway resource.
 
@@ -4532,9 +4519,9 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
     createTime: Output only. Timestamp when the resource was created.
     displayName: Optional. An arbitrary user-provided name for the
       SecurityGateway. Cannot exceed 64 characters.
+    egressIpAddresses: Output only. IP addresses that will be used for
+      establishing connection to the egress endpoints.
     name: Identifier. Name of the resource.
-    regionConfigs: Optional. List of regions where the egress connectivity is
-      required.
     state: Output only. The operational state of the SecurityGateway.
     updateTime: Output only. Timestamp when the resource was last modified.
   """
@@ -4563,8 +4550,8 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  regionConfigs = _messages.MessageField('GoogleCloudBeyondcorpSecuritygatewaysV1alphaRegionConfig', 4, repeated=True)
+  egressIpAddresses = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
 

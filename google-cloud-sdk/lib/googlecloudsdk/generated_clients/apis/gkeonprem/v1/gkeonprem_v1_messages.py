@@ -729,6 +729,8 @@ class BareMetalClusterUpgradePolicy(_messages.Message):
   Fields:
     controlPlaneOnly: Controls whether upgrade applies to only the control
       plane.
+    pause: Output only. Pause is used to show the upgrade pause status. It's
+      view only for now.
     policy: Specifies which upgrade policy to use.
   """
 
@@ -745,7 +747,8 @@ class BareMetalClusterUpgradePolicy(_messages.Message):
     CONCURRENT = 2
 
   controlPlaneOnly = _messages.BooleanField(1)
-  policy = _messages.EnumField('PolicyValueValuesEnum', 2)
+  pause = _messages.BooleanField(2)
+  policy = _messages.EnumField('PolicyValueValuesEnum', 3)
 
 
 class BareMetalControlPlaneConfig(_messages.Message):
@@ -1634,6 +1637,8 @@ class BareMetalStandaloneClusterUpgradePolicy(_messages.Message):
   Fields:
     controlPlaneOnly: Controls whether upgrade applies to only the control
       plane.
+    pause: Output only. Pause is used to show the upgrade pause status. It's
+      view only for now.
     policy: Specifies which upgrade policy to use.
   """
 
@@ -1650,7 +1655,8 @@ class BareMetalStandaloneClusterUpgradePolicy(_messages.Message):
     CONCURRENT = 2
 
   controlPlaneOnly = _messages.BooleanField(1)
-  policy = _messages.EnumField('PolicyValueValuesEnum', 2)
+  pause = _messages.BooleanField(2)
+  policy = _messages.EnumField('PolicyValueValuesEnum', 3)
 
 
 class BareMetalStandaloneControlPlaneConfig(_messages.Message):
@@ -2769,6 +2775,8 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersGetRequest(_messages.Messa
       `FULL', which returns the complete cluster configuration details.
 
   Fields:
+    allowMissing: Optional. If true, return BareMetal Admin Cluster including
+      the one that only exists in RMS.
     name: Required. Name of the bare metal admin cluster to get. Format: "proj
       ects/{project}/locations/{location}/bareMetalAdminClusters/{bare_metal_a
       dmin_cluster}"
@@ -2797,8 +2805,9 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersGetRequest(_messages.Messa
     BASIC = 1
     FULL = 2
 
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(_messages.Message):
@@ -2812,6 +2821,8 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(_messages.Mess
       details.
 
   Fields:
+    allowMissing: Optional. If true, return list of BareMetal Admin Clusters
+      including the ones that only exists in RMS.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, at most 50 clusters will be returned. The
       maximum value is 1000; values above 1000 will be coerced to 1000.
@@ -2844,10 +2855,11 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersListRequest(_messages.Mess
     BASIC = 1
     FULL = 2
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  allowMissing = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class GkeonpremProjectsLocationsBareMetalAdminClustersOperationsGetRequest(_messages.Message):
@@ -3408,6 +3420,8 @@ class GkeonpremProjectsLocationsBareMetalClustersGetRequest(_messages.Message):
       details.
 
   Fields:
+    allowMissing: Optional. If true, return BareMetal Cluster including the
+      one that only exists in RMS.
     name: Required. Name of the bare metal user cluster to get. Format: "proje
       cts/{project}/locations/{location}/bareMetalClusters/{bare_metal_cluster
       }"
@@ -3436,8 +3450,9 @@ class GkeonpremProjectsLocationsBareMetalClustersGetRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
@@ -3451,6 +3466,8 @@ class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
       details.
 
   Fields:
+    allowMissing: Optional. If true, return list of BareMetal Clusters
+      including the ones that only exists in RMS.
     filter: A resource filtering expression following
       https://google.aip.dev/160. When non-empty, only resource's whose
       attributes field matches the filter are returned.
@@ -3486,11 +3503,12 @@ class GkeonpremProjectsLocationsBareMetalClustersListRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
+  allowMissing = _messages.BooleanField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersOperationsGetRequest(_messages.Message):
@@ -4073,6 +4091,8 @@ class GkeonpremProjectsLocationsVmwareAdminClustersGetRequest(_messages.Message)
       `FULL', which returns the complete cluster configuration details.
 
   Fields:
+    allowMissing: Optional. If true, return Vmware Admin Cluster including the
+      one that only exists in RMS.
     name: Required. Name of the VMware admin cluster to be returned. Format: "
       projects/{project}/locations/{location}/vmwareAdminClusters/{vmware_admi
       n_cluster}"
@@ -4101,8 +4121,9 @@ class GkeonpremProjectsLocationsVmwareAdminClustersGetRequest(_messages.Message)
     BASIC = 1
     FULL = 2
 
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersListRequest(_messages.Message):
@@ -4116,6 +4137,8 @@ class GkeonpremProjectsLocationsVmwareAdminClustersListRequest(_messages.Message
       details.
 
   Fields:
+    allowMissing: Optional. If true, return list of Vmware Admin Clusters
+      including the ones that only exists in RMS.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, at most 50 clusters will be returned. The
       maximum value is 1000; values above 1000 will be coerced to 1000.
@@ -4148,10 +4171,11 @@ class GkeonpremProjectsLocationsVmwareAdminClustersListRequest(_messages.Message
     BASIC = 1
     FULL = 2
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  allowMissing = _messages.BooleanField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersOperationsGetRequest(_messages.Message):
@@ -4363,6 +4387,8 @@ class GkeonpremProjectsLocationsVmwareClustersGetRequest(_messages.Message):
       details.
 
   Fields:
+    allowMissing: Optional. If true, return Vmware Cluster including the one
+      that only exists in RMS.
     name: Required. Name of the VMware user cluster to be returned. Format:
       "projects/{project}/locations/{location}/vmwareClusters/{vmware_cluster}
       "
@@ -4390,8 +4416,9 @@ class GkeonpremProjectsLocationsVmwareClustersGetRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  name = _messages.StringField(1, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 2)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
 class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
@@ -4404,6 +4431,8 @@ class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
       as `FULL', which returns the complete cluster configuration details.
 
   Fields:
+    allowMissing: Optional. If true, return list of Vmware Clusters including
+      the ones that only exists in RMS.
     filter: A resource filtering expression following
       https://google.aip.dev/160. When non-empty, only resource's whose
       attributes field matches the filter are returned.
@@ -4438,11 +4467,12 @@ class GkeonpremProjectsLocationsVmwareClustersListRequest(_messages.Message):
     BASIC = 1
     FULL = 2
 
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  view = _messages.EnumField('ViewValueValuesEnum', 5)
+  allowMissing = _messages.BooleanField(1)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
 class GkeonpremProjectsLocationsVmwareClustersOperationsGetRequest(_messages.Message):

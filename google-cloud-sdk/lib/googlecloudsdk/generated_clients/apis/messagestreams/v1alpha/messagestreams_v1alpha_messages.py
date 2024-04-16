@@ -825,8 +825,6 @@ class SaslAuthConfig(_messages.Message):
     MechanismValueValuesEnum:
 
   Fields:
-    authzId: Optional. Optional authorization identity (identity to act as),
-      if different from the username.
     mechanism: A MechanismValueValuesEnum attribute.
     passwordSecret: Required. The password for the authentication identity may
       be loaded from Secret Manager.
@@ -847,10 +845,9 @@ class SaslAuthConfig(_messages.Message):
     SHA_256 = 2
     SHA_512 = 3
 
-  authzId = _messages.StringField(1)
-  mechanism = _messages.EnumField('MechanismValueValuesEnum', 2)
-  passwordSecret = _messages.StringField(3)
-  username = _messages.StringField(4)
+  mechanism = _messages.EnumField('MechanismValueValuesEnum', 1)
+  passwordSecret = _messages.StringField(2)
+  username = _messages.StringField(3)
 
 
 class Schema(_messages.Message):

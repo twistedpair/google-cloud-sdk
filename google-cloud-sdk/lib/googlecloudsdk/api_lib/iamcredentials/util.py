@@ -31,6 +31,9 @@ from googlecloudsdk.core import transport
 from oauth2client import client
 
 
+IAM_ENDPOINT_GDU = 'https://iamcredentials.googleapis.com/'
+
+
 class Error(core_exceptions.Error):
   """Exception that are defined by this module."""
 
@@ -109,6 +112,29 @@ def GenerateIdToken(service_account_id, audience, include_email=False):
       )
   )
   return response.token
+
+
+def GetEffectiveIamEndpoint():
+  """Returns the effective IAM endpoint.
+
+  (1) If the [api_endpoint_overrides/iamcredentials] property is explicitly set,
+  return the property value.
+  (2) Otherwise if [core/universe_domain] value is not default, return
+  "https://iamcredentials.{universe_domain_value}/".
+  (3) Otherise return "https://iamcredentials.googleapis.com/"
+
+  Returns:
+    str: The effective IAM endpoint.
+  """
+  if properties.VALUES.api_endpoint_overrides.iamcredentials.IsExplicitlySet():
+    return properties.VALUES.api_endpoint_overrides.iamcredentials.Get()
+
+  universe_domain_property = properties.VALUES.core.universe_domain
+  if universe_domain_property.Get() != universe_domain_property.default:
+    return IAM_ENDPOINT_GDU.replace(
+        'googleapis.com', universe_domain_property.Get()
+    )
+  return IAM_ENDPOINT_GDU
 
 
 class ImpersonationAccessTokenProvider(object):
@@ -206,46 +232,26 @@ class ImpersonationAccessTokenProvider(object):
     # pylint: disable=g-import-not-at-top
     from google.auth import impersonated_credentials as google_auth_impersonated_credentials
     # pylint: enable=g-import-not-at-top
-    iamcredentials_property = (
-        properties.VALUES.api_endpoint_overrides.iamcredentials
-    )
-    universe_domain_property = properties.VALUES.core.universe_domain
 
-    if iamcredentials_property.IsExplicitlySet():
-      google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
-              'https://iamcredentials.googleapis.com/',
-              iamcredentials_property.Get(),
-          )
-      )
-      google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
-              'https://iamcredentials.googleapis.com/',
-              iamcredentials_property.Get(),
-          )
-      )
-      google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
-              'https://iamcredentials.googleapis.com/',
-              iamcredentials_property.Get(),
-          )
-      )
-    elif universe_domain_property.Get() != universe_domain_property.default:
-      google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
-              'googleapis.com', universe_domain_property.Get()
-          )
-      )
-      google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
-              'googleapis.com', universe_domain_property.Get()
-          )
-      )
-      google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
-          google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
-              'googleapis.com', universe_domain_property.Get()
-          )
-      )
+    effective_iam_endpoint = GetEffectiveIamEndpoint()
+    google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
+            IAM_ENDPOINT_GDU,
+            effective_iam_endpoint,
+        )
+    )
+    google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
+            IAM_ENDPOINT_GDU,
+            effective_iam_endpoint,
+        )
+    )
+    google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
+            IAM_ENDPOINT_GDU,
+            effective_iam_endpoint,
+        )
+    )
 
 
 class ImpersonationCredentials(client.OAuth2Credentials):

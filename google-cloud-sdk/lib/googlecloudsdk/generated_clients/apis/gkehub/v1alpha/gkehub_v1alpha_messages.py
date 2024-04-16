@@ -892,6 +892,44 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
 
 
+class CompliancePostureConfig(_messages.Message):
+  r"""CompliancePostureConfig defines the settings needed to enable/disable
+  features for the Compliance Posture.
+
+  Enums:
+    ModeValueValuesEnum: Defines the enablement mode for Compliance Posture.
+
+  Fields:
+    complianceStandards: List of enabled compliance standards.
+    mode: Defines the enablement mode for Compliance Posture.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Defines the enablement mode for Compliance Posture.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Compliance Posture features on the cluster.
+      ENABLED: Enables Compliance Posture features on the cluster.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    ENABLED = 2
+
+  complianceStandards = _messages.MessageField('ComplianceStandard', 1, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+
+
+class ComplianceStandard(_messages.Message):
+  r"""A ComplianceStandard object.
+
+  Fields:
+    standard: Name of the compliance standard.
+  """
+
+  standard = _messages.StringField(1)
+
+
 class Condition(_messages.Message):
   r"""A condition to be met.
 
@@ -2168,12 +2206,14 @@ class DefaultClusterConfig(_messages.Message):
   Fields:
     binaryAuthorizationConfig: Optional. Enable/Disable binary authorization
       features for the cluster.
+    compliancePostureConfig: A CompliancePostureConfig attribute.
     securityPostureConfig: Enable/Disable Security Posture features for the
       cluster.
   """
 
   binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
+  compliancePostureConfig = _messages.MessageField('CompliancePostureConfig', 2)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 3)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -8084,7 +8124,7 @@ class ServiceMeshMembershipState(_messages.Message):
 
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers.
-    conditions: List of condition reporting membership statues
+    conditions: Output only. List of condition reporting membership statues
     configApiVersion: The API version (i.e. Istio CRD version) for configuring
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.

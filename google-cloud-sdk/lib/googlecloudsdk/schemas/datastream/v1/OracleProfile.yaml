@@ -39,6 +39,9 @@ properties:
   hostname:
     description: Hostname for the Oracle connection.
     type: string
+  oracleSslConfig:
+    description: SSL configuration for the Oracle connection.
+    $ref: OracleSslConfig.yaml
   password:
     description: Password for the Oracle connection.
     type: string

@@ -111,81 +111,49 @@ def ExternalVpnGatewayArgumentForVpnTunnel(required=False):
   )
 
 
-def AddCreateExternalVpnGatewayArgs(parser, is_ipv6_supported=None):
+def AddCreateExternalVpnGatewayArgs(parser):
   """Adds common arguments for creating external VPN gateways."""
 
   parser.add_argument(
       '--description', help='Textual description of the External VPN Gateway.'
   )
 
-  if is_ipv6_supported:
-    parser.add_argument(
-        '--interfaces',
-        required=True,
-        metavar=ALLOWED_METAVAR,
-        type=arg_parsers.ArgList(min_length=0, max_length=4),
-        help="""\
-        Map of interfaces from interface ID to interface IP address for the External VPN Gateway.
+  parser.add_argument(
+      '--interfaces',
+      required=True,
+      metavar=ALLOWED_METAVAR,
+      type=arg_parsers.ArgList(min_length=0, max_length=4),
+      help="""\
+      Map of interfaces from interface ID to interface IP address for the External VPN Gateway.
 
-        There can be one, two, or four interfaces in the map.
+      There can be one, two, or four interfaces in the map.
 
-        For example, to create an external VPN gateway with one interface:
+      For example, to create an external VPN gateway with one interface:
 
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0
+        $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0
 
-        To create an external VPN gateway with two interfaces:
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0,1=192.0.2.1
+      To create an external VPN gateway with two interfaces:
+        $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0,1=192.0.2.1
 
-        To create an external VPN gateway with four interfaces:
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0,1=192.0.2.1,2=192.0.2.3,3=192.0.2.4
+      To create an external VPN gateway with four interfaces:
+        $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=192.0.2.0,1=192.0.2.1,2=192.0.2.3,3=192.0.2.4
 
-        To create an external VPN gateway with IPv6 addresses on four interfaces:
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=2001:db8::1,1=2001:db8::2,2=2001:db8::3,3=2001:db8::4
+      To create an external VPN gateway with IPv6 addresses on four interfaces:
+        $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=2001:db8::1,1=2001:db8::2,2=2001:db8::3,3=2001:db8::4
 
-        Note that the redundancy type of the gateway will be automatically inferred based on the number
-        of interfaces provided:
+      Note that the redundancy type of the gateway will be automatically inferred based on the number
+      of interfaces provided:
 
-          1 interface: `SINGLE_IP_INTERNALLY_REDUNDANT`
+        1 interface: `SINGLE_IP_INTERNALLY_REDUNDANT`
 
-          2 interfaces: `TWO_IPS_REDUNDANCY`
+        2 interfaces: `TWO_IPS_REDUNDANCY`
 
-          4 interfaces: `FOUR_IPS_REDUNDANCY`
-        """,
-    )
-  else:
-    parser.add_argument(
-        '--interfaces',
-        required=True,
-        metavar=ALLOWED_METAVAR,
-        type=arg_parsers.ArgList(min_length=0, max_length=4),
-        help="""\
-        Map of interfaces from interface ID to interface IP address for the External VPN Gateway.
-
-        There can be one, two, or four interfaces in the map.
-
-        For example, to create an external VPN gateway with one interface:
-
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=8.9.9.9
-
-        To create an external VPN gateway with two interfaces:
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=8.9.9.9,1=8.9.9.10
-
-        To create an external VPN gateway with four interfaces:
-          $ {command} MY-EXTERNAL-GATEWAY --interfaces 0=8.9.9.9,1=8.9.9.10,2=8.9.9.11,3=8.9.9.12
-
-        Note that the redundancy type of the gateway will be automatically inferred based on the number
-        of interfaces provided:
-
-          1 interface: `SINGLE_IP_INTERNALLY_REDUNDANT`
-
-          2 interfaces: `TWO_IPS_REDUNDANCY`
-
-          4 interfaces: `FOUR_IPS_REDUNDANCY`
-        """,
-    )
+        4 interfaces: `FOUR_IPS_REDUNDANCY`
+      """,
+  )
 
 
-def ParseInterfaces(interfaces, message_classes, is_ipv6_supported=None):
+def ParseInterfaces(interfaces, message_classes):
   """Parses id=ip_address mappings from --interfaces command line."""
   if len(interfaces) != 1 and len(interfaces) != 2 and len(interfaces) != 4:
     raise exceptions.ArgumentError(
@@ -205,17 +173,15 @@ def ParseInterfaces(interfaces, message_classes, is_ipv6_supported=None):
       interface_list.append(interface)
       continue
 
-    match_ipv6 = False
-    if is_ipv6_supported:
-      match_ipv6 = LEGAL_IPV6_SPECS.match(spec)
-      if match_ipv6:
-        interface_id = match_ipv6.group('id')
-        ipv6_address = match_ipv6.group('ipv6Address')
-        interface = message_classes.ExternalVpnGatewayInterface(
-            id=int(interface_id), ipv6Address=ipv6_address
-        )
-        interface_list.append(interface)
-        continue
+    match_ipv6 = LEGAL_IPV6_SPECS.match(spec)
+    if match_ipv6:
+      interface_id = match_ipv6.group('id')
+      ipv6_address = match_ipv6.group('ipv6Address')
+      interface = message_classes.ExternalVpnGatewayInterface(
+          id=int(interface_id), ipv6Address=ipv6_address
+      )
+      interface_list.append(interface)
+      continue
 
     if not match_ipv4 and not match_ipv6:
       raise exceptions.ArgumentError(

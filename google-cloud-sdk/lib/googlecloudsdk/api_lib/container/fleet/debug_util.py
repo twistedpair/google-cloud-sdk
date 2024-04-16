@@ -89,6 +89,8 @@ def MeshInfoGenerator(args):
   target_project_number = ''
   meshes = ListMeshes()
   for mesh_info in meshes.meshes:
+    if mesh_info.description is None:
+      continue
     matcher = re.match(
         r'.*projects/(.*)/locations/(.*)/memberships/(.*): ',
         mesh_info.description,

@@ -56,3 +56,16 @@ class ResourceAllowancesClient(object):
     )
     delete_req = delete_req_type(name=resource_allowance_ref.RelativeName())
     return self.service.Delete(delete_req)
+
+  def Update(
+      self, resource_allowance_ref, resource_allowance_config, update_mask
+  ):
+    update_req_type = (
+        self.messages.BatchProjectsLocationsResourceAllowancesPatchRequest
+    )
+    update_req = update_req_type(
+        name=resource_allowance_ref.RelativeName(),
+        updateMask=','.join(update_mask),
+        resourceAllowance=resource_allowance_config,
+    )
+    return self.service.Patch(update_req)

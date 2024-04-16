@@ -16,10 +16,12 @@
 """Utilities for loading and parsing kubeconfig used for Connect Gateway."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
 import os
+from typing import Any
 
 from googlecloudsdk.api_lib.container import kubeconfig as container_kubeconfig
 from googlecloudsdk.core import config
@@ -45,7 +47,7 @@ GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME = 'gke_gcloud_auth_plugin_cache'
 class Kubeconfig(object):
   """Interface for interacting with a kubeconfig file."""
 
-  def __init__(self, raw_data, filename):
+  def __init__(self, raw_data: dict[str, Any], filename: str):
     self._filename = filename
     self._data = raw_data
     self.clusters = {}
@@ -82,6 +84,11 @@ class Kubeconfig(object):
     self._data['clusters'] = list(self.clusters.values())
     self._data['users'] = list(self.users.values())
     self._data['contexts'] = list(self.contexts.values())
+
+    # Dry-run yaml.dump with an empty stream to validate the kubeconfig.
+    # Otherwise, errors raised in the FileWriter context manager will result in
+    # the user's existing kubeconfig being overwritten with an empty file.
+    _ = yaml.dump(self._data, None)
     with file_utils.FileWriter(self._filename, private=True) as fp:
       yaml.dump(self._data, fp)
 
@@ -120,6 +127,32 @@ class Kubeconfig(object):
           filename, error.inner_error))
     cls._Validate(data)
     return cls(data, filename)
+
+  @classmethod
+  def LoadFromBytes(cls, raw_data: bytes, path: str = None) -> Kubeconfig:
+    """Parse a YAML kubeconfig.
+
+    Args:
+      raw_data: The YAML data to parse
+      path: The path to associate with the data. Defaults to calling
+        `Kubeconfig.DefaultPath()`.
+
+    Returns:
+      A `Kubeconfig` instance.
+
+    Raises:
+      Error: The data is not valid YAML.
+    """
+    try:
+      data = yaml.load(raw_data)
+    except yaml.Error as error:
+      raise Error(f'unable to parse kubeconfig bytes: {error.inner_error}')
+    cls._Validate(data)
+
+    if not path:
+      path = cls.DefaultPath()
+
+    return cls(data, path)
 
   @classmethod
   def LoadOrCreate(cls, filename):
@@ -165,22 +198,29 @@ class Kubeconfig(object):
               if platforms.OperatingSystem.IsWindows() else 'HOME'))
     return os.path.join(home_dir, '.kube', 'config')
 
-  def Merge(self, kubeconfig):
+  def Merge(self, kubeconfig: Kubeconfig, overwrite: bool = False) -> None:
     """Merge another kubeconfig into self.
 
-    In case of overlapping keys, the value in self is kept and the value in
-    the other kubeconfig is lost.
+    By default, in case of overlapping keys, the value in self is kept and the
+    value in the other kubeconfig is lost.
 
     Args:
       kubeconfig: a Kubeconfig instance
+      overwrite: whether to overwrite overlapping keys in self with data from
+        the other kubeconfig.
     """
-    self.SetCurrentContext(self.current_context or kubeconfig.current_context)
+    # Keys in left are preserved in the merge.
+    left, right = self, kubeconfig
+    if overwrite:
+      left, right = right, left
+
+    self.SetCurrentContext(left.current_context or right.current_context)
     self.clusters = dict(
-        list(kubeconfig.clusters.items()) + list(self.clusters.items()))
+        list(right.clusters.items()) + list(left.clusters.items()))
     self.users = dict(
-        list(kubeconfig.users.items()) + list(self.users.items()))
+        list(right.users.items()) + list(left.users.items()))
     self.contexts = dict(
-        list(kubeconfig.contexts.items()) + list(self.contexts.items()))
+        list(right.contexts.items()) + list(left.contexts.items()))
 
 
 def Cluster(name, server):

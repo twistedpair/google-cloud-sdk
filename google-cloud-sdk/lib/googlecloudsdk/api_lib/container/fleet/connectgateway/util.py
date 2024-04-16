@@ -14,9 +14,22 @@
 # limitations under the License.
 """Connect Gateway API utils."""
 
+from typing import Union
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.generated_clients.apis.connectgateway.v1alpha1 import connectgateway_v1alpha1_messages as messages_v1alpha1
 
+
+class TYPES:
+  # pylint: disable=invalid-name: Follows the naming convention of the generated client.
+  GenerateCredentialsResponse = Union[
+      messages_v1alpha1.GenerateCredentialsResponse
+  ]
+
+
+API_NAME = 'connectgateway'
+DEFAULT_TRACK = base.ReleaseTrack.ALPHA
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
@@ -25,11 +38,11 @@ VERSION_MAP = {
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(release_track=base.ReleaseTrack.GA):
-  api_version = VERSION_MAP.get(release_track)
-  return apis.GetMessagesModule('connectgateway', api_version)
+def GetMessagesModule(release_track=DEFAULT_TRACK):
+  api_version = VERSION_MAP.get(release_track, VERSION_MAP[DEFAULT_TRACK])
+  return apis.GetMessagesModule(API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.GA):
-  api_version = VERSION_MAP.get(release_track)
-  return apis.GetClientInstance('connectgateway', api_version)
+def GetClientInstance(release_track=DEFAULT_TRACK):
+  api_version = VERSION_MAP.get(release_track, VERSION_MAP[DEFAULT_TRACK])
+  return apis.GetClientInstance(API_NAME, api_version)

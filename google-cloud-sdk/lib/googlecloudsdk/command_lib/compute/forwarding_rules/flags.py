@@ -158,7 +158,7 @@ def ForwardingRuleArgumentForRoute(required=True):
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
 
-def ForwardingRuleArgumentForServiceAttachment(required=True):
+def ForwardingRuleArgumentForServiceAttachment(required=False):
   return compute_flags.ResourceArgument(
       resource_name='forwarding rule',
       name='--producer-forwarding-rule',

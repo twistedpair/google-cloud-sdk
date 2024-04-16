@@ -18,14 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import List
+
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
 from googlecloudsdk.api_lib.container import util as container_util
+from googlecloudsdk.api_lib.container.fleet.connectgateway import client as gateway_client
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container.fleet import api_util as hubapi_util
 from googlecloudsdk.command_lib.container.fleet import base as hub_base
 from googlecloudsdk.command_lib.container.fleet import gwkubeconfig_util as kconfig
+from googlecloudsdk.command_lib.container.fleet import overrides
 from googlecloudsdk.command_lib.container.fleet.memberships import errors as memberships_errors
 from googlecloudsdk.command_lib.container.fleet.memberships import util
 from googlecloudsdk.command_lib.projects import util as project_util
@@ -34,7 +38,10 @@ from googlecloudsdk.core import properties
 
 KUBECONTEXT_FORMAT = 'connectgateway_{project}_{location}_{membership}'
 SERVER_FORMAT = 'https://{service_name}/{version}/projects/{project_number}/locations/{location}/{collection}/{membership}'
-REQUIRED_PERMISSIONS = [
+REQUIRED_SERVER_PERMISSIONS = [
+    'gkehub.gateway.get',
+]
+REQUIRED_CLIENT_PERMISSIONS = [
     'gkehub.memberships.get',
     'gkehub.gateway.get',
     'serviceusage.services.get',
@@ -51,7 +58,7 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
     log.status.Print('Starting to build Gateway kubeconfig...')
     log.status.Print('Current project_id: ' + project_id)
 
-    self.RunIamCheck(project_id)
+    self.RunIamCheck(project_id, REQUIRED_CLIENT_PERMISSIONS)
     try:
       hub_endpoint_override = properties.VALUES.api_endpoint_overrides.Property(
           'gkehub'
@@ -100,6 +107,51 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
     )
     log.status.Print(msg)
 
+  def RunServerSide(
+      self,
+      membership_id: str,
+      arg_location: str,
+      force_use_agent: bool = False,
+  ):
+    """RunServerSide generates credentials using server-side kubeconfig generation.
+
+    Args:
+      membership_id: The short name of the membership to generate credentials
+        for.
+      arg_location: The location of the membership to generate credentials for.
+      force_use_agent: Whether to force the use of Connect Agent in generated
+        credentials.
+    """
+    log.status.Print('Fetching Gateway kubeconfig...')
+    container_util.CheckKubectlInstalled()
+    project_id = hub_base.HubCommand.Project()
+    project_number = hub_base.HubCommand.Project(number=True)
+
+    # Ensure at the minimum that the user has gkehub.gateway.get. This is
+    # because the user might have gkehub.gateway.generateCredentials but not
+    # gkehub.gateway.get, which would lead to unclear errors when using kubectl.
+    self.RunIamCheck(project_id, REQUIRED_SERVER_PERMISSIONS)
+
+    with overrides.RegionalGatewayEndpoint(arg_location):
+      client = gateway_client.GatewayClient(self.ReleaseTrack())
+      resp = client.GenerateCredentials(
+          name=f'projects/{project_number}/locations/{arg_location}/memberships/{membership_id}',
+          force_use_agent=force_use_agent,
+      )
+
+    new = kconfig.Kubeconfig.LoadFromBytes(resp.kubeconfig)
+    kubeconfig = kconfig.Kubeconfig.Default()
+    kubeconfig.Merge(new, overwrite=True)
+    # The returned kubeconfig should only have one context.
+    kubeconfig.SetCurrentContext(list(new.contexts.keys())[0])
+    kubeconfig.SaveToFile()
+
+    msg = (
+        f'A new kubeconfig entry "{kubeconfig.current_context}" has been'
+        ' generated and set as the current context.'
+    )
+    log.status.Print(msg)
+
   def KubeContext(self, project_id, location, membership, namespace=None):
     kc = KUBECONTEXT_FORMAT.format(
         project=project_id, location=location, membership=membership
@@ -108,13 +160,13 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
       kc += '_ns-' + namespace
     return kc
 
-  # Run IAM check, make sure caller has permission to use Gateway API.
-  def RunIamCheck(self, project_id):
+  def RunIamCheck(self, project_id: str, permissions: List[str]):
+    """Run an IAM check, making sure the caller has the necessary permissions to use the Gateway API."""
     project_ref = project_util.ParseProject(project_id)
-    result = projects_api.TestIamPermissions(project_ref, REQUIRED_PERMISSIONS)
+    result = projects_api.TestIamPermissions(project_ref, permissions)
     granted_permissions = result.permissions
 
-    if not set(REQUIRED_PERMISSIONS).issubset(set(granted_permissions)):
+    if not set(permissions).issubset(set(granted_permissions)):
       raise memberships_errors.InsufficientPermissionsError()
 
   def ReadClusterMembership(self, project_id, location, membership):

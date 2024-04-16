@@ -62,6 +62,7 @@ from dateutil import tz
 from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
@@ -963,6 +964,22 @@ def _ConcatList(existing_values, new_values):
   return existing_values
 
 
+def UniverseHelpText(default=None, universe_help=None):
+  """Returns a help text for universes.
+
+  Args:
+    default: str, help text for argument.
+    universe_help: str, additional specific help text for Universe.
+
+  Returns:
+    [str], The help text for argument.
+  """
+  if universe_help and not properties.IsDefaultUniverse():
+    return f'UNIVERSE INFO: {universe_help}\n\n{default}'
+
+  return default
+
+
 class ArgType(object):
   """Base class for arg types."""
 
@@ -996,6 +1013,26 @@ class ArgBoolean(ArgType):
     raise ArgumentTypeError(
         'Invalid flag value [{0}], expected one of [{1}]'.format(
             arg_value, ', '.join(self._truthy_strings + self._falsey_strings)))
+
+
+def ArgRequiredInUniverse(
+    default_universe: bool = False, non_default_universe: bool = True
+) -> bool:
+  """Determines if the arg is required based on the universe domain.
+
+  Args:
+    default_universe: Whether the arg is required in the default universe.
+      Defaults to False.
+    non_default_universe: Whether the arg is required outside of the default
+      universe. Defaults to True.
+
+  Returns:
+    bool, whether the arg is required in the current universe.
+  """
+
+  if properties.IsDefaultUniverse():
+    return default_universe
+  return non_default_universe
 
 
 class ArgList(usage_text.ArgTypeUsage, ArgType):

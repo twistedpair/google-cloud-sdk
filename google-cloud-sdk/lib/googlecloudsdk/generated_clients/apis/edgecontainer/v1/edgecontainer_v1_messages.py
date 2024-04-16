@@ -1743,16 +1743,9 @@ class VpcProject(_messages.Message):
   Fields:
     projectId: The project of the VPC to connect to. If not specified, it is
       the same as the cluster project.
-    serviceAccount: Optional. The service account in the VPC project
-      configured by user. It is used to create/delete Cloud Router and Cloud
-      HA VPNs for VPN connection. If this SA is changed during/after a VPN
-      connection is created, you need to remove the Cloud Router and Cloud VPN
-      resources in |project_id|. It is in the form of
-      service-{project_number}@gcp-sa-edgecontainer.iam.gserviceaccount.com.
   """
 
   projectId = _messages.StringField(1)
-  serviceAccount = _messages.StringField(2)
 
 
 class VpnConnection(_messages.Message):

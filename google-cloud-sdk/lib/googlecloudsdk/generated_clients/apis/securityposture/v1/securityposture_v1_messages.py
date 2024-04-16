@@ -730,10 +730,14 @@ class PolicyDetails(_messages.Message):
       CONSTRAINT_TYPE_UNSPECIFIED: <no description>
       SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
       ORG_POLICY_CUSTOM: <no description>
+      SECURITY_HEALTH_ANALYTICS_MODULE: SHA module constraint type.
+      ORG_POLICY: Org policy constraint type.
     """
     CONSTRAINT_TYPE_UNSPECIFIED = 0
     SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 1
     ORG_POLICY_CUSTOM = 2
+    SECURITY_HEALTH_ANALYTICS_MODULE = 3
+    ORG_POLICY = 4
 
   complianceStandards = _messages.StringField(1, repeated=True)
   constraint = _messages.StringField(2)

@@ -256,6 +256,9 @@ def provision_ldap_config(auth_method, msg):
     LDAP auth method for the IdentityServiceFeatureSpec.
   """
 
+  if 'name' not in auth_method:
+    raise exceptions.Error('LDAP Authentication method must contain name.')
+
   auth_method_proto = msg.IdentityServiceAuthMethod()
   auth_method_proto.name = auth_method['name']
   # Optional Auth Method Fields.
@@ -308,6 +311,9 @@ def provision_oidc_config(auth_method, msg):
     member_config: A MemberConfig configuration containing a single
       OIDC auth method for the IdentityServiceFeatureSpec.
   """
+  if 'name' not in auth_method:
+    raise exceptions.Error('OIDC Authentication method must contain name.')
+
   auth_method_proto = msg.IdentityServiceAuthMethod()
   auth_method_proto.name = auth_method['name']
   oidc_config = auth_method['oidc']
@@ -384,12 +390,14 @@ def provision_saml_config(auth_method, msg):
     msg: The gkehub messages package.
 
   Returns:
-    member_config: A MemberConfig configuration containing a single Google
+    member_config: A MemberConfig configuration containing a single SAML
     auth method for the IdentityServiceFeatureSpec.
   """
+  if 'name' not in auth_method:
+    raise exceptions.Error('SAML Authentication method must contain name.')
+
   auth_method_proto = msg.IdentityServiceAuthMethod()
   auth_method_proto.name = auth_method['name']
-  auth_method_proto.proxy = auth_method['proxy']
   saml_config = auth_method['saml']
 
   auth_method_proto.samlConfig = msg.IdentityServiceSamlConfig()
@@ -420,23 +428,34 @@ def provision_saml_config(auth_method, msg):
   auth_method_proto.samlConfig.identityProviderCertificates = saml_config[
       'idpCertificateDataList'
   ]
-  auth_method_proto.samlConfig.userAttribute = saml_config['userAttribute']
-  auth_method_proto.samlConfig.groupsAttribute = saml_config['groupsAttribute']
-  auth_method_proto.samlConfig.userPrefix = saml_config['userPrefix']
-  auth_method_proto.samlConfig.groupPrefix = saml_config['groupPrefix']
 
-  auth_method_proto.samlConfig.attributeMapping = (
-      msg.IdentityServiceSamlConfig.AttributeMappingValue()
-  )
-  for attribute_key, attribute_value in saml_config['attributeMapping'].items():
-    attribute_map_item = (
-        msg.IdentityServiceSamlConfig.AttributeMappingValue.AdditionalProperty()
+  # Optional SAML Config Fields.
+  if 'userAttribute' in saml_config:
+    auth_method_proto.samlConfig.userAttribute = saml_config['userAttribute']
+  if 'groupsAttribute' in saml_config:
+    auth_method_proto.samlConfig.groupsAttribute = saml_config[
+        'groupsAttribute'
+    ]
+  if 'userPrefix' in saml_config:
+    auth_method_proto.samlConfig.userPrefix = saml_config['userPrefix']
+  if 'groupPrefix' in saml_config:
+    auth_method_proto.samlConfig.groupPrefix = saml_config['groupPrefix']
+
+  if 'attributeMapping' in saml_config:
+    auth_method_proto.samlConfig.attributeMapping = (
+        msg.IdentityServiceSamlConfig.AttributeMappingValue()
     )
-    attribute_map_item.key = attribute_key
-    attribute_map_item.value = attribute_value
-    auth_method_proto.samlConfig.attributeMapping.additionalProperties.append(
-        attribute_map_item
-    )
+    for attribute_key, attribute_value in saml_config[
+        'attributeMapping'
+    ].items():
+      attribute_map_item = (
+          msg.IdentityServiceSamlConfig.AttributeMappingValue.AdditionalProperty()
+      )
+      attribute_map_item.key = attribute_key
+      attribute_map_item.value = attribute_value
+      auth_method_proto.samlConfig.attributeMapping.additionalProperties.append(
+          attribute_map_item
+      )
 
   return auth_method_proto
 
@@ -454,6 +473,9 @@ def provision_google_config(auth_method, msg):
     member_config: A MemberConfig configuration containing a single Google
     auth method for the IdentityServiceFeatureSpec.
   """
+  if 'name' not in auth_method:
+    raise exceptions.Error('Google Authentication method must contain name.')
+
   auth_method_proto = msg.IdentityServiceAuthMethod()
   auth_method_proto.name = auth_method['name']
   google_config = auth_method['google']
@@ -486,6 +508,9 @@ def provision_azuread_config(auth_method, msg):
     member_config: A MemberConfig configuration containing a single
     Azure AD auth method for the IdentityServiceFeatureSpec.
   """
+  if 'name' not in auth_method:
+    raise exceptions.Error('AzureAD Authentication method must contain name.')
+
   auth_method_proto = msg.IdentityServiceAuthMethod()
   auth_method_proto.name = auth_method['name']
   auth_method_proto.azureadConfig = msg.IdentityServiceAzureADConfig()

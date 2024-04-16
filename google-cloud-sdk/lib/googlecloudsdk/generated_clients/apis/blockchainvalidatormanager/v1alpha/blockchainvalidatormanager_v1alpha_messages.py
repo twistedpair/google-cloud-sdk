@@ -646,11 +646,11 @@ class ExistingSeedPhraseReference(_messages.Message):
   the voting key.
 
   Fields:
-    depositTxData: Output only. The deposit transaction data corresponding to
-      the derived key.
-    derivationIndex: Immutable. The index to derive the voting key at, used as
-      part of a derivation path. The derivation path is built from this as
-      "m/12381/3600//0/0" See also
+    depositTxData: Output only. Immutable. The deposit transaction data
+      corresponding to the derived key.
+    derivationIndex: Optional. Immutable. The index to derive the voting key
+      at, used as part of a derivation path. The derivation path is built from
+      this as "m/12381/3600//0/0" See also
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
@@ -1026,11 +1026,11 @@ class SeedPhraseReference(_messages.Message):
   Manager secret to backup the seed phrase to.
 
   Fields:
-    depositTxData: Output only. The deposit transaction data corresponding to
-      the derived key.
-    derivationIndex: Immutable. The index to derive the voting key at, used as
-      part of a derivation path. The derivation path is built from this as
-      "m/12381/3600//0/0" See also
+    depositTxData: Output only. Immutable. The deposit transaction data
+      corresponding to the derived key.
+    derivationIndex: Output only. Immutable. The index to derive the voting
+      key at, used as part of a derivation path. The derivation path is built
+      from this as "m/12381/3600//0/0" See also
       https://eips.ethereum.org/EIPS/eip-2334#eth2-specific-parameters
     exportSeedPhrase: Optional. Immutable. True to export the seed phrase to
       Secret Manager.

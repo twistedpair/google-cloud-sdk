@@ -605,8 +605,8 @@ class CertificateConfig(_messages.Message):
       that are related to the subject.
     subjectKeyId: Optional. When specified this provides a custom SKI to be
       used in the certificate. This should only be used to maintain a SKI of
-      an existing CA originally created outside CAS, which was not generated
-      using method (1) described in RFC 5280 section 4.2.1.2.
+      an existing CA originally created outside CA service, which was not
+      generated using method (1) described in RFC 5280 section 4.2.1.2.
     x509Config: Required. Describes how some of the technical X.509 fields in
       a certificate should be populated.
   """
@@ -853,7 +853,7 @@ class CertificateTemplate(_messages.Message):
       identity.
     labels: Optional. Labels with user-defined metadata.
     maximumLifetime: Optional. The maximum lifetime allowed for issued
-      Certificates that use this template. If the issuing CaPool's
+      Certificates that use this template. If the issuing CaPool resource's
       IssuancePolicy specifies a maximum_lifetime the minimum of the two
       durations will be the maximum lifetime for issued Certificates. Note
       that if the issuing CertificateAuthority expires before a Certificate's
@@ -923,7 +923,7 @@ class DisableCertificateAuthorityRequest(_messages.Message):
     ignoreDependentResources: Optional. This field allows this CA to be
       disabled even if it's being depended on by another resource. However,
       doing so may result in unintended and unrecoverable effects on any
-      dependent resource(s) since the CA will no longer be able to issue
+      dependent resources since the CA will no longer be able to issue
       certificates.
     requestId: Optional. An ID to identify requests. Specify a unique request
       ID so that if you must retry your request, the server will know to
@@ -1095,8 +1095,8 @@ class FetchCaCertsResponse(_messages.Message):
   r"""Response message for CertificateAuthorityService.FetchCaCerts.
 
   Fields:
-    caCerts: The PEM encoded CA certificate chains of all Certificate
-      Authorities in this CaPool in the ENABLED, DISABLED, or STAGED states.
+    caCerts: The PEM encoded CA certificate chains of all certificate
+      authorities in this CaPool in the ENABLED, DISABLED, or STAGED states.
   """
 
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)
@@ -1150,8 +1150,8 @@ class IssuancePolicy(_messages.Message):
       identity.
     maximumLifetime: Optional. The maximum lifetime allowed for issued
       Certificates. Note that if the issuing CertificateAuthority expires
-      before a Certificate's requested maximum_lifetime, the effective
-      lifetime will be explicitly truncated to match it.
+      before a Certificate resource's requested maximum_lifetime, the
+      effective lifetime will be explicitly truncated to match it.
     passthroughExtensions: Optional. Describes the set of X.509 extensions
       that may appear in a Certificate issued through this CaPool. If a
       certificate request sets extensions that don't appear in the
@@ -1936,10 +1936,10 @@ class PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesDeleteRequest(_mess
     ignoreActiveCertificates: Optional. This field allows the CA to be deleted
       even if the CA has active certs. Active certs include both unrevoked and
       unexpired certs.
-    ignoreDependentResources: Optional. This field allows this ca to be
+    ignoreDependentResources: Optional. This field allows this CA to be
       deleted even if it's being depended on by another resource. However,
       doing so may result in unintended and unrecoverable effects on any
-      dependent resource(s) since the CA will no longer be able to issue
+      dependent resources since the CA will no longer be able to issue
       certificates.
     name: Required. The resource name for this CertificateAuthority in the
       format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
@@ -2253,7 +2253,7 @@ class PrivatecaProjectsLocationsCaPoolsDeleteRequest(_messages.Message):
     ignoreDependentResources: Optional. This field allows this pool to be
       deleted even if it's being depended on by another resource. However,
       doing so may result in unintended and unrecoverable effects on any
-      dependent resource(s) since the pool will no longer be able to issue
+      dependent resources since the pool will no longer be able to issue
       certificates.
     name: Required. The resource name for this CaPool in the format
       `projects/*/locations/*/caPools/*`.
@@ -2709,13 +2709,13 @@ class PublishingOptions(_messages.Message):
 
   Enums:
     EncodingFormatValueValuesEnum: Optional. Specifies the encoding format of
-      each CertificateAuthority's CA certificate and CRLs. If this is omitted,
-      CA certificates and CRLs will be published in PEM.
+      each CertificateAuthority resource's CA certificate and CRLs. If this is
+      omitted, CA certificates and CRLs will be published in PEM.
 
   Fields:
     encodingFormat: Optional. Specifies the encoding format of each
-      CertificateAuthority's CA certificate and CRLs. If this is omitted, CA
-      certificates and CRLs will be published in PEM.
+      CertificateAuthority resource's CA certificate and CRLs. If this is
+      omitted, CA certificates and CRLs will be published in PEM.
     publishCaCert: Optional. When true, publishes each CertificateAuthority's
       CA certificate and includes its URL in the "Authority Information
       Access" X.509 extension in all issued Certificates. If this is false,
@@ -2731,9 +2731,9 @@ class PublishingOptions(_messages.Message):
   """
 
   class EncodingFormatValueValuesEnum(_messages.Enum):
-    r"""Optional. Specifies the encoding format of each CertificateAuthority's
-    CA certificate and CRLs. If this is omitted, CA certificates and CRLs will
-    be published in PEM.
+    r"""Optional. Specifies the encoding format of each CertificateAuthority
+    resource's CA certificate and CRLs. If this is omitted, CA certificates
+    and CRLs will be published in PEM.
 
     Values:
       ENCODING_FORMAT_UNSPECIFIED: Not specified. By default, PEM format will

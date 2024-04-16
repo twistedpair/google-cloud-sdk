@@ -90,6 +90,7 @@ class StoragePoolsClient(object):
                              enable_ldap=None,
                              capacity=None,
                              description=None,
+                             allow_auto_tiering=None,
                              labels=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
@@ -101,6 +102,7 @@ class StoragePoolsClient(object):
         enable_ldap=enable_ldap,
         capacity=capacity,
         description=description,
+        allow_auto_tiering=allow_auto_tiering,
         labels=labels
     )
 
@@ -153,6 +155,7 @@ class StoragePoolsClient(object):
                                     capacity=None,
                                     active_directory=None,
                                     description=None,
+                                    allow_auto_tiering=None,
                                     labels=None):
     """Parses updates into a storage pool config.
 
@@ -161,6 +164,7 @@ class StoragePoolsClient(object):
       capacity: capacity of a storage pool
       active_directory: the Active Directory attached to a storage pool
       description: str, a new description, if any.
+      allow_auto_tiering: bool indicate whether pool supports auto-tiering
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
@@ -171,6 +175,7 @@ class StoragePoolsClient(object):
         capacity=capacity,
         active_directory=active_directory,
         description=description,
+        allow_auto_tiering=allow_auto_tiering,
         labels=labels
     )
     return storage_pool
@@ -220,6 +225,7 @@ class StoragePoolsAdapter(object):
       enable_ldap,
       capacity,
       description,
+      allow_auto_tiering,
       labels,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
@@ -233,6 +239,7 @@ class StoragePoolsAdapter(object):
       enable_ldap: Bool on whether to enable LDAP on Storage Pool
       capacity: the storage capacity of the Storage Pool
       description: the description of the Storage Pool
+      allow_auto_tiering: Bool on whether Storage Pool supports auto tiering
       labels: the parsed labels value
 
     Returns:
@@ -250,6 +257,8 @@ class StoragePoolsAdapter(object):
     storage_pool.ldapEnabled = enable_ldap
     storage_pool.capacityGib = capacity
     storage_pool.description = description
+    if allow_auto_tiering is not None:
+      storage_pool.allowAutoTiering = allow_auto_tiering
     storage_pool.labels = labels
     return storage_pool
 
@@ -260,6 +269,7 @@ class StoragePoolsAdapter(object):
       active_directory=None,
       labels=None,
       capacity=None,
+      allow_auto_tiering=None,
   ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
@@ -268,6 +278,8 @@ class StoragePoolsAdapter(object):
       storagepool_config.activeDirectory = active_directory
     if description is not None:
       storagepool_config.description = description
+    if allow_auto_tiering is not None:
+      storagepool_config.allowAutoTiering = allow_auto_tiering
     if labels is not None:
       storagepool_config.labels = labels
     return storagepool_config

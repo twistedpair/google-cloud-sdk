@@ -168,21 +168,21 @@ class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBin
   r"""The explanation of the GcpUserAccessBinding. NextTAG: 4
 
   Enums:
-    AccessLevelEvaluationStateValueListEntryValuesEnum:
+    AccessLevelEvaluationStatesValueListEntryValuesEnum:
     EvalStateValueValuesEnum: Output only. Evaluation state of this
       GcpUserAccessBinding.
     PrincipalStateValueValuesEnum: Output only. Principal evaluation states
       indicating whether the principals match.
 
   Fields:
-    accessLevelEvaluationState: Output only. Access level evaluation states.
+    accessLevelEvaluationStates: Output only. Access level evaluation states.
     evalState: Output only. Evaluation state of this GcpUserAccessBinding.
     principalState: Output only. Principal evaluation states indicating
       whether the principals match.
   """
 
-  class AccessLevelEvaluationStateValueListEntryValuesEnum(_messages.Enum):
-    r"""AccessLevelEvaluationStateValueListEntryValuesEnum enum type.
+  class AccessLevelEvaluationStatesValueListEntryValuesEnum(_messages.Enum):
+    r"""AccessLevelEvaluationStatesValueListEntryValuesEnum enum type.
 
     Values:
       ACCESS_LEVEL_EVAL_STATE_UNSPECIFIED: Not used
@@ -208,7 +208,7 @@ class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBin
       EVAL_STATE_UNSPECIFIED: Not used
       EVAL_STATE_GRANTED: The GcpUserAccessBinding grants the request.
       EVAL_STATE_DENIED: The GcpUserAccessBinding denies the request.
-      EVAL_STATE_NOT_APPLICABLE: THE GcpUserAccessBinding is not applicable
+      EVAL_STATE_NOT_APPLICABLE: The GcpUserAccessBinding is not applicable
         for the principal.
       EVAL_STATE_UNKNOWN: / No enough information to get a conclusion.
     """
@@ -242,7 +242,7 @@ class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBin
     PRINCIPAL_STATE_INFO_DENIED = 4
     PRINCIPAL_STATE_UNSUPPORTED = 5
 
-  accessLevelEvaluationState = _messages.EnumField('AccessLevelEvaluationStateValueListEntryValuesEnum', 1, repeated=True)
+  accessLevelEvaluationStates = _messages.EnumField('AccessLevelEvaluationStatesValueListEntryValuesEnum', 1, repeated=True)
   evalState = _messages.EnumField('EvalStateValueValuesEnum', 2)
   principalState = _messages.EnumField('PrincipalStateValueValuesEnum', 3)
 
@@ -266,7 +266,7 @@ class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaTroubleshootGcpU
 
   Fields:
     accessState: Output only. The access state of the request.
-    gcpUserAccessBindingExplanation: The explanation of the
+    gcpUserAccessBindingExplanations: The explanation of the
       GcpUserAccessBinding.
     principal: The principal email address of the caller.
   """
@@ -289,7 +289,7 @@ class GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaTroubleshootGcpU
     ACCESS_STATE_UNKNOWN = 4
 
   accessState = _messages.EnumField('AccessStateValueValuesEnum', 1)
-  gcpUserAccessBindingExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBindingExplanation', 2, repeated=True)
+  gcpUserAccessBindingExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterGcpuseraccessbindingV3alphaGcpUserAccessBindingExplanation', 2, repeated=True)
   principal = _messages.StringField(3)
 
 
@@ -1927,82 +1927,6 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource
   resourceInclusionState = _messages.EnumField('ResourceInclusionStateValueValuesEnum', 3)
 
 
-class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABTarget(_messages.Message):
-  r"""Details about the policies attached to a Principal Access Boundary
-  target contribute to the Principal Access Boundary explanation, with
-  annotations to indicate how these policies contribute to the overall access
-  state.
-
-  Enums:
-    RelevanceValueValuesEnum: The relevance of the Principal Access Boundary
-      target to the overall access state.
-    TargetAccessStateValueValuesEnum: Output only. Indicates whether the
-      principal is allowed to access specified resource, based on evaluating
-      all Principal Access Boundary policies bound to this target.
-
-  Fields:
-    explainedBindingsAndPolicies: List of Principal Access Boundary policies
-      bound to this target that were explained to check the principal's access
-      to specified resource, with annotations to indicate how each binding and
-      policy contributes to the overall access state.
-    relevance: The relevance of the Principal Access Boundary target to the
-      overall access state.
-    target: The name of the Principal Access Boundary target, which is a
-      Principal Set.
-    targetAccessState: Output only. Indicates whether the principal is allowed
-      to access specified resource, based on evaluating all Principal Access
-      Boundary policies bound to this target.
-  """
-
-  class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the Principal Access Boundary target to the overall
-    access state.
-
-    Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Not specified.
-      HEURISTIC_RELEVANCE_NORMAL: The data point has a limited effect on the
-        result. Changing the data point is unlikely to affect the overall
-        determination.
-      HEURISTIC_RELEVANCE_HIGH: The data point has a strong effect on the
-        result. Changing the data point is likely to affect the overall
-        determination.
-    """
-    HEURISTIC_RELEVANCE_UNSPECIFIED = 0
-    HEURISTIC_RELEVANCE_NORMAL = 1
-    HEURISTIC_RELEVANCE_HIGH = 2
-
-  class TargetAccessStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Indicates whether the principal is allowed to access
-    specified resource, based on evaluating all Principal Access Boundary
-    policies bound to this target.
-
-    Values:
-      PAB_ACCESS_STATE_UNSPECIFIED: Not specified.
-      PAB_ACCESS_STATE_ALLOWED: The PAB component allows the principal's
-        access to the specified resource.
-      PAB_ACCESS_STATE_NOT_ALLOWED: The PAB component doesn't allow the
-        principal's access to the specified resource.
-      PAB_ACCESS_STATE_NOT_ENFORCED: The PAB component is not enforced on the
-        principal, or the specified resource. This state refers to 2 specific
-        scenarios: - The service that the specified resource belongs to is not
-        enforced by PAB at the policy version. - The binding doesn't apply to
-        the principal, hence the policy is not enforced as a result.
-      PAB_ACCESS_STATE_UNKNOWN_INFO: The sender of the request does not have
-        access to the PAB component, or the relevant data to explain the PAB
-        component.
-    """
-    PAB_ACCESS_STATE_UNSPECIFIED = 0
-    PAB_ACCESS_STATE_ALLOWED = 1
-    PAB_ACCESS_STATE_NOT_ALLOWED = 2
-    PAB_ACCESS_STATE_NOT_ENFORCED = 3
-    PAB_ACCESS_STATE_UNKNOWN_INFO = 4
-
-  explainedBindingsAndPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy', 1, repeated=True)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
-  target = _messages.StringField(3)
-  targetAccessState = _messages.EnumField('TargetAccessStateValueValuesEnum', 4)
-
-
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPolicyBinding(_messages.Message):
   r"""Details about how a policy binding contributes to the policy
   explanation, with annotations to indicate how the policy binding contributes
@@ -2073,10 +1997,10 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
       access state to the overall access state.
 
   Fields:
-    explainedTargets: List of Principal Access Boundary targets whose attached
-      policies were explained to check the principal's access to specified
-      resource, with annotations to indicate how each target contributes to
-      the overall access state.
+    explainedBindingsAndPolicies: List of Principal Access Boundary policies
+      and bindings that are applicable to the principal's access state, with
+      annotations to indicate how each binding and policy contributes to the
+      overall access state.
     principalAccessBoundaryAccessState: Output only. Indicates whether the
       principal is allowed to access specified resource, based on evaluating
       all applicable Principal Access Boundary bindings and policies.
@@ -2127,7 +2051,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaPABPolicyExplanation(_messages.Me
     HEURISTIC_RELEVANCE_NORMAL = 1
     HEURISTIC_RELEVANCE_HIGH = 2
 
-  explainedTargets = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABTarget', 1, repeated=True)
+  explainedBindingsAndPolicies = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABBindingAndPolicy', 1, repeated=True)
   principalAccessBoundaryAccessState = _messages.EnumField('PrincipalAccessBoundaryAccessStateValueValuesEnum', 2)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 3)
 
@@ -4092,9 +4016,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
       this field must be set to `SOURCE_RESTRICTION_ENABLED`.
 
   Fields:
-    identities: A list of identities that are allowed access through this
-      [EgressPolicy], in the format of `user:{email_id}` or
-      `serviceAccount:{email_id}`.
+    identities: A list of identities that are allowed access through
+      [EgressPolicy]. Identities can be an individual user, service account,
+      Google group, or third-party identity. The `v1` identities that have the
+      prefix `user`, `group`, `serviceAccount`, `principal`, and
+      `principalSet` in https://cloud.google.com/iam/docs/principal-
+      identifiers#v1 are supported.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -4244,9 +4171,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom(_mes
       members of `identities` field will be allowed access.
 
   Fields:
-    identities: A list of identities that are allowed access through this
-      ingress policy, in the format of `user:{email_id}` or
-      `serviceAccount:{email_id}`.
+    identities: A list of identities that are allowed access through
+      [IngressPolicy]. Identities can be an individual user, service account,
+      Google group, or third-party identity. The `v1` identities that have the
+      prefix `user`, `group`, `serviceAccount`, `principal`, and
+      `principalSet` in https://cloud.google.com/iam/docs/principal-
+      identifiers#v1 are supported.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.

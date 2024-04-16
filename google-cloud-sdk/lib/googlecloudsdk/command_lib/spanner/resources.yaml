@@ -21,6 +21,18 @@ instance:
     property: spanner/instance
   disable_auto_completers: false
 
+instancePartition:
+  name: instancePartition
+  collection: spanner.projects.instances.instancePartitions
+  attributes:
+  - *project
+  - *instance
+  - parameter_name: instancePartitionsId
+    attribute_name: instancePartition
+    help: |
+      The name of the Cloud Spanner instance partition.
+  disable_auto_completers: false
+
 database:
   name: database
   collection: spanner.projects.instances.databases

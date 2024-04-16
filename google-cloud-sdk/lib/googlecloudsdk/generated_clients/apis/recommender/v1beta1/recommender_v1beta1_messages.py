@@ -211,7 +211,7 @@ class GoogleCloudRecommenderV1beta1Insight(_messages.Message):
       a given subtype.
     lastRefreshTime: Timestamp of the latest data used to generate the
       insight.
-    name: Name of the insight.
+    name: Identifier. Name of the insight.
     observationPeriod: Observation period that led to the insight. The source
       data used to generate the insight ends at last_refresh_time and begins
       at (last_refresh_time - observation_period).
@@ -927,7 +927,7 @@ class GoogleCloudRecommenderV1beta1Recommendation(_messages.Message):
       updating states.
     lastRefreshTime: Last time this recommendation was refreshed by the system
       that created it in the first place.
-    name: Name of recommendation.
+    name: Identifier. Name of recommendation.
     primaryImpact: The primary impact that this recommendation can have while
       trying to optimize for one category.
     priority: Recommendation's priority.

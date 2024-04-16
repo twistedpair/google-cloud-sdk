@@ -642,7 +642,8 @@ class SecurityGatewayTunnelHelper(object):
         proxy_info=proxy_info,
     )
 
-  def RunReceiveLocalData(self, local_conn, socket_address, user_agent):
+  def RunReceiveLocalData(self, local_conn, socket_address, user_agent,
+                          conn_id=-1):
     """Receive data from provided local connection and send over HTTP CONNECT.
 
     Args:
@@ -650,7 +651,9 @@ class SecurityGatewayTunnelHelper(object):
       socket_address: A verbose loggable string describing where conn is
         connected to.
       user_agent: The user_agent of this connection
+      conn_id: The id of the connection.
     """
+    del conn_id  # Unused.
     sg_conn = None
     try:
       sg_conn = self._InitiateConnection(
@@ -708,13 +711,14 @@ class IAPWebsocketTunnelHelper(object):
     self._shutdown = True
 
   def _InitiateConnection(self, local_conn, get_access_token_callback,
-                          user_agent):
+                          user_agent, conn_id=-1):
     tunnel_target = self._GetTunnelTargetInfo()
     new_websocket = iap_tunnel_websocket.IapTunnelWebSocket(
         tunnel_target, get_access_token_callback,
         functools.partial(_SendLocalDataCallback, local_conn),
         functools.partial(_CloseLocalConnectionCallback, local_conn),
-        user_agent, ignore_certs=self._ignore_certs)
+        user_agent, ignore_certs=self._ignore_certs,
+        conn_id=conn_id)
     new_websocket.InitiateConnection()
     return new_websocket
 
@@ -734,7 +738,7 @@ class IAPWebsocketTunnelHelper(object):
                                      host=self._host,
                                      dest_group=self._dest_group)
 
-  def RunReceiveLocalData(self, conn, socket_address, user_agent):
+  def RunReceiveLocalData(self, conn, socket_address, user_agent, conn_id=0):
     """Receive data from provided local connection and send over WebSocket.
 
     Args:
@@ -742,6 +746,7 @@ class IAPWebsocketTunnelHelper(object):
       socket_address: A verbose loggable string describing where conn is
         connected to.
       user_agent: The user_agent of this connection
+      conn_id: Id of the connection.
     """
     websocket_conn = None
     try:
@@ -749,7 +754,7 @@ class IAPWebsocketTunnelHelper(object):
           conn,
           functools.partial(_GetAccessTokenCallback,
                             store.LoadIfEnabled(use_google_auth=True)),
-          user_agent)
+          user_agent, conn_id=conn_id)
       while not self._shutdown:
         data = conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
         if not data:
@@ -757,14 +762,17 @@ class IAPWebsocketTunnelHelper(object):
           # wait for all data to send before returning.
           websocket_conn.LocalEOF()
           if not websocket_conn.WaitForAllSent():
-            log.warning('Failed to send all data from [%s].', socket_address)
+            log.warning('[%d] Failed to send all data from [%s].',
+                        conn_id, socket_address)
           break
         websocket_conn.Send(data)
     finally:
       if self._shutdown:
-        log.info('Terminating connection to [%s].', socket_address)
+        log.info('[%d] Terminating connection to [%s].',
+                 conn_id, socket_address)
       else:
-        log.info('Client closed connection from [%s].', socket_address)
+        log.info('[%d] Client closed connection from [%s].',
+                 conn_id, socket_address)
       try:
         conn.close()
       except EnvironmentError:
@@ -787,6 +795,7 @@ class IapTunnelProxyServerHelper():
     self._should_test_connection = should_test_connection
     self._server_sockets = []
     self._connections = []
+    self._total_connections = 0
 
   def __del__(self):
     self._CloseServerSockets()
@@ -845,9 +854,11 @@ class IapTunnelProxyServerHelper():
     ready_read_sockets = ready_sockets[0]
     conn, socket_address = ready_read_sockets[0].accept()
     new_thread = threading.Thread(target=self._HandleNewConnection,
-                                  args=(conn, socket_address))
+                                  args=(conn, socket_address,
+                                        self._total_connections))
     new_thread.daemon = True
     new_thread.start()
+    self._total_connections += 1
     return new_thread, conn
 
   def _CloseServerSockets(self):
@@ -897,11 +908,11 @@ class IapTunnelProxyServerHelper():
       gc.collect(2)
       log.debug('connections alive: [%d]' % len(self._connections))
 
-  def _HandleNewConnection(self, conn, socket_address):
+  def _HandleNewConnection(self, conn, socket_address, conn_id):
     try:
       user_agent = transport.MakeUserAgentString()
       self._tunneler.RunReceiveLocalData(conn, repr(socket_address),
-                                         user_agent)
+                                         user_agent, conn_id=conn_id)
     except EnvironmentError as e:
       log.info('Socket error [%s] while receiving from client.',
                six.text_type(e))

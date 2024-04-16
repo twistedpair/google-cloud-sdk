@@ -69,7 +69,7 @@ def AddArgsUpdateNetworkFirewallPolicy(parser):
 
 
 def NetworkFirewallPolicyAssociationArgument(
-    required=False, plural=False, operation=None, allow_global=True
+    required=False, plural=False, operation=None
 ):
   return compute_flags.ResourceArgument(
       name='--firewall-policy',
@@ -79,9 +79,7 @@ def NetworkFirewallPolicyAssociationArgument(
       short_help='Firewall policy ID with which to {0} association.'.format(
           operation
       ),
-      global_collection=(
-          'compute.networkFirewallPolicies' if allow_global else None
-      ),
+      global_collection='compute.networkFirewallPolicies',
       regional_collection='compute.regionNetworkFirewallPolicies',
   )
 

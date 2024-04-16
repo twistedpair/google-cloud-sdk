@@ -5775,6 +5775,9 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
       runtime. Apigee validates that the scopes in any access token presented
       match the scopes defined in the OAuth policy associated with the API
       product.
+    spaceId: Optional. The resource ID of the parent Space. If not set, the
+      parent resource will be the Organization. TODO b/329340109 remove
+      TRUSTED_TESTER to make API available in prod
   """
 
   class QuotaCounterScopeValueValuesEnum(_messages.Enum):
@@ -5825,6 +5828,7 @@ class GoogleCloudApigeeV1ApiProduct(_messages.Message):
   quotaInterval = _messages.StringField(16)
   quotaTimeUnit = _messages.StringField(17)
   scopes = _messages.StringField(18, repeated=True)
+  spaceId = _messages.StringField(19)
 
 
 class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
@@ -11503,6 +11507,8 @@ class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
 
   Fields:
     name: Required. Name of this resource.
+    resourceRevisionId: The revision id for the resource. In case of Apigee,
+      this is proxy revision id.
     type: Required. Type of this resource.
   """
 
@@ -11517,7 +11523,8 @@ class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
     API_PROXY = 1
 
   name = _messages.StringField(1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  resourceRevisionId = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message):
@@ -11538,6 +11545,9 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message
     assessmentRecommendations: The recommendations of the assessment. The key
       is the "name" of the assessment (not display_name), and the value are
       the recommendations.
+    dataUpdateTime: The time when resource data was last fetched for this
+      resource. This time may be different than when the resource was actually
+      updated due to lag in data collection.
     failedAssessmentPerWeight: The number of failed assessments grouped by its
       weight. Keys are one of the following: "MAJOR", "MODERATE", "MINOR".
     score: The security score of the assessment.
@@ -11620,9 +11630,10 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   assessmentRecommendations = _messages.MessageField('AssessmentRecommendationsValue', 1)
-  failedAssessmentPerWeight = _messages.MessageField('FailedAssessmentPerWeightValue', 2)
-  score = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  dataUpdateTime = _messages.StringField(2)
+  failedAssessmentPerWeight = _messages.MessageField('FailedAssessmentPerWeightValue', 3)
+  score = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 5)
 
 
 class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendation(_messages.Message):
@@ -12578,6 +12589,8 @@ class GoogleCloudApigeeV1TlsInfo(_messages.Message):
     commonName: The TLS Common Name of the certificate.
     enabled: Required. Enables TLS. If false, neither one-way nor two-way TLS
       will be enabled.
+    enforce: TLS is strictly enforced. TODO (b/331425331) remove
+      TRUSTED_TESTER when ready for public
     ignoreValidationErrors: If true, Edge ignores TLS certificate errors.
       Valid when configuring TLS for target servers and target endpoints, and
       when configuring virtual hosts that use 2-way TLS. When used with a
@@ -12597,11 +12610,12 @@ class GoogleCloudApigeeV1TlsInfo(_messages.Message):
   clientAuthEnabled = _messages.BooleanField(2)
   commonName = _messages.MessageField('GoogleCloudApigeeV1TlsInfoCommonName', 3)
   enabled = _messages.BooleanField(4)
-  ignoreValidationErrors = _messages.BooleanField(5)
-  keyAlias = _messages.StringField(6)
-  keyStore = _messages.StringField(7)
-  protocols = _messages.StringField(8, repeated=True)
-  trustStore = _messages.StringField(9)
+  enforce = _messages.BooleanField(5)
+  ignoreValidationErrors = _messages.BooleanField(6)
+  keyAlias = _messages.StringField(7)
+  keyStore = _messages.StringField(8)
+  protocols = _messages.StringField(9, repeated=True)
+  trustStore = _messages.StringField(10)
 
 
 class GoogleCloudApigeeV1TlsInfoCommonName(_messages.Message):

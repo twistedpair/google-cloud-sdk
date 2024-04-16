@@ -218,6 +218,15 @@ def AddTimeoutFlag(parser):
       action=actions.StoreProperty(properties.VALUES.builds.timeout))
 
 
+def AddPollingIntervalFlag(parser):
+  """Add a polling interval flag."""
+  parser.add_argument(
+      '--polling-interval',
+      default=1,
+      type=int,
+      help='Amount of time in seconds to wait between polling build status.')
+
+
 def AddAsyncFlag(parser):
   """Add an async flag."""
   base.ASYNC_FLAG.AddToParser(parser)

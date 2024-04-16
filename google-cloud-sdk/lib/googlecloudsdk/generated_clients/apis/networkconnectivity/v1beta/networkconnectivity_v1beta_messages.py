@@ -713,7 +713,8 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     createTime: Output only. Time when the RegionalEndpoint was created.
     description: Optional. A description of this resource.
     ipAddress: Output only. The literal IP address of the PSC Forwarding Rule
-      created on behalf of the customer.
+      created on behalf of the customer. This field is deprecated. Use address
+      instead.
     labels: User-defined labels.
     name: Output only. The name of a RegionalEndpoint. Format: `projects/{proj
       ect}/locations/{location}/regionalEndpoints/{regional_endpoint}`.

@@ -107,22 +107,27 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
         network=args.network, allocatedIpRange=args.allocated_ip_range_name
     )
 
+  if args.enable_private_service_connect:
+    cluster.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
+
   cluster.databaseVersion = args.database_version
 
   return cluster
 
 
 def _AddEnforcedRetentionToAutomatedBackupPolicy(backup_policy, args):
-  if args.automated_backup_enforced_retention:
-    backup_policy.enforcedRetention = True
+  if args.automated_backup_enforced_retention is not None:
+    backup_policy.enforcedRetention = args.automated_backup_enforced_retention
   return backup_policy
 
 
 def _AddEnforcedRetentionToContinuousBackupConfig(
     continuous_backup_config, args
 ):
-  if args.continuous_backup_enforced_retention:
-    continuous_backup_config.enforcedRetention = True
+  if args.continuous_backup_enforced_retention is not None:
+    continuous_backup_config.enforcedRetention = (
+        args.continuous_backup_enforced_retention
+    )
   return continuous_backup_config
 
 
@@ -163,8 +168,6 @@ def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
   flags.ValidateConnectivityFlags(args)
   cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
-  if args.enable_private_service_connect:
-    cluster.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
   return cluster
 
 
@@ -247,6 +250,9 @@ def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
         allocatedIpRange=args.allocated_ip_range_name
     )
 
+  if args.enable_private_service_connect:
+    cluster_resource.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
+
   return cluster_resource
 
 
@@ -277,8 +283,6 @@ def _ConstructClusterResourceForRestoreRequestAlpha(alloydb_messages, args):
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
       alloydb_messages, args
   )
-  if args.enable_private_service_connect:
-    cluster_resource.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
 
   return cluster_resource
 
@@ -353,6 +357,28 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
   cluster, update_masks = _ConstructClusterAndMaskForPatchRequestGA(
       alloydb_messages, args
   )
+  if args.automated_backup_enforced_retention is not None:
+    if cluster.automatedBackupPolicy is None:
+      cluster.automatedBackupPolicy = _ConstructAutomatedBackupPolicy(
+          alloydb_messages, args
+      )
+    update_masks.append('automated_backup_policy.enforced_retention')
+    cluster.automatedBackupPolicy = (
+        _AddEnforcedRetentionToAutomatedBackupPolicy(
+            cluster.automatedBackupPolicy, args
+        )
+    )
+  if args.continuous_backup_enforced_retention is not None:
+    if cluster.continuousBackupConfig is None:
+      cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
+          alloydb_messages, args
+      )
+    update_masks.append('continuous_backup_config.enforced_retention')
+    cluster.continuousBackupConfig = (
+        _AddEnforcedRetentionToContinuousBackupConfig(
+            cluster.continuousBackupConfig, args
+        )
+    )
   update_maintenance_window = (
       args.maintenance_window_any
       or args.maintenance_window_day

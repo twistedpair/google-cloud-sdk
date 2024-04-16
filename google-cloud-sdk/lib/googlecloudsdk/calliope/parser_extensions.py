@@ -819,10 +819,6 @@ class ArgumentParser(argparse.ArgumentParser):
     Raises:
       argparse.ArgumentError: If the action and value don't work together.
     """
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.core.updater import update_manager
-    # pylint: enable=g-import-not-at-top
-
     is_subparser = isinstance(action, CloudSDKSubParsersAction)
 
     # When using tab completion, argcomplete monkey patches various parts of
@@ -857,6 +853,9 @@ class ArgumentParser(argparse.ArgumentParser):
     missing_components = cli_generator.ComponentsForMissingCommand(
         self._calliope_command.GetPath() + [arg])
     if missing_components:
+      # pylint: disable=g-import-not-at-top
+      from googlecloudsdk.core.updater import update_manager
+      # pylint: enable=g-import-not-at-top
       msg = ('You do not currently have this command group installed.  Using '
              'it requires the installation of components: '
              '[{missing_components}]'.format(

@@ -2873,8 +2873,8 @@ class Location(_messages.Message):
 
 class NFSVolumeSource(_messages.Message):
   r"""Represents a persistent volume that will be mounted using NFS. This
-  volume will be shared between all instances of the Service and data will not
-  be deleted when the instance is shut down.
+  volume will be shared between all instances of the resource and data will
+  not be deleted when the instance is shut down.
 
   Fields:
     path: Path that is exported by the NFS server.

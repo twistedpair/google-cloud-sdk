@@ -3827,7 +3827,12 @@ class ObjectAccessControl(proto.Message):
 
     Attributes:
         role (str):
-            The access permission for the entity.
+            The access permission for the entity. One of the following
+            values:
+
+            -  ``READER``
+            -  ``WRITER``
+            -  ``OWNER``
         id (str):
             The ID of the access-control entry.
         entity (str):

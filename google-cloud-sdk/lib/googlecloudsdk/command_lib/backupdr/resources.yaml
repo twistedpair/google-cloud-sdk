@@ -32,9 +32,9 @@ locationDefaultGlobal:
     help: |
       Location ID of the resource.
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.backupdr.util:SetGlobalLocation
+    - value: "-"
       hint: |
-        use default global location
+        default is all locations
 
 operation:
   name: operation
@@ -50,7 +50,7 @@ operation:
   disable_auto_completers: false
 
 managementServer:
-  name: managementServer
+  name: management_server
   collection: backupdr.projects.locations.managementServers
   request_id_field: managementServerId
   attributes:
@@ -63,7 +63,7 @@ managementServer:
   disable_auto_completers: false
 
 backupPlans:
-  name: backupPlans
+  name: backup_plan
   collection: backupdr.projects.locations.backupPlans
   request_id_field: backupPlansId
   attributes:
@@ -77,7 +77,7 @@ backupPlans:
 
 
 backupPlanAssociations:
-  name: backupPlanAssociations
+  name: backup_plan_association
   collection: backupdr.projects.locations.backupPlanAssociations
   request_id_field: backupPlanAssociationsId
   attributes:
@@ -90,7 +90,7 @@ backupPlanAssociations:
   disable_auto_completers: false
 
 backupVault:
-  name: backupVault
+  name: backup_vault
   collection: backupdr.projects.locations.backupVaults
   request_id_field: backupVaultId
   attributes:
@@ -103,23 +103,23 @@ backupVault:
   disable_auto_completers: false
 
 backupVaultDefault:
-  name: backupVault
+  name: backup_vault
   collection: backupdr.projects.locations.backupVaults
   request_id_field: backupVaultId
   attributes:
   - *project
-  - *location
+  - *locationDefaultGlobal
   - &backupVaultDefault
     parameter_name: backupVaultsId
     attribute_name: backup_vault
     help: The ID of the Backup Vault.
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.backupdr.util:SetDefaultBackupVault
+    - value: "-"
       hint: |
-        use all vaults in all locations
+        default is all backup vaults
 
 dataSource:
-  name: dataSource
+  name: data_source
   collection: backupdr.projects.locations.backupVaults.dataSources
   request_id_field: dataSourceId
   attributes:

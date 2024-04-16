@@ -1098,20 +1098,20 @@ def GetDetailedHelpForAddIamPolicyBinding(collection,
       'DESCRIPTION':
           '{description}',
       'EXAMPLES':
-          """To add an IAM policy binding for the role of '{role}' for the user
-'test-user@gmail.com' on {a} {collection} with identifier
-'{example_id}', run:
+          """To add an IAM policy binding for the role of `{role}` for the user
+`test-user@gmail.com` on {a} {collection} with identifier
+`{example_id}`, run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
-To add an IAM policy binding for the role of '{role}' to the service
-account 'test-proj1@example.domain.com', run:
+To add an IAM policy binding for the role of `{role}` to the service
+account `test-proj1@example.domain.com`, run:
 
   $ {{command}} {example_id} --member='serviceAccount:test-proj1@example.domain.com' --role='{role}'
 
-To add an IAM policy binding for the role of '{role}' for all
+To add an IAM policy binding for the role of `{role}` for all
 authenticated users on {a} {collection} with identifier
-'{example_id}', run:
+`{example_id}`, run:
 
   $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
   """.format(collection=collection, example_id=example_id, role=role, a=a)
@@ -1119,8 +1119,8 @@ authenticated users on {a} {collection} with identifier
   if condition:
     detailed_help['EXAMPLES'] = detailed_help['EXAMPLES'] + """\n
 To add an IAM policy binding that expires at the end of the year 2018 for the
-role of '{role}' and the user 'test-user@gmail.com' on {a} {collection} with
-identifier '{example_id}', run:
+role of `{role}` and the user `test-user@gmail.com` on {a} {collection} with
+identifier `{example_id}`, run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
   """.format(
@@ -1162,14 +1162,14 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection,
           '{description}',
       'EXAMPLES':
           """\
-To remove an IAM policy binding for the role of '{role}' for the
-user 'test-user@gmail.com' on {collection} with identifier
-'{example_id}', run:
+To remove an IAM policy binding for the role of `{role}` for the
+user `test-user@gmail.com` on {collection} with identifier
+`{example_id}`, run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}'
 
-To remove an IAM policy binding for the role of '{role}' from all
-authenticated users on {collection} '{example_id}', run:
+To remove an IAM policy binding for the role of `{role}` from all
+authenticated users on {collection} `{example_id}`, run:
 
   $ {{command}} {example_id} --member='allAuthenticatedUsers' --role='{role}'
   """.format(collection=collection, example_id=example_id, role=role)
@@ -1177,16 +1177,17 @@ authenticated users on {collection} '{example_id}', run:
   if condition:
     detailed_help['EXAMPLES'] = detailed_help['EXAMPLES'] + """\n
 To remove an IAM policy binding with a condition of
-expression='request.time < timestamp("2019-01-01T00:00:00Z")',
-title='expires_end_of_2018', and description='Expires at midnight on 2018-12-31'
-for the role of '{role}' for the user 'test-user@gmail.com' on {collection}
-with identifier '{example_id}', run:
+`expression='request.time < timestamp("2019-01-01T00:00:00Z"),
+title='expires_end_of_2018'`, and
+description=`Expires at midnight on 2018-12-31` for the role of `{role}` for
+the user `test-user@gmail.com` on {collection}
+with identifier `{example_id}`, run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --condition='expression=request.time < timestamp("2019-01-01T00:00:00Z"),title=expires_end_of_2018,description=Expires at midnight on 2018-12-31'
 
 To remove all IAM policy bindings regardless of the condition for the role of
-'{role}' and for the user 'test-user@gmail.com' on {collection} with
-identifier '{example_id}', run:
+`{role}` and for the user `test-user@gmail.com` on {collection} with
+identifier `{example_id}`, run:
 
   $ {{command}} {example_id} --member='user:test-user@gmail.com' --role='{role}' --all
   """.format(

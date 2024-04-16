@@ -2381,6 +2381,9 @@ class StoragePool(_messages.Message):
   Fields:
     activeDirectory: Optional. Specifies the Active Directory to be used for
       creating a SMB volume.
+    allowAutoTiering: Optional. True if the storage pool supports Auto Tiering
+      enabled volumes. Default is false. Auto-tiering can be enabled after
+      storage pool creation but it can't be disabled once enabled.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
     description: Optional. Description of the storage pool
@@ -2427,11 +2430,13 @@ class StoragePool(_messages.Message):
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
       STANDARD: Standard service level.
+      FLEX: Flex service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1
     EXTREME = 2
     STANDARD = 3
+    FLEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the storage pool
@@ -2480,22 +2485,23 @@ class StoragePool(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   activeDirectory = _messages.StringField(1)
-  capacityGib = _messages.IntegerField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
-  globalAccessAllowed = _messages.BooleanField(6)
-  kmsConfig = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  ldapEnabled = _messages.BooleanField(9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  psaRange = _messages.StringField(12)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateDetails = _messages.StringField(15)
-  volumeCapacityGib = _messages.IntegerField(16)
-  volumeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  allowAutoTiering = _messages.BooleanField(2)
+  capacityGib = _messages.IntegerField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 6)
+  globalAccessAllowed = _messages.BooleanField(7)
+  kmsConfig = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  ldapEnabled = _messages.BooleanField(10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  psaRange = _messages.StringField(13)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateDetails = _messages.StringField(16)
+  volumeCapacityGib = _messages.IntegerField(17)
+  volumeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):
@@ -2503,6 +2509,39 @@ class SwitchActiveReplicaZoneRequest(_messages.Message):
   regional storagePool.
   """
 
+
+
+class TieringPolicy(_messages.Message):
+  r"""Defines tiering policy for the volume.
+
+  Enums:
+    TierActionValueValuesEnum: Optional. Flag indicating if the volume has
+      tiering policy enable/pause. Default is PAUSED.
+
+  Fields:
+    coolingThresholdDays: Optional. Time in days to mark the volume's data
+      block as cold and make it eligible for tiering, can be range from 7-183.
+      Default is 31.
+    tierAction: Optional. Flag indicating if the volume has tiering policy
+      enable/pause. Default is PAUSED.
+  """
+
+  class TierActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Flag indicating if the volume has tiering policy
+    enable/pause. Default is PAUSED.
+
+    Values:
+      TIER_ACTION_UNSPECIFIED: Unspecified.
+      ENABLED: When tiering is enabled, new cold data will be tiered.
+      PAUSED: When paused, tiering won't be performed on new data. Existing
+        data stays tiered until accessed.
+    """
+    TIER_ACTION_UNSPECIFIED = 0
+    ENABLED = 1
+    PAUSED = 2
+
+  coolingThresholdDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  tierAction = _messages.EnumField('TierActionValueValuesEnum', 2)
 
 
 class TransferStats(_messages.Message):
@@ -2617,6 +2656,7 @@ class Volume(_messages.Message):
     state: Output only. State of the volume
     stateDetails: Output only. State details of the volume
     storagePool: Required. StoragePool name of the volume
+    tieringPolicy: Tiering policy for the volume.
     unixPermissions: Optional. Default unix style permission (e.g. 777) the
       mount point will be created with. Applicable for NFS protocol types
       only.
@@ -2681,11 +2721,13 @@ class Volume(_messages.Message):
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
       STANDARD: Standard service level.
+      FLEX: Flex service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1
     EXTREME = 2
     STANDARD = 3
+    FLEX = 4
 
   class SmbSettingsValueListEntryValuesEnum(_messages.Enum):
     r"""SmbSettingsValueListEntryValuesEnum enum type.
@@ -2791,8 +2833,9 @@ class Volume(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 29)
   stateDetails = _messages.StringField(30)
   storagePool = _messages.StringField(31)
-  unixPermissions = _messages.StringField(32)
-  usedGib = _messages.IntegerField(33)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 32)
+  unixPermissions = _messages.StringField(33)
+  usedGib = _messages.IntegerField(34)
 
 
 class WeeklySchedule(_messages.Message):

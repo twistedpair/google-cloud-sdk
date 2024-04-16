@@ -139,7 +139,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class AuthorizedView(_messages.Message):
-  r"""Placeholder for admin API work while we work out the internals.
+  r"""An Authorized View of a Cloud Bigtable Table.
 
   Fields:
     deletionProtection: Set to true to make the AuthorizedView protected
@@ -3723,7 +3723,8 @@ class UpdateAuthorizedViewRequest(_messages.Message):
   Fields:
     authorizedView: Required. The AuthorizedView to update. The `name` in
       `authorized_view` is used to identify the AuthorizedView. AuthorizedView
-      name must in this format projects//instances//tables//authorizedViews/
+      name must in this format: `projects/{project}/instances/{instance}/table
+      s/{table}/authorizedViews/{authorized_view}`.
     ignoreWarnings: Optional. If true, ignore the safety checks when updating
       the AuthorizedView.
     updateMask: Optional. The list of fields to update. A mask specifying

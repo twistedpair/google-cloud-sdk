@@ -236,14 +236,16 @@ class BackupConfiguration(_messages.Message):
 
     Values:
       TRANSACTIONAL_LOG_STORAGE_STATE_UNSPECIFIED: Unspecified.
-      DISK: The transaction logs for the instance are stored on a data disk.
-      SWITCHING_TO_CLOUD_STORAGE: The transaction logs for the instance are
-        switching from being stored on a data disk to being stored in Cloud
-        Storage.
-      SWITCHED_TO_CLOUD_STORAGE: The transaction logs for the instance are now
-        stored in Cloud Storage. Previously, they were stored on a data disk.
-      CLOUD_STORAGE: The transaction logs for the instance are stored in Cloud
-        Storage.
+      DISK: The transaction logs used for PITR for the instance are stored on
+        a data disk.
+      SWITCHING_TO_CLOUD_STORAGE: The transaction logs used for PITR for the
+        instance are switching from being stored on a data disk to being
+        stored in Cloud Storage. Only applicable to MySQL.
+      SWITCHED_TO_CLOUD_STORAGE: The transaction logs used for PITR for the
+        instance are now stored in Cloud Storage. Previously, they were stored
+        on a data disk. Only applicable to MySQL.
+      CLOUD_STORAGE: The transaction logs used for PITR for the instance are
+        stored in Cloud Storage. Only applicable to MySQL and PostgreSQL.
     """
     TRANSACTIONAL_LOG_STORAGE_STATE_UNSPECIFIED = 0
     DISK = 1
@@ -1795,17 +1797,18 @@ class FlagsListResponse(_messages.Message):
 
 
 class GeminiInstanceConfig(_messages.Message):
-  r"""Gemini configuration.
+  r"""Gemini instance configuration.
 
   Fields:
-    activeQueryEnabled: Output only. Whether active query is enabled.
+    activeQueryEnabled: Output only. Whether the active query is enabled.
     entitled: Output only. Whether Gemini is enabled.
-    flagRecommenderEnabled: Output only. Whether flag recommender is enabled.
-    googleVacuumMgmtEnabled: Output only. Whether vacuum management is
+    flagRecommenderEnabled: Output only. Whether the flag recommender is
       enabled.
-    indexAdvisorEnabled: Output only. Whether index advisor is enabled.
-    oomSessionCancelEnabled: Output only. Whether oom session cancel is
+    googleVacuumMgmtEnabled: Output only. Whether the vacuum management is
       enabled.
+    indexAdvisorEnabled: Output only. Whether the index advisor is enabled.
+    oomSessionCancelEnabled: Output only. Whether canceling the out-of-memory
+      (OOM) session is enabled.
   """
 
   activeQueryEnabled = _messages.BooleanField(1)
@@ -1854,7 +1857,8 @@ class ImportContext(_messages.Message):
   Messages:
     BakImportOptionsValue: Import parameters specific to SQL Server .BAK files
     CsvImportOptionsValue: Options for importing data as CSV.
-    SqlImportOptionsValue: Options for importing data from SQL statements.
+    SqlImportOptionsValue: Optional. Options for importing data from SQL
+      statements.
 
   Fields:
     bakImportOptions: Import parameters specific to SQL Server .BAK files
@@ -1869,7 +1873,8 @@ class ImportContext(_messages.Message):
     importUser: The PostgreSQL user for this import operation. PostgreSQL
       instances only.
     kind: This is always `sql#importContext`.
-    sqlImportOptions: Options for importing data from SQL statements.
+    sqlImportOptions: Optional. Options for importing data from SQL
+      statements.
     uri: Path to the import file in Cloud Storage, in the form
       `gs://bucketName/fileName`. Compressed gzip files (.gz) are supported
       when `fileType` is `SQL`. The instance must have write permissions to
@@ -1987,7 +1992,7 @@ class ImportContext(_messages.Message):
     table = _messages.StringField(6)
 
   class SqlImportOptionsValue(_messages.Message):
-    r"""Options for importing data from SQL statements.
+    r"""Optional. Options for importing data from SQL statements.
 
     Fields:
       parallel: Optional. Whether or not the import should be parallel.
@@ -2228,20 +2233,19 @@ class IpConfiguration(_messages.Message):
 
   Enums:
     SslModeValueValuesEnum: Specify how SSL/TLS is enforced in database
-      connections. MySQL and PostgreSQL use the `ssl_mode` flag. If you must
-      use the `require_ssl` flag for backward compatibility, then only the
-      following value pairs are valid: *
-      `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
-      `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
-      `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      connections. If you must use the `require_ssl` flag for backward
+      compatibility, then only the following value pairs are valid: For
+      PostgreSQL and MySQL: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
+      * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      For SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
       The value of `ssl_mode` gets priority over the value of `require_ssl`.
       For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
       `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
       connections, while the `require_ssl=false` means accept both non-SSL and
       SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
-      this case and accept only SSL connections. SQL Server uses the
-      `require_ssl` flag. You can set the value for this flag to `true` or
-      `false`.
+      this case and accept only SSL connections.
 
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
@@ -2261,46 +2265,46 @@ class IpConfiguration(_messages.Message):
       `/projects/myProject/global/networks/default`. This setting can be
       updated, but it cannot be removed after it is set.
     pscConfig: PSC settings for this instance.
-    requireSsl: Use `ssl_mode` instead for MySQL and PostgreSQL. SQL Server
-      uses this flag. Whether SSL/TLS connections over IP are enforced. If set
-      to false, then allow both non-SSL/non-TLS and SSL/TLS connections. For
-      SSL/TLS connections, the client certificate won't be verified. If set to
-      true, then only allow connections encrypted with SSL/TLS and with valid
-      client certificates. If you want to enforce SSL/TLS without enforcing
-      the requirement for valid client certificates, then use the `ssl_mode`
-      flag instead of the legacy `require_ssl` flag.
+    requireSsl: Use `ssl_mode` instead. Whether SSL/TLS connections over IP
+      are enforced. If set to false, then allow both non-SSL/non-TLS and
+      SSL/TLS connections. For SSL/TLS connections, the client certificate
+      won't be verified. If set to true, then only allow connections encrypted
+      with SSL/TLS and with valid client certificates. If you want to enforce
+      SSL/TLS without enforcing the requirement for valid client certificates,
+      then use the `ssl_mode` flag instead of the legacy `require_ssl` flag.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
-    sslMode: Specify how SSL/TLS is enforced in database connections. MySQL
-      and PostgreSQL use the `ssl_mode` flag. If you must use the
-      `require_ssl` flag for backward compatibility, then only the following
-      value pairs are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
-      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
-      * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+    sslMode: Specify how SSL/TLS is enforced in database connections. If you
+      must use the `require_ssl` flag for backward compatibility, then only
+      the following value pairs are valid: For PostgreSQL and MySQL: *
+      `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
+      `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
+      `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      For SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
       The value of `ssl_mode` gets priority over the value of `require_ssl`.
       For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
       `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
       connections, while the `require_ssl=false` means accept both non-SSL and
       SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
-      this case and accept only SSL connections. SQL Server uses the
-      `require_ssl` flag. You can set the value for this flag to `true` or
-      `false`.
+      this case and accept only SSL connections.
   """
 
   class SslModeValueValuesEnum(_messages.Enum):
-    r"""Specify how SSL/TLS is enforced in database connections. MySQL and
-    PostgreSQL use the `ssl_mode` flag. If you must use the `require_ssl` flag
-    for backward compatibility, then only the following value pairs are valid:
-    * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
+    r"""Specify how SSL/TLS is enforced in database connections. If you must
+    use the `require_ssl` flag for backward compatibility, then only the
+    following value pairs are valid: For PostgreSQL and MySQL: *
+    `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
     `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
-    `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` The
+    `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` For
+    SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+    `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true` The
     value of `ssl_mode` gets priority over the value of `require_ssl`. For
     example, for the pair `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`,
     the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL connections, while the
     `require_ssl=false` means accept both non-SSL and SSL connections. MySQL
     and PostgreSQL databases respect `ssl_mode` in this case and accept only
-    SSL connections. SQL Server uses the `require_ssl` flag. You can set the
-    value for this flag to `true` or `false`.
+    SSL connections.
 
     Values:
       SSL_MODE_UNSPECIFIED: The SSL mode is unknown.
@@ -2320,7 +2324,8 @@ class IpConfiguration(_messages.Message):
         Proxy](https://cloud.google.com/sql/docs/postgres/connect-auth-proxy)
         or [Cloud SQL
         Connectors](https://cloud.google.com/sql/docs/postgres/connect-
-        connectors) to enforce client identity verification.
+        connectors) to enforce client identity verification. This value is not
+        applicable to SQL Server.
     """
     SSL_MODE_UNSPECIFIED = 0
     ALLOW_UNENCRYPTED_AND_ENCRYPTED = 1

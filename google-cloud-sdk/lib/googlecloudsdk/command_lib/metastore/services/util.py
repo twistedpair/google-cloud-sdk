@@ -44,6 +44,21 @@ def LoadHiveMetatsoreConfigsFromXmlFile(file_arg):
   return hive_metastore_configs
 
 
+def UpdateAutoscalingScalingConfig(unused_ref, args, req):
+  """Sets autoscalingEnabled to true if the service specified a min scaling factor, max scaling factor, or both.
+
+  Args:
+    args: The request arguments.
+    req: A request with `service` field.
+
+  Returns:
+    A request with a modified scaling config.
+  """
+  if args.min_scaling_factor or args.max_scaling_factor:
+    req.service.scalingConfig.autoscalingConfig.autoscalingEnabled = True
+  return req
+
+
 def GenerateNetworkConfigFromSubnetList(unused_ref, args, req):
   """Generates the NetworkConfig message from the list of subnetworks.
 
@@ -163,6 +178,15 @@ def _GenerateUpdateMask(args):
       '--tier': 'tier',
       '--instance-size': 'scaling_config.instance_size',
       '--scaling-factor': 'scaling_config.scaling_factor',
+      '--autoscaling-enabled': (
+          'scaling_config.autoscaling_config.autoscaling_enabled'
+      ),
+      '--min-scaling-factor': (
+          'scaling_config.autoscaling_config.limit_config.min_scaling_factor'
+      ),
+      '--max-scaling-factor': (
+          'scaling_config.autoscaling_config.limit_config.max_scaling_factor'
+      ),
       '--update-hive-metastore-configs-from-file': (
           'hive_metastore_config.config_overrides'
       ),

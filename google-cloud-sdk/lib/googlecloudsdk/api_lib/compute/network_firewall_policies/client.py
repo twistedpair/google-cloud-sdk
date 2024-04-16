@@ -57,6 +57,17 @@ class NetworkFirewallPolicy(object):
                 replaceExistingAssociation=replace_existing_association,
                 project=self.ref.project))
 
+  def _MakePatchAssociationRequestTuple(self, association, firewall_policy):
+    return (
+        self._client.networkFirewallPolicies,
+        'PatchAssociation',
+        self._messages.ComputeNetworkFirewallPoliciesPatchAssociationRequest(
+            firewallPolicyAssociation=association,
+            firewallPolicy=firewall_policy,
+            project=self.ref.project,
+        ),
+    )
+
   def _MakeCloneRulesRequestTuple(self, source_firewall_policy):
     return (self._client.networkFirewallPolicies, 'CloneRules',
             self._messages.ComputeNetworkFirewallPoliciesCloneRulesRequest(
@@ -155,6 +166,20 @@ class NetworkFirewallPolicy(object):
     requests = [
         self._MakeAddAssociationRequestTuple(association, firewall_policy,
                                              replace_existing_association)
+    ]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests
+
+  def PatchAssociation(
+      self,
+      association=None,
+      firewall_policy=None,
+      only_generate_request=False,
+  ):
+    """Sends request to patch an association."""
+    requests = [
+        self._MakePatchAssociationRequestTuple(association, firewall_policy)
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)

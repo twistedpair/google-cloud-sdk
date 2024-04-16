@@ -437,10 +437,15 @@ class ThreadInterceptor(threading.Thread):
 class CloudBuildClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
-  def __init__(self, client=None, messages=None, support_gcl=False):
+  def __init__(self,
+               client=None,
+               messages=None,
+               support_gcl=False,
+               polling_interval=1):
     self.client = client or cloudbuild_util.GetClientInstance()
     self.messages = messages or cloudbuild_util.GetMessagesModule()
     self.support_gcl = support_gcl
+    self.polling_interval = polling_interval
 
   def GetBuild(self, build_ref):
     """Get a Build message.
@@ -478,9 +483,11 @@ class CloudBuildClient(object):
     Returns:
       Build message, the completed or terminated build.
     """
+    log.status.Print('Waiting for build to complete. Polling interval: ' +
+                     str(self.polling_interval) + ' second(s).')
     while build.status in working_statuses:
       build = self.GetBuild(build_ref)
-      time.sleep(1)
+      time.sleep(self.polling_interval)
 
     if log_tailer:
       log_tailer.Stop()

@@ -24,17 +24,17 @@ class Accelerator(_messages.Message):
   r"""Identifies Data Fusion accelerators for an instance.
 
   Enums:
-    AcceleratorTypeValueValuesEnum: The type of an accelator for a CDF
-      instance.
-    StateValueValuesEnum: The state of the accelerator.
+    AcceleratorTypeValueValuesEnum: Optional. The type of an accelator for a
+      CDF instance.
+    StateValueValuesEnum: Output only. The state of the accelerator.
 
   Fields:
-    acceleratorType: The type of an accelator for a CDF instance.
-    state: The state of the accelerator.
+    acceleratorType: Optional. The type of an accelator for a CDF instance.
+    state: Output only. The state of the accelerator.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
-    r"""The type of an accelator for a CDF instance.
+    r"""Optional. The type of an accelator for a CDF instance.
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Default value, if unspecified.
@@ -56,7 +56,7 @@ class Accelerator(_messages.Message):
     CLOUDSEARCH = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the accelerator.
+    r"""Output only. The state of the accelerator.
 
     Values:
       STATE_UNSPECIFIED: Default value, do not use.

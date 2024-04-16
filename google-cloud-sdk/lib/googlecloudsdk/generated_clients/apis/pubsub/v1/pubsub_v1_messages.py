@@ -276,8 +276,6 @@ class CloudStorage(_messages.Message):
   Enums:
     StateValueValuesEnum: Output only. An output-only field that indicates the
       state of the Cloud Storage ingestion source.
-    UnprocessableDataActionValueValuesEnum: Optional. Defines the behavior
-      when encountering unprocessable data.
 
   Fields:
     avroFormat: Optional. Data from Cloud Storage will be interpreted in Avro
@@ -293,8 +291,6 @@ class CloudStorage(_messages.Message):
     state: Output only. An output-only field that indicates the state of the
       Cloud Storage ingestion source.
     textFormat: Optional. Data from Cloud Storage will be interpreted as text.
-    unprocessableDataAction: Optional. Defines the behavior when encountering
-      unprocessable data.
     uriWildcard: Optional. URI wildcard used to match objects that will be
       ingested. If unset, all objects will be ingested. See the [supported
       patterns](https://cloud.google.com/storage/docs/wildcards).
@@ -322,8 +318,8 @@ class CloudStorage(_messages.Message):
       BUCKET_NOT_FOUND: The provided Cloud Storage bucket doesn't exist.
       TOO_MANY_OBJECTS: The Cloud Storage bucket has too many objects,
         ingestion will be paused.
-      UNPROCESSABLE_DATA: An error was encountered while parsing the data,
-        ingestion will be paused.
+      TOO_MANY_ERRORS: Pub/Sub has encountered a large number of errors when
+        parsing the objects and attempting to publish. Ingestion will stop.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -331,20 +327,7 @@ class CloudStorage(_messages.Message):
     PUBLISH_PERMISSION_DENIED = 3
     BUCKET_NOT_FOUND = 4
     TOO_MANY_OBJECTS = 5
-    UNPROCESSABLE_DATA = 6
-
-  class UnprocessableDataActionValueValuesEnum(_messages.Enum):
-    r"""Optional. Defines the behavior when encountering unprocessable data.
-
-    Values:
-      UNPROCESSABLE_DATA_ACTION_UNSPECIFIED: Default value. This value is
-        unused.
-      IGNORE: Ignore the error and continue ingestion.
-      PAUSE_INGESTION: Pause ingestion until further action is taken.
-    """
-    UNPROCESSABLE_DATA_ACTION_UNSPECIFIED = 0
-    IGNORE = 1
-    PAUSE_INGESTION = 2
+    TOO_MANY_ERRORS = 6
 
   avroFormat = _messages.MessageField('AvroFormat', 1)
   bucket = _messages.StringField(2)
@@ -352,8 +335,7 @@ class CloudStorage(_messages.Message):
   pubsubAvroFormat = _messages.MessageField('PubSubAvroFormat', 4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   textFormat = _messages.MessageField('TextFormat', 6)
-  unprocessableDataAction = _messages.EnumField('UnprocessableDataActionValueValuesEnum', 7)
-  uriWildcard = _messages.StringField(8)
+  uriWildcard = _messages.StringField(7)
 
 
 class CloudStorageConfig(_messages.Message):

@@ -178,17 +178,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_SECURITYGATEWAYS = (
-      'projects.locations.global.securityGateways',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/global/securityGateways/'
-              '{securityGatewaysId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_INSIGHTS = (
       'projects.locations.insights',
       '{+name}',
@@ -207,6 +196,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SECURITYGATEWAYS = (
+      'projects.locations.securityGateways',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'securityGateways/{securityGatewaysId}',
       },
       ['name'],
       True

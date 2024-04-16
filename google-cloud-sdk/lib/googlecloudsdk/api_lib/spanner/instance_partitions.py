@@ -45,8 +45,8 @@ _API_VERSION = 'v1'
 
 
 def Create(
+    instance_ref,
     instance_partition,
-    instance,
     config,
     description,
     nodes,
@@ -60,11 +60,6 @@ def Create(
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection='spanner.projects.instanceConfigs',
-  )
-  instance_ref = resources.REGISTRY.Parse(
-      instance,
-      params={'projectsId': properties.VALUES.core.project.GetOrFail},
-      collection='spanner.projects.instances',
   )
   instance_partition_obj = msgs.InstancePartition(
       config=config_ref.RelativeName(), displayName=description
@@ -83,27 +78,18 @@ def Create(
   return client.projects_instances_instancePartitions.Create(req)
 
 
-def Get(instance_partition, instance):
+def Get(instance_partition_ref):
   """Get an instance partition by name."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
-  ref = resources.REGISTRY.Parse(
-      instance_partition,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance,
-      },
-      collection='spanner.projects.instances.instancePartitions',
-  )
   req = msgs.SpannerProjectsInstancesInstancePartitionsGetRequest(
-      name=ref.RelativeName()
+      name=instance_partition_ref.RelativeName()
   )
   return client.projects_instances_instancePartitions.Get(req)
 
 
 def Patch(
-    instance_partition,
-    instance,
+    instance_partition_ref,
     description=None,
     nodes=None,
     processing_units=None,
@@ -126,16 +112,8 @@ def Patch(
   elif nodes:
     instance_partition_obj.nodeCount = nodes
 
-  ref = resources.REGISTRY.Parse(
-      instance_partition,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance,
-      },
-      collection='spanner.projects.instances.instancePartitions',
-  )
   req = msgs.SpannerProjectsInstancesInstancePartitionsPatchRequest(
-      name=ref.RelativeName(),
+      name=instance_partition_ref.RelativeName(),
       updateInstancePartitionRequest=msgs.UpdateInstancePartitionRequest(
           fieldMask=','.join(fields), instancePartition=instance_partition_obj
       ),
@@ -165,19 +143,11 @@ def List(instance_ref):
   )
 
 
-def Delete(instance_partition, instance):
+def Delete(instance_partition_ref):
   """Delete an instance partition."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
-  ref = resources.REGISTRY.Parse(
-      instance_partition,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'instancesId': instance,
-      },
-      collection='spanner.projects.instances.instancePartitions',
-  )
   req = msgs.SpannerProjectsInstancesInstancePartitionsDeleteRequest(
-      name=ref.RelativeName()
+      name=instance_partition_ref.RelativeName()
   )
   return client.projects_instances_instancePartitions.Delete(req)

@@ -91,7 +91,7 @@ class IapTunnelWebSocket(object):
 
   def __init__(self, tunnel_target, get_access_token_callback,
                data_handler_callback, close_handler_callback,
-               user_agent, ignore_certs=False):
+               user_agent, conn_id=0, ignore_certs=False):
     self._tunnel_target = tunnel_target
     self._get_access_token_callback = get_access_token_callback
     self._data_handler_callback = data_handler_callback
@@ -121,6 +121,7 @@ class IapTunnelWebSocket(object):
     # This queue is used to store data that was sent but didn't get acked by
     # the server. We will use it to resend the data.
     self._data_to_resend = queue.Queue()
+    self._conn_id = conn_id
 
   def __del__(self):
     if self._websocket_helper:
@@ -208,8 +209,8 @@ class IapTunnelWebSocket(object):
       r.RetryOnException(func=reconnect_func,
                          sleep_ms=RECONNECT_INITIAL_SLEEP_MS)
     except retry.RetryException:
-      log.warning('Unable to reconnect within [%d] ms',
-                  MAX_RECONNECT_WAIT_TIME_MS, exc_info=True)
+      log.warning('[%d] Unable to reconnect within [%d] ms',
+                  self._conn_id, MAX_RECONNECT_WAIT_TIME_MS, exc_info=True)
       self._StopConnectionAsync()
 
   def _EnqueueBytesWithWaitForReconnect(self, bytes_to_send):
@@ -238,8 +239,8 @@ class IapTunnelWebSocket(object):
         # Needed since the gcloud logging methods will log to file regardless
         # of the verbosity level set by the user.
         if log.GetVerbosity() == logging.DEBUG:
-          log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
-                    len(bytes_to_send), bytes_to_send[:20])
+          log.debug('[%d] ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
+                    self._conn_id, len(bytes_to_send), bytes_to_send[:20])
         return
       except queue.Full:
         # Throws Full if timeout was reached
@@ -262,6 +263,7 @@ class IapTunnelWebSocket(object):
   def _StartNewWebSocket(self):
     """Start a new WebSocket and thread to listen for incoming data."""
     headers = ['User-Agent: ' + self._user_agent]
+    log.debug('[%d] user-agent [%s]', self._conn_id, self._user_agent)
     request_reason = properties.VALUES.core.request_reason.Get()
     if request_reason:
       headers += ['X-Goog-Request-Reason: ' + request_reason]
@@ -269,7 +271,7 @@ class IapTunnelWebSocket(object):
     if self._get_access_token_callback:
       headers += ['Authorization: Bearer ' + self._get_access_token_callback()]
 
-    log.debug('Using new websocket library')
+    log.debug('[%d] Using new websocket library', self._conn_id)
 
     if self._connection_sid:
       url = utils.CreateWebSocketReconnectUrl(
@@ -277,11 +279,11 @@ class IapTunnelWebSocket(object):
           self._connection_sid,
           self._total_bytes_received,
           should_use_new_websocket=True)
-      log.info('Reconnecting with URL [%r]', url)
+      log.info('[%d] Reconnecting with URL [%r]', self._conn_id, url)
     else:
       url = utils.CreateWebSocketConnectUrl(
           self._tunnel_target, should_use_new_websocket=True)
-      log.info('Connecting with URL [%r]', url)
+      log.info('[%d] Connecting with URL [%r]', self._conn_id, url)
 
     self._connect_msg_received = False
 
@@ -292,7 +294,8 @@ class IapTunnelWebSocket(object):
         self._tunnel_target.proxy_info,
         self._OnData,
         self._OnClose,
-        should_use_new_websocket=True)
+        should_use_new_websocket=True,
+        conn_id=self._conn_id)
     self._websocket_helper.StartReceivingThread()
 
   def _SendAck(self):
@@ -307,11 +310,12 @@ class IapTunnelWebSocket(object):
         # We throw here so the caller can reconnect
         raise
       except EnvironmentError as e:
-        log.info('Unable to send WebSocket ack [%s]', six.text_type(e))
+        log.info('[%d] Unable to send WebSocket ack [%s]',
+                 self._conn_id, six.text_type(e))
       except:  # pylint: disable=bare-except
         if not self._IsClosed():
-          log.info('Error while attempting to ack [%d] bytes', bytes_received,
-                   exc_info=True)
+          log.info('[%d] Error while attempting to ack [%d] bytes',
+                   self._conn_id, bytes_received, exc_info=True)
         else:
           raise
       finally:
@@ -351,8 +355,8 @@ class IapTunnelWebSocket(object):
         try:
           SendData()
         except Exception as e:  # pylint: disable=broad-except
-          log.debug('Error while sending data, trying to reconnect [%s]',
-                    six.text_type(e))
+          log.debug('[%d] Error while sending data, trying to reconnect [%s]',
+                    self._conn_id, six.text_type(e))
           self._AttemptReconnect(Reconnect)
     finally:
       self.Close()
@@ -469,8 +473,8 @@ class IapTunnelWebSocket(object):
     bytes_confirmed, bytes_left = utils.ExtractSubprotocolAck(binary_data)
     self._ConfirmData(bytes_confirmed)
     if bytes_left:
-      log.debug('Discarding [%d] extra bytes after processing ACK',
-                len(bytes_left))
+      log.debug('[%d] Discarding [%d] extra bytes after processing ACK',
+                self._conn_id, len(bytes_left))
 
   def _HandleSubprotocolConnectSuccessSid(self, binary_data):
     """Handle Subprotocol CONNECT_SUCCESS_SID Frame."""
@@ -484,8 +488,8 @@ class IapTunnelWebSocket(object):
     self._connect_msg_received = True
     if bytes_left:
       log.debug(
-          'Discarding [%d] extra bytes after processing CONNECT_SUCCESS_SID',
-          len(bytes_left))
+          '[%d] Discarding [%d] extra bytes after processing '
+          'CONNECT_SUCCESS_SID', self._conn_id, len(bytes_left))
 
   def _AddUnconfirmedDataBackToTheQueue(self):
     # This data will be sent first
@@ -505,14 +509,14 @@ class IapTunnelWebSocket(object):
     bytes_being_confirmed = bytes_confirmed - self._total_bytes_confirmed
     self._ConfirmData(bytes_confirmed)
     log.info(
-        'Reconnecting: confirming [%d] bytes and resending [%d] messages.',
-        bytes_being_confirmed, len(self._unconfirmed_data))
+        '[%d] Reconnecting: confirming [%d] bytes and resending [%d] messages.',
+        self._conn_id, bytes_being_confirmed, len(self._unconfirmed_data))
     self._AddUnconfirmedDataBackToTheQueue()
     self._connect_msg_received = True
     if bytes_left:
       log.debug(
-          'Discarding [%d] extra bytes after processing RECONNECT_SUCCESS_ACK',
-          len(bytes_left))
+          '[%d] Discarding [%d] extra bytes after processing '
+          'RECONNECT_SUCCESS_ACK', self._conn_id, len(bytes_left))
 
   def _HandleSubprotocolData(self, binary_data):
     """Handle Subprotocol DATA Frame."""
@@ -529,8 +533,8 @@ class IapTunnelWebSocket(object):
       self._StopConnectionAsync()
       raise
     if bytes_left:
-      log.debug('Discarding [%d] extra bytes after processing DATA',
-                len(bytes_left))
+      log.debug('[%d] Discarding [%d] extra bytes after processing DATA',
+                self._conn_id, len(bytes_left))
 
   def _ConfirmData(self, bytes_confirmed):
     """Discard data that has been confirmed via ACKs received from server."""

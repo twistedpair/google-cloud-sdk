@@ -107,6 +107,7 @@ def CreateQuotaPreference(args):
       service=args.service,
       quotaId=args.quota_id,
       justification=_GetJustification(args.email, args.justification),
+      contactEmail=args.email,
   )
 
   if args.project:
@@ -173,6 +174,7 @@ def UpdateQuotaPreference(args):
       service=args.service,
       quotaId=args.quota_id,
       justification=_GetJustification(args.email, args.justification),
+      contactEmail=args.email,
   )
 
   if args.project:

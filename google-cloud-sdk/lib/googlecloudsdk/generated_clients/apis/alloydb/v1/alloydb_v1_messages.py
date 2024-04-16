@@ -1194,9 +1194,10 @@ class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Mes
 
 
 class Cluster(_messages.Message):
-  r"""A cluster is a collection of regional AlloyDB resources. It can include
-  a primary instance and one or more read pool instances. All cluster
-  resources share a storage layer, which scales as needed.
+  r"""A cluster is a collection of regional AlloyDB resources.
+
+  It can include a primary instance and one or more read pool instances. All
+  cluster resources share a storage layer, which scales as needed.
 
   Enums:
     ClusterTypeValueValuesEnum: Output only. The type of the cluster. This is
@@ -1269,6 +1270,8 @@ class Cluster(_messages.Message):
     networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
+    pscConfig: Optional. The configuration for Private Service Connect (PSC)
+      for the cluster.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of Cluster does not match the user's intended state, and the
@@ -1424,13 +1427,14 @@ class Cluster(_messages.Message):
   network = _messages.StringField(18)
   networkConfig = _messages.MessageField('NetworkConfig', 19)
   primaryConfig = _messages.MessageField('PrimaryConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 23)
-  sslConfig = _messages.MessageField('SslConfig', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  pscConfig = _messages.MessageField('PscConfig', 21)
+  reconciling = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 24)
+  sslConfig = _messages.MessageField('SslConfig', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1543,7 +1547,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -1772,6 +1775,7 @@ class InjectFaultRequest(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
+
   It's the main unit of computing resources in AlloyDB.
 
   Enums:
@@ -1851,6 +1855,8 @@ class Instance(_messages.Message):
     networkConfig: Optional. Instance level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    pscInstanceConfig: Optional. The configuration for Private Service Connect
+      (PSC) for the instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
       This is available ONLY when enable_public_ip is set. This is the
       connection endpoint for an end-user application.
@@ -2039,15 +2045,18 @@ class Instance(_messages.Message):
   name = _messages.StringField(14)
   networkConfig = _messages.MessageField('InstanceNetworkConfig', 15)
   nodes = _messages.MessageField('Node', 16, repeated=True)
-  publicIpAddress = _messages.StringField(17)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 18)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  writableNode = _messages.MessageField('Node', 25)
+  pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 17)
+  publicIpAddress = _messages.StringField(18)
+  queryInsightsConfig = _messages.MessageField(
+      'QueryInsightsInstanceConfig', 19
+  )
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  writableNode = _messages.MessageField('Node', 26)
 
 
 class InstanceNetworkConfig(_messages.Message):
@@ -2419,6 +2428,38 @@ class PromoteClusterRequest(_messages.Message):
   etag = _messages.StringField(1)
   requestId = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
+
+
+class PscConfig(_messages.Message):
+  r"""PscConfig contains PSC related configuration at a cluster level.
+
+  Fields:
+    pscEnabled: Optional. Create an instance that allows connections from
+      Private Service Connect endpoints to the instance.
+  """
+
+  pscEnabled = _messages.BooleanField(1)
+
+
+class PscInstanceConfig(_messages.Message):
+  r"""PscInstanceConfig contains PSC related configuration at an instance
+
+  level.
+
+  Fields:
+    allowedConsumerProjects: Optional. List of consumer projects that are
+      allowed to create PSC endpoints to service-attachments to this instance.
+    pscDnsName: Output only. The DNS name of the instance for PSC
+      connectivity. Name convention: ...alloydb-psc.goog
+    serviceAttachmentLink: Output only. The service attachment created when
+      Private Service Connect (PSC) is enabled for the instance. The name of
+      the resource will be in the format of
+      `projects//regions//serviceAttachments/`
+  """
+
+  allowedConsumerProjects = _messages.StringField(1, repeated=True)
+  pscDnsName = _messages.StringField(2)
+  serviceAttachmentLink = _messages.StringField(3)
 
 
 class QuantityBasedExpiry(_messages.Message):

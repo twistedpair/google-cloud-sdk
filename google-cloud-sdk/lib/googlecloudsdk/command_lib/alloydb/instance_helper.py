@@ -161,6 +161,11 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       None,
   )
 
+  if args.allowed_psc_projects:
+    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+        alloydb_messages, args.allowed_psc_projects
+    )
+
   return instance_resource
 
 
@@ -192,10 +197,6 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
   """
   instance_resource = _ConstructInstanceFromArgsBeta(
       client, alloydb_messages, args)
-  if args.allowed_psc_projects:
-    instance_resource.pscInstanceConfig = _PscInstanceConfig(
-        alloydb_messages, args.allowed_psc_projects
-    )
   return instance_resource
 
 
@@ -327,6 +328,13 @@ def ConstructInstanceAndUpdatePathsFromArgs(
       paths.append('networkConfig.enablePublicIp')
     if args.authorized_external_networks is not None:
       paths.append('networkConfig.authorizedExternalNetworks')
+
+  # Empty lists are allowed for consumers to remove all PSC allowed projects.
+  if args.allowed_psc_projects is not None:
+    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+        alloydb_messages, args.allowed_psc_projects
+    )
+    paths.append('pscInstanceConfig.allowedConsumerProjects')
 
   return instance_resource, paths
 
@@ -619,10 +627,4 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgsBeta(
       alloydb_messages, instance_ref, args
   )
-  # Empty lists are allowed for consumers to remove all PSC allowed projects.
-  if args.allowed_psc_projects is not None:
-    instance_resource.pscInstanceConfig = _PscInstanceConfig(
-        alloydb_messages, args.allowed_psc_projects
-    )
-    paths.append('pscInstanceConfig.allowedConsumerProjects')
   return instance_resource, paths

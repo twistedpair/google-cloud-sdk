@@ -620,7 +620,9 @@ class MetadataOptions(_messages.Message):
       TEMPORARY_HOLD_PRESERVE.
     TimeCreatedValueValuesEnum: Specifies how each object's `timeCreated`
       metadata is preserved for transfers. If unspecified, the default
-      behavior is the same as TIME_CREATED_SKIP.
+      behavior is the same as TIME_CREATED_SKIP. This behavior is supported
+      for transfers to GCS buckets from GCS, S3, Azure, S3 Compatible, and
+      Azure sources.
     UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
       attribute should be handled by the transfer. By default, UID is not
       preserved. Only applicable to transfers involving POSIX file systems,
@@ -653,7 +655,8 @@ class MetadataOptions(_messages.Message):
       TEMPORARY_HOLD_PRESERVE.
     timeCreated: Specifies how each object's `timeCreated` metadata is
       preserved for transfers. If unspecified, the default behavior is the
-      same as TIME_CREATED_SKIP.
+      same as TIME_CREATED_SKIP. This behavior is supported for transfers to
+      GCS buckets from GCS, S3, Azure, S3 Compatible, and Azure sources.
     uid: Specifies how each file's POSIX user ID (UID) attribute should be
       handled by the transfer. By default, UID is not preserved. Only
       applicable to transfers involving POSIX file systems, and ignored for
@@ -787,7 +790,8 @@ class MetadataOptions(_messages.Message):
   class TimeCreatedValueValuesEnum(_messages.Enum):
     r"""Specifies how each object's `timeCreated` metadata is preserved for
     transfers. If unspecified, the default behavior is the same as
-    TIME_CREATED_SKIP.
+    TIME_CREATED_SKIP. This behavior is supported for transfers to GCS buckets
+    from GCS, S3, Azure, S3 Compatible, and Azure sources.
 
     Values:
       TIME_CREATED_UNSPECIFIED: TimeCreated behavior is unspecified.
@@ -1766,8 +1770,7 @@ class TransferJob(_messages.Message):
       example: `"transferJobs/OPI^[A-Za-z0-9-._~]*[A-Za-z0-9]$"` Applications
       must not rely on the enforcement of naming requirements involving OPI.
       Invalid job names fail with an INVALID_ARGUMENT error.
-    notificationConfig: Notification configuration. This is not supported for
-      transfers involving PosixFilesystem.
+    notificationConfig: Notification configuration.
     projectId: The ID of the Google Cloud project that owns the job.
     replicationSpec: Replication specification.
     schedule: Specifies schedule for the transfer job. This is an optional

@@ -550,7 +550,7 @@ def _UpdateDeploymentOp(
   return configmanager_util.UpdateDeployment(deployment, deployment_full_name)
 
 
-def ImportStateFile(messages, deployment_full_name, lock_id):
+def ImportStateFile(messages, deployment_full_name, lock_id, file=None):
   """Creates a signed uri to upload the state file.
 
   Args:
@@ -559,6 +559,7 @@ def ImportStateFile(messages, deployment_full_name, lock_id):
     deployment_full_name: string, the fully qualified name of the deployment,
       e.g. "projects/p/locations/l/deployments/d".
     lock_id: Lock ID of the lock file to verify person importing owns lock.
+    file: file path of the statefile to be uploaded.
 
   Returns:
     A messages.StateFile which contains signed uri to be used to upload a state
@@ -574,8 +575,13 @@ def ImportStateFile(messages, deployment_full_name, lock_id):
   state_file = configmanager_util.ImportStateFile(
       import_state_file_request, deployment_full_name
   )
-
-  return state_file
+  if file is None:
+    return state_file
+  state_file_url = state_file.signedUri
+  state_file_obj = files.BinaryFileReader(os.path.abspath(file))
+  requests.GetSession().put(state_file_url, data=state_file_obj)
+  log.status.Print(f'Statefile {file} uploaded successfully.')
+  return
 
 
 def ExportDeploymentStateFile(

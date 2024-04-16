@@ -24,6 +24,7 @@ from cloudsdk.google.protobuf import text_format
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.spanner.resource_args import CloudKmsKeyName
 
 
 # The list of pre-defined IAM roles in Spanner.
@@ -38,12 +39,14 @@ DATABASE_DIALECT_GOOGLESQL = 'GOOGLE_STANDARD_SQL'
 DATABASE_DIALECT_POSTGRESQL = 'POSTGRESQL'
 
 
-def Create(instance_ref,
-           database,
-           ddl,
-           proto_descriptors=None,
-           kms_key=None,
-           database_dialect=None):
+def Create(
+    instance_ref,
+    database,
+    ddl,
+    proto_descriptors=None,
+    kms_key: CloudKmsKeyName = None,
+    database_dialect=None,
+):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -62,10 +65,10 @@ def Create(instance_ref,
     else:
       req_args[
           'databaseDialect'] = msgs.CreateDatabaseRequest.DatabaseDialectValueValuesEnum.GOOGLE_STANDARD_SQL
-  if isinstance(kms_key, str):
-    req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyName=kms_key)
-  elif isinstance(kms_key, list):
-    req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyNames=kms_key)
+  if kms_key:
+    req_args['encryptionConfig'] = msgs.EncryptionConfig(
+        kmsKeyName=kms_key.kms_key_name, kmsKeyNames=kms_key.kms_key_names
+    )
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(
       parent=instance_ref.RelativeName(),
       createDatabaseRequest=msgs.CreateDatabaseRequest(**req_args))
@@ -178,9 +181,16 @@ def Restore(database_ref, backup_ref, encryption_type=None, kms_key=None):
 
   restore_db_request = msgs.RestoreDatabaseRequest(
       backup=backup_ref.RelativeName(), databaseId=database_ref.Name())
-  if encryption_type or kms_key:
+  if kms_key:
     restore_db_request.encryptionConfig = msgs.RestoreDatabaseEncryptionConfig(
-        encryptionType=encryption_type, kmsKeyName=kms_key)
+        encryptionType=encryption_type,
+        kmsKeyName=kms_key.kms_key_name,
+        kmsKeyNames=kms_key.kms_key_names,
+    )
+  elif encryption_type:
+    restore_db_request.encryptionConfig = msgs.RestoreDatabaseEncryptionConfig(
+        encryptionType=encryption_type,
+    )
 
   req = msgs.SpannerProjectsInstancesDatabasesRestoreRequest(
       parent=database_ref.Parent().RelativeName(),

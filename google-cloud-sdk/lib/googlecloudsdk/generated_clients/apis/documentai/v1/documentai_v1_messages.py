@@ -3266,7 +3266,7 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   Enums:
     ModelTypeValueValuesEnum: Output only. The model type of this processor
       version.
-    StateValueValuesEnum: The state of the processor version.
+    StateValueValuesEnum: Output only. The state of the processor version.
 
   Fields:
     createTime: The time the processor version was created.
@@ -3281,10 +3281,10 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     latestEvaluation: The most recently invoked evaluation for the processor
       version.
     modelType: Output only. The model type of this processor version.
-    name: The resource name of the processor version. Format: `projects/{proje
-      ct}/locations/{location}/processors/{processor}/processorVersions/{proce
-      ssor_version}`
-    state: The state of the processor version.
+    name: Identifier. The resource name of the processor version. Format: `pro
+      jects/{project}/locations/{location}/processors/{processor}/processorVer
+      sions/{processor_version}`
+    state: Output only. The state of the processor version.
   """
 
   class ModelTypeValueValuesEnum(_messages.Enum):
@@ -3301,7 +3301,7 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     MODEL_TYPE_CUSTOM = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the processor version.
+    r"""Output only. The state of the processor version.
 
     Values:
       STATE_UNSPECIFIED: The processor version is in an unspecified state.

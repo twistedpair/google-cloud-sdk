@@ -16,21 +16,9 @@
 
 import datetime
 import uuid
-
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.core import properties
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.util import times
-
-
-def SetGlobalLocation():
-  """Set default location to global."""
-  return '-'
-
-
-def SetDefaultBackupVault():
-  """Set default backup vault value to use wildcards."""
-  project = properties.VALUES.core.project.Get()
-  return 'projects/{}/locations/-/backupVaults/-'.format(project)
 
 
 def GenerateRequestId():
@@ -56,8 +44,9 @@ def ConvertUtcTime(effective_time):
   if effective_time is None:
     return None
   if effective_time < times.Now().date():
-    raise arg_parsers.ArgumentTypeError(
-        'Date must be in the future: {0}'.format(effective_time)
+    raise exceptions.InvalidArgumentException(
+        'Date must be in the future: {0}'.format(effective_time),
+        'effective_time',
     )
   year = effective_time.year
   month = effective_time.month
@@ -66,3 +55,30 @@ def ConvertUtcTime(effective_time):
       year, month, day, 0, 0, 0, 0, datetime.timezone.utc
   ).strftime('%Y-%m-%dT%H:%M:%SZ')
   return effective_time
+
+
+def UnlockEffectiveTime():
+  return '0001-01-01T00:00:00.000Z'
+
+
+# TODO: b/332661929 - Add unit tests for this class.
+class OptionsMapValidator(object):
+  """Option that are passed as key(alternative) value(actual) pairs are validated on the args."""
+
+  def __init__(self, options):
+    self.key_len = max(len(option) for option in options.keys())
+    self.options = options
+
+  def IsValid(self, s):
+    if not s:
+      return False
+    return s[: self.key_len].upper() in self.options.keys()
+
+  def Parse(self, s):
+    if not self.IsValid(s):
+      raise arg_parsers.ArgumentTypeError(
+          'Failed to parse the arg ({}). Value should be one of {}'.format(
+              s, ', '.join(self.options.keys())
+          )
+      )
+    return self.options.get(s[: self.key_len].upper(), 'UNKNOWN')

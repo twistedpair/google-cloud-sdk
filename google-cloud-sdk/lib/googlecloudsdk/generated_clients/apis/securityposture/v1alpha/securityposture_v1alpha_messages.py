@@ -273,6 +273,38 @@ class GoogleCloudSecuritypostureV1alphaCustomConstraint(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class GoogleCloudSecuritypostureV1alphaIaCValidationReportPolicyDetails(_messages.Message):
+  r"""Details of policies unsupported by evaluation services during IAC
+  validation.
+
+  Enums:
+    ConstraintTypeValueValuesEnum: Type of policy constraint.
+
+  Fields:
+    constraintType: Type of policy constraint.
+    policyId: Policy id of unsupported policy.
+  """
+
+  class ConstraintTypeValueValuesEnum(_messages.Enum):
+    r"""Type of policy constraint.
+
+    Values:
+      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint type.
+      ORG_POLICY: Org policy canned constraint type.
+      SECURITY_HEALTH_ANALYTICS_MODULE: SHA module canned constraint type.
+      ORG_POLICY_CUSTOM: Custom org policy constraint type.
+      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: Custom SHA constraint type.
+    """
+    CONSTRAINT_TYPE_UNSPECIFIED = 0
+    ORG_POLICY = 1
+    SECURITY_HEALTH_ANALYTICS_MODULE = 2
+    ORG_POLICY_CUSTOM = 3
+    SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 4
+
+  constraintType = _messages.EnumField('ConstraintTypeValueValuesEnum', 1)
+  policyId = _messages.StringField(2)
+
+
 class GoogleCloudSecuritypostureV1alphaPolicyRule(_messages.Message):
   r"""A rule used to express this policy.
 
@@ -362,10 +394,13 @@ class IaCValidationReport(_messages.Message):
   r"""Details of an IaC Validation report.
 
   Fields:
+    skippedPolicies: List of policies unsupported by evaluation services
+      during IAC validation.
     violations: List of violations found in the provided IaC.
   """
 
-  violations = _messages.MessageField('Violation', 1, repeated=True)
+  skippedPolicies = _messages.MessageField('GoogleCloudSecuritypostureV1alphaIaCValidationReportPolicyDetails', 1, repeated=True)
+  violations = _messages.MessageField('Violation', 2, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -748,10 +783,14 @@ class PolicyDetails(_messages.Message):
       CONSTRAINT_TYPE_UNSPECIFIED: <no description>
       SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
       ORG_POLICY_CUSTOM: <no description>
+      SECURITY_HEALTH_ANALYTICS_MODULE: SHA module constraint type.
+      ORG_POLICY: Org policy constraint type.
     """
     CONSTRAINT_TYPE_UNSPECIFIED = 0
     SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 1
     ORG_POLICY_CUSTOM = 2
+    SECURITY_HEALTH_ANALYTICS_MODULE = 3
+    ORG_POLICY = 4
 
   complianceStandards = _messages.StringField(1, repeated=True)
   constraint = _messages.StringField(2)

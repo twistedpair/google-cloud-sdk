@@ -130,6 +130,7 @@ class VolumesClient(object):
       backup_config=None,
       large_capacity=None,
       multiple_endpoints=None,
+      tiering_policy=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config."""
@@ -154,6 +155,7 @@ class VolumesClient(object):
         backup_config=backup_config,
         large_capacity=large_capacity,
         multiple_endpoints=multiple_endpoints,
+        tiering_policy=tiering_policy,
         labels=labels,
     )
 
@@ -212,6 +214,7 @@ class VolumesClient(object):
       backup=None,
       restricted_actions=None,
       backup_config=None,
+      tiering_policy=None,
   ):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
@@ -233,7 +236,8 @@ class VolumesClient(object):
         snapshot=snapshot,
         backup=backup,
         restricted_actions=restricted_actions,
-        backup_config=backup_config)
+        backup_config=backup_config,
+        tiering_policy=tiering_policy)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -397,6 +401,7 @@ class VolumesAdapter(object):
       backup_config=None,
       large_capacity=None,
       multiple_endpoints=None,
+      tiering_policy=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -422,6 +427,7 @@ class VolumesAdapter(object):
       backup_config: the Backup Config attached to the Volume
       large_capacity: Bool on whether to use large capacity for Volume
       multiple_endpoints: Bool on whether to use multiple endpoints for Volume
+      tiering_policy: the tiering policy for the volume.
       labels: the parsed labels value.
 
     Returns:
@@ -459,6 +465,8 @@ class VolumesAdapter(object):
       volume.largeCapacity = large_capacity
     if multiple_endpoints is not None:
       volume.multipleEndpoints = multiple_endpoints
+    if tiering_policy is not None:
+      self.ParseTieringPolicy(volume, tiering_policy)
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -485,6 +493,7 @@ class VolumesAdapter(object):
       backup_config=None,
       large_capacity=None,
       multiple_endpoints=None,
+      tiering_policy=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -527,6 +536,8 @@ class VolumesAdapter(object):
       volume_config.largeCapacity = large_capacity
     if multiple_endpoints is not None:
       volume_config.multipleEndpoints = multiple_endpoints
+    if tiering_policy is not None:
+      self.ParseTieringPolicy(volume_config, tiering_policy)
     return volume_config
 
   def ParseBackupConfig(self, volume, backup_config):
@@ -546,7 +557,7 @@ class VolumesAdapter(object):
       backup_config_message.backupPolicies.append(backup_policy)
     backup_config_message.backupVault = backup_config.get('backup-vault', '')
     backup_config_message.scheduledBackupEnabled = (
-        backup_config.get('enable-scheduled-backups', False)
+        backup_config.get('enable-scheduled-backups', None)
     )
     volume.backupConfig = backup_config_message
 
@@ -558,6 +569,23 @@ class VolumesAdapter(object):
     if backup:
       restore_parameters.sourceBackup = backup
     volume.restoreParameters = restore_parameters
+
+  def ParseTieringPolicy(self, volume, tiering_policy):
+    """Parses Tiering Policy for Volume into a config.
+
+    Args:
+      volume: The Cloud NetApp Volume message object.
+      tiering_policy: the tiering policy message object.
+
+    Returns:
+      Volume message populated with Tiering Policy values.
+    """
+    tiering_policy_message = self.messages.TieringPolicy()
+    tiering_policy_message.tierAction = tiering_policy.get('tier-action')
+    tiering_policy_message.coolingThresholdDays = tiering_policy.get(
+        'cooling-threshold-days'
+    )
+    volume.tieringPolicy = tiering_policy_message
 
 
 class BetaVolumesAdapter(VolumesAdapter):

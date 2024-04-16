@@ -4752,7 +4752,14 @@ class RestartMigrationJobRequest(_messages.Message):
 
 
 class ResumeMigrationJobRequest(_messages.Message):
-  r"""Request message for 'ResumeMigrationJob' request."""
+  r"""Request message for 'ResumeMigrationJob' request.
+
+  Fields:
+    skipValidation: Optional. Resume the migration job without running prior
+      configuration verification. Defaults to `false`.
+  """
+
+  skipValidation = _messages.BooleanField(1)
 
 
 class ReverseSshConnectivity(_messages.Message):

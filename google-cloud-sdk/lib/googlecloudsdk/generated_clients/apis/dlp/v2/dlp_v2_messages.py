@@ -334,6 +334,26 @@ class DlpOrganizationsLocationsColumnDataProfilesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class DlpOrganizationsLocationsConnectionsSearchRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsConnectionsSearchRequest object.
+
+  Fields:
+    filter: Optional. * Supported fields/values - `state` -
+      MISSING|AVAILABLE|ERROR
+    pageSize: Optional. Number of results per page, max 1000.
+    pageToken: Optional. Page token from a previous page to return the next
+      set of results. If set, all other request fields must match the original
+      request.
+    parent: Required. Parent name, typically an organization, without
+      location. For example: "organizations/12345678".
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsDeidentifyTemplatesCreateRequest object.
 
@@ -988,6 +1008,16 @@ class DlpOrganizationsLocationsStoredInfoTypesPatchRequest(_messages.Message):
 
   googlePrivacyDlpV2UpdateStoredInfoTypeRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateStoredInfoTypeRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class DlpOrganizationsLocationsTableDataProfilesDeleteRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsTableDataProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the table data profile.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DlpOrganizationsLocationsTableDataProfilesGetRequest(_messages.Message):
@@ -1793,6 +1823,99 @@ class DlpProjectsLocationsColumnDataProfilesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class DlpProjectsLocationsConnectionsCreateRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateConnectionRequest: A
+      GooglePrivacyDlpV2CreateConnectionRequest resource to be passed as the
+      request body.
+    parent: Required. Parent resource name in the format:
+      "projects/{project}/locations/{location}".
+  """
+
+  googlePrivacyDlpV2CreateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2CreateConnectionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpProjectsLocationsConnectionsDeleteRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the Connection to be deleted, in the
+      format:
+      "projects/{project}/locations/{location}/connections/{connection}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsConnectionsGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsGetRequest object.
+
+  Fields:
+    name: Required. Resource name in the format:
+      "projects/{project}/locations/{location}/connections/{connection}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsConnectionsListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsListRequest object.
+
+  Fields:
+    filter: Optional. * Supported fields/values - `state` -
+      MISSING|AVAILABLE|ERROR
+    pageSize: Optional. Number of results per page, max 1000.
+    pageToken: Optional. Page token from a previous page to return the next
+      set of results. If set, all other request fields must match the original
+      request.
+    parent: Required. Parent name, for example: "projects/project-
+      id/locations/global".
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DlpProjectsLocationsConnectionsPatchRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateConnectionRequest: A
+      GooglePrivacyDlpV2UpdateConnectionRequest resource to be passed as the
+      request body.
+    name: Required. Resource name in the format:
+      "projects/{project}/locations/{location}/connections/{connection}".
+  """
+
+  googlePrivacyDlpV2UpdateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateConnectionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DlpProjectsLocationsConnectionsSearchRequest(_messages.Message):
+  r"""A DlpProjectsLocationsConnectionsSearchRequest object.
+
+  Fields:
+    filter: Optional. * Supported fields/values - `state` -
+      MISSING|AVAILABLE|ERROR
+    pageSize: Optional. Number of results per page, max 1000.
+    pageToken: Optional. Page token from a previous page to return the next
+      set of results. If set, all other request fields must match the original
+      request.
+    parent: Required. Parent name, typically an organization, without
+      location. For example: "organizations/12345678".
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class DlpProjectsLocationsContentDeidentifyRequest(_messages.Message):
@@ -2659,6 +2782,16 @@ class DlpProjectsLocationsStoredInfoTypesPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class DlpProjectsLocationsTableDataProfilesDeleteRequest(_messages.Message):
+  r"""A DlpProjectsLocationsTableDataProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the table data profile.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DlpProjectsLocationsTableDataProfilesGetRequest(_messages.Message):
   r"""A DlpProjectsLocationsTableDataProfilesGetRequest object.
 
@@ -2873,6 +3006,10 @@ class GooglePrivacyDlpV2AllOtherBigQueryTables(_messages.Message):
   a TableReference target.
   """
 
+
+
+class GooglePrivacyDlpV2AllOtherDatabaseResources(_messages.Message):
+  r"""Match database resources not covered by any other filter."""
 
 
 class GooglePrivacyDlpV2AllText(_messages.Message):
@@ -3348,6 +3485,80 @@ class GooglePrivacyDlpV2CharsToIgnore(_messages.Message):
   commonCharactersToIgnore = _messages.EnumField('CommonCharactersToIgnoreValueValuesEnum', 2)
 
 
+class GooglePrivacyDlpV2CloudSqlDiscoveryTarget(_messages.Message):
+  r"""Target used to match against for discovery with Cloud SQL tables.
+
+  Fields:
+    conditions: In addition to matching the filter, these conditions must be
+      true before a profile is generated.
+    disabled: Disable profiling for database resources that match this filter.
+    filter: Required. The tables the discovery cadence applies to. The first
+      target with a matching filter will be the one to apply to a table.
+    generationCadence: How often and when to update profiles. New tables that
+      match both the filter and conditions are scanned as quickly as possible
+      depending on system capacity.
+  """
+
+  conditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudSqlConditions', 1)
+  disabled = _messages.MessageField('GooglePrivacyDlpV2Disabled', 2)
+  filter = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudSqlFilter', 3)
+  generationCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudSqlGenerationCadence', 4)
+
+
+class GooglePrivacyDlpV2CloudSqlIamCredential(_messages.Message):
+  r"""Use IAM auth to connect. This requires the Cloud SQL IAM feature to be
+  enabled on the instance, which is not the default for Cloud SQL. See
+  https://cloud.google.com/sql/docs/postgres/authentication and
+  https://cloud.google.com/sql/docs/mysql/authentication.
+  """
+
+
+
+class GooglePrivacyDlpV2CloudSqlProperties(_messages.Message):
+  r"""Cloud SQL connection properties.
+
+  Enums:
+    DatabaseEngineValueValuesEnum: Required. The database engine used by the
+      Cloud SQL instance that this connection configures.
+
+  Fields:
+    cloudSqlIam: Built-in IAM authentication (must be configured in Cloud
+      SQL).
+    connectionName: Optional. Immutable. The Cloud SQL instance for which the
+      connection is defined. Only one connection per instance is allowed. This
+      can only be set at creation time, and cannot be updated. It is an error
+      to use a connection_name from different project or region than the one
+      that holds the connection. For example, a Connection resource for Cloud
+      SQL connection_name "project-id:us-central1:sql-instance" must be
+      created under the parent "projects/project-id/locations/us-central1"
+    databaseEngine: Required. The database engine used by the Cloud SQL
+      instance that this connection configures.
+    maxConnections: Required. DLP will limit its connections to
+      max_connections. Must be 2 or greater.
+    usernamePassword: A username and password stored in Secret Manager.
+  """
+
+  class DatabaseEngineValueValuesEnum(_messages.Enum):
+    r"""Required. The database engine used by the Cloud SQL instance that this
+    connection configures.
+
+    Values:
+      DATABASE_ENGINE_UNKNOWN: An engine that is not currently supported by
+        SDP.
+      DATABASE_ENGINE_MYSQL: Cloud SQL for MySQL instance.
+      DATABASE_ENGINE_POSTGRES: Cloud SQL for Postgres instance.
+    """
+    DATABASE_ENGINE_UNKNOWN = 0
+    DATABASE_ENGINE_MYSQL = 1
+    DATABASE_ENGINE_POSTGRES = 2
+
+  cloudSqlIam = _messages.MessageField('GooglePrivacyDlpV2CloudSqlIamCredential', 1)
+  connectionName = _messages.StringField(2)
+  databaseEngine = _messages.EnumField('DatabaseEngineValueValuesEnum', 3)
+  maxConnections = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  usernamePassword = _messages.MessageField('GooglePrivacyDlpV2SecretManagerCredential', 5)
+
+
 class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
   r"""Message representing a set of files in Cloud Storage.
 
@@ -3778,6 +3989,48 @@ class GooglePrivacyDlpV2Conditions(_messages.Message):
   conditions = _messages.MessageField('GooglePrivacyDlpV2Condition', 1, repeated=True)
 
 
+class GooglePrivacyDlpV2Connection(_messages.Message):
+  r"""A data connection to allow DLP to profile data in locations that require
+  additional configuration.
+
+  Enums:
+    StateValueValuesEnum: Required. The connection's state in its lifecycle.
+
+  Fields:
+    cloudSql: Connect to a Cloud SQL instance.
+    errors: Output only. Set if status == ERROR, to provide additional
+      details. Will store the last 10 errors sorted with the most recent
+      first.
+    name: Output only. Name of the connection:
+      projects/{project}/locations/{location}/connections/{name}.
+    state: Required. The connection's state in its lifecycle.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. The connection's state in its lifecycle.
+
+    Values:
+      CONNECTION_STATE_UNSPECIFIED: Unused
+      MISSING_CREDENTIALS: DLP automatically created this connection during an
+        initial scan, and it is awaiting full configuration by a user.
+      AVAILABLE: A configured connection that has not encountered any errors.
+      ERROR: A configured connection that encountered errors during its last
+        use. It will not be used again until it is set to AVAILABLE. If the
+        resolution requires external action, then a request to set the status
+        to AVAILABLE will mark this connection for use. Otherwise, any changes
+        to the connection properties will automatically mark it as AVAILABLE.
+    """
+    CONNECTION_STATE_UNSPECIFIED = 0
+    MISSING_CREDENTIALS = 1
+    AVAILABLE = 2
+    ERROR = 3
+
+  cloudSql = _messages.MessageField('GooglePrivacyDlpV2CloudSqlProperties', 1)
+  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 2, repeated=True)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class GooglePrivacyDlpV2Container(_messages.Message):
   r"""Represents a container that may contain DLP findings. Examples of a
   container include a file, table, or database record.
@@ -3861,6 +4114,16 @@ class GooglePrivacyDlpV2ContentLocation(_messages.Message):
   imageLocation = _messages.MessageField('GooglePrivacyDlpV2ImageLocation', 5)
   metadataLocation = _messages.MessageField('GooglePrivacyDlpV2MetadataLocation', 6)
   recordLocation = _messages.MessageField('GooglePrivacyDlpV2RecordLocation', 7)
+
+
+class GooglePrivacyDlpV2CreateConnectionRequest(_messages.Message):
+  r"""Request message for CreateConnection.
+
+  Fields:
+    connection: Required. The connection resource.
+  """
+
+  connection = _messages.MessageField('GooglePrivacyDlpV2Connection', 1)
 
 
 class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
@@ -4417,6 +4680,70 @@ class GooglePrivacyDlpV2DataSourceType(_messages.Message):
   dataSource = _messages.StringField(1)
 
 
+class GooglePrivacyDlpV2DatabaseResourceCollection(_messages.Message):
+  r"""Match database resources using regex filters. Examples of database
+  resources are tables, views, and stored procedures.
+
+  Fields:
+    includeRegexes: A collection of regular expressions to match a database
+      resource against.
+  """
+
+  includeRegexes = _messages.MessageField('GooglePrivacyDlpV2DatabaseResourceRegexes', 1)
+
+
+class GooglePrivacyDlpV2DatabaseResourceReference(_messages.Message):
+  r"""Identifies a single database resource, like a table within a database.
+
+  Fields:
+    instance: Required. The instance where this resource is located. For
+      example: Cloud SQL's instance id.
+    projectId: Required. If within a project-level config, then this must
+      match the config's project id.
+  """
+
+  instance = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2DatabaseResourceRegex(_messages.Message):
+  r"""A pattern to match against one or more database resources. At least one
+  pattern must be specified. Regular expressions use RE2
+  [syntax](https://github.com/google/re2/wiki/Syntax); a guide can be found
+  under the google/re2 repository on GitHub.
+
+  Fields:
+    databaseRegex: Regex to test the database name against. If empty, all
+      databases match.
+    databaseResourceNameRegex: Regex to test the database resource's name
+      against. An example of a database resource name is a table's name. Other
+      database resource names like view names could be included in the future.
+      If empty, all database resources match.
+    instanceRegex: Regex to test the instance name against. If empty, all
+      instances match.
+    projectIdRegex: For organizations, if unset, will match all projects. Has
+      no effect for Data Profile configurations created within a project.
+  """
+
+  databaseRegex = _messages.StringField(1)
+  databaseResourceNameRegex = _messages.StringField(2)
+  instanceRegex = _messages.StringField(3)
+  projectIdRegex = _messages.StringField(4)
+
+
+class GooglePrivacyDlpV2DatabaseResourceRegexes(_messages.Message):
+  r"""A collection of regular expressions to determine what database resources
+  to match against.
+
+  Fields:
+    patterns: A group of regular expression patterns to match against one or
+      more database resources. Maximum of 100 entries. The sum of all regular
+      expression's length can't exceed 10 KiB.
+  """
+
+  patterns = _messages.MessageField('GooglePrivacyDlpV2DatabaseResourceRegex', 1, repeated=True)
+
+
 class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
   r"""Record key for a finding in Cloud Datastore.
 
@@ -4921,6 +5248,118 @@ class GooglePrivacyDlpV2DiscoveryBigQueryFilter(_messages.Message):
   tables = _messages.MessageField('GooglePrivacyDlpV2BigQueryTableCollection', 2)
 
 
+class GooglePrivacyDlpV2DiscoveryCloudSqlConditions(_messages.Message):
+  r"""Requirements that must be true before a table is profiled for the first
+  time.
+
+  Enums:
+    DatabaseEnginesValueListEntryValuesEnum:
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    databaseEngines: Optional. Database engines that should be profiled.
+      Optional. Defaults to ALL_SUPPORTED_DATABASE_ENGINES if unspecified.
+    types: Data profiles will only be generated for the database resource
+      types specified in this field. If not specified, defaults to
+      [DATABASE_RESOURCE_TYPE_ALL_SUPPORTED_TYPES].
+  """
+
+  class DatabaseEnginesValueListEntryValuesEnum(_messages.Enum):
+    r"""DatabaseEnginesValueListEntryValuesEnum enum type.
+
+    Values:
+      DATABASE_ENGINE_UNSPECIFIED: Unused.
+      ALL_SUPPORTED_DATABASE_ENGINES: Include all supported database engines.
+      MYSQL: MySql database.
+      POSTGRES: PostGres database.
+    """
+    DATABASE_ENGINE_UNSPECIFIED = 0
+    ALL_SUPPORTED_DATABASE_ENGINES = 1
+    MYSQL = 2
+    POSTGRES = 3
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      DATABASE_RESOURCE_TYPE_UNSPECIFIED: Unused.
+      DATABASE_RESOURCE_TYPE_ALL_SUPPORTED_TYPES: Includes database resource
+        types that become supported at a later time.
+      DATABASE_RESOURCE_TYPE_TABLE: Tables.
+    """
+    DATABASE_RESOURCE_TYPE_UNSPECIFIED = 0
+    DATABASE_RESOURCE_TYPE_ALL_SUPPORTED_TYPES = 1
+    DATABASE_RESOURCE_TYPE_TABLE = 2
+
+  databaseEngines = _messages.EnumField('DatabaseEnginesValueListEntryValuesEnum', 1, repeated=True)
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2DiscoveryCloudSqlFilter(_messages.Message):
+  r"""Determines what tables will have profiles generated within an
+  organization or project. Includes the ability to filter by regular
+  expression patterns on project ID, location, instance, database, and
+  database resource name.
+
+  Fields:
+    collection: A specific set of database resources for this filter to apply
+      to.
+    databaseResourceReference: The database resource to scan. Targets
+      including this can only include one target (the target with this
+      database resource reference).
+    others: Catch-all. This should always be the last target in the list
+      because anything above it will apply first. Should only appear once in a
+      configuration. If none is specified, a default one will be added
+      automatically.
+  """
+
+  collection = _messages.MessageField('GooglePrivacyDlpV2DatabaseResourceCollection', 1)
+  databaseResourceReference = _messages.MessageField('GooglePrivacyDlpV2DatabaseResourceReference', 2)
+  others = _messages.MessageField('GooglePrivacyDlpV2AllOtherDatabaseResources', 3)
+
+
+class GooglePrivacyDlpV2DiscoveryCloudSqlGenerationCadence(_messages.Message):
+  r"""How often existing tables should have their profiles refreshed. New
+  tables are scanned as quickly as possible depending on system capacity.
+
+  Enums:
+    RefreshFrequencyValueValuesEnum: Data changes (non-schema changes) in
+      Cloud SQL tables can't trigger reprofiling. If you set this field,
+      profiles are refreshed at this frequency regardless of whether the
+      underlying tables have changes. Defaults to never.
+
+  Fields:
+    refreshFrequency: Data changes (non-schema changes) in Cloud SQL tables
+      can't trigger reprofiling. If you set this field, profiles are refreshed
+      at this frequency regardless of whether the underlying tables have
+      changes. Defaults to never.
+    schemaModifiedCadence: When to reprofile if the schema has changed.
+  """
+
+  class RefreshFrequencyValueValuesEnum(_messages.Enum):
+    r"""Data changes (non-schema changes) in Cloud SQL tables can't trigger
+    reprofiling. If you set this field, profiles are refreshed at this
+    frequency regardless of whether the underlying tables have changes.
+    Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 1)
+  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2SchemaModifiedCadence', 2)
+
+
 class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   r"""Configuration for discovery to scan resources for profile generation.
   Only one discovery configuration may exist per organization, folder, or
@@ -5123,9 +5562,12 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
   Fields:
     bigQueryTarget: BigQuery target for Discovery. The first target to match a
       table will be the one applied.
+    cloudSqlTarget: Cloud SQL target for Discovery. The first target to match
+      a table will be the one applied.
   """
 
   bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
+  cloudSqlTarget = _messages.MessageField('GooglePrivacyDlpV2CloudSqlDiscoveryTarget', 2)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -6476,7 +6918,7 @@ class GooglePrivacyDlpV2JobNotificationEmails(_messages.Message):
 
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):
-  r"""Contains a configuration to make dlp api calls on a repeating basis. See
+  r"""Contains a configuration to make api calls on a repeating basis. See
   https://cloud.google.com/sensitive-data-protection/docs/concepts-job-
   triggers to learn more.
 
@@ -6895,6 +7337,19 @@ class GooglePrivacyDlpV2ListColumnDataProfilesResponse(_messages.Message):
   """
 
   columnDataProfiles = _messages.MessageField('GooglePrivacyDlpV2ColumnDataProfile', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2ListConnectionsResponse(_messages.Message):
+  r"""Response message for ListConnections.
+
+  Fields:
+    connections: List of connections.
+    nextPageToken: Token to retrieve the next page of results. An empty value
+      means there are no more results.
+  """
+
+  connections = _messages.MessageField('GooglePrivacyDlpV2Connection', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -7959,6 +8414,87 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
   recurrencePeriodDuration = _messages.StringField(1)
 
 
+class GooglePrivacyDlpV2SchemaModifiedCadence(_messages.Message):
+  r"""How frequency to modify the profile when the table's schema is modified.
+
+  Enums:
+    FrequencyValueValuesEnum: Frequency to regenerate data profiles when the
+      schema is modified. Defaults to monthly.
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    frequency: Frequency to regenerate data profiles when the schema is
+      modified. Defaults to monthly.
+    types: The types of schema modifications to consider. Defaults to
+      NEW_COLUMNS.
+  """
+
+  class FrequencyValueValuesEnum(_messages.Enum):
+    r"""Frequency to regenerate data profiles when the schema is modified.
+    Defaults to monthly.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      SQL_SCHEMA_MODIFICATION_UNSPECIFIED: Unused.
+      NEW_COLUMNS: New columns has appeared.
+      REMOVED_COLUMNS: Columns have been removed from the table.
+    """
+    SQL_SCHEMA_MODIFICATION_UNSPECIFIED = 0
+    NEW_COLUMNS = 1
+    REMOVED_COLUMNS = 2
+
+  frequency = _messages.EnumField('FrequencyValueValuesEnum', 1)
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2SearchConnectionsResponse(_messages.Message):
+  r"""Response message for SearchConnections.
+
+  Fields:
+    connections: List of connections that match the search query. Note that
+      only a subset of the fields will be populated, and only "name" is
+      guaranteed to be set. For full details of a Connection, call
+      GetConnection with the name.
+    nextPageToken: Token to retrieve the next page of results. An empty value
+      means there are no more results.
+  """
+
+  connections = _messages.MessageField('GooglePrivacyDlpV2Connection', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2SecretManagerCredential(_messages.Message):
+  r"""A credential consisting of a username and password, where the password
+  is stored in a Secret Manager resource. Note: Secret Manager [charges
+  apply](https://cloud.google.com/secret-manager/pricing).
+
+  Fields:
+    passwordSecretVersionName: Required. The name of the Secret Manager
+      resource that stores the password, in the form "projects/project-
+      id/secrets/secret-name/versions/version".
+    username: Required. The username.
+  """
+
+  passwordSecretVersionName = _messages.StringField(1)
+  username = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2SelectedInfoTypes(_messages.Message):
   r"""Apply transformation to the selected info_types.
 
@@ -8841,6 +9377,19 @@ class GooglePrivacyDlpV2UnwrappedCryptoKey(_messages.Message):
   """
 
   key = _messages.BytesField(1)
+
+
+class GooglePrivacyDlpV2UpdateConnectionRequest(_messages.Message):
+  r"""Request message for UpdateConnection.
+
+  Fields:
+    connection: Required. The connection with new values for the relevant
+      fields.
+    updateMask: Optional. Mask to control which fields get updated.
+  """
+
+  connection = _messages.MessageField('GooglePrivacyDlpV2Connection', 1)
+  updateMask = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest(_messages.Message):

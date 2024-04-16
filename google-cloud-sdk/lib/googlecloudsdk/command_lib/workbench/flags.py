@@ -208,7 +208,8 @@ def AddCreateInstanceFlags(parser):
       'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
       'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
       'NVIDIA_TESLA_A100', 'NVIDIA_A100_80GB',
-      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS'
+      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
+      'NVIDIA_L4'
   ]
   disk_choices = ['PD_STANDARD', 'PD_SSD', 'PD_BALANCED', 'PD_EXTREME']
   encryption_choices = ['GMEK', 'CMEK']
@@ -535,7 +536,8 @@ def AddUpdateInstanceFlags(parser):
       'NVIDIA_TESLA_K80', 'NVIDIA_TESLA_P100',
       'NVIDIA_TESLA_V100', 'NVIDIA_TESLA_P4', 'NVIDIA_TESLA_T4',
       'NVIDIA_TESLA_A100', 'NVIDIA_A100_80GB',
-      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS'
+      'NVIDIA_TESLA_T4_VWS', 'NVIDIA_TESLA_P100_VWS', 'NVIDIA_TESLA_P4_VWS',
+      'NVIDIA_L4'
   ]
   AddInstanceResource(parser)
   gce_setup_group = parser.add_group(

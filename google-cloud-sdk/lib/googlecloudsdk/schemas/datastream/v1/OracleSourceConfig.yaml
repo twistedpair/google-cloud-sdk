@@ -45,6 +45,6 @@ properties:
       If not set (or set to 0), the system's default value is used.
     type: integer
   streamLargeObjects:
-    description: |-
-      Stream large object values. NOTE: This feature is currently experimental.
+    description: Stream large object values.
+    type: streamlargeobjects
     $ref: StreamLargeObjects.yaml

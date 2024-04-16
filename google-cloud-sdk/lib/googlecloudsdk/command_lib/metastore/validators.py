@@ -47,22 +47,37 @@ def ValidatePort(port):
 
 def ValidateScalingFactor(scaling_factor):
   """Python hook to validate the scaling factor."""
+  return ValidateScalingFactorFloat(scaling_factor, '--scaling-factor')
+
+
+def ValidateMinScalingFactor(scaling_factor):
+  """Python hook to validate the min scaling factor."""
+  return ValidateScalingFactorFloat(scaling_factor, '--min-scaling-factor')
+
+
+def ValidateMaxScalingFactor(scaling_factor):
+  """Python hook to validate the max scaling factor."""
+  return ValidateScalingFactorFloat(scaling_factor, '--max-scaling-factor')
+
+
+def ValidateScalingFactorFloat(scaling_factor, flag_name):
+  """Validate the scaling factor float value."""
   if scaling_factor < 0.1 or scaling_factor > 6:
     raise exceptions.BadArgumentException(
-        '--scaling-factor',
+        flag_name,
         'Scaling factor ({0}) is not in the range [0.1, 6.0].'.format(
             scaling_factor
         ),
     )
   elif scaling_factor < 1 and scaling_factor * 10 % 1 != 0:
     raise exceptions.BadArgumentException(
-        '--scaling-factor',
+        flag_name,
         'Scaling factor less than 1.0 ({0}) should be a'
         ' multiple of 0.1 (e.g. (0.1, 0.2, 0.3))'.format(scaling_factor),
     )
   elif scaling_factor >= 1 and scaling_factor % 1.0 != 0:
     raise exceptions.BadArgumentException(
-        '--scaling-factor',
+        flag_name,
         'Scaling greater than 1.0 ({0}) should be a multiple'
         ' of 1.0 (e.g. (1.0, 2.0, 3.0))'.format(scaling_factor),
     )

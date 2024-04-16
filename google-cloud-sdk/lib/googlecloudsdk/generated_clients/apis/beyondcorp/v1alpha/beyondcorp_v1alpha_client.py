@@ -57,11 +57,10 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
     self.projects_locations_clientGateways = self.ProjectsLocationsClientGatewaysService(self)
     self.projects_locations_connections = self.ProjectsLocationsConnectionsService(self)
     self.projects_locations_connectors = self.ProjectsLocationsConnectorsService(self)
-    self.projects_locations_global_securityGateways = self.ProjectsLocationsGlobalSecurityGatewaysService(self)
-    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_insights = self.ProjectsLocationsInsightsService(self)
     self.projects_locations_netConnections = self.ProjectsLocationsNetConnectionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_securityGateways = self.ProjectsLocationsSecurityGatewaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -2702,161 +2701,6 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalSecurityGatewaysService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_securityGateways resource."""
-
-    _NAME = 'projects_locations_global_securityGateways'
-
-    def __init__(self, client):
-      super(BeyondcorpV1alpha.ProjectsLocationsGlobalSecurityGatewaysService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new SecurityGateway in a given project and global location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsGlobalSecurityGatewaysCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/securityGateways',
-        http_method='POST',
-        method_id='beyondcorp.projects.locations.global.securityGateways.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'securityGatewayId'],
-        relative_path='v1alpha/{+parent}/securityGateways',
-        request_field='googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
-        request_type_name='BeyondcorpProjectsLocationsGlobalSecurityGatewaysCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single SecurityGateway.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsGlobalSecurityGatewaysDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/securityGateways/{securityGatewaysId}',
-        http_method='DELETE',
-        method_id='beyondcorp.projects.locations.global.securityGateways.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsGlobalSecurityGatewaysDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single SecurityGateway.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsGlobalSecurityGatewaysGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/securityGateways/{securityGatewaysId}',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.global.securityGateways.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsGlobalSecurityGatewaysGetRequest',
-        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists SecurityGateways in a given project and global location.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsGlobalSecurityGatewaysListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/securityGateways',
-        http_method='GET',
-        method_id='beyondcorp.projects.locations.global.securityGateways.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/securityGateways',
-        request_field='',
-        request_type_name='BeyondcorpProjectsLocationsGlobalSecurityGatewaysListRequest',
-        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single SecurityGateway.
-
-      Args:
-        request: (BeyondcorpProjectsLocationsGlobalSecurityGatewaysPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/securityGateways/{securityGatewaysId}',
-        http_method='PATCH',
-        method_id='beyondcorp.projects.locations.global.securityGateways.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
-        request_type_name='BeyondcorpProjectsLocationsGlobalSecurityGatewaysPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
-
-    _NAME = 'projects_locations_global'
-
-    def __init__(self, client):
-      super(BeyondcorpV1alpha.ProjectsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
-
   class ProjectsLocationsInsightsService(base_api.BaseApiService):
     """Service class for the projects_locations_insights resource."""
 
@@ -3154,6 +2998,151 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='BeyondcorpProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSecurityGatewaysService(base_api.BaseApiService):
+    """Service class for the projects_locations_securityGateways resource."""
+
+    _NAME = 'projects_locations_securityGateways'
+
+    def __init__(self, client):
+      super(BeyondcorpV1alpha.ProjectsLocationsSecurityGatewaysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SecurityGateway in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways',
+        http_method='POST',
+        method_id='beyondcorp.projects.locations.securityGateways.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'securityGatewayId'],
+        relative_path='v1alpha/{+parent}/securityGateways',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='DELETE',
+        method_id='beyondcorp.projects.locations.securityGateways.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'validateOnly'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysGetRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SecurityGateways in a given project and location.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways',
+        http_method='GET',
+        method_id='beyondcorp.projects.locations.securityGateways.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/securityGateways',
+        request_field='',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysListRequest',
+        response_type_name='GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single SecurityGateway.
+
+      Args:
+        request: (BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/securityGateways/{securityGatewaysId}',
+        http_method='PATCH',
+        method_id='beyondcorp.projects.locations.securityGateways.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='googleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway',
+        request_type_name='BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

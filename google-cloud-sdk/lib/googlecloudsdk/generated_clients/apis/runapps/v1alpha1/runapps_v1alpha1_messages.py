@@ -1159,7 +1159,7 @@ class RedisInstanceConfig(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""Resource defines a Stacks resource. Next tag: 7
+  r"""Resource defines a Stacks resource. Next tag: 8
 
   Messages:
     ConfigValue: Configuration is the typekit-specified set of fields that

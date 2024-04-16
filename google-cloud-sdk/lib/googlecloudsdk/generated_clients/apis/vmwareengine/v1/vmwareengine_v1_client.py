@@ -39,6 +39,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_announcements = self.ProjectsLocationsAnnouncementsService(self)
     self.projects_locations_dnsBindPermission = self.ProjectsLocationsDnsBindPermissionService(self)
     self.projects_locations_networkPeerings_peeringRoutes = self.ProjectsLocationsNetworkPeeringsPeeringRoutesService(self)
     self.projects_locations_networkPeerings = self.ProjectsLocationsNetworkPeeringsService(self)
@@ -54,12 +55,78 @@ class VmwareengineV1(base_api.BaseApiClient):
     self.projects_locations_privateClouds_loggingServers = self.ProjectsLocationsPrivateCloudsLoggingServersService(self)
     self.projects_locations_privateClouds_managementDnsZoneBindings = self.ProjectsLocationsPrivateCloudsManagementDnsZoneBindingsService(self)
     self.projects_locations_privateClouds_subnets = self.ProjectsLocationsPrivateCloudsSubnetsService(self)
+    self.projects_locations_privateClouds_upgradeJobs = self.ProjectsLocationsPrivateCloudsUpgradeJobsService(self)
+    self.projects_locations_privateClouds_upgrades = self.ProjectsLocationsPrivateCloudsUpgradesService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
     self.projects_locations_privateConnections_peeringRoutes = self.ProjectsLocationsPrivateConnectionsPeeringRoutesService(self)
     self.projects_locations_privateConnections = self.ProjectsLocationsPrivateConnectionsService(self)
     self.projects_locations_vmwareEngineNetworks = self.ProjectsLocationsVmwareEngineNetworksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAnnouncementsService(base_api.BaseApiService):
+    """Service class for the projects_locations_announcements resource."""
+
+    _NAME = 'projects_locations_announcements'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsAnnouncementsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `Announcement` by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsAnnouncementsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Announcement) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/announcements/{announcementsId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.announcements.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsAnnouncementsGetRequest',
+        response_type_name='Announcement',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `Announcements` for a given region and project.
+
+      Args:
+        request: (VmwareengineProjectsLocationsAnnouncementsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAnnouncementsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/announcements',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.announcements.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/announcements',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsAnnouncementsListRequest',
+        response_type_name='ListAnnouncementsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsDnsBindPermissionService(base_api.BaseApiService):
     """Service class for the projects_locations_dnsBindPermission resource."""
@@ -1935,6 +2002,161 @@ class VmwareengineV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='subnet',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsSubnetsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudsUpgradeJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_upgradeJobs resource."""
+
+    _NAME = 'projects_locations_privateClouds_upgradeJobs'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsUpgradeJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a Private Cloud `UpgradeJob` resource by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpgradeJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UpgradeJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/upgradeJobs/{upgradeJobsId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.upgradeJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpgradeJobsGetRequest',
+        response_type_name='UpgradeJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `UpgradeJob` recources for a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpgradeJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUpgradeJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/upgradeJobs',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.upgradeJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/upgradeJobs',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpgradeJobsListRequest',
+        response_type_name='ListUpgradeJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudsUpgradesService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_upgrades resource."""
+
+    _NAME = 'projects_locations_privateClouds_upgrades'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsUpgradesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a private cloud `Upgrade` resource by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpgradesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Upgrade) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/upgrades/{upgradesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.upgrades.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpgradesGetRequest',
+        response_type_name='Upgrade',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists past, ongoing and upcoming `Upgrades` for the given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpgradesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUpgradesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/upgrades',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.upgrades.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/upgrades',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpgradesListRequest',
+        response_type_name='ListUpgradesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the private cloud `Upgrade` resource. Only `schedule` field can updated. The schedule can only be updated when the upgrade has not started and schedule edit window is open. Only fields specified in `update_mask` are considered.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsUpgradesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/upgrades/{upgradesId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.privateClouds.upgrades.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='upgrade',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsUpgradesPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

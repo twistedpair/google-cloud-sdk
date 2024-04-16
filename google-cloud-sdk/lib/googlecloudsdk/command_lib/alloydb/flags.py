@@ -543,7 +543,7 @@ def AddAutomatedBackupFlags(
   policy_group.add_argument(
       '--automated-backup-days-of-week',
       metavar='DAYS_OF_WEEK',
-      required=True,
+      required=not update,  # required for create, not for update
       type=_GetDayOfWeekArgList(alloydb_messages),
       help=('Comma-separated list of days of the week to perform a backup. '
             'At least one day of the week must be provided. '
@@ -552,7 +552,7 @@ def AddAutomatedBackupFlags(
   policy_group.add_argument(
       '--automated-backup-start-times',
       metavar='START_TIMES',
-      required=True,
+      required=not update,  # required for create, not for update
       type=_GetTimeOfDayArgList(alloydb_messages),
       help=('Comma-separated list of times during the day to start a backup. '
             'At least one start time must be provided. '
@@ -586,13 +586,14 @@ def AddAutomatedBackupFlags(
             'The backup window must be at least 5 minutes long. '
             'There is no upper bound on the window. If not set, '
             'it will default to 1 hour.'))
-  if not update and (
+  if (
       release_track == base.ReleaseTrack.ALPHA
       or release_track == base.ReleaseTrack.BETA
   ):
     policy_group.add_argument(
         '--automated-backup-enforced-retention',
         action='store_true',
+        default=None,
         required=False,
         hidden=True,
         help=(
@@ -711,13 +712,14 @@ def AddContinuousBackupConfigFlags(parser, release_track, update=False):
           'Continuous Backups.'
       ),
   )
-  if not update and (
+  if (
       release_track == base.ReleaseTrack.ALPHA
       or release_track == base.ReleaseTrack.BETA
   ):
     group.add_argument(
         '--continuous-backup-enforced-retention',
         action='store_true',
+        default=None,
         required=False,
         hidden=True,
         help=(
@@ -912,6 +914,9 @@ def GetAndValidateKmsKeyName(args, flag_overrides=None):
 # LINT.IfChange(validate_continuous_backup_flags)
 def ValidateContinuousBackupFlags(args, update=False):
   """Validate the arguments for continuous backup, ensure the correct set of flags are passed."""
+  # args.continuous_backup_enforced_retention is not validated here since it's
+  # only available in alpha/beta for now, once it's rolled out in GA we should
+  # validate it.
   if (
       args.enable_continuous_backup is False  # pylint: disable=g-bool-id-comparison
       and (

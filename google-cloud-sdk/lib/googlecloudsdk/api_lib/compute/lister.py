@@ -35,6 +35,10 @@ from googlecloudsdk.core.resource import resource_projector
 import six
 
 
+def _AllowPartialError():
+  return properties.VALUES.compute.allow_partial_error.GetBool()
+
+
 def _ConvertProtobufsToDicts(resources):
   for resource in resources:
     if resource is None:
@@ -93,14 +97,37 @@ def FormatListRequests(service, project, scopes, scope_name,
             maxResults=constants.MAX_RESULTS_PER_PAGE)))
 
   else:
-    requests.append((
-        service,
-        'AggregatedList',
-        service.GetRequestType('AggregatedList')(
-            filter=filter_expr,
-            project=project,
-            maxResults=constants.MAX_RESULTS_PER_PAGE)))
 
+    request_message = service.GetRequestType('AggregatedList')
+
+    input_params = {}
+
+    if hasattr(request_message, 'includeAllScopes'):
+      input_params['includeAllScopes'] = True
+    if hasattr(request_message, 'returnPartialSuccess'):
+      input_params['returnPartialSuccess'] = True
+
+    if _AllowPartialError():
+      requests.append((
+          service,
+          'AggregatedList',
+          request_message(
+              filter=filter_expr,
+              project=project,
+              maxResults=constants.MAX_RESULTS_PER_PAGE,
+              **input_params
+          ),
+      ))
+    else:
+      requests.append((
+          service,
+          'AggregatedList',
+          request_message(
+              filter=filter_expr,
+              project=project,
+              maxResults=constants.MAX_RESULTS_PER_PAGE,
+          ),
+      ))
   return requests
 
 
@@ -855,7 +882,10 @@ class ZonalLister(object):
             errors=errors):
           yield item
     if errors:
-      utils.RaiseException(errors, ListException)
+      if _AllowPartialError():
+        utils.WarnIfPartialRequestFail(errors)
+      else:
+        utils.RaiseException(errors, ListException)
 
 
 class RegionalLister(object):
@@ -897,7 +927,13 @@ class RegionalLister(object):
     errors = []
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
+
+    if not _AllowPartialError():
+      utils.RaiseException(errors, ListException)
+
     if isinstance(scope_set, RegionSet):
+      if not _AllowPartialError():
+        utils.RaiseException(errors, ListException)
       for project, regions in six.iteritems(
           _GroupByProject(sorted(list(scope_set)))):
         for item in GetRegionalResourcesDicts(
@@ -912,6 +948,8 @@ class RegionalLister(object):
     else:
       # scopeSet is AllScopes
       # generate AggregatedList
+      if not _AllowPartialError():
+        utils.RaiseException(errors, ListException)
       for project_ref in sorted(list(scope_set.projects)):
         for item in GetRegionalResourcesDicts(
             service=self.service,
@@ -922,8 +960,12 @@ class RegionalLister(object):
             batch_url=self.client.batch_url,
             errors=errors):
           yield item
+
     if errors:
-      utils.RaiseException(errors, ListException)
+      if _AllowPartialError():
+        utils.WarnIfPartialRequestFail(errors)
+      else:
+        utils.RaiseException(errors, ListException)
 
 
 class GlobalLister(object):
@@ -1129,11 +1171,14 @@ class MultiScopeLister(object):
       for project_ref in sorted(list(scope_set.projects)):
         input_params = {}
 
-        if hasattr(request_message, 'includeAllScopes'):
-          input_params['includeAllScopes'] = True
-        if hasattr(request_message,
-                   'returnPartialSuccess') and self.return_partial_success:
-          input_params['returnPartialSuccess'] = True
+        if _AllowPartialError():
+          if hasattr(request_message, 'includeAllScopes'):
+            input_params['includeAllScopes'] = True
+          if (
+              hasattr(request_message, 'returnPartialSuccess')
+              and self.return_partial_success
+          ):
+            input_params['returnPartialSuccess'] = True
 
         requests.append((self.aggregation_service, 'AggregatedList',
                          request_message(
@@ -1161,7 +1206,11 @@ class MultiScopeLister(object):
       # If the command allows partial server errors, instead of raising an
       # exception to show something went wrong, we show a warning message that
       # contains the error messages instead.
-      if self.allow_partial_server_failure and response_count > 0:
+      if (
+          _AllowPartialError()
+          and self.allow_partial_server_failure
+          and response_count > 0
+      ):
         utils.WarnIfPartialRequestFail(errors)
       else:
         utils.RaiseException(errors, ListException)

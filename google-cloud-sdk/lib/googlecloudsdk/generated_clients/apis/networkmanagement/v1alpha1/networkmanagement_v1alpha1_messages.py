@@ -554,7 +554,8 @@ class CloudRunRevisionInfo(_messages.Message):
   Fields:
     displayName: Name of a Cloud Run revision.
     location: Location in which this revision is deployed.
-    serviceName: ID of Cloud Run Service this revision belongs to.
+    serviceName: ID of Cloud Run Service this revision belongs to. Was never
+      set, is not exported to v1 proto and public protos.
     serviceUri: URI of Cloud Run service this revision belongs to.
     uri: URI of a Cloud Run revision.
   """
@@ -983,7 +984,7 @@ class DropInfo(_messages.Message):
       ROUTE_NEXT_HOP_RESOURCE_NOT_FOUND: Route's next hop resource is not
         found.
       ROUTE_NEXT_HOP_INSTANCE_WRONG_NETWORK: Route's next hop instance doesn't
-        hace a NIC in the route's network.
+        have a NIC in the route's network.
       ROUTE_NEXT_HOP_INSTANCE_NON_PRIMARY_IP: Route's next hop IP address is
         not a primary IP address of the next hop instance.
       ROUTE_NEXT_HOP_FORWARDING_RULE_IP_MISMATCH: Route's next hop forwarding
