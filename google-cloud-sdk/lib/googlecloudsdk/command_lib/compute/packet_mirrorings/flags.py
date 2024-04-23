@@ -299,11 +299,12 @@ def _AddFilterCidrRangesArg(parser, is_for_update=False):
         type=arg_parsers.ArgList(),
         metavar='CIDR_RANGE',
         help="""\
-        List of IP CIDR ranges that apply as filters on the source or
-        destination IP in the IP header for packet mirroring traffic. All
-        traffic between the VM and the IPs listed here will be mirrored using
-        this configuration. This can be a Public IP as well.
-        If unspecified, the config applies to all traffic.
+        One or more IPv4 or IPv6 CIDR ranges that apply as filters on the source
+        (ingress) or destination (egress) IP in the IP header. If no ranges are
+        specified, all IPv4 traffic that matches the specified IPProtocols is
+        mirrored. If neither cidrRanges nor IPProtocols is specified, all IPv4
+        traffic is mirrored. To mirror all IPv4 and IPv6 traffic, use
+        0.0.0.0/0,::/0
         """
     )
 

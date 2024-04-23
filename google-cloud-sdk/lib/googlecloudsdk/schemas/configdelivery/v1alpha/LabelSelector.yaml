@@ -1,0 +1,13 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha LabelSelector export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  matchLabels:
+    description: |-
+      match_labels is a map of {key,value} pairs. Each {key,value} pair must
+      match an existing label key and value exactly in order to satisfy the
+      match.
+    $ref: MatchLabelsValue.yaml

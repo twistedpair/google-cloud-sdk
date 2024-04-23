@@ -35,7 +35,8 @@ class NetworkFirewallPoliciesCompleter(compute_completers.ListCommandCompleter):
     super(NetworkFirewallPoliciesCompleter, self).__init__(
         collection='compute.networkFirewallPolicies',
         list_command='compute network-firewall-policies list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
 def NetworkFirewallPolicyArgument(required=False, plural=False, operation=None):
@@ -47,25 +48,27 @@ def NetworkFirewallPolicyArgument(required=False, plural=False, operation=None):
       required=required,
       custom_plural='firewall policies',
       short_help='name of the network firewall policy to {0}.'.format(
-          operation),
+          operation
+      ),
       global_collection='compute.networkFirewallPolicies',
-      regional_collection='compute.regionNetworkFirewallPolicies')
+      regional_collection='compute.regionNetworkFirewallPolicies',
+  )
 
 
 def AddArgNetworkFirewallPolicyCreation(parser):
   """Adds the arguments for network firewall policy creation."""
   parser.add_argument(
       '--description',
-      help=('An optional, textual description for the network firewall'
-            ' policy.'))
+      help='An optional, textual description for the network firewall policy.',
+  )
 
 
 def AddArgsUpdateNetworkFirewallPolicy(parser):
   """Adds the arguments  for firewall policy update."""
   parser.add_argument(
       '--description',
-      help=('An optional, textual description for the network firewall'
-            ' policy.'))
+      help='An optional, textual description for the network firewall policy.',
+  )
 
 
 def NetworkFirewallPolicyAssociationArgument(
@@ -112,7 +115,9 @@ def AddArgsCreateAssociation(parser, support_priority=False):
           'network that is already associated with a '
           'firewall policy the method will fail. If this is set, the existing '
           'association will be deleted at the same time that the new '
-          'association is created.'))
+          'association is created.'
+      ),
+  )
 
 
 def AddArgsUpdateAssociation(parser):
@@ -137,12 +142,13 @@ class NetworksCompleter(compute_completers.ListCommandCompleter):
     super(NetworksCompleter, self).__init__(
         collection='compute.networks',
         list_command='compute networks list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
-def NetworkArgumentForOtherResource(short_help,
-                                    required=True,
-                                    detailed_help=None):
+def NetworkArgumentForOtherResource(
+    short_help, required=True, detailed_help=None
+):
   return compute_flags.ResourceArgument(
       name='--network',
       resource_name='network',
@@ -151,12 +157,13 @@ def NetworkArgumentForOtherResource(short_help,
       required=required,
       global_collection='compute.networks',
       short_help=short_help,
-      detailed_help=detailed_help)
+      detailed_help=detailed_help,
+  )
 
 
-def NetworkFirewallPolicyRuleArgument(required=False,
-                                      plural=False,
-                                      operation=None):
+def NetworkFirewallPolicyRuleArgument(
+    required=False, plural=False, operation=None
+):
   return compute_flags.ResourceArgument(
       name='--firewall-policy',
       resource_name='firewall policy',
@@ -164,11 +171,24 @@ def NetworkFirewallPolicyRuleArgument(required=False,
       required=required,
       short_help='Firewall policy ID with which to {0} rule.'.format(operation),
       global_collection='compute.networkFirewallPolicies',
-      regional_collection='compute.regionNetworkFirewallPolicies')
+      regional_collection='compute.regionNetworkFirewallPolicies',
+  )
 
 
-def NetworkSrcFirewallPolicyRuleArgument(required=False,
-                                         plural=False):
+def NetworkFirewallPolicyPacketMirroringRuleArgument(
+    required=False, plural=False, operation=None
+):
+  return compute_flags.ResourceArgument(
+      name='--firewall-policy',
+      resource_name='firewall policy',
+      plural=plural,
+      required=required,
+      short_help='Firewall policy ID with which to {0} rule.'.format(operation),
+      global_collection='compute.networkFirewallPolicies',
+  )
+
+
+def NetworkSrcFirewallPolicyRuleArgument(required=False, plural=False):
   return compute_flags.ResourceArgument(
       name='--source-firewall-policy',
       resource_name='firewall policy',
@@ -176,7 +196,8 @@ def NetworkSrcFirewallPolicyRuleArgument(required=False,
       required=required,
       short_help='Source Firewall policy NAME with which to clone rule.',
       global_collection='compute.networkFirewallPolicies',
-      regional_collection='compute.regionNetworkFirewallPolicies')
+      regional_collection='compute.regionNetworkFirewallPolicies',
+  )
 
 
 def AddAction(parser, required=True):
@@ -190,12 +211,25 @@ def AddAction(parser, required=True):
   )
 
 
+def AddPacketMirroringAction(parser, required=True):
+  """Adds the action argument to the argparse."""
+  parser.add_argument(
+      '--action',
+      choices=['mirror', 'do_not_mirror', 'goto_next'],
+      type=lambda x: x.lower(),
+      required=required,
+      help='Action to take if the request matches the match condition.',
+  )
+
+
 def AddRulePriority(parser, operation=None):
   """Adds the rule priority argument to the argparse."""
   parser.add_argument(
       'priority',
       help='Priority of the rule to be {}. Valid in [0, 65535].'.format(
-          operation))
+          operation
+      ),
+  )
 
 
 def AddSrcIpRanges(parser, required=False):
@@ -216,7 +250,9 @@ def AddSrcIpRanges(parser, required=False):
           'matches --src-ip-ranges or the secure tag of the source matches '
           '--src-secure-tags.'
           'Multiple IP address blocks can be specified if they are separated '
-          'by commas.'))
+          'by commas.'
+      ),
+  )
 
 
 def AddDestIpRanges(parser, required=False):
@@ -226,7 +262,8 @@ def AddDestIpRanges(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='DEST_IP_RANGE',
-      help='Destination IP ranges to match for this rule. ')
+      help='Destination IP ranges to match for this rule. ',
+  )
 
 
 def AddLayer4Configs(parser, required=False):
@@ -236,8 +273,11 @@ def AddLayer4Configs(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='LAYER4_CONFIG',
-      help=('A list of destination protocols and ports to which the firewall '
-            'rule will apply.'))
+      help=(
+          'A list of destination protocols and ports to which the firewall '
+          'rule will apply.'
+      ),
+  )
 
 
 def AddDirection(parser, required=False):
@@ -247,8 +287,10 @@ def AddDirection(parser, required=False):
       required=required,
       choices=['INGRESS', 'EGRESS'],
       help=(
-          'Direction of the traffic the rule is applied. The default is to apply on incoming traffic.'
-      ))
+          'Direction of the traffic the rule is applied. The default is to'
+          ' apply on incoming traffic.'
+      ),
+  )
 
 
 def AddEnableLogging(parser, required=False):
@@ -257,8 +299,11 @@ def AddEnableLogging(parser, required=False):
       '--enable-logging',
       required=required,
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Use this flag to enable logging of connections that allowed or '
-            'denied by this rule.'))
+      help=(
+          'Use this flag to enable logging of connections that allowed or '
+          'denied by this rule.'
+      ),
+  )
 
 
 def AddDisabled(parser, required=False):
@@ -267,8 +312,26 @@ def AddDisabled(parser, required=False):
       '--disabled',
       required=required,
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Use this flag to disable the rule. Disabled rules will not affect '
-            'traffic.'))
+      help=(
+          'Use this flag to disable the rule. Disabled rules will not affect '
+          'traffic.'
+      ),
+  )
+
+
+def AddGlobalFirewallPolicy(parser):
+  """Adds the --global-firewall-policy flag."""
+  # packet mirroring rules which currently do not support regional resources.
+  # and hence this flag is not generated by default. We add it here manually so
+  # that when regional firewall policies support packet mirroring rule we will
+  # just replace it with the standard mechanism that genereates flags for global
+  # and regional resources.
+  parser.add_argument(
+      '--global-firewall-policy',
+      required=True,
+      action='store_true',
+      help='Use this flag to indicate that firewall policy is global.',
+  )
 
 
 def AddTargetServiceAccounts(parser, required=False):
@@ -278,7 +341,8 @@ def AddTargetServiceAccounts(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='TARGET_SERVICE_ACCOUNTS',
       required=required,
-      help=('List of target service accounts for the rule.'))
+      help='List of target service accounts for the rule.',
+  )
 
 
 def AddDescription(parser, required=False):
@@ -286,7 +350,8 @@ def AddDescription(parser, required=False):
   parser.add_argument(
       '--description',
       required=required,
-      help=('An optional, textual description for the rule.'))
+      help='An optional, textual description for the rule.',
+  )
 
 
 def AddSrcSecureTags(parser, required=False):
@@ -305,7 +370,8 @@ def AddSrcSecureTags(parser, required=False):
           'the source matches --src-ip-ranges or the tag of the source matches '
           '--src-secure-tags. Secure Tags can be assigned to instances during '
           'instance creation.'
-          ))
+      ),
+  )
 
 
 def AddTargetSecureTags(parser, required=False):
@@ -315,16 +381,23 @@ def AddTargetSecureTags(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='TARGET_SECURE_TAGS',
       required=required,
-      help=('An optional, list of target secure tags with a name of the '
-            'format tagValues/ or full namespaced name'))
+      help=(
+          'An optional, list of target secure tags with a name of the '
+          'format tagValues/ or full namespaced name'
+      ),
+  )
 
 
 def AddNewPriority(parser, operation=None):
   """Adds the new firewall policy rule priority to the argparse."""
   parser.add_argument(
       '--new-priority',
-      help=('New priority for the rule to {}. Valid in [0, 65535]. '.format(
-          operation)))
+      help=(
+          'New priority for the rule to {}. Valid in [0, 65535]. '.format(
+              operation
+          )
+      ),
+  )
 
 
 def AddArgsCloneRules(parser):
@@ -332,8 +405,8 @@ def AddArgsCloneRules(parser):
   parser.add_argument(
       '--source-firewall-policy',
       required=True,
-      help=('Name of the source network firewall policy to copy '
-            'the rules from.'))
+      help='Name of the source network firewall policy to copy the rules from.',
+  )
 
 
 def AddSrcAddressGroups(parser):
@@ -346,7 +419,8 @@ def AddSrcAddressGroups(parser):
       help=(
           'Source address groups to match for this rule. '
           'Can only be specified if DIRECTION is ingress.'
-      ))
+      ),
+  )
 
 
 def AddDestAddressGroups(parser):
@@ -373,7 +447,8 @@ def AddSrcFqdns(parser):
       help=(
           'Source FQDNs to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
-      ))
+      ),
+  )
 
 
 def AddDestFqdns(parser):
@@ -400,7 +475,8 @@ def AddSrcRegionCodes(parser):
       help=(
           'Source Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
-      ))
+      ),
+  )
 
 
 def AddDestRegionCodes(parser):
@@ -456,8 +532,10 @@ def AddSecurityProfileGroup(parser):
       metavar='SECURITY_PROFILE_GROUP',
       required=False,
       help=(
-          'A security profile group to be used with apply_security_profile_group action.'
-      ))
+          'A security profile group to be used with'
+          ' apply_security_profile_group action.'
+      ),
+  )
 
 
 def AddTlsInspect(parser):

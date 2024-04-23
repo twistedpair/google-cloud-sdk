@@ -63,6 +63,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REPOSITORIES_ATTACHMENTS = (
+      'projects.locations.repositories.attachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/repositories/'
+              '{repositoriesId}/attachments/{attachmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_REPOSITORIES_DOCKERIMAGES = (
       'projects.locations.repositories.dockerImages',
       '{+name}',

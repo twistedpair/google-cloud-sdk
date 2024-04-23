@@ -105,6 +105,22 @@ class AccessReview(_messages.Message):
   version = _messages.StringField(7)
 
 
+class AdaptiveProtection(_messages.Message):
+  r"""Information about [Google Cloud Armor Adaptive
+  Protection](https://cloud.google.com/armor/docs/cloud-armor-overview#google-
+  cloud-armor-adaptive-protection).
+
+  Fields:
+    confidence: A score of 0 means that there is low confidence that the
+      detected event is an actual attack. A score of 1 means that there is
+      high confidence that the detected event is an attack. See the [Adaptive
+      Protection documentation](https://cloud.google.com/armor/docs/adaptive-
+      protection-overview#configure-alert-tuning) for further explanation.
+  """
+
+  confidence = _messages.FloatField(1)
+
+
 class Application(_messages.Message):
   r"""Represents an application associated with a finding.
 
@@ -118,6 +134,21 @@ class Application(_messages.Message):
 
   baseUri = _messages.StringField(1)
   fullUri = _messages.StringField(2)
+
+
+class Attack(_messages.Message):
+  r"""Information about DDoS attack volume and classification.
+
+  Fields:
+    classification: Type of attack, for example, 'SYN-flood', 'NTP-udp', or
+      'CHARGEN-udp'.
+    volumeBps: Total BPS (bytes per second) volume of attack.
+    volumePps: Total PPS (packets per second) volume of attack.
+  """
+
+  classification = _messages.StringField(1)
+  volumeBps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  volumePps = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class AttackExposure(_messages.Message):
@@ -604,6 +635,36 @@ class BulkMuteFindingsRequest(_messages.Message):
   filter = _messages.StringField(1)
 
 
+class CloudArmor(_messages.Message):
+  r"""Fields related to Google Cloud Armor findings.
+
+  Fields:
+    adaptiveProtection: Information about potential Layer 7 DDoS attacks
+      identified by [Google Cloud Armor Adaptive
+      Protection](https://cloud.google.com/armor/docs/adaptive-protection-
+      overview).
+    attack: Information about DDoS attack volume and classification.
+    duration: Duration of attack from the start until the current moment
+      (updated every 5 minutes).
+    requests: Information about incoming requests evaluated by [Google Cloud
+      Armor security policies](https://cloud.google.com/armor/docs/security-
+      policy-overview).
+    securityPolicy: Information about the [Google Cloud Armor security
+      policy](https://cloud.google.com/armor/docs/security-policy-overview)
+      relevant to the finding.
+    threatVector: Distinguish between volumetric & protocol DDoS attack and
+      application layer attacks. For example, "L3_4" for Layer 3 and Layer 4
+      DDoS attacks, or "L_7" for Layer 7 DDoS attacks.
+  """
+
+  adaptiveProtection = _messages.MessageField('AdaptiveProtection', 1)
+  attack = _messages.MessageField('Attack', 2)
+  duration = _messages.StringField(3)
+  requests = _messages.MessageField('Requests', 4)
+  securityPolicy = _messages.MessageField('SecurityPolicy', 5)
+  threatVector = _messages.StringField(6)
+
+
 class CloudDlpDataProfile(_messages.Message):
   r"""The [data profile](https://cloud.google.com/dlp/docs/data-profiles)
   associated with the finding.
@@ -713,8 +774,6 @@ class ComplianceSnapshot(_messages.Message):
       the snapshot.
     name: The compliance snapshot name. Format:
       //sources//complianceSnapshots/
-    projectDisplayName: The CRM resource display name that is closest to the
-      snapshot the Findings belong to.
     snapshotTime: The snapshot time of the snapshot.
   """
 
@@ -739,8 +798,7 @@ class ComplianceSnapshot(_messages.Message):
   count = _messages.IntegerField(5)
   leafContainerResource = _messages.StringField(6)
   name = _messages.StringField(7)
-  projectDisplayName = _messages.StringField(8)
-  snapshotTime = _messages.StringField(9)
+  snapshotTime = _messages.StringField(8)
 
 
 class Connection(_messages.Message):
@@ -1366,6 +1424,7 @@ class Finding(_messages.Message):
     category: The additional taxonomy group within findings from a given
       source. This field is immutable after creation time. Example:
       "XSS_FLASH_INJECTION"
+    cloudArmor: Fields related to Cloud Armor findings.
     cloudDlpDataProfile: Cloud DLP data profile that is associated with the
       finding.
     cloudDlpInspection: Cloud Data Loss Prevention (Cloud DLP) inspection
@@ -1660,46 +1719,47 @@ class Finding(_messages.Message):
   backupDisasterRecovery = _messages.MessageField('BackupDisasterRecovery', 4)
   canonicalName = _messages.StringField(5)
   category = _messages.StringField(6)
-  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 7)
-  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 8)
-  compliances = _messages.MessageField('Compliance', 9, repeated=True)
-  connections = _messages.MessageField('Connection', 10, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 11)
-  containers = _messages.MessageField('Container', 12, repeated=True)
-  createTime = _messages.StringField(13)
-  database = _messages.MessageField('Database', 14)
-  description = _messages.StringField(15)
-  eventTime = _messages.StringField(16)
-  exfiltration = _messages.MessageField('Exfiltration', 17)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 18)
-  externalUri = _messages.StringField(19)
-  files = _messages.MessageField('File', 20, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 21)
-  iamBindings = _messages.MessageField('IamBinding', 22, repeated=True)
-  indicator = _messages.MessageField('Indicator', 23)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 24)
-  kubernetes = _messages.MessageField('Kubernetes', 25)
-  loadBalancers = _messages.MessageField('LoadBalancer', 26, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 27, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 28)
-  moduleName = _messages.StringField(29)
-  mute = _messages.EnumField('MuteValueValuesEnum', 30)
-  muteInitiator = _messages.StringField(31)
-  muteUpdateTime = _messages.StringField(32)
-  name = _messages.StringField(33)
-  nextSteps = _messages.StringField(34)
-  notebook = _messages.MessageField('Notebook', 35)
-  orgPolicies = _messages.MessageField('OrgPolicy', 36, repeated=True)
-  parent = _messages.StringField(37)
-  parentDisplayName = _messages.StringField(38)
-  processes = _messages.MessageField('Process', 39, repeated=True)
-  resourceName = _messages.StringField(40)
-  securityMarks = _messages.MessageField('SecurityMarks', 41)
-  securityPosture = _messages.MessageField('SecurityPosture', 42)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 43)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 44)
-  state = _messages.EnumField('StateValueValuesEnum', 45)
-  vulnerability = _messages.MessageField('Vulnerability', 46)
+  cloudArmor = _messages.MessageField('CloudArmor', 7)
+  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 8)
+  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 9)
+  compliances = _messages.MessageField('Compliance', 10, repeated=True)
+  connections = _messages.MessageField('Connection', 11, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 12)
+  containers = _messages.MessageField('Container', 13, repeated=True)
+  createTime = _messages.StringField(14)
+  database = _messages.MessageField('Database', 15)
+  description = _messages.StringField(16)
+  eventTime = _messages.StringField(17)
+  exfiltration = _messages.MessageField('Exfiltration', 18)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 19)
+  externalUri = _messages.StringField(20)
+  files = _messages.MessageField('File', 21, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
+  iamBindings = _messages.MessageField('IamBinding', 23, repeated=True)
+  indicator = _messages.MessageField('Indicator', 24)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 25)
+  kubernetes = _messages.MessageField('Kubernetes', 26)
+  loadBalancers = _messages.MessageField('LoadBalancer', 27, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 28, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 29)
+  moduleName = _messages.StringField(30)
+  mute = _messages.EnumField('MuteValueValuesEnum', 31)
+  muteInitiator = _messages.StringField(32)
+  muteUpdateTime = _messages.StringField(33)
+  name = _messages.StringField(34)
+  nextSteps = _messages.StringField(35)
+  notebook = _messages.MessageField('Notebook', 36)
+  orgPolicies = _messages.MessageField('OrgPolicy', 37, repeated=True)
+  parent = _messages.StringField(38)
+  parentDisplayName = _messages.StringField(39)
+  processes = _messages.MessageField('Process', 40, repeated=True)
+  resourceName = _messages.StringField(41)
+  securityMarks = _messages.MessageField('SecurityMarks', 42)
+  securityPosture = _messages.MessageField('SecurityPosture', 43)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 44)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 45)
+  state = _messages.EnumField('StateValueValuesEnum', 46)
+  vulnerability = _messages.MessageField('Vulnerability', 47)
 
 
 class Folder(_messages.Message):
@@ -2847,6 +2907,22 @@ class GoogleCloudSecuritycenterV2AccessReview(_messages.Message):
   version = _messages.StringField(7)
 
 
+class GoogleCloudSecuritycenterV2AdaptiveProtection(_messages.Message):
+  r"""Information about [Google Cloud Armor Adaptive
+  Protection](https://cloud.google.com/armor/docs/cloud-armor-overview#google-
+  cloud-armor-adaptive-protection).
+
+  Fields:
+    confidence: A score of 0 means that there is low confidence that the
+      detected event is an actual attack. A score of 1 means that there is
+      high confidence that the detected event is an attack. See the [Adaptive
+      Protection documentation](https://cloud.google.com/armor/docs/adaptive-
+      protection-overview#configure-alert-tuning) for further explanation.
+  """
+
+  confidence = _messages.FloatField(1)
+
+
 class GoogleCloudSecuritycenterV2Application(_messages.Message):
   r"""Represents an application associated with a finding.
 
@@ -2860,6 +2936,21 @@ class GoogleCloudSecuritycenterV2Application(_messages.Message):
 
   baseUri = _messages.StringField(1)
   fullUri = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2Attack(_messages.Message):
+  r"""Information about DDoS attack volume and classification.
+
+  Fields:
+    classification: Type of attack, for example, 'SYN-flood', 'NTP-udp', or
+      'CHARGEN-udp'.
+    volumeBps: Total BPS (bytes per second) volume of attack.
+    volumePps: Total PPS (packets per second) volume of attack.
+  """
+
+  classification = _messages.StringField(1)
+  volumeBps = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  volumePps = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
@@ -3104,6 +3195,36 @@ class GoogleCloudSecuritycenterV2Binding(_messages.Message):
 
 class GoogleCloudSecuritycenterV2BulkMuteFindingsResponse(_messages.Message):
   r"""The response to a BulkMute request. Contains the LRO information."""
+
+
+class GoogleCloudSecuritycenterV2CloudArmor(_messages.Message):
+  r"""Fields related to Google Cloud Armor findings.
+
+  Fields:
+    adaptiveProtection: Information about potential Layer 7 DDoS attacks
+      identified by [Google Cloud Armor Adaptive
+      Protection](https://cloud.google.com/armor/docs/adaptive-protection-
+      overview).
+    attack: Information about DDoS attack volume and classification.
+    duration: Duration of attack from the start until the current moment
+      (updated every 5 minutes).
+    requests: Information about incoming requests evaluated by [Google Cloud
+      Armor security policies](https://cloud.google.com/armor/docs/security-
+      policy-overview).
+    securityPolicy: Information about the [Google Cloud Armor security
+      policy](https://cloud.google.com/armor/docs/security-policy-overview)
+      relevant to the finding.
+    threatVector: Distinguish between volumetric & protocol DDoS attack and
+      application layer attacks. For example, "L3_4" for Layer 3 and Layer 4
+      DDoS attacks, or "L_7" for Layer 7 DDoS attacks.
+  """
+
+  adaptiveProtection = _messages.MessageField('GoogleCloudSecuritycenterV2AdaptiveProtection', 1)
+  attack = _messages.MessageField('GoogleCloudSecuritycenterV2Attack', 2)
+  duration = _messages.StringField(3)
+  requests = _messages.MessageField('GoogleCloudSecuritycenterV2Requests', 4)
+  securityPolicy = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPolicy', 5)
+  threatVector = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV2CloudDlpDataProfile(_messages.Message):
@@ -3816,6 +3937,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       associated with the finding.
     category: Immutable. The additional taxonomy group within findings from a
       given source. Example: "XSS_FLASH_INJECTION"
+    cloudArmor: Fields related to Cloud Armor findings.
     cloudDlpDataProfile: Cloud DLP data profile that is associated with the
       finding.
     cloudDlpInspection: Cloud Data Loss Prevention (Cloud DLP) inspection
@@ -4121,46 +4243,47 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   backupDisasterRecovery = _messages.MessageField('GoogleCloudSecuritycenterV2BackupDisasterRecovery', 4)
   canonicalName = _messages.StringField(5)
   category = _messages.StringField(6)
-  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 7)
-  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 8)
-  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 9, repeated=True)
-  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 10, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 11)
-  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 12, repeated=True)
-  createTime = _messages.StringField(13)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 14)
-  description = _messages.StringField(15)
-  eventTime = _messages.StringField(16)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 17)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 18)
-  externalUri = _messages.StringField(19)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 20, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 21)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 22, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 23)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 24)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 25)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 26, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 27, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 28)
-  moduleName = _messages.StringField(29)
-  mute = _messages.EnumField('MuteValueValuesEnum', 30)
-  muteInitiator = _messages.StringField(31)
-  muteUpdateTime = _messages.StringField(32)
-  name = _messages.StringField(33)
-  nextSteps = _messages.StringField(34)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 35)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 36, repeated=True)
-  parent = _messages.StringField(37)
-  parentDisplayName = _messages.StringField(38)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 39, repeated=True)
-  resourceName = _messages.StringField(40)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 41)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 42)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 43)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 44)
-  state = _messages.EnumField('StateValueValuesEnum', 45)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 46)
+  cloudArmor = _messages.MessageField('GoogleCloudSecuritycenterV2CloudArmor', 7)
+  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 8)
+  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 9)
+  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 10, repeated=True)
+  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 11, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 12)
+  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 13, repeated=True)
+  createTime = _messages.StringField(14)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 15)
+  description = _messages.StringField(16)
+  eventTime = _messages.StringField(17)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 18)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 19)
+  externalUri = _messages.StringField(20)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 21, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 23, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 24)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 25)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 26)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 27, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 28, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 29)
+  moduleName = _messages.StringField(30)
+  mute = _messages.EnumField('MuteValueValuesEnum', 31)
+  muteInitiator = _messages.StringField(32)
+  muteUpdateTime = _messages.StringField(33)
+  name = _messages.StringField(34)
+  nextSteps = _messages.StringField(35)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 36)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 37, repeated=True)
+  parent = _messages.StringField(38)
+  parentDisplayName = _messages.StringField(39)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 40, repeated=True)
+  resourceName = _messages.StringField(41)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 42)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 43)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 44)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 45)
+  state = _messages.EnumField('StateValueValuesEnum', 46)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 47)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4439,6 +4562,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       PROCESS_DISCOVERY: T1057
       COMMAND_AND_SCRIPTING_INTERPRETER: T1059
       UNIX_SHELL: T1059.004
+      PYTHON: T1059.006
       PERMISSION_GROUPS_DISCOVERY: T1069
       CLOUD_GROUPS: T1069.003
       APPLICATION_LAYER_PROTOCOL: T1071
@@ -4499,56 +4623,57 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     PROCESS_DISCOVERY = 6
     COMMAND_AND_SCRIPTING_INTERPRETER = 7
     UNIX_SHELL = 8
-    PERMISSION_GROUPS_DISCOVERY = 9
-    CLOUD_GROUPS = 10
-    APPLICATION_LAYER_PROTOCOL = 11
-    DNS = 12
-    SOFTWARE_DEPLOYMENT_TOOLS = 13
-    VALID_ACCOUNTS = 14
-    DEFAULT_ACCOUNTS = 15
-    LOCAL_ACCOUNTS = 16
-    CLOUD_ACCOUNTS = 17
-    PROXY = 18
-    EXTERNAL_PROXY = 19
-    MULTI_HOP_PROXY = 20
-    ACCOUNT_MANIPULATION = 21
-    ADDITIONAL_CLOUD_CREDENTIALS = 22
-    SSH_AUTHORIZED_KEYS = 23
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 24
-    INGRESS_TOOL_TRANSFER = 25
-    NATIVE_API = 26
-    BRUTE_FORCE = 27
-    SHARED_MODULES = 28
-    ACCESS_TOKEN_MANIPULATION = 29
-    TOKEN_IMPERSONATION_OR_THEFT = 30
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 31
-    DOMAIN_POLICY_MODIFICATION = 32
-    DATA_DESTRUCTION = 33
-    SERVICE_STOP = 34
-    INHIBIT_SYSTEM_RECOVERY = 35
-    RESOURCE_HIJACKING = 36
-    NETWORK_DENIAL_OF_SERVICE = 37
-    CLOUD_SERVICE_DISCOVERY = 38
-    STEAL_APPLICATION_ACCESS_TOKEN = 39
-    ACCOUNT_ACCESS_REMOVAL = 40
-    STEAL_WEB_SESSION_COOKIE = 41
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 42
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 43
-    UNSECURED_CREDENTIALS = 44
-    MODIFY_AUTHENTICATION_PROCESS = 45
-    IMPAIR_DEFENSES = 46
-    DISABLE_OR_MODIFY_TOOLS = 47
-    EXFILTRATION_OVER_WEB_SERVICE = 48
-    EXFILTRATION_TO_CLOUD_STORAGE = 49
-    DYNAMIC_RESOLUTION = 50
-    LATERAL_TOOL_TRANSFER = 51
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 52
-    CREATE_SNAPSHOT = 53
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 54
-    OBTAIN_CAPABILITIES = 55
-    ACTIVE_SCANNING = 56
-    SCANNING_IP_BLOCKS = 57
-    CONTAINER_AND_RESOURCE_DISCOVERY = 58
+    PYTHON = 9
+    PERMISSION_GROUPS_DISCOVERY = 10
+    CLOUD_GROUPS = 11
+    APPLICATION_LAYER_PROTOCOL = 12
+    DNS = 13
+    SOFTWARE_DEPLOYMENT_TOOLS = 14
+    VALID_ACCOUNTS = 15
+    DEFAULT_ACCOUNTS = 16
+    LOCAL_ACCOUNTS = 17
+    CLOUD_ACCOUNTS = 18
+    PROXY = 19
+    EXTERNAL_PROXY = 20
+    MULTI_HOP_PROXY = 21
+    ACCOUNT_MANIPULATION = 22
+    ADDITIONAL_CLOUD_CREDENTIALS = 23
+    SSH_AUTHORIZED_KEYS = 24
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 25
+    INGRESS_TOOL_TRANSFER = 26
+    NATIVE_API = 27
+    BRUTE_FORCE = 28
+    SHARED_MODULES = 29
+    ACCESS_TOKEN_MANIPULATION = 30
+    TOKEN_IMPERSONATION_OR_THEFT = 31
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 32
+    DOMAIN_POLICY_MODIFICATION = 33
+    DATA_DESTRUCTION = 34
+    SERVICE_STOP = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
+    RESOURCE_HIJACKING = 37
+    NETWORK_DENIAL_OF_SERVICE = 38
+    CLOUD_SERVICE_DISCOVERY = 39
+    STEAL_APPLICATION_ACCESS_TOKEN = 40
+    ACCOUNT_ACCESS_REMOVAL = 41
+    STEAL_WEB_SESSION_COOKIE = 42
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 43
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 44
+    UNSECURED_CREDENTIALS = 45
+    MODIFY_AUTHENTICATION_PROCESS = 46
+    IMPAIR_DEFENSES = 47
+    DISABLE_OR_MODIFY_TOOLS = 48
+    EXFILTRATION_OVER_WEB_SERVICE = 49
+    EXFILTRATION_TO_CLOUD_STORAGE = 50
+    DYNAMIC_RESOLUTION = 51
+    LATERAL_TOOL_TRANSFER = 52
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 53
+    CREATE_SNAPSHOT = 54
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 55
+    OBTAIN_CAPABILITIES = 56
+    ACTIVE_SCANNING = 57
+    SCANNING_IP_BLOCKS = 58
+    CONTAINER_AND_RESOURCE_DISCOVERY = 59
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -4600,6 +4725,7 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
       PROCESS_DISCOVERY: T1057
       COMMAND_AND_SCRIPTING_INTERPRETER: T1059
       UNIX_SHELL: T1059.004
+      PYTHON: T1059.006
       PERMISSION_GROUPS_DISCOVERY: T1069
       CLOUD_GROUPS: T1069.003
       APPLICATION_LAYER_PROTOCOL: T1071
@@ -4660,56 +4786,57 @@ class GoogleCloudSecuritycenterV2MitreAttack(_messages.Message):
     PROCESS_DISCOVERY = 6
     COMMAND_AND_SCRIPTING_INTERPRETER = 7
     UNIX_SHELL = 8
-    PERMISSION_GROUPS_DISCOVERY = 9
-    CLOUD_GROUPS = 10
-    APPLICATION_LAYER_PROTOCOL = 11
-    DNS = 12
-    SOFTWARE_DEPLOYMENT_TOOLS = 13
-    VALID_ACCOUNTS = 14
-    DEFAULT_ACCOUNTS = 15
-    LOCAL_ACCOUNTS = 16
-    CLOUD_ACCOUNTS = 17
-    PROXY = 18
-    EXTERNAL_PROXY = 19
-    MULTI_HOP_PROXY = 20
-    ACCOUNT_MANIPULATION = 21
-    ADDITIONAL_CLOUD_CREDENTIALS = 22
-    SSH_AUTHORIZED_KEYS = 23
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 24
-    INGRESS_TOOL_TRANSFER = 25
-    NATIVE_API = 26
-    BRUTE_FORCE = 27
-    SHARED_MODULES = 28
-    ACCESS_TOKEN_MANIPULATION = 29
-    TOKEN_IMPERSONATION_OR_THEFT = 30
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 31
-    DOMAIN_POLICY_MODIFICATION = 32
-    DATA_DESTRUCTION = 33
-    SERVICE_STOP = 34
-    INHIBIT_SYSTEM_RECOVERY = 35
-    RESOURCE_HIJACKING = 36
-    NETWORK_DENIAL_OF_SERVICE = 37
-    CLOUD_SERVICE_DISCOVERY = 38
-    STEAL_APPLICATION_ACCESS_TOKEN = 39
-    ACCOUNT_ACCESS_REMOVAL = 40
-    STEAL_WEB_SESSION_COOKIE = 41
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 42
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 43
-    UNSECURED_CREDENTIALS = 44
-    MODIFY_AUTHENTICATION_PROCESS = 45
-    IMPAIR_DEFENSES = 46
-    DISABLE_OR_MODIFY_TOOLS = 47
-    EXFILTRATION_OVER_WEB_SERVICE = 48
-    EXFILTRATION_TO_CLOUD_STORAGE = 49
-    DYNAMIC_RESOLUTION = 50
-    LATERAL_TOOL_TRANSFER = 51
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 52
-    CREATE_SNAPSHOT = 53
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 54
-    OBTAIN_CAPABILITIES = 55
-    ACTIVE_SCANNING = 56
-    SCANNING_IP_BLOCKS = 57
-    CONTAINER_AND_RESOURCE_DISCOVERY = 58
+    PYTHON = 9
+    PERMISSION_GROUPS_DISCOVERY = 10
+    CLOUD_GROUPS = 11
+    APPLICATION_LAYER_PROTOCOL = 12
+    DNS = 13
+    SOFTWARE_DEPLOYMENT_TOOLS = 14
+    VALID_ACCOUNTS = 15
+    DEFAULT_ACCOUNTS = 16
+    LOCAL_ACCOUNTS = 17
+    CLOUD_ACCOUNTS = 18
+    PROXY = 19
+    EXTERNAL_PROXY = 20
+    MULTI_HOP_PROXY = 21
+    ACCOUNT_MANIPULATION = 22
+    ADDITIONAL_CLOUD_CREDENTIALS = 23
+    SSH_AUTHORIZED_KEYS = 24
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 25
+    INGRESS_TOOL_TRANSFER = 26
+    NATIVE_API = 27
+    BRUTE_FORCE = 28
+    SHARED_MODULES = 29
+    ACCESS_TOKEN_MANIPULATION = 30
+    TOKEN_IMPERSONATION_OR_THEFT = 31
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 32
+    DOMAIN_POLICY_MODIFICATION = 33
+    DATA_DESTRUCTION = 34
+    SERVICE_STOP = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
+    RESOURCE_HIJACKING = 37
+    NETWORK_DENIAL_OF_SERVICE = 38
+    CLOUD_SERVICE_DISCOVERY = 39
+    STEAL_APPLICATION_ACCESS_TOKEN = 40
+    ACCOUNT_ACCESS_REMOVAL = 41
+    STEAL_WEB_SESSION_COOKIE = 42
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 43
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 44
+    UNSECURED_CREDENTIALS = 45
+    MODIFY_AUTHENTICATION_PROCESS = 46
+    IMPAIR_DEFENSES = 47
+    DISABLE_OR_MODIFY_TOOLS = 48
+    EXFILTRATION_OVER_WEB_SERVICE = 49
+    EXFILTRATION_TO_CLOUD_STORAGE = 50
+    DYNAMIC_RESOLUTION = 51
+    LATERAL_TOOL_TRANSFER = 52
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 53
+    CREATE_SNAPSHOT = 54
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 55
+    OBTAIN_CAPABILITIES = 56
+    ACTIVE_SCANNING = 57
+    SCANNING_IP_BLOCKS = 58
+    CONTAINER_AND_RESOURCE_DISCOVERY = 59
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -5002,6 +5129,25 @@ class GoogleCloudSecuritycenterV2Reference(_messages.Message):
 
   source = _messages.StringField(1)
   uri = _messages.StringField(2)
+
+
+class GoogleCloudSecuritycenterV2Requests(_messages.Message):
+  r"""Information about the requests relevant to the finding.
+
+  Fields:
+    longTermAllowed: Allowed RPS (requests per second) over the long term.
+    longTermDenied: Denied RPS (requests per second) over the long term.
+    ratio: For 'Increasing deny ratio', the ratio is the denied traffic
+      divided by the allowed traffic. For 'Allowed traffic spike', the ratio
+      is the allowed traffic in the short term divided by allowed traffic in
+      the long term.
+    shortTermAllowed: Allowed RPS (requests per second) in the short term.
+  """
+
+  longTermAllowed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  longTermDenied = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ratio = _messages.FloatField(3)
+  shortTermAllowed = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudSecuritycenterV2Resource(_messages.Message):
@@ -5300,18 +5446,18 @@ class GoogleCloudSecuritycenterV2SecurityMarks(_messages.Message):
   Fields:
     canonicalName: The canonical name of the marks. The following list shows
       some examples: +
-      `organizations/{organization_id}/assets/{asset_id}/securityMarks" + `org
+      `organizations/{organization_id}/assets/{asset_id}/securityMarks` + `org
       anizations/{organization_id}/sources/{source_id}/findings/{finding_id}/s
-      ecurityMarks" + `organizations/{organization_id}/sources/{source_id}/loc
-      ations/{location}/findings/{finding_id}/securityMarks" +
-      `folders/{folder_id}/assets/{asset_id}/securityMarks" + `folders/{folder
-      _id}/sources/{source_id}/findings/{finding_id}/securityMarks" + `folders
+      ecurityMarks` + `organizations/{organization_id}/sources/{source_id}/loc
+      ations/{location}/findings/{finding_id}/securityMarks` +
+      `folders/{folder_id}/assets/{asset_id}/securityMarks` + `folders/{folder
+      _id}/sources/{source_id}/findings/{finding_id}/securityMarks` + `folders
       /{folder_id}/sources/{source_id}/locations/{location}/findings/{finding_
-      id}/securityMarks" +
-      `projects/{project_number}/assets/{asset_id}/securityMarks" + `projects/
+      id}/securityMarks` +
+      `projects/{project_number}/assets/{asset_id}/securityMarks` + `projects/
       {project_number}/sources/{source_id}/findings/{finding_id}/securityMarks
-      " + `projects/{project_number}/sources/{source_id}/locations/{location}/
-      findings/{finding_id}/securityMarks"
+      ` + `projects/{project_number}/sources/{source_id}/locations/{location}/
+      findings/{finding_id}/securityMarks`
     marks: Mutable user specified security marks belonging to the parent
       resource. Constraints are as follows: * Keys and values are treated as
       case insensitive * Keys must be between 1 - 256 characters (inclusive) *
@@ -5359,6 +5505,25 @@ class GoogleCloudSecuritycenterV2SecurityMarks(_messages.Message):
   canonicalName = _messages.StringField(1)
   marks = _messages.MessageField('MarksValue', 2)
   name = _messages.StringField(3)
+
+
+class GoogleCloudSecuritycenterV2SecurityPolicy(_messages.Message):
+  r"""Information about the [Google Cloud Armor security
+  policy](https://cloud.google.com/armor/docs/security-policy-overview)
+  relevant to the finding.
+
+  Fields:
+    name: The name of the Google Cloud Armor security policy, for example,
+      "my-security-policy".
+    preview: Whether or not the associated rule or policy is in preview mode.
+    type: The type of Google Cloud Armor security policy for example, 'backend
+      security policy', 'edge security policy', 'network edge security
+      policy', or 'always-on DDoS protection'.
+  """
+
+  name = _messages.StringField(1)
+  preview = _messages.BooleanField(2)
+  type = _messages.StringField(3)
 
 
 class GoogleCloudSecuritycenterV2SecurityPosture(_messages.Message):
@@ -6036,6 +6201,7 @@ class MitreAttack(_messages.Message):
       PROCESS_DISCOVERY: T1057
       COMMAND_AND_SCRIPTING_INTERPRETER: T1059
       UNIX_SHELL: T1059.004
+      PYTHON: T1059.006
       PERMISSION_GROUPS_DISCOVERY: T1069
       CLOUD_GROUPS: T1069.003
       APPLICATION_LAYER_PROTOCOL: T1071
@@ -6096,56 +6262,57 @@ class MitreAttack(_messages.Message):
     PROCESS_DISCOVERY = 6
     COMMAND_AND_SCRIPTING_INTERPRETER = 7
     UNIX_SHELL = 8
-    PERMISSION_GROUPS_DISCOVERY = 9
-    CLOUD_GROUPS = 10
-    APPLICATION_LAYER_PROTOCOL = 11
-    DNS = 12
-    SOFTWARE_DEPLOYMENT_TOOLS = 13
-    VALID_ACCOUNTS = 14
-    DEFAULT_ACCOUNTS = 15
-    LOCAL_ACCOUNTS = 16
-    CLOUD_ACCOUNTS = 17
-    PROXY = 18
-    EXTERNAL_PROXY = 19
-    MULTI_HOP_PROXY = 20
-    ACCOUNT_MANIPULATION = 21
-    ADDITIONAL_CLOUD_CREDENTIALS = 22
-    SSH_AUTHORIZED_KEYS = 23
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 24
-    INGRESS_TOOL_TRANSFER = 25
-    NATIVE_API = 26
-    BRUTE_FORCE = 27
-    SHARED_MODULES = 28
-    ACCESS_TOKEN_MANIPULATION = 29
-    TOKEN_IMPERSONATION_OR_THEFT = 30
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 31
-    DOMAIN_POLICY_MODIFICATION = 32
-    DATA_DESTRUCTION = 33
-    SERVICE_STOP = 34
-    INHIBIT_SYSTEM_RECOVERY = 35
-    RESOURCE_HIJACKING = 36
-    NETWORK_DENIAL_OF_SERVICE = 37
-    CLOUD_SERVICE_DISCOVERY = 38
-    STEAL_APPLICATION_ACCESS_TOKEN = 39
-    ACCOUNT_ACCESS_REMOVAL = 40
-    STEAL_WEB_SESSION_COOKIE = 41
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 42
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 43
-    UNSECURED_CREDENTIALS = 44
-    MODIFY_AUTHENTICATION_PROCESS = 45
-    IMPAIR_DEFENSES = 46
-    DISABLE_OR_MODIFY_TOOLS = 47
-    EXFILTRATION_OVER_WEB_SERVICE = 48
-    EXFILTRATION_TO_CLOUD_STORAGE = 49
-    DYNAMIC_RESOLUTION = 50
-    LATERAL_TOOL_TRANSFER = 51
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 52
-    CREATE_SNAPSHOT = 53
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 54
-    OBTAIN_CAPABILITIES = 55
-    ACTIVE_SCANNING = 56
-    SCANNING_IP_BLOCKS = 57
-    CONTAINER_AND_RESOURCE_DISCOVERY = 58
+    PYTHON = 9
+    PERMISSION_GROUPS_DISCOVERY = 10
+    CLOUD_GROUPS = 11
+    APPLICATION_LAYER_PROTOCOL = 12
+    DNS = 13
+    SOFTWARE_DEPLOYMENT_TOOLS = 14
+    VALID_ACCOUNTS = 15
+    DEFAULT_ACCOUNTS = 16
+    LOCAL_ACCOUNTS = 17
+    CLOUD_ACCOUNTS = 18
+    PROXY = 19
+    EXTERNAL_PROXY = 20
+    MULTI_HOP_PROXY = 21
+    ACCOUNT_MANIPULATION = 22
+    ADDITIONAL_CLOUD_CREDENTIALS = 23
+    SSH_AUTHORIZED_KEYS = 24
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 25
+    INGRESS_TOOL_TRANSFER = 26
+    NATIVE_API = 27
+    BRUTE_FORCE = 28
+    SHARED_MODULES = 29
+    ACCESS_TOKEN_MANIPULATION = 30
+    TOKEN_IMPERSONATION_OR_THEFT = 31
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 32
+    DOMAIN_POLICY_MODIFICATION = 33
+    DATA_DESTRUCTION = 34
+    SERVICE_STOP = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
+    RESOURCE_HIJACKING = 37
+    NETWORK_DENIAL_OF_SERVICE = 38
+    CLOUD_SERVICE_DISCOVERY = 39
+    STEAL_APPLICATION_ACCESS_TOKEN = 40
+    ACCOUNT_ACCESS_REMOVAL = 41
+    STEAL_WEB_SESSION_COOKIE = 42
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 43
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 44
+    UNSECURED_CREDENTIALS = 45
+    MODIFY_AUTHENTICATION_PROCESS = 46
+    IMPAIR_DEFENSES = 47
+    DISABLE_OR_MODIFY_TOOLS = 48
+    EXFILTRATION_OVER_WEB_SERVICE = 49
+    EXFILTRATION_TO_CLOUD_STORAGE = 50
+    DYNAMIC_RESOLUTION = 51
+    LATERAL_TOOL_TRANSFER = 52
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 53
+    CREATE_SNAPSHOT = 54
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 55
+    OBTAIN_CAPABILITIES = 56
+    ACTIVE_SCANNING = 57
+    SCANNING_IP_BLOCKS = 58
+    CONTAINER_AND_RESOURCE_DISCOVERY = 59
 
   class PrimaryTacticValueValuesEnum(_messages.Enum):
     r"""The MITRE ATT&CK tactic most closely represented by this finding, if
@@ -6197,6 +6364,7 @@ class MitreAttack(_messages.Message):
       PROCESS_DISCOVERY: T1057
       COMMAND_AND_SCRIPTING_INTERPRETER: T1059
       UNIX_SHELL: T1059.004
+      PYTHON: T1059.006
       PERMISSION_GROUPS_DISCOVERY: T1069
       CLOUD_GROUPS: T1069.003
       APPLICATION_LAYER_PROTOCOL: T1071
@@ -6257,56 +6425,57 @@ class MitreAttack(_messages.Message):
     PROCESS_DISCOVERY = 6
     COMMAND_AND_SCRIPTING_INTERPRETER = 7
     UNIX_SHELL = 8
-    PERMISSION_GROUPS_DISCOVERY = 9
-    CLOUD_GROUPS = 10
-    APPLICATION_LAYER_PROTOCOL = 11
-    DNS = 12
-    SOFTWARE_DEPLOYMENT_TOOLS = 13
-    VALID_ACCOUNTS = 14
-    DEFAULT_ACCOUNTS = 15
-    LOCAL_ACCOUNTS = 16
-    CLOUD_ACCOUNTS = 17
-    PROXY = 18
-    EXTERNAL_PROXY = 19
-    MULTI_HOP_PROXY = 20
-    ACCOUNT_MANIPULATION = 21
-    ADDITIONAL_CLOUD_CREDENTIALS = 22
-    SSH_AUTHORIZED_KEYS = 23
-    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 24
-    INGRESS_TOOL_TRANSFER = 25
-    NATIVE_API = 26
-    BRUTE_FORCE = 27
-    SHARED_MODULES = 28
-    ACCESS_TOKEN_MANIPULATION = 29
-    TOKEN_IMPERSONATION_OR_THEFT = 30
-    EXPLOIT_PUBLIC_FACING_APPLICATION = 31
-    DOMAIN_POLICY_MODIFICATION = 32
-    DATA_DESTRUCTION = 33
-    SERVICE_STOP = 34
-    INHIBIT_SYSTEM_RECOVERY = 35
-    RESOURCE_HIJACKING = 36
-    NETWORK_DENIAL_OF_SERVICE = 37
-    CLOUD_SERVICE_DISCOVERY = 38
-    STEAL_APPLICATION_ACCESS_TOKEN = 39
-    ACCOUNT_ACCESS_REMOVAL = 40
-    STEAL_WEB_SESSION_COOKIE = 41
-    CREATE_OR_MODIFY_SYSTEM_PROCESS = 42
-    ABUSE_ELEVATION_CONTROL_MECHANISM = 43
-    UNSECURED_CREDENTIALS = 44
-    MODIFY_AUTHENTICATION_PROCESS = 45
-    IMPAIR_DEFENSES = 46
-    DISABLE_OR_MODIFY_TOOLS = 47
-    EXFILTRATION_OVER_WEB_SERVICE = 48
-    EXFILTRATION_TO_CLOUD_STORAGE = 49
-    DYNAMIC_RESOLUTION = 50
-    LATERAL_TOOL_TRANSFER = 51
-    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 52
-    CREATE_SNAPSHOT = 53
-    CLOUD_INFRASTRUCTURE_DISCOVERY = 54
-    OBTAIN_CAPABILITIES = 55
-    ACTIVE_SCANNING = 56
-    SCANNING_IP_BLOCKS = 57
-    CONTAINER_AND_RESOURCE_DISCOVERY = 58
+    PYTHON = 9
+    PERMISSION_GROUPS_DISCOVERY = 10
+    CLOUD_GROUPS = 11
+    APPLICATION_LAYER_PROTOCOL = 12
+    DNS = 13
+    SOFTWARE_DEPLOYMENT_TOOLS = 14
+    VALID_ACCOUNTS = 15
+    DEFAULT_ACCOUNTS = 16
+    LOCAL_ACCOUNTS = 17
+    CLOUD_ACCOUNTS = 18
+    PROXY = 19
+    EXTERNAL_PROXY = 20
+    MULTI_HOP_PROXY = 21
+    ACCOUNT_MANIPULATION = 22
+    ADDITIONAL_CLOUD_CREDENTIALS = 23
+    SSH_AUTHORIZED_KEYS = 24
+    ADDITIONAL_CONTAINER_CLUSTER_ROLES = 25
+    INGRESS_TOOL_TRANSFER = 26
+    NATIVE_API = 27
+    BRUTE_FORCE = 28
+    SHARED_MODULES = 29
+    ACCESS_TOKEN_MANIPULATION = 30
+    TOKEN_IMPERSONATION_OR_THEFT = 31
+    EXPLOIT_PUBLIC_FACING_APPLICATION = 32
+    DOMAIN_POLICY_MODIFICATION = 33
+    DATA_DESTRUCTION = 34
+    SERVICE_STOP = 35
+    INHIBIT_SYSTEM_RECOVERY = 36
+    RESOURCE_HIJACKING = 37
+    NETWORK_DENIAL_OF_SERVICE = 38
+    CLOUD_SERVICE_DISCOVERY = 39
+    STEAL_APPLICATION_ACCESS_TOKEN = 40
+    ACCOUNT_ACCESS_REMOVAL = 41
+    STEAL_WEB_SESSION_COOKIE = 42
+    CREATE_OR_MODIFY_SYSTEM_PROCESS = 43
+    ABUSE_ELEVATION_CONTROL_MECHANISM = 44
+    UNSECURED_CREDENTIALS = 45
+    MODIFY_AUTHENTICATION_PROCESS = 46
+    IMPAIR_DEFENSES = 47
+    DISABLE_OR_MODIFY_TOOLS = 48
+    EXFILTRATION_OVER_WEB_SERVICE = 49
+    EXFILTRATION_TO_CLOUD_STORAGE = 50
+    DYNAMIC_RESOLUTION = 51
+    LATERAL_TOOL_TRANSFER = 52
+    MODIFY_CLOUD_COMPUTE_INFRASTRUCTURE = 53
+    CREATE_SNAPSHOT = 54
+    CLOUD_INFRASTRUCTURE_DISCOVERY = 55
+    OBTAIN_CAPABILITIES = 56
+    ACTIVE_SCANNING = 57
+    SCANNING_IP_BLOCKS = 58
+    CONTAINER_AND_RESOURCE_DISCOVERY = 59
 
   additionalTactics = _messages.EnumField('AdditionalTacticsValueListEntryValuesEnum', 1, repeated=True)
   additionalTechniques = _messages.EnumField('AdditionalTechniquesValueListEntryValuesEnum', 2, repeated=True)
@@ -6750,6 +6919,25 @@ class Reference(_messages.Message):
   uri = _messages.StringField(2)
 
 
+class Requests(_messages.Message):
+  r"""Information about the requests relevant to the finding.
+
+  Fields:
+    longTermAllowed: Allowed RPS (requests per second) over the long term.
+    longTermDenied: Denied RPS (requests per second) over the long term.
+    ratio: For 'Increasing deny ratio', the ratio is the denied traffic
+      divided by the allowed traffic. For 'Allowed traffic spike', the ratio
+      is the allowed traffic in the short term divided by allowed traffic in
+      the long term.
+    shortTermAllowed: Allowed RPS (requests per second) in the short term.
+  """
+
+  longTermAllowed = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  longTermDenied = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ratio = _messages.FloatField(3)
+  shortTermAllowed = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Resource(_messages.Message):
   r"""Information related to the Google Cloud resource that is associated with
   this finding.
@@ -6988,6 +7176,25 @@ class SecurityMarks(_messages.Message):
   canonicalName = _messages.StringField(1)
   marks = _messages.MessageField('MarksValue', 2)
   name = _messages.StringField(3)
+
+
+class SecurityPolicy(_messages.Message):
+  r"""Information about the [Google Cloud Armor security
+  policy](https://cloud.google.com/armor/docs/security-policy-overview)
+  relevant to the finding.
+
+  Fields:
+    name: The name of the Google Cloud Armor security policy, for example,
+      "my-security-policy".
+    preview: Whether or not the associated rule or policy is in preview mode.
+    type: The type of Google Cloud Armor security policy for example, 'backend
+      security policy', 'edge security policy', 'network edge security
+      policy', or 'always-on DDoS protection'.
+  """
+
+  name = _messages.StringField(1)
+  preview = _messages.BooleanField(2)
+  type = _messages.StringField(3)
 
 
 class SecurityPosture(_messages.Message):
@@ -8539,7 +8746,9 @@ class SecuritycenterOrganizationsResourceValueConfigsPatchRequest(_messages.Mess
       the request body.
     name: Name for the resource value config
     updateMask: The list of fields to be updated. If empty all mutable fields
-      will be updated.
+      will be updated. To update nested fields, include the top level field in
+      the mask For example, to update gcp_metadata.resource_type, include the
+      "gcp_metadata" field mask
   """
 
   googleCloudSecuritycenterV2ResourceValueConfig = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceValueConfig', 1)
@@ -10680,6 +10889,81 @@ class Vulnerability(_messages.Message):
   fixedPackage = _messages.MessageField('Package', 2)
   offendingPackage = _messages.MessageField('Package', 3)
   securityBulletin = _messages.MessageField('SecurityBulletin', 4)
+
+
+class VulnerabilityCountBySeverity(_messages.Message):
+  r"""Vulnerability count by severity.
+
+  Messages:
+    SeverityToFindingCountValue: Key is the Severity enum.
+
+  Fields:
+    severityToFindingCount: Key is the Severity enum.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SeverityToFindingCountValue(_messages.Message):
+    r"""Key is the Severity enum.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        SeverityToFindingCountValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        SeverityToFindingCountValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SeverityToFindingCountValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  severityToFindingCount = _messages.MessageField('SeverityToFindingCountValue', 1)
+
+
+class VulnerabilitySnapshot(_messages.Message):
+  r"""Result containing the properties and count of a VulnerabilitySnapshot
+  request.
+
+  Enums:
+    CloudProviderValueValuesEnum: The cloud provider for the vulnerability
+      snapshot.
+
+  Fields:
+    cloudProvider: The cloud provider for the vulnerability snapshot.
+    findingCount: The vulnerability count by severity.
+    name: Identifier. The vulnerability snapshot name. Format:
+      //locations//vulnerabilitySnapshots/
+    snapshotTime: The time that the snapshot was taken.
+  """
+
+  class CloudProviderValueValuesEnum(_messages.Enum):
+    r"""The cloud provider for the vulnerability snapshot.
+
+    Values:
+      CLOUD_PROVIDER_UNSPECIFIED: The cloud provider is unspecified.
+      GOOGLE_CLOUD_PLATFORM: The cloud provider is Google Cloud Platform.
+      AMAZON_WEB_SERVICES: The cloud provider is Amazon Web Services.
+      MICROSOFT_AZURE: The cloud provider is Microsoft Azure.
+    """
+    CLOUD_PROVIDER_UNSPECIFIED = 0
+    GOOGLE_CLOUD_PLATFORM = 1
+    AMAZON_WEB_SERVICES = 2
+    MICROSOFT_AZURE = 3
+
+  cloudProvider = _messages.EnumField('CloudProviderValueValuesEnum', 1)
+  findingCount = _messages.MessageField('VulnerabilityCountBySeverity', 2)
+  name = _messages.StringField(3)
+  snapshotTime = _messages.StringField(4)
 
 
 class YaraRuleSignature(_messages.Message):

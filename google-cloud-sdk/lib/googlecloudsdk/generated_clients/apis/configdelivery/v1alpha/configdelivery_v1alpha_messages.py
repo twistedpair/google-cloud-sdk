@@ -1307,6 +1307,7 @@ class ResourceBundleDeploymentInfo(_messages.Message):
       DELETED: Deleted state.
       INITIATED: Initiated state.
       ABORTED: Aborted state.
+      CANCELLED: Cancelled state.
     """
     STATE_UNSPECIFIED = 0
     RECONCILING = 1
@@ -1320,6 +1321,7 @@ class ResourceBundleDeploymentInfo(_messages.Message):
     DELETED = 9
     INITIATED = 10
     ABORTED = 11
+    CANCELLED = 12
 
   deletionPropagationPolicy = _messages.EnumField('DeletionPropagationPolicyValueValuesEnum', 1)
   messages = _messages.StringField(2, repeated=True)
@@ -1453,6 +1455,7 @@ class RolloutInfo(_messages.Message):
       ERRORED: Rollout errored.
       IN_PROGRESS: Rollout in progress.
       STALLED: Rollout stalled.
+      CANCELLED: Rollout cancelled.
     """
     STATE_UNSPECIFIED = 0
     COMPLETED = 1
@@ -1461,6 +1464,7 @@ class RolloutInfo(_messages.Message):
     ERRORED = 4
     IN_PROGRESS = 5
     STALLED = 6
+    CANCELLED = 7
 
   clusterInfo = _messages.MessageField('ClusterInfo', 1, repeated=True)
   message = _messages.StringField(2)

@@ -1,0 +1,16 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha Fleet export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- project
+additionalProperties: false
+properties:
+  project:
+    description: The host project for the fleet. Format is projects/{project}.
+    type: string
+  selector:
+    description: |-
+      selector allows targeting a subset of fleet members using their labels.
+    $ref: LabelSelector.yaml

@@ -1,0 +1,16 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha RolloutStrategy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  allAtOnce:
+    description: |-
+      AllAtOnceStrategy causes all clusters to be updated concurrently.
+    type: allatoncestrategy
+  rolling:
+    description: |-
+      RollingStrategy causes a specified number of clusters to be updated
+      concurrently until all clusters are updated.
+    $ref: RollingStrategy.yaml

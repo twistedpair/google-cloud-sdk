@@ -128,11 +128,20 @@ def PipelineResultTransform(pipeline_result):
     pipeline_result["value"] = ResultValueTransform(pipeline_result["value"])
 
 
+def TaskStepTransform(task_step):
+  if "ref" in task_step:
+    RefTransform(task_step["ref"])
+  ParamDictTransform(task_step.get("params", []))
+
+
 def TaskResultTransform(task_result):
   _ConvertToUpperCase(task_result, "type")
 
   for property_name in task_result.get("properties", []):
     PropertySpecTransform(task_result["properties"][property_name])
+
+  if "value" in task_result:
+    task_result["value"] = ParamValueTransform(task_result["value"])
 
 
 def PropertySpecTransform(property_spec):

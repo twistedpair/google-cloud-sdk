@@ -64,6 +64,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.instanceGroupManagerResizeRequests = self.InstanceGroupManagerResizeRequestsService(self)
     self.instanceGroupManagers = self.InstanceGroupManagersService(self)
     self.instanceGroups = self.InstanceGroupsService(self)
+    self.instanceSettings = self.InstanceSettingsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
@@ -5641,6 +5642,68 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class InstanceSettingsService(base_api.BaseApiService):
+    """Service class for the instanceSettings resource."""
+
+    _NAME = 'instanceSettings'
+
+    def __init__(self, client):
+      super(ComputeV1.InstanceSettingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceSettings) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instanceSettings.get',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='',
+        request_type_name='ComputeInstanceSettingsGetRequest',
+        response_type_name='InstanceSettings',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patch Instance settings.
+
+      Args:
+        request: (ComputeInstanceSettingsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.instanceSettings.patch',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/instanceSettings',
+        request_field='instanceSettings',
+        request_type_name='ComputeInstanceSettingsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class InstanceTemplatesService(base_api.BaseApiService):
     """Service class for the instanceTemplates resource."""
 
@@ -10045,6 +10108,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}',
         request_field='nodeGroupResource',
         request_type_name='ComputeNodeGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform maintenance on a subset of nodes in the node group.
+
+      Args:
+        request: (ComputeNodeGroupsPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.nodeGroups.performMaintenance',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/performMaintenance',
+        request_field='nodeGroupsPerformMaintenanceRequest',
+        request_type_name='ComputeNodeGroupsPerformMaintenanceRequest',
         response_type_name='Operation',
         supports_download=False,
     )

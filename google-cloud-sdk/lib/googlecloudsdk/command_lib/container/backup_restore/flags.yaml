@@ -57,9 +57,6 @@ cron_schedule:
   type: str
   # backupPlan.backupSchedule message should be nil by default.
   default: null
-  # This only means when backup schedule is passed in, cron-schedule must be
-  # passed in.
-  required: true
   help_text: |
     Schedule on which backups will be automatically created.
 
@@ -67,20 +64,22 @@ cron_schedule:
     `10 3 * * *` will automatically create a backup at 0310 every day. All times are interpreted as
     UTC. The minimum interval between scheduled backups is 10 minutes.
 
-update_cron_schedule:
-  arg_name: cron-schedule
-  api_field: backupPlan.backupSchedule.cronSchedule
-  type: str
-  # backupPlan.backupSchedule message should be nil by default.
-  default: null
-  # This only means when backup schedule is passed in, cron-schedule must be
-  # passed in.
+target_rpo_minutes:
+  arg_name: target-rpo-minutes
+  api_field: backupPlan.backupSchedule.rpoConfig.targetRpoMinutes
+  type: int
   help_text: |
-    Schedule on which backups will be automatically created.
+    Schedule backups based on target RPO minutes instead of fixed cron schedules. Cannot be used with
+    --cron-schedule.
 
-    Use standard [cron](http://en.wikipedia.org/wiki/Cron#Overview) syntax. For example,
-    `10 3 * * *` will automatically create a backup at 0310 every day. All times are interpreted as
-    UTC. The minimum interval between scheduled backups is 10 minutes.
+exclusion_windows_file:
+  arg_name: exclusion-windows-file
+  api_field: backupPlan.backupSchedule.rpoConfig.exclusionWindows
+  processor: googlecloudsdk.command_lib.container.backup_restore.hooks:ReadExclusionWindowsFile
+  help_text: |
+    If provided, defines an array of exclusion windows for RPO based schedules from the given
+    config file in yaml. Only used together with --target-rpo-minutes for creation and rpo-based
+    plans during update.
 
 paused:
   arg_name: paused

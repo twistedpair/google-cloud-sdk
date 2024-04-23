@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage.gcs_grpc import download
+from googlecloudsdk.api_lib.storage.gcs_grpc import grpc_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_grpc import upload
 from googlecloudsdk.api_lib.storage.gcs_json import client as gcs_json_client
@@ -57,14 +58,17 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     super(GrpcClientWithJsonFallback, self).__init__()
     self._gapic_client = None
 
-  def _get_gapic_client(self):
+  def _get_gapic_client(self, redact_request_body_reason=None):
     # Not using @property because the side-effect is non-trivial and
     # might not be obvious. Someone might accidentally access the
     # property and end up creating the gapic client.
     # Creating the gapic client before "fork" will lead to a deadlock.
     if self._gapic_client is None:
       self._gapic_client = core_apis.GetGapicClientInstance(
-          'storage', 'v2', attempt_direct_path=True
+          'storage',
+          'v2',
+          attempt_direct_path=True,
+          redact_request_body_reason=redact_request_body_reason,
       )
     return self._gapic_client
 
@@ -140,7 +144,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
         posix_to_set=posix_to_set,
     )
 
-    final_destination_metadata.bucket = (
+    final_destination_metadata.bucket = grpc_util.get_full_bucket_name(
         destination_resource.storage_url.bucket_name
     )
     final_destination_metadata.name = (
@@ -246,9 +250,13 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     with self._encryption_headers_for_rewrite_call_context(request_config):
       while True:
         request = self._gapic_client.types.RewriteObjectRequest(
-            source_bucket=source_resource.storage_url.bucket_name,
+            source_bucket=grpc_util.get_full_bucket_name(
+                source_resource.storage_url.bucket_name
+            ),
             source_object=source_resource.storage_url.object_name,
-            destination_bucket=destination_resource.storage_url.bucket_name,
+            destination_bucket=grpc_util.get_full_bucket_name(
+                destination_resource.storage_url.bucket_name
+            ),
             destination_name=destination_resource.storage_url.object_name,
             destination=destination_metadata,
             source_generation=source_generation,
@@ -310,7 +318,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
     self._get_gapic_client()
 
     request = self._gapic_client.types.DeleteObjectRequest(
-        bucket=object_url.bucket_name,
+        bucket=grpc_util.get_full_bucket_name(object_url.bucket_name),
         object=object_url.object_name,
         generation=generation,
         if_generation_match=request_config.precondition_generation_match,
@@ -330,7 +338,7 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
 
     object_metadata = self._gapic_client.storage.restore_object(
         self._gapic_client.types.RestoreObjectRequest(
-            bucket=url.bucket_name,
+            bucket=grpc_util.get_full_bucket_name(url.bucket_name),
             object=url.object_name,
             generation=int(url.generation),
             if_generation_match=request_config.precondition_generation_match,
@@ -397,7 +405,13 @@ class GrpcClientWithJsonFallback(gcs_json_client.JsonClient):
   ):
     """See super class."""
 
-    client = self._get_gapic_client()
+    client = self._get_gapic_client(
+        redact_request_body_reason=(
+            'Object data is not displayed to keep the log output clean.'
+            ' Set log_http_show_request_body property to True to print the'
+            ' body of this request.'
+        )
+    )
 
     source_path = self._get_source_path(source_resource)
     should_gzip_in_flight = gzip_util.should_gzip_in_flight(

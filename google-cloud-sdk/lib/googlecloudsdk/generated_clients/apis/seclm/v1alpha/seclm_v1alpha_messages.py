@@ -165,7 +165,7 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListWorkbenchesResponse(_messages.Message):
-  r"""Message for response to listing Workbenches
+  r"""Message for response to listing Workbenches.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -611,9 +611,9 @@ class SeclmProjectsLocationsWorkbenchesCreateRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     workbench: A Workbench resource to be passed as the request body.
-    workbenchId: Required. Id of the requesting object If auto-generating Id
+    workbenchId: Required. Id of the requesting object. If auto-generating Id
       server-side, remove this field and workbench_id from the
-      method_signature of Create RPC
+      method_signature of Create RPC.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -626,7 +626,7 @@ class SeclmProjectsLocationsWorkbenchesDeleteRequest(_messages.Message):
   r"""A SeclmProjectsLocationsWorkbenchesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -648,7 +648,7 @@ class SeclmProjectsLocationsWorkbenchesGetRequest(_messages.Message):
   r"""A SeclmProjectsLocationsWorkbenchesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
   """
 
   name = _messages.StringField(1, required=True)
@@ -658,13 +658,13 @@ class SeclmProjectsLocationsWorkbenchesListRequest(_messages.Message):
   r"""A SeclmProjectsLocationsWorkbenchesListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. String for filtering results.
+    orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListWorkbenchesRequest
+    parent: Required. Parent value for ListWorkbenchesRequest.
   """
 
   filter = _messages.StringField(1)
@@ -678,7 +678,7 @@ class SeclmProjectsLocationsWorkbenchesPatchRequest(_messages.Message):
   r"""A SeclmProjectsLocationsWorkbenchesPatchRequest object.
 
   Fields:
-    name: Identifier. name of resource
+    name: Identifier. Name of resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -708,7 +708,7 @@ class SeclmProjectsLocationsWorkbenchesQueryRequest(_messages.Message):
   r"""A SeclmProjectsLocationsWorkbenchesQueryRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Name of the resource.
     workbenchQueryRequest: A WorkbenchQueryRequest resource to be passed as
       the request body.
   """
@@ -832,21 +832,21 @@ class Status(_messages.Message):
 
 
 class Workbench(_messages.Message):
-  r"""Message describing Workbench object
+  r"""Message describing Workbench object.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Identifier. name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    createTime: Output only. Create time stamp.
+    labels: Optional. Labels as key value pairs.
+    name: Identifier. Name of resource.
+    updateTime: Output only. Update time stamp.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -875,7 +875,7 @@ class Workbench(_messages.Message):
 
 
 class WorkbenchQueryRequest(_messages.Message):
-  r"""Message for querying a Workbench
+  r"""Message for querying a Workbench.
 
   Fields:
     contents: Optional. The content of the current conversation with the
@@ -893,7 +893,7 @@ class WorkbenchQueryRequest(_messages.Message):
 
 
 class WorkbenchQueryResponse(_messages.Message):
-  r"""Response to querying a Workbench
+  r"""Response to querying a Workbench.
 
   Fields:
     candidates: Output only. Candidate responses from the model.

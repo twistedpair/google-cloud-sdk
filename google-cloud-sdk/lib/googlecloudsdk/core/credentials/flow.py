@@ -78,18 +78,24 @@ class WebBrowserInaccessible(Error):
 
 
 def RaiseProxyError(source_exc):
-  six.raise_from(AuthRequestFailedError(
-      'Could not reach the login server. A potential cause of this could be '
-      'because you are behind a proxy. Please set the environment variables '
-      'HTTPS_PROXY and HTTP_PROXY to the address of the proxy in the format '
-      '"protocol://address:port" (without quotes) and try again.\n'
-      'Example: HTTPS_PROXY=http://192.168.0.1:8080'), source_exc)
+  six.raise_from(
+      AuthRequestFailedError(
+          'Could not reach the login server. A potential cause of this could be'
+          ' because you are behind a proxy. Please set the environment'
+          ' variables HTTPS_PROXY and HTTP_PROXY to the address of the proxy in'
+          ' the format "protocol://address:port" (without quotes) and try'
+          ' again.\nExample: HTTPS_PROXY=http://192.168.0.1:8080'
+      ),
+      source_exc,
+  )
 
 
 def PromptForAuthCode(message, authorize_url, client_config=None):
   ImportReadline(client_config)
   log.err.Print(message.format(url=authorize_url))
-  return input('Enter authorization code: ').strip()
+  return input(
+      'Once finished, enter the verification code provided in your browser: '
+  ).strip()
 
 
 @contextlib.contextmanager
@@ -732,7 +738,8 @@ class RemoteLoginWithAuthProxyFlow(InstalledAppFlow):
     auth_url, _ = self.authorization_url(**kwargs)
 
     authorization_prompt_message = (
-        'Go to the following link in your browser:\n\n    {url}\n'
+        'Go to the following link in your browser, and complete the sign-in'
+        ' prompts:\n\n    {url}\n'
     )
 
     code = PromptForAuthCode(

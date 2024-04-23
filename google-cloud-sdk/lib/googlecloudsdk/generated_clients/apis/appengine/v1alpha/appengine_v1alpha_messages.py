@@ -1014,25 +1014,31 @@ class ProjectEvent(_messages.Message):
   r"""The request sent to CLHs during project events.
 
   Enums:
-    PhaseValueValuesEnum:
+    PhaseValueValuesEnum: Phase indicates when in the container event
+      propagation this event is being communicated. Events are sent before and
+      after the per-resource events are propagated. required
 
   Fields:
     eventId: The unique ID for this project event. CLHs can use this value to
       dedup repeated calls. required
-    phase: A PhaseValueValuesEnum attribute.
+    phase: Phase indicates when in the container event propagation this event
+      is being communicated. Events are sent before and after the per-resource
+      events are propagated. required
     projectMetadata: The projects metadata for this project. required
-    state: The state of the project that led to this event.
+    state: The state of the organization that led to this event.
   """
 
   class PhaseValueValuesEnum(_messages.Enum):
-    r"""PhaseValueValuesEnum enum type.
+    r"""Phase indicates when in the container event propagation this event is
+    being communicated. Events are sent before and after the per-resource
+    events are propagated. required
 
     Values:
-      UNKNOWN: <no description>
+      CONTAINER_EVENT_PHASE_UNSPECIFIED: <no description>
       BEFORE_RESOURCE_HANDLING: <no description>
       AFTER_RESOURCE_HANDLING: <no description>
     """
-    UNKNOWN = 0
+    CONTAINER_EVENT_PHASE_UNSPECIFIED = 0
     BEFORE_RESOURCE_HANDLING = 1
     AFTER_RESOURCE_HANDLING = 2
 

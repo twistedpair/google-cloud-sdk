@@ -149,6 +149,8 @@ class Backup(_messages.Message):
       backup_retain_days value.
     retainExpireTime: Output only. The time at which this Backup will be
       automatically deleted (calculated from create_time + retain_days).
+    satisfiesPzi: Output only. [Output Only] Reserved for future use.
+    satisfiesPzs: Output only. [Output Only] Reserved for future use.
     selectedApplications: Output only. If set, the list of
       ProtectedApplications whose resources were included in the Backup.
     selectedNamespaces: Output only. If set, the list of namespaces that were
@@ -233,14 +235,16 @@ class Backup(_messages.Message):
   resourceCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
   retainDays = _messages.IntegerField(19, variant=_messages.Variant.INT32)
   retainExpireTime = _messages.StringField(20)
-  selectedApplications = _messages.MessageField('NamespacedNames', 21)
-  selectedNamespaces = _messages.MessageField('Namespaces', 22)
-  sizeBytes = _messages.IntegerField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  stateReason = _messages.StringField(25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  volumeCount = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  satisfiesPzi = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  selectedApplications = _messages.MessageField('NamespacedNames', 23)
+  selectedNamespaces = _messages.MessageField('Namespaces', 24)
+  sizeBytes = _messages.IntegerField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  stateReason = _messages.StringField(27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  volumeCount = _messages.IntegerField(30, variant=_messages.Variant.INT32)
 
 
 class BackupConfig(_messages.Message):
@@ -3097,6 +3101,8 @@ class VolumeBackup(_messages.Message):
     format: Output only. The format used for the volume backup.
     name: Output only. The full name of the VolumeBackup resource. Format:
       `projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*`.
+    satisfiesPzi: Output only. [Output Only] Reserved for future use.
+    satisfiesPzs: Output only. [Output Only] Reserved for future use.
     sourcePvc: Output only. A reference to the source Kubernetes PVC from
       which this VolumeBackup was created.
     state: Output only. The current state of this VolumeBackup.
@@ -3160,13 +3166,15 @@ class VolumeBackup(_messages.Message):
   etag = _messages.StringField(4)
   format = _messages.EnumField('FormatValueValuesEnum', 5)
   name = _messages.StringField(6)
-  sourcePvc = _messages.MessageField('NamespacedName', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateMessage = _messages.StringField(9)
-  storageBytes = _messages.IntegerField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
-  volumeBackupHandle = _messages.StringField(13)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  sourcePvc = _messages.MessageField('NamespacedName', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateMessage = _messages.StringField(11)
+  storageBytes = _messages.IntegerField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  volumeBackupHandle = _messages.StringField(15)
 
 
 class VolumeDataRestorePolicyBinding(_messages.Message):

@@ -941,7 +941,9 @@ class SecurityCenterService(_messages.Message):
       zation}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
-    updateTime: Output only. The time the service was last updated.
+    updateTime: Output only. The time the service was last updated. This could
+      be due to an explicit user update or due to a side effect of another
+      system change such as billing subscription expiry.
   """
 
   class EffectiveEnablementStateValueValuesEnum(_messages.Enum):

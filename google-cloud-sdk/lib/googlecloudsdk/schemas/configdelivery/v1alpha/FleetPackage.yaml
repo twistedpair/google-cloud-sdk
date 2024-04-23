@@ -1,0 +1,48 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha FleetPackage export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- resourceBundleSelector
+- variantSelector
+additionalProperties: false
+properties:
+  deletionPropagationPolicy:
+    description: Deletion propagation policy for the fleet package.
+    type: string
+    enum:
+    - DELETION_PROPAGATION_POLICY_UNSPECIFIED
+    - FOREGROUND
+    - ORPHAN
+  labels:
+    description: Labels as key value pairs
+    $ref: LabelsValue.yaml
+  name:
+    description: |-
+      Identifier. Name of the FleetPackage. Format is
+      projects/{project}/locations/
+      {location}/fleetPackages/{fleetPackage}/a-z{0,62}
+    type: string
+  resourceBundleSelector:
+    description: |-
+      resource_bundle_selector determines what resource bundle to deploy.
+    $ref: ResourceBundleSelector.yaml
+  rolloutStrategy:
+    description: The strategy for rolling out resource bundles to clusters.
+    $ref: RolloutStrategy.yaml
+  state:
+    description: The desired state of the fleet package.
+    type: string
+    enum:
+    - ACTIVE
+    - STATE_UNSPECIFIED
+    - SUSPENDED
+  target:
+    description: The target into which the resource bundle should be installed.
+    $ref: Target.yaml
+  variantSelector:
+    description: |-
+      variant_selector specifies how to select a resource bundle variant for a
+      target cluster.
+    $ref: VariantSelector.yaml

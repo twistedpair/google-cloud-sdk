@@ -870,11 +870,11 @@ class FindNearest(_messages.Message):
   r"""Nearest Neighbors search config.
 
   Enums:
-    DistanceMeasureValueValuesEnum: Required. The Distance Measure to use,
+    DistanceMeasureValueValuesEnum: Required. The distance measure to use,
       required.
 
   Fields:
-    distanceMeasure: Required. The Distance Measure to use, required.
+    distanceMeasure: Required. The distance measure to use, required.
     limit: Required. The number of nearest neighbors to return. Must be a
       positive integer of no more than 1000.
     queryVector: Required. The query vector that we are searching on. Must be
@@ -885,7 +885,7 @@ class FindNearest(_messages.Message):
   """
 
   class DistanceMeasureValueValuesEnum(_messages.Enum):
-    r"""Required. The Distance Measure to use, required.
+    r"""Required. The distance measure to use, required.
 
     Values:
       DISTANCE_MEASURE_UNSPECIFIED: Should not be set.
@@ -1799,8 +1799,8 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
 
 
 class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
-  r"""Represents a recurring schedule that runs at a specific time every day.
-  The time zone is UTC.
+  r"""Represents a recurring schedule that runs every day. The time zone is
+  UTC.
   """
 
 
@@ -2439,7 +2439,7 @@ class GoogleFirestoreAdminV1IndexField(_messages.Message):
       name of the field or may be omitted.
     order: Indicates that this field supports ordering by the specified order
       or comparing using =, !=, <, <=, >, >=.
-    vectorConfig: Indicates that this field supports nearest neighbors and
+    vectorConfig: Indicates that this field supports nearest neighbor and
       distance operations on vector.
   """
 
@@ -3666,7 +3666,7 @@ class StructuredQuery(_messages.Message):
       position rather than the start position. Requires: * The number of
       values cannot be greater than the number of fields specified in the
       `ORDER BY` clause.
-    findNearest: Optional. A potential Nearest Neighbors Search. Applies after
+    findNearest: Optional. A potential nearest neighbors search. Applies after
       all other filters and ordering. Finds the closest vector embeddings to
       the given query vector.
     from_: The collections to query.

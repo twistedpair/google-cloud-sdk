@@ -226,6 +226,33 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CreateBackendIAMBinding(self, request, global_params=None):
+      r"""Creates an IAM binding on the backend project. Yields a FAILED_PRECONDITION error if this instance is not allowlisted for the requested binding. Backend IAM bindings are only applicable for specific RBE instances. Please reach out to the RBE team for more details. Yields OK if the exact binding between role and principal already exists. Binding the same role to multiple principals is permitted.
+
+      Args:
+        request: (RemotebuildexecutionProjectsInstancesCreateBackendIAMBindingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingResponse) The response message.
+      """
+      config = self.GetMethodConfig('CreateBackendIAMBinding')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateBackendIAMBinding.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}:createBackendIAMBinding',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.createBackendIAMBinding',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:createBackendIAMBinding',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest',
+        request_type_name='RemotebuildexecutionProjectsInstancesCreateBackendIAMBindingRequest',
+        response_type_name='GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingResponse',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified instance. Returns a long running operation which contains a `google.protobuf.Empty` response on completion. Deleting an instance with worker pools in it will delete these worker pools.
 
@@ -250,6 +277,33 @@ class RemotebuildexecutionV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='RemotebuildexecutionProjectsInstancesDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DeleteBackendIAMBinding(self, request, global_params=None):
+      r"""Deletes an IAM binding on the backend project. Yields a FAILED_PRECONDITION error if the parent instance is not allowlisted for at least one of the ENABLE_BE_IAM_BINDING_* entries. Yields a NOT_FOUND error if the binding does not exist.
+
+      Args:
+        request: (RemotebuildexecutionProjectsInstancesDeleteBackendIAMBindingRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('DeleteBackendIAMBinding')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteBackendIAMBinding.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/instances/{instancesId}:deleteBackendIAMBinding',
+        http_method='POST',
+        method_id='remotebuildexecution.projects.instances.deleteBackendIAMBinding',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}:deleteBackendIAMBinding',
+        request_field='googleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingRequest',
+        request_type_name='RemotebuildexecutionProjectsInstancesDeleteBackendIAMBindingRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 

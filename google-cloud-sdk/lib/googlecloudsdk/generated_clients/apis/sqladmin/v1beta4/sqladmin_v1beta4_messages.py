@@ -867,10 +867,10 @@ class DatabaseInstance(_messages.Message):
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
-    replicationCluster: The pair of a primary instance and disaster recovery
-      (DR) replica. A DR replica is a cross-region replica that you designate
-      for failover in the event that the primary instance has regional
-      failure.
+    replicationCluster: A primary instance and disaster recovery (DR) replica
+      pair. A DR replica is a cross-region replica that you designate for
+      failover in the event that the primary instance experiences regional
+      failure. Only applicable to MySQL.
     rootPassword: Initial root password. Use only on creation. You must set
       root passwords before you can connect to PostgreSQL instances.
     satisfiesPzs: The status indicating if instance satisfiesPzs. Reserved for
@@ -2240,12 +2240,12 @@ class IpConfiguration(_messages.Message):
       * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
       For SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
       `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
-      The value of `ssl_mode` gets priority over the value of `require_ssl`.
+      The value of `ssl_mode` has priority over the value of `require_ssl`.
       For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
-      `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
-      connections, while the `require_ssl=false` means accept both non-SSL and
-      SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
-      this case and accept only SSL connections.
+      `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+      connections, while `require_ssl=false` means accept both non-SSL and SSL
+      connections. In this case, MySQL and PostgreSQL databases respect
+      `ssl_mode` and accepts only SSL connections.
 
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
@@ -2282,12 +2282,12 @@ class IpConfiguration(_messages.Message):
       `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
       For SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
       `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true`
-      The value of `ssl_mode` gets priority over the value of `require_ssl`.
+      The value of `ssl_mode` has priority over the value of `require_ssl`.
       For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
-      `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
-      connections, while the `require_ssl=false` means accept both non-SSL and
-      SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
-      this case and accept only SSL connections.
+      `require_ssl=false`, `ssl_mode=ENCRYPTED_ONLY` means accept only SSL
+      connections, while `require_ssl=false` means accept both non-SSL and SSL
+      connections. In this case, MySQL and PostgreSQL databases respect
+      `ssl_mode` and accepts only SSL connections.
   """
 
   class SslModeValueValuesEnum(_messages.Enum):
@@ -2299,22 +2299,25 @@ class IpConfiguration(_messages.Message):
     `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` For
     SQL Server: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
     `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=true` The
-    value of `ssl_mode` gets priority over the value of `require_ssl`. For
+    value of `ssl_mode` has priority over the value of `require_ssl`. For
     example, for the pair `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`,
-    the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL connections, while the
-    `require_ssl=false` means accept both non-SSL and SSL connections. MySQL
-    and PostgreSQL databases respect `ssl_mode` in this case and accept only
+    `ssl_mode=ENCRYPTED_ONLY` means accept only SSL connections, while
+    `require_ssl=false` means accept both non-SSL and SSL connections. In this
+    case, MySQL and PostgreSQL databases respect `ssl_mode` and accepts only
     SSL connections.
 
     Values:
       SSL_MODE_UNSPECIFIED: The SSL mode is unknown.
       ALLOW_UNENCRYPTED_AND_ENCRYPTED: Allow non-SSL/non-TLS and SSL/TLS
-        connections. For SSL/TLS connections, the client certificate won't be
+        connections. For SSL connections to MySQL and PostgreSQL, the client
+        certificate isn't verified. When this value is used, the legacy
+        `require_ssl` flag must be false or cleared to avoid a conflict
+        between the values of the two flags.
+      ENCRYPTED_ONLY: Only allow connections encrypted with SSL/TLS. For SSL
+        connections to MySQL and PostgreSQL, the client certificate isn't
         verified. When this value is used, the legacy `require_ssl` flag must
-        be false or cleared to avoid the conflict between values of two flags.
-      ENCRYPTED_ONLY: Only allow connections encrypted with SSL/TLS. When this
-        value is used, the legacy `require_ssl` flag must be false or cleared
-        to avoid the conflict between values of two flags.
+        be false or cleared to avoid a conflict between the values of the two
+        flags.
       TRUSTED_CLIENT_CERTIFICATE_REQUIRED: Only allow connections encrypted
         with SSL/TLS and with valid client certificates. When this value is
         used, the legacy `require_ssl` flag must be true or cleared to avoid
@@ -2324,8 +2327,8 @@ class IpConfiguration(_messages.Message):
         Proxy](https://cloud.google.com/sql/docs/postgres/connect-auth-proxy)
         or [Cloud SQL
         Connectors](https://cloud.google.com/sql/docs/postgres/connect-
-        connectors) to enforce client identity verification. This value is not
-        applicable to SQL Server.
+        connectors) to enforce client identity verification. Only applicable
+        to MySQL and PostgreSQL. Not applicable to SQL Server.
     """
     SSL_MODE_UNSPECIFIED = 0
     ALLOW_UNENCRYPTED_AND_ENCRYPTED = 1
@@ -2927,17 +2930,20 @@ class ReplicaConfiguration(_messages.Message):
 
 
 class ReplicationCluster(_messages.Message):
-  r"""Primary-DR replica pair
+  r"""A primary instance and disaster recovery (DR) replica pair. A DR replica
+  is a cross-region replica that you designate for failover in the event that
+  the primary instance has regional failure. Only applicable to MySQL.
 
   Fields:
-    drReplica: Output only. read-only field that indicates if the replica is a
-      dr_replica; not set for a primary.
+    drReplica: Output only. Read-only field that indicates whether the replica
+      is a DR replica. This field is not set if the instance is a primary
+      instance.
     failoverDrReplicaName: Optional. If the instance is a primary instance,
       then this field identifies the disaster recovery (DR) replica. A DR
       replica is an optional configuration for Enterprise Plus edition
       instances. If the instance is a read replica, then the field is not set.
-      Users can set this field to set a designated DR replica for a primary.
-      Removing this field removes the DR replica.
+      Set this field to a replica name to designate a DR replica for a primary
+      instance. Remove the replica name to remove the DR replica designation.
     psaWriteEndpoint: Output only. If set, it indicates this instance has a
       private service access (PSA) dns endpoint that is pointing to the
       primary instance of the cluster. If this instance is the primary, the
@@ -4029,10 +4035,12 @@ class SqlInstancesPromoteReplicaRequest(_messages.Message):
   r"""A SqlInstancesPromoteReplicaRequest object.
 
   Fields:
-    failover: Set to true if the promote operation should attempt to re-add
-      the original primary as a replica when it comes back online. Otherwise,
-      if this value is false or not set, the original primary will be a
-      standalone instance.
+    failover: Set to true to invoke a replica failover to the designated DR
+      replica. As part of replica failover, the promote operation attempts to
+      add the original primary instance as a replica of the promoted DR
+      replica when the original primary instance comes back online. If set to
+      false or not specified, then the original primary instance becomes an
+      independent Cloud SQL primary instance. Only applicable to MySQL.
     instance: Cloud SQL read replica instance name.
     project: ID of the project that contains the read replica.
   """
@@ -4156,15 +4164,19 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
   r"""A SqlInstancesStartExternalSyncRequest object.
 
   Enums:
-    MigrationTypeValueValuesEnum: Optional. MigrationType decides if the
-      migration is a physical file based migration or logical migration.
+    MigrationTypeValueValuesEnum: Optional. MigrationType configures the
+      migration to use physical files or logical dump files. If not set, then
+      the logical dump file configuration is used. Valid values are `LOGICAL`
+      or `PHYSICAL`. Only applicable to MySQL.
     SyncModeValueValuesEnum: External sync mode.
     SyncParallelLevelValueValuesEnum: Optional. Parallel level for initial
       data sync. Currently only applicable for MySQL.
 
   Fields:
-    migrationType: Optional. MigrationType decides if the migration is a
-      physical file based migration or logical migration.
+    migrationType: Optional. MigrationType configures the migration to use
+      physical files or logical dump files. If not set, then the logical dump
+      file configuration is used. Valid values are `LOGICAL` or `PHYSICAL`.
+      Only applicable to MySQL.
     mysqlSyncConfig: MySQL-specific settings for start external sync.
     skipVerification: Whether to skip the verification step (VESS).
     syncMode: External sync mode.
@@ -4173,14 +4185,16 @@ class SqlInstancesStartExternalSyncRequest(_messages.Message):
   """
 
   class MigrationTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. MigrationType decides if the migration is a physical file
-    based migration or logical migration.
+    r"""Optional. MigrationType configures the migration to use physical files
+    or logical dump files. If not set, then the logical dump file
+    configuration is used. Valid values are `LOGICAL` or `PHYSICAL`. Only
+    applicable to MySQL.
 
     Values:
-      MIGRATION_TYPE_UNSPECIFIED: If no migration type is specified it will be
-        defaulted to LOGICAL.
-      LOGICAL: Logical Migrations
-      PHYSICAL: Physical file based Migrations
+      MIGRATION_TYPE_UNSPECIFIED: Default value is a logical dump file-based
+        migration
+      LOGICAL: Logical dump file-based migration
+      PHYSICAL: Physical file-based migration
     """
     MIGRATION_TYPE_UNSPECIFIED = 0
     LOGICAL = 1
@@ -4298,34 +4312,40 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
   r"""A SqlInstancesVerifyExternalSyncSettingsRequest object.
 
   Enums:
-    MigrationTypeValueValuesEnum: Optional. MigrationType field decides if the
-      migration is a physical file based migration or logical migration
+    MigrationTypeValueValuesEnum: Optional. MigrationType configures the
+      migration to use physical files or logical dump files. If not set, then
+      the logical dump file configuration is used. Valid values are `LOGICAL`
+      or `PHYSICAL`. Only applicable to MySQL.
     SyncModeValueValuesEnum: External sync mode
     SyncParallelLevelValueValuesEnum: Optional. Parallel level for initial
-      data sync. Currently only applicable for PostgreSQL.
+      data sync. Only applicable for PostgreSQL.
 
   Fields:
-    migrationType: Optional. MigrationType field decides if the migration is a
-      physical file based migration or logical migration
+    migrationType: Optional. MigrationType configures the migration to use
+      physical files or logical dump files. If not set, then the logical dump
+      file configuration is used. Valid values are `LOGICAL` or `PHYSICAL`.
+      Only applicable to MySQL.
     mysqlSyncConfig: Optional. MySQL-specific settings for start external
       sync.
     syncMode: External sync mode
-    syncParallelLevel: Optional. Parallel level for initial data sync.
-      Currently only applicable for PostgreSQL.
+    syncParallelLevel: Optional. Parallel level for initial data sync. Only
+      applicable for PostgreSQL.
     verifyConnectionOnly: Flag to enable verifying connection only
     verifyReplicationOnly: Optional. Flag to verify settings required by
       replication setup only
   """
 
   class MigrationTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. MigrationType field decides if the migration is a physical
-    file based migration or logical migration
+    r"""Optional. MigrationType configures the migration to use physical files
+    or logical dump files. If not set, then the logical dump file
+    configuration is used. Valid values are `LOGICAL` or `PHYSICAL`. Only
+    applicable to MySQL.
 
     Values:
-      MIGRATION_TYPE_UNSPECIFIED: If no migration type is specified it will be
-        defaulted to LOGICAL.
-      LOGICAL: Logical Migrations
-      PHYSICAL: Physical file based Migrations
+      MIGRATION_TYPE_UNSPECIFIED: Default value is a logical dump file-based
+        migration
+      LOGICAL: Logical dump file-based migration
+      PHYSICAL: Physical file-based migration
     """
     MIGRATION_TYPE_UNSPECIFIED = 0
     LOGICAL = 1
@@ -4347,8 +4367,8 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
     OFFLINE = 2
 
   class SyncParallelLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Parallel level for initial data sync. Currently only
-    applicable for PostgreSQL.
+    r"""Optional. Parallel level for initial data sync. Only applicable for
+    PostgreSQL.
 
     Values:
       EXTERNAL_SYNC_PARALLEL_LEVEL_UNSPECIFIED: Unknown sync parallel level.

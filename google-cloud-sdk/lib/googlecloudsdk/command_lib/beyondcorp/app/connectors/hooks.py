@@ -53,21 +53,6 @@ def CheckFieldsSpecified(unused_ref, args, patch_request):
       'Must specify at least one field to update. Try --help.')
 
 
-def UpdateLegacyLabels(unused_ref, args, patch_request):
-  """Updates labels of connector."""
-  labels_diff = labels_util.Diff.FromUpdateArgs(args)
-  if labels_diff.MayHaveUpdates():
-    patch_request = command_util.AddFieldToUpdateMask('labels', patch_request)
-    messages = api_util.GetMessagesModule(args.calliope_command.ReleaseTrack())
-    if patch_request.connector is None:
-      patch_request.connector = messages.Connector()
-    new_labels = labels_diff.Apply(messages.Connector.LabelsValue,
-                                   patch_request.connector.labels).GetOrNone()
-    if new_labels:
-      patch_request.connector.labels = new_labels
-  return patch_request
-
-
 def UpdateLabels(unused_ref, args, patch_request):
   """Updates labels of appConnector."""
   labels_diff = labels_util.Diff.FromUpdateArgs(args)

@@ -2161,6 +2161,7 @@ class DataAccessOptions(_messages.Message):
     LogModeValueValuesEnum:
 
   Fields:
+    isDirectAuth: Indicates that access was granted by a regular grant policy
     logMode: A LogModeValueValuesEnum attribute.
   """
 
@@ -2185,7 +2186,8 @@ class DataAccessOptions(_messages.Message):
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
 
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+  isDirectAuth = _messages.BooleanField(1)
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 2)
 
 
 class DataplaneV2FeatureSpec(_messages.Message):
@@ -4765,6 +4767,17 @@ class IdentityServiceGroupConfig(_messages.Message):
   idAttribute = _messages.StringField(3)
 
 
+class IdentityServiceIdentityServiceOptions(_messages.Message):
+  r"""Holds non-protocol-related configuration options.
+
+  Fields:
+    sessionDuration: Optional. Determines the lifespan of STS tokens issued by
+      Anthos Identity Service.
+  """
+
+  sessionDuration = _messages.StringField(1)
+
+
 class IdentityServiceLdapConfig(_messages.Message):
   r"""Configuration for the LDAP Auth flow.
 
@@ -4790,9 +4803,12 @@ class IdentityServiceMembershipSpec(_messages.Message):
 
   Fields:
     authMethods: A member may support multiple auth methods.
+    identityServiceOptions: Optional. non-protocol-related configuration
+      options.
   """
 
   authMethods = _messages.MessageField('IdentityServiceAuthMethod', 1, repeated=True)
+  identityServiceOptions = _messages.MessageField('IdentityServiceIdentityServiceOptions', 2)
 
 
 class IdentityServiceMembershipState(_messages.Message):
@@ -7331,6 +7347,8 @@ class Rollout(_messages.Message):
       another resource with the same name is created, it gets a different uid.
     updateTime: Output only. The timestamp at which the Rollout was last
       updated.
+    versionUpgrade: Optional. Config for version upgrade of clusters. Note:
+      Currently for GDCE clusters only.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -7412,6 +7430,7 @@ class Rollout(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 12)
   uid = _messages.StringField(13)
   updateTime = _messages.StringField(14)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 15)
 
 
 class Rule(_messages.Message):
@@ -7784,6 +7803,7 @@ class ServiceMeshCondition(_messages.Message):
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
+      VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -7793,6 +7813,7 @@ class ServiceMeshCondition(_messages.Message):
     CNI_INSTALLATION_FAILED = 5
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
+    VPCSC_GA_SUPPORTED = 8
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -8124,7 +8145,7 @@ class ServiceMeshMembershipState(_messages.Message):
 
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers.
-    conditions: Output only. List of condition reporting membership statues
+    conditions: Output only. List of conditions reported for this membership.
     configApiVersion: The API version (i.e. Istio CRD version) for configuring
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.
@@ -8444,6 +8465,34 @@ class ValidationResult(_messages.Message):
   result = _messages.StringField(1)
   success = _messages.BooleanField(2)
   validator = _messages.EnumField('ValidatorValueValuesEnum', 3)
+
+
+class VersionUpgrade(_messages.Message):
+  r"""Config for version upgrade of clusters.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Type of version upgrade specifies which
+      component should be upgraded.
+
+  Fields:
+    desiredVersion: Optional. Desired version of the component.
+    type: Optional. Type of version upgrade specifies which component should
+      be upgraded.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of version upgrade specifies which component should be
+    upgraded.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value.
+      TYPE_CONTROL_PLANE: Control plane upgrade.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_CONTROL_PLANE = 1
+
+  desiredVersion = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class WorkloadMigrationFeatureSpec(_messages.Message):

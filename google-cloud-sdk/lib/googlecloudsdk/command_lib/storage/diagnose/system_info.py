@@ -15,6 +15,7 @@
 """Utilities for fetching system information."""
 
 import abc
+import ctypes
 import os
 import re
 from googlecloudsdk.core.util import files
@@ -90,3 +91,50 @@ class UnixSystemInfoProvider(SystemInfoProvider):
     # blocks) + Cached(in-memory cache for files read from the disk).
     # https://www.kernel.org/doc/Documentation/filesystems/proc.txt
     return (mem_total, mem_free + mem_buffers + mem_cached)
+
+
+class MemoryStatusEX(ctypes.Structure):
+  """Windows MemoryStatusEX structure.
+
+  https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
+  """
+
+  _fields_ = [
+      ('dwLength', ctypes.c_ulong),
+      ('dwMemoryLoad', ctypes.c_ulong),
+      ('ullTotalPhys', ctypes.c_ulonglong),
+      ('ullAvailPhys', ctypes.c_ulonglong),
+      ('ullTotalPageFile', ctypes.c_ulonglong),
+      ('ullAvailPageFile', ctypes.c_ulonglong),
+      ('ullTotalVirtual', ctypes.c_ulonglong),
+      ('ullAvailVirtual', ctypes.c_ulonglong),
+      ('sullAvailExtendedVirtual', ctypes.c_ulonglong),
+  ]
+
+  def __init__(self):
+    # Have to initialize this to the size of MemoryStatusEX.
+    self.dwLength = ctypes.sizeof(self)  # pylint: disable=invalid-name
+    super(MemoryStatusEX, self).__init__()
+
+
+class WindowsSystemInfoProvider(SystemInfoProvider):
+  """System info provider for windows based sytems."""
+
+  def __init__(self):
+    self.kernel32 = ctypes.windll.kernel32
+
+  def get_cpu_load_avg(self) -> float:
+    """Returns the average CPU load during last 1-minute."""
+    pass
+
+  def get_memory_stats(self) -> (int, int):
+    """Fetches the physical memory stats for the system.
+
+    Returns:
+      A tuple containing total memory and free memory in the system
+      respectively.
+    """
+
+    meminfo = MemoryStatusEX()
+    self.kernel32.GlobalMemoryStatusEx(ctypes.byref(meminfo))
+    return (meminfo.ullTotalPhys, meminfo.ullAvailPhys)

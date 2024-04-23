@@ -51,10 +51,11 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
     booleanConstraint: Defines this constraint as being a BooleanConstraint.
     constraintDefault: The evaluation behavior of this constraint in the
       absence of a policy.
-    customConstraint: Defines this constraint as being a CustomConstraint.
     description: Detailed description of what this constraint controls as well
       as how and where it is enforced. Mutable.
     displayName: The human readable name. Mutable.
+    googleManagedConstraint: Defines this constraint as being a
+      GoogleManagedConstraint.
     listConstraint: Defines this constraint as being a ListConstraint.
     name: Immutable. The resource name of the constraint. Must be in one of
       the following forms: *
@@ -82,9 +83,9 @@ class GoogleCloudOrgpolicyV2Constraint(_messages.Message):
 
   booleanConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintBooleanConstraint', 1)
   constraintDefault = _messages.EnumField('ConstraintDefaultValueValuesEnum', 2)
-  customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintGoogleDefinedCustomConstraint', 3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  googleManagedConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintGoogleManagedConstraint', 5)
   listConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2ConstraintListConstraint', 6)
   name = _messages.StringField(7)
   supportsDryRun = _messages.BooleanField(8)
@@ -98,9 +99,9 @@ class GoogleCloudOrgpolicyV2ConstraintBooleanConstraint(_messages.Message):
 
 
 
-class GoogleCloudOrgpolicyV2ConstraintGoogleDefinedCustomConstraint(_messages.Message):
-  r"""A Google defined custom constraint. This represents a subset of fields
-  missing from Constraint proto that are required to describe CustomConstraint
+class GoogleCloudOrgpolicyV2ConstraintGoogleManagedConstraint(_messages.Message):
+  r"""A Google managed constraint. This represents a subset of fields missing
+  from Constraint proto that are required to describe CustomConstraint
 
   Enums:
     ActionTypeValueValuesEnum: Allow or deny type.

@@ -1,0 +1,12 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha Directories export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- pattern
+additionalProperties: false
+properties:
+  pattern:
+    description: pattern is the glob pattern to use to select directories.
+    type: string

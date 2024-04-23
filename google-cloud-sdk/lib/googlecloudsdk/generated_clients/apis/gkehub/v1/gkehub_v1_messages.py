@@ -1760,6 +1760,7 @@ class DataAccessOptions(_messages.Message):
     LogModeValueValuesEnum:
 
   Fields:
+    isDirectAuth: Indicates that access was granted by a regular grant policy
     logMode: A LogModeValueValuesEnum attribute.
   """
 
@@ -1784,7 +1785,8 @@ class DataAccessOptions(_messages.Message):
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
 
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+  isDirectAuth = _messages.BooleanField(1)
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 2)
 
 
 class DataplaneV2FeatureSpec(_messages.Message):
@@ -3812,6 +3814,17 @@ class IdentityServiceGroupConfig(_messages.Message):
   idAttribute = _messages.StringField(3)
 
 
+class IdentityServiceIdentityServiceOptions(_messages.Message):
+  r"""Holds non-protocol-related configuration options.
+
+  Fields:
+    sessionDuration: Optional. Determines the lifespan of STS tokens issued by
+      Anthos Identity Service.
+  """
+
+  sessionDuration = _messages.StringField(1)
+
+
 class IdentityServiceLdapConfig(_messages.Message):
   r"""Configuration for the LDAP Auth flow.
 
@@ -3837,9 +3850,12 @@ class IdentityServiceMembershipSpec(_messages.Message):
 
   Fields:
     authMethods: A member may support multiple auth methods.
+    identityServiceOptions: Optional. non-protocol-related configuration
+      options.
   """
 
   authMethods = _messages.MessageField('IdentityServiceAuthMethod', 1, repeated=True)
+  identityServiceOptions = _messages.MessageField('IdentityServiceIdentityServiceOptions', 2)
 
 
 class IdentityServiceMembershipState(_messages.Message):
@@ -6261,6 +6277,7 @@ class ServiceMeshCondition(_messages.Message):
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
+      VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -6270,6 +6287,7 @@ class ServiceMeshCondition(_messages.Message):
     CNI_INSTALLATION_FAILED = 5
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
+    VPCSC_GA_SUPPORTED = 8
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -6430,7 +6448,7 @@ class ServiceMeshMembershipState(_messages.Message):
   Service Mesh Hub Controller.
 
   Fields:
-    conditions: Output only. List of condition reporting membership statues
+    conditions: Output only. List of conditions reported for this membership.
     controlPlaneManagement: Output only. Status of control plane management
     dataPlaneManagement: Output only. Status of data plane management.
   """

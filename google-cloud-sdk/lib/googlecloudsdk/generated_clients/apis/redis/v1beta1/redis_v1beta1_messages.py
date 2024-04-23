@@ -58,6 +58,8 @@ class AvailabilityConfiguration(_messages.Message):
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
       than one zone in a region (it is highly available).
+    crossRegionReplicaConfigured: Checks for resources that are configured to
+      have redundancy, and ongoing replication across regions
     externalReplicaConfigured: A boolean attribute.
     promotableReplicaConfigured: A boolean attribute.
   """
@@ -82,8 +84,9 @@ class AvailabilityConfiguration(_messages.Message):
     AVAILABILITY_TYPE_OTHER = 4
 
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  externalReplicaConfigured = _messages.BooleanField(2)
-  promotableReplicaConfigured = _messages.BooleanField(3)
+  crossRegionReplicaConfigured = _messages.BooleanField(2)
+  externalReplicaConfigured = _messages.BooleanField(3)
+  promotableReplicaConfigured = _messages.BooleanField(4)
 
 
 class BackupConfiguration(_messages.Message):
@@ -1568,12 +1571,10 @@ class Entitlement(_messages.Message):
 
     Values:
       ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
-      DUET_AI: The root entitlement representing Duet AI package ownership.
       GEMINI: The root entitlement representing Gemini package ownership.
     """
     ENTITLEMENT_TYPE_UNSPECIFIED = 0
-    DUET_AI = 1
-    GEMINI = 2
+    GEMINI = 1
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

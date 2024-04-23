@@ -1,0 +1,13 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha MatchLabelsValue export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties:
+  key:
+    description: Name of the additional property.
+    type: string
+  value:
+    description: A string attribute.
+    type: string
+properties:

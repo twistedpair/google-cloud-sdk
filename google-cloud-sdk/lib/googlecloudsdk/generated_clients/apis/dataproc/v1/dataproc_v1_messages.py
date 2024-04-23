@@ -511,30 +511,31 @@ class AuthenticationConfig(_messages.Message):
   resources on the project(s).
 
   Enums:
-    AuthenticationTypeValueValuesEnum: Authentication type for workload
-      execution.
+    UserWorkloadAuthenticationTypeValueValuesEnum: Optional. Authentication
+      type for the user workload running in containers.
 
   Fields:
-    authenticationType: Authentication type for workload execution.
+    userWorkloadAuthenticationType: Optional. Authentication type for the user
+      workload running in containers.
   """
 
-  class AuthenticationTypeValueValuesEnum(_messages.Enum):
-    r"""Authentication type for workload execution.
+  class UserWorkloadAuthenticationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Authentication type for the user workload running in
+    containers.
 
     Values:
       AUTHENTICATION_TYPE_UNSPECIFIED: If AuthenticationType is unspecified
         then SERVICE_ACCOUNT is used
-      SERVICE_ACCOUNT: Use service account credentials for authentication
-      CREDENTIALS_INJECTION: Use injected credentials for authentication
-      END_USER_CREDENTIALS: Use end user credentials for authentication
-        (go/dataproc-personal-auth-v2)
+      SYSTEM_SERVICE_ACCOUNT: Use the system service account credentials for
+        authenticating to other services.
+      END_USER_CREDENTIALS: Use OAuth credentials associated with the workload
+        creator/user for authenticating to other services.
     """
     AUTHENTICATION_TYPE_UNSPECIFIED = 0
-    SERVICE_ACCOUNT = 1
-    CREDENTIALS_INJECTION = 2
-    END_USER_CREDENTIALS = 3
+    SYSTEM_SERVICE_ACCOUNT = 1
+    END_USER_CREDENTIALS = 2
 
-  authenticationType = _messages.EnumField('AuthenticationTypeValueValuesEnum', 1)
+  userWorkloadAuthenticationType = _messages.EnumField('UserWorkloadAuthenticationTypeValueValuesEnum', 1)
 
 
 class AutoscalingConfig(_messages.Message):

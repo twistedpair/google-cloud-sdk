@@ -544,6 +544,9 @@ class EthereumDetailsTemplate(_messages.Message):
       how this is used. If not set, the validator client's default is used. If
       no blockchain node is specified, this has no effect as no validator
       client is run.
+    network: Optional. Output only. The Ethereum network the validator is
+      deployed on. This is set on initial deployment to a blockchain node and
+      cannot be changed.
     suggestedFeeRecipient: Immutable. The Ethereum address to which fee
       rewards should be sent. This can only be set when creating the
       validator. If no blockchain node is specified for the validator, this
@@ -556,8 +559,9 @@ class EthereumDetailsTemplate(_messages.Message):
 
   gasLimit = _messages.IntegerField(1)
   graffiti = _messages.StringField(2)
-  suggestedFeeRecipient = _messages.StringField(3)
-  useBlockBuilderProposals = _messages.BooleanField(4)
+  network = _messages.StringField(3)
+  suggestedFeeRecipient = _messages.StringField(4)
+  useBlockBuilderProposals = _messages.BooleanField(5)
 
 
 class EthereumNodeDetails(_messages.Message):
@@ -573,8 +577,8 @@ class EthereumNodeDetails(_messages.Message):
     consensusClient: Required. The consensus client.
     executionClient: Required. The execution client
     mevRelayUrls: Optional. URLs for MEV-relay services to use for block
-      building. When set, a GCP-managed MEV-boost service is configured on the
-      beacon client.
+      building. When set, a Google Cloud managed MEV-boost service is
+      configured on the beacon client.
     network: Immutable. The Ethereum environment being accessed.
   """
 

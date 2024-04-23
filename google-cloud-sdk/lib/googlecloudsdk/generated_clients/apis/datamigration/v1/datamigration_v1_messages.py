@@ -3224,6 +3224,11 @@ class IndexEntity(_messages.Message):
     name: The name of the index.
     tableColumns: Table columns used as part of the Index, for example B-TREE
       index should list the columns which constitutes the index.
+    tableColumnsDescending: For each table_column, mark whether it's sorting
+      order is ascending (false) or descending (true). If no value is defined,
+      assume all columns are sorted in ascending order. Otherwise, the number
+      of items must match that of table_columns with each value specifying the
+      direction of the matched column by its index.
     type: Type of index, for example B-TREE.
     unique: Boolean value indicating whether the index is unique.
   """
@@ -3256,8 +3261,9 @@ class IndexEntity(_messages.Message):
   customFeatures = _messages.MessageField('CustomFeaturesValue', 1)
   name = _messages.StringField(2)
   tableColumns = _messages.StringField(3, repeated=True)
-  type = _messages.StringField(4)
-  unique = _messages.BooleanField(5)
+  tableColumnsDescending = _messages.BooleanField(4, repeated=True)
+  type = _messages.StringField(5)
+  unique = _messages.BooleanField(6)
 
 
 class IntComparisonFilter(_messages.Message):
@@ -3737,8 +3743,7 @@ class MigrationJob(_messages.Message):
     name: The name (URI) of this migration job resource, in the form of:
       projects/{project}/locations/{location}/migrationJobs/{migrationJob}.
     performanceConfig: Optional. Data dump parallelism settings used by the
-      migration. Currently applicable only for MySQL to Cloud SQL for MySQL
-      migrations only.
+      migration.
     phase: Output only. The current migration job phase.
     reverseSshConnectivity: The details needed to communicate to the source
       over Reverse SSH tunnel connectivity.

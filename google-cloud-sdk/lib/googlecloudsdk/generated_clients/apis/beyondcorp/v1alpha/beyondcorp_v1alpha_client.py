@@ -1052,6 +1052,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing BeyondCorp Enterprise Subscription in a given organization. Location will always be global as BeyondCorp subscriptions are per organization.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/subscriptions/{subscriptionsId}',
+        http_method='PATCH',
+        method_id='beyondcorp.organizations.locations.subscriptions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription',
+        request_type_name='BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 

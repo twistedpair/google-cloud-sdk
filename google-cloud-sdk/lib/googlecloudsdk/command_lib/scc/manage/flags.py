@@ -14,13 +14,17 @@
 # limitations under the License.
 """Specify common flags for management gcloud."""
 
+import textwrap
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.resource_manager import completers
 from googlecloudsdk.command_lib.scc.manage import constants
 
 
-def CreateParentFlag(required=False) -> base.Argument:
+def CreateParentFlag(
+    resource_name: str = 'custom module', required=False
+) -> base.Argument:
   """Returns a flag for capturing an org, project, or folder name.
 
   The flag can be provided in one of 2 forms:
@@ -32,6 +36,8 @@ def CreateParentFlag(required=False) -> base.Argument:
       * --folders=<id> or folders/<id>
 
   Args:
+    resource_name: The name of the resource for which the flag is created. The
+      default value is set to 'custom module'.
     required: whether or not this flag is required
   """
 
@@ -41,8 +47,12 @@ def CreateParentFlag(required=False) -> base.Argument:
       base.Argument(
           '--parent',
           required=False,
-          help=("""Parent associated with the custom module. Can be one of
-              organizations/<id>, projects/<id or name>, folders/<id>"""),
+          help=textwrap.dedent(
+              """Parent associated with the {}. Can be one of
+              organizations/<id>, projects/<id or name>, folders/<id>""".format(
+                  resource_name
+              )
+          ),
       )
   )
 
@@ -52,7 +62,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           required=False,
           metavar='ORGANIZATION_ID',
           completer=completers.OrganizationCompleter,
-          help='Organization associated with the custom module.',
+          help='Organization associated with the {}.'.format(resource_name),
       )
   )
 
@@ -62,7 +72,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           required=False,
           metavar='PROJECT_ID_OR_NUMBER',
           completer=completers.ProjectCompleter,
-          help='Project associated with the custom module.',
+          help='Project associated with the {}.'.format(resource_name),
       )
   )
 
@@ -71,7 +81,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           '--folder',
           required=False,
           metavar='FOLDER_ID',
-          help='Folder associated with the custom module.',
+          help='Folder associated with the {}.'.format(resource_name),
       )
   )
 

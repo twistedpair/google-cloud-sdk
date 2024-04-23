@@ -42,6 +42,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     self.media = self.MediaService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
+    self.projects_locations_repositories_attachments = self.ProjectsLocationsRepositoriesAttachmentsService(self)
     self.projects_locations_repositories_dockerImages = self.ProjectsLocationsRepositoriesDockerImagesService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
     self.projects_locations_repositories_genericArtifacts = self.ProjectsLocationsRepositoriesGenericArtifactsService(self)
@@ -213,6 +214,124 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsRepositoriesAttachmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_attachments resource."""
+
+    _NAME = 'projects_locations_repositories_attachments'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1.ProjectsLocationsRepositoriesAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an attachment. The returned Operation will finish once the attachment has been created. Its response will be the created Attachment.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/attachments',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.attachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attachmentId'],
+        relative_path='v1/{+parent}/attachments',
+        request_field='attachment',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAttachmentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an attachment. The returned Operation will finish once the attachments has been deleted. It will not have any Operation metadata and will return a google.protobuf.Empty response.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/attachments/{attachmentsId}',
+        http_method='DELETE',
+        method_id='artifactregistry.projects.locations.repositories.attachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAttachmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an attachment.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Attachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/attachments/{attachmentsId}',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.attachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAttachmentsGetRequest',
+        response_type_name='Attachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists repositories.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/attachments',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.attachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/attachments',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest',
+        response_type_name='ListAttachmentsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRepositoriesDockerImagesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_dockerImages resource."""
 
@@ -269,7 +388,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.dockerImages.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/dockerImages',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest',
@@ -285,6 +404,14 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     def __init__(self, client):
       super(ArtifactregistryV1.ProjectsLocationsRepositoriesFilesService, self).__init__(client)
       self._upload_configs = {
+          'Upload': base_api.ApiUploadInfo(
+              accept=['*/*'],
+              max_size=None,
+              resumable_multipart=True,
+              resumable_path='/resumable/upload/v1/{+parent}/files:upload',
+              simple_multipart=True,
+              simple_path='/upload/v1/{+parent}/files:upload',
+          ),
           }
 
     def Delete(self, request, global_params=None):
@@ -365,6 +492,37 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesListRequest',
         response_type_name='ListFilesResponse',
+        supports_download=False,
+    )
+
+    def Upload(self, request, global_params=None, upload=None):
+      r"""Directly uploads a File to a repository. The returned Operation will complete once the resources are uploaded.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesFilesUploadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+        upload: (Upload, default: None) If present, upload
+            this stream with the request.
+      Returns:
+        (UploadFileMediaResponse) The response message.
+      """
+      config = self.GetMethodConfig('Upload')
+      upload_config = self.GetUploadConfig('Upload')
+      return self._RunMethod(
+          config, request, global_params=global_params,
+          upload=upload, upload_config=upload_config)
+
+    Upload.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files:upload',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.files.upload',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/files:upload',
+        request_field='uploadFileRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesUploadRequest',
+        response_type_name='UploadFileMediaResponse',
         supports_download=False,
     )
 

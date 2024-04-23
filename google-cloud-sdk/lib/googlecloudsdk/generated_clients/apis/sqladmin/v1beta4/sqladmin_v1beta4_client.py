@@ -950,7 +950,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def PromoteReplica(self, request, global_params=None):
-      r"""Promotes the read replica instance to be a stand-alone Cloud SQL instance. Using this operation might cause your instance to restart.
+      r"""Promotes the read replica instance to be an independent Cloud SQL primary instance. Using this operation might cause your instance to restart.
 
       Args:
         request: (SqlInstancesPromoteReplicaRequest) input message
@@ -1184,7 +1184,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Switchover(self, request, global_params=None):
-      r"""Switches over from the primary instance to a replica instance.
+      r"""Switches over from the primary instance to the designated DR replica instance.
 
       Args:
         request: (SqlInstancesSwitchoverRequest) input message

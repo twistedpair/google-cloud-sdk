@@ -870,11 +870,11 @@ class FindNearest(_messages.Message):
   r"""Nearest Neighbors search config.
 
   Enums:
-    DistanceMeasureValueValuesEnum: Required. The Distance Measure to use,
+    DistanceMeasureValueValuesEnum: Required. The distance measure to use,
       required.
 
   Fields:
-    distanceMeasure: Required. The Distance Measure to use, required.
+    distanceMeasure: Required. The distance measure to use, required.
     limit: Required. The number of nearest neighbors to return. Must be a
       positive integer of no more than 1000.
     queryVector: Required. The query vector that we are searching on. Must be
@@ -885,7 +885,7 @@ class FindNearest(_messages.Message):
   """
 
   class DistanceMeasureValueValuesEnum(_messages.Enum):
-    r"""Required. The Distance Measure to use, required.
+    r"""Required. The distance measure to use, required.
 
     Values:
       DISTANCE_MEASURE_UNSPECIFIED: Should not be set.
@@ -2453,7 +2453,7 @@ class StructuredQuery(_messages.Message):
       position rather than the start position. Requires: * The number of
       values cannot be greater than the number of fields specified in the
       `ORDER BY` clause.
-    findNearest: Optional. A potential Nearest Neighbors Search. Applies after
+    findNearest: Optional. A potential nearest neighbors search. Applies after
       all other filters and ordering. Finds the closest vector embeddings to
       the given query vector.
     from_: The collections to query.

@@ -518,6 +518,7 @@ class EndpointsClient(object):
                   region,
                   display_name,
                   machine_type=None,
+                  tpu_topology=None,
                   accelerator_dict=None,
                   min_replica_count=None,
                   max_replica_count=None,
@@ -535,6 +536,7 @@ class EndpointsClient(object):
       region: str, the location of the endpoint and the model.
       display_name: str, the display name of the new deployed model.
       machine_type: str or None, the type of the machine to serve the model.
+      tpu_topology: str or None, the topology of the TPU to serve the model.
       accelerator_dict: dict or None, the accelerator attached to the deployed
         model from args.
       min_replica_count: int or None, the minimum number of replicas the
@@ -563,6 +565,8 @@ class EndpointsClient(object):
       machine_spec = self.messages.GoogleCloudAiplatformV1MachineSpec()
       if machine_type is not None:
         machine_spec.machineType = machine_type
+      if tpu_topology is not None:
+        machine_spec.tpuTopology = tpu_topology
       accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
                                                constants.GA_VERSION)
       if accelerator is not None:
@@ -635,6 +639,7 @@ class EndpointsClient(object):
                       region,
                       display_name,
                       machine_type=None,
+                      tpu_topology=None,
                       accelerator_dict=None,
                       min_replica_count=None,
                       max_replica_count=None,
@@ -653,6 +658,7 @@ class EndpointsClient(object):
       region: str, the location of the endpoint and the model.
       display_name: str, the display name of the new deployed model.
       machine_type: str or None, the type of the machine to serve the model.
+      tpu_topology: str or None, the topology of the TPU to serve the model.
       accelerator_dict: dict or None, the accelerator attached to the deployed
         model from args.
       min_replica_count: int or None, the minimum number of replicas the
@@ -684,6 +690,8 @@ class EndpointsClient(object):
       machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec()
       if machine_type is not None:
         machine_spec.machineType = machine_type
+      if tpu_topology is not None:
+        machine_spec.tpuTopology = tpu_topology
       accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
                                                constants.BETA_VERSION)
       if accelerator is not None:

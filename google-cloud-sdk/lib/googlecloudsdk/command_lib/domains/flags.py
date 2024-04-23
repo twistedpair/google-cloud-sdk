@@ -50,9 +50,16 @@ def AddConfigureDNSSettingsFlagsToParser(parser):
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--unsafe-dns-update',
       default=False,
-      action='store_true',
       help='Use this flag to allow DNS changes that may make '
-      'your domain stop serving.').AddToParser(parser)
+      'your domain stop serving.',
+      action=actions.DeprecationAction(
+          '--unsafe-dns-update',
+          warn=('The {flag_name} option is deprecated. To complete an unsafe '
+                'DNS operation first disable DNSSEC, then change name servers, '
+                'then (optionally) enable DNSSEC.'),
+          removed=False,
+          action='store_true'),
+      ).AddToParser(parser)
 
 
 def AddConfigureContactsSettingsFlagsToParser(parser):
@@ -151,7 +158,7 @@ def _AddDNSSettingsFlagsToParser(parser, mutation_op):
   group_help_text = """\
       Set the authoritative name servers for the given domain.
       """
-  if mutation_op == MutationOp.REGISTER or mutation_op == MutationOp.UPDATE:
+  if mutation_op == MutationOp.REGISTER:
     dnssec_help_text = ('If the zone is signed, DNSSEC will be enabled by '
                         'default unless you pass --disable-dnssec.')
 

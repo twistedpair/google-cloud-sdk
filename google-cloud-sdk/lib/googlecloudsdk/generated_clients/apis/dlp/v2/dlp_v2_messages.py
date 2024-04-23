@@ -6363,7 +6363,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
 
 class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
   r"""Classification of infoTypes to organize them according to geographic
-  location, industry, and data type.
+  location, industry, and data type. NEXT_ID: 47
 
   Enums:
     IndustryCategoryValueValuesEnum: The group of relevant businesses where
@@ -6433,6 +6433,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       PERU: The infoType is typically used in Peru.
       POLAND: The infoType is typically used in Poland.
       PORTUGAL: The infoType is typically used in Portugal.
+      RUSSIA: The infoType is typically used in Russia.
       SINGAPORE: The infoType is typically used in Singapore.
       SOUTH_AFRICA: The infoType is typically used in South Africa.
       SPAIN: The infoType is typically used in Spain.
@@ -6441,9 +6442,11 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       TAIWAN: The infoType is typically used in Taiwan.
       THAILAND: The infoType is typically used in Thailand.
       TURKEY: The infoType is typically used in Turkey.
+      UKRAINE: The infoType is typically used in Ukraine.
       UNITED_KINGDOM: The infoType is typically used in the United Kingdom.
       UNITED_STATES: The infoType is typically used in the United States.
       URUGUAY: The infoType is typically used in Uruguay.
+      UZBEKISTAN: The infoType is typically used in Uzbekistan.
       VENEZUELA: The infoType is typically used in Venezuela.
       INTERNAL: The infoType is typically used in Google internally.
     """
@@ -6478,19 +6481,22 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     PERU = 28
     POLAND = 29
     PORTUGAL = 30
-    SINGAPORE = 31
-    SOUTH_AFRICA = 32
-    SPAIN = 33
-    SWEDEN = 34
-    SWITZERLAND = 35
-    TAIWAN = 36
-    THAILAND = 37
-    TURKEY = 38
-    UNITED_KINGDOM = 39
-    UNITED_STATES = 40
-    URUGUAY = 41
-    VENEZUELA = 42
-    INTERNAL = 43
+    RUSSIA = 31
+    SINGAPORE = 32
+    SOUTH_AFRICA = 33
+    SPAIN = 34
+    SWEDEN = 35
+    SWITZERLAND = 36
+    TAIWAN = 37
+    THAILAND = 38
+    TURKEY = 39
+    UKRAINE = 40
+    UNITED_KINGDOM = 41
+    UNITED_STATES = 42
+    URUGUAY = 43
+    UZBEKISTAN = 44
+    VENEZUELA = 45
+    INTERNAL = 46
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs
@@ -9026,7 +9032,13 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       scanning files that have not been modified since the last time the
       JobTrigger executed. This will be based on the time of the execution of
       the last run of the JobTrigger or the timespan end_time used in the last
-      run of the JobTrigger.
+      run of the JobTrigger. *For BigQuery* Inspect jobs triggered by
+      automatic population will scan data that is at least three hours old
+      when the job starts. This is because streaming buffer rows are not read
+      during inspection and reading up to the current timestamp will result in
+      skipped rows. See the [known issue](https://cloud.google.com/sensitive-
+      data-protection/docs/known-issues#recently-streamed-data) related to
+      this operation.
     endTime: Exclude files, tables, or rows newer than this value. If not set,
       no upper time limit is applied.
     startTime: Exclude files, tables, or rows older than this value. If not

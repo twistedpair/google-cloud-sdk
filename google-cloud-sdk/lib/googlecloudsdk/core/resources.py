@@ -500,9 +500,16 @@ class Resource(object):
       # Auto resolve the parent collection by finding the collection with
       # matching parameters.
       for collection, parser in six.iteritems(all_collections):
-        if parser.collection_info.GetParams('') == parent_params:
+        if (parser.collection_info.GetParams('') == parent_params and
+            parser.collection_info.GetPath('') in self._path):
           parent_collection = collection
           break
+      # Fallback to collection that matches params only
+      if not parent_collection:
+        for collection, parser in six.iteritems(all_collections):
+          if parser.collection_info.GetParams('') == parent_params:
+            parent_collection = collection
+            break
       if not parent_collection:
         raise ParentCollectionResolutionException(
             self.Collection(), parent_params)
@@ -1225,33 +1232,80 @@ REGISTRY = Registry()
 
 
 def GetApiBaseUrl(api_name, api_version):
-  """Determine base url to use for resources of given version."""
+  """Determine base url to use for resources of given version from API endpoint override.
+
+  If no override is set by the user, return None.
+
+  Args:
+    api_name: str, The API name.
+    api_version: str, The API version.
+
+  Returns:
+    Base URL of the API namespace, with API version, None if no override set.
+  """
   # Use current override endpoint for this resource name.
   endpoint_override_property = getattr(
       properties.VALUES.api_endpoint_overrides, api_name, None)
   base_url = None
   if endpoint_override_property is not None:
-    base_url = endpoint_override_property.Get()
-    if base_url is not None:
-      # Check base url style. If it includes api version then override
-      # also replaces the version, otherwise it only overrides the domain.
-      # pylint:disable=protected-access
-      client_base_url = apis_internal._GetBaseUrlFromApi(api_name, api_version)
-
-      _, url_version, _ = resource_util.SplitEndpointUrl(client_base_url)
-      if url_version is None:
-        base_url += api_version + '/'
-  if base_url is not None:
-    base_url = apis_internal.UniversifyAddress(base_url)
+    base_url = _GetApiBaseUrl(
+        endpoint_override_property.Get(), api_name, api_version
+    )
   return base_url
 
 
 def GetApiBaseUrlOrThrow(api_name, api_version):
-  """Determine base url to use for resources of given version."""
-  # Uses current override endpoint for this resource name or throws an exception
+  """Determine base url to use for resources of given version using current override endpoint for this resource name.
+
+  If no override is found, raise an error.
+
+  Args:
+    api_name: str, The API name.
+    api_version: str, The API version.
+
+  Returns:
+    Base URL of the API namespace, with API version.
+
+  Raises:
+    UserError: If override endpoint is not set.
+  """
   api_base_url = GetApiBaseUrl(api_name, api_version)
   if api_base_url is None:
     raise UserError(
         'gcloud config property {} needs to be set in api_endpoint_overrides '
         'section.'.format(api_name))
+  return api_base_url
+
+
+def GetApiBaseUrlOrDefault(api_name, api_version, default_base_url):
+  """Determine base url to use for resources of given version using current override endpoint for this resource name.
+
+  If no override is found, returns the default base url, with API version.
+
+  Args:
+    api_name: str, The API name.
+    api_version: str, The API version.
+    default_base_url: str, The default API endpoint.
+
+  Returns:
+    Base URL of the API namespace, with API version.
+  """
+  api_base_url = GetApiBaseUrl(api_name, api_version)
+  if api_base_url is None:
+    return _GetApiBaseUrl(default_base_url, api_name, api_version)
+  return api_base_url
+
+
+def _GetApiBaseUrl(base_url, api_name, api_version):
+  """Determine base url to use for resources of given API version from the supplied base url."""
+  api_base_url = base_url
+  if api_base_url is not None:
+    # Check base url style. If it includes api version then override
+    # also replaces the version, otherwise it only overrides the domain.
+    # pylint:disable=protected-access
+    client_base_url = apis_internal._GetBaseUrlFromApi(api_name, api_version)
+    _, url_version, _ = resource_util.SplitEndpointUrl(client_base_url)
+    if url_version is None:
+      api_base_url += api_version + '/'
+    api_base_url = apis_internal.UniversifyAddress(api_base_url)
   return api_base_url

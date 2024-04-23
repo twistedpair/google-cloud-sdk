@@ -54,10 +54,22 @@ def TektonYamlDataToPipelineRun(data):
   input_util.ParamDictTransform(spec.get("params", []))
 
   messages = client_util.GetMessagesModule()
-  schema_message = encoding.DictToMessage(spec, messages.PipelineRun)
+  _CheckSpecKeys(data, spec)
+  data.update(spec)
+  data.pop("spec")
+  data.pop("kind")
+  schema_message = encoding.DictToMessage(data, messages.PipelineRun)
 
   input_util.UnrecognizedFields(schema_message)
   return schema_message
+
+
+def _CheckSpecKeys(data, spec):
+  for key in spec.keys():
+    if key in data:
+      raise cloudbuild_exceptions.InvalidYamlError(
+          "{0} only needs to be defined in spec".format(key)
+      )
 
 
 def TektonYamlDataToTaskRun(data):
@@ -80,7 +92,11 @@ def TektonYamlDataToTaskRun(data):
   input_util.ParamDictTransform(spec.get("params", []))
 
   messages = client_util.GetMessagesModule()
-  schema_message = encoding.DictToMessage(spec, messages.TaskRun)
+  _CheckSpecKeys(data, spec)
+  data.update(spec)
+  data.pop("spec")
+  data.pop("kind")
+  schema_message = encoding.DictToMessage(data, messages.TaskRun)
 
   input_util.UnrecognizedFields(schema_message)
   return schema_message
@@ -152,6 +168,8 @@ def _TaskSpecTransform(spec):
     input_util.ParamSpecTransform(param_spec)
   for task_result in spec.get("results", []):
     input_util.TaskResultTransform(task_result)
+  for task_step in spec.get("steps", []):
+    input_util.TaskStepTransform(task_step)
 
 
 def _TaskTransform(task):

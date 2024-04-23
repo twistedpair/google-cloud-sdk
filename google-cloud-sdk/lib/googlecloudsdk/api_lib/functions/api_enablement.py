@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Optional
+
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import api_enablement
@@ -26,8 +28,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def PromptToEnableApiIfDisabled(service_name, enable_by_default=False):
-  # type: (str) -> None
+def PromptToEnableApiIfDisabled(
+    service_name: str, enable_by_default: Optional[bool] = False
+):
   """Prompts to enable the API if it's not enabled.
 
   Args:

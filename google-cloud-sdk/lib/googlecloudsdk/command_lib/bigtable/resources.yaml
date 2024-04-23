@@ -76,22 +76,6 @@ app_profile:
     attribute_name: app_profile
     help: Name of the Cloud Bigtable app profile.
 
-# Deprecated
-# TODO(b/319097562): cleanup once the renaming is done.
-view:
-  name: view
-  collection: bigtableadmin.projects.instances.tables.views
-  request_id_field: viewId
-  attributes:
-  - *project
-  - *instance
-  - *table
-  - &view
-    parameter_name: viewsId
-    attribute_name: view
-    help: Name of the Cloud Bigtable view.
-  disable_auto_completers: false
-
 authorized_view:
   name: authorized-view
   collection: bigtableadmin.projects.instances.tables.authorizedViews

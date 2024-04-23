@@ -316,8 +316,8 @@ def AddMtu(parser):
       type=int,
       help="""\
       Maximum transmission unit (MTU) is the size of the largest IP packet
-      passing through this interconnect attachment. Only 1440 and 1500 are
-      allowed values. If not specified, the value will default to 1440.
+      passing through this interconnect attachment. Must be one of 1440, 1460,
+      1500, or 8896. If not specified, the value will default to 1440.
       """)
 
 

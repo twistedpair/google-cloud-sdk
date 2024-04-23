@@ -64,7 +64,7 @@ class OsconfigV1(base_api.BaseApiClient):
           }
 
     def GetProjectFeatureSettings(self, request, global_params=None):
-      r"""GetProjectFeatureSettings returns the feature settings for a project.
+      r"""GetProjectFeatureSettings returns the VM Manager feature settings for a project.
 
       Args:
         request: (OsconfigProjectsLocationsGlobalGetProjectFeatureSettingsRequest) input message
@@ -91,7 +91,7 @@ class OsconfigV1(base_api.BaseApiClient):
     )
 
     def UpdateProjectFeatureSettings(self, request, global_params=None):
-      r"""UpdateProjectFeatureSettings sets the feature settings for a project.
+      r"""UpdateProjectFeatureSettings sets the VM Manager features for a project.
 
       Args:
         request: (OsconfigProjectsLocationsGlobalUpdateProjectFeatureSettingsRequest) input message

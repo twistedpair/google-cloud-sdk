@@ -249,6 +249,8 @@ class ConsumerPscConfig(_messages.Message):
       are allowed to be created in. Note, this network does not need be in the
       ConsumerPscConfig.project in the case of SharedVPC. Example:
       projects/{projectNumOrId}/global/networks/{networkId}.
+    producerInstanceId: Immutable. An immutable identifier for the producer
+      instance.
     project: The consumer project where PSC connections are allowed to be
       created in.
     state: Output only. Overall state of PSC Connections management for this
@@ -277,8 +279,9 @@ class ConsumerPscConfig(_messages.Message):
 
   disableGlobalAccess = _messages.BooleanField(1)
   network = _messages.StringField(2)
-  project = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  producerInstanceId = _messages.StringField(3)
+  project = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -1035,10 +1038,10 @@ class InternalRange(_messages.Message):
       See: https://google.aip.dev/122#fields-representing-resource-names
     network: The URL or resource ID of the network in which to reserve the
       internal range. The network cannot be deleted if there are any reserved
-      internal ranges referring to it. Legacy networks are not supported. This
-      can only be specified for a global internal address. Example: - URL:
-      /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
-      network123
+      internal ranges referring to it. Legacy networks are not supported. For
+      example: https://www.googleapis.com/compute/v1/projects/{project}/locati
+      ons/global/networks/{network}
+      projects/{project}/locations/global/networks/{network} {network}
     overlaps: Optional. Types of resources that are allowed to overlap with
       the current internal range.
     peering: The type of peering set for this internal range.
@@ -1335,6 +1338,22 @@ class ListPolicyBasedRoutesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   policyBasedRoutes = _messages.MessageField('PolicyBasedRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListRegionalEndpointsResponse(_messages.Message):
+  r"""Response for ListRegionalEndpoints.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    regionalEndpoints: Regional endpoints to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  regionalEndpoints = _messages.MessageField('RegionalEndpoint', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -2386,6 +2405,92 @@ class NetworkconnectivityProjectsLocationsOperationsListRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the RegionalEndpoint.
+    regionalEndpoint: A RegionalEndpoint resource to be passed as the request
+      body.
+    regionalEndpointId: Required. Unique id of the Regional Endpoint to be
+      created.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  regionalEndpoint = _messages.MessageField('RegionalEndpoint', 2)
+  regionalEndpointId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsRegionalEndpointsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRegionalEndpointsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the RegionalEndpoint to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsRegionalEndpointsGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRegionalEndpointsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the RegionalEndpoint resource to get. Format: `pro
+      jects/{project}/locations/{location}/regionalEndpoints/{regional_endpoin
+      t}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: Requested page size. Server may return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A page token.
+    parent: Required. The parent resource's name of the RegionalEndpoint.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NetworkconnectivityProjectsLocationsServiceClassesCreateRequest(_messages.Message):
@@ -3551,6 +3656,102 @@ class PscConnection(_messages.Message):
   pscConnectionId = _messages.StringField(8)
   selectedSubnetwork = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class RegionalEndpoint(_messages.Message):
+  r"""The RegionalEndpoint resource.
+
+  Enums:
+    AccessTypeValueValuesEnum: Required. The access type of this regional
+      endpoint. This field is reflected in the PSC Forwarding Rule
+      configuration to enable global access.
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    accessType: Required. The access type of this regional endpoint. This
+      field is reflected in the PSC Forwarding Rule configuration to enable
+      global access.
+    address: Optional. The IP Address of the Regional Endpoint. When no
+      address is provided, an IP from the subnetwork is allocated. Use one of
+      the following formats: * IPv4 address as in `10.0.0.1` * Address
+      resource URI as in
+      `projects/{project}/regions/{region}/addresses/{address_name}`
+    createTime: Output only. Time when the RegionalEndpoint was created.
+    description: Optional. A description of this resource.
+    ipAddress: Output only. The literal IP address of the PSC Forwarding Rule
+      created on behalf of the customer. This field is deprecated. Use address
+      instead.
+    labels: User-defined labels.
+    name: Output only. The name of a RegionalEndpoint. Format: `projects/{proj
+      ect}/locations/{location}/regionalEndpoints/{regional_endpoint}`.
+    network: The name of the VPC network for this private regional endpoint.
+      Format: `projects/{project}/global/networks/{network}`
+    pscForwardingRule: Output only. The resource reference of the PSC
+      Forwarding Rule created on behalf of the customer. Format: `//compute.go
+      ogleapis.com/projects/{project}/regions/{region}/forwardingRules/{forwar
+      ding_rule_name}`
+    subnetwork: The name of the subnetwork from which the IP address will be
+      allocated. Format:
+      `projects/{project}/regions/{region}/subnetworks/{subnetwork}`
+    targetGoogleApi: Required. The service endpoint this private regional
+      endpoint connects to. Format: `{apiname}.{region}.p.rep.googleapis.com`
+      Example: "cloudkms.us-central1.p.rep.googleapis.com".
+    updateTime: Output only. Time when the RegionalEndpoint was updated.
+  """
+
+  class AccessTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The access type of this regional endpoint. This field is
+    reflected in the PSC Forwarding Rule configuration to enable global
+    access.
+
+    Values:
+      ACCESS_TYPE_UNSPECIFIED: An invalid type as the default case.
+      GLOBAL: This regional endpoint is accessible from all regions.
+      REGIONAL: This regional endpoint is only accessible from the same region
+        where it resides.
+    """
+    ACCESS_TYPE_UNSPECIFIED = 0
+    GLOBAL = 1
+    REGIONAL = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  accessType = _messages.EnumField('AccessTypeValueValuesEnum', 1)
+  address = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  ipAddress = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  pscForwardingRule = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  targetGoogleApi = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class RejectHubSpokeRequest(_messages.Message):

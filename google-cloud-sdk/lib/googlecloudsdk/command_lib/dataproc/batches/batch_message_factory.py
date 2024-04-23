@@ -65,6 +65,7 @@ class BatchMessageFactory(object):
         self.dataproc.messages.SparkRBatch: 'sparkRBatch',
         self.dataproc.messages.SparkSqlBatch: 'sparkSqlBatch',
         self.dataproc.messages.PySparkBatch: 'pysparkBatch',
+        self.dataproc.messages.RayBatch: 'rayBatch',
     }
 
     self.runtime_config_factory = runtime_config_factory_override

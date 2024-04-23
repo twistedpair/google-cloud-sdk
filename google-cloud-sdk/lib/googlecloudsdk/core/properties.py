@@ -34,6 +34,7 @@ from googlecloudsdk.core.docker import constants as const_lib
 from googlecloudsdk.core.resource import resource_printer_types as formats
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_proxy_types
+from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.generated_clients.apis import apis_map
 import six
@@ -99,12 +100,13 @@ _PUBSUB_NOTICE_URL = (
 
 
 def _DefaultToFastUpdate():
-  # TODO(b/153353954): Roll this out everywhere; limited to internal users
-  # initially.
+  # TODO(b/153353954): Roll this out everywhere.
+  current_platform = platforms.OperatingSystem.Current()
   return (
       (encoding.GetEncodedValue(os.environ,
                                 'CLOUDSDK_INTERNAL_USER_FAST_UPDATE') == 'true')
       or config.INSTALLATION_CONFIG.IsAlternateReleaseChannel()
+      or current_platform == platforms.OperatingSystem.WINDOWS
   )
 
 
@@ -1228,6 +1230,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.datastream = self._Add('datastream', command='gcloud datastream')
     self.deploymentmanager = self._Add(
         'deploymentmanager', command='gcloud deployment-manager')
+    self.developerconnect = self._Add(
+        'developerconnect', command='gcloud developerconnect', hidden=True)
     self.discovery = self._Add('discovery', hidden=True)
     self.dns = self._Add('dns', command='gcloud dns')
     self.domains = self._Add('domains', command='gcloud domains')
@@ -1269,6 +1273,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.looker = self._Add('looker', command='gcloud looker')
     self.managedidentities = self._Add(
         'managedidentities', command='gcloud active-directory')
+    self.managedkafka = self._Add(
+        'managedkafka', command='gcloud managed-kafka', hidden=True)
     self.manager = self._Add('manager', hidden=True)
     self.marketplacesolutions = self._Add(
         'marketplacesolutions', command='gcloud mps')

@@ -29,11 +29,11 @@ def ConvertIntToStr(duration):
   return str(duration) + 's'
 
 
-def ConvertUtcTime(effective_time):
-  """Converts the date to UTC time.
+def TransformTo12AmUtcTime(effective_time):
+  """Transforms the datetime object to UTC time string fixed at 12AM.
 
   Args:
-    effective_time: Date to be converted to UTC time.
+    effective_time: Date to be converted to UTC time string fixed at 12AM.
 
   Returns:
     UTC time.
@@ -57,7 +57,7 @@ def ConvertUtcTime(effective_time):
   return effective_time
 
 
-def UnlockEffectiveTime():
+def ResetEnforcedRetention():
   return '0001-01-01T00:00:00.000Z'
 
 

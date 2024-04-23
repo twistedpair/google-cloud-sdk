@@ -22,7 +22,6 @@ from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
 
-
 ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 
@@ -31,8 +30,9 @@ INGRESS_STATUS_ANNOTATION = 'run.googleapis.com/ingress-status'
 INGRESS_ALL = 'all'
 INGRESS_INTERNAL = 'internal'
 INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
-
 SERVICE_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
+SERVICE_MAX_SCALE_ANNOTATION = 'run.googleapis.com/maxScale'
+SERVICE_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 
 

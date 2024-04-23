@@ -1,0 +1,13 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha Variants export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- directories
+additionalProperties: false
+properties:
+  directories:
+    description: |-
+      directories is the set of directories to use to select variants.
+    $ref: Directories.yaml

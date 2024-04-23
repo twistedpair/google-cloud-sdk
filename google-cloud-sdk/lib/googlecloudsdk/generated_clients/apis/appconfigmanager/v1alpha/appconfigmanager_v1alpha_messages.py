@@ -131,19 +131,19 @@ class AppconfigmanagerProjectsLocationsConfigsVersionRendersGetRequest(_messages
 
   Enums:
     ViewValueValuesEnum: Optional. View of the ConfigVersionRender. In the
-      default BASIC view, only the metadata associated with the
+      default FULL view, all metadata & payload associated with the
       ConfigVersionRender will be returned.
 
   Fields:
     name: Required. Name of the resource
-    view: Optional. View of the ConfigVersionRender. In the default BASIC
-      view, only the metadata associated with the ConfigVersionRender will be
+    view: Optional. View of the ConfigVersionRender. In the default FULL view,
+      all metadata & payload associated with the ConfigVersionRender will be
       returned.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigVersionRender. In the default BASIC view,
-    only the metadata associated with the ConfigVersionRender will be
+    r"""Optional. View of the ConfigVersionRender. In the default FULL view,
+    all metadata & payload associated with the ConfigVersionRender will be
     returned.
 
     Values:
@@ -270,18 +270,18 @@ class AppconfigmanagerProjectsLocationsConfigsVersionsGetRequest(_messages.Messa
 
   Enums:
     ViewValueValuesEnum: Optional. View of the ConfigVersion. In the default
-      BASIC view, only the metadata associated with the ConfigVersion will be
-      returned.
+      FULL view, all metadata & payload associated with the ConfigVersion will
+      be returned.
 
   Fields:
     name: Required. Name of the resource
-    view: Optional. View of the ConfigVersion. In the default BASIC view, only
-      the metadata associated with the ConfigVersion will be returned.
+    view: Optional. View of the ConfigVersion. In the default FULL view, all
+      metadata & payload associated with the ConfigVersion will be returned.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View of the ConfigVersion. In the default BASIC view, only
-    the metadata associated with the ConfigVersion will be returned.
+    r"""Optional. View of the ConfigVersion. In the default FULL view, all
+    metadata & payload associated with the ConfigVersion will be returned.
 
     Values:
       VIEW_UNSPECIFIED: The default / unset value. The API will default to the
@@ -415,34 +415,6 @@ class AppconfigmanagerProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class AppconfigmanagerProjectsLocationsTemplatesCreateRequest(_messages.Message):
-  r"""A AppconfigmanagerProjectsLocationsTemplatesCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    template: A Template resource to be passed as the request body.
-    templateId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and template_id from the method_signature
-      of Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  template = _messages.MessageField('Template', 3)
-  templateId = _messages.StringField(4)
-
-
 class Config(_messages.Message):
   r"""Message describing Config object
 
@@ -458,7 +430,7 @@ class Config(_messages.Message):
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. [Output only] The resource name of the Config
       in the format `projects/*/configs/*`.
-    p4saEmail: Output only. per-resource p4sa email
+    serviceAgentEmail: Output only. Per-resource service agent email
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -505,7 +477,7 @@ class Config(_messages.Message):
   format = _messages.EnumField('FormatValueValuesEnum', 2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  p4saEmail = _messages.StringField(5)
+  serviceAgentEmail = _messages.StringField(5)
   updateTime = _messages.StringField(6)
 
 
@@ -866,50 +838,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class Template(_messages.Message):
-  r"""Message describing Template object
-
-  Messages:
-    LabelsValue: Optional. Labels as key value pairs
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. [Output only] The resource name of the
-      Template in the format `projects/*/templates/*`.
-    updateTime: Output only. [Output only] Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
 
 
 class TemplateValuesPayload(_messages.Message):

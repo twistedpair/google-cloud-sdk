@@ -1,0 +1,28 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha CloudBuildRepository export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- name
+- serviceAccount
+- tag
+- variants
+additionalProperties: false
+properties:
+  name:
+    description: |-
+      Name of the cloud build repository. Format is
+      projects/{p}/locations/{l}/connections/{c}/repositories/{r}.
+    type: string
+  serviceAccount:
+    description: service_account to use for running cloud build triggers.
+    type: string
+  tag:
+    description: tag of the cloud build repository that should be read from.
+    type: string
+  variants:
+    description: |-
+      variants is the configuration for how to read the repository to find
+      variants.
+    $ref: Variants.yaml

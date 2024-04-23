@@ -40,7 +40,8 @@ class DeploymentResourcePoolsClient(object):
                  accelerator_dict=None,
                  min_replica_count=None,
                  max_replica_count=None,
-                 machine_type=None):
+                 machine_type=None,
+                 tpu_topology=None):
     """Creates a new deployment resource pool using v1beta1 API.
 
     Args:
@@ -61,6 +62,7 @@ class DeploymentResourcePoolsClient(object):
         deployment resource pool may be deployed on when the traffic against it
         increases.
       machine_type: str or None, Immutable. The type of the machine.
+      tpu_topology: str or None, the topology of the TPU to serve the model.
 
     Returns:
       A long-running operation for Create.
@@ -69,6 +71,8 @@ class DeploymentResourcePoolsClient(object):
     machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec()
     if machine_type is not None:
       machine_spec.machineType = machine_type
+    if tpu_topology is not None:
+      machine_spec.tpuTopology = tpu_topology
     accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
                                              constants.BETA_VERSION)
     if accelerator is not None:

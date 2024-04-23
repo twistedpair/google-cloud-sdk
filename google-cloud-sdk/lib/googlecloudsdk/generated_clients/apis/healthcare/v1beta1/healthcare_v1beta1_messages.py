@@ -2250,12 +2250,9 @@ class ExplainDataAccessConsentInfo(_messages.Message):
       policy. Each resource has the following format: `projects/{project_id}/l
       ocations/{location_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}/
       fhir/{resource_type}/{resource_id}`
-    consentResource: The versioned resource name of this consent resource, in
-      the format: `projects/{project_id}/locations/{location}/datasets/{datase
-      t_id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}/_history/{ve
-      rsion_id}`. For FHIR stores with `disable_resource_versioning=true`, the
-      format is `projects/{project_id}/locations/{location}/datasets/{dataset_
-      id}/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}`.
+    consentResource: The resource name of this consent resource, in the
+      format: `projects/{project_id}/locations/{location}/datasets/{dataset_id
+      }/fhirStores/{fhir_store_id}/fhir/Consent/{resource_id}`.
     enforcementTime: Last enforcement timestamp of this consent resource.
     matchingAccessorScopes: A list of all the matching accessor scopes of this
       consent policy that enforced
@@ -2423,45 +2420,46 @@ class ExportMessagesRequest(_messages.Message):
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
     filter: Restricts messages exported to those matching a filter, only
-      applicable to PubsubDestination. The following syntax is available: * A
-      string field value can be written as text inside quotation marks, for
-      example `"query text"`. The only valid relational operation for text
-      fields is equality (`=`), where text is searched within the field,
-      rather than having the field be equal to the text. For example,
-      `"Comment = great"` returns messages with `great` in the comment field.
-      * A number field value can be written as an integer, a decimal, or an
-      exponential. The valid relational operators for number fields are the
-      equality operator (`=`), along with the less than/greater than operators
-      (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`)
-      operator. You can prepend the `NOT` operator to an expression to negate
-      it. * A date field value must be written in the `yyyy-mm-dd` format.
-      Fields with date and time use the RFC3339 time format. Leading zeros are
-      required for one-digit months and days. The valid relational operators
-      for date fields are the equality operator (`=`) , along with the less
-      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
-      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
-      expression to negate it. * Multiple field query expressions can be
-      combined in one query by adding `AND` or `OR` operators between the
-      expressions. If a boolean operator appears within a quoted string, it is
-      not treated as special, and is just another part of the character string
-      to be matched. You can prepend the `NOT` operator to an expression to
-      negate it. The following fields and functions are available for
-      filtering: * `message_type`, from the MSH-9.1 field. For example, `NOT
-      message_type = "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date
-      the message was sent in the dataset's time_zone, from the MSH-7 segment.
-      For example, `send_date < "2017-01-02"`. * `send_time`, the timestamp
-      when the message was sent, using the RFC3339 time format for
-      comparisons, from the MSH-7 segment. For example, `send_time <
-      "2017-01-02T00:00:00-05:00"`. * `create_time`, the timestamp when the
-      message was created in the HL7v2 store. Use the RFC3339 time format for
-      comparisons. For example, `create_time < "2017-01-02T00:00:00-05:00"`. *
-      `send_facility`, the care center that the message came from, from the
-      MSH-4 segment. For example, `send_facility = "ABC"`. Note: The filter
-      will be applied to every message in the HL7v2 store whose `send_time`
-      lies in the range defined by the `start_time` and the `end_time`. Even
-      if the filter only matches a small set of messages, the export operation
-      can still take a long time to finish when a lot of messages are between
-      the specified `start_time` and `end_time` range.
+      applicable to PubsubDestination and GcsDestination. The following syntax
+      is available: * A string field value can be written as text inside
+      quotation marks, for example `"query text"`. The only valid relational
+      operation for text fields is equality (`=`), where text is searched
+      within the field, rather than having the field be equal to the text. For
+      example, `"Comment = great"` returns messages with `great` in the
+      comment field. * A number field value can be written as an integer, a
+      decimal, or an exponential. The valid relational operators for number
+      fields are the equality operator (`=`), along with the less than/greater
+      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
+      (`!=`) operator. You can prepend the `NOT` operator to an expression to
+      negate it. * A date field value must be written in the `yyyy-mm-dd`
+      format. Fields with date and time use the RFC3339 time format. Leading
+      zeros are required for one-digit months and days. The valid relational
+      operators for date fields are the equality operator (`=`) , along with
+      the less than/greater than operators (`<`, `<=`, `>`, `>=`). Note that
+      there is no inequality (`!=`) operator. You can prepend the `NOT`
+      operator to an expression to negate it. * Multiple field query
+      expressions can be combined in one query by adding `AND` or `OR`
+      operators between the expressions. If a boolean operator appears within
+      a quoted string, it is not treated as special, and is just another part
+      of the character string to be matched. You can prepend the `NOT`
+      operator to an expression to negate it. The following fields and
+      functions are available for filtering: * `message_type`, from the
+      MSH-9.1 field. For example, `NOT message_type = "ADT"`. * `send_date` or
+      `sendDate`, the YYYY-MM-DD date the message was sent in the dataset's
+      time_zone, from the MSH-7 segment. For example, `send_date <
+      "2017-01-02"`. * `send_time`, the timestamp when the message was sent,
+      using the RFC3339 time format for comparisons, from the MSH-7 segment.
+      For example, `send_time < "2017-01-02T00:00:00-05:00"`. * `create_time`,
+      the timestamp when the message was created in the HL7v2 store. Use the
+      RFC3339 time format for comparisons. For example, `create_time <
+      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
+      the message came from, from the MSH-4 segment. For example,
+      `send_facility = "ABC"`. Note: The filter will be applied to every
+      message in the HL7v2 store whose `send_time` lies in the range defined
+      by the `start_time` and the `end_time`. Even if the filter only matches
+      a small set of messages, the export operation can still take a long time
+      to finish when a lot of messages are between the specified `start_time`
+      and `end_time` range.
     gcsDestination: Export to a Cloud Storage destination.
     pubsubDestination: Export messages to a Pub/Sub topic.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
@@ -8539,12 +8537,16 @@ class SchemaConfig(_messages.Message):
         are `Parameters.parameter.resource`, `Bundle.entry.resource`, and
         `Bundle.entry.response.outcome`. Analytics schema does not gracefully
         handle extensions with one or more occurrences, anaytics schema also
-        does not handle contained resource.
+        does not handle contained resource. Additionally, extensions with a
+        URL ending in "/{existing_resource_field_name}" may cause undefined
+        behavior.
       ANALYTICS_V2: Analytics V2, similar to schema defined by the FHIR
         community, with added support for extensions with one or more
-        occurrences and contained resources in stringified JSON. Analytics V2
-        uses more space in the destination table than Analytics V1. It is
-        generally recommended to use Analytics V2 over Analytics.
+        occurrences and contained resources in stringified JSON. Extensions
+        with a URL ending in "/{existing_resource_field_name}" will cause
+        conflict and prevent the resource from being sent to BigQuery.
+        Analytics V2 uses more space in the destination table than Analytics
+        V1. It is generally recommended to use Analytics V2 over Analytics.
     """
     SCHEMA_TYPE_UNSPECIFIED = 0
     LOSSLESS = 1

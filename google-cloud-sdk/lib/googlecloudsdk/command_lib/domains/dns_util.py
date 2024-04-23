@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
 import sys
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -33,6 +34,14 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_printer
 import six
+
+
+@enum.unique
+class DNSSECUpdate(enum.Enum):
+  """DNSSEC update options."""
+  ENABLE = enum.auto()
+  DISABLE = enum.auto()
+  NO_CHANGE = enum.auto()
 
 
 class DnsUpdateMask(object):
@@ -55,7 +64,7 @@ def ParseDNSSettings(api_version,
                      use_google_domains_dns,
                      dns_settings_from_file,
                      domain,
-                     enable_dnssec=True,
+                     dnssec_update=DNSSECUpdate.NO_CHANGE,
                      dns_settings=None):
   """Parses DNS settings from a flag.
 
@@ -69,8 +78,7 @@ def ParseDNSSettings(api_version,
       be used.
     dns_settings_from_file: Path to a yaml file with dns_settings.
     domain: Domain name corresponding to the DNS settings.
-    enable_dnssec: Enable DNSSEC for Google Domains name servers or Cloud DNS
-      Zone.
+    dnssec_update: DNSSECUpdate operation.
     dns_settings: Current DNS settings. Used during Configure DNS only.
 
   Returns:
@@ -83,13 +91,15 @@ def ParseDNSSettings(api_version,
   if cloud_dns_zone is not None:
     nameservers, ds_records = _GetCloudDnsDetails(domains_messages,
                                                   cloud_dns_zone, domain,
-                                                  enable_dnssec)
+                                                  dnssec_update, dns_settings)
     return _CustomNameServers(domains_messages, nameservers, ds_records)
   if use_google_domains_dns:
-    return _GoogleDomainsNameServers(domains_messages, enable_dnssec)
+    return _GoogleDomainsNameServers(
+        domains_messages, dnssec_update, dns_settings
+    )
   if dns_settings_from_file is not None:
     return _ParseDnsSettingsFromFile(domains_messages, dns_settings_from_file)
-  if dns_settings is not None and not enable_dnssec:
+  if dns_settings is not None and dnssec_update == DNSSECUpdate.DISABLE:
     return _DisableDnssec(domains_messages, dns_settings)
   return None, None
 
@@ -109,12 +119,23 @@ def _CustomNameServers(domains_messages, name_servers, ds_records=None):
   return dns_settings, update_mask
 
 
-def _GoogleDomainsNameServers(domains_messages, enable_dnssec):
+def _GoogleDomainsNameServers(
+    domains_messages, dnssec_update, dns_settings=None
+):
   """Enable Google Domains name servers and returns (dns_settings, update_mask)."""
   update_mask = DnsUpdateMask(name_servers=True, google_domains_dnssec=True)
-  ds_state = domains_messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_PUBLISHED
-  if not enable_dnssec:
-    ds_state = domains_messages.GoogleDomainsDns.DsStateValueValuesEnum.DS_RECORDS_UNPUBLISHED
+  ds_state = (
+      domains_messages.GoogleDomainsDns.DsStateValueValuesEnum
+      .DS_RECORDS_UNPUBLISHED)
+  if dnssec_update == DNSSECUpdate.ENABLE:
+    ds_state = (
+        domains_messages.GoogleDomainsDns.DsStateValueValuesEnum
+        .DS_RECORDS_PUBLISHED)
+  elif dnssec_update == DNSSECUpdate.NO_CHANGE:
+    # If GoogleDomainsDNS is currently used, keep the current DNSSEC value.
+    # Otherwise keep the default value to disable DNSSEC.
+    if dns_settings is not None and dns_settings.googleDomainsDns is not None:
+      ds_state = dns_settings.googleDomainsDns.dsState
   dns_settings = domains_messages.DnsSettings(
       googleDomainsDns=domains_messages.GoogleDomainsDns(dsState=ds_state))
   return dns_settings, update_mask
@@ -151,15 +172,18 @@ def _ParseDnsSettingsFromFile(domains_messages, path):
   return dns_settings, update_mask
 
 
-def _GetCloudDnsDetails(domains_messages, cloud_dns_zone, domain,
-                        enable_dnssec):
+def _GetCloudDnsDetails(
+    domains_messages, cloud_dns_zone, domain, dnssec_update, dns_settings=None
+):
   """Fetches list of name servers from provided Cloud DNS Managed Zone.
 
   Args:
     domains_messages: Cloud Domains messages module.
     cloud_dns_zone: Cloud DNS Zone resource reference.
     domain: Domain name.
-    enable_dnssec: If true, try to read DNSSEC information from the Zone.
+    dnssec_update: If ENABLE, try to read DNSSEC information from the Zone.
+    dns_settings: Current DNS configuration (or None if resource is not yet
+      created).
 
   Returns:
     A pair: List of name servers and a list of Ds records (or [] if e.g. the
@@ -174,25 +198,47 @@ def _GetCloudDnsDetails(domains_messages, cloud_dns_zone, domain,
       params={
           'project': properties.VALUES.core.project.GetOrFail,
       },
-      collection='dns.managedZones')
+      collection='dns.managedZones',
+  )
 
   try:
     zone = dns.managedZones.Get(
         dns_messages.DnsManagedZonesGetRequest(
-            project=zone_ref.project, managedZone=zone_ref.managedZone))
+            project=zone_ref.project, managedZone=zone_ref.managedZone
+        )
+    )
   except apitools_exceptions.HttpError as error:
     raise calliope_exceptions.HttpException(error)
   domain_with_dot = domain + '.'
   if zone.dnsName != domain_with_dot:
     raise exceptions.Error(
-        'The dnsName \'{}\' of specified Cloud DNS zone \'{}\' does not match the '
-        'registration domain \'{}\''.format(zone.dnsName, cloud_dns_zone,
-                                            domain_with_dot))
-  if zone.visibility != dns_messages.ManagedZone.VisibilityValueValuesEnum.public:
+        "The dnsName '{}' of specified Cloud DNS zone '{}' does not match the "
+        "registration domain '{}'".format(
+            zone.dnsName, cloud_dns_zone, domain_with_dot
+        )
+    )
+  if (
+      zone.visibility
+      != dns_messages.ManagedZone.VisibilityValueValuesEnum.public
+  ):
     raise exceptions.Error(
-        'Cloud DNS Zone \'{}\' is not public.'.format(cloud_dns_zone))
+        "Cloud DNS Zone '{}' is not public.".format(cloud_dns_zone)
+    )
 
-  if not enable_dnssec:
+  if dnssec_update == DNSSECUpdate.DISABLE:
+    return zone.nameServers, []
+  if dnssec_update == DNSSECUpdate.NO_CHANGE:
+    # If the DNS Zone is already in use keep the current config.
+    if (
+        dns_settings is not None
+        and dns_settings.customDns is not None
+        and set(dns_settings.customDns.nameServers) == set(zone.nameServers)
+    ):
+      return (
+          dns_settings.customDns.nameServers,
+          dns_settings.customDns.dsRecords,
+      )
+    # Otherwise disable DNSSEC
     return zone.nameServers, []
 
   signed = dns_messages.ManagedZoneDnsSecConfig.StateValueValuesEnum.on
@@ -269,7 +315,7 @@ def _DisableDnssec(domains_messages, dns_settings):
 
 def PromptForNameServers(api_version,
                          domain,
-                         enable_dnssec=None,
+                         dnssec_update=DNSSECUpdate.NO_CHANGE,
                          dns_settings=None,
                          print_format='default'):
   """Asks the user to provide DNS settings interactively.
@@ -277,7 +323,7 @@ def PromptForNameServers(api_version,
   Args:
     api_version: Cloud Domains API version to call.
     domain: Domain name corresponding to the DNS settings.
-    enable_dnssec: Should the DNSSEC be enabled.
+    dnssec_update: DNSSECUpdate operation.
     dns_settings: Current DNS configuration (or None if resource is not yet
       created).
     print_format: Print format to use when showing current dns_settings.
@@ -335,17 +381,21 @@ def PromptForNameServers(api_version,
       zone = util.PromptWithValidator(
           validator=util.ValidateNonEmpty,
           error_message=' Cloud DNS Managed Zone name must not be empty.',
-          prompt_string='Cloud DNS Managed Zone name:  ')
+          prompt_string='Cloud DNS Managed Zone name:  ',
+      )
       try:
-        name_servers, ds_records = _GetCloudDnsDetails(domains_messages, zone,
-                                                       domain, enable_dnssec)
+        name_servers, ds_records = _GetCloudDnsDetails(
+            domains_messages, zone, domain, dnssec_update, dns_settings
+        )
       except (exceptions.Error, calliope_exceptions.HttpException) as e:
         log.status.Print(six.text_type(e))
       else:
         break
     return _CustomNameServers(domains_messages, name_servers, ds_records)
   elif index == 2:  # Google Domains name servers.
-    return _GoogleDomainsNameServers(domains_messages, enable_dnssec)
+    return _GoogleDomainsNameServers(
+        domains_messages, dnssec_update, dns_settings
+    )
   else:
     return None, None  # Cancel.
 
@@ -382,7 +432,11 @@ def PromptForNameServersTransfer(api_version, domain):
 
   cancel_option = False
   default = 2  # Keep current DNS settings.
-  enable_dnssec = False
+
+  # It's not safe to change name servers and enable DNSSEC during transfers at
+  # once, so we just mark DNSSEC as disabled. However, this option is only used
+  # when the customer is changing the existing DNS configuration.
+  dnssec_update = DNSSECUpdate.DISABLE
 
   index = console_io.PromptChoice(
       message=message,
@@ -397,7 +451,7 @@ def PromptForNameServersTransfer(api_version, domain):
           prompt_string='Cloud DNS Managed Zone name:  ')
       try:
         name_servers, ds_records = _GetCloudDnsDetails(domains_messages, zone,
-                                                       domain, enable_dnssec)
+                                                       domain, dnssec_update)
       except (exceptions.Error, calliope_exceptions.HttpException) as e:
         log.status.Print(six.text_type(e))
       else:
@@ -407,7 +461,7 @@ def PromptForNameServersTransfer(api_version, domain):
     return dns_settings, update_mask, False
   elif index == 1:  # Google Domains name servers.
     dns_settings, update_mask = _GoogleDomainsNameServers(
-        domains_messages, enable_dnssec)
+        domains_messages, dnssec_update)
     return dns_settings, update_mask, False
   else:  # Keep current DNS settings (Transfer).
     return None, None, True

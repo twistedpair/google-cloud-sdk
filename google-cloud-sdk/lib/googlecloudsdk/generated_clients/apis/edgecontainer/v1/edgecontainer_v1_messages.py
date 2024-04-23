@@ -1444,6 +1444,10 @@ class Operation(_messages.Message):
 class OperationMetadata(_messages.Message):
   r"""Long-running operation metadata for Edge Container API methods.
 
+  Enums:
+    StatusReasonValueValuesEnum: Machine-readable status of the operation, if
+      any.
+
   Fields:
     apiVersion: API version used to start the operation.
     createTime: The time the operation was created.
@@ -1453,20 +1457,32 @@ class OperationMetadata(_messages.Message):
       cancelled have Operation.error value with a google.rpc.Status.code of 1,
       corresponding to `Code.CANCELLED`.
     statusMessage: Human-readable status of the operation, if any.
+    statusReason: Machine-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: The verb executed by the operation.
     warnings: Warnings that do not block the operation, but still hold
       relevant information for the end user to receive.
   """
 
+  class StatusReasonValueValuesEnum(_messages.Enum):
+    r"""Machine-readable status of the operation, if any.
+
+    Values:
+      STATUS_REASON_UNSPECIFIED: Reason unknown.
+      UPGRADE_PAUSED: The cluster upgrade is currently paused.
+    """
+    STATUS_REASON_UNSPECIFIED = 0
+    UPGRADE_PAUSED = 1
+
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
   requestedCancellation = _messages.BooleanField(4)
   statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-  warnings = _messages.StringField(8, repeated=True)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
+  warnings = _messages.StringField(9, repeated=True)
 
 
 class Quota(_messages.Message):

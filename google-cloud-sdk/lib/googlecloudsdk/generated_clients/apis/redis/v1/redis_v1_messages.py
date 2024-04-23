@@ -58,6 +58,8 @@ class AvailabilityConfiguration(_messages.Message):
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
       than one zone in a region (it is highly available).
+    crossRegionReplicaConfigured: Checks for resources that are configured to
+      have redundancy, and ongoing replication across regions
     externalReplicaConfigured: A boolean attribute.
     promotableReplicaConfigured: A boolean attribute.
   """
@@ -82,8 +84,9 @@ class AvailabilityConfiguration(_messages.Message):
     AVAILABILITY_TYPE_OTHER = 4
 
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  externalReplicaConfigured = _messages.BooleanField(2)
-  promotableReplicaConfigured = _messages.BooleanField(3)
+  crossRegionReplicaConfigured = _messages.BooleanField(2)
+  externalReplicaConfigured = _messages.BooleanField(3)
+  promotableReplicaConfigured = _messages.BooleanField(4)
 
 
 class BackupConfiguration(_messages.Message):
@@ -186,6 +189,8 @@ class Cluster(_messages.Message):
       If not provided, auth feature is disabled for the cluster.
     createTime: Output only. The timestamp associated with the cluster
       creation request.
+    deletionProtectionEnabled: Optional. The delete operation will fail when
+      the value is set to true.
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
@@ -307,21 +312,22 @@ class Cluster(_messages.Message):
 
   authorizationMode = _messages.EnumField('AuthorizationModeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 3, repeated=True)
-  name = _messages.StringField(4)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 5)
-  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 6)
-  preciseSizeGb = _messages.FloatField(7)
-  pscConfigs = _messages.MessageField('PscConfig', 8, repeated=True)
-  pscConnections = _messages.MessageField('PscConnection', 9, repeated=True)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 10)
-  replicaCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  stateInfo = _messages.MessageField('StateInfo', 15)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 16)
-  uid = _messages.StringField(17)
+  deletionProtectionEnabled = _messages.BooleanField(3)
+  discoveryEndpoints = _messages.MessageField('DiscoveryEndpoint', 4, repeated=True)
+  name = _messages.StringField(5)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 6)
+  persistenceConfig = _messages.MessageField('ClusterPersistenceConfig', 7)
+  preciseSizeGb = _messages.FloatField(8)
+  pscConfigs = _messages.MessageField('PscConfig', 9, repeated=True)
+  pscConnections = _messages.MessageField('PscConnection', 10, repeated=True)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 11)
+  replicaCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  shardCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  stateInfo = _messages.MessageField('StateInfo', 16)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 17)
+  uid = _messages.StringField(18)
 
 
 class ClusterPersistenceConfig(_messages.Message):
@@ -1430,12 +1436,10 @@ class Entitlement(_messages.Message):
 
     Values:
       ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
-      DUET_AI: The root entitlement representing Duet AI package ownership.
       GEMINI: The root entitlement representing Gemini package ownership.
     """
     ENTITLEMENT_TYPE_UNSPECIFIED = 0
-    DUET_AI = 1
-    GEMINI = 2
+    GEMINI = 1
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

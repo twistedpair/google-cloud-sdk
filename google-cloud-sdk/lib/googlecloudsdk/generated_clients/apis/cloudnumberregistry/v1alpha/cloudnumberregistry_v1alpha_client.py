@@ -40,6 +40,8 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_registryBooks_historicalEvents = self.ProjectsLocationsRegistryBooksHistoricalEventsService(self)
+    self.projects_locations_registryBooks_nodeEvents = self.ProjectsLocationsRegistryBooksNodeEventsService(self)
     self.projects_locations_registryBooks_registryNodes = self.ProjectsLocationsRegistryBooksRegistryNodesService(self)
     self.projects_locations_registryBooks = self.ProjectsLocationsRegistryBooksService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -160,6 +162,80 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudnumberregistryProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegistryBooksHistoricalEventsService(base_api.BaseApiService):
+    """Service class for the projects_locations_registryBooks_historicalEvents resource."""
+
+    _NAME = 'projects_locations_registryBooks_historicalEvents'
+
+    def __init__(self, client):
+      super(CloudnumberregistryV1alpha.ProjectsLocationsRegistryBooksHistoricalEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Show(self, request, global_params=None):
+      r"""Shows HistoricalEvents in a given registry book.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowHistoricalEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Show')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Show.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/historicalEvents:show',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.historicalEvents.show',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/historicalEvents:show',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest',
+        response_type_name='ShowHistoricalEventsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRegistryBooksNodeEventsService(base_api.BaseApiService):
+    """Service class for the projects_locations_registryBooks_nodeEvents resource."""
+
+    _NAME = 'projects_locations_registryBooks_nodeEvents'
+
+    def __init__(self, client):
+      super(CloudnumberregistryV1alpha.ProjectsLocationsRegistryBooksNodeEventsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Show(self, request, global_params=None):
+      r"""Shows NodeEvents related to an IP range in a given registry book.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowNodeEventsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Show')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Show.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/nodeEvents:show',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.nodeEvents.show',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'ipRange', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/nodeEvents:show',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest',
+        response_type_name='ShowNodeEventsResponse',
         supports_download=False,
     )
 
@@ -308,6 +384,33 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Search(self, request, global_params=None):
+      r"""Search registry nodes in a given registry book.
+
+      Args:
+        request: (CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchRegistryNodesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/registryNodes:search',
+        http_method='GET',
+        method_id='cloudnumberregistry.projects.locations.registryBooks.registryNodes.search',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['attributeKeys', 'ipRange', 'keywords', 'orderBy', 'pageSize', 'pageToken', 'source'],
+        relative_path='v1alpha/{+parent}/registryNodes:search',
+        request_field='',
+        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest',
+        response_type_name='SearchRegistryNodesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRegistryBooksService(base_api.BaseApiService):
     """Service class for the projects_locations_registryBooks resource."""
 
@@ -399,33 +502,6 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def HistoricalEvents(self, request, global_params=None):
-      r"""Shows HistoricalEvents in a given registry book.
-
-      Args:
-        request: (CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ShowHistoricalEventsResponse) The response message.
-      """
-      config = self.GetMethodConfig('HistoricalEvents')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    HistoricalEvents.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/historicalEvents',
-        http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.registryBooks.historicalEvents',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/historicalEvents',
-        request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsRequest',
-        response_type_name='ShowHistoricalEventsResponse',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists RegistryBooks in a given project and location.
 
@@ -453,33 +529,6 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def NodeEvents(self, request, global_params=None):
-      r"""Shows NodeEvents related to an IP range in a given registry book.
-
-      Args:
-        request: (CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ShowNodeEventsResponse) The response message.
-      """
-      config = self.GetMethodConfig('NodeEvents')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    NodeEvents.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/nodeEvents',
-        http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.registryBooks.nodeEvents',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'ipRange', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/nodeEvents',
-        request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsRequest',
-        response_type_name='ShowNodeEventsResponse',
-        supports_download=False,
-    )
-
     def Patch(self, request, global_params=None):
       r"""Updates the parameters of a single RegistryBook.
 
@@ -504,33 +553,6 @@ class CloudnumberregistryV1alpha(base_api.BaseApiClient):
         request_field='registryBook',
         request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def SearchRegistry(self, request, global_params=None):
-      r"""Search registry nodes in a given registry book.
-
-      Args:
-        request: (CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SearchRegistryResponse) The response message.
-      """
-      config = self.GetMethodConfig('SearchRegistry')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SearchRegistry.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}:searchRegistry',
-        http_method='GET',
-        method_id='cloudnumberregistry.projects.locations.registryBooks.searchRegistry',
-        ordered_params=['book'],
-        path_params=['book'],
-        query_params=['attributeKeys', 'ipRange', 'keywords', 'orderBy', 'pageSize', 'pageToken', 'source'],
-        relative_path='v1alpha/{+book}:searchRegistry',
-        request_field='',
-        request_type_name='CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest',
-        response_type_name='SearchRegistryResponse',
         supports_download=False,
     )
 

@@ -231,7 +231,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePoolInstalledApps in a WorkforcePool][google.iam.admin.v1.WorkforcePool]. If `show_deleted` is set to `true`, then deleted installed apps are also listed.
+      r"""Lists all non-deleted WorkforcePoolInstalledApps in a WorkforcePool. If `show_deleted` is set to `true`, then deleted installed apps are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsInstalledAppsListRequest) input message
@@ -605,7 +605,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolProvider. Deleting a provider does not revoke credentials that have already been\ issued; they continue to grant access. You can undelete a provider for 30 days. After 30 days, deletion is permanent. You cannot update deleted providers. However, you can view and list them.
+      r"""Deletes a WorkforcePoolProvider. Deleting a provider does not revoke credentials that have already been issued; they continue to grant access. You can undelete a provider for 30 days. After 30 days, deletion is permanent. You cannot update deleted providers. However, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersDeleteRequest) input message
@@ -787,7 +787,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolSubject. Subject must not already be in a deleted state. A WorkforcePoolSubject is automatically created the first time an external credential is exchanged for a Google Cloud credential with a mapped `google.subject` attribute. There is no path to manually create WorkforcePoolSubjects. Once deleted, the WorkforcePoolSubject may not be used for 30 days. After 30 days, the WorkforcePoolSubject will be deleted forever and can be reused in token exchanges with Google Cloud STS. This will automatically create a new WorkforcePoolSubject that is independent of the previously deleted WorkforcePoolSubject with the same google.subject value.
+      r"""Deletes a WorkforcePoolSubject. Subject must not already be in a deleted state. A WorkforcePoolSubject is automatically created the first time an external credential is exchanged for a Google Cloud credential using a mapped `google.subject` attribute. There is no endpoint to manually create a WorkforcePoolSubject. For 30 days after a WorkforcePoolSubject is deleted, using the same `google.subject` attribute in token exchanges with Google Cloud STS fails. Call UndeleteWorkforcePoolSubject to undelete a WorkforcePoolSubject that has been deleted, within within 30 days of deleting it. After 30 days, the WorkforcePoolSubject is permanently deleted. At this point, a token exchange with Google Cloud STS that uses the same mapped `google.subject` attribute automatically creates a new WorkforcePoolSubject that is unrelated to the previously deleted WorkforcePoolSubject but has the same `google.subject` value.
 
       Args:
         request: (IamLocationsWorkforcePoolsSubjectsDeleteRequest) input message
@@ -1040,7 +1040,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on the WorkforcePool. If the pool does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+      r"""Returns the caller's permissions on the WorkforcePool. If the pool doesn't exist, this call returns an empty set of permissions. It doesn't return a `NOT_FOUND` error.
 
       Args:
         request: (IamLocationsWorkforcePoolsTestIamPermissionsRequest) input message
@@ -3732,6 +3732,33 @@ class IamV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='IamProjectsServiceAccountsKeysListRequest',
         response_type_name='ListServiceAccountKeysResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches a ServiceAccountKey.
+
+      Args:
+        request: (IamProjectsServiceAccountsKeysPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceAccountKey) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:patch',
+        http_method='POST',
+        method_id='iam.projects.serviceAccounts.keys.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:patch',
+        request_field='patchServiceAccountKeyRequest',
+        request_type_name='IamProjectsServiceAccountsKeysPatchRequest',
+        response_type_name='ServiceAccountKey',
         supports_download=False,
     )
 

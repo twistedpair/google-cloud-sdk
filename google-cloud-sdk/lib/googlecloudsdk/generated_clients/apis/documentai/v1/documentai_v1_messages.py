@@ -2162,10 +2162,14 @@ class GoogleCloudDocumentaiV1DocumentPageTokenStyleInfo(_messages.Message):
     letterSpacing: Letter spacing in points.
     pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
       _resolution_ \xf7 `72.0`.
-    smallcaps: Whether the text is in small caps.
-    strikeout: Whether the text is strikethrough.
-    subscript: Whether the text is a subscript.
-    superscript: Whether the text is a superscript.
+    smallcaps: Whether the text is in small caps. This feature is not
+      supported yet.
+    strikeout: Whether the text is strikethrough. This feature is not
+      supported yet.
+    subscript: Whether the text is a subscript. This feature is not supported
+      yet.
+    superscript: Whether the text is a superscript. This feature is not
+      supported yet.
     textColor: Color of the text.
     underlined: Whether the text is underlined.
   """
@@ -4293,10 +4297,14 @@ class GoogleCloudDocumentaiV1beta1DocumentPageTokenStyleInfo(_messages.Message):
     letterSpacing: Letter spacing in points.
     pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
       _resolution_ \xf7 `72.0`.
-    smallcaps: Whether the text is in small caps.
-    strikeout: Whether the text is strikethrough.
-    subscript: Whether the text is a subscript.
-    superscript: Whether the text is a superscript.
+    smallcaps: Whether the text is in small caps. This feature is not
+      supported yet.
+    strikeout: Whether the text is strikethrough. This feature is not
+      supported yet.
+    subscript: Whether the text is a subscript. This feature is not supported
+      yet.
+    superscript: Whether the text is a superscript. This feature is not
+      supported yet.
     textColor: Color of the text.
     underlined: Whether the text is underlined.
   """
@@ -5364,10 +5372,14 @@ class GoogleCloudDocumentaiV1beta2DocumentPageTokenStyleInfo(_messages.Message):
     letterSpacing: Letter spacing in points.
     pixelFontSize: Font size in pixels, equal to _unrounded font_size_ *
       _resolution_ \xf7 `72.0`.
-    smallcaps: Whether the text is in small caps.
-    strikeout: Whether the text is strikethrough.
-    subscript: Whether the text is a subscript.
-    superscript: Whether the text is a superscript.
+    smallcaps: Whether the text is in small caps. This feature is not
+      supported yet.
+    strikeout: Whether the text is strikethrough. This feature is not
+      supported yet.
+    subscript: Whether the text is a subscript. This feature is not supported
+      yet.
+    superscript: Whether the text is a superscript. This feature is not
+      supported yet.
     textColor: Color of the text.
     underlined: Whether the text is underlined.
   """

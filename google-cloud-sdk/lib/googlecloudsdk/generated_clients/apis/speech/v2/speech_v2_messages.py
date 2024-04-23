@@ -1395,7 +1395,7 @@ class RecognitionOutputConfig(_messages.Message):
 
 
 class RecognitionResponseMetadata(_messages.Message):
-  r"""Metadata about the recognition request and response. Next ID: 10
+  r"""Metadata about the recognition request and response.
 
   Fields:
     totalBilledDuration: When available, billed audio seconds for the

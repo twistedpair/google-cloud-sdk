@@ -758,15 +758,7 @@ class CanaryDeployment(_messages.Message):
 
 
 class CancelAutomationRunRequest(_messages.Message):
-  r"""The request object used by `CancelAutomationRun`.
-
-  Fields:
-    overrideDeployPolicy: Deploy policies to override. Format is
-      `projects/{project}/
-      locations/{location}/deployPolicies/{deploy_policy}`.
-  """
-
-  overrideDeployPolicy = _messages.StringField(1, repeated=True)
+  r"""The request object used by `CancelAutomationRun`."""
 
 
 class CancelAutomationRunResponse(_messages.Message):
@@ -5614,6 +5606,23 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkaffoldGCBRepoSource(_messages.Message):
+  r"""Cloud Build V2 Repository containing Skaffold Configs.
+
+  Fields:
+    path: Optional. Relative path from the repository root to the Skaffold
+      Config file.
+    ref: Optional. Branch or tag to use when cloning the repository.
+    repository: Required. Name of the Cloud Build V2 Repository. Format is pro
+      jects/{project}/locations/{location}/connections/{connection}/repositori
+      es/{repository}.
+  """
+
+  path = _messages.StringField(1)
+  ref = _messages.StringField(2)
+  repository = _messages.StringField(3)
+
+
 class SkaffoldGCSSource(_messages.Message):
   r"""Cloud Storage bucket containing Skaffold Config modules.
 
@@ -5635,7 +5644,7 @@ class SkaffoldGitSource(_messages.Message):
   Fields:
     path: Optional. Relative path from the repository root to the Skaffold
       file.
-    ref: Optional. Git ref the package should be cloned from.
+    ref: Optional. Git branch or tag to use when cloning the repository.
     repo: Required. Git repository the package should be cloned from.
   """
 
@@ -5651,13 +5660,16 @@ class SkaffoldModules(_messages.Message):
     configs: Optional. The Skaffold Config modules to use from the specified
       source.
     git: Remote git repository containing the Skaffold Config modules.
+    googleCloudBuildRepo: Cloud Build V2 repository containing the Skaffold
+      Config modules.
     googleCloudStorage: Cloud Storage bucket containing the Skaffold Config
       modules.
   """
 
   configs = _messages.StringField(1, repeated=True)
   git = _messages.MessageField('SkaffoldGitSource', 2)
-  googleCloudStorage = _messages.MessageField('SkaffoldGCSSource', 3)
+  googleCloudBuildRepo = _messages.MessageField('SkaffoldGCBRepoSource', 3)
+  googleCloudStorage = _messages.MessageField('SkaffoldGCSSource', 4)
 
 
 class SkaffoldSupportedCondition(_messages.Message):

@@ -17,6 +17,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild.v2 import client_util
@@ -30,6 +32,11 @@ _WORKFLOW_OPTIONS_ENUMS = [
     "options.provenance.storage",
     "options.provenance.region",
 ]
+
+_GCB_REPOSITORY_PAT = re.compile("^projects/[^/]+/locations/[^/]+/connections/"
+                                 "[^/]+/repositories/[^/]+$")
+_DC_GIT_REPO_LINK_PAT = re.compile("^projects/[^/]+/locations/[^/]+/connections"
+                                   "/[^/]+/gitRepositoryLinks/[^/]+$")
 
 
 def CloudBuildYamlDataToWorkflow(workflow):
@@ -90,13 +97,16 @@ def _ResourcesTransform(workflow):
     if any(t in resource for t in types):
       resources_map[resource.pop("name")] = resource
     elif "repository" in resource:
-      if resource["repository"].startswith("projects/"):
+      if re.match(_GCB_REPOSITORY_PAT, resource["repository"]):
         resource["repo"] = resource.pop("repository")
+      elif re.match(_DC_GIT_REPO_LINK_PAT, resource["repository"]):
+        resource["gitRepoLink"] = resource.pop("repository")
       elif resource["repository"].startswith("https://"):
         resource["url"] = resource.pop("repository")
       else:
         raise cloudbuild_exceptions.InvalidYamlError(
-            "Malformed repo/url resource: {}".format(resource["repository"]))
+            "Malformed repo/gitRepoLink/url resource: {}".format(
+                resource["repository"]))
       resources_map[resource.pop("name")] = resource
     else:
       raise cloudbuild_exceptions.InvalidYamlError(

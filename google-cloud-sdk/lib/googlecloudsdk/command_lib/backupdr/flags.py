@@ -20,9 +20,11 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.backupdr import util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 
 
 def LocationAttributeConfig(arg_name='location'):
@@ -38,6 +40,17 @@ def GetManagementServerResourceSpec():
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False,
+  )
+
+
+def BackupPlanAssociationProjectAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='workload-project',
+      help_text='Cloud project id for the {resource}.',
+      fallthroughs=[
+          deps.ArgFallthrough('--project'),
+          deps.PropertyFallthrough(properties.VALUES.core.project),
+      ],
   )
 
 
@@ -60,7 +73,7 @@ def GetBackupPlanAssociationResourceSpec():
       'backupdr.projects.locations.backupPlanAssociations',
       resource_name='Backup Plan Association',
       locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      projectsId=BackupPlanAssociationProjectAttributeConfig(),
       disable_auto_completers=False,
   )
 
@@ -71,6 +84,17 @@ def AddManagementServerResourceArg(parser, help_text):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetManagementServerResourceSpec(),
+      help_text,
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddBackupPlanAssociationResourceArg(parser, help_text):
+  """Adds an argument for backup plan association to parser."""
+  name = 'backup_plan_association'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetBackupPlanAssociationResourceSpec(),
       help_text,
       required=True,
   ).AddToParser(parser)
@@ -94,7 +118,6 @@ def AddCreateBackupPlanAssociationFlags(parser):
               # This hides the location flag for backup plan.
               flag_name_overrides={
                   'location': '',
-                  'project': '',
               },
               required=True,
           ),

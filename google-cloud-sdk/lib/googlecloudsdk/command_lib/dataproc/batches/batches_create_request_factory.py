@@ -65,6 +65,9 @@ class BatchesCreateRequestFactory(object):
     """
     kwargs = {}
 
+    # Overwrite region if location is provided
+    if hasattr(args, 'location') and args.location:
+      args.region = args.location
     kwargs['parent'] = args.CONCEPTS.region.Parse().RelativeName()
 
     # Recommendation: Always set a request ID for a create batch request.
@@ -101,32 +104,44 @@ def AddArguments(parser, api_version):
   batch_id_pattern = re.compile(r'^[a-z0-9][-a-z0-9]{2,61}[a-z0-9]$')
   parser.add_argument(
       '--batch',
-      type=arg_parsers.CustomFunctionValidator(batch_id_pattern.match, (
-          'Only lowercase letters (a-z), numbers (0-9), and '
-          'hyphens (-) are allowed. The length must be between 4 and 63 characters.'
-      )),
+      type=arg_parsers.CustomFunctionValidator(
+          batch_id_pattern.match,
+          (
+              'Only lowercase letters (a-z), numbers (0-9), and hyphens (-) are'
+              ' allowed. The length must be between 4 and 63 characters.'
+          ),
+      ),
       help=(
-          'The ID of the batch job to submit. '
-          'The ID must contain only lowercase letters (a-z), numbers (0-9) and '
-          'hyphens (-). The length of the name must be between 4 and 63 characters. '
-          'If this argument is not provided, a random generated UUID '
-          'will be used.'))
+          'The ID of the batch job to submit. The ID must contain only'
+          ' lowercase letters (a-z), numbers (0-9) and hyphens (-). The length'
+          ' of the name must be between 4 and 63 characters. If this argument'
+          ' is not provided, a random generated UUID will be used.'
+      ),
+  )
 
   request_id_pattern = re.compile(r'^[a-zA-Z0-9_-]{1,40}$')
   parser.add_argument(
       '--request-id',
-      type=arg_parsers.CustomFunctionValidator(request_id_pattern.match, (
-          'Only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens '
-          '(-) are allowed. The length must not exceed 40 characters.')),
-      help=('A unique ID that identifies the request. If the service '
-            'receives two batch create requests with the same request_id, '
-            'the second request is ignored and the operation that '
-            'corresponds to the first Batch created and stored in the '
-            'backend is returned. '
-            'Recommendation:  Always set this value to a UUID. '
-            'The value must contain only letters (a-z, A-Z), numbers (0-9), '
-            'underscores (_), and hyphens (-). The maximum length is 40 '
-            'characters.'))
+      type=arg_parsers.CustomFunctionValidator(
+          request_id_pattern.match,
+          (
+              'Only letters (a-z, A-Z), numbers (0-9), underscores (_), and'
+              ' hyphens (-) are allowed. The length must not exceed 40'
+              ' characters.'
+          ),
+      ),
+      help=(
+          'A unique ID that identifies the request. If the service '
+          'receives two batch create requests with the same request_id, '
+          'the second request is ignored and the operation that '
+          'corresponds to the first batch created and stored in the '
+          'backend is returned. '
+          'Recommendation:  Always set this value to a UUID. '
+          'The value must contain only letters (a-z, A-Z), numbers (0-9), '
+          'underscores (_), and hyphens (-). The maximum length is 40 '
+          'characters.'
+      ),
+  )
 
   _AddDependency(parser)
 

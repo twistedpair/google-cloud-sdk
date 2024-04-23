@@ -336,6 +336,15 @@ For available machine types, see
 https://cloud.google.com/ai-platform-unified/docs/predictions/machine-types.
 """).AddToParser(parser)
 
+  if version == constants.BETA_VERSION:
+    base.Argument(
+        '--tpu-topology',
+        help="""\
+CloudTPU topology to use for this deployment. Required for multihost
+CloudTPU deployments:
+https://cloud.google.com/kubernetes-engine/docs/concepts/tpus#topology.
+""").AddToParser(parser)
+
   base.Argument(
       '--accelerator',
       type=arg_parsers.ArgDict(

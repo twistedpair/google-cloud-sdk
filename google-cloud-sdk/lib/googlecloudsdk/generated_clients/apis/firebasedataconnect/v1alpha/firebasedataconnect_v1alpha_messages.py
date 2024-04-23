@@ -573,7 +573,7 @@ class FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest(_messag
     revisionId: Optional. The ID to use for the connector revision, which will
       become the final component of the connector revision's resource name. If
       not specified, the connector revision ID will be auto-generated.
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Connector resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
@@ -816,7 +816,7 @@ class FirebasedataconnectProjectsLocationsServicesPatchRequest(_messages.Message
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     service: A Service resource to be passed as the request body.
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Service resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
@@ -958,7 +958,7 @@ class FirebasedataconnectProjectsLocationsServicesSchemasPatchRequest(_messages.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     schema: A Schema resource to be passed as the request body.
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Schema resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not

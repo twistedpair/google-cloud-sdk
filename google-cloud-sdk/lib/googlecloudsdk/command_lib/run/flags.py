@@ -1354,14 +1354,58 @@ def AddServiceMinInstancesFlag(parser):
   )
 
 
-def AddMaxInstancesFlag(parser):
+def AddMaxInstancesFlag(parser, resource_kind='service'):
   """Add max scaling flag."""
+  help_text = (
+      'The maximum number of container instances of the Service to run. '
+      "Use 'default' to unset the limit and use the platform default."
+  )
+  if resource_kind == 'worker':
+    help_text = (
+        'The maximum number of container instances of the Worker to run. '
+        "Use 'default' to unset the limit and use the platform default."
+    )
   parser.add_argument(
       '--max-instances',
       type=_ScaleValue,
+      help=help_text,
+  )
+
+
+class _MaxSurgeValue(object):
+  """Type for max-surge flag values."""
+
+  def __init__(self, value):
+    self.restore_default = value == 'default'
+    if not self.restore_default:
+      try:
+        self.surge_percent = int(value)
+      except (TypeError, ValueError):
+        raise serverless_exceptions.ArgumentError(
+            "Surge percent value %s is not an integer or 'default'." % value
+        )
+
+      if self.surge_percent < 0:
+        raise serverless_exceptions.ArgumentError(
+            'Surge percent value %s is negative.' % value
+        )
+
+      if self.surge_percent > 100:
+        raise serverless_exceptions.ArgumentError(
+            'Surge percent value %s is greater than 100.' % value
+        )
+
+
+def AddMaxSurgeFlag(parser, resource_kind='service'):
+  """Add max surge flag."""
+  split_type = 'instance' if resource_kind == 'worker' else 'traffic'
+  parser.add_argument(
+      '--max-surge',
+      type=_MaxSurgeValue,
       help=(
-          'The maximum number of container instances of the Service to run. '
-          "Use 'default' to unset the limit and use the platform default."
+          'A maximum percentage of instances that will be moved in each step of'
+          ' {split_type} split changes. Use "default" to unset the limit and'
+          ' use the platform default.'.format(split_type=split_type)
       ),
   )
 
@@ -2072,15 +2116,30 @@ def _GetServiceScalingChanges(args):
               str(scale_value.instance_count),
           )
       )
+  if 'max_surge' in args and args.max_surge is not None:
+    max_surge_value = args.max_surge
+    if max_surge_value.restore_default or max_surge_value.surge_percent == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_SURGE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_SURGE_ANNOTATION,
+              str(max_surge_value.surge_percent),
+          )
+      )
   return result
 
 
 def _GetWorkerScalingChanges(args):
   """Return the changes for engine-level scaling for Worker resources for the given args."""
   result = []
+  # TODO(b/322180968): Once Worker API is ready, replace Service related
+  # references and switch max instance implementation to engine-level.
   if 'min_instances' in args and args.min_instances is not None:
-    # TODO(b/322180968): Once Worker API is ready, replace Service related
-    # references.
     scale_value = args.min_instances
     if scale_value.restore_default or scale_value.instance_count == 0:
       result.append(
@@ -2093,6 +2152,37 @@ def _GetWorkerScalingChanges(args):
           config_changes.SetAnnotationChange(
               service.SERVICE_MIN_SCALE_ANNOTATION,
               str(scale_value.instance_count),
+          )
+      )
+  # Until Worker API is ready with engine-level max instance support,
+  # we go with version-level max scaling here.
+  if 'max_instances' in args and args.max_instances is not None:
+    scale_value = args.max_instances
+    if scale_value.restore_default:
+      result.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.MAX_SCALE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.MAX_SCALE_ANNOTATION, str(scale_value.instance_count)
+          )
+      )
+  if 'max_surge' in args and args.max_surge is not None:
+    max_surge_value = args.max_surge
+    if max_surge_value.restore_default or max_surge_value.surge_percent == 0:
+      result.append(
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_SURGE_ANNOTATION
+          )
+      )
+    else:
+      result.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_SURGE_ANNOTATION,
+              str(max_surge_value.surge_percent),
           )
       )
   return result

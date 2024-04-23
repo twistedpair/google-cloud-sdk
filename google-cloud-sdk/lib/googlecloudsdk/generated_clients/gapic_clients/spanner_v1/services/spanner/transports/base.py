@@ -122,6 +122,7 @@ class SpannerTransport(abc.ABC):
                 self.create_session,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -133,6 +134,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.batch_create_sessions,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=60.0,
@@ -144,6 +146,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.get_session,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -155,6 +158,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.list_sessions,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=3600.0,
@@ -166,6 +170,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.delete_session,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -177,6 +182,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.execute_sql,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -193,6 +199,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.execute_batch_dml,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -204,6 +211,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.read,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -220,6 +228,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.begin_transaction,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -231,6 +240,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.commit,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=3600.0,
@@ -242,6 +252,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.rollback,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -253,6 +264,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.partition_query,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,
@@ -264,6 +276,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
                 self.partition_read,
                 default_retry=retries.Retry(
 initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
                     deadline=30.0,

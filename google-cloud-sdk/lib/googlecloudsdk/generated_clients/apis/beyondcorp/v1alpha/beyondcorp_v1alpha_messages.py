@@ -1013,6 +1013,40 @@ class BeyondcorpOrganizationsLocationsSubscriptionsListRequest(_messages.Message
   parent = _messages.StringField(3, required=True)
 
 
+class BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest object.
+
+  Fields:
+    googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription: A
+      GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription
+      resource to be passed as the request body.
+    name: Required. Unique resource name of the Subscription. The name is
+      ignored when creating a subscription.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Subscription resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all mutable fields will be overwritten.
+      Mutable fields: type, state.
+  """
+
+  googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class BeyondcorpProjectsLocationsAppConnectionsCreateRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppConnectionsCreateRequest object.
 
@@ -4519,8 +4553,8 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
     createTime: Output only. Timestamp when the resource was created.
     displayName: Optional. An arbitrary user-provided name for the
       SecurityGateway. Cannot exceed 64 characters.
-    egressIpAddresses: Output only. IP addresses that will be used for
-      establishing connection to the egress endpoints.
+    externalIps: Output only. IP addresses that will be used for establishing
+      connection to the endpoints.
     name: Identifier. Name of the resource.
     state: Output only. The operational state of the SecurityGateway.
     updateTime: Output only. Timestamp when the resource was last modified.
@@ -4550,7 +4584,7 @@ class GoogleCloudBeyondcorpSecuritygatewaysV1alphaSecurityGateway(_messages.Mess
 
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
-  egressIpAddresses = _messages.StringField(3, repeated=True)
+  externalIps = _messages.StringField(3, repeated=True)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)

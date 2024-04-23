@@ -106,6 +106,17 @@ table(
             networkInterfaces[].ipv6AccessConfigs[0].externalIpv6.notnull().list():label=EXTERNAL_IPV6,
             networkInterfaces[].ipv6Address.notnull().list():label=INTERNAL_IPV6)"""
 
+DEFAULT_LIST_FORMAT_WITH_IPV6 = """\
+    table(
+      name,
+      zone.basename(),
+      machineType.machine_type().basename(),
+      scheduling.preemptible.yesno(yes=true, no=''),
+      internal_ip():label=INTERNAL_IP,
+      external_ip():label=EXTERNAL_IP,
+      status
+    )"""
+
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_name',
@@ -147,6 +158,42 @@ INSTANCES_ARG_FOR_IMPORT = compute_flags.ResourceArgument(
 
 SSH_INSTANCE_RESOLVER = compute_flags.ResourceResolver.FromMap(
     'instance', {compute_scope.ScopeEnum.ZONE: 'compute.instances'})
+
+
+def TransformInstanceExternalIp(resource):
+  """Transforms the instance resource to collect IPv4 and IPv6 external IPs."""
+  if not resource.get('networkInterfaces'):
+    return ''
+  ipv4_external_ips = [
+      r['accessConfigs'][0]['natIP']
+      for r in resource['networkInterfaces']
+      if r.get('accessConfigs') and r['accessConfigs'][0].get('natIP')
+  ]
+  ipv6_external_ips = [
+      f"{r['ipv6AccessConfigs'][0]['externalIpv6']}/{r['ipv6AccessConfigs'][0]['externalIpv6PrefixLength']}"
+      for r in resource['networkInterfaces']
+      if r.get('ipv6AccessConfigs')
+      and r['ipv6AccessConfigs'][0].get('externalIpv6')
+      and r['ipv6AccessConfigs'][0].get('externalIpv6PrefixLength')
+  ]
+  return '\n'.join(ipv4_external_ips + ipv6_external_ips)
+
+
+def TransformInstanceInternalIp(resource):
+  """Transforms the instance resource to collect IPv4 and IPv6 internal IPs."""
+  if not resource.get('networkInterfaces'):
+    return ''
+  ipv4_internal_ips = [
+      r['networkIP']
+      for r in resource['networkInterfaces']
+      if r.get('networkIP')
+  ]
+  ipv6_internal_ips = [
+      f"{r['ipv6Address']}/{r['internalIpv6PrefixLength']}"
+      for r in resource['networkInterfaces']
+      if r.get('ipv6Address') and r.get('internalIpv6PrefixLength')
+  ]
+  return '\n'.join(ipv4_internal_ips + ipv6_internal_ips)
 
 
 def GetInstanceZoneScopeLister(compute_client):

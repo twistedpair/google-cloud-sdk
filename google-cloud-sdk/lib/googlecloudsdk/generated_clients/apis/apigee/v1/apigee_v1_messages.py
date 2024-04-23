@@ -5566,8 +5566,15 @@ class GoogleCloudApigeeV1ApiDoc(_messages.Message):
       through the `getDocumentation` and `updateDocumentation` methods
     id: Output only. The ID of the catalog item.
     imageUrl: Optional. Location of the image used for the catalog item in the
-      catalog. For portal files, this can have the format `/files/{filename}`.
-      Max length is 2,083 characters.
+      catalog. This can be either an image with an external URL or a file path
+      for [image files stored in the portal](/apigee/docs/api-
+      platform/publish/portal/portal-files"), for example, `/files/book-
+      tree.jpg`. When specifying the URL of an external image, the image won't
+      be uploaded to your assets; additionally, loading the image in the
+      integrated portal will be subject to its availability, which may be
+      blocked or restricted by [content security policies](/apigee/docs/api-
+      platform/publish/portal/csp). Max length of file path is 2,083
+      characters.
     modified: Output only. Time the catalog item was last modified in
       milliseconds since epoch.
     published: Optional. Denotes whether the catalog item is published to the
@@ -8523,8 +8530,8 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       since epoch.
     description: Optional. Description of the instance.
     diskEncryptionKeyName: Customer Managed Encryption Key (CMEK) used for
-      disk and volume encryption. Required for Apigee paid subscriptions only.
-      Use the following format:
+      disk and volume encryption. If not specified, a Google-Managed
+      encryption key will be used. Use the following format:
       `projects/([^/]+)/locations/([^/]+)/keyRings/([^/]+)/cryptoKeys/([^/]+)`
     displayName: Optional. Display name for the instance.
     externalHost: Output only. External hostname or IP address of the Apigee
@@ -9795,16 +9802,14 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       an Apigee organization](https://cloud.google.com/apigee/docs/api-
       platform/get-started/create-org).
     apiConsumerDataEncryptionKeyName: Cloud KMS key name used for encrypting
-      API consumer data. Required for US/EU regions when
-      [BillingType](#BillingType) is `SUBSCRIPTION`. When
-      [BillingType](#BillingType) is `EVALUATION` or the region is not US/EU,
-      a Google-Managed encryption key will be used. Format:
+      API consumer data. If not specified or [BillingType](#BillingType) is
+      `EVALUATION`, a Google-Managed encryption key will be used. Format:
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`
-    apiConsumerDataLocation: This field is needed only for customers with
-      control plane in US or EU. Apigee stores some control plane data only in
-      single region. This field determines which single region Apigee should
-      use. For example: "us-west1" when control plane is in US or "europe-
-      west2" when control plane is in EU.
+    apiConsumerDataLocation: This field is needed only for customers using
+      non-default data residency regions. Apigee stores some control plane
+      data only in single region. This field determines which single region
+      Apigee should use. For example: "us-west1" when control plane is in US
+      or "europe-west2" when control plane is in EU.
     apigeeProjectId: Output only. Apigee Project ID associated with the
       organization. Use this project to allowlist Apigee in the Service
       Attachment when using private service connect with Apigee.
@@ -9829,8 +9834,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       CA of the Apigee organization. Valid only when
       [RuntimeType](#RuntimeType) is `CLOUD`.
     controlPlaneEncryptionKeyName: Cloud KMS key name used for encrypting
-      control plane data that is stored in a multi region. Required when
-      [BillingType](#BillingType) is `SUBSCRIPTION`. When
+      control plane data that is stored in a multi region. Only used for the
+      data residency region "US" or "EU". If not specified or
       [BillingType](#BillingType) is `EVALUATION`, a Google-Managed encryption
       key will be used. Format:
       `projects/*/locations/*/keyRings/*/cryptoKeys/*`
@@ -9874,8 +9879,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       REGULAR channel for some time.
     runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
       the data that is stored and replicated across runtime instances. Update
-      is not allowed after the organization is created. Required when
-      [RuntimeType](#RuntimeType) is `CLOUD`. If not specified when
+      is not allowed after the organization is created. If not specified or
       [RuntimeType](#RuntimeType) is `TRIAL`, a Google-Managed encryption key
       will be used. For example:
       "projects/foo/locations/us/keyRings/bar/cryptoKeys/baz". **Note:** Not
@@ -11406,6 +11410,10 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
     accessTokens: Optional. A list of access_tokens. Limit 1000 per action.
     apiKeys: Optional. A list of API keys. Limit 1000 per action.
     apiProducts: Optional. A list of API Products. Limit 1000 per action.
+    asns: Optional. A list of ASN numbers to act on, e.g. 23.
+      https://en.wikipedia.org/wiki/Autonomous_system_(Internet) This uses
+      int64 instead of uint32 because of https://linter.aip.dev/141/forbidden-
+      types.
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
       TorListRule, Advanced Anomaly Detection, Advanced API Scraper, Search
@@ -11415,6 +11423,8 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
     developers: Optional. A list of developers. Limit 1000 per action.
     ipAddressRanges: Optional. A list of IP addresses. This could be either
       IPv4 or IPv6. Limited to 100 per action.
+    regionCodes: Optional. A list of countries/region codes to act on, e.g.
+      US. This follows https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2.
     userAgents: Optional. A list of user agents to deny. We look for exact
       matches. Limit 50 per action.
   """
@@ -11422,11 +11432,13 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
   accessTokens = _messages.StringField(1, repeated=True)
   apiKeys = _messages.StringField(2, repeated=True)
   apiProducts = _messages.StringField(3, repeated=True)
-  botReasons = _messages.StringField(4, repeated=True)
-  developerApps = _messages.StringField(5, repeated=True)
-  developers = _messages.StringField(6, repeated=True)
-  ipAddressRanges = _messages.StringField(7, repeated=True)
-  userAgents = _messages.StringField(8, repeated=True)
+  asns = _messages.IntegerField(4, repeated=True)
+  botReasons = _messages.StringField(5, repeated=True)
+  developerApps = _messages.StringField(6, repeated=True)
+  developers = _messages.StringField(7, repeated=True)
+  ipAddressRanges = _messages.StringField(8, repeated=True)
+  regionCodes = _messages.StringField(9, repeated=True)
+  userAgents = _messages.StringField(10, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityActionDeny(_messages.Message):
@@ -11562,17 +11574,13 @@ class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message
       LOW: Severity is low.
       MEDIUM: Severity is medium.
       HIGH: Severity is high.
-      NONE: Severity is none.
-      NO_RISK: Severity represents no risk
       MINIMAL: Severity is minimal
     """
     SEVERITY_UNSPECIFIED = 0
     LOW = 1
     MEDIUM = 2
     HIGH = 3
-    NONE = 4
-    NO_RISK = 5
-    MINIMAL = 6
+    MINIMAL = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AssessmentRecommendationsValue(_messages.Message):
@@ -12589,8 +12597,7 @@ class GoogleCloudApigeeV1TlsInfo(_messages.Message):
     commonName: The TLS Common Name of the certificate.
     enabled: Required. Enables TLS. If false, neither one-way nor two-way TLS
       will be enabled.
-    enforce: TLS is strictly enforced. TODO (b/331425331) remove
-      TRUSTED_TESTER when ready for public
+    enforce: TLS is strictly enforced.
     ignoreValidationErrors: If true, Edge ignores TLS certificate errors.
       Valid when configuring TLS for target servers and target endpoints, and
       when configuring virtual hosts that use 2-way TLS. When used with a
@@ -12641,6 +12648,7 @@ class GoogleCloudApigeeV1TlsInfoConfig(_messages.Message):
     commonName: Common name to validate the target server against.
     enabled: Flag that specifies whether one-way TLS is enabled. Set to `true`
       to enable one-way TLS.
+    enforce: Flag that enforces TLS settings
     ignoreValidationErrors: Flag that specifies whether to ignore TLS
       certificate validation errors. Set to `true` to ignore errors.
     keyAlias: Name of the alias used for client-side authentication in the
@@ -12659,11 +12667,12 @@ class GoogleCloudApigeeV1TlsInfoConfig(_messages.Message):
   clientAuthEnabled = _messages.BooleanField(2)
   commonName = _messages.MessageField('GoogleCloudApigeeV1CommonNameConfig', 3)
   enabled = _messages.BooleanField(4)
-  ignoreValidationErrors = _messages.BooleanField(5)
-  keyAlias = _messages.StringField(6)
-  keyAliasReference = _messages.MessageField('GoogleCloudApigeeV1KeyAliasReference', 7)
-  protocols = _messages.StringField(8, repeated=True)
-  trustStore = _messages.StringField(9)
+  enforce = _messages.BooleanField(5)
+  ignoreValidationErrors = _messages.BooleanField(6)
+  keyAlias = _messages.StringField(7)
+  keyAliasReference = _messages.MessageField('GoogleCloudApigeeV1KeyAliasReference', 8)
+  protocols = _messages.StringField(9, repeated=True)
+  trustStore = _messages.StringField(10)
 
 
 class GoogleCloudApigeeV1TraceConfig(_messages.Message):

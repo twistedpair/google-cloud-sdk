@@ -1924,8 +1924,13 @@ class CsvOptions(_messages.Message):
       treated as a part of the field. BigQuery also supports the escape
       sequence "\t" (U+0009) to specify a tab separator. The default value is
       comma (",", U+002C).
-    nullMarker: [Optional] A custom string that will represent a NULL value in
-      CSV import data.
+    nullMarker: Optional. Specifies a string that represents a null value in a
+      CSV file. For example, if you specify "\\N", BigQuery interprets "\\N"
+      as a null value when querying a CSV file. The default value is the empty
+      string. If you set this property to a custom value, BigQuery throws an
+      error if an empty string is present for all data types except for STRING
+      and BYTE. For STRING and BYTE columns, BigQuery interprets the empty
+      string as an empty value.
     preserveAsciiControlCharacters: Optional. Indicates if the embedded ASCII
       control characters (the first 32 characters in the ASCII-table, from
       '\x00' to '\x1F') are preserved.
@@ -2130,9 +2135,7 @@ class Dataset(_messages.Message):
     type: Output only. Same as `type` in `ListFormatDataset`. The type of the
       dataset, one of: * DEFAULT - only accessible by owner and authorized
       accounts, * PUBLIC - accessible by everyone, * LINKED - linked dataset,
-      * EXTERNAL - dataset with definition in external metadata catalog. --
-      *BIGLAKE_METASTORE - dataset that references a database created in
-      BigLakeMetastore service. --
+      * EXTERNAL - dataset with definition in external metadata catalog.
   """
 
   class DefaultRoundingModeValueValuesEnum(_messages.Enum):
@@ -2505,6 +2508,11 @@ class DifferentialPrivacyPolicy(_messages.Message):
       have a refresh policy and can only be updated via ALTER VIEW or
       circumvented by creating a new view that can be queried with a fresh
       budget.
+    deltaBudgetRemaining: Output only. The delta budget remaining. If budget
+      is exhausted, no more queries are allowed. Note that the budget for
+      queries that are in progress is deducted before the query executes. If
+      the query fails or is cancelled then the budget is refunded. In this
+      case the amount of budget remaining can increase.
     deltaPerQuery: Optional. The delta value that is used per query. Delta
       represents the probability that any row will fail to be epsilon
       differentially private. Indicates the risk associated with exposing
@@ -2521,6 +2529,11 @@ class DifferentialPrivacyPolicy(_messages.Message):
       budget does not have a refresh policy and can only be updated via ALTER
       VIEW or circumvented by creating a new view that can be queried with a
       fresh budget.
+    epsilonBudgetRemaining: Output only. The epsilon budget remaining. If
+      budget is exhausted, no more queries are allowed. Note that the budget
+      for queries that are in progress is deducted before the query executes.
+      If the query fails or is cancelled then the budget is refunded. In this
+      case the amount of budget remaining can increase.
     maxEpsilonPerQuery: Optional. The maximum epsilon value that a query can
       consume. If the subscriber specifies epsilon as a parameter in a SELECT
       query, it must be less than or equal to this value. The epsilon
@@ -2537,11 +2550,13 @@ class DifferentialPrivacyPolicy(_messages.Message):
   """
 
   deltaBudget = _messages.FloatField(1)
-  deltaPerQuery = _messages.FloatField(2)
-  epsilonBudget = _messages.FloatField(3)
-  maxEpsilonPerQuery = _messages.FloatField(4)
-  maxGroupsContributed = _messages.IntegerField(5)
-  privacyUnitColumn = _messages.StringField(6)
+  deltaBudgetRemaining = _messages.FloatField(2)
+  deltaPerQuery = _messages.FloatField(3)
+  epsilonBudget = _messages.FloatField(4)
+  epsilonBudgetRemaining = _messages.FloatField(5)
+  maxEpsilonPerQuery = _messages.FloatField(6)
+  maxGroupsContributed = _messages.IntegerField(7)
+  privacyUnitColumn = _messages.StringField(8)
 
 
 class DimensionalityReductionMetrics(_messages.Message):
@@ -3216,6 +3231,32 @@ class ExternalServiceCost(_messages.Message):
   externalService = _messages.StringField(3)
   reservedSlotCount = _messages.IntegerField(4)
   slotMs = _messages.IntegerField(5)
+
+
+class ExternalTypeInfo(_messages.Message):
+  r"""Metadata about the external data type definition such as the external
+  system in which the type is defined.
+
+  Enums:
+    TypeSystemValueValuesEnum: Required. Specifies the external system which
+      defines the data type.
+
+  Fields:
+    typeSystem: Required. Specifies the external system which defines the data
+      type.
+  """
+
+  class TypeSystemValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the external system which defines the data type.
+
+    Values:
+      TYPE_SYSTEM_UNSPECIFIED: TypeSystem not specified.
+      HIVE: Represents Hive data types.
+    """
+    TYPE_SYSTEM_UNSPECIFIED = 0
+    HIVE = 1
+
+  typeSystem = _messages.EnumField('TypeSystemValueValuesEnum', 1)
 
 
 class FeatureValue(_messages.Message):
@@ -3937,16 +3978,15 @@ class JobConfigurationLoad(_messages.Message):
       load job behavior. Currently, only the 'session_id' connection property
       is supported, and is used to resolve _SESSION appearing as the dataset
       id.
-    copyFilesOnly: Optional. [Experimental] Configures the load job to only
-      copy files to the destination BigLake managed table with an external
-      storage_uri, without reading file content and writing them to new files.
-      Copying files only is supported when: * source_uris are in the same
-      external storage system as the destination table but they do not overlap
-      with storage_uri of the destination table. * source_format is the same
-      file format as the destination table. * destination_table is an existing
-      BigLake managed table. Its schema does not have default value
-      expression. It schema does not have type parameters other than precision
-      and scale. * No options other than the above are specified.
+    copyFilesOnly: Optional. [Experimental] Configures the load job to copy
+      files directly to the destination BigLake managed table, bypassing file
+      content reading and rewriting. Copying files only is supported when all
+      the following are true: * `source_uris` are located in the same Cloud
+      Storage location as the destination table's `storage_uri` location. *
+      `source_format` is `PARQUET`. * `destination_table` is an existing
+      BigLake managed table. The table's schema does not have flexible column
+      names. The table's columns do not have type parameters other than
+      precision and scale. * No options other than the above are specified.
     createDisposition: Optional. Specifies whether the job is allowed to
       create new tables. The following values are supported: *
       CREATE_IF_NEEDED: If the table does not exist, BigQuery creates the
@@ -4640,7 +4680,8 @@ class JobStatistics(_messages.Message):
     r"""Job resource usage breakdown by reservation.
 
     Fields:
-      name: Reservation name or "unreserved" for on-demand resources usage.
+      name: Reservation name or "unreserved" for on-demand resource usage and
+        multi-statement queries.
       slotMs: Total slot milliseconds used by the reservation for a particular
         job.
     """
@@ -4858,7 +4899,8 @@ class JobStatistics2(_messages.Message):
     r"""Job resource usage breakdown by reservation.
 
     Fields:
-      name: Reservation name or "unreserved" for on-demand resources usage.
+      name: Reservation name or "unreserved" for on-demand resource usage and
+        multi-statement queries.
       slotMs: Total slot milliseconds used by the reservation for a particular
         job.
     """
@@ -5244,7 +5286,8 @@ class MaterializedView(_messages.Message):
         user because of a fine-grained security policy on one of its base
         tables.
       BASE_TABLE_TOO_STALE: One of the view's base tables is too stale. For
-        example, the cached metadata of a biglake table needs to be updated.
+        example, the cached metadata of a BigLake external table needs to be
+        updated.
     """
     REJECTED_REASON_UNSPECIFIED = 0
     NO_DATA = 1
@@ -5269,8 +5312,8 @@ class MaterializedViewDefinition(_messages.Message):
   r"""Definition and configuration of a materialized view.
 
   Fields:
-    allowNonIncrementalDefinition: Optional. This option declares authors
-      intention to construct a materialized view that will not be refreshed
+    allowNonIncrementalDefinition: Optional. This option declares the
+      intention to construct a materialized view that isn't refreshed
       incrementally.
     enableRefresh: Optional. Enable automatic refresh of the materialized view
       when the base table is updated. The default value is "true".
@@ -5383,6 +5426,8 @@ class MlStatistics(_messages.Message):
       RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
       TENSORFLOW_LITE: An imported TensorFlow Lite model.
       ONNX: An imported ONNX model.
+      TRANSFORM_ONLY: Model to capture the manual preprocessing logic in the
+        transform clause.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5408,6 +5453,7 @@ class MlStatistics(_messages.Message):
     RANDOM_FOREST_CLASSIFIER = 21
     TENSORFLOW_LITE = 22
     ONNX = 23
+    TRANSFORM_ONLY = 24
 
   class TrainingTypeValueValuesEnum(_messages.Enum):
     r"""Output only. Training type of the job.
@@ -5533,6 +5579,8 @@ class Model(_messages.Message):
       RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
       TENSORFLOW_LITE: An imported TensorFlow Lite model.
       ONNX: An imported ONNX model.
+      TRANSFORM_ONLY: Model to capture the manual preprocessing logic in the
+        transform clause.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5558,6 +5606,7 @@ class Model(_messages.Message):
     RANDOM_FOREST_CLASSIFIER = 21
     TENSORFLOW_LITE = 22
     ONNX = 23
+    TRANSFORM_ONLY = 24
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -8090,6 +8139,8 @@ class TableFieldSchema(_messages.Message):
       field.
     description: Optional. The field description. The maximum length is 1,024
       characters.
+    externalTypeDefinition: Optional. Definition of the external data type.
+      Only valid for top-level schema fields (not nested fields).
     fields: Optional. Describes the nested schema fields if the type property
       is set to RECORD.
     maxLength: Optional. Maximum length of values of this field for STRINGS or
@@ -8190,16 +8241,17 @@ class TableFieldSchema(_messages.Message):
   collation = _messages.StringField(2)
   defaultValueExpression = _messages.StringField(3)
   description = _messages.StringField(4)
-  fields = _messages.MessageField('TableFieldSchema', 5, repeated=True)
-  maxLength = _messages.IntegerField(6)
-  mode = _messages.StringField(7)
-  name = _messages.StringField(8)
-  policyTags = _messages.MessageField('PolicyTagsValue', 9)
-  precision = _messages.IntegerField(10)
-  rangeElementType = _messages.MessageField('RangeElementTypeValue', 11)
-  roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 12)
-  scale = _messages.IntegerField(13)
-  type = _messages.StringField(14)
+  externalTypeDefinition = _messages.StringField(5)
+  fields = _messages.MessageField('TableFieldSchema', 6, repeated=True)
+  maxLength = _messages.IntegerField(7)
+  mode = _messages.StringField(8)
+  name = _messages.StringField(9)
+  policyTags = _messages.MessageField('PolicyTagsValue', 10)
+  precision = _messages.IntegerField(11)
+  rangeElementType = _messages.MessageField('RangeElementTypeValue', 12)
+  roundingMode = _messages.EnumField('RoundingModeValueValuesEnum', 13)
+  scale = _messages.IntegerField(14)
+  type = _messages.StringField(15)
 
 
 class TableList(_messages.Message):
@@ -8424,10 +8476,13 @@ class TableSchema(_messages.Message):
   r"""Schema of a table
 
   Fields:
+    externalTypeInfo: Optional. Specifies metadata of the external data type
+      definition in field schema (TableFieldSchema.external_type_definition).
     fields: Describes the fields in a table.
   """
 
-  fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
+  externalTypeInfo = _messages.MessageField('ExternalTypeInfo', 1)
+  fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

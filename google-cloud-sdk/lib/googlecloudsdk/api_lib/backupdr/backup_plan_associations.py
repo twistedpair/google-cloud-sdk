@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
+from googlecloudsdk.core import resources
+from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
 
 
 class BackupPlanAssociationsClient(util.BackupDrClientBase):
@@ -48,3 +50,24 @@ class BackupPlanAssociationsClient(util.BackupDrClientBase):
         name=resource.RelativeName()
     )
     return self.service.Delete(request)
+
+  def TriggerBackup(
+      self, resource: resources.Resource, backup_rule: str
+  ) -> backupdr_v1_messages.Operation:
+    """Triggers an on demand backup according to the given backup rule.
+
+    Args:
+      resource: The backup plan association resource.
+      backup_rule: The backup rule to be used for the adhoc backup
+
+    Returns:
+      A long running operation
+    """
+    trigger_backup_request = self.messages.TriggerBackupRequest(
+        ruleId=backup_rule,
+    )
+    request = self.messages.BackupdrProjectsLocationsBackupPlanAssociationsTriggerBackupRequest(
+        name=resource.RelativeName(),
+        triggerBackupRequest=trigger_backup_request,
+    )
+    return self.service.TriggerBackup(request)

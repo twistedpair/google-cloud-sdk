@@ -1251,7 +1251,7 @@ class Cluster(_messages.Message):
     encryptionInfo: Output only. The encryption information for the cluster.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     geminiConfig: Optional. Configuration parameters related to the Gemini in
-      Databases add-on. See go/prd-enable-duet-ai-databases for more details.
+      Databases add-on.
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
@@ -1663,7 +1663,7 @@ class FailoverInstanceRequest(_messages.Message):
 
 class GeminiClusterConfig(_messages.Message):
   r"""Cluster level configuration parameters related to the Gemini in
-  Databases add-on. See go/prd-enable-duet-ai-databases for more details.
+  Databases add-on.
 
   Fields:
     entitled: Output only. Whether the Gemini in Databases add-on is enabled
@@ -1678,7 +1678,7 @@ class GeminiClusterConfig(_messages.Message):
 
 class GeminiInstanceConfig(_messages.Message):
   r"""Instance level configuration parameters related to the Gemini in
-  Databases add-on. See go/prd-enable-duet-ai-databases for more details.
+  Databases add-on.
 
   Fields:
     entitled: Output only. Whether the Gemini in Databases add-on is enabled
@@ -1940,7 +1940,7 @@ class Instance(_messages.Message):
       error will be thrown. If this is absent for a ZONAL instance, instance
       is created in a random zone with available capacity.
     geminiConfig: Optional. Configuration parameters related to the Gemini in
-      Databases add-on. See go/prd-enable-duet-ai-databases for more details.
+      Databases add-on.
     instanceType: Required. The type of the instance. Specified at creation
       time.
     ipAddress: Output only. The IP address for the Instance. This is the
@@ -2744,6 +2744,8 @@ class RestartInstanceRequest(_messages.Message):
   r"""A RestartInstanceRequest object.
 
   Fields:
+    nodeIds: Optional. Full name of the nodes as obtained from
+      INSTANCE_VIEW_FULL to restart upon. Only applicable for read instances.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2760,8 +2762,9 @@ class RestartInstanceRequest(_messages.Message):
       execute the restart.
   """
 
-  requestId = _messages.StringField(1)
-  validateOnly = _messages.BooleanField(2)
+  nodeIds = _messages.StringField(1, repeated=True)
+  requestId = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
 
 
 class RestoreClusterRequest(_messages.Message):
@@ -2998,6 +3001,8 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
       than one zone in a region (it is highly available).
+    crossRegionReplicaConfigured: Checks for resources that are configured to
+      have redundancy, and ongoing replication across regions
     externalReplicaConfigured: A boolean attribute.
     promotableReplicaConfigured: A boolean attribute.
   """
@@ -3022,8 +3027,9 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
     AVAILABILITY_TYPE_OTHER = 4
 
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  externalReplicaConfigured = _messages.BooleanField(2)
-  promotableReplicaConfigured = _messages.BooleanField(3)
+  crossRegionReplicaConfigured = _messages.BooleanField(2)
+  externalReplicaConfigured = _messages.BooleanField(3)
+  promotableReplicaConfigured = _messages.BooleanField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message):
@@ -4128,12 +4134,10 @@ class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
 
     Values:
       ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
-      DUET_AI: The root entitlement representing Duet AI package ownership.
       GEMINI: The root entitlement representing Gemini package ownership.
     """
     ENTITLEMENT_TYPE_UNSPECIFIED = 0
-    DUET_AI = 1
-    GEMINI = 2
+    GEMINI = 1
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

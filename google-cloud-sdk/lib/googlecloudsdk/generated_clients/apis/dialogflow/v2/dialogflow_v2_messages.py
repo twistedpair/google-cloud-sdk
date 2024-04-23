@@ -5685,6 +5685,22 @@ class GoogleCloudDialogflowCxV3KnowledgeConnectorSettings(_messages.Message):
   triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 5)
 
 
+class GoogleCloudDialogflowCxV3LanguageInfo(_messages.Message):
+  r"""Represents the language information of the request.
+
+  Fields:
+    confidenceScore: The confidence score of the detected language between 0
+      and 1.
+    inputLanguageCode: The language code specified in the original request.
+    resolvedLanguageCode: The language code detected for this request based on
+      the user conversation.
+  """
+
+  confidenceScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  inputLanguageCode = _messages.StringField(2)
+  resolvedLanguageCode = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowCxV3Page(_messages.Message):
   r"""A Dialogflow CX conversation (session) can be described and visualized
   as a state machine. The states of a CX session are represented by pages. For
@@ -6796,6 +6812,7 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
     languageCode: The language code specified in the original request.
+    languageInfo: Information about the language of the request.
     messages: The list of rich message responses to present to the user.
       Webhook can choose to append or replace this list in
       WebhookResponse.fulfillment_response;
@@ -6845,15 +6862,16 @@ class GoogleCloudDialogflowCxV3WebhookRequest(_messages.Message):
   fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo', 3)
   intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestIntentInfo', 4)
   languageCode = _messages.StringField(5)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 6, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 7)
-  payload = _messages.MessageField('PayloadValue', 8)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 9)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 10)
-  text = _messages.StringField(11)
-  transcript = _messages.StringField(12)
-  triggerEvent = _messages.StringField(13)
-  triggerIntent = _messages.StringField(14)
+  languageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3LanguageInfo', 6)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3ResponseMessage', 7, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3PageInfo', 8)
+  payload = _messages.MessageField('PayloadValue', 9)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3WebhookRequestSentimentAnalysisResult', 10)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3SessionInfo', 11)
+  text = _messages.StringField(12)
+  transcript = _messages.StringField(13)
+  triggerEvent = _messages.StringField(14)
+  triggerIntent = _messages.StringField(15)
 
 
 class GoogleCloudDialogflowCxV3WebhookRequestFulfillmentInfo(_messages.Message):
@@ -8433,6 +8451,22 @@ class GoogleCloudDialogflowCxV3beta1KnowledgeConnectorSettings(_messages.Message
   triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 5)
 
 
+class GoogleCloudDialogflowCxV3beta1LanguageInfo(_messages.Message):
+  r"""Represents the language information of the request.
+
+  Fields:
+    confidenceScore: The confidence score of the detected language between 0
+      and 1.
+    inputLanguageCode: The language code specified in the original request.
+    resolvedLanguageCode: The language code detected for this request based on
+      the user conversation.
+  """
+
+  confidenceScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  inputLanguageCode = _messages.StringField(2)
+  resolvedLanguageCode = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
   r"""A Dialogflow CX conversation (session) can be described and visualized
   as a state machine. The states of a CX session are represented by pages. For
@@ -9524,6 +9558,7 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
       triggered this webhook call.
     intentInfo: Information about the last matched intent.
     languageCode: The language code specified in the original request.
+    languageInfo: Information about the language of the request.
     messages: The list of rich message responses to present to the user.
       Webhook can choose to append or replace this list in
       WebhookResponse.fulfillment_response;
@@ -9573,15 +9608,16 @@ class GoogleCloudDialogflowCxV3beta1WebhookRequest(_messages.Message):
   fulfillmentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo', 3)
   intentInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestIntentInfo', 4)
   languageCode = _messages.StringField(5)
-  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 6, repeated=True)
-  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 7)
-  payload = _messages.MessageField('PayloadValue', 8)
-  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 9)
-  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 10)
-  text = _messages.StringField(11)
-  transcript = _messages.StringField(12)
-  triggerEvent = _messages.StringField(13)
-  triggerIntent = _messages.StringField(14)
+  languageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1LanguageInfo', 6)
+  messages = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessage', 7, repeated=True)
+  pageInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1PageInfo', 8)
+  payload = _messages.MessageField('PayloadValue', 9)
+  sentimentAnalysisResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1WebhookRequestSentimentAnalysisResult', 10)
+  sessionInfo = _messages.MessageField('GoogleCloudDialogflowCxV3beta1SessionInfo', 11)
+  text = _messages.StringField(12)
+  transcript = _messages.StringField(13)
+  triggerEvent = _messages.StringField(14)
+  triggerIntent = _messages.StringField(15)
 
 
 class GoogleCloudDialogflowCxV3beta1WebhookRequestFulfillmentInfo(_messages.Message):

@@ -318,6 +318,7 @@ def GetGapicClientInstance(
     address_override_func=None,
     transport=apis_util.GapicTransport.GRPC,
     attempt_direct_path=False,
+    redact_request_body_reason=None,
 ):
   """Returns an instance of the GAPIC API client specified in the args.
 
@@ -329,6 +330,8 @@ def GetGapicClientInstance(
     transport: apis_util.GapicTransport, The transport to be used by the client.
     attempt_direct_path: bool, True if we want to attempt direct path gRPC where
       possible.
+    redact_request_body_reason: str, the reason why the request body must be
+      redacted if --log-http is used. If None, the body is not redacted.
 
   Raises:
     GapicRestUnsupportedError: If transport is REST.
@@ -350,6 +353,7 @@ def GetGapicClientInstance(
       address_override_func=address_override_func,
       transport_choice=transport,
       attempt_direct_path=attempt_direct_path,
+      redact_request_body_reason=redact_request_body_reason,
   )
 
 

@@ -3606,7 +3606,12 @@ class Object(proto.Message):
             Output only. Hashes for the data part of this
             object. This field is used for output only and
             will be silently ignored if provided in
-            requests.
+            requests. The checksums of the complete object
+            regardless of data range. If the object is
+            downloaded in full, the client should compute
+            one of these checksums over the downloaded
+            object and compare it against the value provided
+            here.
         update_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The modification time of the
             object metadata. Set initially to object

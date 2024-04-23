@@ -193,6 +193,17 @@ def AddAction(parser, required=True):
   )
 
 
+def AddPacketMirroringAction(parser, required=True):
+  """Adds the action argument to the argparse."""
+  parser.add_argument(
+      '--action',
+      choices=['mirror', 'do_not_mirror', 'goto_next'],
+      type=lambda x: x.lower(),
+      required=required,
+      help='Action to take if the request matches the match condition.',
+  )
+
+
 def AddFirewallPolicyId(parser, required=True, operation=None):
   """Adds the firewall policy ID argument to the argparse."""
   parser.add_argument(

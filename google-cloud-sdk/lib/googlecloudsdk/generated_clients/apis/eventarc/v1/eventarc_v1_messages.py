@@ -191,6 +191,8 @@ class Channel(_messages.Message):
     pubsubTopic: Output only. The name of the Pub/Sub topic created and
       managed by Eventarc system as a transport for the event delivery.
       Format: `projects/{project}/topics/{topic_id}`.
+    satisfiesPzs: Output only. Whether or not this Channel satisfies the
+      requirements of physical zone separation
     state: Output only. The state of a Channel.
     uid: Output only. Server assigned unique identifier for the channel. The
       value is a UUID4 string and guaranteed to remain unchanged until the
@@ -228,9 +230,10 @@ class Channel(_messages.Message):
   name = _messages.StringField(4)
   provider = _messages.StringField(5)
   pubsubTopic = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  satisfiesPzs = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ChannelConnection(_messages.Message):
@@ -1802,6 +1805,8 @@ class Trigger(_messages.Message):
     name: Required. The resource name of the trigger. Must be unique within
       the location of the project and must be in
       `projects/{project}/locations/{location}/triggers/{trigger}` format.
+    satisfiesPzs: Output only. Whether or not this Trigger satisfies the
+      requirements of physical zone separation
     serviceAccount: Optional. The IAM service account email associated with
       the trigger. The service account represents the identity of the trigger.
       The `iam.serviceAccounts.actAs` permission must be granted on the
@@ -1877,10 +1882,11 @@ class Trigger(_messages.Message):
   eventFilters = _messages.MessageField('EventFilter', 7, repeated=True)
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  transport = _messages.MessageField('Transport', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  satisfiesPzs = _messages.BooleanField(10)
+  serviceAccount = _messages.StringField(11)
+  transport = _messages.MessageField('Transport', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 encoding.AddCustomJsonFieldMapping(

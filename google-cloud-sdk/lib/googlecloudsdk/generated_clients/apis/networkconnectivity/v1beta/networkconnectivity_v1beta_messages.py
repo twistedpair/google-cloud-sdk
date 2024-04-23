@@ -149,6 +149,51 @@ class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Messa
   spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
 
 
+class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Message):
+  r"""Message describing CustomHardwareInstance object
+
+  Messages:
+    LabelsValue: Optional. User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the CustomHardwareInstance was created.
+    labels: Optional. User-defined labels.
+    name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
+      {project}/locations/{location}/customHardwareInstances/{custom_hardware_
+      instance}`.
+    updateTime: Output only. Time when the CustomHardwareInstance was updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages.Message):
   r"""Message describing CustomHardwareLinkAttachment object
 
@@ -218,6 +263,56 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
   network = _messages.StringField(5)
   project = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_messages.Message):
+  r"""Message describing CustomHardwareLinkConnectPair object
+
+  Messages:
+    LabelsValue: Optional. User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the CustomHardwareLinkConnectPair was
+      created.
+    labels: Optional. User-defined labels.
+    name: Identifier. The name of a CustomHardwareLinkConnectPair. The name is
+      restricted to letters, numbers and with the first character being a
+      letter, the last a letter or a number. Format: `projects/{project}/locat
+      ions/{location}/customHardwareLinkConnectPairs/{custom_hardware_link_con
+      nect_pair}` where custom_hardware_link_connect_pair must match the regex
+      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+    updateTime: Output only. Time when the CustomHardwareLinkConnectPair was
+      updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
@@ -497,6 +592,22 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
   vpcNetwork = _messages.StringField(3)
 
 
+class GoogleCloudNetworkconnectivityV1betaListCustomHardwareInstancesResponse(_messages.Message):
+  r"""Response for ListCustomHardwareInstances.
+
+  Fields:
+    customHardwareInstances: The list of CustomHardwareInstance
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    unreachable: Locations that could not be reached.
+  """
+
+  customHardwareInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkAttachmentsResponse(_messages.Message):
   r"""Response for ListCustomHardwareLinkAttachments.
 
@@ -509,6 +620,22 @@ class GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkAttachmentsRespo
   """
 
   customHardwareLinkAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkConnectPairsResponse(_messages.Message):
+  r"""Response for ListCustomHardwareLinkConnectPairs.
+
+  Fields:
+    customHardwareLinkConnectPairs: The list of CustomHardwareLinkConnectPair
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    unreachable: Locations that could not be reached.
+  """
+
+  customHardwareLinkConnectPairs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1847,6 +1974,133 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesCreateRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsCustomHardwareInstancesCreateRequest
+  object.
+
+  Fields:
+    customHardwareInstanceId: Required. Unique id of the
+      CustomHardwareInstance. If auto-generating Id server-side, remove this
+      field and custom_hardware_instance_id from the method_signature of
+      Create RPC
+    googleCloudNetworkconnectivityV1betaCustomHardwareInstance: A
+      GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance resource to
+      be passed as the request body.
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  customHardwareInstanceId = _messages.StringField(1)
+  googleCloudNetworkconnectivityV1betaCustomHardwareInstance = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesDeleteRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsCustomHardwareInstancesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the CustomHardwareInstance to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesListRequest
+  object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results listed in
+      the response.
+    orderBy: Optional. Sort the results by a certain order.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent resource's name of the
+      CustomHardwareInstance.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest
+  object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaCustomHardwareInstance: A
+      GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance resource to
+      be passed as the request body.
+    name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
+      {project}/locations/{location}/customHardwareInstances/{custom_hardware_
+      instance}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the CustomHardwareInstance resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  googleCloudNetworkconnectivityV1betaCustomHardwareInstance = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreat
   eRequest object.
@@ -1968,6 +2222,147 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsPatchRequ
   """
 
   googleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCreateRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCrea
+  teRequest object.
+
+  Fields:
+    customHardwareLinkConnectPairId: Required. Unique id of the
+      CustomHardwareLinkConnectPair. (i.e. 'foo' in
+      '[...]/projects/*/locations/*/customHardwareLinkConnectPairs/foo') See
+      https://google.aip.dev/122#resource-id-segments
+    googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair: A
+      GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair
+      resource to be passed as the request body.
+    parent: Required. The parent resource's name of the
+      CustomHardwareLinkConnectPair. Use the following format:
+      `projects/{project}/locations/{location}`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  customHardwareLinkConnectPairId = _messages.StringField(1)
+  googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair', 2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsDeleteRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsDele
+  teRequest object.
+
+  Fields:
+    name: Required. The name is restricted to letters, numbers and with the
+      first character being a letter, the last a letter or a number. Format: `
+      projects/{project}/locations/{location}/customHardwareLinkConnectPairs/{
+      custom_hardware_link_connect_pair}` where
+      custom_hardware_link_connect_pair must match the regex
+      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name is restricted to letters, numbers and with the
+      first character being a letter, the last a letter or a number. Format: `
+      projects/{project}/locations/{location}/customHardwareLinkConnectPairs/{
+      custom_hardware_link_connect_pair}` where
+      custom_hardware_link_connect_pair must match the regex
+      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsList
+  Request object.
+
+  Fields:
+    filter: Optional. A filter expression that filters the results listed in
+      the response.
+    orderBy: Optional. Sort the results by a certain order.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The parent resource's name of the
+      CustomHardwareLinkConnectPair. Use the following format:
+      `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatc
+  hRequest object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair: A
+      GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair
+      resource to be passed as the request body.
+    name: Identifier. The name of a CustomHardwareLinkConnectPair. The name is
+      restricted to letters, numbers and with the first character being a
+      letter, the last a letter or a number. Format: `projects/{project}/locat
+      ions/{location}/customHardwareLinkConnectPairs/{custom_hardware_link_con
+      nect_pair}` where custom_hardware_link_connect_pair must match the regex
+      `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the CustomHardwareLinkConnectPair resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then all fields will be overwritten.
+  """
+
+  googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)

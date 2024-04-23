@@ -271,7 +271,7 @@ class APIMethod(object):
     """Gets the collection that matches the API parameters of this method.
 
     Methods apply to elements of a collection. The resource argument is always
-    of the type of that collection.  List is an exception where you are listing
+    of the type of that collection. List is an exception where you are listing
     items of that collection so the argument to be provided is that of the
     parent collection. This method returns the collection that should be used
     to parse the resource for this specific method.
@@ -284,6 +284,11 @@ class APIMethod(object):
       return self.collection
     collections = GetAPICollections(
         self.collection.api_name, self.collection.api_version)
+    for c in collections:
+      if (self.detailed_params == c.detailed_params
+          and c.detailed_path in self.detailed_path):
+        return c
+    # Fallback to collection that matches params only
     for c in collections:
       if self.detailed_params == c.detailed_params:
         return c

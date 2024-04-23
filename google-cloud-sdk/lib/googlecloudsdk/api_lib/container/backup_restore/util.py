@@ -126,21 +126,41 @@ def WaitForBackupToFinish(backup,
       exponential_sleep_multiplier=exponential_sleep_multiplier,
       jitter_ms=jitter_ms,
       wait_ceiling_ms=wait_ceiling_ms,
-      status_update_func=status_update)
+      status_update_func=status_update,
+  )
   backup_poller = BackupPoller(client, messages)
   try:
     result = retryer.RetryOnResult(
         func=backup_poller.Poll,
         args=(backup,),
         should_retry_if=backup_poller.IsNotDone,
-        sleep_ms=sleep_ms)
+        sleep_ms=sleep_ms,
+    )
     log.Print('Backup completed. Backup state: {0}'.format(result.state))
     return result
   # No need to catch MaxRetrialsException since we retry unlimitedly.
   except retry.WaitException:
     raise WaitForCompletionTimeoutError(
-        'Timeout waiting for backup to complete. Backup is not completed, use "gcloud container backup-restore backups describe" command to check backup status.'
+        'Timeout waiting for backup to complete. Backup is not completed, use'
+        ' "gcloud container backup-restore backups describe" command to check'
+        ' backup status.'
     )
+
+
+def GetBackupIndexDownloadUrl(backup_ref, client=None):
+  """Get a temporary download URL for the backup resource index."""
+  if client is None:
+    client = GetClientInstance()
+  message = GetMessagesModule()
+  req = (
+      message.GkebackupProjectsLocationsBackupPlansBackupsGetBackupIndexDownloadUrlRequest()
+  )
+  req.backup = backup_ref.RelativeName()
+  return (
+      client.projects_locations_backupPlans_backups.GetBackupIndexDownloadUrl(
+          req
+      )
+  )
 
 
 def CreateRestore(restore_ref,
@@ -216,18 +236,22 @@ def WaitForRestoreToFinish(restore,
       exponential_sleep_multiplier=exponential_sleep_multiplier,
       jitter_ms=jitter_ms,
       wait_ceiling_ms=wait_ceiling_ms,
-      status_update_func=status_update)
+      status_update_func=status_update,
+  )
   restore_poller = RestorePoller(client, messages)
   try:
     result = retryer.RetryOnResult(
         func=restore_poller.Poll,
         args=(restore,),
         should_retry_if=restore_poller.IsNotDone,
-        sleep_ms=sleep_ms)
+        sleep_ms=sleep_ms,
+    )
     log.Print('Restore completed. Restore state: {0}'.format(result.state))
     return result
   # No need to catch MaxRetrialsException since we retry unlimitedly.
   except retry.WaitException:
     raise WaitForCompletionTimeoutError(
-        'Timeout waiting for restore to complete. Restore is not completed, use "gcloud container backup-restore restores describe" command to check restore status.'
+        'Timeout waiting for restore to complete. Restore is not completed, use'
+        ' "gcloud container backup-restore restores describe" command to check'
+        ' restore status.'
     )

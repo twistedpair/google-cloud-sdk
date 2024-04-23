@@ -41,6 +41,7 @@ def CreateImage(
   """Creates an image from Source."""
   # Automatic base image updates implies call to build API.
   delegate_builds = base_image or delegate_builds
+  base_image_from_build = None
   # Upload source and call build API if it's in alpha and `--delegate-builds`
   # flag is set. Otherwise, default behavior stays the same.
   if release_track is base.ReleaseTrack.ALPHA and delegate_builds:
@@ -54,7 +55,7 @@ def CreateImage(
         release_track,
         base_image,
     )
-    response_dict, build_log_url = _SubmitBuild(
+    response_dict, build_log_url, base_image_from_build = _SubmitBuild(
         tracker,
         release_track,
         region,
@@ -91,7 +92,10 @@ def CreateImage(
     return None  # Failed to create an image
   else:
     tracker.CompleteStage(stages.BUILD_READY)
-    return response_dict['results']['images'][0]['digest']
+    return (
+        response_dict['results']['images'][0]['digest'],
+        base_image_from_build,
+    )
 
 
 def _PrepareBuildConfig(
@@ -152,9 +156,7 @@ def _PrepareBuildConfig(
     if build_pack is None:
       assert build_config.steps[0].name == 'gcr.io/cloud-builders/docker'
       # https://docs.docker.com/engine/reference/commandline/image_build/
-      build_config.steps[0].args.extend(
-          ['--label', f'google.source={uri}']
-      )
+      build_config.steps[0].args.extend(['--label', f'google.source={uri}'])
 
     build_config.source = build_messages.Source(
         storageSource=build_messages.StorageSource(
@@ -243,10 +245,11 @@ def _PrepareSubmitBuildRequest(
   source = sources.Upload(build_source, region, resource_ref)
   tracker.CompleteStage(stages.UPLOAD_SOURCE)
   parent = 'projects/{project}/locations/{region}'.format(
-      project=properties.VALUES.core.project.Get(required=True),
-      region=region)
+      project=properties.VALUES.core.project.Get(required=True), region=region
+  )
   storage_source = messages.GoogleCloudRunV2StorageSource(
-      bucket=source.bucket, object=source.name, generation=source.generation)
+      bucket=source.bucket, object=source.name, generation=source.generation
+  )
 
   buildpack_build = None
   docker_build = None
@@ -255,12 +258,14 @@ def _PrepareSubmitBuildRequest(
     # https://github.com/GoogleCloudPlatform/buildpacks/blob/main/cmd/utils/label/README.md
     # uri = f'gs://{source.bucket}/{source.name}#{source.generation}'
     envs = build_pack[0].get('envs', [])
-    function_target_env = [x for x in envs
-                           if x.startswith('GOOGLE_FUNCTION_TARGET')]
+    function_target_env = [
+        x for x in envs if x.startswith('GOOGLE_FUNCTION_TARGET')
+    ]
     if function_target_env:
       function_target = function_target_env[0].split('=')[1]
     buildpack_build = messages.GoogleCloudRunV2BuildpacksBuild(
-        baseImage=base_image, functionTarget=function_target)
+        baseImage=base_image, functionTarget=function_target
+    )
   else:
     docker_build = messages.GoogleCloudRunV2DockerBuild()
   submit_build_request = messages.RunProjectsLocationsBuildsSubmitRequest(
@@ -269,8 +274,9 @@ def _PrepareSubmitBuildRequest(
           storageSource=storage_source,
           imageUri=build_image,
           buildpackBuild=buildpack_build,
-          dockerBuild=docker_build,),
-      )
+          dockerBuild=docker_build,
+      ),
+  )
   return submit_build_request
 
 
@@ -280,16 +286,31 @@ def _SubmitBuild(
     region,
     submit_build_request,
 ):
-  """Calls Build API to submit a build."""
+  """Call Build API to submit a build.
+
+  Arguments:
+    tracker: StagedProgressTracker, to report on the progress of releasing.
+    release_track: ReleaseTrack, the release track of a command calling this.
+    region: str, The region of the control plane.
+    submit_build_request: SubmitBuildRequest, the request to submit build.
+
+  Returns:
+    response_dict: Build resource returned by Cloud build.
+    build_log_url: The url to build log
+    build_response.baseImageUri: The rectified uri of the base image that should
+    be used in automatic base image update.
+  """
   run_client = run_util.GetClientInstance(release_track)
   build_messages = cloudbuild_util.GetMessagesModule()
 
   build_response = run_client.projects_locations_builds.Submit(
-      submit_build_request)
+      submit_build_request
+  )
   build_op = build_response.buildOperation
   json = encoding.MessageToJson(build_op.metadata)
   build = encoding.JsonToMessage(
-      build_messages.BuildOperationMetadata, json).build
+      build_messages.BuildOperationMetadata, json
+  ).build
   name = f'projects/{build.projectId}/locations/{region}/operations/{build.id}'
 
   build_op_ref = resources.REGISTRY.ParseRelativeName(
@@ -305,7 +326,7 @@ def _SubmitBuild(
       ),
   )
   response_dict = _PollUntilBuildCompletes(build_op_ref)
-  return response_dict, build_log_url
+  return response_dict, build_log_url, build_response.baseImageUri
 
 
 def _PollUntilBuildCompletes(build_op_ref):

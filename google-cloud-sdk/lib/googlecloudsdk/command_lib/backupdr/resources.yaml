@@ -75,7 +75,6 @@ backupPlans:
     help: The ID of the Backup Plan
   disable_auto_completers: false
 
-
 backupPlanAssociations:
   name: backup_plan_association
   collection: backupdr.projects.locations.backupPlanAssociations
@@ -130,4 +129,36 @@ dataSource:
     parameter_name: dataSourcesId
     attribute_name: data_source
     help: The ID of the Data Source.
+  disable_auto_completers: false
+
+dataSourceDefault:
+  name: dataSource
+  collection: backupdr.projects.locations.backupVaults.dataSources
+  request_id_field: dataSourceId
+  attributes:
+  - *project
+  - *locationDefaultGlobal
+  - *backupVaultDefault
+  - &dataSourceDefault
+    parameter_name: dataSourcesId
+    attribute_name: data_source
+    help: The ID of the Data Source.
+    fallthroughs:
+    - value: "-"
+      hint: |
+        default is all data sources
+
+backup:
+  name: backup
+  collection: backupdr.projects.locations.backupVaults.dataSources.backups
+  request_id_field: backupId
+  attributes:
+  - *project
+  - *location
+  - *backupVaultId
+  - *dataSourceId
+  - &backupId
+    parameter_name: backupsId
+    attribute_name: backup
+    help: The ID of the Backup.
   disable_auto_completers: false

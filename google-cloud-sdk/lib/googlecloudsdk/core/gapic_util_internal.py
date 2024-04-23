@@ -568,8 +568,9 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor,
   Logging is enabled if the --log-http flag is provided on any command.
   """
 
-  def __init__(self, credentials):
+  def __init__(self, credentials, redact_request_body_reason=None):
     self._credentials = credentials
+    self._redact_request_body_reason = redact_request_body_reason
 
   def log_metadata(self, metadata):
     """Logs the metadata.
@@ -606,7 +607,15 @@ class LoggingInterceptor(grpc.UnaryUnaryClientInterceptor,
     self.log_metadata(client_call_details.metadata)
     log.status.Print('== headers end ==')
     log.status.Print('== body start ==')
-    log.status.Print('{}'.format(request))
+    show_request_body = (
+        properties.VALUES.core.log_http_show_request_body.GetBool()
+    )
+    if (self._redact_request_body_reason is None) or show_request_body:
+      log.status.Print('{}'.format(request))
+    else:
+      log.status.Print(
+          'Body redacted: {}'.format(self._redact_request_body_reason)
+      )
     log.status.Print('== body end ==')
     log.status.Print('==== request end ====')
 
@@ -866,6 +875,7 @@ def MakeTransport(
     address_override_func,
     mtls_enabled=False,
     attempt_direct_path=False,
+    redact_request_body_reason=None,
 ):
   """Instantiates a grpc transport."""
   transport_class = client_class.get_transport_class()
@@ -889,12 +899,15 @@ def MakeTransport(
   interceptors.append(APIEnablementInterceptor())
   interceptors.append(RequestOrgRestrictionInterceptor())
   if properties.VALUES.core.log_http.GetBool():
-    interceptors.append(LoggingInterceptor(credentials))
+    interceptors.append(
+        LoggingInterceptor(
+            credentials,
+            redact_request_body_reason=redact_request_body_reason,
+        )
+    )
 
   channel = grpc.intercept_channel(channel, *interceptors)
-  return transport_class(
-      channel=channel,
-      host=address)
+  return transport_class(channel=channel, host=address)
 
 
 def MakeAsyncTransport(

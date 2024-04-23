@@ -198,10 +198,6 @@ apis:
       resources:
         projects:
           path: projects/{projectId}
-        # Deprecated
-        # TODO(b/319097562): cleanup once the renaming is done.
-        projects.instances.tables.views:
-          path: projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/views/{viewsId}
         projects.instances.tables.authorizedViews:
           path: projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}
   binaryauthorization:
@@ -410,6 +406,11 @@ apis:
     v1alpha:
       discovery_doc: cloudnumberregistry_v1alpha.json
       default: true
+      resources:
+        projects.locations.registryBooks.nodeEvents:
+          path: projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/nodeEvents
+        projects.locations.registryBooks.historicalEvents:
+          path: projects/{projectsId}/locations/{locationsId}/registryBooks/{registryBooksId}/historicalEvents
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
@@ -667,6 +668,12 @@ apis:
     v2beta:
       discovery_doc: deploymentmanager_v2beta.json
       mtls_endpoint_override: https://www.mtls.googleapis.com/deploymentmanager/v2beta/
+  developerconnect:
+    v1:
+      default: true
+      discovery_doc: developerconnect_v1.json
+    v1alpha:
+      discovery_doc: developerconnect_v1alpha.json
   dialogflow:
     v2:
       discovery_doc: dialogflow_v2.json
@@ -976,6 +983,10 @@ apis:
       discovery_doc: managedidentities_v1beta1.json
     v1:
       discovery_doc: managedidentities_v1.json
+      default: true
+  managedkafka:
+    v1:
+      discovery_doc: managedkafka_v1.json
       default: true
   logging:
     v2:
@@ -1867,6 +1878,10 @@ canonical_surfaces:
   deploymentmanager:
     name: deploymentmanager
     command: deployment-manager
+  developerconnect:
+    name: developerconnect
+    command: developerconnect
+    hidden: true
   discovery:
     name: discovery
     hidden: true
@@ -1954,6 +1969,10 @@ canonical_surfaces:
   managedidentities:
     name: managedidentities
     command: active-directory
+  managedkafka:
+    name: managedkafka
+    command: managed-kafka
+    hidden: true
   manager:
     name: manager
     hidden: true

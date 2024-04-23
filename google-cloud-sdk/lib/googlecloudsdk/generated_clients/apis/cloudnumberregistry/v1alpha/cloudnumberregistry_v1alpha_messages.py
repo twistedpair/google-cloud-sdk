@@ -171,9 +171,9 @@ class CloudnumberregistryProjectsLocationsRegistryBooksGetRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
-class CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsRequest(_messages.Message):
+class CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest(_messages.Message):
   r"""A
-  CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsRequest
+  CloudnumberregistryProjectsLocationsRegistryBooksHistoricalEventsShowRequest
   object.
 
   Fields:
@@ -213,8 +213,8 @@ class CloudnumberregistryProjectsLocationsRegistryBooksListRequest(_messages.Mes
   parent = _messages.StringField(5, required=True)
 
 
-class CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsRequest
+class CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest(_messages.Message):
+  r"""A CloudnumberregistryProjectsLocationsRegistryBooksNodeEventsShowRequest
   object.
 
   Fields:
@@ -384,14 +384,14 @@ class CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesPatchRequest
   updateMask = _messages.StringField(4)
 
 
-class CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest(_messages.Message):
-  r"""A CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest
+class CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest(_messages.Message):
+  r"""A
+  CloudnumberregistryProjectsLocationsRegistryBooksRegistryNodesSearchRequest
   object.
 
   Fields:
     attributeKeys: Optional. A list of attribute keys owned by the registry
       nodes.
-    book: Required. Name of the resource
     ipRange: Optional. IP range to filter for registry node.
     keywords: Optional. A list of keywords that are contained by the attribute
       values within registry nodes.
@@ -400,16 +400,17 @@ class CloudnumberregistryProjectsLocationsRegistryBooksSearchRegistryRequest(_me
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
+    parent: Required. Name of the parent resource
     source: Optional. Source filter of the registry nodes.
   """
 
   attributeKeys = _messages.StringField(1, repeated=True)
-  book = _messages.StringField(2, required=True)
-  ipRange = _messages.StringField(3)
-  keywords = _messages.StringField(4, repeated=True)
-  orderBy = _messages.StringField(5)
-  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(7)
+  ipRange = _messages.StringField(2)
+  keywords = _messages.StringField(3, repeated=True)
+  orderBy = _messages.StringField(4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  parent = _messages.StringField(7, required=True)
   source = _messages.StringField(8)
 
 
@@ -432,7 +433,7 @@ class HistoricalEvent(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     ipRange: Required. IP range of registry node to view history.
     labels: Optional. Labels as key value pairs
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     nodeEvents: Output only. List of node events of IP range.
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -628,7 +629,7 @@ class NodeEvent(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
-    name: Required. name of resource
+    name: Required. Identifier. name of resource
     postEventNode: Output only. The registry node before the node event.
     preEventNode: Output only. The registry node before the node event.
     updateTime: Output only. [Output only] Update time stamp
@@ -894,7 +895,7 @@ class RegistryNode(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
-class SearchRegistryResponse(_messages.Message):
+class SearchRegistryNodesResponse(_messages.Message):
   r"""Message represents the response of registry search API.
 
   Fields:

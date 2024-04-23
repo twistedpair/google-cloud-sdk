@@ -1,0 +1,11 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: configdelivery v1alpha RollingStrategy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  maxConcurrent:
+    description: |-
+      Maximum number of clusters to update the resource bundle on concurrently.
+    type: integer

@@ -2100,11 +2100,13 @@ class PipelineRef(_messages.Message):
       GCB_REPO: GCB repo resolver.
       GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
         resolver/
+      DEVELOPER_CONNECT: Developer Connect resolver.
     """
     RESOLVER_NAME_UNSPECIFIED = 0
     BUNDLES = 1
     GCB_REPO = 2
     GIT = 3
+    DEVELOPER_CONNECT = 4
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
@@ -2177,6 +2179,8 @@ class PipelineRun(_messages.Message):
     pipelineRunStatus: Pipelinerun status the user can provide. Used for
       cancellation.
     pipelineSpec: PipelineSpec defines the desired state of Pipeline.
+    pipelineSpecYaml: Output only. Inline pipelineSpec yaml string, used by
+      workflow run requests.
     provenance: Optional. Provenance configuration.
     record: Output only. The `Record` of this `PipelineRun`. Format: `projects
       /{project}/locations/{location}/results/{result_id}/records/{record_id}`
@@ -2275,21 +2279,22 @@ class PipelineRun(_messages.Message):
   pipelineRef = _messages.MessageField('PipelineRef', 11)
   pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 12)
   pipelineSpec = _messages.MessageField('PipelineSpec', 13)
-  provenance = _messages.MessageField('Provenance', 14)
-  record = _messages.StringField(15)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 16)
-  results = _messages.MessageField('PipelineRunResult', 17, repeated=True)
-  security = _messages.MessageField('Security', 18)
-  serviceAccount = _messages.StringField(19)
-  skippedTasks = _messages.MessageField('SkippedTask', 20, repeated=True)
-  startTime = _messages.StringField(21)
-  timeouts = _messages.MessageField('TimeoutFields', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  worker = _messages.MessageField('Worker', 25)
-  workerPool = _messages.StringField(26)
-  workflow = _messages.StringField(27)
-  workspaces = _messages.MessageField('WorkspaceBinding', 28, repeated=True)
+  pipelineSpecYaml = _messages.StringField(14)
+  provenance = _messages.MessageField('Provenance', 15)
+  record = _messages.StringField(16)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 17)
+  results = _messages.MessageField('PipelineRunResult', 18, repeated=True)
+  security = _messages.MessageField('Security', 19)
+  serviceAccount = _messages.StringField(20)
+  skippedTasks = _messages.MessageField('SkippedTask', 21, repeated=True)
+  startTime = _messages.StringField(22)
+  timeouts = _messages.MessageField('TimeoutFields', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  worker = _messages.MessageField('Worker', 26)
+  workerPool = _messages.StringField(27)
+  workflow = _messages.StringField(28)
+  workspaces = _messages.MessageField('WorkspaceBinding', 29, repeated=True)
 
 
 class PipelineRunResult(_messages.Message):
@@ -3192,6 +3197,8 @@ class Step(_messages.Message):
     env: List of environment variables to set in the container.
     image: Docker image name.
     name: Name of the container specified as a DNS_LABEL.
+    params: Optional. Optional parameters passed to the StepAction.
+    ref: Optional. Optional reference to a remote StepAction.
     script: The contents of an executable file to execute.
     securityContext: Optional. SecurityContext defines the security options
       the Step should be run with. If set, the fields of SecurityContext
@@ -3208,11 +3215,48 @@ class Step(_messages.Message):
   env = _messages.MessageField('EnvVar', 3, repeated=True)
   image = _messages.StringField(4)
   name = _messages.StringField(5)
-  script = _messages.StringField(6)
-  securityContext = _messages.MessageField('SecurityContext', 7)
-  timeout = _messages.StringField(8)
-  volumeMounts = _messages.MessageField('VolumeMount', 9, repeated=True)
-  workingDir = _messages.StringField(10)
+  params = _messages.MessageField('Param', 6, repeated=True)
+  ref = _messages.MessageField('StepRef', 7)
+  script = _messages.StringField(8)
+  securityContext = _messages.MessageField('SecurityContext', 9)
+  timeout = _messages.StringField(10)
+  volumeMounts = _messages.MessageField('VolumeMount', 11, repeated=True)
+  workingDir = _messages.StringField(12)
+
+
+class StepRef(_messages.Message):
+  r"""A reference to a remote Step, i.e. a StepAction.
+
+  Enums:
+    ResolverValueValuesEnum: Optional. Type of the resolver.
+
+  Fields:
+    name: Optional. Name of the step.
+    params: Optional. Parameters used to control the resolution.
+    resolver: Optional. Type of the resolver.
+  """
+
+  class ResolverValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the resolver.
+
+    Values:
+      RESOLVER_NAME_UNSPECIFIED: Default enum type; should not be used.
+      BUNDLES: Bundles resolver. https://tekton.dev/docs/pipelines/bundle-
+        resolver/
+      GCB_REPO: GCB repo resolver.
+      GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
+        resolver/
+      DEVELOPER_CONNECT: Developer Connect resolver.
+    """
+    RESOLVER_NAME_UNSPECIFIED = 0
+    BUNDLES = 1
+    GCB_REPO = 2
+    GIT = 3
+    DEVELOPER_CONNECT = 4
+
+  name = _messages.StringField(1)
+  params = _messages.MessageField('Param', 2, repeated=True)
+  resolver = _messages.EnumField('ResolverValueValuesEnum', 3)
 
 
 class StepState(_messages.Message):
@@ -3221,16 +3265,20 @@ class StepState(_messages.Message):
   Fields:
     imageId: Image ID of the StepState.
     name: Name of the StepState.
+    results: Output only. Holds optional results produced by a StepAction.
     running: Details about a running container
     terminated: Details about a terminated container
+    terminationReason: Output only. Describes the final status of a Step.
     waiting: Details about a waiting container
   """
 
   imageId = _messages.StringField(1)
   name = _messages.StringField(2)
-  running = _messages.MessageField('ContainerStateRunning', 3)
-  terminated = _messages.MessageField('ContainerStateTerminated', 4)
-  waiting = _messages.MessageField('ContainerStateWaiting', 5)
+  results = _messages.MessageField('TaskRunResult', 3, repeated=True)
+  running = _messages.MessageField('ContainerStateRunning', 4)
+  terminated = _messages.MessageField('ContainerStateTerminated', 5)
+  terminationReason = _messages.StringField(6)
+  waiting = _messages.MessageField('ContainerStateWaiting', 7)
 
 
 class StepTemplate(_messages.Message):
@@ -3276,11 +3324,13 @@ class TaskRef(_messages.Message):
       GCB_REPO: GCB repo resolver.
       GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
         resolver/
+      DEVELOPER_CONNECT: Developer Connect resolver.
     """
     RESOLVER_NAME_UNSPECIFIED = 0
     BUNDLES = 1
     GCB_REPO = 2
     GIT = 3
+    DEVELOPER_CONNECT = 4
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
@@ -3303,6 +3353,8 @@ class TaskResult(_messages.Message):
     properties: When type is OBJECT, this map holds the names of fields inside
       that object along with the type of data each field holds.
     type: The type of data that the result holds.
+    value: Optional. Optionally used to initialize a Task's result with a
+      Step's result.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -3348,6 +3400,7 @@ class TaskResult(_messages.Message):
   name = _messages.StringField(2)
   properties = _messages.MessageField('PropertiesValue', 3)
   type = _messages.EnumField('TypeValueValuesEnum', 4)
+  value = _messages.MessageField('ParamValue', 5)
 
 
 class TaskRun(_messages.Message):

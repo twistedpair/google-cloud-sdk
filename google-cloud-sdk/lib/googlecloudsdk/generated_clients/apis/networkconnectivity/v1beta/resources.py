@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CUSTOMHARDWAREINSTANCES = (
+      'projects.locations.customHardwareInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'customHardwareInstances/{customHardwareInstancesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CUSTOMHARDWARELINKATTACHMENTS = (
       'projects.locations.customHardwareLinkAttachments',
       '{+name}',
@@ -49,6 +60,18 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'customHardwareLinkAttachments/'
               '{customHardwareLinkAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_CUSTOMHARDWARELINKCONNECTPAIRS = (
+      'projects.locations.customHardwareLinkConnectPairs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'customHardwareLinkConnectPairs/'
+              '{customHardwareLinkConnectPairsId}',
       },
       ['name'],
       True

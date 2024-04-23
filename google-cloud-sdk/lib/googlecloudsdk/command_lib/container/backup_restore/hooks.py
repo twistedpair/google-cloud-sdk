@@ -187,7 +187,7 @@ def PreprocessUpdateBackupPlan(ref, args, request):
   """Preprocesses request and update mask for backup update command."""
   del ref
 
-  # Clear other fields in the backup scope mutex group.
+  # Clear other fields in the backup scope and backup schedule mutex group.
   if args.IsSpecified('selected_namespaces'):
     request.backupPlan.backupConfig.selectedApplications = None
     request.backupPlan.backupConfig.allNamespaces = None
@@ -198,16 +198,36 @@ def PreprocessUpdateBackupPlan(ref, args, request):
     request.backupPlan.backupConfig.selectedApplications = None
     request.backupPlan.backupConfig.selectedNamespaces = None
 
-  # Correct update mask for backup scope mutex group.
-  new_masks = []
+  # Unlike creation, update with both flags can result in both fields cleared
+  # using the below logic, so we need to catch and error out here early.
+  if (args.IsSpecified('target_rpo_minutes') and
+      args.IsSpecified('cron_schedule')):
+    raise exceptions.InvalidArgumentException(
+        '--cron-schedule',
+        'Cannot specify both --target_rpo_minutes and --cron_schedule.')
+
+  if args.IsSpecified('target_rpo_minutes'):
+    request.backupPlan.backupSchedule.cronSchedule = None
+  if args.IsSpecified('cron_schedule'):
+    request.backupPlan.backupSchedule.rpoConfig = None
+
+  # Correct update mask for backup scope and backup schedule mutex group.
+  new_masks = set()
   for mask in request.updateMask.split(','):
     if mask.startswith('backupConfig.selectedNamespaces'):
-      mask = 'backupConfig.selectedNamespaces'
+      new_masks.add('backupConfig.selectedNamespaces')
     elif mask.startswith('backupConfig.selectedApplications'):
-      mask = 'backupConfig.selectedApplications'
-    # Other masks are unchanged.
-    new_masks.append(mask)
-  request.updateMask = ','.join(new_masks)
+      new_masks.add('backupConfig.selectedApplications')
+    elif mask.startswith('backupSchedule.cronSchedule'):
+      new_masks.add('backupSchedule.cronSchedule')
+      new_masks.add('backupSchedule.rpoConfig')
+    elif mask.startswith('backupSchedule.rpoConfig.targetRpoMinutes'):
+      new_masks.add('backupSchedule.rpoConfig.targetRpoMinutes')
+      new_masks.add('backupSchedule.cronSchedule')
+    else:
+      new_masks.add(mask)
+  # use set to dedup and canonicalize
+  request.updateMask = ','.join(sorted(new_masks))
   return request
 
 
@@ -363,3 +383,19 @@ def ReadTransformationRuleFile(file_arg):
       ),
   )
   return temp_restore_config.transformationRules
+
+
+def ReadExclusionWindowsFile(file_arg):
+  """Reads content of the exclusion window file specified in file_arg."""
+  if not file_arg:
+    return None
+  data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
+  ms = api_util.GetMessagesModule()
+  temp_rpo_config = export_util.Import(
+      message_type=ms.RpoConfig,
+      stream=data,
+      schema_path=export_util.GetSchemaPath(
+          'gkebackup', 'v1', 'ExclusionWindows'
+      ),
+  )
+  return temp_rpo_config.exclusionWindows

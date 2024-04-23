@@ -2708,6 +2708,9 @@ class SnapshotSchedulePolicy(_messages.Message):
       backend.
     labels: Labels as key value pairs.
     name: Output only. The name of the snapshot schedule policy.
+    pod: Immutable. Pod name. Pod is an independent part of infrastructure.
+      SnapshotSchedulePolicies can only be connected to the volumes allocated
+      in the same pod.
     schedules: The snapshot schedules contained in this policy. You can
       specify a maximum of 5 schedules.
     state: The state of the snapshot schedule policy.
@@ -2751,8 +2754,9 @@ class SnapshotSchedulePolicy(_messages.Message):
   id = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  schedules = _messages.MessageField('Schedule', 5, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  pod = _messages.StringField(5)
+  schedules = _messages.MessageField('Schedule', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class StandardQueryParameters(_messages.Message):

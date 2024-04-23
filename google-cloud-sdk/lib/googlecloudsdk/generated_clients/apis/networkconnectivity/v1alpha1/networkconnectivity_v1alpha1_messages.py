@@ -487,10 +487,10 @@ class InternalRange(_messages.Message):
       See: https://google.aip.dev/122#fields-representing-resource-names
     network: The URL or resource ID of the network in which to reserve the
       internal range. The network cannot be deleted if there are any reserved
-      internal ranges referring to it. Legacy networks are not supported. This
-      can only be specified for a global internal address. Example: - URL:
-      /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
-      network123
+      internal ranges referring to it. Legacy networks are not supported. For
+      example: https://www.googleapis.com/compute/v1/projects/{project}/locati
+      ons/global/networks/{network}
+      projects/{project}/locations/global/networks/{network} {network}
     overlaps: Optional. Types of resources that are allowed to overlap with
       the current internal range.
     peering: The type of peering set for this internal range.

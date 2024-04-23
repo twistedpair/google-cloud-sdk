@@ -26,20 +26,7 @@ from __future__ import unicode_literals
 
 import datetime
 
-
-_DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
-_DAYS_PER_YEAR = 365.2422
-
-_MICROSECONDS_PER_SECOND = 1000000
-_SECONDS_PER_MINUTE = 60
-_MINUTES_PER_HOUR = 60
-_HOURS_PER_DAY = 24
-_MONTHS_PER_YEAR = 12
-
-_SECONDS_PER_HOUR = _SECONDS_PER_MINUTE * _MINUTES_PER_HOUR
-_SECONDS_PER_DAY = _SECONDS_PER_HOUR * _HOURS_PER_DAY
-_SECONDS_PER_YEAR = _SECONDS_PER_DAY * _DAYS_PER_YEAR
-_SECONDS_PER_MONTH = _SECONDS_PER_YEAR / _MONTHS_PER_YEAR
+_ISO_DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
 
 
 def IsLeapYear(year):
@@ -66,8 +53,9 @@ def DaysInCalendarMonth(year, month):
   Returns:
     The number of days in the given month and calendar year.
   """
-  return _DAYS_IN_MONTH[month - 1] + (
-      1 if month == 2 and IsLeapYear(year) else 0)
+  return _ISO_DAYS_IN_MONTH[month - 1] + (
+      1 if month == 2 and IsLeapYear(year) else 0
+  )
 
 
 def _FormatNumber(result, number, suffix='', precision=3):
@@ -115,6 +103,20 @@ class Duration(object):
   calendar=True.
   """
 
+  _DAYS_IN_MONTH = _ISO_DAYS_IN_MONTH
+  _DAYS_PER_YEAR = 365.2422
+
+  _MICROSECONDS_PER_SECOND = 1000000
+  _SECONDS_PER_MINUTE = 60
+  _MINUTES_PER_HOUR = 60
+  _HOURS_PER_DAY = 24
+  _MONTHS_PER_YEAR = 12
+
+  _SECONDS_PER_HOUR = _SECONDS_PER_MINUTE * _MINUTES_PER_HOUR
+  _SECONDS_PER_DAY = _SECONDS_PER_HOUR * _HOURS_PER_DAY
+  _SECONDS_PER_YEAR = _SECONDS_PER_DAY * _DAYS_PER_YEAR
+  _SECONDS_PER_MONTH = _SECONDS_PER_YEAR / _MONTHS_PER_YEAR
+
   def __init__(self, years=0, months=0, days=0, hours=0, minutes=0, seconds=0,
                microseconds=0, delta=None, calendar=False):
     self.years = years
@@ -148,81 +150,83 @@ class Duration(object):
 
     self.years, fraction = _Percolate(self.years)
     if fraction:
-      self.days += _DAYS_PER_YEAR * fraction
+      self.days += self._DAYS_PER_YEAR * fraction
 
     self.months, fraction = _Percolate(self.months)
     if fraction:
       # Truncate to integer days because of irregular months.
-      self.days += int(_DAYS_PER_YEAR * fraction / _MONTHS_PER_YEAR)
+      self.days += int(self._DAYS_PER_YEAR * fraction / self._MONTHS_PER_YEAR)
 
     self.days, fraction = _Percolate(self.days)
     if fraction:
-      self.hours += _HOURS_PER_DAY * fraction
+      self.hours += self._HOURS_PER_DAY * fraction
 
     self.hours, fraction = _Percolate(self.hours)
     if fraction:
-      self.minutes += _MINUTES_PER_HOUR * fraction
+      self.minutes += self._MINUTES_PER_HOUR * fraction
 
     self.minutes, fraction = _Percolate(self.minutes)
     if fraction:
-      self.seconds += _SECONDS_PER_MINUTE * fraction
+      self.seconds += self._SECONDS_PER_MINUTE * fraction
 
     self.seconds, fraction = _Percolate(self.seconds)
     if fraction:
-      self.microseconds = int(_MICROSECONDS_PER_SECOND * fraction)
+      self.microseconds = int(self._MICROSECONDS_PER_SECOND * fraction)
 
     # Adjust ranges to carry over to larger units.
 
     self.total_seconds = 0.0
 
-    carry = int(self.microseconds / _MICROSECONDS_PER_SECOND)
-    self.microseconds -= int(carry * _MICROSECONDS_PER_SECOND)
-    self.total_seconds += self.microseconds / _MICROSECONDS_PER_SECOND
+    carry = int(self.microseconds / self._MICROSECONDS_PER_SECOND)
+    self.microseconds -= int(carry * self._MICROSECONDS_PER_SECOND)
+    self.total_seconds += self.microseconds / self._MICROSECONDS_PER_SECOND
     self.seconds += carry
 
-    carry = int(self.seconds / _SECONDS_PER_MINUTE)
-    self.seconds -= carry * _SECONDS_PER_MINUTE
+    carry = int(self.seconds / self._SECONDS_PER_MINUTE)
+    self.seconds -= carry * self._SECONDS_PER_MINUTE
     self.total_seconds += self.seconds
     self.minutes += carry
 
-    carry = int(self.minutes / _MINUTES_PER_HOUR)
-    self.minutes -= carry * _MINUTES_PER_HOUR
-    self.total_seconds += self.minutes * _SECONDS_PER_MINUTE
+    carry = int(self.minutes / self._MINUTES_PER_HOUR)
+    self.minutes -= carry * self._MINUTES_PER_HOUR
+    self.total_seconds += self.minutes * self._SECONDS_PER_MINUTE
     self.hours += carry
 
     if not self.calendar:
       if self.days or self.months or self.years:
         self.calendar = True
       else:
-        self.total_seconds += self.hours * _SECONDS_PER_HOUR
+        self.total_seconds += self.hours * self._SECONDS_PER_HOUR
         return
 
-    carry = int(self.hours / _HOURS_PER_DAY)
-    self.hours -= carry * _HOURS_PER_DAY
-    self.total_seconds += self.hours * _SECONDS_PER_HOUR
+    carry = int(self.hours / self._HOURS_PER_DAY)
+    self.hours -= carry * self._HOURS_PER_DAY
+    self.total_seconds += self.hours * self._SECONDS_PER_HOUR
     self.days += carry
 
     # Carry days over to years because of irregular months. Allow the first
     # year to have int(_DAYS_PER_YEAR + 1) days, +1 to allow 366 for leap years.
-    if self.days >= int(_DAYS_PER_YEAR + 1):
-      self.days -= int(_DAYS_PER_YEAR + 1)
+    if self.days >= int(self._DAYS_PER_YEAR + 1):
+      self.days -= int(self._DAYS_PER_YEAR + 1)
       self.years += 1
-    elif self.days <= -int(_DAYS_PER_YEAR + 1):
-      self.days += int(_DAYS_PER_YEAR + 1)
+    elif self.days <= -int(self._DAYS_PER_YEAR + 1):
+      self.days += int(self._DAYS_PER_YEAR + 1)
       self.years -= 1
-    carry = int(self.days / _DAYS_PER_YEAR)
-    self.days -= int(carry * _DAYS_PER_YEAR)
-    self.total_seconds += self.days * _SECONDS_PER_DAY
+    carry = int(self.days / self._DAYS_PER_YEAR)
+    self.days -= int(carry * self._DAYS_PER_YEAR)
+    self.total_seconds += self.days * self._SECONDS_PER_DAY
     self.years += carry
 
-    carry = int(self.months / _MONTHS_PER_YEAR)
-    self.months -= carry * _MONTHS_PER_YEAR
-    self.total_seconds += self.months * _SECONDS_PER_MONTH
+    carry = int(self.months / self._MONTHS_PER_YEAR)
+    self.months -= carry * self._MONTHS_PER_YEAR
+    self.total_seconds += self.months * self._SECONDS_PER_MONTH
     self.years += carry
-    self.total_seconds += self.years * _SECONDS_PER_YEAR
+    self.total_seconds += self.years * self._SECONDS_PER_YEAR
 
-    self.total_seconds = (round(self.total_seconds, 0) +
-                          self.microseconds / _MICROSECONDS_PER_SECOND)
+    self.total_seconds = (
+        round(self.total_seconds, 0)
+        + self.microseconds / self._MICROSECONDS_PER_SECOND
+    )
 
   def Parse(self, string):
     """Parses an ISO 8601 duration from string and returns a Duration object.
@@ -339,27 +343,27 @@ class Duration(object):
     if count < parts and self.years:
       shown = 1
       n = abs(self.years)
-      total_seconds -= n * _SECONDS_PER_YEAR
+      total_seconds -= n * self._SECONDS_PER_YEAR
       if count >= parts - 1:
-        n += total_seconds / _SECONDS_PER_YEAR
+        n += total_seconds / self._SECONDS_PER_YEAR
       _FormatNumber(result, n, 'Y', precision=0)
     count += shown
 
     if count < parts and self.months:
       shown = 1
       n = abs(self.months)
-      total_seconds -= n * _SECONDS_PER_MONTH
+      total_seconds -= n * self._SECONDS_PER_MONTH
       if count >= parts - 1:
-        n += total_seconds / _SECONDS_PER_MONTH
+        n += total_seconds / self._SECONDS_PER_MONTH
       _FormatNumber(result, n, 'M', precision=0)
     count += shown
 
     if count < parts and self.days:
       shown = 1
       n = abs(self.days)
-      total_seconds -= n * _SECONDS_PER_DAY
+      total_seconds -= n * self._SECONDS_PER_DAY
       if count >= parts - 1:
-        n += total_seconds / _SECONDS_PER_DAY
+        n += total_seconds / self._SECONDS_PER_DAY
       _FormatNumber(result, n, 'D', precision=0)
     result.append('T')
     count += shown
@@ -367,28 +371,32 @@ class Duration(object):
     if count < parts and self.hours:
       shown = 1
       n = abs(self.hours)
-      total_seconds -= n * _SECONDS_PER_HOUR
+      total_seconds -= n * self._SECONDS_PER_HOUR
       if count >= parts - 1:
-        n += total_seconds / _SECONDS_PER_HOUR
+        n += total_seconds / self._SECONDS_PER_HOUR
       _FormatNumber(result, n, 'H', precision=0)
     count += shown
 
     if count < parts and self.minutes:
       shown = 1
       n = abs(self.minutes)
-      total_seconds -= n * _SECONDS_PER_MINUTE
+      total_seconds -= n * self._SECONDS_PER_MINUTE
       if count >= parts - 1:
-        n += total_seconds / _SECONDS_PER_MINUTE
+        n += total_seconds / self._SECONDS_PER_MINUTE
       _FormatNumber(result, n, 'M', precision=0)
     count += shown
 
     if count < parts and (self.seconds or self.microseconds):
       count += 1
-      _FormatNumber(result,
-                    (abs(self.seconds) + abs(self.microseconds) /
-                     _MICROSECONDS_PER_SECOND),
-                    'S',
-                    precision=precision)
+      _FormatNumber(
+          result,
+          (
+              abs(self.seconds)
+              + abs(self.microseconds) / self._MICROSECONDS_PER_SECOND
+          ),
+          'S',
+          precision=precision,
+      )
 
     # No dangling 'T'.
     if result[-1] == 'T':
@@ -433,44 +441,44 @@ class Duration(object):
     )
 
     microsecond += self.microseconds
-    if microsecond >= _MICROSECONDS_PER_SECOND:
-      microsecond -= _MICROSECONDS_PER_SECOND
+    if microsecond >= self._MICROSECONDS_PER_SECOND:
+      microsecond -= self._MICROSECONDS_PER_SECOND
       second += 1
     elif microsecond < 0:
-      microsecond += _MICROSECONDS_PER_SECOND
+      microsecond += self._MICROSECONDS_PER_SECOND
       second -= 1
 
     second += self.seconds
-    if second >= _SECONDS_PER_MINUTE:
-      second -= _SECONDS_PER_MINUTE
+    if second >= self._SECONDS_PER_MINUTE:
+      second -= self._SECONDS_PER_MINUTE
       minute += 1
     elif second < 0:
-      second += _SECONDS_PER_MINUTE
+      second += self._SECONDS_PER_MINUTE
       minute -= 1
 
     minute += self.minutes
-    if minute >= _MINUTES_PER_HOUR:
-      minute -= _MINUTES_PER_HOUR
+    if minute >= self._MINUTES_PER_HOUR:
+      minute -= self._MINUTES_PER_HOUR
       hour += 1
     elif minute < 0:
-      minute += _MINUTES_PER_HOUR
+      minute += self._MINUTES_PER_HOUR
       hour -= 1
 
     # Non-calendar hours can be > 23 so we normalize here.
-    carry = int((hour + self.hours) / _HOURS_PER_DAY)
-    hour += self.hours - carry * _HOURS_PER_DAY
+    carry = int((hour + self.hours) / self._HOURS_PER_DAY)
+    hour += self.hours - carry * self._HOURS_PER_DAY
     if hour < 0:
-      hour += _HOURS_PER_DAY
+      hour += self._HOURS_PER_DAY
       carry -= 1
     day += carry
 
     # Adjust the year before days and months because of irregular months.
     month += self.months
-    if month > _MONTHS_PER_YEAR:
-      month -= _MONTHS_PER_YEAR
+    if month > self._MONTHS_PER_YEAR:
+      month -= self._MONTHS_PER_YEAR
       year += 1
     elif month < 1:
-      month += _MONTHS_PER_YEAR
+      month += self._MONTHS_PER_YEAR
       year -= 1
 
     year += self.years
@@ -482,7 +490,7 @@ class Duration(object):
       while day < 1:
         month -= 1
         if month < 1:
-          month = _MONTHS_PER_YEAR
+          month = self._MONTHS_PER_YEAR
           year -= 1
         day += DaysInCalendarMonth(year, month)
     else:
@@ -492,7 +500,7 @@ class Duration(object):
           break
         day -= days_in_month
         month += 1
-        if month > _MONTHS_PER_YEAR:
+        if month > self._MONTHS_PER_YEAR:
           month = 1
           year += 1
 

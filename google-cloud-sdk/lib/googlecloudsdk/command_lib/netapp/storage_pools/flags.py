@@ -43,11 +43,12 @@ STORAGE_POOLS_LIST_FORMAT = """\
 ## Helper functions to add args / flags for Storage Pools gcloud commands ##
 
 
-def GetStoragePoolServiceLevelArg(messages, required=True):
+def GetStoragePoolServiceLevelArg(messages, release_track, required=True):
   """Adds a --service-level arg to the given parser.
 
   Args:
     messages: The messages module.
+    release_track: the release track for the surface (GA, BETA, ALPHA)
     required: bool, whether choice arg is required or not
 
   Returns:
@@ -58,24 +59,35 @@ def GetStoragePoolServiceLevelArg(messages, required=True):
           'premium',
           """
                           Premium Service Level for Cloud NetApp Storage Pool.
-                          The Premium Service Level has a throughput per TiB of
-                          allocated volume size of 64 MiB/s.""",
+                          The Premium Service Level has a throughput per GiB of
+                          allocated volume size of 64 KiB/s.""",
       ),
       'EXTREME': (
           'extreme',
           """
                           Extreme Service Level for Cloud NetApp Storage Pool.
-                          The Extreme Service Level has a throughput per TiB of
-                          allocated volume size of 128 MiB/s.""",
+                          The Extreme Service Level has a throughput per GiB of
+                          allocated volume size of 128 KiB/s.""",
       ),
       'STANDARD': (
           'standard',
           """
                           Standard Service Level for Cloud NetApp Storage Pool.
-                          The Standard Service Level has a throughput per TiB of
-                          allocated volume size of 128 MiB/s.""",
-      )
+                          The Standard Service Level has a throughput per GiB of
+                          allocated volume size of 16 KiB/s.""",
+      ),
   }
+  if (
+      release_track == base.ReleaseTrack.BETA
+      or release_track == base.ReleaseTrack.ALPHA
+  ):
+    custom_mappings['FLEX'] = (
+        'flex',
+        """
+                          Flex Service Level for Cloud NetApp Storage Pool.
+                          The Flex Service Level has a throughput per GiB of
+                          allocated volume size of 16 KiB/s.""",
+    )
   service_level_arg = arg_utils.ChoiceEnumMapper(
       '--service-level',
       messages.StoragePool.ServiceLevelValueValuesEnum,
@@ -90,10 +102,10 @@ def GetStoragePoolServiceLevelArg(messages, required=True):
 
 
 def AddStoragePoolServiceLevelArg(
-    parser, messages, required=False
+    parser, messages, release_track, required=False
 ):
   GetStoragePoolServiceLevelArg(
-      messages, required=required
+      messages, release_track=release_track, required=required
   ).choice_arg.AddToParser(parser)
 
 
@@ -190,7 +202,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
   labels_util.AddCreateLabelsFlags(parser)
   messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   AddStoragePoolServiceLevelArg(
-      parser, messages=messages, required=True
+      parser, release_track=release_track, messages=messages, required=True
   )
   AddStoragePoolNetworkArg(parser)
   AddStoragePoolActiveDirectoryArg(parser)

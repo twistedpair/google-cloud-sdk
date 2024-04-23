@@ -16,6 +16,10 @@ package = 'auditmanager'
 class AuditReport(_messages.Message):
   r"""Represents an audit report.
 
+  Enums:
+    ReportGenerationStateValueValuesEnum: Output only. The state of Audit
+      Report Generation.
+
   Fields:
     complianceStandard: Output only. Compliance Standard.
     controlDetails: Output only. The overall status of controls
@@ -25,10 +29,32 @@ class AuditReport(_messages.Message):
     name: Identifier. The name of this Audit Report, in the format of scope
       given in request.
     operationId: Output only. ClientOperationId
+    reportGenerationState: Output only. The state of Audit Report Generation.
     reportSummary: Output only. Report summary with compliance, violation
       counts etc.
     scope: Output only. The parent scope on which the report was generated.
   """
+
+  class ReportGenerationStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of Audit Report Generation.
+
+    Values:
+      REPORT_GENERATION_STATE_UNSPECIFIED: Unspecified. Invalid state.
+      IN_PROGRESS: Audit report generation process is in progress, ie.
+        operation state is neither OPERATION_STATE_DONE nor
+        OPERATION_STATE_FAILED.
+      COMPLETED: Audit report generation process is completed. Operation state
+        is OPERATION_STATE_DONE.
+      FAILED: Audit report generation process is failed. Operation state is
+        OPERATION_STATE_FAILED.
+      SUMMARY_UNKNOWN: Audit report generation process has completed. But
+        report summary is unknown. This is valid for older reports.
+    """
+    REPORT_GENERATION_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    COMPLETED = 2
+    FAILED = 3
+    SUMMARY_UNKNOWN = 4
 
   complianceStandard = _messages.StringField(1)
   controlDetails = _messages.MessageField('ControlDetails', 2, repeated=True)
@@ -36,8 +62,9 @@ class AuditReport(_messages.Message):
   destinationDetails = _messages.MessageField('DestinationDetails', 4)
   name = _messages.StringField(5)
   operationId = _messages.StringField(6)
-  reportSummary = _messages.MessageField('ReportSummary', 7)
-  scope = _messages.StringField(8)
+  reportGenerationState = _messages.EnumField('ReportGenerationStateValueValuesEnum', 7)
+  reportSummary = _messages.MessageField('ReportSummary', 8)
+  scope = _messages.StringField(9)
 
 
 class AuditScopeReport(_messages.Message):
@@ -598,515 +625,77 @@ class Control(_messages.Message):
   r"""Represents a control.
 
   Enums:
-    ControlIdValueValuesEnum: Output only. The ID of the control.
     FamilyValueValuesEnum: Output only. Group where the control belongs. E.g.
       Access Control.
 
   Fields:
-    controlId: Output only. The ID of the control.
+    customerResponsibilityDescription: Output only. Description of the
+      customer responsibility for implementing this control.
+    customerResponsibilityImplementation: Output only. Implementation of the
+      customer responsibility for implementing this control.
+    description: Output only. Regulatory control ask of the control
     displayName: Output only. Display name of the control.
     family: Output only. Group where the control belongs. E.g. Access Control.
+    googleResponsibilityDescription: Output only. Description of the google
+      responsibility for implementing this control.
+    googleResponsibilityImplementation: Output only. Implementation of the
+      google responsibility for implementing this control.
+    responsibilityType: Output only. The type of responsibility for
+      implementing this control. It can be google, customer or shared.
   """
-
-  class ControlIdValueValuesEnum(_messages.Enum):
-    r"""Output only. The ID of the control.
-
-    Values:
-      REGULATORY_CONTROL_ID_UNSPECIFIED: <no description>
-      REGULATORY_CONTROL_ID_TEST: <no description>
-      NIST_R4_SC_01: <no description>
-      NIST_R4_SC_02: <no description>
-      NIST_R4_SC_04: <no description>
-      NIST_R4_SC_05: <no description>
-      NIST_R4_SC_06: <no description>
-      NIST_R4_SC_07: <no description>
-      NIST_R4_SC_07_03: <no description>
-      NIST_R4_SC_07_04: <no description>
-      NIST_R4_SC_07_05: <no description>
-      NIST_R4_SC_07_07: <no description>
-      NIST_R4_SC_07_08: <no description>
-      NIST_R4_SC_07_12: <no description>
-      NIST_R4_SC_07_13: <no description>
-      NIST_R4_SC_07_18: <no description>
-      NIST_R4_SC_08: <no description>
-      NIST_R4_SC_08_01: <no description>
-      NIST_R4_SC_10: <no description>
-      NIST_R4_SC_12: <no description>
-      NIST_R4_SC_12_02: <no description>
-      NIST_R4_SC_12_03: <no description>
-      NIST_R4_SC_13: <no description>
-      NIST_R4_SC_15: <no description>
-      NIST_R4_SC_17: <no description>
-      NIST_R4_SC_18: <no description>
-      NIST_R4_SC_19: <no description>
-      NIST_R4_SC_20: <no description>
-      NIST_R4_SC_21: <no description>
-      NIST_R4_SC_22: <no description>
-      NIST_R4_SC_23: <no description>
-      NIST_R4_SC_28: <no description>
-      NIST_R4_SC_28_01: <no description>
-      NIST_R4_SC_39: <no description>
-      NIST_R4_SI_01: <no description>
-      NIST_R4_SI_02: <no description>
-      NIST_R4_SI_02_02: <no description>
-      NIST_R4_SI_02_03: <no description>
-      NIST_R4_SI_03: <no description>
-      NIST_R4_SI_04: <no description>
-      NIST_R4_SI_04_01: <no description>
-      NIST_R4_SI_04_02: <no description>
-      NIST_R4_SI_04_04: <no description>
-      NIST_R4_SI_04_05: <no description>
-      NIST_R4_SI_04_14: <no description>
-      NIST_R4_SI_04_16: <no description>
-      NIST_R4_SI_04_23: <no description>
-      NIST_R4_SI_05: <no description>
-      NIST_R4_SI_06: <no description>
-      NIST_R4_SI_07: <no description>
-      NIST_R4_SI_07_01: <no description>
-      NIST_R4_SI_07_07: <no description>
-      NIST_R4_SI_08: <no description>
-      NIST_R4_SI_08_01: <no description>
-      NIST_R4_SI_08_02: <no description>
-      NIST_R4_SI_10: <no description>
-      NIST_R4_SI_11: <no description>
-      NIST_R4_SI_12: <no description>
-      NIST_R4_SI_16: <no description>
-      NIST_R4_SA_01: <no description>
-      NIST_R4_SA_02: <no description>
-      NIST_R4_SA_03: <no description>
-      NIST_R4_SA_04: <no description>
-      NIST_R4_SA_04_01: <no description>
-      NIST_R4_SA_04_02: <no description>
-      NIST_R4_SA_04_08: <no description>
-      NIST_R4_SA_04_09: <no description>
-      NIST_R4_SA_04_10: <no description>
-      NIST_R4_SA_05: <no description>
-      NIST_R4_SA_08: <no description>
-      NIST_R4_SA_09: <no description>
-      NIST_R4_SA_09_01: <no description>
-      NIST_R4_SA_09_02: <no description>
-      NIST_R4_SA_09_04: <no description>
-      NIST_R4_SA_09_05: <no description>
-      NIST_R4_SA_10: <no description>
-      NIST_R4_SA_10_01: <no description>
-      NIST_R4_SA_11: <no description>
-      NIST_R4_SA_11_01: <no description>
-      NIST_R4_SA_11_02: <no description>
-      NIST_R4_SA_11_08: <no description>
-      NIST_R4_AU_01: <no description>
-      NIST_R4_AU_02: <no description>
-      NIST_R4_AU_02_03: <no description>
-      NIST_R4_AU_03: <no description>
-      NIST_R4_AU_03_01: <no description>
-      NIST_R4_AU_04: <no description>
-      NIST_R4_AU_05: <no description>
-      NIST_R4_AU_06: <no description>
-      NIST_R4_AU_06_01: <no description>
-      NIST_R4_AU_06_03: <no description>
-      NIST_R4_AU_07: <no description>
-      NIST_R4_AU_08: <no description>
-      NIST_R4_AU_08_01: <no description>
-      NIST_R4_AU_09: <no description>
-      NIST_R4_AU_09_02: <no description>
-      NIST_R4_AU_09_04: <no description>
-      NIST_R4_AU_11: <no description>
-      NIST_R4_AU_12: <no description>
-      NIST_R4_AC_01: <no description>
-      NIST_R4_AC_02: <no description>
-      NIST_R4_AC_02_01: <no description>
-      NIST_R4_AC_02_02: <no description>
-      NIST_R4_AC_02_03: <no description>
-      NIST_R4_AC_02_04: <no description>
-      NIST_R4_AC_02_05: <no description>
-      NIST_R4_AC_02_07: <no description>
-      NIST_R4_AC_02_09: <no description>
-      NIST_R4_AC_02_12: <no description>
-      NIST_R4_AC_03: <no description>
-      NIST_R4_AC_04: <no description>
-      NIST_R4_AC_04_21: <no description>
-      NIST_R4_AC_05: <no description>
-      NIST_R4_AC_06: <no description>
-      NIST_R4_AC_06_01: <no description>
-      NIST_R4_AC_06_02: <no description>
-      NIST_R4_AC_06_05: <no description>
-      NIST_R4_AC_06_09: <no description>
-      NIST_R4_AC_06_10: <no description>
-      NIST_R4_AC_08: <no description>
-      NIST_R4_AC_10: <no description>
-      NIST_R4_AC_11: <no description>
-      NIST_R4_AC_12: <no description>
-      NIST_R4_AC_14: <no description>
-      NIST_R4_AC_17: <no description>
-      NIST_R4_AC_17_01: <no description>
-      NIST_R4_AC_17_02: <no description>
-      NIST_R4_AC_17_03: <no description>
-      NIST_R4_AC_17_04: <no description>
-      NIST_R4_AC_17_09: <no description>
-      NIST_R4_AC_18: <no description>
-      NIST_R4_AC_18_01: <no description>
-      NIST_R4_AC_19: <no description>
-      NIST_R4_AC_19_05: <no description>
-      NIST_R4_AC_20: <no description>
-      NIST_R4_AC_20_01: <no description>
-      NIST_R4_AC_20_02: <no description>
-      NIST_R4_AC_21: <no description>
-      NIST_R4_AC_22: <no description>
-      GR_AI_R1_AR_CO_6_1: <no description>
-      GR_AI_R1_AR_CO_6_2: <no description>
-      GR_AI_R1_BQ_CO_6_1: <no description>
-      GR_AI_R1_BQ_CO_6_2: <no description>
-      GR_AI_R1_CBD_CO_6_1: <no description>
-      GR_AI_R1_CBD_CO_6_2: <no description>
-      GR_AI_R1_CBD_CO_6_3: <no description>
-      GR_AI_R1_CF_CO_4_1: <no description>
-      GR_AI_R1_CF_CO_4_2: <no description>
-      GR_AI_R1_CF_CO_4_3: <no description>
-      GR_AI_R1_CF_CO_4_4: <no description>
-      GR_AI_R1_CI_CO_6_1: <no description>
-      GR_AI_R1_CI_CO_6_2: <no description>
-      GR_AI_R1_CI_CO_6_4: <no description>
-      GR_AI_R1_CI_CO_6_5: <no description>
-      GR_AI_R1_CI_CO_6_7: <no description>
-      GR_AI_R1_CI_CO_6_8: <no description>
-      GR_AI_R1_COM_CO_1_1: <no description>
-      GR_AI_R1_COM_CO_2_2: <no description>
-      GR_AI_R1_COM_CO_2_3: <no description>
-      GR_AI_R1_COM_CO_2_4: <no description>
-      GR_AI_R1_COM_CO_2_5: <no description>
-      GR_AI_R1_COM_CO_2_6: <no description>
-      GR_AI_R1_COM_CO_2_7: <no description>
-      GR_AI_R1_COM_CO_4_1: <no description>
-      GR_AI_R1_COM_CO_5_1: <no description>
-      GR_AI_R1_COM_CO_7_1: <no description>
-      GR_AI_R1_COM_CO_7_2: <no description>
-      GR_AI_R1_COM_CO_7_3: <no description>
-      GR_AI_R1_COM_CO_7_4: <no description>
-      GR_AI_R1_COM_CO_7_5: <no description>
-      GR_AI_R1_COM_CO_7_8: <no description>
-      GR_AI_R1_COM_CO_8_1: <no description>
-      GR_AI_R1_COM_CO_8_2: <no description>
-      GR_AI_R1_DNS_CO_6_1: <no description>
-      GR_AI_R1_DNS_CO_7_1: <no description>
-      GR_AI_R1_GCS_CO_4_1: <no description>
-      GR_AI_R1_GCS_CO_4_2: <no description>
-      GR_AI_R1_GCS_CO_6_1: <no description>
-      GR_AI_R1_GCS_CO_6_11: <no description>
-      GR_AI_R1_GCS_CO_6_12: <no description>
-      GR_AI_R1_GCS_CO_6_13: <no description>
-      GR_AI_R1_GCS_CO_6_14: <no description>
-      GR_AI_R1_GCS_CO_6_15: <no description>
-      GR_AI_R1_GCS_CO_6_16: <no description>
-      GR_AI_R1_GCS_CO_6_17: <no description>
-      GR_AI_R1_GCS_CO_6_18: <no description>
-      GR_AI_R1_GCS_CO_6_2: <no description>
-      GR_AI_R1_GCS_CO_6_3: <no description>
-      GR_AI_R1_GCS_CO_6_4: <no description>
-      GR_AI_R1_GCS_CO_6_5: <no description>
-      GR_AI_R1_GCS_CO_6_6: <no description>
-      GR_AI_R1_GCS_CO_6_7: <no description>
-      GR_AI_R1_GCS_CO_6_8: <no description>
-      GR_AI_R1_GCS_CO_6_9: <no description>
-      GR_AI_R1_GCS_CO_7_1: <no description>
-      GR_AI_R1_GCS_CO_7_2: <no description>
-      GR_AI_R1_GCS_CO_7_3: <no description>
-      GR_AI_R1_GCS_CO_7_4: <no description>
-      GR_AI_R1_IAM_CO_4_1: <no description>
-      GR_AI_R1_IAM_CO_4_2: <no description>
-      GR_AI_R1_IAM_CO_4_3: <no description>
-      GR_AI_R1_IAM_CO_6_1: <no description>
-      GR_AI_R1_IAM_CO_7_1: <no description>
-      GR_AI_R1_LOG_CO_6_1: <no description>
-      GR_AI_R1_LOG_CO_6_2: <no description>
-      GR_AI_R1_LOG_CO_6_3: <no description>
-      GR_AI_R1_LOG_CO_6_4: <no description>
-      GR_AI_R1_LOG_CO_6_6: <no description>
-      GR_AI_R1_OPS_CO_6_1: <no description>
-      GR_AI_R1_PS_CO_6_1: <no description>
-      GR_AI_R1_RM_CO_4_1: <no description>
-      GR_AI_R1_RM_CO_4_2: <no description>
-      GR_AI_R1_SM_CO_6_1: <no description>
-      GR_AI_R1_SM_CO_6_2: <no description>
-      GR_AI_R1_SM_CO_6_3: <no description>
-      GR_AI_R1_SCC_CO_6_1: <no description>
-      GR_AI_R1_SCC_CO_6_2: <no description>
-      GR_AI_R1_SCC_CO_6_3: <no description>
-      GR_AI_R1_SCC_CO_6_4: <no description>
-      GR_AI_R1_SCC_CO_6_5: <no description>
-      GR_AI_R1_SCC_CO_6_6: <no description>
-      GR_AI_R1_SCC_CO_6_7: <no description>
-      GR_AI_R1_SCC_CO_6_8: <no description>
-      GR_AI_R1_SCC_CO_7_1: <no description>
-      GR_AI_R1_VPC_CO_6_1: <no description>
-      GR_AI_R1_VPC_CO_6_2: <no description>
-      GR_AI_R1_VPC_CO_6_3: <no description>
-      GR_AI_R1_VPC_CO_6_4: <no description>
-      GR_AI_R1_VPC_CO_6_5: <no description>
-      GR_AI_R1_VPC_CO_6_6: <no description>
-      GR_AI_R1_VAI_CO_4_1: <no description>
-      GR_AI_R1_VAI_CO_4_2: <no description>
-      GR_AI_R1_VAI_CO_4_3: <no description>
-      GR_AI_R1_VAI_CO_4_4: <no description>
-      GR_AI_R1_VAI_CO_4_5: <no description>
-      GR_AI_R1_VAI_CO_4_6: <no description>
-      GR_AI_R1_VAI_CO_4_7: <no description>
-      GR_AI_R1_VAI_CO_4_8: <no description>
-      GR_AI_R1_CB_CO_6_1: <no description>
-      GCP_RESTRICT_SERVICE_USAGE: <no description>
-      GCP_RESOURCE_LOCATION: <no description>
-    """
-    REGULATORY_CONTROL_ID_UNSPECIFIED = 0
-    REGULATORY_CONTROL_ID_TEST = 1
-    NIST_R4_SC_01 = 2
-    NIST_R4_SC_02 = 3
-    NIST_R4_SC_04 = 4
-    NIST_R4_SC_05 = 5
-    NIST_R4_SC_06 = 6
-    NIST_R4_SC_07 = 7
-    NIST_R4_SC_07_03 = 8
-    NIST_R4_SC_07_04 = 9
-    NIST_R4_SC_07_05 = 10
-    NIST_R4_SC_07_07 = 11
-    NIST_R4_SC_07_08 = 12
-    NIST_R4_SC_07_12 = 13
-    NIST_R4_SC_07_13 = 14
-    NIST_R4_SC_07_18 = 15
-    NIST_R4_SC_08 = 16
-    NIST_R4_SC_08_01 = 17
-    NIST_R4_SC_10 = 18
-    NIST_R4_SC_12 = 19
-    NIST_R4_SC_12_02 = 20
-    NIST_R4_SC_12_03 = 21
-    NIST_R4_SC_13 = 22
-    NIST_R4_SC_15 = 23
-    NIST_R4_SC_17 = 24
-    NIST_R4_SC_18 = 25
-    NIST_R4_SC_19 = 26
-    NIST_R4_SC_20 = 27
-    NIST_R4_SC_21 = 28
-    NIST_R4_SC_22 = 29
-    NIST_R4_SC_23 = 30
-    NIST_R4_SC_28 = 31
-    NIST_R4_SC_28_01 = 32
-    NIST_R4_SC_39 = 33
-    NIST_R4_SI_01 = 34
-    NIST_R4_SI_02 = 35
-    NIST_R4_SI_02_02 = 36
-    NIST_R4_SI_02_03 = 37
-    NIST_R4_SI_03 = 38
-    NIST_R4_SI_04 = 39
-    NIST_R4_SI_04_01 = 40
-    NIST_R4_SI_04_02 = 41
-    NIST_R4_SI_04_04 = 42
-    NIST_R4_SI_04_05 = 43
-    NIST_R4_SI_04_14 = 44
-    NIST_R4_SI_04_16 = 45
-    NIST_R4_SI_04_23 = 46
-    NIST_R4_SI_05 = 47
-    NIST_R4_SI_06 = 48
-    NIST_R4_SI_07 = 49
-    NIST_R4_SI_07_01 = 50
-    NIST_R4_SI_07_07 = 51
-    NIST_R4_SI_08 = 52
-    NIST_R4_SI_08_01 = 53
-    NIST_R4_SI_08_02 = 54
-    NIST_R4_SI_10 = 55
-    NIST_R4_SI_11 = 56
-    NIST_R4_SI_12 = 57
-    NIST_R4_SI_16 = 58
-    NIST_R4_SA_01 = 59
-    NIST_R4_SA_02 = 60
-    NIST_R4_SA_03 = 61
-    NIST_R4_SA_04 = 62
-    NIST_R4_SA_04_01 = 63
-    NIST_R4_SA_04_02 = 64
-    NIST_R4_SA_04_08 = 65
-    NIST_R4_SA_04_09 = 66
-    NIST_R4_SA_04_10 = 67
-    NIST_R4_SA_05 = 68
-    NIST_R4_SA_08 = 69
-    NIST_R4_SA_09 = 70
-    NIST_R4_SA_09_01 = 71
-    NIST_R4_SA_09_02 = 72
-    NIST_R4_SA_09_04 = 73
-    NIST_R4_SA_09_05 = 74
-    NIST_R4_SA_10 = 75
-    NIST_R4_SA_10_01 = 76
-    NIST_R4_SA_11 = 77
-    NIST_R4_SA_11_01 = 78
-    NIST_R4_SA_11_02 = 79
-    NIST_R4_SA_11_08 = 80
-    NIST_R4_AU_01 = 81
-    NIST_R4_AU_02 = 82
-    NIST_R4_AU_02_03 = 83
-    NIST_R4_AU_03 = 84
-    NIST_R4_AU_03_01 = 85
-    NIST_R4_AU_04 = 86
-    NIST_R4_AU_05 = 87
-    NIST_R4_AU_06 = 88
-    NIST_R4_AU_06_01 = 89
-    NIST_R4_AU_06_03 = 90
-    NIST_R4_AU_07 = 91
-    NIST_R4_AU_08 = 92
-    NIST_R4_AU_08_01 = 93
-    NIST_R4_AU_09 = 94
-    NIST_R4_AU_09_02 = 95
-    NIST_R4_AU_09_04 = 96
-    NIST_R4_AU_11 = 97
-    NIST_R4_AU_12 = 98
-    NIST_R4_AC_01 = 99
-    NIST_R4_AC_02 = 100
-    NIST_R4_AC_02_01 = 101
-    NIST_R4_AC_02_02 = 102
-    NIST_R4_AC_02_03 = 103
-    NIST_R4_AC_02_04 = 104
-    NIST_R4_AC_02_05 = 105
-    NIST_R4_AC_02_07 = 106
-    NIST_R4_AC_02_09 = 107
-    NIST_R4_AC_02_12 = 108
-    NIST_R4_AC_03 = 109
-    NIST_R4_AC_04 = 110
-    NIST_R4_AC_04_21 = 111
-    NIST_R4_AC_05 = 112
-    NIST_R4_AC_06 = 113
-    NIST_R4_AC_06_01 = 114
-    NIST_R4_AC_06_02 = 115
-    NIST_R4_AC_06_05 = 116
-    NIST_R4_AC_06_09 = 117
-    NIST_R4_AC_06_10 = 118
-    NIST_R4_AC_08 = 119
-    NIST_R4_AC_10 = 120
-    NIST_R4_AC_11 = 121
-    NIST_R4_AC_12 = 122
-    NIST_R4_AC_14 = 123
-    NIST_R4_AC_17 = 124
-    NIST_R4_AC_17_01 = 125
-    NIST_R4_AC_17_02 = 126
-    NIST_R4_AC_17_03 = 127
-    NIST_R4_AC_17_04 = 128
-    NIST_R4_AC_17_09 = 129
-    NIST_R4_AC_18 = 130
-    NIST_R4_AC_18_01 = 131
-    NIST_R4_AC_19 = 132
-    NIST_R4_AC_19_05 = 133
-    NIST_R4_AC_20 = 134
-    NIST_R4_AC_20_01 = 135
-    NIST_R4_AC_20_02 = 136
-    NIST_R4_AC_21 = 137
-    NIST_R4_AC_22 = 138
-    GR_AI_R1_AR_CO_6_1 = 139
-    GR_AI_R1_AR_CO_6_2 = 140
-    GR_AI_R1_BQ_CO_6_1 = 141
-    GR_AI_R1_BQ_CO_6_2 = 142
-    GR_AI_R1_CBD_CO_6_1 = 143
-    GR_AI_R1_CBD_CO_6_2 = 144
-    GR_AI_R1_CBD_CO_6_3 = 145
-    GR_AI_R1_CF_CO_4_1 = 146
-    GR_AI_R1_CF_CO_4_2 = 147
-    GR_AI_R1_CF_CO_4_3 = 148
-    GR_AI_R1_CF_CO_4_4 = 149
-    GR_AI_R1_CI_CO_6_1 = 150
-    GR_AI_R1_CI_CO_6_2 = 151
-    GR_AI_R1_CI_CO_6_4 = 152
-    GR_AI_R1_CI_CO_6_5 = 153
-    GR_AI_R1_CI_CO_6_7 = 154
-    GR_AI_R1_CI_CO_6_8 = 155
-    GR_AI_R1_COM_CO_1_1 = 156
-    GR_AI_R1_COM_CO_2_2 = 157
-    GR_AI_R1_COM_CO_2_3 = 158
-    GR_AI_R1_COM_CO_2_4 = 159
-    GR_AI_R1_COM_CO_2_5 = 160
-    GR_AI_R1_COM_CO_2_6 = 161
-    GR_AI_R1_COM_CO_2_7 = 162
-    GR_AI_R1_COM_CO_4_1 = 163
-    GR_AI_R1_COM_CO_5_1 = 164
-    GR_AI_R1_COM_CO_7_1 = 165
-    GR_AI_R1_COM_CO_7_2 = 166
-    GR_AI_R1_COM_CO_7_3 = 167
-    GR_AI_R1_COM_CO_7_4 = 168
-    GR_AI_R1_COM_CO_7_5 = 169
-    GR_AI_R1_COM_CO_7_8 = 170
-    GR_AI_R1_COM_CO_8_1 = 171
-    GR_AI_R1_COM_CO_8_2 = 172
-    GR_AI_R1_DNS_CO_6_1 = 173
-    GR_AI_R1_DNS_CO_7_1 = 174
-    GR_AI_R1_GCS_CO_4_1 = 175
-    GR_AI_R1_GCS_CO_4_2 = 176
-    GR_AI_R1_GCS_CO_6_1 = 177
-    GR_AI_R1_GCS_CO_6_11 = 178
-    GR_AI_R1_GCS_CO_6_12 = 179
-    GR_AI_R1_GCS_CO_6_13 = 180
-    GR_AI_R1_GCS_CO_6_14 = 181
-    GR_AI_R1_GCS_CO_6_15 = 182
-    GR_AI_R1_GCS_CO_6_16 = 183
-    GR_AI_R1_GCS_CO_6_17 = 184
-    GR_AI_R1_GCS_CO_6_18 = 185
-    GR_AI_R1_GCS_CO_6_2 = 186
-    GR_AI_R1_GCS_CO_6_3 = 187
-    GR_AI_R1_GCS_CO_6_4 = 188
-    GR_AI_R1_GCS_CO_6_5 = 189
-    GR_AI_R1_GCS_CO_6_6 = 190
-    GR_AI_R1_GCS_CO_6_7 = 191
-    GR_AI_R1_GCS_CO_6_8 = 192
-    GR_AI_R1_GCS_CO_6_9 = 193
-    GR_AI_R1_GCS_CO_7_1 = 194
-    GR_AI_R1_GCS_CO_7_2 = 195
-    GR_AI_R1_GCS_CO_7_3 = 196
-    GR_AI_R1_GCS_CO_7_4 = 197
-    GR_AI_R1_IAM_CO_4_1 = 198
-    GR_AI_R1_IAM_CO_4_2 = 199
-    GR_AI_R1_IAM_CO_4_3 = 200
-    GR_AI_R1_IAM_CO_6_1 = 201
-    GR_AI_R1_IAM_CO_7_1 = 202
-    GR_AI_R1_LOG_CO_6_1 = 203
-    GR_AI_R1_LOG_CO_6_2 = 204
-    GR_AI_R1_LOG_CO_6_3 = 205
-    GR_AI_R1_LOG_CO_6_4 = 206
-    GR_AI_R1_LOG_CO_6_6 = 207
-    GR_AI_R1_OPS_CO_6_1 = 208
-    GR_AI_R1_PS_CO_6_1 = 209
-    GR_AI_R1_RM_CO_4_1 = 210
-    GR_AI_R1_RM_CO_4_2 = 211
-    GR_AI_R1_SM_CO_6_1 = 212
-    GR_AI_R1_SM_CO_6_2 = 213
-    GR_AI_R1_SM_CO_6_3 = 214
-    GR_AI_R1_SCC_CO_6_1 = 215
-    GR_AI_R1_SCC_CO_6_2 = 216
-    GR_AI_R1_SCC_CO_6_3 = 217
-    GR_AI_R1_SCC_CO_6_4 = 218
-    GR_AI_R1_SCC_CO_6_5 = 219
-    GR_AI_R1_SCC_CO_6_6 = 220
-    GR_AI_R1_SCC_CO_6_7 = 221
-    GR_AI_R1_SCC_CO_6_8 = 222
-    GR_AI_R1_SCC_CO_7_1 = 223
-    GR_AI_R1_VPC_CO_6_1 = 224
-    GR_AI_R1_VPC_CO_6_2 = 225
-    GR_AI_R1_VPC_CO_6_3 = 226
-    GR_AI_R1_VPC_CO_6_4 = 227
-    GR_AI_R1_VPC_CO_6_5 = 228
-    GR_AI_R1_VPC_CO_6_6 = 229
-    GR_AI_R1_VAI_CO_4_1 = 230
-    GR_AI_R1_VAI_CO_4_2 = 231
-    GR_AI_R1_VAI_CO_4_3 = 232
-    GR_AI_R1_VAI_CO_4_4 = 233
-    GR_AI_R1_VAI_CO_4_5 = 234
-    GR_AI_R1_VAI_CO_4_6 = 235
-    GR_AI_R1_VAI_CO_4_7 = 236
-    GR_AI_R1_VAI_CO_4_8 = 237
-    GR_AI_R1_CB_CO_6_1 = 238
-    GCP_RESTRICT_SERVICE_USAGE = 239
-    GCP_RESOURCE_LOCATION = 240
 
   class FamilyValueValuesEnum(_messages.Enum):
     r"""Output only. Group where the control belongs. E.g. Access Control.
 
     Values:
-      FAMILY_UNSPECIFIED: Unspecified.
+      FAMILY_UNSPECIFIED: Unspecified. Invalid state.
+      AC: Access Control
+      AT: Awareness and Training
+      AU: Audit and Accountability
+      CA: Certification, Accreditation and Security Assessments
+      CM: Configuration Management
+      CP: Contingency Planning
+      IA: Identification and Authentication
+      IR: Incident Response
+      MA: Maintenance
+      MP: Media Protection
+      PE: Physical and Environmental Protection
+      PL: Security Planning
+      PS: Personnel Security
+      RA: Risk Assessment
+      SA: System Services and Acquisition
+      SC: System and Communications Protection
+      SI: System and Information Integrity
+      SR: Supply Chain Risk Management
     """
     FAMILY_UNSPECIFIED = 0
+    AC = 1
+    AT = 2
+    AU = 3
+    CA = 4
+    CM = 5
+    CP = 6
+    IA = 7
+    IR = 8
+    MA = 9
+    MP = 10
+    PE = 11
+    PL = 12
+    PS = 13
+    RA = 14
+    SA = 15
+    SC = 16
+    SI = 17
+    SR = 18
 
-  controlId = _messages.EnumField('ControlIdValueValuesEnum', 1)
-  displayName = _messages.StringField(2)
-  family = _messages.EnumField('FamilyValueValuesEnum', 3)
+  customerResponsibilityDescription = _messages.StringField(1)
+  customerResponsibilityImplementation = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  family = _messages.EnumField('FamilyValueValuesEnum', 5)
+  googleResponsibilityDescription = _messages.StringField(6)
+  googleResponsibilityImplementation = _messages.StringField(7)
+  responsibilityType = _messages.StringField(8)
 
 
 class ControlDetails(_messages.Message):

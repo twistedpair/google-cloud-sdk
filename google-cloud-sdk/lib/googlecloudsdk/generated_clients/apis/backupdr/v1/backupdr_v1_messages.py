@@ -157,15 +157,15 @@ class AllocationAffinity(_messages.Message):
 
     Values:
       TYPE_UNSPECIFIED: Default value. This value is unused.
-      NO_ALLOCATION: Do not consume from any allocated capacity.
-      ANY_ALLOCATION: Consume any allocation available.
-      SPECIFIC_ALLOCATION: Must consume from a specific reservation. Must
+      NO_RESERVATION: Do not consume from any allocated capacity.
+      ANY_RESERVATION: Consume any allocation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
         specify key value fields for specifying the reservations.
     """
     TYPE_UNSPECIFIED = 0
-    NO_ALLOCATION = 1
-    ANY_ALLOCATION = 2
-    SPECIFIC_ALLOCATION = 3
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
 
   consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
   key = _messages.StringField(2)
@@ -176,11 +176,15 @@ class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
   Fields:
+    deviceName: Optional. This is used as an identifier for the disks. This is
+      the unique name has to provided to modify disk parameters like disk_name
+      and replica_zones (in case of RePDs)
     initializeParams: Optional. Specifies the parameters to initialize this
       disk.
   """
 
-  initializeParams = _messages.MessageField('InitializeParams', 1)
+  deviceName = _messages.StringField(1)
+  initializeParams = _messages.MessageField('InitializeParams', 2)
 
 
 class AuditConfig(_messages.Message):
@@ -3068,43 +3072,44 @@ class RuleConfigInfo(_messages.Message):
   r"""Message for rules config info.
 
   Enums:
-    StateValueValuesEnum: Output only. The config state for rule.
+    LastBackupStateValueValuesEnum: Output only. The last backup state for
+      rule.
 
   Fields:
     dataSource: Output only. Output Only. Resource name of data source which
       will be used as storage location for backups taken by specified rule.
       Format : projects/{project}/locations/{location}/backupVaults/{backupvau
       lt}/dataSources/{datasource}
+    lastBackupError: Output only. Output Only. google.rpc.Status object to
+      store the last backup error.
+    lastBackupState: Output only. The last backup state for rule.
     lastSuccessfulBackupConsistencyTime: Output only. The point in time when
       the last successful backup was captured from the source.
     ruleId: Output only. Output Only. Backup Rule id fetched from backup plan.
-    state: Output only. The config state for rule.
-    stateDetails: Output only. Output Only. Additional details for current
-      config state.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The config state for rule.
+  class LastBackupStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The last backup state for rule.
 
     Values:
-      CONFIG_STATE_UNSPECIFIED: State not set.
+      LAST_BACKUP_STATE_UNSPECIFIED: State not set.
       FIRST_BACKUP_PENDING: The first backup is pending.
-      PERMISSIONS_MISSING: Required permissions are missing to perform backup
-        operation.
-      LAST_BACKUP_SUCCEEDED: The last backup operation succeeded.
-      LAST_BACKUP_FAILED: The last backup operation failed.
+      PERMISSION_DENIED: The most recent backup could not be run/failed
+        because of the lack of permissions.
+      SUCCEEDED: The last backup operation succeeded.
+      FAILED: The last backup operation failed.
     """
-    CONFIG_STATE_UNSPECIFIED = 0
+    LAST_BACKUP_STATE_UNSPECIFIED = 0
     FIRST_BACKUP_PENDING = 1
-    PERMISSIONS_MISSING = 2
-    LAST_BACKUP_SUCCEEDED = 3
-    LAST_BACKUP_FAILED = 4
+    PERMISSION_DENIED = 2
+    SUCCEEDED = 3
+    FAILED = 4
 
   dataSource = _messages.StringField(1)
-  lastSuccessfulBackupConsistencyTime = _messages.StringField(2)
-  ruleId = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  stateDetails = _messages.StringField(5)
+  lastBackupError = _messages.MessageField('Status', 2)
+  lastBackupState = _messages.EnumField('LastBackupStateValueValuesEnum', 3)
+  lastSuccessfulBackupConsistencyTime = _messages.StringField(4)
+  ruleId = _messages.StringField(5)
 
 
 class Scheduling(_messages.Message):
@@ -3128,9 +3133,6 @@ class Scheduling(_messages.Message):
       Local Ssd Vm should wait while recovery of the Local Ssd state is
       attempted. Its value should be in between 0 and 168 hours with hour
       granularity and the default value being 1 hour.
-    maxRunDuration: Optional. Specifies the max run duration for the given
-      instance. If specified, the instance termination action will be
-      performed at the end of the run duration.
     minNodeCpus: Optional. The minimum number of virtual CPUs this instance
       will consume when running on a sole-tenant node.
     nodeAffinities: Optional. A set of node affinity and anti-affinity
@@ -3140,8 +3142,6 @@ class Scheduling(_messages.Message):
     preemptible: Optional. Defines whether the instance is preemptible.
     provisioningModel: Optional. Specifies the provisioning model of the
       instance.
-    terminationTime: Optional. Specifies the timestamp, when the instance will
-      be terminated.
   """
 
   class InstanceTerminationActionValueValuesEnum(_messages.Enum):
@@ -3187,13 +3187,11 @@ class Scheduling(_messages.Message):
   automaticRestart = _messages.BooleanField(1)
   instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 2)
   localSsdRecoveryTimeout = _messages.MessageField('Duration', 3)
-  maxRunDuration = _messages.MessageField('Duration', 4)
-  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('NodeAffinity', 6, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
-  preemptible = _messages.BooleanField(8)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 9)
-  terminationTime = _messages.StringField(10)
+  minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('NodeAffinity', 5, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 6)
+  preemptible = _messages.BooleanField(7)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 8)
 
 
 class ServiceAccount(_messages.Message):

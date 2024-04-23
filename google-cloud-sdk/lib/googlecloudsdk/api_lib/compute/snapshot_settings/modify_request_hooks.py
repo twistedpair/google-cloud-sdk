@@ -27,7 +27,8 @@ def validate_single_location(_, args, req):
     pass
   elif len(args.storage_location_names) != 1:
     raise exceptions.InvalidArgumentException(
-        "only a single location name is permitted"
+        "storage_location_names",
+        "only a single location name is permitted at this time"
     )
 
   return req

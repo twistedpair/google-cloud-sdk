@@ -133,6 +133,7 @@ def MakeClient(
     address_override_func=None,
     mtls_enabled=False,
     attempt_direct_path=False,
+    redact_request_body_reason=None,
 ):
   """Instantiates a gapic API client with gcloud defaults and configuration.
 
@@ -149,6 +150,8 @@ def MakeClient(
     mtls_enabled: bool, True if mTLS is enabled for this client.
     attempt_direct_path: bool, True if we want to attempt direct path gRPC where
       possible
+    redact_request_body_reason: str, the reason why the request body must be
+      redacted if --log-http is used. If None, the body is not redacted.
 
   Returns:
     A gapic API client.
@@ -163,6 +166,7 @@ def MakeClient(
           address_override_func,
           mtls_enabled,
           attempt_direct_path,
+          redact_request_body_reason,
       )
   )
 

@@ -59,6 +59,10 @@ _INVALID_REPO_NAME_ERROR = (
     "Names may only contain lowercase letters, numbers, and hyphens, and must "
     "begin with a letter and end with a letter or number.")
 
+_INVALID_RULE_NAME_ERROR = (
+    "Names may only contain lowercase letters, numbers, hyphens, underscores "
+    "and dots, and must begin with a letter and end with a letter or number.")
+
 _INVALID_REPO_LOCATION_ERROR = ("GCR repository {} can only be created in the "
                                 "{} multi-region.")
 
@@ -72,6 +76,8 @@ _ALLOWED_GCR_REPO_LOCATION = {
 }
 
 _REPO_REGEX = "^[a-z]([a-z0-9-]*[a-z0-9])?$"
+# https://google.aip.dev/122
+_RESOURCE_ID_REGEX = "^[a-z]([a-z0-9._-]*[a-z0-9])?$"
 
 _AR_SERVICE_ACCOUNT = "service-{project_num}@gcp-sa-artifactregistry.iam.gserviceaccount.com"
 
@@ -169,6 +175,10 @@ def _GetClientForResource(resource_ref):
 
 def _IsValidRepoName(repo_name):
   return re.match(_REPO_REGEX, repo_name) is not None
+
+
+def _IsValidRuleName(rule_name):
+  return re.match(_RESOURCE_ID_REGEX, rule_name) is not None
 
 
 def GetProject(args):
@@ -449,6 +459,8 @@ def AppendRuleDataToRequest(rule_ref, unused_args, request):
   """Adds rule data to CreateRuleRequest."""
   parts = request.parent.split("/")
   request.parent = "/".join(parts[: len(parts) - 2])
+  if not _IsValidRuleName(rule_ref.rulesId):
+    raise ar_exceptions.InvalidInputValueError(_INVALID_RULE_NAME_ERROR)
   request.ruleId = rule_ref.rulesId
   return request
 

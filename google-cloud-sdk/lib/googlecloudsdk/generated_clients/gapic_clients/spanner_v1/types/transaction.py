@@ -130,6 +130,13 @@ class TransactionOptions(proto.Message):
     priority increases with each consecutive abort, meaning that each
     attempt has a slightly better chance of success than the previous.
 
+    Note that the lock priority is preserved per session (not per
+    transaction). Lock priority is set by the first read or write in the
+    first attempt of a read-write transaction. If the application opts a
+    new session to retry the whole transaction, the transaction will
+    lose its original lock priority. Moreover, the lock priority is only
+    preserved if the transaction fails with an ``ABORTED`` error.
+
     Under some circumstances (for example, many transactions attempting
     to modify the same row(s)), a transaction can abort many times in a
     short period before successfully committing. Thus, it is not a good
@@ -402,22 +409,22 @@ class TransactionOptions(proto.Message):
         exclude_txn_from_change_streams (bool):
             When ``exclude_txn_from_change_streams`` is set to ``true``:
 
-            -  Mutations from this transaction will not be recorded in
-               change streams with DDL option
+            -  Modifications from this transaction will not be recorded
+               in change streams with DDL option
                ``allow_txn_exclusion=true`` that are tracking columns
                modified by these transactions.
-            -  Mutations from this transaction will be recorded in
+            -  Modifications from this transaction will be recorded in
                change streams with DDL option
                ``allow_txn_exclusion=false or not set`` that are
                tracking columns modified by these transactions.
 
             When ``exclude_txn_from_change_streams`` is set to ``false``
-            or not set, mutations from this transaction will be recorded
-            in all change streams that are tracking columns modified by
-            these transactions. ``exclude_txn_from_change_streams`` may
-            only be specified for read-write or partitioned-dml
-            transactions, otherwise the API will return an
-            ``INVALID_ARGUMENT`` error.
+            or not set, Modifications from this transaction will be
+            recorded in all change streams that are tracking columns
+            modified by these transactions.
+            ``exclude_txn_from_change_streams`` may only be specified
+            for read-write or partitioned-dml transactions, otherwise
+            the API will return an ``INVALID_ARGUMENT`` error.
     """
 
     class ReadWrite(proto.Message):

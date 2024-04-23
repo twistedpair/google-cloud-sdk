@@ -45,7 +45,6 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
-import six
 
 
 types_utils.SERVICE_TYPE = 'service'
@@ -941,6 +940,15 @@ class RunAppsOperations(object):
       )
     return output
 
+  def _GetResourceStatusMap(self, app_ref):
+    app_status = api_utils.GetApplicationStatus(self._client, app_ref)
+    if not app_status:
+      return {}
+    return {
+        (resource.id.type, resource.id.name): resource.state
+        for resource in app_status.resourceStatuses
+    }
+
   def _ParseResourcesForList(
       self,
       app: runapps_v1alpha1_messages.Application,
@@ -956,8 +964,8 @@ class RunAppsOperations(object):
       return []
 
     bindings = base.BindingFinder(app_resources)
-    # cache deployment so we don't pull the same one multiple times.
-    deployment_cache = {}
+
+    resource_statuses = self._GetResourceStatusMap(self.GetAppRef(app.name))
 
     # Filter by type and/or service.
     output = []
@@ -1002,14 +1010,13 @@ class RunAppsOperations(object):
       if service_name_filter and service_name_filter not in services:
         continue
 
-      status = self._GetStatusFromLatestDeployment(
-          resource.latestDeployment, deployment_cache
-      )
-
       # region is parsed from the name, which has the following form:
       # projects/<proj-name>/locations/<location>/applications/default'
       region = app.name.split('/')[3]
 
+      resource_status = resource_statuses.get(
+          (resource.id.type, resource.id.name)
+      )
       output.append(
           integration_list_printer.Row(
               integration_name=resource.id.name,
@@ -1017,7 +1024,7 @@ class RunAppsOperations(object):
               integration_type=integration_type,
               # sorting is done here to guarantee output for scenario tests
               services=','.join(sorted(services)),
-              latest_deployment_status=six.text_type(status),
+              latest_resource_status=resource_status,
           )
       )
 
@@ -1040,34 +1047,6 @@ class RunAppsOperations(object):
 
     bindings = base.BindingFinder(app_resources)
     return bindings.GetAllBindings()
-
-  def _GetStatusFromLatestDeployment(
-      self,
-      deployment: str,
-      deployment_cache: {str, runapps_v1alpha1_messages.Deployment},
-  ) -> runapps_v1alpha1_messages.DeploymentStatus.StateValueValuesEnum:
-    """Get status from latest deployment.
-
-    Args:
-      deployment: the name of the latest deployment
-      deployment_cache: a map of cached deployments
-
-    Returns:
-      status of the latest deployment.
-    """
-    status = (
-        runapps_v1alpha1_messages.DeploymentStatus.StateValueValuesEnum.STATE_UNSPECIFIED
-    )
-    if not deployment:
-      return status
-    if deployment_cache.get(deployment):
-      status = deployment_cache[deployment].status.state
-    else:
-      dep = api_utils.GetDeployment(self._client, deployment)
-      if dep:
-        status = dep.status.state
-        deployment_cache[deployment] = dep
-    return status
 
   def GetDefaultApp(self) -> runapps_v1alpha1_messages.Application:
     """Returns the default application.

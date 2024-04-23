@@ -1070,6 +1070,10 @@ class GoogleCloudRunV2Job(_messages.Message):
       execution or empty for newly created Job. Additional information on the
       failure can be found in `terminal_condition` and `conditions`.
     satisfiesPzs: Output only. Reserved for future use.
+    startExecutionToken: A unique string used as a suffix creating a new
+      execution. The Job will become ready when the execution is successfully
+      started. The sum of job name and token length must be fewer than 63
+      characters.
     template: Required. The template used to create executions for this Job.
     terminalCondition: Output only. The Condition of this Job, containing its
       readiness status, and detailed error information in case it did not
@@ -1216,10 +1220,11 @@ class GoogleCloudRunV2Job(_messages.Message):
   observedGeneration = _messages.IntegerField(18)
   reconciling = _messages.BooleanField(19)
   satisfiesPzs = _messages.BooleanField(20)
-  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 21)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  startExecutionToken = _messages.StringField(21)
+  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 22)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class GoogleCloudRunV2ListExecutionsResponse(_messages.Message):

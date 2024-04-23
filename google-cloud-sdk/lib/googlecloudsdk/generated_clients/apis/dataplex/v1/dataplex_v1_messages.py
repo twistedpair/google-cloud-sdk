@@ -4778,6 +4778,8 @@ class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
     RuleTypeValueValuesEnum: The type of the data quality rule.
 
   Fields:
+    assertionRowCount: The number of rows returned by the sql statement in the
+      SqlAssertion rule. This field is only valid for SqlAssertion rules.
     column: The column which this rule is evaluated against.
     dataSource: The data source of the data scan (e.g. BigQuery table name).
     evaluatedRowCount: The number of rows evaluated against the data quality
@@ -4840,6 +4842,8 @@ class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
         x/docs/reference/rest/v1/DataQualityRule#tableconditionexpectation.
       UNIQUENESS_EXPECTATION: Please see https://cloud.google.com/dataplex/doc
         s/reference/rest/v1/DataQualityRule#uniquenessexpectation.
+      SQL_ASSERTION: Please see https://cloud.google.com/dataplex/docs/referen
+        ce/rest/v1/DataQualityRule#sqlAssertion.
     """
     RULE_TYPE_UNSPECIFIED = 0
     NON_NULL_EXPECTATION = 1
@@ -4850,19 +4854,21 @@ class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
     STATISTIC_RANGE_EXPECTATION = 6
     TABLE_CONDITION_EXPECTATION = 7
     UNIQUENESS_EXPECTATION = 8
+    SQL_ASSERTION = 9
 
-  column = _messages.StringField(1)
-  dataSource = _messages.StringField(2)
-  evaluatedRowCount = _messages.IntegerField(3)
-  evalutionType = _messages.EnumField('EvalutionTypeValueValuesEnum', 4)
-  jobId = _messages.StringField(5)
-  nullRowCount = _messages.IntegerField(6)
-  passedRowCount = _messages.IntegerField(7)
-  result = _messages.EnumField('ResultValueValuesEnum', 8)
-  ruleDimension = _messages.StringField(9)
-  ruleName = _messages.StringField(10)
-  ruleType = _messages.EnumField('RuleTypeValueValuesEnum', 11)
-  thresholdPercent = _messages.FloatField(12)
+  assertionRowCount = _messages.IntegerField(1)
+  column = _messages.StringField(2)
+  dataSource = _messages.StringField(3)
+  evaluatedRowCount = _messages.IntegerField(4)
+  evalutionType = _messages.EnumField('EvalutionTypeValueValuesEnum', 5)
+  jobId = _messages.StringField(6)
+  nullRowCount = _messages.IntegerField(7)
+  passedRowCount = _messages.IntegerField(8)
+  result = _messages.EnumField('ResultValueValuesEnum', 9)
+  ruleDimension = _messages.StringField(10)
+  ruleName = _messages.StringField(11)
+  ruleType = _messages.EnumField('RuleTypeValueValuesEnum', 12)
+  thresholdPercent = _messages.FloatField(13)
 
 
 class GoogleCloudDataplexV1DataQualitySpec(_messages.Message):

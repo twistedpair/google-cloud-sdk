@@ -2526,11 +2526,21 @@ class JobSpec(_messages.Message):
   r"""JobSpec describes how the job will look.
 
   Fields:
+    runExecutionToken: A unique string used as a suffix for creating a new
+      execution. The Job will become ready when the execution is successfully
+      completed. The sum of job name and token length must be fewer than 63
+      characters.
+    startExecutionToken: A unique string used as a suffix for creating a new
+      execution. The Job will become ready when the execution is successfully
+      started. The sum of job name and token length must be fewer than 63
+      characters.
     template: Optional. Describes the execution that will be created when
       running a job.
   """
 
-  template = _messages.MessageField('ExecutionTemplateSpec', 1)
+  runExecutionToken = _messages.StringField(1)
+  startExecutionToken = _messages.StringField(2)
+  template = _messages.MessageField('ExecutionTemplateSpec', 3)
 
 
 class JobStatus(_messages.Message):

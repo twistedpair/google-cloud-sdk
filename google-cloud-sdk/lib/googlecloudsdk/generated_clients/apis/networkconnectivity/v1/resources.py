@@ -117,6 +117,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_REGIONALENDPOINTS = (
+      'projects.locations.regionalEndpoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'regionalEndpoints/{regionalEndpointsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SERVICECLASSES = (
       'projects.locations.serviceClasses',
       '{+name}',

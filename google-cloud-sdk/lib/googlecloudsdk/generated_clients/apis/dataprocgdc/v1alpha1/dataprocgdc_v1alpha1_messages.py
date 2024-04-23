@@ -912,7 +912,7 @@ class ServiceInstance(_messages.Message):
     gdceCluster: Optional. A GDCE cluster.
     labels: Optional. The labels to associate with this service instance.
       Labels may be used for filtering and billing tracking.
-    name: The name of the service instance.
+    name: Identifier. The name of the service instance.
     reconciling: Output only. Whether the service instance is currently
       reconciling. True if the current state of the resource does not match
       the intended state, and the system is working to reconcile them, whether

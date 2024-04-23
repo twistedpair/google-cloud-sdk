@@ -1,0 +1,46 @@
+project:
+  name: project
+  collection: managedkafka.projects
+  attributes:
+  - parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The project name.
+    property: core/project
+
+location:
+  name: location
+  collection: managedkafka.projects.locations
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      ID of the location of the Apache Kafka for BigQuery resource. See
+      https://cloud.google.com/managed-kafka/docs/locations for a list of supported
+      locations.
+
+cluster:
+  name: cluster
+  collection: managedkafka.projects.locations.clusters
+  request_id_field: clusterId
+  attributes:
+  - *location
+  - &cluster
+    parameter_name: clustersId
+    attribute_name: cluster
+    help: |
+      The cluster name.
+
+topic:
+  name: topic
+  collection: managedkafka.projects.locations.clusters.topics
+  request_id_field: topicId
+  attributes:
+  - *location
+  - *cluster
+  - &topic
+    parameter_name: topicsId
+    attribute_name: topic
+    help: |
+      The topic name.

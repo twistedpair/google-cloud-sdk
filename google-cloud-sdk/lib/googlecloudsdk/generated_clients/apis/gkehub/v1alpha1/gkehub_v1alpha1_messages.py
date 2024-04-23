@@ -599,6 +599,7 @@ class Condition(_messages.Message):
       CNI_POD_UNSCHEDULABLE: CNI pod unschedulable error code
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
+      VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -608,6 +609,7 @@ class Condition(_messages.Message):
     CNI_INSTALLATION_FAILED = 5
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
+    VPCSC_GA_SUPPORTED = 8
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -1226,6 +1228,7 @@ class DataAccessOptions(_messages.Message):
     LogModeValueValuesEnum:
 
   Fields:
+    isDirectAuth: Indicates that access was granted by a regular grant policy
     logMode: A LogModeValueValuesEnum attribute.
   """
 
@@ -1250,7 +1253,8 @@ class DataAccessOptions(_messages.Message):
     LOG_MODE_UNSPECIFIED = 0
     LOG_FAIL_CLOSED = 1
 
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+  isDirectAuth = _messages.BooleanField(1)
+  logMode = _messages.EnumField('LogModeValueValuesEnum', 2)
 
 
 class DataPlaneManagement(_messages.Message):
@@ -2607,6 +2611,17 @@ class IdentityServiceFeatureState(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class IdentityServiceOptions(_messages.Message):
+  r"""Holds non-protocol-related configuration options.
+
+  Fields:
+    sessionDuration: Optional. Determines the lifespan of STS tokens issued by
+      Anthos Identity Service.
+  """
+
+  sessionDuration = _messages.StringField(1)
+
+
 class InstallError(_messages.Message):
   r"""Errors pertaining to the installation of ACM
 
@@ -2824,9 +2839,12 @@ class MemberConfig(_messages.Message):
 
   Fields:
     authMethods: A member may support multiple auth methods.
+    identityServiceOptions: Optional. non-protocol-related configuration
+      options.
   """
 
   authMethods = _messages.MessageField('AuthMethod', 1, repeated=True)
+  identityServiceOptions = _messages.MessageField('IdentityServiceOptions', 2)
 
 
 class MembershipConfig(_messages.Message):
@@ -4454,7 +4472,7 @@ class ServiceMeshFeatureState(_messages.Message):
   Fields:
     analysisMessages: Output only. Results of running Service Mesh analyzers
       against member clusters, or the entire mesh.
-    conditions: Output only. List of condition reporting membership statues
+    conditions: Output only. List of conditions reported for this membership.
     configApiVersion: The API version (i.e. Istio CRD version) for configuring
       service mesh in this cluster. This version is influenced by the
       `default_channel` field.

@@ -5105,29 +5105,17 @@ Note, updating the system configuration of an existing node pool requires recrea
   )
 
 
-def AddContainerdConfigFlag(parser, hidden=True):
+def AddContainerdConfigFlag(parser):
   """Adds --containerd-config-from-file flag to the given parser."""
   parser.add_argument(
       '--containerd-config-from-file',
       type=arg_parsers.FileContents(),
-      hidden=hidden,
-      # TODO(b/290786967): Update with proper documentation link.
       help="""
-Path of the YAML/JSON file that contains the containerd configuration, including private registry access config.
+Path of the YAML file that contains containerd configuration entries like configuring access to private image registries.
 
-Example:
-    privateRegistryAccessConfig:
-      enabled: true
-      certificateAuthorityDomainConfig:
-        - gcpSecretManagerCertificateConfig:
-            secretURI: "projects/1234567890/secrets/my-cert/versions/2"
-          fqdns:
-            - "my.custom.domain"
-            - "10.2.3.4"
+For detailed information on the configuration usage, please refer to https://cloud.google.com/kubernetes-engine/docs/how-to/customize-containerd-configuration.
 
-For detailed information on the configuration usage, please refer to DOC_LINK.
-
-Note: updating the containerd configuration of an existing cluster/node-pool requires recreation of the nodes which which might cause a disruption.
+Note: Updating the containerd configuration of an existing cluster or node pool requires recreation of the existing nodes, which might cause disruptions in running workloads.
 """,
   )
 
@@ -5463,7 +5451,8 @@ def AddEnableNestedVirtualizationFlag(parser, for_node_pool=False, hidden=True):
   target = 'node pool' if for_node_pool else 'default initial node pool'
   help_text = """
       Enables the use of nested virtualization on the {}.
-      Defaults to `false`. Can only be enabled on UBUNTU_CONTAINERD base image.
+      Defaults to `false`. Can only be enabled on UBUNTU_CONTAINERD base image
+      or COS_CONTAINERD base image with version 1.28.4-gke.1083000 and above.
     """.format(target)
   parser.add_argument(
       '--enable-nested-virtualization',
@@ -6326,7 +6315,7 @@ def AddSecondaryBootDisksArgs(
 
       *disk-image*::: (Required) The full resource path to the source disk image to create the secondary boot disks from.
 
-      *mode*::: (Optional) The configuration mode for the secondary boot disks. The default value is "CONTAINER_IMAGE_CACHE."
+      *mode*::: (Optional) The configuration mode for the secondary boot disks. The default value is "CONTAINER_IMAGE_CACHE".
       """,
   )
 

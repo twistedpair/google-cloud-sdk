@@ -35,19 +35,6 @@ appconnection:
     help: |
       The connection_id for the Connection Resource of the Beyondcorp service.
 
-connection:
-  name: connection
-  collection: beyondcorp.projects.locations.connections
-  request_id_field: connectionId
-  disable_auto_completers: false
-  attributes:
-  - *project
-  - *location
-  - &connection
-    parameter_name: connectionsId
-    attribute_name: connection
-    help: |
-      The connection_id for the Connection Resource of the Beyondcorp service.
 
 appconnector:
   name: app connector
@@ -63,19 +50,6 @@ appconnector:
     help: |
       The connector_id for the AppConnector Resource of the Beyondcorp service.
 
-connector:
-  name: connector
-  collection: beyondcorp.projects.locations.connectors
-  request_id_field: connectorId
-  disable_auto_completers: false
-  attributes:
-  - *project
-  - *location
-  - &connector
-    parameter_name: connectorsId
-    attribute_name: connector
-    help: |
-      The connector_id for the Connector Resource of the Beyondcorp service.
 
 operation:
   name: operation

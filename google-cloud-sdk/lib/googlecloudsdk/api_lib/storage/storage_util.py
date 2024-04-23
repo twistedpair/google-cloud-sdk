@@ -32,6 +32,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import platforms
 import six
 
@@ -418,3 +419,28 @@ class Snapshot(object):
           dirnames.remove(dname)  # Don't recurse into dpath at all.
           continue
         self.dirs.append(dpath)
+
+
+class ObjectLockRetentionDuration(iso_duration.Duration):
+  """Specialized object lock duration class derived from iso_duration.Duration.
+
+  Retention period for object lock feature follows non iso standard values
+  for years and months. A year is considered to be 365.25 days
+  and every month is expected to have 31 days.
+
+  This class makes the required changes so that calculations are adjusted
+  accordingly when parsing the duration string.
+  """
+
+  _DAYS_PER_YEAR = 365.25
+
+  _MICROSECONDS_PER_SECOND = 1000000
+  _SECONDS_PER_MINUTE = 60
+  _MINUTES_PER_HOUR = 60
+  _HOURS_PER_DAY = 24
+  _MONTHS_PER_YEAR = 12
+
+  _SECONDS_PER_HOUR = _SECONDS_PER_MINUTE * _MINUTES_PER_HOUR
+  _SECONDS_PER_DAY = _SECONDS_PER_HOUR * _HOURS_PER_DAY
+  _SECONDS_PER_YEAR = _SECONDS_PER_DAY * _DAYS_PER_YEAR
+  _SECONDS_PER_MONTH = 31 * _SECONDS_PER_DAY

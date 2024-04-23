@@ -53,6 +53,7 @@ class AcceleratorConfig(_messages.Message):
       V4: TPU v4.
       V5LITE_POD: TPU v5lite pod.
       V5P: TPU v5.
+      V6E: TPU v6e.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
@@ -60,6 +61,7 @@ class AcceleratorConfig(_messages.Message):
     V4 = 3
     V5LITE_POD = 4
     V5P = 5
+    V6E = 6
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -1269,14 +1271,39 @@ class Reservation(_messages.Message):
   r"""A reservation describes the amount of a resource 'allotted' for a
   defined period of time.
 
+  Enums:
+    StateValueValuesEnum: Output only. The state of the Reservation.
+
   Fields:
     name: The reservation name with the format:
       projects/{projectID}/locations/{location}/reservations/{reservationID}
     standard: A Standard attribute.
+    state: Output only. The state of the Reservation.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Reservation.
+
+    Values:
+      STATE_UNSPECIFIED: The Reservation state is unspecified.
+      APPROVED: The Reservation has been approved.
+      PROVISIONING: The Reservation is being provisioned.
+      ACTIVE: The Reservation is active.
+      DEPROVISIONING: The Reservation is being deprovisioned.
+      EXPIRED: The Reservation is past its end date.
+      FAILED: The Reservation encountered a failure during mutation.
+    """
+    STATE_UNSPECIFIED = 0
+    APPROVED = 1
+    PROVISIONING = 2
+    ACTIVE = 3
+    DEPROVISIONING = 4
+    EXPIRED = 5
+    FAILED = 6
 
   name = _messages.StringField(1)
   standard = _messages.MessageField('Standard', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ResetQueuedResourceRequest(_messages.Message):

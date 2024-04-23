@@ -1661,6 +1661,28 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override='https://www.mtls.googleapis.com/deploymentmanager/v2beta/'),
     },
+    'developerconnect': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.developerconnect.v1',
+                    client_classpath='developerconnect_v1_client.DeveloperconnectV1',
+                    base_url='https://developerconnect.googleapis.com/',
+                    messages_modulepath='developerconnect_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.developerconnect.v1alpha',
+                    client_classpath='developerconnect_v1alpha_client.DeveloperconnectV1alpha',
+                    base_url='https://developerconnect.googleapis.com/',
+                    messages_modulepath='developerconnect_v1alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'dialogflow': {
         'v2':
             APIDef(
@@ -2418,6 +2440,18 @@ MAP = {
                     base_url='https://managedidentities.googleapis.com/',
                     messages_modulepath='managedidentities_v1beta1_messages'),
                 default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'managedkafka': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.managedkafka.v1',
+                    client_classpath='managedkafka_v1_client.ManagedkafkaV1',
+                    base_url='https://managedkafka.googleapis.com/',
+                    messages_modulepath='managedkafka_v1_messages'),
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

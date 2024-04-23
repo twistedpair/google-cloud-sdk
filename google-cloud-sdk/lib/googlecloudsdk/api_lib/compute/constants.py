@@ -182,16 +182,18 @@ WINDOWS_IMAGE_PROJECTS = [
     'windows-cloud',
     'windows-sql-cloud'
 ]
-PUBLIC_IMAGE_PROJECTS = [
-    'centos-cloud',
+BASE_PUBLIC_IMAGE_PROJECTS = [
     'cos-cloud',
     'debian-cloud',
+    'rocky-linux-cloud',
+]
+PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
+    'centos-cloud',
     'fedora-cloud',
     'fedora-coreos-cloud',
     'opensuse-cloud',
     'rhel-cloud',
     'rhel-sap-cloud',
-    'rocky-linux-cloud',
     'suse-cloud',
     'suse-sap-cloud',
     'ubuntu-os-cloud',

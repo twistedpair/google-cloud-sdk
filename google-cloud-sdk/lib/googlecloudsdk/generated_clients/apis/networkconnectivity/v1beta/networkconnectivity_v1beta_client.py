@@ -39,7 +39,9 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_customHardwareInstances = self.ProjectsLocationsCustomHardwareInstancesService(self)
     self.projects_locations_customHardwareLinkAttachments = self.ProjectsLocationsCustomHardwareLinkAttachmentsService(self)
+    self.projects_locations_customHardwareLinkConnectPairs = self.ProjectsLocationsCustomHardwareLinkConnectPairsService(self)
     self.projects_locations_global_hubs_groups = self.ProjectsLocationsGlobalHubsGroupsService(self)
     self.projects_locations_global_hubs_routeTables_routes = self.ProjectsLocationsGlobalHubsRouteTablesRoutesService(self)
     self.projects_locations_global_hubs_routeTables = self.ProjectsLocationsGlobalHubsRouteTablesService(self)
@@ -50,6 +52,151 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_spokes = self.ProjectsLocationsSpokesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsCustomHardwareInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_customHardwareInstances resource."""
+
+    _NAME = 'projects_locations_customHardwareInstances'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsCustomHardwareInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new CustomHardwareInstance in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customHardwareInstanceId', 'requestId'],
+        relative_path='v1beta/{+parent}/customHardwareInstances',
+        request_field='googleCloudNetworkconnectivityV1betaCustomHardwareInstance',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single CustomHardwareInstance.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single CustomHardwareInstance.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists CustomHardwareInstances in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListCustomHardwareInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/customHardwareInstances',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListCustomHardwareInstancesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single CustomHardwareInstance.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaCustomHardwareInstance',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsCustomHardwareLinkAttachmentsService(base_api.BaseApiService):
     """Service class for the projects_locations_customHardwareLinkAttachments resource."""
@@ -192,6 +339,151 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+name}',
         request_field='googleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment',
         request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCustomHardwareLinkConnectPairsService(base_api.BaseApiService):
+    """Service class for the projects_locations_customHardwareLinkConnectPairs resource."""
+
+    _NAME = 'projects_locations_customHardwareLinkConnectPairs'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsCustomHardwareLinkConnectPairsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new CustomHardwareLinkConnectPair in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['customHardwareLinkConnectPairId', 'requestId'],
+        relative_path='v1beta/{+parent}/customHardwareLinkConnectPairs',
+        request_field='googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single CustomHardwareLinkConnectPair.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single CustomHardwareLinkConnectPair.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists CustomHardwareLinkConnectPairs in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkConnectPairsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/customHardwareLinkConnectPairs',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkConnectPairsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single CustomHardwareLinkConnectPair.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}',
+        http_method='PATCH',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1beta/{+name}',
+        request_field='googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

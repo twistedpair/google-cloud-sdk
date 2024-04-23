@@ -1194,10 +1194,9 @@ class CloudControl2SharedOperationsReconciliationOperationMetadata(_messages.Mes
 
 
 class Cluster(_messages.Message):
-  r"""A cluster is a collection of regional AlloyDB resources.
-
-  It can include a primary instance and one or more read pool instances. All
-  cluster resources share a storage layer, which scales as needed.
+  r"""A cluster is a collection of regional AlloyDB resources. It can include
+  a primary instance and one or more read pool instances. All cluster
+  resources share a storage layer, which scales as needed.
 
   Enums:
     ClusterTypeValueValuesEnum: Output only. The type of the cluster. This is
@@ -1254,6 +1253,8 @@ class Cluster(_messages.Message):
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
+    maintenanceUpdatePolicy: Optional. The maintenance update policy
+      determines when to allow or deny updates.
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -1422,19 +1423,20 @@ class Cluster(_messages.Message):
   etag = _messages.StringField(13)
   initialUser = _messages.MessageField('UserPassword', 14)
   labels = _messages.MessageField('LabelsValue', 15)
-  migrationSource = _messages.MessageField('MigrationSource', 16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  networkConfig = _messages.MessageField('NetworkConfig', 19)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
-  pscConfig = _messages.MessageField('PscConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 24)
-  sslConfig = _messages.MessageField('SslConfig', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 16)
+  migrationSource = _messages.MessageField('MigrationSource', 17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  networkConfig = _messages.MessageField('NetworkConfig', 20)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 21)
+  pscConfig = _messages.MessageField('PscConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 25)
+  sslConfig = _messages.MessageField('SslConfig', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1547,6 +1549,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -1775,7 +1778,6 @@ class InjectFaultRequest(_messages.Message):
 
 class Instance(_messages.Message):
   r"""An Instance is a computing unit that an end customer can connect to.
-
   It's the main unit of computing resources in AlloyDB.
 
   Enums:
@@ -2047,9 +2049,7 @@ class Instance(_messages.Message):
   nodes = _messages.MessageField('Node', 16, repeated=True)
   pscInstanceConfig = _messages.MessageField('PscInstanceConfig', 17)
   publicIpAddress = _messages.StringField(18)
-  queryInsightsConfig = _messages.MessageField(
-      'QueryInsightsInstanceConfig', 19
-  )
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 19)
   readPoolConfig = _messages.MessageField('ReadPoolConfig', 20)
   reconciling = _messages.BooleanField(21)
   satisfiesPzs = _messages.BooleanField(22)
@@ -2178,6 +2178,56 @@ class MachineConfig(_messages.Message):
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class MaintenanceUpdatePolicy(_messages.Message):
+  r"""MaintenanceUpdatePolicy defines the policy for system updates.
+
+  Fields:
+    maintenanceWindows: Preferred windows to perform maintenance. Currently
+      limited to 1.
+  """
+
+  maintenanceWindows = _messages.MessageField('MaintenanceWindow', 1, repeated=True)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""MaintenanceWindow specifies a preferred day and time for maintenance.
+
+  Enums:
+    DayValueValuesEnum: Preferred day of the week for maintenance, e.g.
+      MONDAY, TUESDAY, etc.
+
+  Fields:
+    day: Preferred day of the week for maintenance, e.g. MONDAY, TUESDAY, etc.
+    startTime: Preferred time to start the maintenance operation on the
+      specified day. Maintenance will start within 1 hour of this time.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Preferred day of the week for maintenance, e.g. MONDAY, TUESDAY, etc.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  startTime = _messages.MessageField('GoogleTypeTimeOfDay', 2)
 
 
 class MigrationSource(_messages.Message):
@@ -2443,7 +2493,6 @@ class PscConfig(_messages.Message):
 
 class PscInstanceConfig(_messages.Message):
   r"""PscInstanceConfig contains PSC related configuration at an instance
-
   level.
 
   Fields:
@@ -2784,6 +2833,8 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
       instance serves data from only one zone. Outages in that zone affect
       data accessibility. * `REGIONAL`: The instance can serve data from more
       than one zone in a region (it is highly available).
+    crossRegionReplicaConfigured: Checks for resources that are configured to
+      have redundancy, and ongoing replication across regions
     externalReplicaConfigured: A boolean attribute.
     promotableReplicaConfigured: A boolean attribute.
   """
@@ -2808,8 +2859,9 @@ class StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration(_messages.M
     AVAILABILITY_TYPE_OTHER = 4
 
   availabilityType = _messages.EnumField('AvailabilityTypeValueValuesEnum', 1)
-  externalReplicaConfigured = _messages.BooleanField(2)
-  promotableReplicaConfigured = _messages.BooleanField(3)
+  crossRegionReplicaConfigured = _messages.BooleanField(2)
+  externalReplicaConfigured = _messages.BooleanField(3)
+  promotableReplicaConfigured = _messages.BooleanField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message):
@@ -3914,12 +3966,10 @@ class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
 
     Values:
       ENTITLEMENT_TYPE_UNSPECIFIED: <no description>
-      DUET_AI: The root entitlement representing Duet AI package ownership.
       GEMINI: The root entitlement representing Gemini package ownership.
     """
     ENTITLEMENT_TYPE_UNSPECIFIED = 0
-    DUET_AI = 1
-    GEMINI = 2
+    GEMINI = 1
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

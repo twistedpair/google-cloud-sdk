@@ -1381,8 +1381,7 @@ class GcpUserAccessBinding(_messages.Message):
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
-      binding restrictions will universally apply to all applications. See
-      go/caa-restricted-apps-control-plane.
+      binding restrictions will universally apply to all applications.
   """
 
   accessLevels = _messages.StringField(1, repeated=True)

@@ -8822,7 +8822,7 @@ class TlsRouteRouteMatch(_messages.Message):
       first matched against `www.example.com`, then `*.example.com`, then
       `*.com.` Partial wildcards are not supported, and values like
       *w.example.com are invalid. At least one of sni_host and alpn is
-      required. Up to 5 sni hosts across all matches can be set.
+      required. Up to 100 sni hosts across all matches can be set.
   """
 
   alpn = _messages.StringField(1, repeated=True)

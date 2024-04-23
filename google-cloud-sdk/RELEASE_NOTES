@@ -5,6 +5,105 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 473.0.0 (2024-04-23)
+
+### Breaking Changes
+
+*   **(Cloud Domains)** Changed the default setting of DNSSEC to disabled when using the Cloud DNS Zone in `gcloud domains registrations configure dns` command. It's unsafe to enable it be default.
+
+
+### Google Cloud CLI
+
+* Enabled faster component update mode by default on Windows. This avoids
+  making a backup copy of the installation directory when running certain
+  `gcloud components` commands, which should significantly improve the time
+  taken by these operations (including installation and updates).
+  * If for some reason this change causes problems, please file a bug report.
+    One can temporarily revert to the legacy update mode via `gcloud config set
+    experimental/fast_component_update False` or by setting the environment
+    variable `CLOUDSDK_EXPERIMENTAL_FAST_COMPONENT_UPDATE=False` (it may be
+    necessary to first reinstall the `gcloud` CLI either from scratch or by
+    running `gcloud components reinstall`). Note that the faster update mode
+    will eventually become the default on all platforms at which point the
+    `fast_component_update` mode property will be removed.
+  * Since the `gcloud` CLI no longer makes a full copy of the installation
+    directory to allow for this performance improvement, `gcloud components
+    restore` has been deprecated. However, equivalent functionality can be
+    achieved via `gcloud components update --version=<previous version>` or
+    `gcloud components reinstall`, depending on whether one needs to restore an
+    earlier version or reinstall the current version, respectively.
+* Updated Windows PuTTY executables to version 0.81.
+
+### Artifact Registry
+
+* Added file name to `gcloud artifacts files download` progress message.
+
+### Backup For GKE
+
+* Added a new command
+`gcloud container backup-restore backups get-backup-index-download-url`.
+
+### Cloud Composer
+
+* Added  `--image-version` to `gcloud composer environments update` to upgrade composer environment to a newer composer version.
+
+### Cloud Domains
+
+* Deprecated `--unsafe-dns-update` flag from `gcloud domains registrations configure dns` command.
+
+### Cloud IAM
+
+*   Added `--extra-attributes-client-id` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    client id for extra attributes oauth2 flow.
+*   Added `--extra-attributes-client-secret-value` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    client secret for extra attributes oauth2 flow.
+*   Added `--extra-attributes-issuer-uri` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    issuer uri for extra attributes oauth2 flow.
+*   Added `--extra-attributes-type` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    attributes type for extra attributes oauth2 flow.
+*   Added `--extra-attributes-filter` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc` which allow user to setup
+    filter for extra attributes oauth2 flow.
+*   Added `--clear-extra-attributes-config` flag to
+    `gcloud iam workforce-pools providers update-oidc` which allow user to clear
+    extra attributes oauth2 config.
+
+### Cloud NetApp
+
+* Added flex service level to `gcloud beta netapp storage-pools create`, and changed throughput rate descriptions to match those of <https://cloud.google.com/netapp/volumes/docs/configure-and-use/storage-pools/overview#service_levels>.
+
+### Cloud Run
+
+* Promoted `--network`, `--subnet`, `--network-tags`, `--clear-network` and
+  `--clear-network-tags` flags in all commands to GA.
+
+### Compute Engine
+
+* Fixed a bug where an incorrect error message shown when attempting to specify multiple storage locations on `gcloud compute snapshot-settings update` command.
+* Added commands `<get|set>-iam-policy` and `<add|remove>-iam-policy-bindings` to `gcloud compute backend-buckets` for GA.
+
+### Kubernetes Engine
+
+* Promote `--containerd-config-from-file` flags to GA in container cluster and node-pools creation.
+
+### Privileged Access Manager
+
+*   Added `gcloud beta pam` command group which helps manage Privileged Access
+    Manager (PAM) entitlements and grants.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 472.0.0 (2024-04-16)
 
 ### AI

@@ -43,10 +43,13 @@ class NetworkFirewallPolicy(object):
     return self._client.networkFirewallPolicies
 
   def _HasProject(self, collection):
-    collection_info = self._resources.GetCollectionInfo(collection,
-                                                        self._version)
-    return ('projects' in collection_info.path or
-            'projects' in collection_info.base_url)
+    collection_info = self._resources.GetCollectionInfo(
+        collection, self._version
+    )
+    return (
+        'projects' in collection_info.path
+        or 'projects' in collection_info.base_url
+    )
 
   def _MakeAddAssociationRequestTuple(self, association, firewall_policy,
                                       replace_existing_association):
@@ -69,54 +72,81 @@ class NetworkFirewallPolicy(object):
     )
 
   def _MakeCloneRulesRequestTuple(self, source_firewall_policy):
-    return (self._client.networkFirewallPolicies, 'CloneRules',
-            self._messages.ComputeNetworkFirewallPoliciesCloneRulesRequest(
-                firewallPolicy=self.ref.Name(),
-                sourceFirewallPolicy=source_firewall_policy,
-                project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'CloneRules',
+        self._messages.ComputeNetworkFirewallPoliciesCloneRulesRequest(
+            firewallPolicy=self.ref.Name(),
+            sourceFirewallPolicy=source_firewall_policy,
+            project=self.ref.project,
+        ),
+    )
 
   def _MakeCreateRequestTuple(self, firewall_policy):
-    return (self._client.networkFirewallPolicies, 'Insert',
-            self._messages.ComputeNetworkFirewallPoliciesInsertRequest(
-                firewallPolicy=firewall_policy, project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'Insert',
+        self._messages.ComputeNetworkFirewallPoliciesInsertRequest(
+            firewallPolicy=firewall_policy, project=self.ref.project
+        ),
+    )
 
   def _MakeDeleteRequestTuple(self, firewall_policy):
-    return (self._client.networkFirewallPolicies, 'Delete',
-            self._messages.ComputeNetworkFirewallPoliciesDeleteRequest(
-                firewallPolicy=firewall_policy, project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'Delete',
+        self._messages.ComputeNetworkFirewallPoliciesDeleteRequest(
+            firewallPolicy=firewall_policy, project=self.ref.project
+        ),
+    )
 
   def _MakeDescribeRequestTuple(self):
-    return (self._client.networkFirewallPolicies, 'Get',
-            self._messages.ComputeNetworkFirewallPoliciesGetRequest(
-                firewallPolicy=self.ref.Name(), project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'Get',
+        self._messages.ComputeNetworkFirewallPoliciesGetRequest(
+            firewallPolicy=self.ref.Name(), project=self.ref.project
+        ),
+    )
 
   def _MakeDeleteAssociationRequestTuple(self, firewall_policy, name):
     return (
-        self._client.networkFirewallPolicies, 'RemoveAssociation',
+        self._client.networkFirewallPolicies,
+        'RemoveAssociation',
         self._messages.ComputeNetworkFirewallPoliciesRemoveAssociationRequest(
-            firewallPolicy=firewall_policy, name=name,
-            project=self.ref.project))
+            firewallPolicy=firewall_policy, name=name, project=self.ref.project
+        ),
+    )
 
   def _MakeListRequestTuple(self):
-    return (self._client.networkFirewallPolicies, 'List',
-            self._messages.ComputeNetworkFirewallPoliciesListRequest(
-                project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'List',
+        self._messages.ComputeNetworkFirewallPoliciesListRequest(
+            project=self.ref.project
+        ),
+    )
 
   def _MakeUpdateRequestTuple(self, firewall_policy=None):
     """Sends request to update a network firewall policy."""
-    return (self._client.networkFirewallPolicies, 'Patch',
-            self._messages.ComputeNetworkFirewallPoliciesPatchRequest(
-                firewallPolicy=self.ref.Name(),
-                firewallPolicyResource=firewall_policy,
-                project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'Patch',
+        self._messages.ComputeNetworkFirewallPoliciesPatchRequest(
+            firewallPolicy=self.ref.Name(),
+            firewallPolicyResource=firewall_policy,
+            project=self.ref.project,
+        ),
+    )
 
-  def CloneRules(self,
-                 source_firewall_policy=None,
-                 only_generate_request=False):
+  def CloneRules(
+      self, source_firewall_policy=None, only_generate_request=False
+  ):
     """Sends request to clone all the rules from another firewall policy."""
     requests = [
         self._MakeCloneRulesRequestTuple(
-            source_firewall_policy=source_firewall_policy)
+            source_firewall_policy=source_firewall_policy
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
@@ -157,15 +187,18 @@ class NetworkFirewallPolicy(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def AddAssociation(self,
-                     association=None,
-                     firewall_policy=None,
-                     replace_existing_association=False,
-                     only_generate_request=False):
+  def AddAssociation(
+      self,
+      association=None,
+      firewall_policy=None,
+      replace_existing_association=False,
+      only_generate_request=False,
+  ):
     """Sends request to add an association."""
     requests = [
-        self._MakeAddAssociationRequestTuple(association, firewall_policy,
-                                             replace_existing_association)
+        self._MakeAddAssociationRequestTuple(
+            association, firewall_policy, replace_existing_association
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
@@ -185,14 +218,11 @@ class NetworkFirewallPolicy(object):
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def DeleteAssociation(self,
-                        firewall_policy=None,
-                        name=None,
-                        only_generate_request=False):
+  def DeleteAssociation(
+      self, firewall_policy=None, name=None, only_generate_request=False
+  ):
     """Sends request to delete an association."""
-    requests = [
-        self._MakeDeleteAssociationRequestTuple(firewall_policy, name)
-    ]
+    requests = [self._MakeDeleteAssociationRequestTuple(firewall_policy, name)]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
@@ -201,99 +231,178 @@ class NetworkFirewallPolicy(object):
 class NetworkFirewallPolicyRule(NetworkFirewallPolicy):
   """Abstracts Network FirewallPolicy Rule."""
 
-  def __init__(self,
-               ref=None,
-               compute_client=None):
+  def __init__(self, ref=None, compute_client=None):
     super(NetworkFirewallPolicyRule, self).__init__(
-        ref=ref,
-        compute_client=compute_client)
+        ref=ref, compute_client=compute_client
+    )
 
-  def _MakeCreateRuleRequestTuple(self, firewall_policy=None,
-                                  firewall_policy_rule=None):
-    return (self._client.networkFirewallPolicies, 'AddRule',
-            self._messages.ComputeNetworkFirewallPoliciesAddRuleRequest(
-                firewallPolicy=firewall_policy,
-                firewallPolicyRule=firewall_policy_rule,
-                project=self.ref.project))
+  def _MakeCreateRuleRequestTuple(
+      self, firewall_policy=None, firewall_policy_rule=None
+  ):
+    return (
+        self._client.networkFirewallPolicies,
+        'AddRule',
+        self._messages.ComputeNetworkFirewallPoliciesAddRuleRequest(
+            firewallPolicy=firewall_policy,
+            firewallPolicyRule=firewall_policy_rule,
+            project=self.ref.project,
+        ),
+    )
 
-  def _MakeDeleteRuleRequestTuple(self, priority=None,
-                                  firewall_policy=None):
-    return (self._client.networkFirewallPolicies, 'RemoveRule',
-            self._messages.ComputeNetworkFirewallPoliciesRemoveRuleRequest(
-                firewallPolicy=firewall_policy, priority=priority,
-                project=self.ref.project))
+  def _MakeDeleteRuleRequestTuple(self, priority=None, firewall_policy=None):
+    return (
+        self._client.networkFirewallPolicies,
+        'RemoveRule',
+        self._messages.ComputeNetworkFirewallPoliciesRemoveRuleRequest(
+            firewallPolicy=firewall_policy,
+            priority=priority,
+            project=self.ref.project,
+        ),
+    )
 
   def _MakeDescribeRuleRequestTuple(self, priority=None, firewall_policy=None):
-    return (self._client.networkFirewallPolicies, 'GetRule',
-            self._messages.ComputeNetworkFirewallPoliciesGetRuleRequest(
-                firewallPolicy=firewall_policy, priority=priority,
-                project=self.ref.project))
+    return (
+        self._client.networkFirewallPolicies,
+        'GetRule',
+        self._messages.ComputeNetworkFirewallPoliciesGetRuleRequest(
+            firewallPolicy=firewall_policy,
+            priority=priority,
+            project=self.ref.project,
+        ),
+    )
 
-  def _MakeUpdateRuleRequestTuple(self,
-                                  priority=None,
-                                  firewall_policy=None,
-                                  firewall_policy_rule=None):
-    return (self._client.networkFirewallPolicies, 'PatchRule',
-            self._messages.ComputeNetworkFirewallPoliciesPatchRuleRequest(
-                priority=priority,
-                firewallPolicy=firewall_policy,
-                firewallPolicyRule=firewall_policy_rule,
-                project=self.ref.project))
+  def _MakeUpdateRuleRequestTuple(
+      self, priority=None, firewall_policy=None, firewall_policy_rule=None
+  ):
+    return (
+        self._client.networkFirewallPolicies,
+        'PatchRule',
+        self._messages.ComputeNetworkFirewallPoliciesPatchRuleRequest(
+            priority=priority,
+            firewallPolicy=firewall_policy,
+            firewallPolicyRule=firewall_policy_rule,
+            project=self.ref.project,
+        ),
+    )
 
-  def Create(self,
-             firewall_policy=None,
-             firewall_policy_rule=None,
-             only_generate_request=False):
+  def CreateRule(
+      self,
+      firewall_policy=None,
+      firewall_policy_rule=None,
+      only_generate_request=False,
+  ):
     """Sends request to create an network firewall policy rule."""
     requests = [
         self._MakeCreateRuleRequestTuple(
             firewall_policy=firewall_policy,
-            firewall_policy_rule=firewall_policy_rule)
+            firewall_policy_rule=firewall_policy_rule,
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Delete(self,
-             priority=None,
-             firewall_policy=None,
-             only_generate_request=False):
+  def DeleteRule(
+      self, priority=None, firewall_policy=None, only_generate_request=False
+  ):
     """Sends request to delete an network firewall policy rule."""
 
     requests = [
         self._MakeDeleteRuleRequestTuple(
-            priority=priority, firewall_policy=firewall_policy)
+            priority=priority, firewall_policy=firewall_policy
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Describe(self,
-               priority=None,
-               firewall_policy=None,
-               only_generate_request=False):
+  def DescribeRule(
+      self, priority=None, firewall_policy=None, only_generate_request=False
+  ):
     """Sends request to describe a firewall policy rule."""
     requests = [
         self._MakeDescribeRuleRequestTuple(
-            priority=priority, firewall_policy=firewall_policy)
+            priority=priority, firewall_policy=firewall_policy
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
 
-  def Update(self,
-             priority=None,
-             firewall_policy=None,
-             firewall_policy_rule=None,
-             only_generate_request=False):
+  def UpdateRule(
+      self,
+      priority=None,
+      firewall_policy=None,
+      firewall_policy_rule=None,
+      only_generate_request=False,
+  ):
     """Sends request to update an network firewall policy rule."""
 
     requests = [
         self._MakeUpdateRuleRequestTuple(
             priority=priority,
             firewall_policy=firewall_policy,
-            firewall_policy_rule=firewall_policy_rule)
+            firewall_policy_rule=firewall_policy_rule,
+        )
     ]
     if not only_generate_request:
       return self._compute_client.MakeRequests(requests)
     return requests
+
+
+class NetworkFirewallPolicyPacketMirroringRule(NetworkFirewallPolicyRule):
+  """Abstracts Network FirewallPolicy Packet Mirroring Rule."""
+
+  def __init__(self, ref=None, compute_client=None):
+    super(NetworkFirewallPolicyPacketMirroringRule, self).__init__(
+        ref=ref, compute_client=compute_client
+    )
+
+  def _MakeCreateRuleRequestTuple(
+      self, firewall_policy=None, firewall_policy_rule=None
+  ):
+    return (
+        self._client.networkFirewallPolicies,
+        'AddPacketMirroringRule',
+        self._messages.ComputeNetworkFirewallPoliciesAddPacketMirroringRuleRequest(
+            firewallPolicy=firewall_policy,
+            firewallPolicyRule=firewall_policy_rule,
+            project=self.ref.project,
+        ),
+    )
+
+  def _MakeDeleteRuleRequestTuple(self, priority=None, firewall_policy=None):
+    return (
+        self._client.networkFirewallPolicies,
+        'RemovePacketMirroringRule',
+        self._messages.ComputeNetworkFirewallPoliciesRemovePacketMirroringRuleRequest(
+            firewallPolicy=firewall_policy,
+            priority=priority,
+            project=self.ref.project,
+        ),
+    )
+
+  def _MakeDescribeRuleRequestTuple(self, priority=None, firewall_policy=None):
+    return (
+        self._client.networkFirewallPolicies,
+        'GetPacketMirroringRule',
+        self._messages.ComputeNetworkFirewallPoliciesGetPacketMirroringRuleRequest(
+            firewallPolicy=firewall_policy,
+            priority=priority,
+            project=self.ref.project,
+        ),
+    )
+
+  def _MakeUpdateRuleRequestTuple(
+      self, priority=None, firewall_policy=None, firewall_policy_rule=None
+  ):
+    return (
+        self._client.networkFirewallPolicies,
+        'PatchPacketMirroringRule',
+        self._messages.ComputeNetworkFirewallPoliciesPatchPacketMirroringRuleRequest(
+            priority=priority,
+            firewallPolicy=firewall_policy,
+            firewallPolicyRule=firewall_policy_rule,
+            project=self.ref.project,
+        ),
+    )

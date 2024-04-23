@@ -24,28 +24,6 @@ DOCS_URL = 'https://cloud.google.com/anthos-config-management/docs/concepts/poli
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  PROJECTS_FLEETCONSTRAINTTEMPLATES = (
-      'projects.fleetConstraintTemplates',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/fleetConstraintTemplates/'
-              '{fleetConstraintTemplatesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_FLEETCONSTRAINTS = (
-      'projects.fleetConstraints',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/fleetConstraints/{fleetConstraintsId}/'
-              '{fleetConstraintsId1}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_MEMBERSHIPCONSTRAINTTEMPLATES = (
       'projects.membershipConstraintTemplates',
       '{+name}',

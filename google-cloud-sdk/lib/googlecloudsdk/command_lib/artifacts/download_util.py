@@ -29,7 +29,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import transports
 
 
-def Download(tmp_path, final_path, file_res_name, allow_overwrite):
+def Download(tmp_path, final_path, file_res_name, file_name, allow_overwrite):
   """Downloads a file to a local path."""
   client = requests.GetClient()
   chunksize = 3 * 1024 * 1024
@@ -45,7 +45,9 @@ def Download(tmp_path, final_path, file_res_name, allow_overwrite):
   m = requests.GetMessages()
   request = m.ArtifactregistryMediaDownloadRequest(name=file_res_name)
   # Allow overwriting in /tmp.
-  with console_io.ProgressBar('Downloading the file') as progress_bar:
+  with console_io.ProgressBar(
+      f'Downloading {file_name}'
+  ) as progress_bar:
 
     def ProgressCallback(_, download):
       """callback function to print the progress of the download."""

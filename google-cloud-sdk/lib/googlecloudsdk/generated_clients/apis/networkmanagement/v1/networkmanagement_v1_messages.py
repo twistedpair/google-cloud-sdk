@@ -56,6 +56,8 @@ class AbortInfo(_messages.Message):
         new tests.
       UNKNOWN_IP: Aborted because no endpoint with the packet's destination IP
         address is found.
+      GOOGLE_MANAGED_SERVICE_UNKNOWN_IP: Aborted because no endpoint with the
+        packet's destination IP is found in the Google-managed project.
       SOURCE_IP_ADDRESS_NOT_IN_SOURCE_NETWORK: Aborted because the source IP
         address doesn't belong to any of the subnets of the source VPC
         network.
@@ -117,28 +119,29 @@ class AbortInfo(_messages.Message):
     DESTINATION_ENDPOINT_NOT_FOUND = 7
     MISMATCHED_DESTINATION_NETWORK = 8
     UNKNOWN_IP = 9
-    SOURCE_IP_ADDRESS_NOT_IN_SOURCE_NETWORK = 10
-    PERMISSION_DENIED = 11
-    PERMISSION_DENIED_NO_CLOUD_NAT_CONFIGS = 12
-    PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS = 13
-    NO_SOURCE_LOCATION = 14
-    INVALID_ARGUMENT = 15
-    TRACE_TOO_LONG = 16
-    INTERNAL_ERROR = 17
-    UNSUPPORTED = 18
-    MISMATCHED_IP_VERSION = 19
-    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 20
-    RESOURCE_CONFIG_NOT_FOUND = 21
-    VM_INSTANCE_CONFIG_NOT_FOUND = 22
-    NETWORK_CONFIG_NOT_FOUND = 23
-    FIREWALL_CONFIG_NOT_FOUND = 24
-    ROUTE_CONFIG_NOT_FOUND = 25
-    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 26
-    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 27
-    SOURCE_FORWARDING_RULE_UNSUPPORTED = 28
-    NON_ROUTABLE_IP_ADDRESS = 29
-    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 30
-    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 31
+    GOOGLE_MANAGED_SERVICE_UNKNOWN_IP = 10
+    SOURCE_IP_ADDRESS_NOT_IN_SOURCE_NETWORK = 11
+    PERMISSION_DENIED = 12
+    PERMISSION_DENIED_NO_CLOUD_NAT_CONFIGS = 13
+    PERMISSION_DENIED_NO_NEG_ENDPOINT_CONFIGS = 14
+    NO_SOURCE_LOCATION = 15
+    INVALID_ARGUMENT = 16
+    TRACE_TOO_LONG = 17
+    INTERNAL_ERROR = 18
+    UNSUPPORTED = 19
+    MISMATCHED_IP_VERSION = 20
+    GKE_KONNECTIVITY_PROXY_UNSUPPORTED = 21
+    RESOURCE_CONFIG_NOT_FOUND = 22
+    VM_INSTANCE_CONFIG_NOT_FOUND = 23
+    NETWORK_CONFIG_NOT_FOUND = 24
+    FIREWALL_CONFIG_NOT_FOUND = 25
+    ROUTE_CONFIG_NOT_FOUND = 26
+    GOOGLE_MANAGED_SERVICE_AMBIGUOUS_PSC_ENDPOINT = 27
+    SOURCE_PSC_CLOUD_SQL_UNSUPPORTED = 28
+    SOURCE_FORWARDING_RULE_UNSUPPORTED = 29
+    NON_ROUTABLE_IP_ADDRESS = 30
+    UNKNOWN_ISSUE_IN_GOOGLE_MANAGED_PROJECT = 31
+    UNSUPPORTED_GOOGLE_MANAGED_PROJECT_CONFIG = 32
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   ipAddress = _messages.StringField(2)
@@ -428,7 +431,7 @@ class ConnectivityTest(_messages.Message):
       endpoints that you don't intend to test.
     displayName: Output only. The display name of a Connectivity Test.
     labels: Resource labels to represent user-provided metadata.
-    name: Required. Unique name of the resource using the form:
+    name: Identifier. Unique name of the resource using the form:
       `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     probingDetails: Output only. The probing details of this test from the
       latest run, present for applicable tests only. The details are updated
@@ -1791,7 +1794,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest(_mes
   Fields:
     connectivityTest: A ConnectivityTest resource to be passed as the request
       body.
-    name: Required. Unique name of the resource using the form:
+    name: Identifier. Unique name of the resource using the form:
       `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.

@@ -20098,6 +20098,58 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PatchNamedSet(self, request, global_params=None):
+      r"""Patches Named Set.
+
+      Args:
+        request: (ComputeRoutersPatchNamedSetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchNamedSet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchNamedSet.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.patchNamedSet',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/patchNamedSet',
+        request_field='namedSet',
+        request_type_name='ComputeRoutersPatchNamedSetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def PatchRoutePolicy(self, request, global_params=None):
+      r"""Patches Route Policy.
+
+      Args:
+        request: (ComputeRoutersPatchRoutePolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PatchRoutePolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PatchRoutePolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.routers.patchRoutePolicy',
+        ordered_params=['project', 'region', 'router'],
+        path_params=['project', 'region', 'router'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/routers/{router}/patchRoutePolicy',
+        request_field='routePolicy',
+        request_type_name='ComputeRoutersPatchRoutePolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Preview(self, request, global_params=None):
       r"""Preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
 

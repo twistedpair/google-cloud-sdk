@@ -42,7 +42,6 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
     self.projects_locations_configs_versionRenders = self.ProjectsLocationsConfigsVersionRendersService(self)
     self.projects_locations_configs_versions = self.ProjectsLocationsConfigsVersionsService(self)
     self.projects_locations_configs = self.ProjectsLocationsConfigsService(self)
-    self.projects_locations_templates = self.ProjectsLocationsTemplatesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -397,43 +396,6 @@ class AppconfigmanagerV1alpha(base_api.BaseApiClient):
         request_field='config',
         request_type_name='AppconfigmanagerProjectsLocationsConfigsPatchRequest',
         response_type_name='Config',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsTemplatesService(base_api.BaseApiService):
-    """Service class for the projects_locations_templates resource."""
-
-    _NAME = 'projects_locations_templates'
-
-    def __init__(self, client):
-      super(AppconfigmanagerV1alpha.ProjectsLocationsTemplatesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Template in a given project and location.
-
-      Args:
-        request: (AppconfigmanagerProjectsLocationsTemplatesCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Template) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/templates',
-        http_method='POST',
-        method_id='appconfigmanager.projects.locations.templates.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'templateId'],
-        relative_path='v1alpha/{+parent}/templates',
-        request_field='template',
-        request_type_name='AppconfigmanagerProjectsLocationsTemplatesCreateRequest',
-        response_type_name='Template',
         supports_download=False,
     )
 

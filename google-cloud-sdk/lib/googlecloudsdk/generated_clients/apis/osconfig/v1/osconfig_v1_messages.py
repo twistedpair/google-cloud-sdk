@@ -1967,8 +1967,8 @@ class OsconfigProjectsLocationsGlobalGetProjectFeatureSettingsRequest(_messages.
   object.
 
   Fields:
-    name: Required. Name of the billing config.
-      "projects//locations/global/projectFeatureSettings"
+    name: Required. Name specifies the URL for the ProjectFeatureSettings
+      resource: projects/project_id/locations/global/projectFeatureSettings.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1979,8 +1979,9 @@ class OsconfigProjectsLocationsGlobalUpdateProjectFeatureSettingsRequest(_messag
   object.
 
   Fields:
-    name: Required. Immutable. Name of the config, e.g.
-      projects/12345/locations/global/projectFeatureSettings
+    name: Required. Immutable. Name specifies the URL for the
+      ProjectFeatureSettings resource:
+      projects/project_id/locations/global/projectFeatureSettings.
     projectFeatureSettings: A ProjectFeatureSettings resource to be passed as
       the request body.
     updateMask: Optional. Field mask that controls which fields of the
@@ -2921,26 +2922,28 @@ class PausePatchDeploymentRequest(_messages.Message):
 
 
 class ProjectFeatureSettings(_messages.Message):
-  r"""ProjectFeatureSettings represents the features settings for the VM
-  Manager. The project features settings can be set for a project.
+  r"""ProjectFeatureSettings represents the VM Manager feature settings in a
+  project. For more information, see Enable full VM Manager functionality.
 
   Enums:
-    PatchAndConfigFeatureSetValueValuesEnum: Currently set
-      PatchAndConfigFeatureSet for name.
+    PatchAndConfigFeatureSetValueValuesEnum: Set PatchAndConfigFeatureSet for
+      the project.
 
   Fields:
-    name: Required. Immutable. Name of the config, e.g.
-      projects/12345/locations/global/projectFeatureSettings
-    patchAndConfigFeatureSet: Currently set PatchAndConfigFeatureSet for name.
+    name: Required. Immutable. Name specifies the URL for the
+      ProjectFeatureSettings resource:
+      projects/project_id/locations/global/projectFeatureSettings.
+    patchAndConfigFeatureSet: Set PatchAndConfigFeatureSet for the project.
   """
 
   class PatchAndConfigFeatureSetValueValuesEnum(_messages.Enum):
-    r"""Currently set PatchAndConfigFeatureSet for name.
+    r"""Set PatchAndConfigFeatureSet for the project.
 
     Values:
       PATCH_AND_CONFIG_FEATURE_SET_UNSPECIFIED: Not specified placeholder
-      OSCONFIG_B: Basic feature set. Enables only the basic set of features.
-      OSCONFIG_C: Classic set of functionality.
+      OSCONFIG_B: Enables only the basic set of VM Manager features in the
+        project.
+      OSCONFIG_C: Enables all VM Manager features in the project.
     """
     PATCH_AND_CONFIG_FEATURE_SET_UNSPECIFIED = 0
     OSCONFIG_B = 1

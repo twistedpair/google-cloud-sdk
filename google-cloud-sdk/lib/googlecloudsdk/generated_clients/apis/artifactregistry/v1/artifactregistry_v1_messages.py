@@ -169,6 +169,66 @@ class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsUploadRequest(_me
   uploadAptArtifactRequest = _messages.MessageField('UploadAptArtifactRequest', 2)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesAttachmentsCreateRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAttachmentsCreateRequest
+  object.
+
+  Fields:
+    attachment: A Attachment resource to be passed as the request body.
+    attachmentId: Required. The attachment id to use for this attachment.
+    parent: Required. The name of the parent resource where the attachment
+      will be created.
+  """
+
+  attachment = _messages.MessageField('Attachment', 1)
+  attachmentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesAttachmentsDeleteRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAttachmentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the attachment to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesAttachmentsGetRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAttachmentsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the attachment to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAttachmentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. The fields eligible for filtering
+      are: * `target` * `type` * `attachment_namespace`
+    pageSize: The maximum number of attachments to return. Maximum page size
+      is 1,000.
+    pageToken: The next_page_token value returned from a previous list
+      request, if any.
+    parent: Required. The name of the parent resource whose attachments will
+      be listed.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
 
@@ -210,6 +270,20 @@ class ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest(_mess
   object.
 
   Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter rules are case insensitive. The fields eligible for filtering
+      are: * `name` Examples of using a filter: *
+      `name="projects/p1/locations/us-
+      central1/repositories/repo1/dockerImages/nginx@sha:12*"` --> images with
+      an package ID equals to "nginx" and version ID starting with "sha:12" .
+      * `name="projects/p1/locations/us-
+      central1/repositories/repo1/dockerImages/*234"` --> images with an
+      Version ID ending with "234". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/dockerImages/*inx@sha:12*"` --> images with
+      an ID containing "inx@sha:12". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/dockerImages/*fff*"` --> images with an ID
+      containing "fff", it could either be package ID or version ID that
+      contains "fff".
     orderBy: The field to order the results by.
     pageSize: The maximum number of artifacts to return.
     pageToken: The next_page_token value returned from a previous list
@@ -218,10 +292,11 @@ class ArtifactregistryProjectsLocationsRepositoriesDockerImagesListRequest(_mess
       be listed.
   """
 
-  orderBy = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesFilesDeleteRequest(_messages.Message):
@@ -270,6 +345,21 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesFilesUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesFilesUploadRequest
+  object.
+
+  Fields:
+    parent: Required. The resource name of the repository where the file will
+      be uploaded.
+    uploadFileRequest: A UploadFileRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadFileRequest = _messages.MessageField('UploadFileRequest', 2)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest(_messages.Message):
@@ -945,6 +1035,75 @@ class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class Attachment(_messages.Message):
+  r"""An Attachment refers to additional metadata that can be attached to
+  artifacts in ArtifactRegistry. An attachment consists of one or more files.
+
+  Messages:
+    AnnotationsValue: Optional. User annotations. These attributes can only be
+      set and used by the user, and not by Artifact Registry. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations. Client specified annotations.
+
+  Fields:
+    annotations: Optional. User annotations. These attributes can only be set
+      and used by the user, and not by Artifact Registry. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations. Client specified annotations.
+    attachmentNamespace: The namespace this attachment belongs to. E.g. If an
+      Attachment is created by artifact analysis, namespace is set to
+      artifactanalysis.googleapis.com.
+    createTime: Output only. The time when the attachment was created.
+    files: Required. The files that blong to this Attachment. If the file ID
+      part contains slashes, they are escaped. E.g. "projects/p1/locations/us-
+      central1/repositories/repo1/files/sha:".
+    name: The name of the attachment. E.g.
+      "projects/p1/locations/us/repositories/repo/attachments/sbom".
+    target: Required. The target the attachment is for, can be a Version,
+      Package or Repository. E.g. "projects/p1/locations/us-
+      central1/repositories/repo1/packages/p1/versions/v1".
+    type: Type of Attachment. E.g. application/vnd.spdx+jsonn
+    updateTime: Output only. The time when the attachment was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations. These attributes can only be set and used
+    by the user, and not by Artifact Registry. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations. Client specified annotations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  attachmentNamespace = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  files = _messages.StringField(4, repeated=True)
+  name = _messages.StringField(5)
+  target = _messages.StringField(6)
+  type = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
 class BatchDeleteVersionsMetadata(_messages.Message):
   r"""The metadata of an LRO from deleting multiple versions.
 
@@ -1145,17 +1304,6 @@ class CleanupPolicyMostRecentVersions(_messages.Message):
   packageNamePrefixes = _messages.StringField(2, repeated=True)
 
 
-class CustomRepository(_messages.Message):
-  r"""Custom Go remote repository.
-
-  Fields:
-    uri: An http/https uri reference to the upstream remote repository, Must
-      be the URI of a version control system. For example: https://github.com.
-  """
-
-  uri = _messages.StringField(1)
-
-
 class DockerImage(_messages.Message):
   r"""DockerImage represents a docker artifact. The following fields are
   returned as untyped metadata in the Version resource, using camelcase keys
@@ -1333,7 +1481,7 @@ class GoRepository(_messages.Message):
     customRepository: One of the publicly available Go repositories.
   """
 
-  customRepository = _messages.MessageField('CustomRepository', 1)
+  customRepository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigGoRepositoryCustomRepository', 1)
 
 
 class GoogetArtifact(_messages.Message):
@@ -1446,6 +1594,17 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryCust
   Fields:
     uri: An http/https uri reference to the custom remote repository, for ex:
       "https://registry-1.docker.io".
+  """
+
+  uri = _messages.StringField(1)
+
+
+class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigGoRepositoryCustomRepository(_messages.Message):
+  r"""Custom Go remote repository.
+
+  Fields:
+    uri: An http/https uri reference to the upstream remote repository, Must
+      be the URI of a version control system. For example: https://github.com.
   """
 
   uri = _messages.StringField(1)
@@ -1819,6 +1978,19 @@ class KfpArtifact(_messages.Message):
 
   name = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class ListAttachmentsResponse(_messages.Message):
+  r"""The response from listing attachments.
+
+  Fields:
+    attachments: The Attachments returned.
+    nextPageToken: The token to retrieve the next page of attachments, or
+      empty if there are no more attachments to return.
+  """
+
+  attachments = _messages.MessageField('Attachment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListDockerImagesResponse(_messages.Message):
@@ -2556,6 +2728,7 @@ class RemoteRepositoryConfig(_messages.Message):
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
     remoteType: A RemoteTypeValueValuesEnum attribute.
+    serviceDirectoryConfig: A ServiceDirectoryConfig attribute.
     upstreamCredentials: Optional. The credentials used to access the remote
       repository.
     yumRepository: Specific settings for a Yum remote repository.
@@ -2583,8 +2756,9 @@ class RemoteRepositoryConfig(_messages.Message):
   npmRepository = _messages.MessageField('NpmRepository', 8)
   pythonRepository = _messages.MessageField('PythonRepository', 9)
   remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 10)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 11)
-  yumRepository = _messages.MessageField('YumRepository', 12)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 11)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 12)
+  yumRepository = _messages.MessageField('YumRepository', 13)
 
 
 class Repository(_messages.Message):
@@ -2835,6 +3009,17 @@ class SbomConfig(_messages.Message):
   lastEnableTime = _messages.StringField(5)
 
 
+class ServiceDirectoryConfig(_messages.Message):
+  r"""Config for Service Directory Integration.
+
+  Fields:
+    service: Required. Service Directory resource name (versionless), for ex:
+      projects/my-proj/locations/us/namespaces/network/services/my-service
+  """
+
+  service = _messages.StringField(1)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3036,6 +3221,27 @@ class UploadAptArtifactResponse(_messages.Message):
   aptArtifacts = _messages.MessageField('AptArtifact', 1, repeated=True)
 
 
+class UploadFileMediaResponse(_messages.Message):
+  r"""The response to upload a generic artifact.
+
+  Fields:
+    operation: Operation that will be returned to the user.
+  """
+
+  operation = _messages.MessageField('Operation', 1)
+
+
+class UploadFileRequest(_messages.Message):
+  r"""The request to upload a file.
+
+  Fields:
+    fileId: Optional. The ID of the file. If left empty will default to sha256
+      digest of the content uploaded.
+  """
+
+  fileId = _messages.StringField(1)
+
+
 class UploadGenericArtifactMediaResponse(_messages.Message):
   r"""The response to upload a generic artifact.
 
@@ -3059,21 +3265,20 @@ class UploadGenericArtifactRequest(_messages.Message):
   Fields:
     filename: The name of the file of the generic artifact to be uploaded.
       E.g. "example-file.zip" The filename should only include letters,
-      numbers, and url safe characters, i.e. [a-zA-Z0-9-_.~@], and cannot
-      exceed 64 characters.
+      numbers, and url safe characters, i.e. [a-zA-Z0-9-_.~@].
     name: Deprecated. Use package_id, version_id and filename instead. The
       resource name of the generic artifact. E.g. "projects/math/locations/us/
       repositories/operations/genericArtifacts/addition/1.0.0/add.py"
     packageId: The ID of the package of the generic artifact. If the package
       does not exist, a new package will be created. E.g. "pkg-1" The
       package_id must start with a letter, end with a letter or number, only
-      contain letters, numbers, and hyphens, i.e. [a-z0-9-], and cannot exceed
-      64 characters.
+      contain letters, numbers, hyphens and periods i.e. [a-z0-9-.], and
+      cannot exceed 256 characters.
     versionId: The ID of the version of the generic artifact. If the version
       does not exist, a new version will be created. E.g."1.0.0" The
       version_id must start and end with a letter or number, can only contain
       lowercase letters, numbers, hyphens and periods, i.e. [a-z0-9-.] and
-      cannot exceed a total of 64 characters. While "latest" is a well-known
+      cannot exceed a total of 128 characters. While "latest" is a well-known
       name for the latest version of a package, it is not yet supported and is
       reserved for future use. Creating a version called "latest" is not
       allowed.

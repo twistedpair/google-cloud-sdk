@@ -16,7 +16,7 @@ package = 'storagetransfer'
 
 
 class AgentPool(_messages.Message):
-  r"""Represents an On-Premises Agent pool.
+  r"""Represents an agent pool.
 
   Enums:
     StateValueValuesEnum: Output only. Specifies the state of the AgentPool.
@@ -35,8 +35,8 @@ class AgentPool(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
-      CREATING: This is an initialization state. During this stage, the
-        resources such as Pub/Sub topics are allocated for the AgentPool.
+      CREATING: This is an initialization state. During this stage, resources
+        are allocated for the AgentPool.
       CREATED: Determines that the AgentPool is created for use. At this
         state, Agents can join the AgentPool and participate in the transfer
         jobs in that pool.

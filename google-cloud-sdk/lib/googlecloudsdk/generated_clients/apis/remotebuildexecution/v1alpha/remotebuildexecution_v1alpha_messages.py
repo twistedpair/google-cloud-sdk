@@ -1338,6 +1338,62 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaAutoscale(_messages.Message)
   minSize = _messages.IntegerField(3)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding(_messages.Message):
+  r"""A representation of an individual backend IAM binding.
+
+  Fields:
+    principal: Required. The IAM principal (i.e. twosync or twosync-src group)
+      this binding applies to.
+    role: Required. The RBE-managed IAM role this binding applies to. The set
+      of eligible roles depends on which instance allowlist(s) the parent
+      instance is a member of, specifically with regards to the
+      ENABLE_BE_IAM_BINDING_* entries. Format: roles/
+  """
+
+  principal = _messages.StringField(1)
+  role = _messages.StringField(2)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties(_messages.Message):
+  r"""Describes backend project configuration. As of 2024Q2, this consists of
+  user- managed IAM bindings established for this instance as well as the
+  identity of the backend project.
+
+  Fields:
+    backendProjectNumber: Output only. The backend project number is not
+      normally exposed to the user but is required by the user for these IAM
+      role bindings to be useful. For example, a role that grants SSH access
+      to worker machines in the backend project is useless if those machines
+      cannot then be discovered.
+    bindings: Output only. List of the desired BE project bindings.
+  """
+
+  backendProjectNumber = _messages.StringField(1)
+  bindings = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding', 2, repeated=True)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest(_messages.Message):
+  r"""The request used for `CreateBackendIAMBinding`.
+
+  Fields:
+    backendIamBinding: Required. The backend IAM binding to create.
+  """
+
+  backendIamBinding = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding', 1)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingResponse(_messages.Message):
+  r"""The response used for `CreateBackendIAMBinding`.
+
+  Fields:
+    backendProperties: The backend properties of the instance, which contains
+      the list of backend IAM bindings, after creation of the most recent
+      binding.
+  """
+
+  backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messages.Message):
   r"""The request used for `CreateInstance`.
 
@@ -1345,9 +1401,9 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateInstanceRequest(_messa
     instance: Required. Specifies the instance to create. The name in the
       instance, if specified in the instance, is ignored.
     instanceId: Required. ID of the created instance. A valid `instance_id`
-      must: be 6-50 characters long, contain only lowercase letters, digits,
-      hyphens and underscores, start with a lowercase letter, and end with a
-      lowercase letter or a digit.
+      must: - Be 6-50 characters long - Contain only lowercase letters,
+      digits, hyphens and underscores - Start with a lowercase letter - End
+      with a lowercase letter or a digit
     parent: Required. Resource name of the project containing the instance.
       Format: `projects/[PROJECT_ID]`.
   """
@@ -1374,6 +1430,16 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateWorkerPoolRequest(_mes
   parent = _messages.StringField(1)
   poolId = _messages.StringField(2)
   workerPool = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool', 3)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingRequest(_messages.Message):
+  r"""The request used for `DeleteBackendIAMBinding`.
+
+  Fields:
+    backendIamBinding: Required. The backend IAM binding to delete.
+  """
+
+  backendIamBinding = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding', 1)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteInstanceRequest(_messages.Message):
@@ -1717,6 +1783,10 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     StateValueValuesEnum: Output only. State of the instance.
 
   Fields:
+    backendProperties: Output only. Describes the instance's backend project
+      configuration. Currently, this includes the list of user-managed IAM
+      bindings applied to the backend project, which will always be empty for
+      instances not in one of the ENABLE_BE_IAM_BINDING_* feature allowlists.
     featurePolicy: The policy to define whether or not RBE features can be
       used or how they can be used.
     location: The location is a GCP region. Currently only `us-central1` is
@@ -1751,12 +1821,13 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaInstance(_messages.Message):
     RUNNING = 2
     INACTIVE = 3
 
-  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 1)
-  location = _messages.StringField(2)
-  loggingEnabled = _messages.BooleanField(3)
-  name = _messages.StringField(4)
-  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  backendProperties = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendProperties', 1)
+  featurePolicy = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy', 2)
+  location = _messages.StringField(3)
+  loggingEnabled = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  schedulerNotificationConfig = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaListInstancesRequest(_messages.Message):
@@ -1830,7 +1901,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaSchedulerNotificationConfig(
   Fields:
     topic: The Pub/Sub topic resource name to issue notifications to. Note
       that the topic does not need to be owned by the same project as this
-      instance. Format: `projects//topics/`.
+      instance. Format: projects//topics/
   """
 
   topic = _messages.StringField(1)
@@ -2547,6 +2618,38 @@ class GoogleRpcStatus(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class RemotebuildexecutionProjectsInstancesCreateBackendIAMBindingRequest(_messages.Message):
+  r"""A RemotebuildexecutionProjectsInstancesCreateBackendIAMBindingRequest
+  object.
+
+  Fields:
+    googleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingReque
+      st: A GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBind
+      ingRequest resource to be passed as the request body.
+    parent: Required. Name of the instance to create a backend project IAM
+      binding for. Format: projects/[PROJECT_ID]/instances/[INSTANCE_ID]
+  """
+
+  googleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaCreateBackendIAMBindingRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class RemotebuildexecutionProjectsInstancesDeleteBackendIAMBindingRequest(_messages.Message):
+  r"""A RemotebuildexecutionProjectsInstancesDeleteBackendIAMBindingRequest
+  object.
+
+  Fields:
+    googleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingReque
+      st: A GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBind
+      ingRequest resource to be passed as the request body.
+    parent: Required. Name of the instance to delete a backend project IAM
+      binding for. Format: projects/[PROJECT_ID]/instances/[INSTANCE_ID]
+  """
+
+  googleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingRequest = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteBackendIAMBindingRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class RemotebuildexecutionProjectsInstancesDeleteRequest(_messages.Message):

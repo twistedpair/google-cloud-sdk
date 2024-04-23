@@ -13623,6 +13623,47 @@ class ComputeInstanceGroupsSetNamedPortsRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceSettingsGetRequest(_messages.Message):
+  r"""A ComputeInstanceSettingsGetRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    zone: Name of the zone for this request.
+  """
+
+  project = _messages.StringField(1, required=True)
+  zone = _messages.StringField(2, required=True)
+
+
+class ComputeInstanceSettingsPatchRequest(_messages.Message):
+  r"""A ComputeInstanceSettingsPatchRequest object.
+
+  Fields:
+    instanceSettings: A InstanceSettings resource to be passed as the request
+      body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    updateMask: update_mask indicates fields to be updated as part of this
+      request.
+    zone: The zone scoping this request. It should conform to RFC1035.
+  """
+
+  instanceSettings = _messages.MessageField('InstanceSettings', 1)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
   r"""A ComputeInstanceTemplatesAggregatedListRequest object.
 
@@ -18788,6 +18829,34 @@ class ComputeNodeGroupsPatchRequest(_messages.Message):
 
   nodeGroup = _messages.StringField(1, required=True)
   nodeGroupResource = _messages.MessageField('NodeGroup', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeNodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A ComputeNodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodeGroup: Name of the node group scoping this request.
+    nodeGroupsPerformMaintenanceRequest: A NodeGroupsPerformMaintenanceRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsPerformMaintenanceRequest = _messages.MessageField('NodeGroupsPerformMaintenanceRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -34812,13 +34881,14 @@ class ErrorInfo(_messages.Message):
   east2" } }
 
   Messages:
-    MetadatasValue: Additional structured details about this error. Keys
-      should match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length.
-      When identifying the current value of an exceeded limit, the units
-      should be contained in the key, not the value. For example, rather than
-      {"instanceLimit": "100/request"}, should be returned as,
-      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
-      instances that can be created in a single (batch) request.
+    MetadatasValue: Additional structured details about this error. Keys must
+      match /a-z+/ but should ideally be lowerCamelCase. Also they must be
+      limited to 64 characters in length. When identifying the current value
+      of an exceeded limit, the units should be contained in the key, not the
+      value. For example, rather than {"instanceLimit": "100/request"}, should
+      be returned as, {"instanceLimitPerRequest": "100"}, if the client
+      exceeds the number of instances that can be created in a single (batch)
+      request.
 
   Fields:
     domain: The logical grouping to which the "reason" belongs. The error
@@ -34827,13 +34897,13 @@ class ErrorInfo(_messages.Message):
       is generated by some common infrastructure, the error domain must be a
       globally unique value that identifies the infrastructure. For Google API
       infrastructure, the error domain is "googleapis.com".
-    metadatas: Additional structured details about this error. Keys should
-      match /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
-      identifying the current value of an exceeded limit, the units should be
-      contained in the key, not the value. For example, rather than
-      {"instanceLimit": "100/request"}, should be returned as,
-      {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
-      instances that can be created in a single (batch) request.
+    metadatas: Additional structured details about this error. Keys must match
+      /a-z+/ but should ideally be lowerCamelCase. Also they must be limited
+      to 64 characters in length. When identifying the current value of an
+      exceeded limit, the units should be contained in the key, not the value.
+      For example, rather than {"instanceLimit": "100/request"}, should be
+      returned as, {"instanceLimitPerRequest": "100"}, if the client exceeds
+      the number of instances that can be created in a single (batch) request.
     reason: The reason of the error. This is a constant value that identifies
       the proximate cause of the error. Error reasons are unique within a
       particular domain of errors. This should be at most 63 characters and
@@ -34843,13 +34913,13 @@ class ErrorInfo(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadatasValue(_messages.Message):
-    r"""Additional structured details about this error. Keys should match
-    /[a-zA-Z0-9-_]/ and be limited to 64 characters in length. When
-    identifying the current value of an exceeded limit, the units should be
-    contained in the key, not the value. For example, rather than
-    {"instanceLimit": "100/request"}, should be returned as,
-    {"instanceLimitPerRequest": "100"}, if the client exceeds the number of
-    instances that can be created in a single (batch) request.
+    r"""Additional structured details about this error. Keys must match /a-z+/
+    but should ideally be lowerCamelCase. Also they must be limited to 64
+    characters in length. When identifying the current value of an exceeded
+    limit, the units should be contained in the key, not the value. For
+    example, rather than {"instanceLimit": "100/request"}, should be returned
+    as, {"instanceLimitPerRequest": "100"}, if the client exceeds the number
+    of instances that can be created in a single (batch) request.
 
     Messages:
       AdditionalProperty: An additional property for a MetadatasValue object.
@@ -42501,7 +42571,7 @@ class InstanceGroupManagerStatusStateful(_messages.Message):
       there is still some preserved state on a managed instance, for example,
       if you have deleted all PICs but not yet applied those deletions.
     perInstanceConfigs: [Output Only] Status of per-instance configurations on
-      the instance.
+      the instances.
   """
 
   hasStatefulConfig = _messages.BooleanField(1)
@@ -44463,6 +44533,79 @@ class InstanceReference(_messages.Message):
   """
 
   instance = _messages.StringField(1)
+
+
+class InstanceSettings(_messages.Message):
+  r"""Represents a Instance Settings resource. You can use instance settings
+  to configure default settings for Compute Engine VM instances. For example,
+  you can use it to configure default machine type of Compute Engine VM
+  instances.
+
+  Fields:
+    fingerprint: Specifies a fingerprint for instance settings, which is
+      essentially a hash of the instance settings resource's contents and used
+      for optimistic locking. The fingerprint is initially generated by
+      Compute Engine and changes after every request to modify or update the
+      instance settings resource. You must always provide an up-to-date
+      fingerprint hash in order to update or change the resource, otherwise
+      the request will fail with error 412 conditionNotMet. To see the latest
+      fingerprint, make a get() request to retrieve the resource.
+    kind: [Output Only] Type of the resource. Always compute#instance_settings
+      for instance settings.
+    metadata: The metadata key/value pairs assigned to all the instances in
+      the corresponding scope.
+    zone: [Output Only] URL of the zone where the resource resides You must
+      specify this field as part of the HTTP request URL. It is not settable
+      as a field in the request body.
+  """
+
+  fingerprint = _messages.BytesField(1)
+  kind = _messages.StringField(2, default='compute#instanceSettings')
+  metadata = _messages.MessageField('InstanceSettingsMetadata', 3)
+  zone = _messages.StringField(4)
+
+
+class InstanceSettingsMetadata(_messages.Message):
+  r"""A InstanceSettingsMetadata object.
+
+  Messages:
+    ItemsValue: A metadata key/value items map. The total size of all keys and
+      values must be less than 512KB.
+
+  Fields:
+    items: A metadata key/value items map. The total size of all keys and
+      values must be less than 512KB.
+    kind: [Output Only] Type of the resource. Always compute#metadata for
+      metadata.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A metadata key/value items map. The total size of all keys and values
+    must be less than 512KB.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ItemsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  items = _messages.MessageField('ItemsValue', 1)
+  kind = _messages.StringField(2, default='compute#metadata')
 
 
 class InstanceTemplate(_messages.Message):
@@ -52034,7 +52177,7 @@ class NetworkEndpointGroup(_messages.Message):
     NetworkEndpointTypeValueValuesEnum: Type of network endpoints in this
       network endpoint group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT,
       NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT, INTERNET_IP_PORT,
-      SERVERLESS, PRIVATE_SERVICE_CONNECT.
+      SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
 
   Messages:
     AnnotationsValue: Metadata defined as annotations on the network endpoint
@@ -52072,7 +52215,7 @@ class NetworkEndpointGroup(_messages.Message):
     networkEndpointType: Type of network endpoints in this network endpoint
       group. Can be one of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT,
       INTERNET_FQDN_PORT, INTERNET_IP_PORT, SERVERLESS,
-      PRIVATE_SERVICE_CONNECT.
+      PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
     pscData: A NetworkEndpointGroupPscData attribute.
     pscTargetService: The target service url used to set up private service
       connection to a Google API or a PSC Producer Service Attachment. An
@@ -52091,7 +52234,7 @@ class NetworkEndpointGroup(_messages.Message):
   class NetworkEndpointTypeValueValuesEnum(_messages.Enum):
     r"""Type of network endpoints in this network endpoint group. Can be one
     of GCE_VM_IP, GCE_VM_IP_PORT, NON_GCP_PRIVATE_IP_PORT, INTERNET_FQDN_PORT,
-    INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT.
+    INTERNET_IP_PORT, SERVERLESS, PRIVATE_SERVICE_CONNECT, GCE_VM_IP_PORTMAP.
 
     Values:
       GCE_VM_IP: The network endpoint is represented by an IP address.
@@ -53589,6 +53732,9 @@ class NodeGroup(_messages.Message):
   nodes.
 
   Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events. The accepted values are: `AS_NEEDED` and
+      `RECURRENT`.
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
       node in the group undergoes maintenance. Set to one of: DEFAULT,
       RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
@@ -53610,6 +53756,8 @@ class NodeGroup(_messages.Message):
       other resources. This field is for use by internal tools that use the
       public API. The location hint here on the NodeGroup overrides any
       location_hint present in the NodeTemplate.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events. The accepted values are: `AS_NEEDED` and `RECURRENT`.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
       or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
@@ -53630,6 +53778,25 @@ class NodeGroup(_messages.Message):
     zone: [Output Only] The name of the zone where the node group resides,
       such as us-central1-a.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies the frequency of planned maintenance events. The accepted
+    values are: `AS_NEEDED` and `RECURRENT`.
+
+    Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
+    """
+    AS_NEEDED = 0
+    RECURRENT = 1
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
@@ -53677,15 +53844,16 @@ class NodeGroup(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#nodeGroup')
   locationHint = _messages.StringField(7)
-  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 8)
-  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 9)
-  name = _messages.StringField(10)
-  nodeTemplate = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  shareSettings = _messages.MessageField('ShareSettings', 13)
-  size = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  zone = _messages.StringField(16)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 8)
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 9)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 10)
+  name = _messages.StringField(11)
+  nodeTemplate = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  shareSettings = _messages.MessageField('ShareSettings', 14)
+  size = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  zone = _messages.StringField(17)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -54117,6 +54285,8 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
     totalResources: Total amount of available resources on the node.
+    upcomingMaintenance: [Output Only] The information about an upcoming
+      maintenance event.
   """
 
   class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
@@ -54160,6 +54330,7 @@ class NodeGroupNode(_messages.Message):
   serverId = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   totalResources = _messages.MessageField('InstanceConsumptionInfo', 13)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 14)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -54345,6 +54516,19 @@ class NodeGroupsListNodes(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A NodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodes: [Required] List of nodes affected by the call.
+    startTime: The start time of the schedule. The timestamp is an RFC3339
+      string.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
+  startTime = _messages.StringField(2)
 
 
 class NodeGroupsScopedList(_messages.Message):
@@ -57185,8 +57369,7 @@ class PacketMirroringFilter(_messages.Message):
       ranges are specified, all IPv4 traffic that matches the specified
       IPProtocols is mirrored. If neither cidrRanges nor IPProtocols is
       specified, all IPv4 traffic is mirrored. To mirror all IPv4 and IPv6
-      traffic, use "0.0.0.0/0,::/0". Note: Support for IPv6 traffic is in
-      preview.
+      traffic, use "0.0.0.0/0,::/0".
     direction: Direction of traffic to mirror, either INGRESS, EGRESS, or
       BOTH. The default is BOTH.
   """
@@ -57611,10 +57794,11 @@ class PathMatcher(_messages.Message):
       forwarding the request to the selected backend. If defaultRouteAction
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
-      any weightedBackendServices. Only one of defaultRouteAction or
-      defaultUrlRedirect must be set. URL maps for classic Application Load
-      Balancers only support the urlRewrite action within a path matcher's
-      defaultRouteAction.
+      any weightedBackendServices. If defaultRouteAction is specified, don't
+      set defaultUrlRedirect. If defaultRouteAction.weightedBackendServices is
+      specified, don't set defaultService. URL maps for classic Application
+      Load Balancers only support the urlRewrite action within a path
+      matcher's defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
       This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
@@ -57627,17 +57811,17 @@ class PathMatcher(_messages.Message):
       before sending the request to the backend. However, if defaultService is
       specified, defaultRouteAction cannot contain any
       weightedBackendServices. Conversely, if defaultRouteAction specifies any
-      weightedBackendServices, defaultService must not be specified. Only one
-      of defaultService, defaultUrlRedirect , or
-      defaultRouteAction.weightedBackendService must be set. Authorization
+      weightedBackendServices, defaultService must not be specified. If
+      defaultService is specified, then set either defaultUrlRedirect or
+      defaultRouteAction.weightedBackendService. Don't set both. Authorization
       requires one or more of the following Google IAM permissions on the
       specified resource default_service: - compute.backendBuckets.use -
       compute.backendServices.use
     defaultUrlRedirect: When none of the specified pathRules or routeRules
       match, the request is redirected to a URL specified by
-      defaultUrlRedirect. If defaultUrlRedirect is specified, defaultService
-      or defaultRouteAction must not be set. Not supported when the URL map is
-      bound to a target gRPC proxy.
+      defaultUrlRedirect. If defaultUrlRedirect is specified, then set either
+      defaultService or defaultRouteAction. Don't set both. Not supported when
+      the URL map is bound to a target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Specifies changes to request and response headers that need
@@ -59778,6 +59962,11 @@ class Region(_messages.Message):
     StatusValueValuesEnum: [Output Only] Status of the region, either UP or
       DOWN.
 
+  Messages:
+    QuotaStatusWarningValue: [Output Only] Warning of fetching the `quotas`
+      field for this region. This field is populated only if fetching of the
+      `quotas` field fails.
+
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -59789,6 +59978,9 @@ class Region(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#region for
       regions.
     name: [Output Only] Name of the resource.
+    quotaStatusWarning: [Output Only] Warning of fetching the `quotas` field
+      for this region. This field is populated only if fetching of the
+      `quotas` field fails.
     quotas: [Output Only] Quotas assigned to this region.
     selfLink: [Output Only] Server-defined URL for the resource.
     status: [Output Only] Status of the region, either UP or DOWN.
@@ -59807,17 +59999,153 @@ class Region(_messages.Message):
     DOWN = 0
     UP = 1
 
+  class QuotaStatusWarningValue(_messages.Message):
+    r"""[Output Only] Warning of fetching the `quotas` field for this region.
+    This field is populated only if fetching of the `quotas` field fails.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      REQUIRED_TOS_AGREEMENT = 21
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
+      RESOURCE_NOT_DELETED = 23
+      SCHEMA_VALIDATION_IGNORED = 24
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
+      UNDECLARED_PROPERTIES = 26
+      UNREACHABLE = 27
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
   creationTimestamp = _messages.StringField(1)
   deprecated = _messages.MessageField('DeprecationStatus', 2)
   description = _messages.StringField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#region')
   name = _messages.StringField(6)
-  quotas = _messages.MessageField('Quota', 7, repeated=True)
-  selfLink = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  supportsPzs = _messages.BooleanField(10)
-  zones = _messages.StringField(11, repeated=True)
+  quotaStatusWarning = _messages.MessageField('QuotaStatusWarningValue', 7)
+  quotas = _messages.MessageField('Quota', 8, repeated=True)
+  selfLink = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  supportsPzs = _messages.BooleanField(11)
+  zones = _messages.StringField(12, repeated=True)
 
 
 class RegionAddressesMoveRequest(_messages.Message):
@@ -62645,7 +62973,7 @@ class ResourcePolicyDiskConsistencyGroupPolicy(_messages.Message):
 
 class ResourcePolicyGroupPlacementPolicy(_messages.Message):
   r"""A GroupPlacementPolicy specifies resource placement configuration. It
-  specifies the failure bucket separation as well as network locality
+  specifies the failure bucket separation
 
   Enums:
     CollocationValueValuesEnum: Specifies network collocation
@@ -63970,6 +64298,16 @@ class RouterBgpPeer(_messages.Message):
       established with routing information. The default is TRUE.
     enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
       disabled by default.
+    exportPolicies: List of export policies applied to this peer, in the order
+      they must be evaluated. The name must correspond to an existing policy
+      that has ROUTE_POLICY_TYPE_EXPORT type. Note that Route Policies are
+      currently available in preview. Please use Beta API to use Route
+      Policies.
+    importPolicies: List of import policies applied to this peer, in the order
+      they must be evaluated. The name must correspond to an existing policy
+      that has ROUTE_POLICY_TYPE_IMPORT type. Note that Route Policies are
+      currently available in preview. Please use Beta API to use Route
+      Policies.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
@@ -64068,16 +64406,18 @@ class RouterBgpPeer(_messages.Message):
   customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   enable = _messages.EnumField('EnableValueValuesEnum', 8)
   enableIpv6 = _messages.BooleanField(9)
-  interfaceName = _messages.StringField(10)
-  ipAddress = _messages.StringField(11)
-  ipv6NexthopAddress = _messages.StringField(12)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
-  md5AuthenticationKeyName = _messages.StringField(14)
-  name = _messages.StringField(15)
-  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(17)
-  peerIpv6NexthopAddress = _messages.StringField(18)
-  routerApplianceInstance = _messages.StringField(19)
+  exportPolicies = _messages.StringField(10, repeated=True)
+  importPolicies = _messages.StringField(11, repeated=True)
+  interfaceName = _messages.StringField(12)
+  ipAddress = _messages.StringField(13)
+  ipv6NexthopAddress = _messages.StringField(14)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 15)
+  md5AuthenticationKeyName = _messages.StringField(16)
+  name = _messages.StringField(17)
+  peerAsn = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(19)
+  peerIpv6NexthopAddress = _messages.StringField(20)
+  routerApplianceInstance = _messages.StringField(21)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -67288,10 +67628,19 @@ class ServiceAttachment(_messages.Message):
       value can be set to ACCEPT_AUTOMATIC. An ACCEPT_AUTOMATIC service
       attachment is one that always accepts the connection from consumer
       forwarding rules.
-    consumerAcceptLists: Projects that are allowed to connect to this service
-      attachment.
-    consumerRejectLists: Projects that are not allowed to connect to this
-      service attachment. The project can be specified using its id or number.
+    consumerAcceptLists: Specifies which consumer projects or networks are
+      allowed to connect to the service attachment. Each project or network
+      has a connection limit. A given service attachment can manage
+      connections at either the project or network level. Therefore, both the
+      accept and reject lists for a given service attachment must contain
+      either only projects or only networks.
+    consumerRejectLists: Specifies a list of projects or networks that are not
+      allowed to connect to this service attachment. The project can be
+      specified using its project ID or project number and the network can be
+      specified using its URL. A given service attachment can manage
+      connections at either the project or network level. Therefore, both the
+      reject and accept lists for a given service attachment must contain
+      either only projects or only networks.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -77546,9 +77895,9 @@ class UrlMap(_messages.Message):
       URL rewrites, take effect before sending the request to the backend.
       However, if defaultService is specified, defaultRouteAction cannot
       contain any weightedBackendServices. Conversely, if routeAction
-      specifies any weightedBackendServices, service must not be specified.
-      Only one of defaultService, defaultUrlRedirect , or
-      defaultRouteAction.weightedBackendService must be set. defaultService
+      specifies any weightedBackendServices, service must not be specified. If
+      defaultService is specified, then set either defaultUrlRedirect , or
+      defaultRouteAction.weightedBackendService Don't set both. defaultService
       has no effect when the URL map is bound to a target gRPC proxy that has
       the validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified hostRules match, the

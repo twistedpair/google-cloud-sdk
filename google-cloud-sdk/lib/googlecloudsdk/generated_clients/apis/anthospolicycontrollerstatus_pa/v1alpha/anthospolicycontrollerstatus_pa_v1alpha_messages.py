@@ -14,79 +14,6 @@ from apitools.base.py import extra_types
 package = 'anthospolicycontrollerstatus_pa'
 
 
-class AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesGetRequest(_messages.Message):
-  r"""A
-  AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the fleet constraint template to retrieve.
-      Format: projects/{project_id}/fleetConstraintTemplates/{constraint_templ
-      ate_name}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesListRequest(_messages.Message):
-  r"""A
-  AnthospolicycontrollerstatusPaProjectsFleetConstraintTemplatesListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of fleet constraint templates to return. The
-      service may return fewer than this value. If unspecified or 0, defaults
-      to 500 results. The maximum value is 2000; values above 2000 will be
-      coerced to 2000.
-    pageToken: A page token, received from a previous
-      ListFleetConstraintTemplates call. Provide this to retrieve the
-      subsequent page. When paginating, all other parameters provided to
-      ListFleetConstraintTemplates must match the call that provided the page
-      token.
-    parent: Required. The project id for which to fetch fleet constraint
-      templates. Format: projects/{project_id}.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class AnthospolicycontrollerstatusPaProjectsFleetConstraintsGetRequest(_messages.Message):
-  r"""A AnthospolicycontrollerstatusPaProjectsFleetConstraintsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the fleet constraint to retrieve. Format: proj
-      ects/{project_id}/fleetConstraints/{constraint_template_name}/{constrain
-      t_name}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AnthospolicycontrollerstatusPaProjectsFleetConstraintsListRequest(_messages.Message):
-  r"""A AnthospolicycontrollerstatusPaProjectsFleetConstraintsListRequest
-  object.
-
-  Fields:
-    pageSize: The maximum number of fleet constraints to return. The service
-      may return fewer than this value. If unspecified or 0, defaults to 500
-      results. The maximum value is 2000; values above 2000 will be coerced to
-      2000.
-    pageToken: A page token, received from a previous ListFleetConstraints
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to ListFleetConstraints must match the call
-      that provided the page token.
-    parent: Required. The project id for which to fetch fleet constraints.
-      Format: projects/{project_id}.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolationsListRequest(_messages.Message):
   r"""A AnthospolicycontrollerstatusPaProjectsMembershipConstraintAuditViolati
   onsListRequest object.
@@ -309,40 +236,6 @@ class ConstraintTemplateRef(_messages.Message):
   name = _messages.StringField(1)
 
 
-class FleetConstraint(_messages.Message):
-  r"""The fleet-wide info for a constraint. Includes the number of constraints
-  to avoid clients making serial round trips.
-
-  Fields:
-    numMemberships: The number of memberships where this constraint was found.
-    numViolations: The number of violations of this constraint.
-    ref: The constraint this data refers to.
-  """
-
-  numMemberships = _messages.IntegerField(1)
-  numViolations = _messages.IntegerField(2)
-  ref = _messages.MessageField('ConstraintRef', 3)
-
-
-class FleetConstraintTemplate(_messages.Message):
-  r"""FleetConstraintTemplate contains aggregate status for a single
-  constraint template. The aggregation is across all member clusters in a
-  fleet.
-
-  Fields:
-    numConstraints: The number of unique constraints using this constraint
-      template. This is included so avoid clients don't have to make serial
-      round trips.
-    numMemberships: The number of member clusters on which this constraint
-      template was found.
-    ref: The constraint template this data refers to.
-  """
-
-  numConstraints = _messages.IntegerField(1)
-  numMemberships = _messages.IntegerField(2)
-  ref = _messages.MessageField('ConstraintTemplateRef', 3)
-
-
 class GroupKind(_messages.Message):
   r"""GroupKind includes the group, kind of the K8s resource.
 
@@ -394,36 +287,6 @@ class KubernetesMatch(_messages.Message):
   namespaceSelector = _messages.StringField(5)
   namespaces = _messages.StringField(6, repeated=True)
   scope = _messages.EnumField('ScopeValueValuesEnum', 7)
-
-
-class ListFleetConstraintTemplatesResponse(_messages.Message):
-  r"""Response schema for ListFleetConstraintTemplates.
-
-  Fields:
-    fleetConstraintTemplates: List of fleet-wide constraint template info.
-    nextPageToken: A token, which can be sent as page_token to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    totalSize: The number of fleet constraint templates in the response.
-  """
-
-  fleetConstraintTemplates = _messages.MessageField('FleetConstraintTemplate', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  totalSize = _messages.IntegerField(3)
-
-
-class ListFleetConstraintsResponse(_messages.Message):
-  r"""Response schema for ListFleetConstraints.
-
-  Fields:
-    fleetConstraints: List of fleet-wide constraint info.
-    nextPageToken: A token, which can be sent as page_token to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    totalSize: The number of fleet constraints in the response.
-  """
-
-  fleetConstraints = _messages.MessageField('FleetConstraint', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  totalSize = _messages.IntegerField(3)
 
 
 class ListMembershipConstraintAuditViolationsProducerResponse(_messages.Message):

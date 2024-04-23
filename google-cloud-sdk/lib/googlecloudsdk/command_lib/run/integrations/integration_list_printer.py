@@ -24,8 +24,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import base
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
+import six
+
+StateValueValuesEnum = (
+    runapps_v1alpha1_messages.ResourceStatus.StateValueValuesEnum
+)
 
 
 class Row(object):
@@ -35,52 +40,60 @@ class Row(object):
   around a dict as the keys could mispelled or changed in one place.
   """
 
-  def __init__(self, integration_name, integration_type,
-               services, latest_deployment_status, region: str):
+  def __init__(
+      self,
+      integration_name,
+      integration_type,
+      services,
+      latest_resource_status,
+      region: str,
+  ):
     self.integration_name = integration_name
     self.integration_type = integration_type
     self.services = services
-    self.latest_deployment_status = latest_deployment_status
+    self.latest_resource_status = latest_resource_status
     self.region = region
-    self.formatted_latest_deployment_status = (
-        _GetSymbolFromDeploymentStatus(latest_deployment_status)
+    self.formatted_latest_resource_status = _GetSymbolFromResourceStatus(
+        latest_resource_status
     )
 
   def __eq__(self, other):
-    return (self.integration_name == other.integration_name and
-            self.integration_type == other.integration_type and
-            self.services == other.services and
-            self.latest_deployment_status == other.latest_deployment_status and
-            self.region == other.region
-           )
+    return (
+        self.integration_name == other.integration_name
+        and self.integration_type == other.integration_type
+        and self.services == other.services
+        and self.latest_resource_status == other.latest_resource_status
+        and self.region == other.region
+    )
 
 
-def _GetSymbolFromDeploymentStatus(status):
-  """Gets a symbol based on the latest deployment status.
+def _GetSymbolFromResourceStatus(status):
+  """Gets a symbol based on the latest resource status.
 
-  If a deployment cannot be found or the deployment is not in a 'SUCCEEDED',
-  'FAILED', or 'IN_PROGRESS' state, then it should be reported as 'FAILED'.
+  If a resource cannot be found or the deployment is not in a well defined state
+  the default status is 'FAILED'.
 
   This would be true for integrations where the deployment never kicked off
   due to a failure.
 
   Args:
-    status: The latest deployment status.
+    status: The latest resource status.
 
   Returns:
     str, the symbol to be placed in front of the integration name.
   """
-  status_to_symbol = {
-      deployment_states.SUCCEEDED:
-          base.GetSymbol(base.SUCCESS),
-      deployment_states.FAILED:
-          base.GetSymbol(base.FAILED),
-      deployment_states.IN_PROGRESS:
-          base.GetSymbol(base.UPDATING),
-  }
 
-  return status_to_symbol.get(status,
-                              base.GetSymbol(
-                                  base.FAILED
-                                  )
-                              )
+  if status == StateValueValuesEnum.ACTIVE:
+    symbol = base.GetSymbol(base.SUCCESS)
+  elif status == StateValueValuesEnum.FAILED:
+    symbol = base.GetSymbol(base.FAILED)
+  elif status == StateValueValuesEnum.UPDATING:
+    symbol = base.GetSymbol(base.UPDATING)
+  elif status == StateValueValuesEnum.NOT_READY:
+    symbol = base.GetSymbol(base.DEFAULT)
+  elif status == StateValueValuesEnum.NOT_DEPLOYED:
+    symbol = base.GetSymbol(base.DEFAULT)
+  else:
+    symbol = base.GetSymbol(base.FAILED)
+
+  return six.text_type(symbol)
