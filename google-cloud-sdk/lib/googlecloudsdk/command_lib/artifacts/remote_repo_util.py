@@ -23,6 +23,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
+GITHUB_URI = "https://github.com"
+
 
 def Args():
   """Adds the remote-<facade>-repo flags."""
@@ -56,6 +58,9 @@ def Args():
           help=_OsPackageRemoteRepoHelpText(
               facade="Yum", hide_custom_remotes=True
           ),
+      ),
+      base.Argument(
+          "--remote-go-repo", help=_GoRemoteRepoHelpText(), hidden=True
       ),
       base.Argument(
           "--remote-username",
@@ -263,6 +268,25 @@ def AppendRemoteRepoConfigToRequest(messages, repo_args, request):
     else:  # raise error
       _RaiseRemoteRepoUpstreamError(facade, remote_base)
 
+  # GO
+  elif repo_args.remote_go_repo:
+    remote_cfg.goRepository = messages.GoRepository()
+    facade, remote_input = "Go", repo_args.remote_go_repo
+    # Go does not have Public enums
+    if _IsRemoteURI(remote_input):  # input is CustomRepository
+      if remote_input[-1] == "/":
+        remote_input = remote_input[:-1]
+      if remote_input != GITHUB_URI:
+        _RaiseCustomUpstreamUnsupportedError(facade, remote_input, [GITHUB_URI])
+      remote_cfg.goRepository.customRepository = (
+          messages.GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigGoRepositoryCustomRepository()
+      )
+      remote_cfg.goRepository.customRepository.uri = remote_input
+    elif _IsARRemote(remote_input):  # input is ArtifactRegistryRepository
+      _RaiseArtifactRegistryUpstreamUnsupportedError(facade)
+    else:  # raise error
+      _RaiseRemoteRepoUpstreamError(facade, remote_input)
+
   else:
     return request
 
@@ -291,6 +315,13 @@ REMOTE_{command}_REPO can be either:
       facade_lower=facade.lower(),
       command=_LanguagePackageCommandName(facade),
       enums=_EnumsStrForFacade(facade),
+  )
+
+
+def _GoRemoteRepoHelpText() -> str:
+  return (
+      '(Go only) Repo upstream for go remote repository. "https://github.com"'
+      " is theonly valid value at this moment."
   )
 
 
@@ -368,6 +399,8 @@ def _EnumsMessageForFacade(facade: str):
           .RepositoryBaseValueValuesEnum
       ),
   }
+  if facade not in facade_to_enum:
+    return None
   return facade_to_enum[facade]
 
 
@@ -378,6 +411,8 @@ def _EnumsStrForFacade(facade: str) -> str:
 
 def _EnumsMessageToStr(enums) -> str:
   """Returns the human-readable PublicRepository enum strings."""
+  if enums is None:
+    return ""
   return ", ".join(
       arg_utils.EnumNameToChoice(name)
       for name, number in sorted(enums.to_dict().items())
@@ -406,7 +441,36 @@ def _IsARRemote(remote_input: str) -> bool:
 
 
 def _RaiseRemoteRepoUpstreamError(facade: str, remote_input: str):
-  raise ar_exceptions.InvalidInputValueError("""\
-Invalid repo upstream for remote repository: '{remote_input}'. Valid choices are: [{enums}].
-If you intended to enter a custom upstream URI, this value must start with 'https://' or 'http://'.
-""".format(remote_input=remote_input, enums=_EnumsStrForFacade(facade)))
+  """Raises an error for a remote repo upstream error."""
+  well_known_enum_requirement = ""
+  if _EnumsStrForFacade(facade):
+    enums = _EnumsMessageForFacade(facade)
+    well_known_enum_requirement = (
+        " If you intended to enter a well known upstream repo, valid choices"
+        f" are: [{enums}]."
+    )
+
+  custom_uri_requirement = (
+      " If you intended to enter a custom upstream URI, this value must start"
+      " with 'https://' or 'http://'."
+  )
+  raise ar_exceptions.InvalidInputValueError(
+      "Invalid repo upstream for remote repository:"
+      f" '{remote_input}'.{well_known_enum_requirement}{custom_uri_requirement}"
+  )
+
+
+def _RaiseArtifactRegistryUpstreamUnsupportedError(facade: str):
+  raise ar_exceptions.InvalidInputValueError(
+      f"Artifact Registry upstream is not supported for {facade}."
+  )
+
+
+def _RaiseCustomUpstreamUnsupportedError(
+    facade: str, remote_input: str, allowed: list[str]
+):
+  allowed_choices = ", ".join(allowed)
+  raise ar_exceptions.InvalidInputValueError(
+      f"Custom upstream {remote_input} is not supported for {facade}. Valid"
+      f" choices are [{allowed_choices}].\n"
+  )

@@ -83,6 +83,8 @@ class AccessApprovalSettings(_messages.Message):
     preferredRequestExpirationDays: This preference is shared with Google
       personnel, but can be overridden if said personnel deems necessary. The
       approver ultimately can set the expiration at approval time.
+    requireCustomerVisibleJustification: Optional. A setting to require
+      approval request justifications to be customer visible.
   """
 
   activeKeyVersion = _messages.StringField(1)
@@ -95,6 +97,7 @@ class AccessApprovalSettings(_messages.Message):
   notificationPubsubTopic = _messages.StringField(8)
   preferNoBroadApprovalRequests = _messages.BooleanField(9)
   preferredRequestExpirationDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  requireCustomerVisibleJustification = _messages.BooleanField(11)
 
 
 class AccessLocations(_messages.Message):

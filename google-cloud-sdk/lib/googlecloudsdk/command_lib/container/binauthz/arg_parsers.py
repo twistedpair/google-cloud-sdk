@@ -49,7 +49,6 @@ BINAUTHZ_ENFORCER_REGIONS = [
     'europe-west2',
     'europe-west3',
     'europe-west4',
-    'europe-west5',
     'europe-west6',
     'europe-west8',
     'europe-west9',

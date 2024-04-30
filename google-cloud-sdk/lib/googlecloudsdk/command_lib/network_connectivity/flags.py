@@ -278,14 +278,14 @@ def GetRegionResourceSpec(location_arguments):
       disable_auto_completers=False)
 
 
-def GetResourceLocationArguments(vpc_spoke_only_command):
-  if not vpc_spoke_only_command:
+def GetResourceLocationArguments(global_spoke_command):
+  if not global_spoke_command:
     return [GLOBAL_ARGUMENT, REGION_ARGUMENT]
   else:
     return [GLOBAL_ARGUMENT]
 
 
-def AddSpokeResourceArg(parser, verb, vpc_spoke_only_command=False):
+def AddSpokeResourceArg(parser, verb, global_spoke_command=False):
   """Add a resource argument for a spoke.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -293,10 +293,10 @@ def AddSpokeResourceArg(parser, verb, vpc_spoke_only_command=False):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    vpc_spoke_only_command: bool, if the spoke resource arg is for a VPC
+    global_spoke_command: bool, if the spoke resource arg is for a VPC
       spoke-specific command.
   """
-  location_arguments = GetResourceLocationArguments(vpc_spoke_only_command)
+  location_arguments = GetResourceLocationArguments(global_spoke_command)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='spoke',
       concept_spec=GetSpokeResourceSpec(location_arguments),
@@ -307,7 +307,7 @@ def AddSpokeResourceArg(parser, verb, vpc_spoke_only_command=False):
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb, vpc_spoke_only_command=False):
+def AddRegionResourceArg(parser, verb, global_spoke_command=False):
   """Add a resource argument for a region.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -315,11 +315,11 @@ def AddRegionResourceArg(parser, verb, vpc_spoke_only_command=False):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    vpc_spoke_only_command: bool, if the spoke resource arg is for a VPC
+    global_spoke_command: bool, if the spoke resource arg is for a VPC
       spoke-specific command.
   """
 
-  location_arguments = GetResourceLocationArguments(vpc_spoke_only_command)
+  location_arguments = GetResourceLocationArguments(global_spoke_command)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='region',
       concept_spec=GetRegionResourceSpec(location_arguments),

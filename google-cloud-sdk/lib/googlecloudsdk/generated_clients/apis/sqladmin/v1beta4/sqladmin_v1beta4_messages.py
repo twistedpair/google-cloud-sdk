@@ -3828,6 +3828,8 @@ class SqlInstancesDeleteRequest(_messages.Message):
   r"""A SqlInstancesDeleteRequest object.
 
   Fields:
+    enableFinalBackup: Flag to opt-in for final backup. By default, it is
+      turned off.
     finalBackupDescription: The description of the final backup.
     finalBackupExpiryTime: Optional. Final Backup expiration time. Timestamp
       in UTC of when this resource is considered expired.
@@ -3835,15 +3837,16 @@ class SqlInstancesDeleteRequest(_messages.Message):
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance to be
       deleted.
-    skipFinalBackup: By default we opt in for creating final backup
+    skipFinalBackup: Deprecated field, please use enable_final_backup
   """
 
-  finalBackupDescription = _messages.StringField(1)
-  finalBackupExpiryTime = _messages.StringField(2)
-  finalBackupTtlDays = _messages.IntegerField(3)
-  instance = _messages.StringField(4, required=True)
-  project = _messages.StringField(5, required=True)
-  skipFinalBackup = _messages.BooleanField(6)
+  enableFinalBackup = _messages.BooleanField(1)
+  finalBackupDescription = _messages.StringField(2)
+  finalBackupExpiryTime = _messages.StringField(3)
+  finalBackupTtlDays = _messages.IntegerField(4)
+  instance = _messages.StringField(5, required=True)
+  project = _messages.StringField(6, required=True)
+  skipFinalBackup = _messages.BooleanField(7)
 
 
 class SqlInstancesDemoteMasterRequest(_messages.Message):

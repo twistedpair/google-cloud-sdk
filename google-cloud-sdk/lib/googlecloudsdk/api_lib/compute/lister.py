@@ -927,13 +927,7 @@ class RegionalLister(object):
     errors = []
     scope_set = frontend.scope_set
     filter_expr = frontend.filter
-
-    if not _AllowPartialError():
-      utils.RaiseException(errors, ListException)
-
     if isinstance(scope_set, RegionSet):
-      if not _AllowPartialError():
-        utils.RaiseException(errors, ListException)
       for project, regions in six.iteritems(
           _GroupByProject(sorted(list(scope_set)))):
         for item in GetRegionalResourcesDicts(
@@ -948,8 +942,6 @@ class RegionalLister(object):
     else:
       # scopeSet is AllScopes
       # generate AggregatedList
-      if not _AllowPartialError():
-        utils.RaiseException(errors, ListException)
       for project_ref in sorted(list(scope_set.projects)):
         for item in GetRegionalResourcesDicts(
             service=self.service,

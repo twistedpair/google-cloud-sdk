@@ -91,11 +91,13 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
       UPDATE: Constraint applied when updating the resource.
       DELETE: Constraint applied when deleting the resource. Not supported
         yet.
+      REMOVE_GRANT: Constraint applied when removing an IAM grant.
     """
     METHOD_TYPE_UNSPECIFIED = 0
     CREATE = 1
     UPDATE = 2
     DELETE = 3
+    REMOVE_GRANT = 4
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   condition = _messages.StringField(2)

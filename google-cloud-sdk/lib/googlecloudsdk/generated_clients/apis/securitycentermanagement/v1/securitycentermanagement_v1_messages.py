@@ -923,6 +923,8 @@ class SecurityCenterService(_messages.Message):
     ModulesValue: Optional. The configurations including the state of
       enablement for the service's different modules. The absence of a module
       in the map implies its configuration is inherited from its parent's.
+    ServiceConfigValue: Optional. Additional service specific configuration.
+      Not all services will utilize this field.
 
   Fields:
     effectiveEnablementState: Output only. The effective enablement state for
@@ -941,6 +943,8 @@ class SecurityCenterService(_messages.Message):
       zation}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+    serviceConfig: Optional. Additional service specific configuration. Not
+      all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
       be due to an explicit user update or due to a side effect of another
       system change such as billing subscription expiry.
@@ -1008,11 +1012,38 @@ class SecurityCenterService(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceConfigValue(_messages.Message):
+    r"""Optional. Additional service specific configuration. Not all services
+    will utilize this field.
+
+    Messages:
+      AdditionalProperty: An additional property for a ServiceConfigValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceConfigValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   effectiveEnablementState = _messages.EnumField('EffectiveEnablementStateValueValuesEnum', 1)
   intendedEnablementState = _messages.EnumField('IntendedEnablementStateValueValuesEnum', 2)
   modules = _messages.MessageField('ModulesValue', 3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  serviceConfig = _messages.MessageField('ServiceConfigValue', 5)
+  updateTime = _messages.StringField(6)
 
 
 class SecurityHealthAnalyticsCustomModule(_messages.Message):

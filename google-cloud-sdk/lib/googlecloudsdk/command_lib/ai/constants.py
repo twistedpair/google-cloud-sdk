@@ -44,6 +44,7 @@ SUPPORTED_REGION = ('us-central1', 'europe-west4', 'asia-east1')
 # Available regions specifically for training, including custom-jobs and
 # hp-tuning-jobs.
 SUPPORTED_TRAINING_REGIONS = (
+    'africa-south1',
     'asia-east1',
     'asia-east2',
     'asia-northeast1',
@@ -64,6 +65,9 @@ SUPPORTED_TRAINING_REGIONS = (
     'europe-west6',
     'europe-west8',
     'europe-west9',
+    'europe-west12',
+    'me-central1',
+    'me-central2',
     'me-west1',
     'northamerica-northeast1',
     'northamerica-northeast2',
@@ -72,6 +76,7 @@ SUPPORTED_TRAINING_REGIONS = (
     'us-central1',
     'us-east1',
     'us-east4',
+    'us-east5',
     'us-south1',
     'us-west1',
     'us-west2',

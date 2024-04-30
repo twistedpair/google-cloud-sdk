@@ -906,7 +906,7 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest(_messages.M
 
   Enums:
     ViewValueValuesEnum: Optional. The resource_view to be applied to the
-      returned views' fields. Default to NAME_ONLY.
+      returned AuthorizedViews' fields. Default to NAME_ONLY.
 
   Fields:
     pageSize: Optional. Maximum number of results per page. A page_size of
@@ -921,13 +921,13 @@ class BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest(_messages.M
     parent: Required. The unique name of the table for which AuthorizedViews
       should be listed. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}`.
-    view: Optional. The resource_view to be applied to the returned views'
-      fields. Default to NAME_ONLY.
+    view: Optional. The resource_view to be applied to the returned
+      AuthorizedViews' fields. Default to NAME_ONLY.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. The resource_view to be applied to the returned views'
-    fields. Default to NAME_ONLY.
+    r"""Optional. The resource_view to be applied to the returned
+    AuthorizedViews' fields. Default to NAME_ONLY.
 
     Values:
       RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
@@ -1741,7 +1741,7 @@ class CreateAuthorizedViewMetadata(_messages.Message):
     finishTime: The time at which the operation failed or was completed
       successfully.
     originalRequest: The request that prompted the initiation of this
-      CreateInstance operation.
+      CreateAuthorizedView operation.
     requestTime: The time at which the original request was received.
   """
 

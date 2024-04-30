@@ -217,7 +217,7 @@ data_attribute_binding:
       Identifier of the Dataplex Data Attribute Binding
 
 entry_group:
-  name: entry_group
+  name: entry group
   collection: dataplex.projects.locations.entryGroups
   request_id_field: entryGroupId
   disable_auto_completers: false
@@ -231,7 +231,7 @@ entry_group:
       Entry group containing Dataplex Entries.
 
 aspect_type:
-  name: aspect_type
+  name: aspect type
   collection: dataplex.projects.locations.aspectTypes
   request_id_field: aspectTypeId
   disable_auto_completers: false
@@ -239,13 +239,13 @@ aspect_type:
   - *project
   - *location
   - &aspect_type
-    parameter_name: aspectTypeId
+    parameter_name: aspectTypesId
     attribute_name: aspect_type
     help: |
       Identifier of the Dataplex Aspect Type resource.
 
 entry_type:
-  name: entry_type
+  name: entry type
   collection: dataplex.projects.locations.entryTypes
   request_id_field: entryTypeId
   disable_auto_completers: false
@@ -253,7 +253,7 @@ entry_type:
   - *project
   - *location
   - &entry_type
-    parameter_name: entryTypeId
+    parameter_name: entryTypesId
     attribute_name: entry_type
     help: |
       Identifier of the Dataplex Entry Type resource.

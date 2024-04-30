@@ -2235,7 +2235,7 @@ class AiplatformProjectsLocationsFeatureGroupsCreateRequest(_messages.Message):
       GoogleCloudAiplatformV1beta1FeatureGroup resource to be passed as the
       request body.
     parent: Required. The resource name of the Location to create
-      FeatureGroups. Format: `projects/{project}/locations/{location}'`
+      FeatureGroups. Format: `projects/{project}/locations/{location}`
   """
 
   featureGroupId = _messages.StringField(1)
@@ -22864,9 +22864,6 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringSchema(_messages.Message):
       of features in the prediction instance. We will match the feature with
       the array in the order specified in [feature_fields].
     groundTruthFields: Target /ground truth names of the model.
-    instanceType: The prediction instance type that the Model accepts when
-      serving. Supported values are: * `object`: Each input is a JSON object
-      format. * `array`: Each input is a JSON array format.
     predictionFields: Prediction output names of the model. The requirements
       are the same as the feature_fields. For AutoML Tables, the prediction
       output name presented in schema will be: `predicted_{target_column}`,
@@ -22878,8 +22875,7 @@ class GoogleCloudAiplatformV1beta1ModelMonitoringSchema(_messages.Message):
 
   featureFields = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringSchemaFieldSchema', 1, repeated=True)
   groundTruthFields = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringSchemaFieldSchema', 2, repeated=True)
-  instanceType = _messages.StringField(3)
-  predictionFields = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringSchemaFieldSchema', 4, repeated=True)
+  predictionFields = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringSchemaFieldSchema', 3, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringSchemaFieldSchema(_messages.Message):
@@ -23653,6 +23649,7 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
       INVALID_NUMERIC_VALUE: Numeric restrict has invalid numeric value
         specified.
       INVALID_ENCODING: File is not in UTF_8 format.
+      INVALID_TOKEN_VALUE: Token restrict value is invalid.
     """
     ERROR_TYPE_UNSPECIFIED = 0
     EMPTY_LINE = 1
@@ -23668,6 +23665,7 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
     MULTIPLE_VALUES = 11
     INVALID_NUMERIC_VALUE = 12
     INVALID_ENCODING = 13
+    INVALID_TOKEN_VALUE = 14
 
   embeddingId = _messages.StringField(1)
   errorMessage = _messages.StringField(2)
@@ -23783,8 +23781,11 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
   Fields:
     createTime: Output only. Timestamp when this NotebookExecutionJob was
       created.
+    customEnvironmentSpec: The custom compute configuration for an execution
+      job.
     dataformRepositorySource: The Dataform Repository pointing to a single
       file notebook repository.
+    directNotebookSource: The contents of an input notebook file.
     displayName: The display name of the NotebookExecutionJob. The name can be
       up to 128 characters long and can consist of any UTF-8 characters.
     executionTimeout: Max running time of the execution job in seconds
@@ -23849,19 +23850,36 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJob(_messages.Message):
     JOB_STATE_PARTIALLY_SUCCEEDED = 11
 
   createTime = _messages.StringField(1)
-  dataformRepositorySource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource', 2)
-  displayName = _messages.StringField(3)
-  executionTimeout = _messages.StringField(4)
-  executionUser = _messages.StringField(5)
-  gcsNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource', 6)
-  gcsOutputUri = _messages.StringField(7)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  notebookRuntimeTemplateResourceName = _messages.StringField(10)
-  scheduleResourceName = _messages.StringField(11)
-  serviceAccount = _messages.StringField(12)
-  status = _messages.MessageField('GoogleRpcStatus', 13)
-  updateTime = _messages.StringField(14)
+  customEnvironmentSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobCustomEnvironmentSpec', 2)
+  dataformRepositorySource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource', 3)
+  directNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobDirectNotebookSource', 4)
+  displayName = _messages.StringField(5)
+  executionTimeout = _messages.StringField(6)
+  executionUser = _messages.StringField(7)
+  gcsNotebookSource = _messages.MessageField('GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource', 8)
+  gcsOutputUri = _messages.StringField(9)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  notebookRuntimeTemplateResourceName = _messages.StringField(12)
+  scheduleResourceName = _messages.StringField(13)
+  serviceAccount = _messages.StringField(14)
+  status = _messages.MessageField('GoogleRpcStatus', 15)
+  updateTime = _messages.StringField(16)
+
+
+class GoogleCloudAiplatformV1beta1NotebookExecutionJobCustomEnvironmentSpec(_messages.Message):
+  r"""Compute configuration to use for an execution job.
+
+  Fields:
+    machineSpec: The specification of a single machine for the execution job.
+    networkSpec: The network configuration to use for the execution job.
+    persistentDiskSpec: The specification of a persistent disk to attach for
+      the execution job.
+  """
+
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 1)
+  networkSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1NetworkSpec', 2)
+  persistentDiskSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1PersistentDiskSpec', 3)
 
 
 class GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource(_messages.Message):
@@ -23877,6 +23895,16 @@ class GoogleCloudAiplatformV1beta1NotebookExecutionJobDataformRepositorySource(_
 
   commitSha = _messages.StringField(1)
   dataformRepositoryResourceName = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1NotebookExecutionJobDirectNotebookSource(_messages.Message):
+  r"""The content of the input notebook in ipynb format.
+
+  Fields:
+    content: The base64-encoded contents of the input notebook file.
+  """
+
+  content = _messages.BytesField(1)
 
 
 class GoogleCloudAiplatformV1beta1NotebookExecutionJobGcsNotebookSource(_messages.Message):
@@ -25678,6 +25706,8 @@ class GoogleCloudAiplatformV1beta1PublisherModelCallToActionDeploy(_messages.Mes
       Models.
     dedicatedResources: A description of resources that are dedicated to the
       DeployedModel, and that need a higher degree of manual configuration.
+    deployTaskName: Optional. The name of the deploy task (e.g., "text to
+      image generation").
     largeModelReference: Optional. Large model reference. When this is set,
       model_artifact_spec is not needed.
     modelDisplayName: Optional. Default model display name.
@@ -25693,11 +25723,12 @@ class GoogleCloudAiplatformV1beta1PublisherModelCallToActionDeploy(_messages.Mes
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 2)
   containerSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelContainerSpec', 3)
   dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1beta1DedicatedResources', 4)
-  largeModelReference = _messages.MessageField('GoogleCloudAiplatformV1beta1LargeModelReference', 5)
-  modelDisplayName = _messages.StringField(6)
-  publicArtifactUri = _messages.StringField(7)
-  sharedResources = _messages.StringField(8)
-  title = _messages.StringField(9)
+  deployTaskName = _messages.StringField(5)
+  largeModelReference = _messages.MessageField('GoogleCloudAiplatformV1beta1LargeModelReference', 6)
+  modelDisplayName = _messages.StringField(7)
+  publicArtifactUri = _messages.StringField(8)
+  sharedResources = _messages.StringField(9)
+  title = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1PublisherModelCallToActionDeployGke(_messages.Message):
@@ -36475,13 +36506,20 @@ class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
 
   Enums:
     AttributionDatasetValueValuesEnum: The dataset the segment came from.
+      Datasets change often as model evolves. Treat this field as
+      informational only and avoid depending on it directly.
     SegmentRecitationActionValueValuesEnum:
+    SourceCategoryValueValuesEnum: The category of the source dataset where
+      the segment came from. This is more stable than Dataset.
 
   Fields:
-    attributionDataset: The dataset the segment came from.
+    attributionDataset: The dataset the segment came from. Datasets change
+      often as model evolves. Treat this field as informational only and avoid
+      depending on it directly.
     displayAttributionMessage: human-friendly string that contains information
       from doc_attribution which could be shown by clients
-    docAttribution: populated when recitation_action == CITE
+    docAttribution: A LanguageLabsAidaTrustRecitationProtoDocAttribution
+      attribute.
     docOccurrences: number of documents that contained this segment
     endIndex: A integer attribute.
     rawText: The raw text in the given input that is corresponding to the
@@ -36489,6 +36527,8 @@ class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
       enabled in the request options.
     segmentRecitationAction: A SegmentRecitationActionValueValuesEnum
       attribute.
+    sourceCategory: The category of the source dataset where the segment came
+      from. This is more stable than Dataset.
     startIndex: The segment boundary start (inclusive) and end index
       (exclusive) in the given text. In the streaming RPC, the indexes always
       start from the beginning of the first text in the entire stream. The
@@ -36496,7 +36536,9 @@ class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
   """
 
   class AttributionDatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset the segment came from.
+    r"""The dataset the segment came from. Datasets change often as model
+    evolves. Treat this field as informational only and avoid depending on it
+    directly.
 
     Values:
       DATASET_UNSPECIFIED: <no description>
@@ -37306,6 +37348,31 @@ class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
     NO_ACTION = 3
     EXEMPT_FOUND_IN_PROMPT = 4
 
+  class SourceCategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the source dataset where the segment came from. This
+    is more stable than Dataset.
+
+    Values:
+      SOURCE_CATEGORY_UNSPECIFIED: <no description>
+      SOURCE_CATEGORY_WIKIPEDIA: <no description>
+      SOURCE_CATEGORY_WEBDOCS: <no description>
+      SOURCE_CATEGORY_GITHUB: <no description>
+      SOURCE_CATEGORY_ARXIV: <no description>
+      SOURCE_CATEGORY_PRIVATE_BOOKS: <no description>
+      SOURCE_CATEGORY_OTHERS: <no description>
+      SOURCE_CATEGORY_PUBLIC_BOOKS: <no description>
+      SOURCE_CATEGORY_GNEWS: <no description>
+    """
+    SOURCE_CATEGORY_UNSPECIFIED = 0
+    SOURCE_CATEGORY_WIKIPEDIA = 1
+    SOURCE_CATEGORY_WEBDOCS = 2
+    SOURCE_CATEGORY_GITHUB = 3
+    SOURCE_CATEGORY_ARXIV = 4
+    SOURCE_CATEGORY_PRIVATE_BOOKS = 5
+    SOURCE_CATEGORY_OTHERS = 6
+    SOURCE_CATEGORY_PUBLIC_BOOKS = 7
+    SOURCE_CATEGORY_GNEWS = 8
+
   attributionDataset = _messages.EnumField('AttributionDatasetValueValuesEnum', 1)
   displayAttributionMessage = _messages.StringField(2)
   docAttribution = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoDocAttribution', 3)
@@ -37313,7 +37380,8 @@ class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
   endIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   rawText = _messages.StringField(6)
   segmentRecitationAction = _messages.EnumField('SegmentRecitationActionValueValuesEnum', 7)
-  startIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sourceCategory = _messages.EnumField('SourceCategoryValueValuesEnum', 8)
+  startIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class LanguageLabsAidaTrustRecitationProtoStreamRecitationResult(_messages.Message):
@@ -38292,13 +38360,19 @@ class LearningGenaiRecitationSegmentResult(_messages.Message):
 
   Enums:
     AttributionDatasetValueValuesEnum: The dataset the segment came from.
+      Datasets change often as model evolves. Treat this field as
+      informational only and avoid depending on it directly.
     SegmentRecitationActionValueValuesEnum:
+    SourceCategoryValueValuesEnum: The category of the source dataset where
+      the segment came from. This is more stable than Dataset.
 
   Fields:
-    attributionDataset: The dataset the segment came from.
+    attributionDataset: The dataset the segment came from. Datasets change
+      often as model evolves. Treat this field as informational only and avoid
+      depending on it directly.
     displayAttributionMessage: human-friendly string that contains information
       from doc_attribution which could be shown by clients
-    docAttribution: populated when recitation_action == CITE
+    docAttribution: A LearningGenaiRecitationDocAttribution attribute.
     docOccurrences: number of documents that contained this segment
     endIndex: A integer attribute.
     rawText: The raw text in the given input that is corresponding to the
@@ -38306,6 +38380,8 @@ class LearningGenaiRecitationSegmentResult(_messages.Message):
       enabled in the request options.
     segmentRecitationAction: A SegmentRecitationActionValueValuesEnum
       attribute.
+    sourceCategory: The category of the source dataset where the segment came
+      from. This is more stable than Dataset.
     startIndex: The segment boundary start (inclusive) and end index
       (exclusive) in the given text. In the streaming RPC, the indexes always
       start from the beginning of the first text in the entire stream. The
@@ -38313,7 +38389,9 @@ class LearningGenaiRecitationSegmentResult(_messages.Message):
   """
 
   class AttributionDatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset the segment came from.
+    r"""The dataset the segment came from. Datasets change often as model
+    evolves. Treat this field as informational only and avoid depending on it
+    directly.
 
     Values:
       DATASET_UNSPECIFIED: <no description>
@@ -39123,6 +39201,31 @@ class LearningGenaiRecitationSegmentResult(_messages.Message):
     NO_ACTION = 3
     EXEMPT_FOUND_IN_PROMPT = 4
 
+  class SourceCategoryValueValuesEnum(_messages.Enum):
+    r"""The category of the source dataset where the segment came from. This
+    is more stable than Dataset.
+
+    Values:
+      SOURCE_CATEGORY_UNSPECIFIED: <no description>
+      SOURCE_CATEGORY_WIKIPEDIA: <no description>
+      SOURCE_CATEGORY_WEBDOCS: <no description>
+      SOURCE_CATEGORY_GITHUB: <no description>
+      SOURCE_CATEGORY_ARXIV: <no description>
+      SOURCE_CATEGORY_PRIVATE_BOOKS: <no description>
+      SOURCE_CATEGORY_OTHERS: <no description>
+      SOURCE_CATEGORY_PUBLIC_BOOKS: <no description>
+      SOURCE_CATEGORY_GNEWS: <no description>
+    """
+    SOURCE_CATEGORY_UNSPECIFIED = 0
+    SOURCE_CATEGORY_WIKIPEDIA = 1
+    SOURCE_CATEGORY_WEBDOCS = 2
+    SOURCE_CATEGORY_GITHUB = 3
+    SOURCE_CATEGORY_ARXIV = 4
+    SOURCE_CATEGORY_PRIVATE_BOOKS = 5
+    SOURCE_CATEGORY_OTHERS = 6
+    SOURCE_CATEGORY_PUBLIC_BOOKS = 7
+    SOURCE_CATEGORY_GNEWS = 8
+
   attributionDataset = _messages.EnumField('AttributionDatasetValueValuesEnum', 1)
   displayAttributionMessage = _messages.StringField(2)
   docAttribution = _messages.MessageField('LearningGenaiRecitationDocAttribution', 3)
@@ -39130,7 +39233,8 @@ class LearningGenaiRecitationSegmentResult(_messages.Message):
   endIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   rawText = _messages.StringField(6)
   segmentRecitationAction = _messages.EnumField('SegmentRecitationActionValueValuesEnum', 7)
-  startIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  sourceCategory = _messages.EnumField('SourceCategoryValueValuesEnum', 8)
+  startIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class LearningGenaiRootCalculationType(_messages.Message):
@@ -40553,9 +40657,10 @@ class LearningServingLlmMessageMetadata(_messages.Message):
     scores: All the different scores for a message are logged here.
     streamTerminated: Whether the response is terminated during streaming
       return. Only used for streaming requests.
-    totalDecodedTokenCount: NOT YET IMPLEMENTED. Aggregated number of total
-      tokens decoded so far. For streaming, this is sum of all the tokens
-      decoded so far i.e. aggregated count.
+    totalDecodedTokenCount: Total tokens decoded so far per
+      response_candidate. For streaming: Count of all the tokens decoded so
+      far (aggregated count). For unary: Count of all the tokens decoded per
+      response_candidate.
     translatedUserPrompts: Translated user-prompt used for RAI post
       processing. This is for internal processing only. We will translate in
       pre-processor and pass the translated text to the post processor using

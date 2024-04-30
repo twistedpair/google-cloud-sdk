@@ -3616,6 +3616,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExportHistory(self, request, global_params=None):
+      r"""Export resources including historical versions from the FHIR store to the specified destination. The exported resource, along with previous versions, will be exported in one or more FHIR history bundles. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresExportHistoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ExportHistory')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExportHistory.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:exportHistory',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.exportHistory',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:exportHistory',
+        request_field='exportResourcesHistoryRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresExportHistoryRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets the configuration of the specified FHIR store.
 
@@ -3720,6 +3747,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}:import',
         request_field='importResourcesRequest',
         request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresImportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ImportHistory(self, request, global_params=None):
+      r"""Import resource historical versions from Cloud Storage source to destination fhir store. The exported resource, along with previous versions, will be exported in one or more FHIR history bundles. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ImportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresImportHistoryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportHistory')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportHistory.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:importHistory',
+        http_method='POST',
+        method_id='healthcare.projects.locations.datasets.fhirStores.importHistory',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:importHistory',
+        request_field='importResourcesHistoryRequest',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresImportHistoryRequest',
         response_type_name='Operation',
         supports_download=False,
     )

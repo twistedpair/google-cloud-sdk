@@ -919,6 +919,8 @@ class Cluster(_messages.Message):
       Resource usage export is disabled when this config is unspecified.
     runtimeVulnerabilityInsightConfig: Enable/Disable RVI features for the
       cluster.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     secretManagerConfig: Secret CSI driver configuration.
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
@@ -1066,18 +1068,20 @@ class Cluster(_messages.Message):
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 62)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 63)
   runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 64)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 65)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 66)
-  selfLink = _messages.StringField(67)
-  servicesIpv4Cidr = _messages.StringField(68)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 69)
-  status = _messages.EnumField('StatusValueValuesEnum', 70)
-  statusMessage = _messages.StringField(71)
-  subnetwork = _messages.StringField(72)
-  tpuIpv4CidrBlock = _messages.StringField(73)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 74)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 75)
-  zone = _messages.StringField(76)
+  satisfiesPzi = _messages.BooleanField(65)
+  satisfiesPzs = _messages.BooleanField(66)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 67)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 68)
+  selfLink = _messages.StringField(69)
+  servicesIpv4Cidr = _messages.StringField(70)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 71)
+  status = _messages.EnumField('StatusValueValuesEnum', 72)
+  statusMessage = _messages.StringField(73)
+  subnetwork = _messages.StringField(74)
+  tpuIpv4CidrBlock = _messages.StringField(75)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 76)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
+  zone = _messages.StringField(78)
 
 
 class ClusterAutoscaling(_messages.Message):

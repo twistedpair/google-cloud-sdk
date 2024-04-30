@@ -57,6 +57,26 @@ class AccessSelector(_messages.Message):
   roles = _messages.StringField(2, repeated=True)
 
 
+class AdditionalInfo(_messages.Message):
+  r"""The proto to hold the detailed information about the validation result.
+
+  Fields:
+    invalidAccount: Optional. The invalid Collector accounts. This field will
+      be set only when the connection state is AWS_INVALID_COLLECTOR_ACCOUNTS.
+    summary: Required. The summary of the validation result. When the
+      connection does not pass the Delegated Role validation, including
+      Delegated Role assumption and listing accounts when auto-discovery is
+      enabled, it will contain the detailed failure reasons. If the Delegated
+      Role validation passes, this field will be in the format of
+      "$VALIDATED_COLLECTOR_ACCT_CNT out of $TOTAL_COLLECTOR_ACCT_CNT
+      Collector accounts were validated. The valid Collector accounts rate is
+      $PERCENTAGE."
+  """
+
+  invalidAccount = _messages.MessageField('InvalidCollectorAccount', 1, repeated=True)
+  summary = _messages.StringField(2)
+
+
 class AnalyzeIamPolicyLongrunningMetadata(_messages.Message):
   r"""Represents the metadata of the longrunning operation for the
   AnalyzeIamPolicyLongrunning RPC.
@@ -4475,6 +4495,24 @@ class IngestAssetResponse(_messages.Message):
   name = _messages.StringField(1)
 
 
+class InvalidCollectorAccount(_messages.Message):
+  r"""Details about an invalid Collector account.
+
+  Fields:
+    accountId: Required. The account id of the invalid Collector account.
+    cause: Optional. The detailed reason for the invalidity.
+    role: Optional. The invalid Collector Role name of the invalid account.
+    status: Optional. The invalidity status, should be either
+      AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE or
+      AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION.
+  """
+
+  accountId = _messages.StringField(1)
+  cause = _messages.StringField(2)
+  role = _messages.StringField(3)
+  status = _messages.StringField(4)
+
+
 class Inventory(_messages.Message):
   r"""This API resource represents the available inventory data for a Compute
   Engine virtual machine (VM) instance at a given point in time. You can use
@@ -6392,6 +6430,8 @@ class ValidationResult(_messages.Message):
       cloud connection
 
   Fields:
+    additionalInfo: Required. The detailed information about the validation
+      result.
     cause: Optional. Some further information about the connection. When the
       connection does not pass the Delegated Role validation, including
       Delegated Role assumption and listing accounts when auto-discovery is
@@ -6399,7 +6439,8 @@ class ValidationResult(_messages.Message):
       Role validation passes, this field will always contain the validated
       Collector account number. In addition, when the connection state is
       AWS_INVALID_COLLECTOR_ACCOUNTS, it will provide the valid Collector Role
-      rate, and the detailed reasons for all invalid accounts.
+      rate, and the detailed reasons for all invalid accounts. This field is
+      parsed from the above CauseProto in JSON format.
     connectionState: NOTE: Deprecated The state of the other-cloud connection
     connectionStatus: Required. The status of the other-cloud connection with
       one of the following values VALID: The connection has been set up at AWS
@@ -6443,10 +6484,11 @@ class ValidationResult(_messages.Message):
     FAILED_TO_ASSUME_DELEGATED_ROLE = 2
     INVALID_FOR_OTHER_REASON = 3
 
-  cause = _messages.StringField(1)
-  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 2)
-  connectionStatus = _messages.StringField(3)
-  validationTime = _messages.StringField(4)
+  additionalInfo = _messages.MessageField('AdditionalInfo', 1)
+  cause = _messages.StringField(2)
+  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 3)
+  connectionStatus = _messages.StringField(4)
+  validationTime = _messages.StringField(5)
 
 
 class VerifyOtherCloudConnectionRequest(_messages.Message):

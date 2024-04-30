@@ -135,6 +135,31 @@ def AddCreateBackupPlanAssociationFlags(parser):
   )
 
 
+def AddTriggerBackupFlags(parser):
+  """Adds flags required to create a backup plan association."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'BACKUP_PLAN_ASSOCIATION',
+              GetBackupPlanAssociationResourceSpec(),
+              'Name of an existing backup plan association to use for creating'
+              ' an on-demand backup.',
+              required=True,
+          ),
+      ],
+  ).AddToParser(parser)
+
+  parser.add_argument(
+      '--backup-rule-id',
+      required=True,
+      type=str,
+      help=(
+          'Name of an existing backup rule to use for creating an on-demand'
+          ' backup.'
+      ),
+  )
+
+
 def AddNetwork(parser, required=True):
   """Adds a positional network argument to parser.
 

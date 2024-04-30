@@ -1447,6 +1447,7 @@ def SetUptimeCheckProtocolFields(
         '--content-type',
         '--port',
         '--pings-count',
+        '--service-agent-auth',
     ]
     for flag in should_not_be_set:
       dest = _FlagToDest(flag)
@@ -1494,6 +1495,7 @@ def SetUptimeCheckProtocolFields(
         '--body',
         '--request-method',
         '--content-type',
+        '--service-agent-auth',
     ]
     for flag in should_not_be_set:
       dest = _FlagToDest(flag)
@@ -1548,6 +1550,18 @@ def SetUptimeCheckProtocolFields(
         http_check.port = args.port
       if http_check.port is None:
         http_check.port = 80
+    service_agent_auth_mapping = {
+        'oidc-token': (
+            messages.ServiceAgentAuthentication.TypeValueValuesEnum.OIDC_TOKEN
+        ),
+    }
+    if args.service_agent_auth is not None:
+      http_check.serviceAgentAuthentication = (
+          messages.ServiceAgentAuthentication()
+      )
+      http_check.serviceAgentAuthentication.type = (
+          service_agent_auth_mapping.get(args.service_agent_auth)
+      )
     method_mapping = {
         'get': messages.HttpCheck.RequestMethodValueValuesEnum.GET,
         'post': messages.HttpCheck.RequestMethodValueValuesEnum.POST,

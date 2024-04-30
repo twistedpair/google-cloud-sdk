@@ -1168,8 +1168,8 @@ class DistributionCut(_messages.Message):
 
 
 class Documentation(_messages.Message):
-  r"""A content string and a MIME type that describes the content string's
-  format.
+  r"""Documentation that is included in the notifications and incidents
+  pertaining to this policy.
 
   Fields:
     content: The body of the documentation, interpreted according to
@@ -1667,7 +1667,7 @@ class HttpCheck(_messages.Message):
       HTTP response status code is in this set of status codes. If empty, the
       HTTP status code will only pass if the HTTP status code is 200-299.
     authInfo: The authentication information. Optional when creating an HTTP
-      check; defaults to empty.
+      check; defaults to empty. Do not set both auth_method and auth_info.
     body: The request body associated with the HTTP POST request. If
       content_type is URL_ENCODED, the body passed in must be URL-encoded.
       Users can provide a Content-Length header via the headers field or the
@@ -1713,6 +1713,9 @@ class HttpCheck(_messages.Message):
       monitored_resource) and path to construct the full URL.
     requestMethod: The HTTP request method to use for the check. If set to
       METHOD_UNSPECIFIED then request_method defaults to GET.
+    serviceAgentAuthentication: If specified, Uptime will generate and attach
+      an OIDC JWT token for the Monitoring service agent service account as an
+      Authorization header in the HTTP request when probing.
     useSsl: If true, use HTTPS instead of HTTP to run the check.
     validateSsl: Boolean specifying whether to include SSL certificate
       validation as a part of the Uptime check. Only applies to checks where
@@ -1796,8 +1799,9 @@ class HttpCheck(_messages.Message):
   pingConfig = _messages.MessageField('PingConfig', 9)
   port = _messages.IntegerField(10, variant=_messages.Variant.INT32)
   requestMethod = _messages.EnumField('RequestMethodValueValuesEnum', 11)
-  useSsl = _messages.BooleanField(12)
-  validateSsl = _messages.BooleanField(13)
+  serviceAgentAuthentication = _messages.MessageField('ServiceAgentAuthentication', 12)
+  useSsl = _messages.BooleanField(13)
+  validateSsl = _messages.BooleanField(14)
 
 
 class InternalChecker(_messages.Message):
@@ -2687,6 +2691,8 @@ class MetricThreshold(_messages.Message):
       hand side.Only COMPARISON_LT and COMPARISON_GT are supported currently.
     EvaluationMissingDataValueValuesEnum: A condition control that determines
       how metric-threshold conditions are evaluated when data stops arriving.
+      To use this control, the value of the duration field must be greater
+      than or equal to 60 seconds.
 
   Fields:
     aggregations: Specifies the alignment of data points in individual time
@@ -2729,7 +2735,9 @@ class MetricThreshold(_messages.Message):
       outlier does not generate spurious alerts, but short enough that
       unhealthy states are detected and alerted on quickly.
     evaluationMissingData: A condition control that determines how metric-
-      threshold conditions are evaluated when data stops arriving.
+      threshold conditions are evaluated when data stops arriving. To use this
+      control, the value of the duration field must be greater than or equal
+      to 60 seconds.
     filter: Required. A filter
       (https://cloud.google.com/monitoring/api/v3/filters) that identifies
       which time series should be compared with the threshold.The filter is
@@ -2783,7 +2791,8 @@ class MetricThreshold(_messages.Message):
 
   class EvaluationMissingDataValueValuesEnum(_messages.Enum):
     r"""A condition control that determines how metric-threshold conditions
-    are evaluated when data stops arriving.
+    are evaluated when data stops arriving. To use this control, the value of
+    the duration field must be greater than or equal to 60 seconds.
 
     Values:
       EVALUATION_MISSING_DATA_UNSPECIFIED: An unspecified evaluation missing
@@ -2906,7 +2915,7 @@ class MonitoredResourceDescriptor(_messages.Message):
       format "monitoredResourceDescriptors/{type}".
     type: Required. The monitored resource type. For example, the type
       "cloudsql_database" represents databases in Google Cloud SQL. For a list
-      of types, see Monitoring resource types
+      of types, see Monitored resource types
       (https://cloud.google.com/monitoring/api/resources) and Logging resource
       types (https://cloud.google.com/logging/docs/api/v2/resource-list).
   """
@@ -5908,7 +5917,7 @@ class MonitoringServicesPatchRequest(_messages.Message):
   r"""A MonitoringServicesPatchRequest object.
 
   Fields:
-    name: Resource name for this Service. The format is:
+    name: Identifier. Resource name for this Service. The format is:
       projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]
     service: A Service resource to be passed as the request body.
     updateMask: A set of field paths defining which fields to use for the
@@ -6053,9 +6062,9 @@ class MonitoringServicesServiceLevelObjectivesPatchRequest(_messages.Message):
   r"""A MonitoringServicesServiceLevelObjectivesPatchRequest object.
 
   Fields:
-    name: Resource name for this ServiceLevelObjective. The format is: project
-      s/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[S
-      LO_NAME]
+    name: Identifier. Resource name for this ServiceLevelObjective. The format
+      is: projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelOb
+      jectives/[SLO_NAME]
     serviceLevelObjective: A ServiceLevelObjective resource to be passed as
       the request body.
     updateMask: A set of field paths defining which fields to use for the
@@ -6862,7 +6871,7 @@ class Service(_messages.Message):
       mesh. Metrics for Istio are documented here
       (https://istio.io/latest/docs/reference/config/metrics/)
     meshIstio: Type used for Istio services scoped to an Istio mesh.
-    name: Resource name for this Service. The format is:
+    name: Identifier. Resource name for this Service. The format is:
       projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]
     telemetry: Configuration for how to query telemetry on a Service.
     userLabels: Labels which have been used to annotate the service. Label
@@ -6918,6 +6927,32 @@ class Service(_messages.Message):
   name = _messages.StringField(13)
   telemetry = _messages.MessageField('Telemetry', 14)
   userLabels = _messages.MessageField('UserLabelsValue', 15)
+
+
+class ServiceAgentAuthentication(_messages.Message):
+  r"""Contains information needed for generating an OpenID Connect token
+  (https://developers.google.com/identity/protocols/OpenIDConnect). The OIDC
+  token will be generated for the Monitoring service agent service account.
+
+  Enums:
+    TypeValueValuesEnum: Type of authentication.
+
+  Fields:
+    type: Type of authentication.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of authentication.
+
+    Values:
+      SERVICE_AGENT_AUTHENTICATION_TYPE_UNSPECIFIED: Default value, will
+        result in OIDC Authentication.
+      OIDC_TOKEN: OIDC Authentication
+    """
+    SERVICE_AGENT_AUTHENTICATION_TYPE_UNSPECIFIED = 0
+    OIDC_TOKEN = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class ServiceLevelIndicator(_messages.Message):
@@ -6976,9 +7011,9 @@ class ServiceLevelObjective(_messages.Message):
     displayName: Name used for UI elements listing this SLO.
     goal: The fraction of service that must be good in order for this
       objective to be met. 0 < goal <= 0.999.
-    name: Resource name for this ServiceLevelObjective. The format is: project
-      s/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelObjectives/[S
-      LO_NAME]
+    name: Identifier. Resource name for this ServiceLevelObjective. The format
+      is: projects/[PROJECT_ID_OR_NUMBER]/services/[SERVICE_ID]/serviceLevelOb
+      jectives/[SLO_NAME]
     rollingPeriod: A rolling time period, semantically "in the past ". Must be
       an integer multiple of 1 day no larger than 30 days.
     serviceLevelIndicator: The definition of good service, used to measure and

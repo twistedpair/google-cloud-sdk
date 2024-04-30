@@ -24,8 +24,10 @@ from __future__ import unicode_literals
 import contextlib
 import functools
 import multiprocessing
+import signal as signal_lib
 import sys
 import threading
+import traceback
 
 from googlecloudsdk.api_lib.storage.gcs_json import patch_apitools_messages
 from googlecloudsdk.command_lib import crash_handling
@@ -124,6 +126,69 @@ def _task_queue_lock():
 _SHUTDOWN = 'SHUTDOWN'
 
 _CREATE_WORKER_PROCESS = 'CREATE_WORKER_PROCESS'
+
+
+class _DebugSignalHandler:
+  """Signal handler for collecting debug information."""
+
+  def __init__(self):
+    """Initializes the debug signal handler."""
+    if (
+        platforms.OperatingSystem.Current()
+        is not platforms.OperatingSystem.WINDOWS
+    ):
+      self._debug_signal = signal_lib.SIGUSR1
+
+  def _debug_handler(
+      self, signal_number: int = None, frame: object = None
+  ) -> None:
+    """Logs stack traces of running threads.
+
+    Args:
+      signal_number: Signal number.
+      frame: Frame object.
+    """
+    del signal_number, frame  # currently unused
+    log.debug('Initiating crash debug information data collection.')
+    stack_traces = []
+    # pylint:disable=protected-access, There does not appear to be another way
+    # to collect the stacktraces for all running threads.
+    for thread_id, stack in sys._current_frames().items():
+      stack_traces.append('\n# Traceback for thread: %s' % thread_id)
+      for frame in traceback.extract_stack(stack):
+        filename, line_number, name, text = frame
+        stack_traces.append(
+            'File: "%s", line %d, in %s' % (filename, line_number, name)
+        )
+        if text:
+          stack_traces.append('  %s' % (text.strip()))
+
+    for line in stack_traces:
+      log.debug(line)
+
+  def install(self):
+    """Installs the debug signal handler."""
+    if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
+      return  # Not supported for windows systems.
+    try:
+      self._original_signal_handler = signal_lib.getsignal(self._debug_signal)
+      signal_lib.signal(self._debug_signal, self._debug_handler)
+    except ValueError:
+      pass  # Can be run from the main thread only.
+
+  def terminate(self):
+    """Restores the original signal handler.
+
+    This method should be called when the debug signal handler is no longer
+    needed.
+    """
+    if platforms.OperatingSystem.Current() is platforms.OperatingSystem.WINDOWS:
+      return  # Not supported for windows systems.
+    try:
+      if hasattr(self, '_original_signal_handler'):
+        signal_lib.signal(self._debug_signal, self._original_signal_handler)
+    except ValueError:
+      pass  # Can be run from the main thread only.
 
 
 class SharedProcessContext:
@@ -340,12 +405,14 @@ def _store_exception(target_function):
 class TaskGraphExecutor:
   """Executes an iterable of command_lib.storage.tasks.task.Task instances."""
 
-  def __init__(self,
-               task_iterator,
-               max_process_count=multiprocessing.cpu_count(),
-               thread_count=4,
-               task_status_queue=None,
-               progress_manager_args=None):
+  def __init__(
+      self,
+      task_iterator,
+      max_process_count=multiprocessing.cpu_count(),
+      thread_count=4,
+      task_status_queue=None,
+      progress_manager_args=None,
+  ):
     """Initializes a TaskGraphExecutor instance.
 
     No threads or processes are started by the constructor.
@@ -360,6 +427,7 @@ class TaskGraphExecutor:
       progress_manager_args (task_status.ProgressManagerArgs|None):
         Determines what type of progress indicator to display.
     """
+
     self._task_iterator = iter(task_iterator)
     self._max_process_count = max_process_count
     self._thread_count = thread_count
@@ -397,6 +465,7 @@ class TaskGraphExecutor:
 
     self._accepting_new_tasks = True
     self._exit_code = 0
+    self._debug_handler = _DebugSignalHandler()
 
   def _add_worker_process(self):
     """Signal the worker process spawner to create a new process."""
@@ -509,6 +578,9 @@ class TaskGraphExecutor:
       self._signal_queue.put(_SHUTDOWN)
       worker_process_spawner.join()
 
+      # Restore the debug signal handler.
+      self._debug_handler.terminate()
+
   def run(self):
     """Executes tasks from a task iterator in parallel.
 
@@ -517,6 +589,7 @@ class TaskGraphExecutor:
         raised.
     """
     shared_process_context = SharedProcessContext()
+    self._debug_handler.install()
     with self._get_worker_process_spawner(shared_process_context):
       # It is now safe to start the progress_manager thread, since new processes
       # are started by a child process.

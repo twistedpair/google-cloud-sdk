@@ -53,6 +53,52 @@ def _ConstructAutomatedBackupPolicy(alloydb_messages, args):
   return backup_policy
 
 
+def _ConstructAutomatedBackupPolicyForCreateSecondary(alloydb_messages, args):
+  """Returns the automated backup policy based on args."""
+  automated_backup_policy = alloydb_messages.AutomatedBackupPolicy()
+  if args.enable_automated_backup:
+    automated_backup_policy.enabled = True
+  elif args.enable_automated_backup is False:  # pylint: disable=g-bool-id-comparison
+    automated_backup_policy.enabled = False
+    return automated_backup_policy
+
+  if args.automated_backup_window:
+    automated_backup_policy.backupWindow = '{}s'.format(
+        args.automated_backup_window
+    )
+
+  if args.automated_backup_days_of_week and args.automated_backup_start_times:
+    automated_backup_policy.weeklySchedule = alloydb_messages.WeeklySchedule(
+        daysOfWeek=args.automated_backup_days_of_week,
+        startTimes=args.automated_backup_start_times,
+    )
+
+  if args.automated_backup_retention_count:
+    automated_backup_policy.quantityBasedRetention = (
+        alloydb_messages.QuantityBasedRetention(
+            count=args.automated_backup_retention_count
+        )
+    )
+  elif args.automated_backup_retention_period:
+    automated_backup_policy.timeBasedRetention = (
+        alloydb_messages.TimeBasedRetention(
+            retentionPeriod='{}s'.format(args.automated_backup_retention_period)
+        )
+    )
+
+  kms_key = flags.GetAndValidateKmsKeyName(
+      args, flag_overrides=flags.GetAutomatedBackupKmsFlagOverrides()
+  )
+  if kms_key:
+    encryption_config = alloydb_messages.EncryptionConfig()
+    encryption_config.kmsKeyName = kms_key
+    automated_backup_policy.encryptionConfig = encryption_config
+
+  automated_backup_policy.location = args.region
+
+  return automated_backup_policy
+
+
 def _ConstructContinuousBackupConfig(alloydb_messages, args, update=False):
   """Returns the continuous backup config based on args."""
   continuous_backup_config = alloydb_messages.ContinuousBackupConfig()
@@ -112,6 +158,16 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
 
   cluster.databaseVersion = args.database_version
 
+  configure_maintenance_window = (
+      args.maintenance_window_day or args.maintenance_window_hour
+  )
+  if configure_maintenance_window:
+    cluster.maintenanceUpdatePolicy = (
+        alloydb_messages.MaintenanceUpdatePolicy()
+    )
+    cluster.maintenanceUpdatePolicy.maintenanceWindows = (
+        _ConstructMaintenanceWindows(alloydb_messages, args)
+    )
   return cluster
 
 
@@ -142,25 +198,19 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
           cluster.continuousBackupConfig, args
       )
   )
-  configure_maintenance_window = (
-      args.maintenance_window_day
-      or args.maintenance_window_hour
-  )
   configure_deny_period = (
       args.deny_maintenance_period_start_date
       or args.deny_maintenance_period_end_date
       or args.deny_maintenance_period_time
   )
-  if configure_maintenance_window or configure_deny_period:
-    cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
-    if configure_maintenance_window:
-      cluster.maintenanceUpdatePolicy.maintenanceWindows = (
-          _ConstructMaintenanceWindows(alloydb_messages, args)
+  if configure_deny_period:
+    if cluster.maintenanceUpdatePolicy is None:
+      cluster.maintenanceUpdatePolicy = (
+          alloydb_messages.MaintenanceUpdatePolicy()
       )
-    if configure_deny_period:
-      cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
-          _ConstructDenyPeriods(alloydb_messages, args)
-      )
+    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
+        _ConstructDenyPeriods(alloydb_messages, args)
+    )
   return cluster
 
 
@@ -349,6 +399,18 @@ def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):
   if continuous_backup_update_masks:
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args, update=True)
+
+  update_maintenance_window = (
+      args.maintenance_window_any
+      or args.maintenance_window_day
+      or args.maintenance_window_hour
+  )
+  if update_maintenance_window:
+    cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
+    cluster.maintenanceUpdatePolicy.maintenanceWindows = (
+        _ConstructMaintenanceWindows(alloydb_messages, args, update=True)
+    )
+    update_masks.append('maintenance_update_policy.maintenance_windows')
   return cluster, update_masks
 
 
@@ -379,30 +441,21 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
             cluster.continuousBackupConfig, args
         )
     )
-  update_maintenance_window = (
-      args.maintenance_window_any
-      or args.maintenance_window_day
-      or args.maintenance_window_hour
-  )
   update_deny_period = (
       args.remove_deny_maintenance_period
       or args.deny_maintenance_period_start_date
       or args.deny_maintenance_period_end_date
       or args.deny_maintenance_period_time
   )
-  if update_maintenance_window or update_deny_period:
-    cluster.maintenanceUpdatePolicy = alloydb_messages.MaintenanceUpdatePolicy()
-    if update_maintenance_window:
-      cluster.maintenanceUpdatePolicy.maintenanceWindows = (
-          _ConstructMaintenanceWindows(alloydb_messages, args, update=True)
+  if update_deny_period:
+    if cluster.maintenanceUpdatePolicy is None:
+      cluster.maintenanceUpdatePolicy = (
+          alloydb_messages.MaintenanceUpdatePolicy()
       )
-      update_masks.append('maintenance_update_policy.maintenance_windows')
-
-    if update_deny_period:
-      cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
-          _ConstructDenyPeriods(alloydb_messages, args, update=True)
-      )
-      update_masks.append('maintenance_update_policy.deny_maintenance_periods')
+    cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
+        _ConstructDenyPeriods(alloydb_messages, args, update=True)
+    )
+    update_masks.append('maintenance_update_policy.deny_maintenance_periods')
   return cluster, update_masks
 
 
@@ -483,6 +536,18 @@ def ConstructCreatesecondaryRequestFromArgs(
   ):
     cluster.continuousBackupConfig = _ConstructContinuousBackupConfig(
         alloydb_messages, args
+    )
+
+  if (
+      args.enable_automated_backup is not None
+      or args.automated_backup_days_of_week
+      or args.automated_backup_window
+      or args.automated_backup_start_times
+  ):
+    cluster.automatedBackupPolicy = (
+        _ConstructAutomatedBackupPolicyForCreateSecondary(
+            alloydb_messages, args
+        )
     )
 
   if args.allocated_ip_range_name:

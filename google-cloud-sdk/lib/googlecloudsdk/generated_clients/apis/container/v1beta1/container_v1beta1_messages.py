@@ -1002,6 +1002,8 @@ class Cluster(_messages.Message):
       Resource usage export is disabled when this config unspecified.
     runtimeVulnerabilityInsightConfig: Enable/Disable RVI features for the
       cluster.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     secretManagerConfig: Secret CSI driver configuration.
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
@@ -1169,23 +1171,25 @@ class Cluster(_messages.Message):
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 73)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 74)
   runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 75)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 76)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 77)
-  selfLink = _messages.StringField(78)
-  servicesIpv4Cidr = _messages.StringField(79)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 80)
-  status = _messages.EnumField('StatusValueValuesEnum', 81)
-  statusMessage = _messages.StringField(82)
-  subnetwork = _messages.StringField(83)
-  tpuConfig = _messages.MessageField('TpuConfig', 84)
-  tpuIpv4CidrBlock = _messages.StringField(85)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 86)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 87)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 88)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 89)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 90)
-  workloadMonitoringEnabledEap = _messages.BooleanField(91)
-  zone = _messages.StringField(92)
+  satisfiesPzi = _messages.BooleanField(76)
+  satisfiesPzs = _messages.BooleanField(77)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 78)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 79)
+  selfLink = _messages.StringField(80)
+  servicesIpv4Cidr = _messages.StringField(81)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 82)
+  status = _messages.EnumField('StatusValueValuesEnum', 83)
+  statusMessage = _messages.StringField(84)
+  subnetwork = _messages.StringField(85)
+  tpuConfig = _messages.MessageField('TpuConfig', 86)
+  tpuIpv4CidrBlock = _messages.StringField(87)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 88)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 89)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 90)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 91)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 92)
+  workloadMonitoringEnabledEap = _messages.BooleanField(93)
+  zone = _messages.StringField(94)
 
 
 class ClusterAutoscaling(_messages.Message):

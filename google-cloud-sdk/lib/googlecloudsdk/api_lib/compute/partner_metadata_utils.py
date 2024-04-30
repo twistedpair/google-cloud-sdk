@@ -21,14 +21,14 @@ from __future__ import unicode_literals
 
 import json
 
-from apitools.base.protorpclite import protojson
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import arg_parsers
 
-messages = core_apis.GetMessagesModule('compute', 'alpha')
+alpha_message = core_apis.GetMessagesModule('compute', 'alpha')
+beta_message = core_apis.GetMessagesModule('compute', 'beta')
 
 
 class NullValueInAddPartnerMetadataException(exceptions.Error):
@@ -41,19 +41,18 @@ def AddPartnerMetadataArgs(parser):
       '--partner-metadata',
       type=arg_parsers.ArgDict(),
       help=(
-          'Partner Metadata assigned to the instance. A map from a'
-          ' subdomain(namespace) to entries map.'
+          'Partner metadata specifying namespace and its entries. The entries'
+          ' can be key-value pairs or in json format.'
       ),
       default={},
-      metavar='KEY=VALUE',
+      metavar='NAMESPACE/KEY=VALUE',
       action=arg_parsers.UpdateAction,
   )
   parser.add_argument(
       '--partner-metadata-from-file',
       type=arg_parsers.FileContents(),
       help=(
-          'path to json local file which including the definintion of partner'
-          ' metadata.'
+          'Path to a local json file containing partner metadata.'
       ),
       metavar='LOCAL_FILE_PATH',
   )
@@ -95,10 +94,19 @@ def _CreatePartnerMetadataDict(
     else:
       partner_metadata_dict[key] = {'entries': partner_metadata_file[key]}
   for key, value in partner_metadata.items():
-    namespace, entry = key.split('/')
+    namespace, *entries = key.split('/')
     if namespace not in partner_metadata_dict:
       partner_metadata_dict[namespace] = {'entries': {}}
-    partner_metadata_dict[namespace]['entries'][entry] = json.loads(value)
+    partner_metadata = partner_metadata_dict[namespace]
+    if entries:
+      for entry in entries[:-1]:
+        partner_metadata[entry] = (
+            partner_metadata[entry] if entry in partner_metadata else {}
+        )
+        partner_metadata = partner_metadata[entry]
+      partner_metadata[entries[-1]] = json.loads(value)
+    else:
+      partner_metadata_dict[namespace] = json.loads(value)
   return partner_metadata_dict
 
 
@@ -112,26 +120,58 @@ def ValidatePartnerMetadata(partner_metadata):
       ValidatePartnerMetadata(partner_metadata[key])
 
 
-def ConvertStructuredEntries(structured_entries):
-  structured_entries_message = messages.StructuredEntries()
-  if structured_entries is None:
+def ConvertStructuredEntries(
+    structured_entries, compute_messages=alpha_message
+):
+  """Convert structured entries dictionary to message.
+
+  Args:
+    structured_entries: dictionary represents partner metadata structuredEntries
+    compute_messages: compute messages object
+
+  Returns:
+    StructuredEntries message
+
+  """
+  structured_entries_message = compute_messages.StructuredEntries()
+  if structured_entries is None or 'entries' not in structured_entries:
     return structured_entries_message
-  structured_entries_message.entries = messages.StructuredEntries.EntriesValue()
+  if structured_entries['entries'] is None:
+    structured_entries_message.entries = None
+    return structured_entries_message
+  structured_entries_message.entries = (
+      compute_messages.StructuredEntries.EntriesValue()
+  )
   for key, value in structured_entries['entries'].items():
     structured_entries_message.entries.additionalProperties.append(
-        messages.StructuredEntries.EntriesValue.AdditionalProperty(
+        compute_messages.StructuredEntries.EntriesValue.AdditionalProperty(
             key=key, value=encoding.DictToMessage(value, extra_types.JsonValue)
         )
     )
   return structured_entries_message
 
 
-def ConvertPartnerMetadataDictToMessage(partner_metadata_dict):
-  partner_metadata_message = messages.PartnerMetadata.PartnerMetadataValue()
+def ConvertPartnerMetadataDictToMessage(
+    partner_metadata_dict, compute_messages=alpha_message
+):
+  """Convert partner metadata dictionary to message.
+
+  Args:
+    partner_metadata_dict: dictionary represents partner metadata
+    compute_messages: compute messages object
+
+  Returns:
+    partnerMetadata message
+
+  """
+  partner_metadata_message = (
+      compute_messages.PartnerMetadata.PartnerMetadataValue()
+  )
   for namespace, structured_entries in partner_metadata_dict.items():
     partner_metadata_message.additionalProperties.append(
-        messages.PartnerMetadata.PartnerMetadataValue.AdditionalProperty(
-            key=namespace, value=ConvertStructuredEntries(structured_entries)
+        compute_messages.PartnerMetadata.PartnerMetadataValue.AdditionalProperty(
+            key=namespace,
+            value=ConvertStructuredEntries(structured_entries, compute_messages)
         )
     )
   return partner_metadata_message
@@ -148,18 +188,25 @@ def ConvertStructuredEntriesToJson(structured_entries_message):
   return json.dumps(structured_entries_dict)
 
 
-def EncodeStructuredEntries(structured_entries_message):
-  if structured_entries_message.entries is None:
-    return 'null'
-  return ConvertStructuredEntriesToJson(structured_entries_message)
+def _AddEncodingForStructuredEntriesMessage(messages):
+  """Add encoding for StructuredEntries message to convert it to json string.
 
+  Args:
+    messages: message represntantion of compute api.
+  """
+  def EncodeStructuredEntries(structured_entries_message):
+    if structured_entries_message.entries is None:
+      return 'null'
+    return ConvertStructuredEntriesToJson(structured_entries_message)
 
-def DecodeStructuredEntries(structured_entries):
-  return protojson.ProtoJson().decode_message(
-      messages.StructuredEntries, structured_entries
-  )
+  def DecodeStructuredEntries(structured_entries):
+    structured_entries_dict = json.loads(structured_entries)
+    return ConvertStructuredEntries(structured_entries_dict, messages)
 
-if hasattr(messages, 'StructuredEntries'):
-  encoding.RegisterCustomMessageCodec(
-      encoder=EncodeStructuredEntries, decoder=DecodeStructuredEntries
-  )(messages.StructuredEntries)
+  if hasattr(messages, 'StructuredEntries'):
+    encoding.RegisterCustomMessageCodec(
+        encoder=EncodeStructuredEntries, decoder=DecodeStructuredEntries
+    )(messages.StructuredEntries)
+
+_AddEncodingForStructuredEntriesMessage(alpha_message)
+_AddEncodingForStructuredEntriesMessage(beta_message)

@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.compute.operations import poller
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
@@ -174,13 +175,22 @@ class NoCosImageException(Error):
         .format(COS_MAJOR_RELEASE))
 
 
+def _AddUniversePrefix(project_name):
+  if properties.IsDefaultUniverse():
+    return project_name
+  else:
+    prefix = properties.VALUES.core.project.GetOrFail().split(':')[0]
+    return prefix + ':' + project_name
+
+
 def ExpandCosImageFlag(compute_client):
   """Select a COS image to run Docker."""
   compute = compute_client.apitools_client
   images = compute_client.MakeRequests([(
       compute.images,
       'List',
-      compute_client.messages.ComputeImagesListRequest(project=COS_PROJECT)
+      compute_client.messages.ComputeImagesListRequest(
+          project=_AddUniversePrefix(COS_PROJECT))
   )])
   return _SelectNewestCosImage(images)
 
@@ -241,7 +251,8 @@ def ExpandKonletCosImageFlag(compute_client):
   images = compute_client.MakeRequests(
       [(compute.images,
         'List',
-        compute_client.messages.ComputeImagesListRequest(project=COS_PROJECT))])
+        compute_client.messages.ComputeImagesListRequest(
+            project=_AddUniversePrefix(COS_PROJECT)))])
   name_re_template = r'cos-{}-(\d+)-.*'
   image_families = ['stable', 'beta', 'dev']
 

@@ -387,15 +387,6 @@ apis:
           path: groups/{groupId}
         groups.memberships:
           path: groups/{groupId}/memberships/{membershipId}
-  cloudiot:
-    v1:
-      discovery_doc: cloudiot_v1.json
-      default: true
-      resources:
-        projects.locations.registries.devices.states:
-          path: projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/states/{statesId}
-        projects.locations.registries.devices.configVersions:
-          path: projects/{projectsId}/locations/{locationsId}/registries/{registriesId}/devices/{devicesId}/configVersions/{configVersion}
   cloudkms:
     v1:
       discovery_doc: cloudkms_v1.json
@@ -672,8 +663,18 @@ apis:
     v1:
       default: true
       discovery_doc: developerconnect_v1.json
+      resources:
+        projects.secrets:
+          path: projects/{projectsId}/secrets/{secretsId}
+        projects.secrets.versions:
+          path: projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}
     v1alpha:
       discovery_doc: developerconnect_v1alpha.json
+      resources:
+        projects.secrets:
+          path: projects/{projectsId}/secrets/{secretsId}
+        projects.secrets.versions:
+          path: projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}
   dialogflow:
     v2:
       discovery_doc: dialogflow_v2.json
@@ -907,6 +908,8 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+    v3alpha:
+      discovery_doc: iam_v3alpha.json
     v3beta:
       discovery_doc: iam_v3beta.json
   iamcredentials:
@@ -1794,9 +1797,6 @@ canonical_surfaces:
   cloudidentity:
     name: cloudidentity
     command: identity
-  cloudiot:
-    name: cloudiot
-    command: iot
   cloudkms:
     name: cloudkms
     command: kms

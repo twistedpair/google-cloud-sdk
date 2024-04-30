@@ -115,6 +115,10 @@ UPTIME_JSON_MATCHER_TYPES = {
     'regex-match': 'Response matches regex at JSONPath',
 }
 
+UPTIME_SERVICE_AGENT_TYPES = {
+    'oidc-token': 'OIDC Token authentication',
+}
+
 
 def AddFileMessageFlag(parser, resource, flag=None):
   """Adds flags for specifying a message as a file to the parser."""
@@ -553,6 +557,14 @@ def AddUptimeProtocolFlags(parser, update=False):
         Can only be set if `--protocol` is `http` or `https`.""",
       type=bool,
   )
+  uptime_service_agent_auth_group = uptime_protocol_group.add_group(
+      help='Uptime check service agent authorization.'
+  )
+  uptime_service_agent_auth_group.add_argument(
+      '--service-agent-auth',
+      help="""The type of authentication to use for the HTTP request.
+        Can only be set if `--protocol` is `https`.""",
+      choices=UPTIME_SERVICE_AGENT_TYPES)
   if update:
     uptime_headers_group = uptime_protocol_group.add_group(
         help='Uptime check headers.'

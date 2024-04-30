@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://developerconnect.googleapis.com/v1/'
-DOCS_URL = ''
+DOCS_URL = 'http://cloud.google.com/developer-connect/docs/overview'
 
 
 class Collections(enum.Enum):
@@ -72,6 +72,20 @@ class Collections(enum.Enum):
               '{operationsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_SECRETS = (
+      'projects.secrets',
+      'projects/{projectsId}/secrets/{secretsId}',
+      {},
+      ['projectsId', 'secretsId'],
+      True
+  )
+  PROJECTS_SECRETS_VERSIONS = (
+      'projects.secrets.versions',
+      'projects/{projectsId}/secrets/{secretsId}/versions/{versionsId}',
+      {},
+      ['projectsId', 'secretsId', 'versionsId'],
       True
   )
 

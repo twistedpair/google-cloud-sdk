@@ -44,3 +44,16 @@ topic:
     attribute_name: topic
     help: |
       The topic name.
+
+consumer_group:
+  name: consumer_group
+  collection: managedkafka.projects.locations.clusters.consumerGroups
+  request_id_field: consumerGroupId
+  attributes:
+  - *location
+  - *cluster
+  - &consumer_group
+    parameter_name: consumerGroupsId
+    attribute_name: consumer_group
+    help: |
+      The consumer group name.

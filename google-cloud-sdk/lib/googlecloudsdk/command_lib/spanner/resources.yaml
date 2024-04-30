@@ -39,7 +39,8 @@ database:
   attributes:
   - *project
   - *instance
-  - parameter_name: databasesId
+  - &database
+    parameter_name: databasesId
     attribute_name: database
     help: |
       The name of the Cloud Spanner database.
@@ -55,6 +56,19 @@ backup:
     attribute_name: backup
     help: |
       The name of the Cloud Spanner backup.
+  disable_auto_completers: false
+
+backupSchedule:
+  name: backupSchedule
+  collection: spanner.projects.instances.databases.backupSchedules
+  attributes:
+  - *project
+  - *instance
+  - *database
+  - parameter_name: backupSchedulesId
+    attribute_name: backupSchedule
+    help: |
+      The name of the Cloud Spanner backup schedule.
   disable_auto_completers: false
 
 backupOperation:

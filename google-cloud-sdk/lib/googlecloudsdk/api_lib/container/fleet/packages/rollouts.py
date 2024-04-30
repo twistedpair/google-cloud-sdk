@@ -51,12 +51,12 @@ class RolloutsClient(object):
     self._service = self.client.projects_locations_fleetPackages_rollouts
 
   def List(self, project, location, fleet_package, limit=None, page_size=100):
-    """List Rollouts of a KRMPackage.
+    """List Rollouts of a Fleet Package.
 
     Args:
       project: GCP project id.
       location: Valid GCP location (e.g. us-central1).
-      fleet_package: Name of parent FleetPackage.
+      fleet_package: Name of parent Fleet Package.
       limit: int or None, the total number of results to return.
       page_size: int, the number of entries in each batch (affects requests
         made, but not the yielded results).
@@ -81,8 +81,8 @@ class RolloutsClient(object):
 
     Args:
       project: GCP project ID.
-      location: GCP location of Release.
-      fleet_package: Name of parent FleetPackage.
+      location: GCP location of Fleet Package.
+      fleet_package: Name of parent Fleet Package.
       rollout: Name of Rollout.
 
     Returns:
@@ -93,3 +93,65 @@ class RolloutsClient(object):
         name=fully_qualified_path
     )
     return self._service.Get(describe_req)
+
+  def Abort(self, project, location, fleet_package, rollout, reason=None):
+    """Abort an in-progress Rollout.
+
+    Args:
+      project: GCP project ID.
+      location: GCP location of Fleet Package.
+      fleet_package: Name of parent Fleet Package.
+      rollout: Name of Rollout.
+      reason: Reason for aborting the Rollout.
+
+    Returns:
+      Operation for aborting rollout.
+    """
+    fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
+    abort_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsAbortRequest(
+        name=fully_qualified_path,
+        abortRolloutRequest=self.messages.AbortRolloutRequest(reason=reason),
+    )
+    return self._service.Abort(abort_req)
+
+  def Resume(self, project, location, fleet_package, rollout, reason=None):
+    """Resume a suspended Rollout.
+
+    Args:
+      project: GCP project ID.
+      location: GCP location of Fleet Package.
+      fleet_package: Name of parent Fleet Package.
+      rollout: Name of Rollout.
+      reason: Reason for resuming the Rollout.
+
+    Returns:
+      Operation for resuming rollout.
+    """
+    fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
+    resume_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsResumeRequest(
+        name=fully_qualified_path,
+        resumeRolloutRequest=self.messages.ResumeRolloutRequest(reason=reason),
+    )
+    return self._service.Resume(resume_req)
+
+  def Suspend(self, project, location, fleet_package, rollout, reason=None):
+    """Suspend an in-progress Rollout.
+
+    Args:
+      project: GCP project ID.
+      location: GCP location of Fleet Package.
+      fleet_package: Name of parent Fleet Package.
+      rollout: Name of Rollout.
+      reason: Reason for suspending the Rollout.
+
+    Returns:
+      Operation for suspending rollout.
+    """
+    fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
+    suspend_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsSuspendRequest(
+        name=fully_qualified_path,
+        suspendRolloutRequest=self.messages.SuspendRolloutRequest(
+            reason=reason
+        ),
+    )
+    return self._service.Suspend(suspend_req)

@@ -99,7 +99,13 @@ def LocationAttributeConfig():
 
 def FleetPackageAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='fleet_package', help_text='Fleet Package name.'
+      name='fleet-package', help_text='Fleet Package name.'
+  )
+
+
+def RolloutAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='rollout', help_text='Rollout name.'
   )
 
 
@@ -114,7 +120,18 @@ def GetLocationResourceSpec():
 def GetFleetPackageResourceSpec():
   return concepts.ResourceSpec(
       'configdelivery.projects.locations.fleetPackages',
-      resource_name='fleet_package',
+      resource_name='fleet-package',
+      fleetPackagesId=FleetPackageAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=ProjectAttributeConfig(),
+  )
+
+
+def GetRolloutResourceSpec():
+  return concepts.ResourceSpec(
+      'configdelivery.projects.locations.fleetPackages.rollouts',
+      resource_name='rollout',
+      rolloutsId=RolloutAttributeConfig(),
       fleetPackagesId=FleetPackageAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=ProjectAttributeConfig(),

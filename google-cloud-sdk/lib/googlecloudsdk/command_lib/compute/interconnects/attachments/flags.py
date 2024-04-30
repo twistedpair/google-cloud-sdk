@@ -410,7 +410,7 @@ def AddStackType(parser):
               'Both IPv4 and IPv6 protocols are enabled on this attachment.',
       },
       type=arg_utils.ChoiceToEnumName,
-      help=('The stack type of the protocol(s) enabled on this interconnect '
+      help=('Stack type of the protocol(s) enabled on this interconnect '
             'attachment.'))
 
 
@@ -437,7 +437,7 @@ def AddCloudRouterIpv6InterfaceId(parser):
   parser.add_argument(
       '--cloud-router-ipv6-interface-id',
       metavar='INTERFACE_ID',
-      help="""The `cloud-router-ipv6-interface-id` field is not available.""")
+      help="""`cloud-router-ipv6-interface-id` field is not available.""")
 
 
 def AddCustomerRouterIpv6InterfaceId(parser):
@@ -449,7 +449,7 @@ def AddCustomerRouterIpv6InterfaceId(parser):
   parser.add_argument(
       '--customer-router-ipv6-interface-id',
       metavar='PEER_INTERFACE_ID',
-      help="""The `customer-router-ipv6-interface-id` field is not available.""")
+      help="""`customer-router-ipv6-interface-id` field is not available.""")
 
 
 def AddSubnetLength(parser):
@@ -464,7 +464,7 @@ def AddSubnetLength(parser):
       type=int,
       choices=frozenset({29, 30}),
       help="""\
-      The length of the IPv4 subnet mask for this attachment. 29 is the
+      Length of the IPv4 subnet mask for this attachment. 29 is the
       default value, except for attachments on Cross-Cloud Interconnects whose
       remote location's "constraints.subnetLengthRange" field specifies a
       minimum subnet length of 30. In that case, the default value is 30.

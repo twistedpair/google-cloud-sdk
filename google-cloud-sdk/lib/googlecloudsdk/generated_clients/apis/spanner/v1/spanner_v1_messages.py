@@ -213,6 +213,7 @@ class BackupSchedule(_messages.Message):
     encryptionConfig: Optional. The encryption configuration that will be used
       to encrypt the backup. If this field is not specified, the backup will
       use the same encryption configuration as the database.
+    fullBackupSpec: The schedule creates only full backups.
     name: Identifier. Output only for the CreateBackupSchedule operation.
       Required for the UpdateBackupSchedule operation. A globally unique
       identifier for the backup schedule which cannot be changed. Values are
@@ -227,9 +228,10 @@ class BackupSchedule(_messages.Message):
   """
 
   encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 1)
-  name = _messages.StringField(2)
-  retentionDuration = _messages.StringField(3)
-  spec = _messages.MessageField('BackupScheduleSpec', 4)
+  fullBackupSpec = _messages.MessageField('FullBackupSpec', 2)
+  name = _messages.StringField(3)
+  retentionDuration = _messages.StringField(4)
+  spec = _messages.MessageField('BackupScheduleSpec', 5)
 
 
 class BackupScheduleSpec(_messages.Message):
@@ -954,28 +956,28 @@ class CreateSessionRequest(_messages.Message):
 
 
 class CrontabSpec(_messages.Message):
-  r"""CrontabSpec can be used to specify the version timestamp and frequency
-  at which the backup should be created.
+  r"""CrontabSpec can be used to specify the version time and frequency at
+  which the backup should be created.
 
   Fields:
     creationWindow: Output only. Schedule backups will contain an externally
-      consistent copy of the database at the version timestamp specified in
+      consistent copy of the database at the version time specified in
       `schedule_spec.cron_spec`. However, Spanner may not initiate the
-      creation of the scheduled backups at that version timestamp. Spanner
-      will initiate the creation of scheduled backups within the time window
+      creation of the scheduled backups at that version time. Spanner will
+      initiate the creation of scheduled backups within the time window
       bounded by the version_time specified in `schedule_spec.cron_spec` and
       version_time + `creation_window`.
     text: Required. Textual representation of the crontab. User can customize
-      the backup frequency and the backup version timestamp using the cron
-      expression. The version timestamp must be in UTC timzeone. The backup
-      will contain an externally consistent copy of the database at the
-      version timestamp. Allowed frequencies are 12 hour, 1 day, 1 week and 1
-      month. Examples of valid cron specifications: * `0 2/12 * * * ` : every
-      12 hours at (2, 14) hours past midnight in UTC. * `0 2,14 * * * ` :
-      every 12 hours at (2,14) hours past midnight in UTC. * `0 2 * * * ` :
-      once a day at 2 past midnight in UTC. * `0 2 * * 0 ` : once a week every
-      Sunday at 2 past midnight in UTC. * `0 2 8 * * ` : once a month on 8th
-      day at 2 past midnight in UTC.
+      the backup frequency and the backup version time using the cron
+      expression. The version time must be in UTC timzeone. The backup will
+      contain an externally consistent copy of the database at the version
+      time. Allowed frequencies are 12 hour, 1 day, 1 week and 1 month.
+      Examples of valid cron specifications: * `0 2/12 * * * ` : every 12
+      hours at (2, 14) hours past midnight in UTC. * `0 2,14 * * * ` : every
+      12 hours at (2,14) hours past midnight in UTC. * `0 2 * * * ` : once a
+      day at 2 past midnight in UTC. * `0 2 * * 0 ` : once a week every Sunday
+      at 2 past midnight in UTC. * `0 2 8 * * ` : once a month on 8th day at 2
+      past midnight in UTC.
     timeZone: Output only. The time zone of the times in `CrontabSpec.text`.
       Currently only UTC is supported.
   """
@@ -1630,6 +1632,13 @@ class FreeInstanceMetadata(_messages.Message):
   expireBehavior = _messages.EnumField('ExpireBehaviorValueValuesEnum', 1)
   expireTime = _messages.StringField(2)
   upgradeTime = _messages.StringField(3)
+
+
+class FullBackupSpec(_messages.Message):
+  r"""The specification for full backups. A full backup stores the entire
+  contents of the database at a given version time.
+  """
+
 
 
 class GetDatabaseDdlResponse(_messages.Message):
@@ -6516,19 +6525,19 @@ class TransactionOptions(_messages.Message):
   has a slightly better chance of success than the previous. Note that the
   lock priority is preserved per session (not per transaction). Lock priority
   is set by the first read or write in the first attempt of a read-write
-  transaction. If the application opts a new session to retry the whole
-  transaction, the transaction will lose its original lock priority. Moreover,
-  the lock priority is only preserved if the transaction fails with an
-  `ABORTED` error. Under some circumstances (for example, many transactions
-  attempting to modify the same row(s)), a transaction can abort many times in
-  a short period before successfully committing. Thus, it is not a good idea
-  to cap the number of retries a transaction can attempt; instead, it is
-  better to limit the total amount of time spent retrying. Idle transactions:
-  A transaction is considered idle if it has no outstanding reads or SQL
-  queries and has not started a read or SQL query within the last 10 seconds.
-  Idle transactions can be aborted by Cloud Spanner so that they don't hold on
-  to locks indefinitely. If an idle transaction is aborted, the commit will
-  fail with error `ABORTED`. If this behavior is undesirable, periodically
+  transaction. If the application starts a new session to retry the whole
+  transaction, the transaction loses its original lock priority. Moreover, the
+  lock priority is only preserved if the transaction fails with an `ABORTED`
+  error. Under some circumstances (for example, many transactions attempting
+  to modify the same row(s)), a transaction can abort many times in a short
+  period before successfully committing. Thus, it is not a good idea to cap
+  the number of retries a transaction can attempt; instead, it is better to
+  limit the total amount of time spent retrying. Idle transactions: A
+  transaction is considered idle if it has no outstanding reads or SQL queries
+  and has not started a read or SQL query within the last 10 seconds. Idle
+  transactions can be aborted by Cloud Spanner so that they don't hold on to
+  locks indefinitely. If an idle transaction is aborted, the commit will fail
+  with error `ABORTED`. If this behavior is undesirable, periodically
   executing a simple SQL query in the transaction (for example, `SELECT 1`)
   prevents the transaction from becoming idle. Snapshot read-only
   transactions: Snapshot read-only transactions provides a simpler method than
@@ -6639,9 +6648,9 @@ class TransactionOptions(_messages.Message):
   atomically to partitions of the table, in independent transactions.
   Secondary index rows are updated atomically with the base table rows. -
   Partitioned DML does not guarantee exactly-once execution semantics against
-  a partition. The statement will be applied at least once to each partition.
-  It is strongly recommended that the DML statement should be idempotent to
-  avoid unexpected results. For instance, it is potentially dangerous to run a
+  a partition. The statement is applied at least once to each partition. It is
+  strongly recommended that the DML statement should be idempotent to avoid
+  unexpected results. For instance, it is potentially dangerous to run a
   statement such as `UPDATE table SET column = column + 1` as it could be run
   multiple times against some rows. - The partitions are committed
   automatically - there is no support for Commit or Rollback. If the call

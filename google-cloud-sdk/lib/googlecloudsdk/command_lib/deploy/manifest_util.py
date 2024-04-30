@@ -38,6 +38,26 @@ DEPLOY_POLICY_KIND = 'DeployPolicy'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_V1 = 'deploy.cloud.google.com/v1'
 USAGE_CHOICES = ['RENDER', 'DEPLOY']
+ACTION_CHOICES = [
+    'ADVANCE',
+    'APPROVE',
+    'CANCEL',
+    'CREATE',
+    'IGNORE_JOB',
+    'RETRY_JOB',
+    'ROLLBACK',
+    'TERMINATE_JOBRUN',
+]
+DAY_OF_WEEK_CHOICES = [
+    'MONDAY',
+    'TUESDAY',
+    'WEDNESDAY',
+    'THURSDAY',
+    'FRIDAY',
+    'SATURDAY',
+    'SUNDAY',
+]
+INVOKER_CHOICES = ['USER', 'DEPLOY_AUTOMATION']
 # If changing these fields also change them in the UI code.
 NAME_FIELD = 'name'
 ADVANCE_ROLLOUT_FIELD = 'advanceRollout'
@@ -53,6 +73,7 @@ ID_FIELD = 'id'
 ADVANCE_ROLLOUT_RULE_FIELD = 'advanceRolloutRule'
 PROMOTE_RELEASE_RULE_FIELD = 'promoteReleaseRule'
 REPAIR_ROLLOUT_RULE_FIELD = 'repairRolloutRule'
+RESTRICT_ROLLOUT_FIELD = 'restrictRollouts'
 DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
 SOURCE_PHASES_FIELD = 'sourcePhases'
 DESTINATION_PHASE_FIELD = 'destinationPhase'
@@ -267,6 +288,8 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
             'failed to parse deploy policy {}, rules are defined incorrectly'
             .format(resource_ref.Name()),
         )
+        SetPolicyRules(messages, resource, rules)
+        continue
       if field == 'selectors' and kind == DEPLOY_POLICY_KIND:
         selectors = manifest.get('selectors')
         _EnsureIsType(
@@ -290,6 +313,124 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
   )
 
   resource_dict[kind].append(resource)
+
+
+def SetPolicyRules(messages, policy, rules):
+  """Sets the rules field of cloud deploy policy message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
+      message.
+    rules: [googlecloudsdk.generated_clients.apis.clouddeploy.PolicyRule], list
+      of PolicyRule messages.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+  """
+  # Go through each rule and parse the restrictRollouts field.
+  for pv_rule in rules:
+    restrict_rollout_message = messages.RestrictRollout()
+    if pv_rule.get(RESTRICT_ROLLOUT_FIELD):
+      restrict_rollout = pv_rule.get(RESTRICT_ROLLOUT_FIELD)
+      _SetRestrictRollout(
+          messages, restrict_rollout_message, restrict_rollout, policy
+      )
+    else:
+      policy.rules.append(pv_rule)
+
+
+def _SetRestrictRollout(
+    messages, restrict_rollout_message, restrict_rollout, policy
+):
+  """Sets the restrictRollout field of cloud deploy policy message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    restrict_rollout_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.RestrictRollout
+      message.
+    restrict_rollout: value of the restrictRollout field in the manifest.
+    policy:  googlecloudsdk.generated_clients.apis.clouddeploy.DeployPolicy
+      message.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+  """
+  for field in restrict_rollout:
+    # The value of actions and invoker are enums, so they need special
+    # treatment. timeWindow also needs special treatment because it has an
+    # enum within it.
+    if field != 'actions' and field != 'invoker' and field != 'timeWindow':
+      # If the field doesn't need special treatment (e.g. timeZone) set it
+      # on the restrictRollout message.
+      setattr(restrict_rollout_message, field, restrict_rollout.get(field))
+
+  actions = restrict_rollout.get('actions', [])
+  for action in actions:
+    restrict_rollout_message.actions.append(
+        # converts a string literal in restrictRollout.actions to an Enum.
+        arg_utils.ChoiceToEnum(
+            action,
+            messages.RestrictRollout.ActionsValueListEntryValuesEnum,
+            valid_choices=ACTION_CHOICES,
+        )
+    )
+
+  invokers = restrict_rollout.get('invoker', [])
+  for invoker in invokers:
+    restrict_rollout_message.invoker.append(
+        # converts a string literal in restrictRollout.invoker to an Enum.
+        arg_utils.ChoiceToEnum(
+            invoker,
+            messages.RestrictRollout.InvokerValueListEntryValuesEnum,
+            valid_choices=INVOKER_CHOICES,
+        )
+    )
+  # Parse and set the timeWindow field on the restrictRollout message.
+  time_window = restrict_rollout.get('timeWindow')
+  time_window_message = messages.TimeWindow()
+  _SetTimeWindow(messages, time_window_message, time_window)
+  restrict_rollout_message.timeWindow = time_window_message
+  # Set the restrictRollout field on the policy rule message.
+  policy_rule_message = messages.PolicyRule()
+  policy_rule_message.restrictRollouts = restrict_rollout_message
+  policy.rules.append(policy_rule_message)
+
+
+def _SetTimeWindow(messages, time_window_message, time_window):
+  """Sets the timeWindow field of cloud deploy resource message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    time_window_message:
+      googlecloudsdk.generated_clients.apis.clouddeploy.TimeWindow message.
+    time_window: value of the timeWindow field.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+  """
+  for f in time_window:
+    # ranges has an enum within it, so it needs special treatment.
+    if f != 'ranges':
+      setattr(time_window_message, f, time_window.get(f))
+  ranges = time_window.get('ranges', [])
+  for r in ranges:
+    range_message = messages.Range()
+    for field in r:
+      if field != 'dayOfWeek':
+        setattr(range_message, field, r.get(field))
+    days_of_week = r.get('dayOfWeek') or []
+    for d in days_of_week:
+      range_message.dayOfWeek.append(
+          # converts a string literal in ranges.dayOfWeek to an Enum.
+          arg_utils.ChoiceToEnum(
+              d,
+              messages.Range.DayOfWeekValueListEntryValuesEnum,
+              valid_choices=DAY_OF_WEEK_CHOICES,
+          )
+      )
+    time_window_message.ranges.append(range_message)
 
 
 def _CreateTargetResource(messages, target_name_or_id, project, region):

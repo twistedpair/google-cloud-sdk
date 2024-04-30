@@ -6687,7 +6687,8 @@ class GoogleCloudApigeeV1ComputeEnvironmentScoresRequest(_messages.Message):
     pageToken: Optional. A token that can be sent as `page_token` to retrieve
       the next page. If this field is omitted, there are no subsequent pages.
     timeRange: Required. Time range for score calculation. At most 14 days of
-      scores will be returned.
+      scores will be returned, and both the start and end dates must be within
+      the last 90 days.
   """
 
   filters = _messages.MessageField('GoogleCloudApigeeV1ComputeEnvironmentScoresRequestFilter', 1, repeated=True)

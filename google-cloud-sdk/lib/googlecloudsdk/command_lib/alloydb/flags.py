@@ -545,20 +545,26 @@ def AddAutomatedBackupFlags(
       metavar='DAYS_OF_WEEK',
       required=not update,  # required for create, not for update
       type=_GetDayOfWeekArgList(alloydb_messages),
-      help=('Comma-separated list of days of the week to perform a backup. '
-            'At least one day of the week must be provided. '
-            '(e.g., --automated-backup-days-of-week=MONDAY,WEDNESDAY,SUNDAY)'))
+      help=(
+          'Comma-separated list of days of the week to perform a backup. '
+          'At least one day of the week must be provided. '
+          '(e.g., --automated-backup-days-of-week=MONDAY,WEDNESDAY,SUNDAY)'
+      ),
+  )
 
   policy_group.add_argument(
       '--automated-backup-start-times',
       metavar='START_TIMES',
       required=not update,  # required for create, not for update
       type=_GetTimeOfDayArgList(alloydb_messages),
-      help=('Comma-separated list of times during the day to start a backup. '
-            'At least one start time must be provided. '
-            'The start times are assumed to be in UTC and required to be '
-            'an exact hour in the format HH:00. (e.g., '
-            '`--automated-backup-start-times=01:00,13:00`)'))
+      help=(
+          'Comma-separated list of times during the day to start a backup. '
+          'At least one start time must be provided. '
+          'The start times are assumed to be in UTC and required to be '
+          'an exact hour in the format HH:00. (e.g., '
+          '`--automated-backup-start-times=01:00,13:00`)'
+      ),
+  )
 
   retention_group = policy_group.add_group(
       mutex=True,
@@ -625,6 +631,103 @@ def AddAutomatedBackupFlags(
       '--disable-automated-backup',
       action='store_true',
       help='Disables automated backups on the cluster.')
+
+
+def AddAutomatedBackupFlagsForCreateSecondary(parser, alloydb_messages):
+  """Adds automated backup flags.
+
+  Args:
+    parser: argparse.ArgumentParser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+  """
+  group = parser.add_group(
+      mutex=False,
+      help=(
+          'Automated backup policy. If unspecified, automated backups are'
+          ' copied from the associated primary cluster.'
+      ),
+  )
+
+  group.add_argument(
+      '--enable-automated-backup',
+      action='store_true',
+      default=None,
+      help='Enables Automated Backups on the cluster.',
+  )
+
+  group.add_argument(
+      '--automated-backup-days-of-week',
+      metavar='DAYS_OF_WEEK',
+      # required=True,
+      type=_GetDayOfWeekArgList(alloydb_messages),
+      help=(
+          'Comma-separated list of days of the week to perform a backup. '
+          'At least one day of the week must be provided. '
+          '(e.g., --automated-backup-days-of-week=MONDAY,WEDNESDAY,SUNDAY)'
+      ),
+  )
+
+  group.add_argument(
+      '--automated-backup-start-times',
+      metavar='START_TIMES',
+      # required=True,
+      type=_GetTimeOfDayArgList(alloydb_messages),
+      help=(
+          'Comma-separated list of times during the day to start a backup. '
+          'At least one start time must be provided. '
+          'The start times are assumed to be in UTC and required to be '
+          'an exact hour in the format HH:00. (e.g., '
+          '`--automated-backup-start-times=01:00,13:00`)'
+      ),
+  )
+
+  retention_group = group.add_group(
+      mutex=True,
+      help=(
+          'Retention policy. If no retention policy is provided, '
+          'all automated backups will be retained.'
+      ),
+  )
+  retention_group.add_argument(
+      '--automated-backup-retention-period',
+      metavar='RETENTION_PERIOD',
+      type=arg_parsers.Duration(parsed_unit='s'),
+      help=(
+          'Retention period of the backup relative to creation time.  See '
+          '`$ gcloud topic datetimes` for information on duration formats.'
+      ),
+  )
+  retention_group.add_argument(
+      '--automated-backup-retention-count',
+      metavar='RETENTION_COUNT',
+      type=int,
+      help='Number of most recent successful backups retained.',
+  )
+
+  group.add_argument(
+      '--automated-backup-window',
+      metavar='TIMEOUT_PERIOD',
+      type=arg_parsers.Duration(lower_bound='5m', parsed_unit='s'),
+      help=(
+          'The length of the time window beginning at start time during '
+          'which a backup can be taken. If a backup does not succeed within '
+          'this time window, it will be canceled and considered failed. '
+          'The backup window must be at least 5 minutes long. '
+          'There is no upper bound on the window. If not set, '
+          'it will default to 1 hour.'
+      ),
+  )
+
+  kms_resource_args.AddKmsKeyResourceArg(
+      group,
+      'automated backups',
+      flag_overrides=GetAutomatedBackupKmsFlagOverrides(),
+      permission_info=(
+          "The 'AlloyDB Service Agent' service account must hold permission"
+          " 'Cloud KMS CryptoKey Encrypter/Decrypter'"
+      ),
+      name='--automated-backup-encryption-key',
+  )
 
 
 def AddEncryptionConfigFlags(parser, verb):
@@ -934,6 +1037,28 @@ def ValidateContinuousBackupFlags(args, update=False):
 # LINT.ThenChange()
 
 
+# LINT.IfChange(validate_automated_backup_flags_for_secondary)
+def ValidateAutomatedBackupFlagsForCreateSecondary(args):
+  """Validate the arguments for automated backup for secondary clusters, ensure the correct set of flags are passed."""
+  if (
+      args.enable_automated_backup is False  # pylint: disable=g-bool-id-comparison
+      and (
+          args.automated_backup_recovery_window_days
+          or args.automated_backup_encryption_key
+          or args.automated_backup_start_times
+      )
+  ):
+    raise exceptions.ConflictingArgumentsException(
+        '--no-enable-automated-backup',
+        '--automated-backup-start-times',
+        '--automated-backup-days-of-week',
+        '--automated-backup-window',
+    )
+
+
+# LINT.ThenChange()
+
+
 def ValidateConnectivityFlags(args):
   """Validate the arguments for connectivity, ensure the correct set of flags are passed."""
   # TODO(b/310733501) Move this to create.yaml or update.yaml files.
@@ -1163,7 +1288,6 @@ def _AddMaintenanceWindowAny(group):
   group.add_argument(
       '--maintenance-window-any',
       required=False,
-      hidden=True,
       action='store_true',
       default=False,
       help='Remove the user-specified maintenance window.',
@@ -1176,7 +1300,6 @@ def _AddMaintenanceWindowDayAndHour(group, alloydb_messages):
   group.add_argument(
       '--maintenance-window-day',
       required=True,
-      hidden=True,
       type=day_of_week_enum,
       choices=([
           day_of_week_enum.MONDAY,
@@ -1192,7 +1315,6 @@ def _AddMaintenanceWindowDayAndHour(group, alloydb_messages):
   group.add_argument(
       '--maintenance-window-hour',
       required=True,
-      hidden=True,
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=23),
       help='Hour of day for maintenance window, in UTC time zone.',
   )
@@ -1209,8 +1331,7 @@ def AddMaintenanceWindow(parser, alloydb_messages, update=False):
   """
   if update:
     parent_group = parser.add_group(
-        mutex=True, hidden=True,
-        help='Configure a preferred maintenance window.'
+        mutex=True, help='Configure a preferred maintenance window.'
     )
     child_group = parent_group.add_group(
         help='Specify preferred day and time for maintenance.'
@@ -1219,7 +1340,6 @@ def AddMaintenanceWindow(parser, alloydb_messages, update=False):
     _AddMaintenanceWindowDayAndHour(child_group, alloydb_messages)
   else:
     group = parser.add_group(
-        hidden=True,
         help='Specify preferred day and time for maintenance.'
     )
     _AddMaintenanceWindowDayAndHour(group, alloydb_messages)

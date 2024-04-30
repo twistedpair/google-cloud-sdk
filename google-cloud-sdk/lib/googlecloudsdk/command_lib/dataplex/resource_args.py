@@ -155,7 +155,7 @@ def GetDataplexEntryGroupResourceSpec():
   """Gets Entry Group resource spec."""
   return concepts.ResourceSpec(
       'dataplex.projects.locations.entryGroups',
-      resource_name='entry_group',
+      resource_name='entry group',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
       entryGroupsId=EntryGroupAttributeConfig(),
@@ -166,10 +166,10 @@ def GetDataplexAspectTypeResourceSpec():
   """Gets Aspect Type resource spec."""
   return concepts.ResourceSpec(
       'dataplex.projects.locations.aspectTypes',
-      resource_name='aspect_type',
+      resource_name='aspect type',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      entryGroupsId=AspectTypeAttributeConfig(),
+      aspectTypesId=AspectTypeAttributeConfig(),
   )
 
 
@@ -177,10 +177,10 @@ def GetDataplexEntryTypeResourceSpec():
   """Gets Entry Type resource spec."""
   return concepts.ResourceSpec(
       'dataplex.projects.locations.entryTypes',
-      resource_name='entry_type',
+      resource_name='entry type',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       locationsId=LocationAttributeConfig(),
-      entryGroupsId=EntryTypeAttributeConfig(),
+      entryTypesId=EntryTypeAttributeConfig(),
   )
 
 

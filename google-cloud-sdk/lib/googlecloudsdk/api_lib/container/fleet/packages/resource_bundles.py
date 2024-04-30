@@ -114,7 +114,7 @@ class ResourceBundlesClient(object):
     result = waiter.WaitFor(
         self.resource_bundle_waiter,
         create_operation,
-        'Creating ResourceBundle {name}',
+        f'Creating ResourceBundle {name}',
     )
     return result
 

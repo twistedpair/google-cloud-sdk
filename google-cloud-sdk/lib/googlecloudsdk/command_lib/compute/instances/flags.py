@@ -1846,41 +1846,46 @@ def AddProvisioningModelVmArgs(parser):
 def AddMaxRunDurationVmArgs(parser, is_update=False):
   """Set arguments for specifing max-run-duration and termination-time flags."""
   max_run_duration_help_text = """\
-      Limits how long this VM instance can run, specified as a duration
-      relative to the VM instance's most-recent start time. Format the duration,
-      ``MAX_RUN_DURATION'', as the number of days, hours, minutes, and seconds
-      followed by d, h, m, and s respectively. For example, specify 30m for a
-      duration of 30 minutes or specify 1d2h3m4s for a duration of 1 day,
+      Limits how long this VM instance can run, specified as a duration relative
+      to the last time when the VM began running. Format the duration,
+      MAX_RUN_DURATION, as the number of days, hours, minutes, and seconds
+      followed by d, h, m, and s respectively. For example, specify `30m` for a
+      duration of 30 minutes or specify `1d2h3m4s` for a duration of 1 day,
       2 hours, 3 minutes, and 4 seconds. Alternatively, to specify a timestamp,
-      use `--termination-time` instead.
+      use --termination-time instead.
 
-      If neither `--max-run-duration` nor `--termination-time` is specified
-      (default), the VM instance runs until prompted by a user action
-      or system event.
-      If either is specified, the VM instance is scheduled to be automatically
-      terminated using the action specified by `--instance-termination-action`.
-      For `--max-run-duration`, the VM instance is automatically terminated when the VM's
-      current runtime reaches ``MAX_RUN_DURATION''. Note: Anytime the VM instance
-      is stopped or suspended,  `--max-run-duration` and (unless the VM uses
-      `--provisioning-model=SPOT`) `--instance-termination-action` are
-      automatically removed from the VM.
+      If neither --max-run-duration nor --termination-time is specified
+      (default), the VM instance runs until prompted by a user action or system
+      event. If either is specified, the VM instance is scheduled to be
+      automatically terminated at the VM's termination timestamp
+      (`terminationTimestamp`) using the action specified by
+      --instance-termination-action.
+
+      Note: The `terminationTimestamp` is removed whenever the VM is stopped or
+      suspended and redefined whenever the VM is rerun. For --max-run-duration
+      specifically, the `terminationTimestamp` is the sum of MAX_RUN_DURATION
+      and the time when the VM last entered the `RUNNING` state, which changes
+      whenever the VM is rerun.
       """
 
   termination_time_help_text = """
-      Limits how long this VM instance can run, specified as a time.
-      Format the time, ``TERMINATION_TIME'', as a RFC 3339 timestamp. For more
-      information, see https://tools.ietf.org/html/rfc3339.
-      Alternatively, to specify a duration, use `--max-run-duration` instead.
+      Limits how long this VM instance can run, specified as a time. Format the
+      time, TERMINATION_TIME, as a RFC 3339 timestamp. For more information,
+      see https://tools.ietf.org/html/rfc3339. Alternatively, to specify a
+      duration, use --max-run-duration instead.
 
-    If neither `--termination-time` nor `--max-run-duration`
-    is specified (default),
-    the VM instance runs until prompted by a user action or system event.
-    If either is specified, the VM instance is scheduled to be automatically
-    terminated using the action specified by `--instance-termination-action`.
-    For `--termination-time`, the VM instance is automatically terminated at the
-    specified timestamp. Note: Anytime the VM instance is stopped or suspended,
-    `--termination-time` and (unless the VM uses `--provisioning-model=SPOT`)
-    `--instance-termination-action` are automatically removed from the VM.
+      If neither --termination-time nor --max-run-duration is specified
+      (default), the VM instance runs until prompted by a user action or
+      system event. If either is specified, the VM instance is scheduled to
+      be automatically terminated at the VM's termination timestamp
+      (`terminationTimestamp`) using the action specified by
+      --instance-termination-action.
+
+      Note: The `terminationTimestamp` is removed whenever the VM is stopped
+      or suspended and redefined whenever the VM is rerun. For
+      --termination-time specifically, the `terminationTimestamp` remains the
+      same whenever the VM is rerun, but any requests to rerun the VM fail if
+      the specified timestamp is in the past.
     """
   if is_update:
     max_run_duration_group = parser.add_group('Max Run Duration', mutex=True)
@@ -1926,18 +1931,18 @@ def AddMaxRunDurationVmArgs(parser, is_update=False):
 def AddDiscardLocalSsdVmArgs(parser, is_update=False):
   """Set arguments for specifing discard-local-ssds-at-termination-timestamp flag."""
   discard_local_ssds_at_termination_timestamp_help_text = """\
-        Required and only allowed for VMs that have one or more local SSDs,
-        use --termination-action=STOP (default), and use either
-        --max-run-duration or --termination-time. This flag indicates whether
-        you want Compute Engine to discard (true) or preserve (false) local SSD
-        data when the VM's terminationTimestamp is reached.
+        Required to be set to `true` and only allowed for VMs that have one or
+        more local SSDs, use --instance-termination-action=STOP, and use either
+        --max-run-duration or --termination-time.
 
-        If set to false, Compute Engine will preserve local SSD data by
-        including the --discard-local-ssd=false flag in the automatic
-        termination command. The --discard-local-ssd=false flag preserves local
-        SSD data by migrating it to persistent storage until you rerun the VM.
-        Importantly, preserving local SSD data incurs costs and is subject to
-        restrictions. For more information, see https://cloud.google.com/compute/docs/disks/local-ssd#stop_instance.
+        This flag indicates the value that you want Compute Engine to use for
+        the `--discard-local-ssd` flag in the automatic
+        `gcloud compute instances stop` command. This flag only supports the
+        `true` value, which discards local SSD data when automatically stopping
+        this VM during its `terminationTimestamp`.
+
+        For more information about the `--discard-local-ssd` flag, see
+        https://cloud.google.com/compute/docs/disks/local-ssd#stop_instance.
       """
   if is_update:
     discard_local_ssds_at_termination_timestamp_group = parser.add_group(
@@ -2036,16 +2041,19 @@ def AddInstanceTerminationActionVmArgs(parser, is_update=False):
     termination_action_group.add_argument(
         '--instance-termination-action',
         choices={
-            'STOP': 'Default. Stop the VM without preserving memory. '
-                    'The VM can be restarted later.',
-            'DELETE': 'Permanently delete the VM.'
+            'STOP': (
+                'Default only for Spot VMs. Stop the VM without preserving'
+                ' memory. The VM can be restarted later.'
+            ),
+            'DELETE': 'Permanently delete the VM.',
         },
         type=arg_utils.ChoiceToEnumName,
         help="""\
       Specifies the termination action that will be taken upon VM preemption
-      (`--provisioning-model=SPOT` or `--preemptible`) or automatic instance
-      termination (`--max-run-duration` or `--termination-time`).
-      """)
+        (--provisioning-model=SPOT) or automatic instance
+        termination (--max-run-duration or --termination-time).
+      """,
+    )
     termination_action_group.add_argument(
         '--clear-instance-termination-action',
         action='store_true',
@@ -2063,16 +2071,19 @@ def AddInstanceTerminationActionVmArgs(parser, is_update=False):
     parser.add_argument(
         '--instance-termination-action',
         choices={
-            'STOP': 'Default. Stop the VM without preserving memory. '
-                    'The VM can be restarted later.',
-            'DELETE': 'Permanently delete the VM.'
+            'STOP': (
+                'Default only for Spot VMs. Stop the VM without preserving'
+                ' memory. The VM can be restarted later.'
+            ),
+            'DELETE': 'Permanently delete the VM.',
         },
         type=arg_utils.ChoiceToEnumName,
         help="""\
       Specifies the termination action that will be taken upon VM preemption
-      (`--provisioning-model=SPOT` or `--preemptible`) or automatic instance
-      termination (`--max-run-duration` or `--termination-time`).
-      """)
+        (--provisioning-model=SPOT) or automatic instance
+        termination (--max-run-duration or --termination-time).
+      """,
+    )
 
 
 def ValidateInstanceScheduling(args, support_max_run_duration=False):

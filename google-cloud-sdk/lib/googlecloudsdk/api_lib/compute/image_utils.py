@@ -124,6 +124,13 @@ class ImageExpander(object):
           error_message='Could not fetch image resource:')
     return res[0]
 
+  def _AddUniversePrefix(self, project_name):
+    if properties.IsDefaultUniverse():
+      return project_name
+    else:
+      prefix = properties.VALUES.core.project.GetOrFail().split(':')[0]
+      return prefix + ':' + project_name
+
   def ExpandImageFlag(self,
                       user_project,
                       image=None,
@@ -202,10 +209,10 @@ class ImageExpander(object):
         image_family = constants.DEFAULT_IMAGE_FAMILY_FOR_CONFIDENTIAL_VMS[
             confidential_vm_type
         ]
-        params['project'] = 'ubuntu-os-cloud'
+        params['project'] = self._AddUniversePrefix('ubuntu-os-cloud')
       else:
         image_family = constants.DEFAULT_IMAGE_FAMILY
-        params['project'] = 'debian-cloud'
+        params['project'] = self._AddUniversePrefix('debian-cloud')
         if support_image_family_scope and image_family_scope != 'global':
           params['zone'] = '-'
           collection = 'compute.imageFamilyViews'

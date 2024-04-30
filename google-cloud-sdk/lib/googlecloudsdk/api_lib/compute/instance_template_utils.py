@@ -140,7 +140,7 @@ def CreateNetworkInterfaceMessage(resources,
     network_interface.stackType = (
         messages.NetworkInterface.StackTypeValueValuesEnum(stack_type))
 
-  if address:
+  if address and stack_type != 'IPV6_ONLY':
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)

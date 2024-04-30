@@ -66,7 +66,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""ApproveGrant is used to provide approval for a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. An approval once granted on a Grant can not be taken back.
+      r"""`ApproveGrant` is used to approve a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsApproveRequest) input message
@@ -93,7 +93,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Grant in a given project and location.
+      r"""Creates a new grant in a given project and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest) input message
@@ -120,7 +120,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Deny(self, request, global_params=None):
-      r"""DenyGrant is like ApproveGrant but is used for denying a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. This operation cannot be undone.
+      r"""`DenyGrant` is used to deny a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsDenyRequest) input message
@@ -147,7 +147,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details of a single Grant.
+      r"""Get details of a single grant.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsGetRequest) input message
@@ -174,7 +174,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Grants for a given Entitlement.
+      r"""Lists grants for a given entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsListRequest) input message
@@ -201,7 +201,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Revoke(self, request, global_params=None):
-      r"""RevokeGrant is used to immediately revoke access for a Grant. This method can be called when the Grant is in a non terminal state.
+      r"""`RevokeGrant` is used to immediately revoke access for a grant. This method can be called when the grant is in a non-terminal state.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsRevokeRequest) input message
@@ -228,7 +228,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchGrants returns Grants that are related to the calling user in the specified way.
+      r"""`SearchGrants` returns grants that are related to the calling user in the specified way.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsSearchRequest) input message
@@ -265,7 +265,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest) input message
@@ -292,7 +292,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Entitlement. This method can only be called when there are no in progress (ACTIVE/ACTIVATING/REVOKING) Grants under this Entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsDeleteRequest) input message
@@ -319,7 +319,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Entitlement.
+      r"""Gets details of a single entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsGetRequest) input message
@@ -346,7 +346,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlements in a given project/folder/organization and location.
+      r"""Lists entitlements in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest) input message
@@ -373,7 +373,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
+      r"""Updates the entitlement specified in the request. Updated fields in the entitlement need to be specified in an update mask. The changes made to an entitlement are applicable only on future grants of the entitlement. However, if new approvers are added or existing approvers are removed from the approval workflow, the changes are effective on existing grants. The following fields are not supported for updates: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow (only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest) input message
@@ -400,7 +400,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
+      r"""`SearchEntitlements` returns entitlements on which the caller has the specified access.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsEntitlementsSearchRequest) input message
@@ -629,7 +629,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""ApproveGrant is used to provide approval for a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. An approval once granted on a Grant can not be taken back.
+      r"""`ApproveGrant` is used to approve a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsApproveRequest) input message
@@ -656,7 +656,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Grant in a given project and location.
+      r"""Creates a new grant in a given project and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateRequest) input message
@@ -683,7 +683,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Deny(self, request, global_params=None):
-      r"""DenyGrant is like ApproveGrant but is used for denying a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. This operation cannot be undone.
+      r"""`DenyGrant` is used to deny a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsDenyRequest) input message
@@ -710,7 +710,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details of a single Grant.
+      r"""Get details of a single grant.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsGetRequest) input message
@@ -737,7 +737,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Grants for a given Entitlement.
+      r"""Lists grants for a given entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsListRequest) input message
@@ -764,7 +764,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Revoke(self, request, global_params=None):
-      r"""RevokeGrant is used to immediately revoke access for a Grant. This method can be called when the Grant is in a non terminal state.
+      r"""`RevokeGrant` is used to immediately revoke access for a grant. This method can be called when the grant is in a non-terminal state.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsRevokeRequest) input message
@@ -791,7 +791,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchGrants returns Grants that are related to the calling user in the specified way.
+      r"""`SearchGrants` returns grants that are related to the calling user in the specified way.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsSearchRequest) input message
@@ -828,7 +828,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsCreateRequest) input message
@@ -855,7 +855,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Entitlement. This method can only be called when there are no in progress (ACTIVE/ACTIVATING/REVOKING) Grants under this Entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsDeleteRequest) input message
@@ -882,7 +882,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Entitlement.
+      r"""Gets details of a single entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGetRequest) input message
@@ -909,7 +909,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlements in a given project/folder/organization and location.
+      r"""Lists entitlements in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest) input message
@@ -936,7 +936,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
+      r"""Updates the entitlement specified in the request. Updated fields in the entitlement need to be specified in an update mask. The changes made to an entitlement are applicable only on future grants of the entitlement. However, if new approvers are added or existing approvers are removed from the approval workflow, the changes are effective on existing grants. The following fields are not supported for updates: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow (only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest) input message
@@ -963,7 +963,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
+      r"""`SearchEntitlements` returns entitlements on which the caller has the specified access.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsEntitlementsSearchRequest) input message
@@ -1192,7 +1192,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Approve(self, request, global_params=None):
-      r"""ApproveGrant is used to provide approval for a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. An approval once granted on a Grant can not be taken back.
+      r"""`ApproveGrant` is used to approve a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsApproveRequest) input message
@@ -1219,7 +1219,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Grant in a given project and location.
+      r"""Creates a new grant in a given project and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest) input message
@@ -1246,7 +1246,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Deny(self, request, global_params=None):
-      r"""DenyGrant is like ApproveGrant but is used for denying a Grant. This method can only be called while the Grant is in `APPROVAL_AWAITED` state. This operation cannot be undone.
+      r"""`DenyGrant` is used to deny a grant. This method can only be called on a grant when it's in the `APPROVAL_AWAITED` state. This operation can't be undone.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsDenyRequest) input message
@@ -1273,7 +1273,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details of a single Grant.
+      r"""Get details of a single grant.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsGetRequest) input message
@@ -1300,7 +1300,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Grants for a given Entitlement.
+      r"""Lists grants for a given entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsListRequest) input message
@@ -1327,7 +1327,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Revoke(self, request, global_params=None):
-      r"""RevokeGrant is used to immediately revoke access for a Grant. This method can be called when the Grant is in a non terminal state.
+      r"""`RevokeGrant` is used to immediately revoke access for a grant. This method can be called when the grant is in a non-terminal state.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsRevokeRequest) input message
@@ -1354,7 +1354,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchGrants returns Grants that are related to the calling user in the specified way.
+      r"""`SearchGrants` returns grants that are related to the calling user in the specified way.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsSearchRequest) input message
@@ -1391,7 +1391,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Entitlement in a given project/folder/organization and location.
+      r"""Creates a new entitlement in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsCreateRequest) input message
@@ -1418,7 +1418,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Entitlement. This method can only be called when there are no in progress (ACTIVE/ACTIVATING/REVOKING) Grants under this Entitlement.
+      r"""Deletes a single entitlement. This method can only be called when there are no in-progress (ACTIVE/ACTIVATING/REVOKING) grants under the entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsDeleteRequest) input message
@@ -1445,7 +1445,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Entitlement.
+      r"""Gets details of a single entitlement.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsGetRequest) input message
@@ -1472,7 +1472,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Entitlements in a given project/folder/organization and location.
+      r"""Lists entitlements in a given project/folder/organization and location.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsListRequest) input message
@@ -1499,7 +1499,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the Entitlement specified in the request. The fields of the Entitlement to be updated need to be specified in the update mask. The changes made to an Entitlement are applicable only on future Grants of the Entitlement. However if new approver(s) are added or existing approver(s) are removed from the approval workflow, the changes are effective on existing grants. The following fields are currently not supported for update: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow(currently only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
+      r"""Updates the entitlement specified in the request. Updated fields in the entitlement need to be specified in an update mask. The changes made to an entitlement are applicable only on future grants of the entitlement. However, if new approvers are added or existing approvers are removed from the approval workflow, the changes are effective on existing grants. The following fields are not supported for updates: * All immutable fields * Entitlement name * Resource name * Resource type * Adding an approval workflow in an entitlement which previously had no approval workflow. * Deleting the approval workflow from an entitlement. * Adding or deleting a step in the approval workflow (only one step is supported) Note that updates are allowed on the list of approvers in an approval workflow step.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest) input message
@@ -1526,7 +1526,7 @@ class PrivilegedaccessmanagerV1beta(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""SearchEntitlements returns Entitlements on which the caller has the specified access.
+      r"""`SearchEntitlements` returns entitlements on which the caller has the specified access.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsEntitlementsSearchRequest) input message

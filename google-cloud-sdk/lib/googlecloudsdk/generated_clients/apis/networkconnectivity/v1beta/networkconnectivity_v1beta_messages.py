@@ -161,6 +161,8 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
     name: Identifier. The name of a CustomHardwareInstance. Format: `projects/
       {project}/locations/{location}/customHardwareInstances/{custom_hardware_
       instance}`.
+    region: Required. The region associated with the custom hardware instance.
+      Example: us-central1
     updateTime: Output only. Time when the CustomHardwareInstance was updated.
   """
 
@@ -191,7 +193,8 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Messa
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  region = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
 
 
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages.Message):
@@ -2875,15 +2878,15 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsCreateRequest(_messag
       created.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   googleCloudNetworkconnectivityV1betaRegionalEndpoint = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRegionalEndpoint', 1)
@@ -2900,15 +2903,15 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsDeleteRequest(_messag
     name: Required. The name of the RegionalEndpoint to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if the original operation with the same request
+      ID was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)

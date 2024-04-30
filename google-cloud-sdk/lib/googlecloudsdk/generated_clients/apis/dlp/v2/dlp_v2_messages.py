@@ -5775,8 +5775,14 @@ class GooglePrivacyDlpV2Export(_messages.Message):
 
   Fields:
     profileTable: Store all table and column profiles in an existing table or
-      a new table in an existing dataset. Each re-generation will result in a
-      new row in BigQuery.
+      a new table in an existing dataset. Each re-generation will result in
+      new rows in BigQuery. Data is inserted using [streaming
+      insert](https://cloud.google.com/blog/products/bigquery/life-of-a-
+      bigquery-streaming-insert) and so data may be in the buffer for a period
+      of time after the profile has finished. The Pub/Sub notification is sent
+      before the streaming buffer is guaranteed to be written, so data may not
+      be instantly visible to queries by the time your topic receives the
+      Pub/Sub notification.
   """
 
   profileTable = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 1)
@@ -8357,14 +8363,17 @@ class GooglePrivacyDlpV2Result(_messages.Message):
     hybridStats: Statistics related to the processing of hybrid inspect.
     infoTypeStats: Statistics of how many instances of each info type were
       found during inspect job.
+    numRowsProcessed: Number of rows scanned post sampling and time filtering
+      (Applicable for row based stores such as BigQuery).
     processedBytes: Total size in bytes that were processed.
     totalEstimatedBytes: Estimate of the number of bytes to process.
   """
 
   hybridStats = _messages.MessageField('GooglePrivacyDlpV2HybridInspectStatistics', 1)
   infoTypeStats = _messages.MessageField('GooglePrivacyDlpV2InfoTypeStats', 2, repeated=True)
-  processedBytes = _messages.IntegerField(3)
-  totalEstimatedBytes = _messages.IntegerField(4)
+  numRowsProcessed = _messages.IntegerField(3)
+  processedBytes = _messages.IntegerField(4)
+  totalEstimatedBytes = _messages.IntegerField(5)
 
 
 class GooglePrivacyDlpV2RiskAnalysisJobConfig(_messages.Message):

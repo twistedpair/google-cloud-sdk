@@ -2,28 +2,27 @@ cpu:
   api_field: cluster.capacityConfig.vcpuCount
   arg_name: cpu
   help_text: |
-    The number of vCPUs to provision for the cluster. Minimum is 3.
+    The number of vCPUs to provision for the cluster. The minimum is 3.
 
 memory:
   api_field: cluster.capacityConfig.memoryBytes
   arg_name: memory
   type: googlecloudsdk.core.util.scaled_integer:ParseInteger
   help_text: |
-    The memory to provision for the cluster in bytes. Must be between 1 GiB and 6 GiB per vCPU.
+    The memory to provision for the cluster in bytes. The value must be between 1 GiB and 8 GiB
+    per vCPU.
     Ex. 1024Mi, 4Gi.
 
 subnets:
   arg_name: subnets
   type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
   help_text: |
-    VPC subnets from which the cluster will be accessible. Both broker and boostrap server
-    IP addresses and DNS entries will be automatically created in each subnet.
-    Name of the subnet must be in the format
-    projects/``PROJECT_ID''/regions/``REGION''/subnetworks/subnet. The subnet must be
-    located in the same region as the cluster. The project may differ. Minimum of 1 subnet is
-    required. Maximum 10 subnets can be specified. Use comma separation to specify multiple subnets.
-    The bootstrap address is structured as
-    bootstrap.``CLUSTER_ID''.``REGION''.managedkafka.``PROJECT_ID''.cloud.goog:9092.
+    VPC subnets from which the cluster is accessible. Both broker and bootstrap server
+    IP addresses and DNS entries are automatically created in each subnet. The subnet must be
+    located in the same region as the cluster. The project may differ. A minimum of 1 subnet is
+    required. A maximum of 10 subnets can be specified. Use commas to separate multiple subnets.
+    The name of the subnet must be in the format
+    projects/``PROJECT_ID''/regions/``REGION''/subnetworks/``SUBNET''.
 
 labels:
   api_field: cluster.labels
@@ -44,20 +43,35 @@ encryption-key:
     projects/``PROJECT_ID''/locations/``LOCATION''/keyRings/``KEY_RING''/cryptoKeys/``KEY''.
     The key must be located in the same region as the cluster. The key cannot be changed once set.
 
+auto-rebalance:
+  api_field: cluster.rebalanceConfig.mode
+  arg_name: auto-rebalance
+  action: store_true
+  help_text: |
+    Whether the automatic rebalancing is enabled. If automatic rebalancing
+    is enabled, topic partitions are rebalanced among brokers when the number of
+    CPUs in the cluster changes. Automatic rebalancing is enabled by default.
+    Use --no-auto-rebalance to disable this flag.
+  choices:
+  - arg_value: true
+    enum_value: AUTO_REBALANCE_ON_SCALE_UP
+  - arg_value: false
+    enum_value: NO_REBALANCE
+
 partitions:
   api_field: topic.partitionCount
   arg_name: partitions
   help_text: |
     The number of partitions in a topic. You can increase the partition count for a topic, but you
-    cannot decrease it. Be aware that increasing partitions for a topic that uses a key might
-    change how messages are distributed.
+    cannot decrease it. Increasing partitions for a topic that uses a key might change how messages
+    are distributed.
 
 replication-factor:
   api_field: topic.replicationFactor
   arg_name: replication-factor
   help_text: |
-    The number of replicas of each partition. If not specified during creation,
-    the cluster's default replication factor (3) is used.
+    The number of replicas of each partition. A replication factor of 3 is
+    recommended for high availability.
 
 configs:
   api_field: topic.configs
@@ -65,6 +79,15 @@ configs:
   metavar: KEY=VALUE
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   help_text: |
-    Configurations for the topic that are overridden from the cluster defaults.
+    Configuration for the topic that are overridden from the cluster defaults.
     The key of the map is a Kafka topic property name, for example:
     `cleanup.policy=compact`, `compression.type=producer`.
+
+# TODO(b/336117815): Provide hard examples and external docs on this flag.
+topics-file:
+  arg_name: topics-file
+  type: "googlecloudsdk.calliope.arg_parsers:ArgObject:"
+  metavar: JSON|YAML|FILE
+  help_text: |
+    The path to the JSON or YAML file containing the configuration of the topics to be updated for
+    the consumer group. This also supports inline JSON or YAML.

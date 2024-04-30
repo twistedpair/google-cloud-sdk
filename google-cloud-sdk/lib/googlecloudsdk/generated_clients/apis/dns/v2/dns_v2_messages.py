@@ -2279,19 +2279,15 @@ class RRSetRoutingPolicy(_messages.Message):
 
   Fields:
     geo: A RRSetRoutingPolicyGeoPolicy attribute.
-    healthCheck: The selfLink attribute of the HealthCheck resource to use for
-      this RRSetRoutingPolicy.
-      https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks
     kind: A string attribute.
     primaryBackup: A RRSetRoutingPolicyPrimaryBackupPolicy attribute.
     wrr: A RRSetRoutingPolicyWrrPolicy attribute.
   """
 
   geo = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
-  healthCheck = _messages.StringField(2)
-  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicy')
-  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 4)
-  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 5)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicy')
+  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 3)
+  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 4)
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
@@ -2347,15 +2343,11 @@ class RRSetRoutingPolicyHealthCheckTargets(_messages.Message):
   should be set.
 
   Fields:
-    externalEndpoints: The Internet IP addresses to be health checked. The
-      format matches the format of ResourceRecordSet.rrdata as defined in RFC
-      1035 (section 5) and RFC 1034 (section 3.6.1)
     internalLoadBalancers: Configuration for internal load balancers to be
       health checked.
   """
 
-  externalEndpoints = _messages.StringField(1, repeated=True)
-  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 2, repeated=True)
+  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 1, repeated=True)
 
 
 class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):

@@ -342,10 +342,14 @@ def Move(instance, target_instance_config):
           ' Transactions may have a higher chance of failing.\n\n\t* Spiked CPU'
           ' utilization: System resources will be strained, impacting'
           ' performance.\n\n\t* Additional costs: Instance moves incur extra'
-          ' charges, as described in the documentation.\n\nBefore proceeding,'
-          ' and for detailed information and best practices, please consult the'
-          ' documentation at'
-          ' http://cloud.google.com/spanner/docs/move-instance.'.format(
+          ' charges, as described in the documentation.\n\n\t* Backups: It is'
+          ' important that you copy your backups before moving your instance.'
+          ' Backups need to be deleted from the Instance before the move. You'
+          ' cannot create a backup while the move is in progress.\n\nBefore'
+          ' proceeding, and for detailed information and best practices, refer'
+          ' to the documentation at'
+          ' https://cloud.google.com/spanner/docs/move-instance#move-prerequisites.'
+          .format(
               instance, GetInstanceConfig(instance), target_instance_config
           )
       ),

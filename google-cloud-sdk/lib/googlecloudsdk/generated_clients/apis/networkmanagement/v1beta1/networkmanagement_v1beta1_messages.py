@@ -2929,6 +2929,10 @@ class VpcFlowLogsConfig(_messages.Message):
     StateValueValuesEnum: Optional. The state of the VPC Flow Log. Default
       value is ENABLED.
 
+  Messages:
+    LabelsValue: Optional. Resource labels to represent user-provided
+      metadata.
+
   Fields:
     aggregationInterval: Optional. The aggregation interval for the logs.
       Default value is INTERVAL_5_SEC.
@@ -2944,6 +2948,7 @@ class VpcFlowLogsConfig(_messages.Message):
     interconnectAttachment: Traffic will be logged from the Interconnect
       Attachment. Format:
       projects/{project_id}/locations/{region}/interconnectAttachments/{name}
+    labels: Optional. Resource labels to represent user-provided metadata.
     metadata: Optional. Configures whether all, none or a subset of metadata
       fields should be added to the reported VPC flow logs. Default value is
       INCLUDE_ALL_METADATA.
@@ -3015,20 +3020,45 @@ class VpcFlowLogsConfig(_messages.Message):
     ENABLED = 1
     DISABLED = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Resource labels to represent user-provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   aggregationInterval = _messages.EnumField('AggregationIntervalValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   filterExpr = _messages.StringField(4)
   flowSampling = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
   interconnectAttachment = _messages.StringField(6)
-  metadata = _messages.EnumField('MetadataValueValuesEnum', 7)
-  metadataFields = _messages.StringField(8, repeated=True)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  subnet = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
-  vpnTunnel = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 7)
+  metadata = _messages.EnumField('MetadataValueValuesEnum', 8)
+  metadataFields = _messages.StringField(9, repeated=True)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  subnet = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  vpnTunnel = _messages.StringField(15)
 
 
 class VpnGatewayInfo(_messages.Message):

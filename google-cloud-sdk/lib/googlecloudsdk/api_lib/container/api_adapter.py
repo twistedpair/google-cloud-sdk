@@ -294,6 +294,7 @@ GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
 GCSFUSECSIDRIVER = 'GcsFuseCsiDriver'
 STATEFULHA = 'StatefulHA'
 PARALLELSTORECSIDRIVER = 'ParallelstoreCsiDriver'
+RAYOPERATOR = 'RayOperator'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -330,6 +331,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     GCSFUSECSIDRIVER,
     STATEFULHA,
     PARALLELSTORECSIDRIVER,
+    RAYOPERATOR,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
@@ -1866,6 +1868,7 @@ class APIAdapter(object):
           enable_parallelstore_csi_driver=(
               PARALLELSTORECSIDRIVER in options.addons
           ),
+          enable_ray_operator=(RAYOPERATOR in options.addons),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -3431,6 +3434,10 @@ class APIAdapter(object):
         addons.gkeBackupAgentConfig = (
             self.messages.GkeBackupAgentConfig(
                 enabled=not options.disable_addons.get(BACKUPRESTORE)))
+      if options.disable_addons.get(RAYOPERATOR) is not None:
+        addons.rayOperatorConfig = (
+            self.messages.RayOperatorConfig(
+                enabled=not options.disable_addons.get(RAYOPERATOR)))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -3943,7 +3950,8 @@ class APIAdapter(object):
                     enable_backup_restore=None,
                     enable_gcsfuse_csi_driver=None,
                     enable_stateful_ha=None,
-                    enable_parallelstore_csi_driver=None):
+                    enable_parallelstore_csi_driver=None,
+                    enable_ray_operator=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -3960,6 +3968,7 @@ class APIAdapter(object):
       enable_gcsfuse_csi_driver: whether to enable GcsFuseCsiDriver.
       enable_stateful_ha: whether to enable StatefulHA addon.
       enable_parallelstore_csi_driver: whether to enable ParallelstoreCsiDriver.
+      enable_ray_operator: whether to enable RayOperator.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -4004,6 +4013,8 @@ class APIAdapter(object):
       addons.parallelstoreCsiDriverConfig = (
           self.messages.ParallelstoreCsiDriverConfig(enabled=True)
       )
+    if enable_ray_operator:
+      addons.rayOperatorConfig = self.messages.RayOperatorConfig(enabled=True)
 
     return addons
 

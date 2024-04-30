@@ -2754,10 +2754,10 @@ class Environment(_messages.Message):
       encrypt data at rest, AKA a Customer Managed Encryption Key (CMEK).
       Format:
       projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/KEY
-    serviceOptions: The list of service options to enable. This field should
-      be used for service related experiments only. These experiments, when
-      graduating to GA, should be replaced by dedicated fields or become
-      default (i.e. always on).
+    serviceOptions: Optional. The list of service options to enable. This
+      field should be used for service related experiments only. These
+      experiments, when graduating to GA, should be replaced by dedicated
+      fields or become default (i.e. always on).
     shuffleMode: Output only. The shuffle mode used for the job.
     streamingMode: Optional. Specifies the Streaming Engine message processing
       guarantees. Reduces cost and latency but might result in duplicate
@@ -3665,7 +3665,7 @@ class Job(_messages.Message):
       `JOB_STATE_DRAINED`. These states irrevocably terminate the job if it
       hasn't already reached a terminal state. This field has no effect on
       `CreateJob` requests.
-    TypeValueValuesEnum: The type of Dataflow job.
+    TypeValueValuesEnum: Optional. The type of Dataflow job.
 
   Messages:
     LabelsValue: User-defined labels for this job. The labels map can contain
@@ -3696,7 +3696,7 @@ class Job(_messages.Message):
       be made. This field might be mutated by the Dataflow service; callers
       cannot mutate it.
     currentStateTime: The timestamp associated with the current state.
-    environment: The environment for the job.
+    environment: Optional. The environment for the job.
     executionInfo: Deprecated.
     id: The unique ID of this job. This field is set by the Dataflow service
       when the job is created, and is immutable for the life of the job.
@@ -3712,12 +3712,12 @@ class Job(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
-    name: The user-specified Dataflow job name. Only one active job with a
-      given name can exist in a project within one region at any given time.
-      Jobs in different regions can have the same name. If a caller attempts
-      to create a job with the same name as an active job that already exists,
-      the attempt returns the existing job. The name must match the regular
-      expression `[a-z]([-a-z0-9]{0,1022}[a-z0-9])?`
+    name: Optional. The user-specified Dataflow job name. Only one active job
+      with a given name can exist in a project within one region at any given
+      time. Jobs in different regions can have the same name. If a caller
+      attempts to create a job with the same name as an active job that
+      already exists, the attempt returns the existing job. The name must
+      match the regular expression `[a-z]([-a-z0-9]{0,1022}[a-z0-9])?`
     pipelineDescription: Preliminary field: The format of this data may change
       at any time. A description of the user pipeline and stages through which
       it is executed. Created by Cloud Dataflow service. Only retrieved with
@@ -3765,7 +3765,7 @@ class Job(_messages.Message):
       bucket.storage.googleapis.com/{object}
     transformNameMapping: The map of transform name prefixes of the job to be
       replaced to the corresponding name prefixes of the new job.
-    type: The type of Dataflow job.
+    type: Optional. The type of Dataflow job.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -3916,7 +3916,7 @@ class Job(_messages.Message):
     JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of Dataflow job.
+    r"""Optional. The type of Dataflow job.
 
     Values:
       JOB_TYPE_UNKNOWN: The type of the job is unspecified, or unknown.
@@ -5374,6 +5374,9 @@ class ParameterMetadata(_messages.Message):
       BOOLEAN: The parameter specifies a boolean input.
       ENUM: The parameter specifies an enum input.
       NUMBER: The parameter specifies a number input.
+      KAFKA_TOPIC: The parameter specifies the fully-qualified name of an
+        Apache Kafka topic. This can be either a Google Managed Kafka topic or
+        a non-managed Kafka topic.
     """
     DEFAULT = 0
     TEXT = 1
@@ -5395,6 +5398,7 @@ class ParameterMetadata(_messages.Message):
     BOOLEAN = 17
     ENUM = 18
     NUMBER = 19
+    KAFKA_TOPIC = 20
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

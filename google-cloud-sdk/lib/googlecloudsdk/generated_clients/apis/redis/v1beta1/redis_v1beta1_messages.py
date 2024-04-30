@@ -2673,6 +2673,7 @@ class Product(_messages.Message):
       PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
       PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
+      PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -2685,7 +2686,8 @@ class Product(_messages.Message):
     PRODUCT_TYPE_ON_PREM = 6
     ON_PREM = 7
     PRODUCT_TYPE_MEMORYSTORE = 8
-    PRODUCT_TYPE_OTHER = 9
+    PRODUCT_TYPE_BIGTABLE = 9
+    PRODUCT_TYPE_OTHER = 10
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

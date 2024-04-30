@@ -1253,6 +1253,9 @@ class Cluster(_messages.Message):
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
+    maintenanceSchedule: Output only. The maintenance schedule for the
+      cluster, generated for a specific rollout if a maintenance window is
+      set.
     maintenanceUpdatePolicy: Optional. The maintenance update policy
       determines when to allow or deny updates.
     migrationSource: Output only. Cluster created via DMS migration.
@@ -1423,20 +1426,21 @@ class Cluster(_messages.Message):
   etag = _messages.StringField(13)
   initialUser = _messages.MessageField('UserPassword', 14)
   labels = _messages.MessageField('LabelsValue', 15)
-  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 16)
-  migrationSource = _messages.MessageField('MigrationSource', 17)
-  name = _messages.StringField(18)
-  network = _messages.StringField(19)
-  networkConfig = _messages.MessageField('NetworkConfig', 20)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 21)
-  pscConfig = _messages.MessageField('PscConfig', 22)
-  reconciling = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 25)
-  sslConfig = _messages.MessageField('SslConfig', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  uid = _messages.StringField(28)
-  updateTime = _messages.StringField(29)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 16)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 17)
+  migrationSource = _messages.MessageField('MigrationSource', 18)
+  name = _messages.StringField(19)
+  network = _messages.StringField(20)
+  networkConfig = _messages.MessageField('NetworkConfig', 21)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 22)
+  pscConfig = _messages.MessageField('PscConfig', 23)
+  reconciling = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 26)
+  sslConfig = _messages.MessageField('SslConfig', 27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  uid = _messages.StringField(29)
+  updateTime = _messages.StringField(30)
 
 
 class ConnectionInfo(_messages.Message):
@@ -2178,6 +2182,20 @@ class MachineConfig(_messages.Message):
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class MaintenanceSchedule(_messages.Message):
+  r"""MaintenanceSchedule stores the maintenance schedule generated from the
+  MaintenanceUpdatePolicy, once a maintenance rollout is triggered, if
+  MaintenanceWindow is set, and if there is no conflicting DenyPeriod. The
+  schedule is cleared once the update takes place. This field cannot be
+  manually changed; modify the MaintenanceUpdatePolicy instead.
+
+  Fields:
+    startTime: Output only. The scheduled start time for the maintenance.
+  """
+
+  startTime = _messages.StringField(1)
 
 
 class MaintenanceUpdatePolicy(_messages.Message):
@@ -4160,6 +4178,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
       PRODUCT_TYPE_MEMORYSTORE: Memorystore product area in GCP
+      PRODUCT_TYPE_BIGTABLE: Bigtable product area in GCP
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
@@ -4172,7 +4191,8 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_ON_PREM = 6
     ON_PREM = 7
     PRODUCT_TYPE_MEMORYSTORE = 8
-    PRODUCT_TYPE_OTHER = 9
+    PRODUCT_TYPE_BIGTABLE = 9
+    PRODUCT_TYPE_OTHER = 10
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

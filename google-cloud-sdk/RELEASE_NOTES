@@ -5,6 +5,80 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 474.0.0 (2024-04-30)
+
+### AI
+
+* Added more choice options to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tunining-jobs`, including: africa-south1, europe-west12, me-central1, me-central2 and us-east5.
+
+### AlloyDB
+
+* Updated `gcloud beta alloydb clusters create-secondary` to support automated
+backup policy.
+* Added flags `--maintenance-window-day` and `--maintenance-window-hour` to configure
+preferred maintenance window for a cluster to commands `gcloud alloydb clusters create` and `gcloud alloydb clusters update`.
+* Added flag `--maintenance-window-any` to remove preferred maintenance window
+for a cluster to `gcloud alloydb clusters update`.
+
+### Artifact Registry
+
+* Added `gcloud artifacts generic upload` to support uploading to a Generic Repository.
+* Added `gcloud artifacts generic download` to support downloading to a Generic Repository.
+
+### Cloud DNS
+
+* Modified `--description` flag of `gcloud dns managed-zones create` to be optional instead of required. If not set, the managed zone's description will be empty.
+
+### Cloud Monitoring
+
+* Added `--service-agent-auth` flag to `gcloud monitoring uptime` commands.
+
+### Compute Engine
+
+* Added `--tls-early-data` flag to `gcloud compute alpha/beta target-https-proxies create/update` to Tls Early Data field in Target Https Proxy.
+* Added `gcloud compute project-zonal-metadata` for managing project zonal
+metadata. Documentation of this feature is available at
+<https://cloud.google.com/compute/docs/metadata/setting-custom-metadata#set-custom-project-zonal-metadata>.
+* Promoted `--stack-type` flag of `gcloud compute interconnects attachments partner create` to GA. Flag defines the stack type of partner interconnect attachment.
+* Promoted `--stack-type` flag of `gcloud compute interconnects attachments partner update` to GA. Flag defines the stack type of interconnect attachment.
+* Added `producer-port` argument when creating PSC NEGs. This is an optional field, and used to specify the port the PSC NEG will consume traffic from the PSC Producer.
+* Promoted the flag of `--partner-metadata` and `--partner-metadata-from-file` to beta in:
+  * `gcloud compute instance-templates create`.
+  * `gcloud compute instances create`.
+  * `gcloud compute instances update`.
+* Promoted `gcloud compute instances add-partner-metadata` command to beta.
+* Promoted `gcloud compute instances patch-partner-metadata` command to beta.
+* Promoted `gcloud compute instances remove-partner-metadata` command to beta.
+* Promoted the flag of `--view` to beta in:
+  * `gcloud compute instance-templates list`
+  * `gcloud compute instance-templates describe`.
+  * `gcloud compute instances list`
+  * `gcloud compute instances describe`.
+
+### Firebase Test Lab
+
+* Promoted `--resign` flag of `gcloud firebase test android run` to GA. This
+  flag allows clients to specify if Robo should re-sign the app-under-test APK.
+
+### Kubernetes Engine
+
+* Updated kubectl versions:
+  * kubectl.1.26 (1.26.15)
+  * kubectl.1.27 (1.27.13)
+  * kubectl.1.28 (1.28.9)
+  * kubectl.1.29 (1.29.4)
+  * kubectl.1.30 (1.30.0)
+* Updated help text for `--cluster-ipv4-cidr` to clarify that this flag is not
+applicable in a Shared VPC setup.
+
+### Network Services
+
+* Promoted `gcloud network-services service-lb-policies` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 473.0.0 (2024-04-23)
 
 ### Breaking Changes

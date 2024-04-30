@@ -42,6 +42,13 @@ KUBERNETES_GPU_LIMITATION_MSG = (
     "https://cloud.google.com/kubernetes-engine/docs/how-to/gpus"
 )
 
+# TODO(b/335290129): Remove KUBERNETES_GPU_DRIVER_AUTO_INSTALL_MSG from cluster
+# and node pool create when majority of GPU node pools use auto install.
+KUBERNETES_GPU_DRIVER_AUTO_INSTALL_MSG = (
+    "Starting in GKE 1.30, if you don't specify a driver "
+    "version, GKE installs the default GPU driver for your node's GKE version."
+)
+
 USERNAME_PASSWORD_ERROR_MSG = (
     "Cannot specify --password with empty --username or --no-enable-basic-auth."
 )

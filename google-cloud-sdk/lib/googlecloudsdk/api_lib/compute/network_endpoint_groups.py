@@ -27,11 +27,14 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 class NetworkEndpointGroupsClient(object):
   """Client for network endpoint groups service in the GCE API."""
 
-  def __init__(self, client, messages, resources):
+  def __init__(
+      self, client, messages, resources, support_port_mapping_neg=False
+  ):
     self.client = client
     self.messages = messages
     self.resources = resources
     self._zonal_service = self.client.apitools_client.networkEndpointGroups
+    self.support_port_mapping_neg = support_port_mapping_neg
     if hasattr(self.client.apitools_client, 'globalNetworkEndpointGroups'):
       self._global_service = (
           self.client.apitools_client.globalNetworkEndpointGroups
@@ -46,6 +49,7 @@ class NetworkEndpointGroupsClient(object):
       neg_ref,
       network_endpoint_type,
       default_port=None,
+      producer_port=None,
       network=None,
       subnet=None,
       cloud_run_service=None,
@@ -162,16 +166,32 @@ class NetworkEndpointGroupsClient(object):
           and arg_utils.ChoiceToEnum(network_endpoint_type, endpoint_type_enum)
           == endpoint_type_enum.PRIVATE_SERVICE_CONNECT
       ):
-        network_endpoint_group = self.messages.NetworkEndpointGroup(
-            name=neg_ref.Name(),
-            networkEndpointType=arg_utils.ChoiceToEnum(
-                network_endpoint_type, endpoint_type_enum
-            ),
-            defaultPort=default_port,
-            network=network_uri,
-            subnetwork=subnet_uri,
-            pscTargetService=psc_target_service,
-        )
+        if producer_port:
+          psc_data = self.messages.NetworkEndpointGroupPscData(
+              producerPort=producer_port,
+          )
+          network_endpoint_group = self.messages.NetworkEndpointGroup(
+              name=neg_ref.Name(),
+              networkEndpointType=arg_utils.ChoiceToEnum(
+                  network_endpoint_type, endpoint_type_enum
+              ),
+              defaultPort=default_port,
+              pscData=psc_data,
+              network=network_uri,
+              subnetwork=subnet_uri,
+              pscTargetService=psc_target_service,
+          )
+        else:
+          network_endpoint_group = self.messages.NetworkEndpointGroup(
+              name=neg_ref.Name(),
+              networkEndpointType=arg_utils.ChoiceToEnum(
+                  network_endpoint_type, endpoint_type_enum
+              ),
+              defaultPort=default_port,
+              network=network_uri,
+              subnetwork=subnet_uri,
+              pscTargetService=psc_target_service,
+          )
       elif client_port_mapping_mode:
         client_port_mapping_mode_enum = (
             self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
@@ -190,6 +210,16 @@ class NetworkEndpointGroupsClient(object):
             clientPortMappingMode=arg_utils.ChoiceToEnum(
                 client_port_mapping_mode, client_port_mapping_mode_enum
             ),
+        )
+      elif is_port_mapping_neg:
+        network_endpoint_group = self.messages.NetworkEndpointGroup(
+            name=neg_ref.Name(),
+            networkEndpointType=arg_utils.ChoiceToEnum(
+                network_endpoint_type, endpoint_type_enum
+            ),
+            defaultPort=default_port,
+            network=network_uri,
+            subnetwork=subnet_uri,
         )
       else:
         network_endpoint_group = self.messages.NetworkEndpointGroup(
@@ -371,6 +401,10 @@ class NetworkEndpointGroupsClient(object):
         message_endpoint.fqdn = arg_endpoint.get('fqdn')
       if 'client-port' in arg_endpoint:
         message_endpoint.clientPort = arg_endpoint.get('client-port')
+      if 'client-destination-port' in arg_endpoint:
+        message_endpoint.clientDestinationPort = arg_endpoint.get(
+            'client-destination-port'
+        )
       output_list.append(message_endpoint)
 
     return output_list
@@ -473,23 +507,35 @@ class NetworkEndpointGroupsClient(object):
         endpoint_type_enum.INTERNET_IP_PORT,
     }
 
-  def _IsPortMappingNeg(self, network_endpoint_type, client_port_mapping_mode):
+  def _IsPortMappingNeg(
+      self,
+      network_endpoint_type,
+      client_port_mapping_mode,
+  ):
     """Checks if the NEG in the request is a Port Mapping NEG."""
-    if not client_port_mapping_mode:
-      return False
-
     endpoint_type_enum = (
         self.messages.NetworkEndpointGroup.NetworkEndpointTypeValueValuesEnum
     )
     endpoint_type_enum_value = arg_utils.ChoiceToEnum(
         network_endpoint_type, endpoint_type_enum
     )
+
+    if (
+        self.support_port_mapping_neg
+        and endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORTMAP
+    ):
+      return True
+
+    if not client_port_mapping_mode:
+      return False
+
     client_port_mapping_mode_enum = (
         self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
     )
     client_port_mapping_mode_enum_value = arg_utils.ChoiceToEnum(
         client_port_mapping_mode, client_port_mapping_mode_enum
     )
+
     return (
         endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORT
         and client_port_mapping_mode_enum_value

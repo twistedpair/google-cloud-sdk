@@ -132,9 +132,9 @@ class TransactionOptions(proto.Message):
 
     Note that the lock priority is preserved per session (not per
     transaction). Lock priority is set by the first read or write in the
-    first attempt of a read-write transaction. If the application opts a
-    new session to retry the whole transaction, the transaction will
-    lose its original lock priority. Moreover, the lock priority is only
+    first attempt of a read-write transaction. If the application starts
+    a new session to retry the whole transaction, the transaction loses
+    its original lock priority. Moreover, the lock priority is only
     preserved if the transaction fails with an ``ABORTED`` error.
 
     Under some circumstances (for example, many transactions attempting
@@ -345,11 +345,11 @@ class TransactionOptions(proto.Message):
        updated atomically with the base table rows.
 
     -  Partitioned DML does not guarantee exactly-once execution
-       semantics against a partition. The statement will be applied at
-       least once to each partition. It is strongly recommended that the
-       DML statement should be idempotent to avoid unexpected results.
-       For instance, it is potentially dangerous to run a statement such
-       as ``UPDATE table SET column = column + 1`` as it could be run
+       semantics against a partition. The statement is applied at least
+       once to each partition. It is strongly recommended that the DML
+       statement should be idempotent to avoid unexpected results. For
+       instance, it is potentially dangerous to run a statement such as
+       ``UPDATE table SET column = column + 1`` as it could be run
        multiple times against some rows.
 
     -  The partitions are committed automatically - there is no support

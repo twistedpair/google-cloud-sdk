@@ -524,10 +524,10 @@ def AddAcceleratorArgs(
 
       *gpu-driver-version*::: (Optional) The NVIDIA driver version to install. GPU_DRIVER_VERSION must be one of:
 
-        `default`: Install the default driver version.
+        `default`: Install the default driver version for this GKE version.
 
-        `latest`: Install the latest available driver version. Available only for
-        nodes that use Container-Optimized OS.
+        `latest`: Install the latest driver version available for this GKE version.
+        Can only be used for nodes that use Container-Optimized OS.
 
         `disabled`: Skip automatic driver installation. You must manually install a
         driver after you create the cluster. If you omit the flag `gpu-driver-version`,
@@ -3464,6 +3464,7 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
           api_adapter.STATEFULHA,
           # TODO(b/314808639): Remove at AGA time
           api_adapter.PARALLELSTORECSIDRIVER,
+          api_adapter.RAYOPERATOR,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -5060,9 +5061,9 @@ Examples:
       sysctl:
         net.core.somaxconn: '2048'
         net.ipv4.tcp_rmem: '4096 87380 6291456'
-    hugepageConfig:
-      hugepage_size2m: '1024'
-      hugepage_size1g: '2'
+      hugepageConfig:
+        hugepage_size2m: '1024'
+        hugepage_size1g: '2'
 
 List of supported kubelet configs in 'kubeletConfig'.
 
@@ -6337,6 +6338,26 @@ def AddEnableBackupRestoreFlag(parser):
       default=None,
       help=help_text,
       hidden=False,
+  )
+
+
+def AddEnableRayOperatorFlag(parser, hidden=True):
+  """Adds --enable-ray-operator flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+  """
+
+  help_text = """\
+    Enable the Ray Operator GKE add-on. This add-on is disabled by default.
+    """
+  parser.add_argument(
+      '--enable-ray-operator',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
   )
 
 

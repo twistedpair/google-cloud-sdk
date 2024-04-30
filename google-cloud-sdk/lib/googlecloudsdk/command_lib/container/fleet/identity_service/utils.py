@@ -19,11 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core import log
 import urllib3
 
 # The max number of auth methods allowed per config.
 MAX_AUTH_PROVIDERS = 20
+
+# The min and max lifetime of tokens issued by AIS.
+SESSION_DURATION_MIN = 15  # minutes
+SESSION_DURATION_MAX = 1440  # minutes
 
 
 def parse_config(loaded_config, msg):
@@ -45,44 +48,149 @@ def parse_config(loaded_config, msg):
     raise exceptions.Error('Input config file must contain one YAML document.')
   clientconfig = loaded_config.data[0]
   validate_clientconfig_meta(clientconfig)
-  auth_providers = clientconfig.GetAuthProviders(name_only=False)
+  auth_methods = get_auth_methods(clientconfig)
+  identity_service_options = get_identity_service_options(clientconfig)
 
-  # Don't accept configs containing more auth providers than MAX_AUTH_PROVIDERS
-  auth_providers_count = len(auth_providers)
-  if auth_providers_count > MAX_AUTH_PROVIDERS:
+  if auth_methods is None and identity_service_options is None:
+    raise exceptions.Error(
+        "A valid 'spec.identityServiceOptions' or 'spec.authentication' must be"
+        ' provided'
+    )
+
+  member_config = msg.IdentityServiceMembershipSpec()
+  member_config.identityServiceOptions = (
+      validate_and_construct_identity_service_options_proto(
+          identity_service_options, msg
+      )
+  )
+  member_config.authMethods = validate_and_construct_auth_methods_proto(
+      auth_methods, msg
+  )
+  return member_config
+
+
+def get_identity_service_options(clientconfig):
+  spec = clientconfig['spec']
+  if spec is None or 'identityServiceOptions' not in spec:
+    return None
+  if not spec['identityServiceOptions']:
+    raise exceptions.Error(
+        "Must provide a valid option under 'spec.identityServiceOptions'"
+    )
+  return spec['identityServiceOptions']
+
+
+def validate_and_construct_identity_service_options_proto(
+    identity_service_options_config, msg
+):
+  """Constructs an IdentityServiceMembershipSpec.IdentityServiceIdentityServiceOptions instance from the provided `identity_service_options_config` config.
+
+  Args:
+    identity_service_options_config: a map of non-protocol-related configuration
+      options from the applied configuration.
+    msg: The gkehub message package
+
+  Returns:
+    an instance of
+    IdentityServiceMembershipSpec.IdentityServiceIdentityServiceOptions
+
+  Raises:
+    exceptions.Error: if an unsupported option is found under
+    `spec.IdentityServiceOptions`
+  """
+  if identity_service_options_config is None:
+    return None
+  supported_options = {'sessionDuration': parse_session_duration}
+  identity_service_options_proto = msg.IdentityServiceIdentityServiceOptions()
+  for option in identity_service_options_config:
+    if option not in supported_options:
+      raise exceptions.Error(
+          "Invalid option '{}' provided under 'spec.identityServiceOptions'"
+          .format(option)
+      )
+    setattr(
+        identity_service_options_proto,
+        option,
+        supported_options[option](identity_service_options_config),
+    )
+  return identity_service_options_proto
+
+
+def parse_session_duration(identity_service_options_config):
+  session_duration = identity_service_options_config['sessionDuration']
+  if not isinstance(session_duration, int) or (
+      session_duration < SESSION_DURATION_MIN
+      or session_duration > SESSION_DURATION_MAX
+  ):
+    raise exceptions.Error(
+        "'spec.identityServiceOptions.sessionDuration' must be an integer"
+        ' between {} and {}.'.format(SESSION_DURATION_MIN, SESSION_DURATION_MAX)
+    )
+  return str(session_duration * 60) + 's'
+
+
+def get_auth_methods(clientconfig):
+  spec = clientconfig['spec']
+  if spec is None or 'authentication' not in spec:
+    return None
+  if not spec['authentication']:
+    raise exceptions.Error(
+        "Must provide a valid configuration under 'spec.authentication'"
+    )
+  return spec['authentication']
+
+
+def validate_and_construct_auth_methods_proto(auth_methods_config, msg):
+  """Constructs a list of IdentityServiceMembershipSpec.IdentityServiceAuthMethod from the given auth methods config.
+
+  Args:
+    auth_methods_config: A list of providers from the applied configuration
+    msg: The GKE Hub message package
+
+  Returns:
+    a list of
+    IdentityServiceMembershipSpec.IdentityServiceAuthMethod
+
+  Raises:
+    exceptions.Error: if the provided config is invalid
+  """
+  if auth_methods_config is None:
+    return []
+  # Don't accept configs containing more auth methods than MAX_AUTH_METHODS
+  auth_methods_count = len(auth_methods_config)
+  if auth_methods_count > MAX_AUTH_PROVIDERS:
     err_msg = (
         'The provided configuration contains {} identity providers. '
         'The maximum number that can be provided is {}.'
-    ).format(auth_providers_count, MAX_AUTH_PROVIDERS)
+    ).format(auth_methods_count, MAX_AUTH_PROVIDERS)
     raise exceptions.Error(err_msg)
-
-  # Create empty MemberConfig and populate it with Auth_Provider configurations.
-  member_config = msg.IdentityServiceMembershipSpec()
-  # The config must contain at least one auth method
-  found_auth_method = False
-  providers = {
+  supported_protocols = {
       'oidc': provision_oidc_config,
       'google': provision_google_config,
       'azureAD': provision_azuread_config,
       'saml': provision_saml_config,
       'ldap': provision_ldap_config,
   }
-  for auth_provider in auth_providers:
-    for provider_name in providers:
-      if provider_name in auth_provider:
-        found_auth_method = True
-        auth_method = providers[provider_name](auth_provider, msg)
-        member_config.authMethods.append(auth_method)
-        break
-    if not found_auth_method:
-      status_msg = (
-          'Authentication method [{}] is not supported, skipping to the next.'
-      ).format(auth_provider['name'])
-      log.status.Print(status_msg)
-  if not found_auth_method:
-    raise exceptions.Error(
-        'No supported authentication method is present in the provided config.')
-  return member_config
+  auth_method_meta = {'name', 'proxy'}
+  auth_methods_proto = []
+  for auth_method_config in auth_methods_config:
+    protocols = [
+        key for key in auth_method_config.keys() if key not in auth_method_meta
+    ]
+    if len(protocols) != 1:
+      raise exceptions.Error(
+          'Exactly one identity protocol can be configured per authentication'
+          ' method'
+      )
+    protocol = protocols[0]
+    if protocol not in supported_protocols:
+      raise exceptions.Error(
+          'Unsupported identity protocol [{}] found under'
+          " 'spec.authentication'.".format(protocol)
+      )
+    auth_method = supported_protocols[protocol](auth_method_config, msg)
+    auth_methods_proto.append(auth_method)
+  return auth_methods_proto
 
 
 def validate_clientconfig_meta(clientconfig):
@@ -91,9 +199,8 @@ def validate_clientconfig_meta(clientconfig):
   Args:
     clientconfig: The data field of the YamlConfigFile.
   """
-
   if 'spec' not in clientconfig:
-    raise exceptions.Error('Missing required field .spec')
+    raise exceptions.Error("Missing required field 'spec'.")
 
 
 def provision_ldap_server_config(ldap_server_config, msg):

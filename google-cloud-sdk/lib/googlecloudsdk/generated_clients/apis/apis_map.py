@@ -1043,18 +1043,6 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'cloudiot': {
-        'v1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.cloudiot.v1',
-                    client_classpath='cloudiot_v1_client.CloudiotV1',
-                    base_url='https://cloudiot.googleapis.com/',
-                    messages_modulepath='cloudiot_v1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
     'cloudkms': {
         'v1':
             APIDef(
@@ -2247,6 +2235,16 @@ MAP = {
                     client_classpath='iam_v2beta_client.IamV2beta',
                     base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v2beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v3alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.iam.v3alpha',
+                    client_classpath='iam_v3alpha_client.IamV3alpha',
+                    base_url='https://iam.googleapis.com/',
+                    messages_modulepath='iam_v3alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

@@ -2491,15 +2491,15 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     projectDisplayName: The project ID that the resource belongs to.
     resourcePath: Provides the path to the resource within the resource
       hierarchy.
-    resourcePathString: A string representation of the resource path. For GCP,
-      it has the format of: organizations/{organization_id}/folders/{folder_id
-      }/folders/{folder_id}/projects/{project_id} where there can be any
-      number of folders. For AWS, it has the format of: org/{organization_id}/
-      ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account
-      _id} where there can be any number of organizational units. For Azure,
-      it has the format of: mg/{management_group_id}/mg/{management_group_id}/
-      subscription/{subscription_id}/rg/{resource_group_name} where there can
-      be any number of management groups.
+    resourcePathString: A string representation of the resource path. For
+      Google Cloud, it has the format of organizations/{organization_id}/folde
+      rs/{folder_id}/folders/{folder_id}/projects/{project_id} where there can
+      be any number of folders. For AWS, it has the format of org/{organizatio
+      n_id}/ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{a
+      ccount_id} where there can be any number of organizational units. For
+      Azure, it has the format of mg/{management_group_id}/mg/{management_grou
+      p_id}/subscription/{subscription_id}/rg/{resource_group_name} where
+      there can be any number of management groups.
     service: The parent service or product from which the resource is
       provided, for example, GKE or SNS.
     type: The full resource type of the resource.
@@ -5489,15 +5489,15 @@ class GoogleCloudSecuritycenterV2Resource(_messages.Message):
       https://cloud.google.com/apis/design/resource_names#full_resource_name
     resourcePath: Provides the path to the resource within the resource
       hierarchy.
-    resourcePathString: A string representation of the resource path. For GCP,
-      it has the format of: organizations/{organization_id}/folders/{folder_id
-      }/folders/{folder_id}/projects/{project_id} where there can be any
-      number of folders. For AWS, it has the format of: org/{organization_id}/
-      ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account
-      _id} where there can be any number of organizational units. For Azure,
-      it has the format of: mg/{management_group_id}/mg/{management_group_id}/
-      subscription/{subscription_id}/rg/{resource_group_name} where there can
-      be any number of management groups.
+    resourcePathString: A string representation of the resource path. For
+      Google Cloud, it has the format of organizations/{organization_id}/folde
+      rs/{folder_id}/folders/{folder_id}/projects/{project_id} where there can
+      be any number of folders. For AWS, it has the format of org/{organizatio
+      n_id}/ou/{organizational_unit_id}/ou/{organizational_unit_id}/account/{a
+      ccount_id} where there can be any number of organizational units. For
+      Azure, it has the format of mg/{management_group_id}/mg/{management_grou
+      p_id}/subscription/{subscription_id}/rg/{resource_group_name} where
+      there can be any number of management groups.
     service: The service or resource provider associated with the resource.
     type: The full resource type of the resource.
   """
@@ -5558,9 +5558,9 @@ class GoogleCloudSecuritycenterV2ResourcePathNode(_messages.Message):
 
     Values:
       RESOURCE_PATH_NODE_TYPE_UNSPECIFIED: Node type is unspecified.
-      GCP_ORGANIZATION: The node represents a GCP organization.
-      GCP_FOLDER: The node represents a GCP folder.
-      GCP_PROJECT: The node represents a GCP project.
+      GCP_ORGANIZATION: The node represents a Google Cloud organization.
+      GCP_FOLDER: The node represents a Google Cloud folder.
+      GCP_PROJECT: The node represents a Google Cloud project.
       AWS_ORGANIZATION: The node represents an AWS organization.
       AWS_ORGANIZATIONAL_UNIT: The node represents an AWS organizational unit.
       AWS_ACCOUNT: The node represents an AWS account.
@@ -7641,15 +7641,15 @@ class Resource(_messages.Message):
       to.
     resourcePath: Provides the path to the resource within the resource
       hierarchy.
-    resourcePathString: A string representation of the resource path. For GCP,
-      it has the format of: org/{organization_id}/folder/{folder_id}/folder/{f
-      older_id}/project/{project_id} where there can be any number of folders.
-      For AWS, it has the format of: org/{organization_id}/ou/{organizational_
-      unit_id}/ou/{organizational_unit_id}/account/{account_id} where there
-      can be any number of organizational units. For Azure, it has the format
-      of: mg/{management_group_id}/mg/{management_group_id}/subscription/{subs
-      cription_id}/rg/{resource_group_name} where there can be any number of
-      management groups.
+    resourcePathString: A string representation of the resource path. For
+      Google Cloud, it has the format of org/{organization_id}/folder/{folder_
+      id}/folder/{folder_id}/project/{project_id} where there can be any
+      number of folders. For AWS, it has the format of org/{organization_id}/o
+      u/{organizational_unit_id}/ou/{organizational_unit_id}/account/{account_
+      id} where there can be any number of organizational units. For Azure, it
+      has the format of mg/{management_group_id}/mg/{management_group_id}/subs
+      cription/{subscription_id}/rg/{resource_group_name} where there can be
+      any number of management groups.
     service: The service or resource provider associated with the resource.
     type: The full resource type of the resource.
   """
@@ -7715,9 +7715,9 @@ class ResourcePathNode(_messages.Message):
 
     Values:
       RESOURCE_PATH_NODE_TYPE_UNSPECIFIED: Node type is unspecified.
-      GCP_ORGANIZATION: The node represents a GCP organization.
-      GCP_FOLDER: The node represents a GCP folder.
-      GCP_PROJECT: The node represents a GCP project.
+      GCP_ORGANIZATION: The node represents a Google Cloud organization.
+      GCP_FOLDER: The node represents a Google Cloud folder.
+      GCP_PROJECT: The node represents a Google Cloud project.
       AWS_ORGANIZATION: The node represents an AWS organization.
       AWS_ORGANIZATIONAL_UNIT: The node represents an AWS organizational unit.
       AWS_ACCOUNT: The node represents an AWS account.

@@ -117,3 +117,24 @@ def SynthesizeBootstrapAddr(response, cluster):
   synthesized = core.resource.resource_projector.MakeSerializable(response)
   synthesized["bootstrapAddress"] = bootstrap
   return synthesized
+
+
+def UpdateTopics(_, args, request):
+  """Load the topics JSON from the argument to the request.
+
+  Args:
+    _:  resource parameter required but unused variable.
+    args: list of flags.
+    request:  the payload to return.
+
+  Returns:
+    The updated request with topics.
+  """
+  topics = core.yaml.load(args.topics_file)
+  request.consumerGroup = {
+      "topics": encoding.DictToMessage(
+          topics, _MESSAGE.ConsumerGroup.TopicsValue
+      )
+  }
+  request.updateMask = "topics"
+  return request

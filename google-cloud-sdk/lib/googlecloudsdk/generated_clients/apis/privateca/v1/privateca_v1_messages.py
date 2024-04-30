@@ -481,6 +481,8 @@ class CertificateAuthority(_messages.Message):
       such that the root issuer is the final element (consistent with RFC
       5246). For a self-signed CA, this will only list the current
       CertificateAuthority's certificate.
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The State for this CertificateAuthority.
     subordinateConfig: Optional. If this is a subordinate
       CertificateAuthority, this field will be set with the subordinate
@@ -586,11 +588,13 @@ class CertificateAuthority(_messages.Message):
   lifetime = _messages.StringField(10)
   name = _messages.StringField(11)
   pemCaCertificates = _messages.StringField(12, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  subordinateConfig = _messages.MessageField('SubordinateConfig', 14)
-  tier = _messages.EnumField('TierValueValuesEnum', 15)
-  type = _messages.EnumField('TypeValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
+  satisfiesPzi = _messages.BooleanField(13)
+  satisfiesPzs = _messages.BooleanField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  subordinateConfig = _messages.MessageField('SubordinateConfig', 16)
+  tier = _messages.EnumField('TierValueValuesEnum', 17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
 
 
 class CertificateConfig(_messages.Message):

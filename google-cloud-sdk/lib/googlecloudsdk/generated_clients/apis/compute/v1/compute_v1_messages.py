@@ -1717,7 +1717,7 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
 
 class AllocationSpecificSKUReservation(_messages.Message):
   r"""This reservation type allows to pre allocate specific instance
-  configuration. Next ID: 6
+  configuration.
 
   Fields:
     assuredCount: [Output Only] Indicates how many instances are actually
@@ -36492,6 +36492,14 @@ class ForwardingRule(_messages.Message):
       make a get() request to retrieve a ForwardingRule.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipCollection: Resource reference of a PublicDelegatedPrefix. The PDP must
+      be a sub-PDP in EXTERNAL_IPV6_FORWARDING_RULE_CREATION mode. Use one of
+      the following formats to specify a sub-PDP when creating an IPv6 NetLB
+      forwarding rule using BYOIP: Full resource URL, as in
+      https://www.googleapis.com/compute/v1/projects/project_id/regions/region
+      /publicDelegatedPrefixes/sub-pdp-name Partial URL, as in: -
+      projects/project_id/regions/region/publicDelegatedPrefixes/sub-pdp-name
+      - regions/region/publicDelegatedPrefixes/sub-pdp-name
     ipVersion: The IP Version that will be used by this forwarding rule. Valid
       options are IPV4 or IPV6.
     isMirroringCollector: Indicates whether or not this load balancer can be
@@ -36776,29 +36784,30 @@ class ForwardingRule(_messages.Message):
   description = _messages.StringField(9)
   fingerprint = _messages.BytesField(10)
   id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 12)
-  isMirroringCollector = _messages.BooleanField(13)
-  kind = _messages.StringField(14, default='compute#forwardingRule')
-  labelFingerprint = _messages.BytesField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 17)
-  metadataFilters = _messages.MessageField('MetadataFilter', 18, repeated=True)
-  name = _messages.StringField(19)
-  network = _messages.StringField(20)
-  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 21)
-  noAutomateDnsZone = _messages.BooleanField(22)
-  portRange = _messages.StringField(23)
-  ports = _messages.StringField(24, repeated=True)
-  pscConnectionId = _messages.IntegerField(25, variant=_messages.Variant.UINT64)
-  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 26)
-  region = _messages.StringField(27)
-  selfLink = _messages.StringField(28)
-  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 29, repeated=True)
-  serviceLabel = _messages.StringField(30)
-  serviceName = _messages.StringField(31)
-  sourceIpRanges = _messages.StringField(32, repeated=True)
-  subnetwork = _messages.StringField(33)
-  target = _messages.StringField(34)
+  ipCollection = _messages.StringField(12)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 13)
+  isMirroringCollector = _messages.BooleanField(14)
+  kind = _messages.StringField(15, default='compute#forwardingRule')
+  labelFingerprint = _messages.BytesField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 18)
+  metadataFilters = _messages.MessageField('MetadataFilter', 19, repeated=True)
+  name = _messages.StringField(20)
+  network = _messages.StringField(21)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 22)
+  noAutomateDnsZone = _messages.BooleanField(23)
+  portRange = _messages.StringField(24)
+  ports = _messages.StringField(25, repeated=True)
+  pscConnectionId = _messages.IntegerField(26, variant=_messages.Variant.UINT64)
+  pscConnectionStatus = _messages.EnumField('PscConnectionStatusValueValuesEnum', 27)
+  region = _messages.StringField(28)
+  selfLink = _messages.StringField(29)
+  serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 30, repeated=True)
+  serviceLabel = _messages.StringField(31)
+  serviceName = _messages.StringField(32)
+  sourceIpRanges = _messages.StringField(33, repeated=True)
+  subnetwork = _messages.StringField(34)
+  target = _messages.StringField(35)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -57106,7 +57115,7 @@ class PacketMirroring(_messages.Message):
     enable: Indicates whether or not this packet mirroring takes effect. If
       set to FALSE, this packet mirroring policy will not be enforced on the
       network. The default is TRUE.
-    filter: Filter for mirrored traffic. If unspecified, all traffic is
+    filter: Filter for mirrored traffic. If unspecified, all IPv4 traffic is
       mirrored.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
@@ -57364,7 +57373,7 @@ class PacketMirroringFilter(_messages.Message):
       protocols are specified, all traffic that matches the specified CIDR
       ranges is mirrored. If neither cidrRanges nor IPProtocols is specified,
       all IPv4 traffic is mirrored.
-    cidrRanges: One or more IPv4 or IPv6 CIDR ranges that apply as filter on
+    cidrRanges: One or more IPv4 or IPv6 CIDR ranges that apply as filters on
       the source (ingress) or destination (egress) IP in the IP header. If no
       ranges are specified, all IPv4 traffic that matches the specified
       IPProtocols is mirrored. If neither cidrRanges nor IPProtocols is
@@ -58866,6 +58875,7 @@ class PublicDelegatedPrefix(_messages.Message):
 
   Enums:
     ByoipApiVersionValueValuesEnum: [Output Only] The version of BYOIP API.
+    ModeValueValuesEnum: The public delegated prefix mode for IPv6 only.
     StatusValueValuesEnum: [Output Only] The status of the public delegated
       prefix, which can be one of following values: - `INITIALIZING` The
       public delegated prefix is being initialized and addresses cannot be
@@ -58875,6 +58885,10 @@ class PublicDelegatedPrefix(_messages.Message):
       deprovsioned.
 
   Fields:
+    allocatablePrefixLength: The allocatable prefix length supported by this
+      public delegated prefix. This field is optional and cannot be set for
+      prefixes in DELEGATION mode. It cannot be set for IPv4 prefixes either,
+      and it always defaults to 32.
     byoipApiVersion: [Output Only] The version of BYOIP API.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -58894,6 +58908,7 @@ class PublicDelegatedPrefix(_messages.Message):
     isLiveMigration: If true, the prefix will be live migrated.
     kind: [Output Only] Type of the resource. Always
       compute#publicDelegatedPrefix for public delegated prefixes.
+    mode: The public delegated prefix mode for IPv6 only.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -58931,6 +58946,19 @@ class PublicDelegatedPrefix(_messages.Message):
     V1 = 0
     V2 = 1
 
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The public delegated prefix mode for IPv6 only.
+
+    Values:
+      DELEGATION: The public delegated prefix is used for further sub-
+        delegation only. Such prefixes cannot set allocatablePrefixLength.
+      EXTERNAL_IPV6_FORWARDING_RULE_CREATION: The public delegated prefix is
+        used for creating forwarding rules only. Such prefixes cannot set
+        publicDelegatedSubPrefixes.
+    """
+    DELEGATION = 0
+    EXTERNAL_IPV6_FORWARDING_RULE_CREATION = 1
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the public delegated prefix, which can be
     one of following values: - `INITIALIZING` The public delegated prefix is
@@ -58957,20 +58985,22 @@ class PublicDelegatedPrefix(_messages.Message):
     INITIALIZING = 4
     READY_TO_ANNOUNCE = 5
 
-  byoipApiVersion = _messages.EnumField('ByoipApiVersionValueValuesEnum', 1)
-  creationTimestamp = _messages.StringField(2)
-  description = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(6)
-  isLiveMigration = _messages.BooleanField(7)
-  kind = _messages.StringField(8, default='compute#publicDelegatedPrefix')
-  name = _messages.StringField(9)
-  parentPrefix = _messages.StringField(10)
-  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 11, repeated=True)
-  region = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  allocatablePrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  byoipApiVersion = _messages.EnumField('ByoipApiVersionValueValuesEnum', 2)
+  creationTimestamp = _messages.StringField(3)
+  description = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(7)
+  isLiveMigration = _messages.BooleanField(8)
+  kind = _messages.StringField(9, default='compute#publicDelegatedPrefix')
+  mode = _messages.EnumField('ModeValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  parentPrefix = _messages.StringField(12)
+  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 13, repeated=True)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
 
 
 class PublicDelegatedPrefixAggregatedList(_messages.Message):
@@ -59332,10 +59362,13 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
   r"""Represents a sub PublicDelegatedPrefix.
 
   Enums:
+    ModeValueValuesEnum: The PublicDelegatedSubPrefix mode for IPv6 only.
     StatusValueValuesEnum: [Output Only] The status of the sub public
       delegated prefix.
 
   Fields:
+    allocatablePrefixLength: The allocatable prefix length supported by this
+      PublicDelegatedSubPrefix.
     delegateeProject: Name of the project scoping this
       PublicDelegatedSubPrefix.
     description: An optional description of this resource. Provide this
@@ -59344,11 +59377,25 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
       public delegated prefix.
     isAddress: Whether the sub prefix is delegated to create Address resources
       in the delegatee project.
+    mode: The PublicDelegatedSubPrefix mode for IPv6 only.
     name: The name of the sub public delegated prefix.
     region: [Output Only] The region of the sub public delegated prefix if it
       is regional. If absent, the sub prefix is global.
     status: [Output Only] The status of the sub public delegated prefix.
   """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""The PublicDelegatedSubPrefix mode for IPv6 only.
+
+    Values:
+      DELEGATION: The public delegated prefix is used for further sub-
+        delegation only. Such prefixes cannot set allocatablePrefixLength.
+      EXTERNAL_IPV6_FORWARDING_RULE_CREATION: The public delegated prefix is
+        used for creating forwarding rules only. Such prefixes cannot set
+        publicDelegatedSubPrefixes.
+    """
+    DELEGATION = 0
+    EXTERNAL_IPV6_FORWARDING_RULE_CREATION = 1
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the sub public delegated prefix.
@@ -59360,13 +59407,15 @@ class PublicDelegatedPrefixPublicDelegatedSubPrefix(_messages.Message):
     ACTIVE = 0
     INACTIVE = 1
 
-  delegateeProject = _messages.StringField(1)
-  description = _messages.StringField(2)
-  ipCidrRange = _messages.StringField(3)
-  isAddress = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  region = _messages.StringField(6)
-  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  allocatablePrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  delegateeProject = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ipCidrRange = _messages.StringField(4)
+  isAddress = _messages.BooleanField(5)
+  mode = _messages.EnumField('ModeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  region = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
 
 
 class PublicDelegatedPrefixesScopedList(_messages.Message):
@@ -59682,6 +59731,7 @@ class Quota(_messages.Message):
       SNAPSHOTS: The total number of snapshots allowed for a single project.
       SSD_TOTAL_GB: <no description>
       SSL_CERTIFICATES: <no description>
+      SSL_POLICIES: <no description>
       STATIC_ADDRESSES: <no description>
       STATIC_BYOIP_ADDRESSES: <no description>
       STATIC_EXTERNAL_IPV6_ADDRESS_RANGES: <no description>
@@ -59845,26 +59895,27 @@ class Quota(_messages.Message):
     SNAPSHOTS = 139
     SSD_TOTAL_GB = 140
     SSL_CERTIFICATES = 141
-    STATIC_ADDRESSES = 142
-    STATIC_BYOIP_ADDRESSES = 143
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 144
-    SUBNETWORKS = 145
-    T2A_CPUS = 146
-    T2D_CPUS = 147
-    TARGET_HTTPS_PROXIES = 148
-    TARGET_HTTP_PROXIES = 149
-    TARGET_INSTANCES = 150
-    TARGET_POOLS = 151
-    TARGET_SSL_PROXIES = 152
-    TARGET_TCP_PROXIES = 153
-    TARGET_VPN_GATEWAYS = 154
-    TPU_LITE_DEVICE_V5 = 155
-    TPU_LITE_PODSLICE_V5 = 156
-    TPU_PODSLICE_V4 = 157
-    URL_MAPS = 158
-    VPN_GATEWAYS = 159
-    VPN_TUNNELS = 160
-    XPN_SERVICE_PROJECTS = 161
+    SSL_POLICIES = 142
+    STATIC_ADDRESSES = 143
+    STATIC_BYOIP_ADDRESSES = 144
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 145
+    SUBNETWORKS = 146
+    T2A_CPUS = 147
+    T2D_CPUS = 148
+    TARGET_HTTPS_PROXIES = 149
+    TARGET_HTTP_PROXIES = 150
+    TARGET_INSTANCES = 151
+    TARGET_POOLS = 152
+    TARGET_SSL_PROXIES = 153
+    TARGET_TCP_PROXIES = 154
+    TARGET_VPN_GATEWAYS = 155
+    TPU_LITE_DEVICE_V5 = 156
+    TPU_LITE_PODSLICE_V5 = 157
+    TPU_PODSLICE_V4 = 158
+    URL_MAPS = 159
+    VPN_GATEWAYS = 160
+    VPN_TUNNELS = 161
+    XPN_SERVICE_PROJECTS = 162
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

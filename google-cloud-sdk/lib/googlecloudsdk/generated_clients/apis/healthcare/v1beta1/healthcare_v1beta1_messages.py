@@ -2485,6 +2485,46 @@ class ExportMessagesResponse(_messages.Message):
 
 
 
+class ExportResourcesHistoryRequest(_messages.Message):
+  r"""Request to export the history of resources.
+
+  Fields:
+    _since: If provided, only resources versions updated after this time are
+      exported. The time uses the format YYYY-MM-DDThh:mm:ss.sss+zz:zz. For
+      example, `2015-02-07T13:28:17.239+02:00` or `2017-01-01T00:00:00Z`. The
+      time must be specified to the second and include a time zone.
+    _type: String of comma-delimited FHIR resource types. If provided, only
+      resources of the specified resource type(s) are exported.
+    bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
+      Service Agent requires two IAM roles on the BigQuery location:
+      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
+      one BigQuery table per resource type. Unlike when setting
+      `BigQueryDestination` for `StreamConfig`, `ExportResources` does not
+      create BigQuery views.
+    gcsDestination: The Cloud Storage output destination. The Healthcare
+      Service Agent account requires the `roles/storage.objectAdmin` role on
+      the Cloud Storage location. The exported outputs are organized by FHIR
+      resource types. The server creates one or more objects per resource type
+      depending on the volume of the resources exported. When there is only
+      one object per resource type, the object name is in the form of
+      `{operation_id})_history_{resource_type}`. When there are multiple
+      objects for a given resource type, the object names are in the form of
+      `{operation_id}_history_{resource_type}-{index}-of-{total}`. Each object
+      contains newline delimited JSON, and each line is a FHIR history bundle
+      containing the history for a single resource.
+    maxResourceVersions: If provided and non-zero, places a limit on the
+      number of resource versions that are returned for a given resource. For
+      example, if the limit is `100` and a resource has over 100 versions,
+      only the 100 most recent versions will be returned. Must be positive.
+  """
+
+  _since = _messages.StringField(1)
+  _type = _messages.StringField(2)
+  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 3)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 4)
+  maxResourceVersions = _messages.IntegerField(5)
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
@@ -5511,6 +5551,22 @@ class HealthcareProjectsLocationsDatasetsFhirStoresExplainDataAccessRequest(_mes
   resourceId = _messages.StringField(2)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresExportHistoryRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresExportHistoryRequest
+  object.
+
+  Fields:
+    exportResourcesHistoryRequest: A ExportResourcesHistoryRequest resource to
+      be passed as the request body.
+    name: Required. The name of the FHIR store to export resource from, in the
+      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
+      id}/fhirStores/{fhir_store_id}`.
+  """
+
+  exportResourcesHistoryRequest = _messages.MessageField('ExportResourcesHistoryRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresExportRequest object.
 
@@ -6010,6 +6066,22 @@ class HealthcareProjectsLocationsDatasetsFhirStoresGetRequest(_messages.Message)
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsFhirStoresImportHistoryRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresImportHistoryRequest
+  object.
+
+  Fields:
+    importResourcesHistoryRequest: A ImportResourcesHistoryRequest resource to
+      be passed as the request body.
+    name: Required. The name of the FHIR store to import FHIR resources to, in
+      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/fhirStores/{fhir_store_id}`.
+  """
+
+  importResourcesHistoryRequest = _messages.MessageField('ImportResourcesHistoryRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsFhirStoresImportRequest(_messages.Message):
@@ -7222,6 +7294,57 @@ class ImportMessagesResponse(_messages.Message):
   operation finishes successfully.
   """
 
+
+
+class ImportResourcesHistoryRequest(_messages.Message):
+  r"""Request to import the history of resources.
+
+  Enums:
+    ContentStructureValueValuesEnum: The content structure in the source
+      location. If not specified, the server treats the input source files as
+      BUNDLE.
+
+  Fields:
+    contentStructure: The content structure in the source location. If not
+      specified, the server treats the input source files as BUNDLE.
+    gcsSource: Cloud Storage source data location and import configuration.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectAdmin` Cloud IAM roles on the Cloud Storage
+      location. The Healthcare Service Agent Each Cloud Storage object should
+      be a text file that contains the format specified in ContentStructure.
+    maxErrorCount: The maximum number of errors before the server cancels the
+      operation. If not specified or set to 0, defaults to 100. -1 means no
+      maximum, the server tries to process all input. Since the server
+      executes the operation in parallel, it might not stop the operation
+      after exactly this number of errors occur.
+  """
+
+  class ContentStructureValueValuesEnum(_messages.Enum):
+    r"""The content structure in the source location. If not specified, the
+    server treats the input source files as BUNDLE.
+
+    Values:
+      CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
+        specified, the default value `BUNDLE` is used.
+      BUNDLE: The source file contains one or more lines of newline-delimited
+        JSON (ndjson). Each line is a bundle that contains one or more
+        resources.
+      RESOURCE: The source file contains one or more lines of newline-
+        delimited JSON (ndjson). Each line is a single resource.
+      BUNDLE_PRETTY: The entire file is one JSON bundle. The JSON can span
+        multiple lines.
+      RESOURCE_PRETTY: The entire file is one JSON resource. The JSON can span
+        multiple lines.
+    """
+    CONTENT_STRUCTURE_UNSPECIFIED = 0
+    BUNDLE = 1
+    RESOURCE = 2
+    BUNDLE_PRETTY = 3
+    RESOURCE_PRETTY = 4
+
+  contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsSource', 2)
+  maxErrorCount = _messages.IntegerField(3)
 
 
 class ImportResourcesRequest(_messages.Message):

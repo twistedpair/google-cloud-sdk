@@ -69,6 +69,48 @@ def AddQuicOverrideUpdateArgs(parser):
   AddQuicOverrideCreateArgs(parser, default=None)
 
 
+def AddTlsEarlyDataCreateArgs(parser, default=None):
+  """Adds parser arguments for creation related to TlsEarlyData."""
+
+  parser.add_argument(
+      '--tls-early-data',
+      choices={
+          'DISABLED': (
+              'TLS 1.3 Early Data is not advertised, and any (invalid) attempts'
+              ' to send Early Data will be rejected.'
+          ),
+          'STRICT': (
+              'Enables TLS 1.3 Early Data for requests with safe HTTP methods,'
+              ' and HTTP requests that do not have query parameters. Requests'
+              ' that send Early Data containing non-idempotent HTTP methods or'
+              ' with query parameters will be rejected with a HTTP 425.'
+          ),
+          'PERMISSIVE': (
+              'Enables TLS 1.3 Early Data for requests with safe HTTP methods'
+              ' (GET, HEAD, OPTIONS, TRACE). This mode does not enforce any'
+              ' other limitations for requests with Early Data. The application'
+              ' owner should validate that Early Data is acceptable for a given'
+              ' request path.'
+          ),
+      },
+      default=default,
+      help=(
+          'TLS 1.3 Early Data ("0-RTT" or "zero round trip") allows clients to'
+          ' include HTTP request data alongside a TLS handshake. This can'
+          ' improve application performance, especially on networks where'
+          ' connection interruptions may be common, such as on mobile. This'
+          ' applies to both HTTP over TCP (ie: HTTP/1.1 and HTTP/2) and HTTP/3'
+          ' over QUIC.'
+      ),
+  )
+
+
+def AddTlsEarlyDataUpdateArgs(parser):
+  """Adds parser arguments for update related to TlsEarlyData."""
+
+  AddTlsEarlyDataCreateArgs(parser, default=None)
+
+
 def AddHttpKeepAliveTimeoutSec(parser):
   """Adds the http keep alive timeout sec argument."""
   parser.add_argument(

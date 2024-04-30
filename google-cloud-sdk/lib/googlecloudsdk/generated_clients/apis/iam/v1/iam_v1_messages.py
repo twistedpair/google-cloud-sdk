@@ -490,6 +490,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class EnableServiceAccountKeyRequest(_messages.Message):
   r"""The service account key enable request."""
 
@@ -654,15 +655,14 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
 
 class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2ClientQueryParameters(_messages.Message):
   r"""Represents the parameters to control which claims are fetched from an
-
   IdP.
 
   Fields:
     filter: Optional. The filter used to request specific records from IdP. In
       case of attributes type as AZURE_AD_GROUPS_MAIL, it represents the
       filter used to request specific groups for users from IdP. By default,
-      all of the groups associated with the user are fetched. The groups should
-      be mail enabled and security enabled. See
+      all of the groups associated with the user are fetched. The groups
+      should be mail enabled and security enabled. See
       https://learn.microsoft.com/en-us/graph/search-query-parameter for more
       details.
   """
@@ -4653,8 +4653,8 @@ class ServiceAccountKey(_messages.Message):
   service accounts are also published at the OAuth2 Service Account API.
 
   Enums:
-    DisableReasonValueValuesEnum: optional. If the key is disabled, it may
-      have a DisableReason describing why it was disabled.
+    DisableReasonValueValuesEnum: Output only. optional. If the key is
+      disabled, it may have a DisableReason describing why it was disabled.
     KeyAlgorithmValueValuesEnum: Specifies the algorithm (and possibly key
       size) for the key.
     KeyOriginValueValuesEnum: The key origin.
@@ -4674,13 +4674,13 @@ class ServiceAccountKey(_messages.Message):
       the user.
     description: Optional. A user provided description of this service account
       key.
-    disableReason: optional. If the key is disabled, it may have a
-      DisableReason describing why it was disabled.
+    disableReason: Output only. optional. If the key is disabled, it may have
+      a DisableReason describing why it was disabled.
     disabled: The key status.
-    extendedStatus: Extended Status provides permanent information about a
-      service account key. For example, if this key was detected as exposed or
-      compromised, that information will remain for the lifetime of the key in
-      the extended_status.
+    extendedStatus: Output only. Extended Status provides permanent
+      information about a service account key. For example, if this key was
+      detected as exposed or compromised, that information will remain for the
+      lifetime of the key in the extended_status.
     keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
     keyOrigin: The key origin.
     keyType: The key type.
@@ -4706,8 +4706,8 @@ class ServiceAccountKey(_messages.Message):
   """
 
   class DisableReasonValueValuesEnum(_messages.Enum):
-    r"""optional. If the key is disabled, it may have a DisableReason
-    describing why it was disabled.
+    r"""Output only. optional. If the key is disabled, it may have a
+    DisableReason describing why it was disabled.
 
     Values:
       SERVICE_ACCOUNT_KEY_DISABLE_REASON_UNSPECIFIED: Unspecified disable

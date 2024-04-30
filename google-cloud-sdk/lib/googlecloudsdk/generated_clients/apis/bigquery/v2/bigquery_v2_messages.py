@@ -3233,32 +3233,6 @@ class ExternalServiceCost(_messages.Message):
   slotMs = _messages.IntegerField(5)
 
 
-class ExternalTypeInfo(_messages.Message):
-  r"""Metadata about the external data type definition such as the external
-  system in which the type is defined.
-
-  Enums:
-    TypeSystemValueValuesEnum: Required. Specifies the external system which
-      defines the data type.
-
-  Fields:
-    typeSystem: Required. Specifies the external system which defines the data
-      type.
-  """
-
-  class TypeSystemValueValuesEnum(_messages.Enum):
-    r"""Required. Specifies the external system which defines the data type.
-
-    Values:
-      TYPE_SYSTEM_UNSPECIFIED: TypeSystem not specified.
-      HIVE: Represents Hive data types.
-    """
-    TYPE_SYSTEM_UNSPECIFIED = 0
-    HIVE = 1
-
-  typeSystem = _messages.EnumField('TypeSystemValueValuesEnum', 1)
-
-
 class FeatureValue(_messages.Message):
   r"""Representative value of a single feature within the cluster.
 
@@ -3272,6 +3246,32 @@ class FeatureValue(_messages.Message):
   categoricalValue = _messages.MessageField('CategoricalValue', 1)
   featureColumn = _messages.StringField(2)
   numericalValue = _messages.FloatField(3)
+
+
+class ForeignTypeInfo(_messages.Message):
+  r"""Metadata about the foreign data type definition such as the system in
+  which the type is defined.
+
+  Enums:
+    TypeSystemValueValuesEnum: Required. Specifies the system which defines
+      the foreign data type.
+
+  Fields:
+    typeSystem: Required. Specifies the system which defines the foreign data
+      type.
+  """
+
+  class TypeSystemValueValuesEnum(_messages.Enum):
+    r"""Required. Specifies the system which defines the foreign data type.
+
+    Values:
+      TYPE_SYSTEM_UNSPECIFIED: TypeSystem not specified.
+      HIVE: Represents Hive data types.
+    """
+    TYPE_SYSTEM_UNSPECIFIED = 0
+    HIVE = 1
+
+  typeSystem = _messages.EnumField('TypeSystemValueValuesEnum', 1)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -8139,10 +8139,11 @@ class TableFieldSchema(_messages.Message):
       field.
     description: Optional. The field description. The maximum length is 1,024
       characters.
-    externalTypeDefinition: Optional. Definition of the external data type.
-      Only valid for top-level schema fields (not nested fields).
     fields: Optional. Describes the nested schema fields if the type property
       is set to RECORD.
+    foreignTypeDefinition: Optional. Definition of the foreign data type. Only
+      valid for top-level schema fields (not nested fields). If the type is
+      FOREIGN, this field is required.
     maxLength: Optional. Maximum length of values of this field for STRINGS or
       BYTES. If max_length is not specified, no maximum length constraint is
       imposed on this field. If type = "STRING", then max_length represents
@@ -8241,8 +8242,8 @@ class TableFieldSchema(_messages.Message):
   collation = _messages.StringField(2)
   defaultValueExpression = _messages.StringField(3)
   description = _messages.StringField(4)
-  externalTypeDefinition = _messages.StringField(5)
-  fields = _messages.MessageField('TableFieldSchema', 6, repeated=True)
+  fields = _messages.MessageField('TableFieldSchema', 5, repeated=True)
+  foreignTypeDefinition = _messages.StringField(6)
   maxLength = _messages.IntegerField(7)
   mode = _messages.StringField(8)
   name = _messages.StringField(9)
@@ -8476,13 +8477,13 @@ class TableSchema(_messages.Message):
   r"""Schema of a table
 
   Fields:
-    externalTypeInfo: Optional. Specifies metadata of the external data type
-      definition in field schema (TableFieldSchema.external_type_definition).
     fields: Describes the fields in a table.
+    foreignTypeInfo: Optional. Specifies metadata of the foreign data type
+      definition in field schema (TableFieldSchema.foreign_type_definition).
   """
 
-  externalTypeInfo = _messages.MessageField('ExternalTypeInfo', 1)
-  fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
+  fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
+  foreignTypeInfo = _messages.MessageField('ForeignTypeInfo', 2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

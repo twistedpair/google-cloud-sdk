@@ -344,10 +344,13 @@ class IaCValidationReport(_messages.Message):
   r"""Details of an IaC Validation report.
 
   Fields:
+    note: A general-purpose note field for additional information about the
+      report.
     violations: List of violations found in the provided IaC.
   """
 
-  violations = _messages.MessageField('Violation', 1, repeated=True)
+  note = _messages.StringField(1)
+  violations = _messages.MessageField('Violation', 2, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):

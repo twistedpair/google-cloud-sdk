@@ -157,11 +157,12 @@ def GetPeeringZoneListArg():
       'to forward queries to.')
 
 
-def GetManagedZonesDescriptionArg(required=False):
+def GetManagedZonesDescriptionArg():
   return base.Argument(
       '--description',
-      required=required,
-      help='Short description for the managed-zone.')
+      required=False,
+      help='Short description for the managed zone.',
+  )
 
 
 def GetDnsSecStateFlagMapper(messages):

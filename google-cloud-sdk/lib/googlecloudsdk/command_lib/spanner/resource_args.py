@@ -170,6 +170,13 @@ def BackupAttributeConfig():
       help_text='The Cloud Spanner backup for the {resource}.')
 
 
+def BackupScheduleAttributeConfig():
+  """Get backup schedule resource attribute."""
+  return concepts.ResourceParameterAttributeConfig(
+      name='backup-schedule',
+      help_text='The Cloud Spanner backup schedule for the {resource}.')
+
+
 def SessionAttributeConfig():
   """Get session resource attribute."""
   return concepts.ResourceParameterAttributeConfig(
@@ -238,6 +245,16 @@ def GetBackupResourceSpec():
       'spanner.projects.instances.backups',
       resource_name='backup',
       backupsId=BackupAttributeConfig(),
+      instancesId=InstanceAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetBackupScheduleResourceSpec():
+  return concepts.ResourceSpec(
+      'spanner.projects.instances.databases.backupSchedules',
+      resource_name='backup-schedule',
+      backupSchedulesId=BackupScheduleAttributeConfig(),
+      databasesId=DatabaseAttributeConfig(),
       instancesId=InstanceAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -384,6 +401,26 @@ def AddBackupResourceArg(parser, verb, positional=True):
       name,
       GetBackupResourceSpec(),
       'The Cloud Spanner backup {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddBackupScheduleResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a Cloud Spanner backup schedule.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the argparse parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+    positional: bool, if True, means that the backup schedules ID is a
+      positional rather than a flag.
+  """
+  name = 'backup_schedule' if positional else '--backup-schedule'
+
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetBackupScheduleResourceSpec(),
+      'The Cloud Spanner backup schedule {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

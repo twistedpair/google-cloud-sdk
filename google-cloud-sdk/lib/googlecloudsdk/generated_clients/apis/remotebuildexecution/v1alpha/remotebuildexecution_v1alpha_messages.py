@@ -964,10 +964,11 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
   Enums:
     CmUsageValueValuesEnum: Indicates if and how Container Manager is being
       used for task execution.
+    InputMountTypeValueValuesEnum: Indicates how the input tree was mounted
+      for the action.
     OutputLocationValueValuesEnum: Indicates whether output files and/or
       output directories were found relative to the execution root or to the
       user provided work directory or both or none.
-    UsedOverlayValueValuesEnum: Indicates whether overlay was used.
 
   Fields:
     cmUsage: Indicates if and how Container Manager is being used for task
@@ -979,6 +980,7 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
       size of input files.
     inputCacheMissFiles: The input cache miss rate as a fraction of the number
       of input files.
+    inputMountType: Indicates how the input tree was mounted for the action.
     numErrors: The number of errors reported.
     numWarnings: The number of warnings reported.
     outputLocation: Indicates whether output files and/or output directories
@@ -986,7 +988,6 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
       directory or both or none.
     usedAsyncContainer: Indicates whether an asynchronous container was used
       for execution.
-    usedOverlay: Indicates whether overlay was used.
   """
 
   class CmUsageValueValuesEnum(_messages.Enum):
@@ -1004,6 +1005,22 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     CONFIG_NONE = 0
     CONFIG_MATCH = 1
     CONFIG_MISMATCH = 2
+
+  class InputMountTypeValueValuesEnum(_messages.Enum):
+    r"""Indicates how the input tree was mounted for the action.
+
+    Values:
+      MOUNT_UNSPECIFIED: The mechanism for mounting the input tree is
+        unspecified.
+      MOUNT_OVERLAY: The input tree was mounted from a read-write overlay
+        filesystem.
+      MOUNT_WRITABLE: The input tree was mounted as a read-write bind mount.
+        The CAS proxy will use file watchers and/or post-action scanning of
+        inputs to catch modfiications to the input blobs.
+    """
+    MOUNT_UNSPECIFIED = 0
+    MOUNT_OVERLAY = 1
+    MOUNT_WRITABLE = 2
 
   class OutputLocationValueValuesEnum(_messages.Enum):
     r"""Indicates whether output files and/or output directories were found
@@ -1047,31 +1064,16 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
     LOCATION_EXEC_ROOT_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR = 5
     LOCATION_EXEC_ROOT_AND_WORKING_DIR_RELATIVE_OUTPUT_OUTSIDE_WORKING_DIR = 6
 
-  class UsedOverlayValueValuesEnum(_messages.Enum):
-    r"""Indicates whether overlay was used.
-
-    Values:
-      OVERLAY_UNSPECIFIED: Indicates that whether or not overlay was used is
-        unspecified. This applies, for example, to non-CommandTask actions.
-      OVERLAY_ENABLED: Indicates that overlay was used for a CommandTask
-        action.
-      OVERLAY_DISABLED: Indicates that overlay was not used for a CommandTask
-        action.
-    """
-    OVERLAY_UNSPECIFIED = 0
-    OVERLAY_ENABLED = 1
-    OVERLAY_DISABLED = 2
-
   cmUsage = _messages.EnumField('CmUsageValueValuesEnum', 1)
   dockerCacheHit = _messages.BooleanField(2)
   dockerImageName = _messages.StringField(3)
   inputCacheMissBytes = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
   inputCacheMissFiles = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  numErrors = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  numWarnings = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
-  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 8)
-  usedAsyncContainer = _messages.BooleanField(9)
-  usedOverlay = _messages.EnumField('UsedOverlayValueValuesEnum', 10)
+  inputMountType = _messages.EnumField('InputMountTypeValueValuesEnum', 6)
+  numErrors = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  numWarnings = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
+  outputLocation = _messages.EnumField('OutputLocationValueValuesEnum', 9)
+  usedAsyncContainer = _messages.BooleanField(10)
 
 
 class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):

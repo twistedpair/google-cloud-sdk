@@ -253,13 +253,13 @@ class CloudFunction(_messages.Message):
       unspecified, it defaults to `ARTIFACT_REGISTRY`. If `docker_repository`
       field is specified, this field should either be left unspecified or set
       to `ARTIFACT_REGISTRY`.
-    dockerRepository: User managed repository created in Artifact Registry
-      optionally with a customer managed encryption key. If specified,
-      deployments will use Artifact Registry. If unspecified and the
-      deployment is eligible to use Artifact Registry, GCF will create and use
-      a repository named 'gcf-artifacts' for every deployed region. This is
-      the repository to which the function docker image will be pushed after
-      it is built by Cloud Build. It must match the pattern
+    dockerRepository: User-managed repository created in Artifact Registry to
+      which the function's Docker image will be pushed after it is built by
+      Cloud Build. May optionally be encrypted with a customer-managed
+      encryption key (CMEK). If unspecified and `docker_registry` is not
+      explicitly set to `CONTAINER_REGISTRY`, GCF will create and use a
+      default Artifact Registry repository named 'gcf-artifacts' in the
+      region. It must match the pattern
       `projects/{project}/locations/{location}/repositories/{repository}`.
       Cross-project repositories are not supported. Cross-location
       repositories are not supported. Repository format must be 'DOCKER'.

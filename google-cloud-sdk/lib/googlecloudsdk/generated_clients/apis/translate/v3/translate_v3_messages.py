@@ -2626,10 +2626,12 @@ class TranslateTextRequest(_messages.Message):
       format depends on model type: - AutoML Translation models:
       `projects/{project-number-or-id}/locations/{location-id}/models/{model-
       id}` - General (built-in) models: `projects/{project-number-or-
-      id}/locations/{location-id}/models/general/nmt`, For global (non-
-      regionalized) requests, use `location-id` `global`. For example,
-      `projects/{project-number-or-id}/locations/global/models/general/nmt`.
-      If not provided, the default Google model (NMT) will be used
+      id}/locations/{location-id}/models/general/nmt`, - Translation LLM
+      models: `projects/{project-number-or-id}/locations/{location-
+      id}/models/general/translation-llm`, For global (non-regionalized)
+      requests, use `location-id` `global`. For example, `projects/{project-
+      number-or-id}/locations/global/models/general/nmt`. If not provided, the
+      default Google model (NMT) will be used
     sourceLanguageCode: Optional. The ISO-639 language code of the input text
       if known, for example, "en-US" or "sr-Latn". Supported language codes
       are listed in Language Support. If the source language isn't specified,

@@ -971,6 +971,33 @@ class BeyondcorpV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels an existing BeyondCorp Enterprise Subscription in a given organization. Location will always be global as BeyondCorp subscriptions are per organization. Returns the timestamp for when the cancellation will become effective.
+
+      Args:
+        request: (BeyondcorpOrganizationsLocationsSubscriptionsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaCancelSubscriptionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/subscriptions/{subscriptionsId}:cancel',
+        http_method='GET',
+        method_id='beyondcorp.organizations.locations.subscriptions.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='',
+        request_type_name='BeyondcorpOrganizationsLocationsSubscriptionsCancelRequest',
+        response_type_name='GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaCancelSubscriptionResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new BeyondCorp Enterprise Subscription in a given organization. Location will always be global as BeyondCorp subscriptions are per organization.
 

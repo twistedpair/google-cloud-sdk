@@ -909,6 +909,11 @@ class ServiceInstance(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     displayName: Optional. User-provided human-readable name to be used in
       user interfaces.
+    effectiveServiceAccount: Output only. Effective GCP service account
+      associated with ServiceInstance. This will be the service_account if
+      specified. Otherwise, it will be an automatically created per-resource
+      P4SA that also automatically has Fleet Workload Identity bindings
+      applied.
     gdceCluster: Optional. A GDCE cluster.
     labels: Optional. The labels to associate with this service instance.
       Labels may be used for filtering and billing tracking.
@@ -920,6 +925,8 @@ class ServiceInstance(_messages.Message):
       aip.dev/128#reconciliation
     requestedState: Output only. The intended state to which the service
       instance is reconciling.
+    serviceAccount: Optional. Requested GCP service account to associate with
+      ServiceInstance.
     sparkServiceInstanceConfig: Optional. Spark-specific service instance
       configuration.
     state: Output only. The current state.
@@ -1047,16 +1054,18 @@ class ServiceInstance(_messages.Message):
   auxiliaryServicesConfig = _messages.MessageField('AuxiliaryServicesConfig', 2)
   createTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  gdceCluster = _messages.MessageField('GdceCluster', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 9)
-  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateMessage = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  effectiveServiceAccount = _messages.StringField(5)
+  gdceCluster = _messages.MessageField('GdceCluster', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 10)
+  serviceAccount = _messages.StringField(11)
+  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateMessage = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class SparkApplication(_messages.Message):

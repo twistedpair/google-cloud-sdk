@@ -17,8 +17,8 @@ class AccessControlEntry(_messages.Message):
   r"""AccessControlEntry is used to control who can do some operation.
 
   Fields:
-    principals: Optional. Users who are being allowed for the operation. Each
-      entry should be a valid v1 IAM Principal Identifier. Format for these is
+    principals: Optional. Users who are allowed for the operation. Each entry
+      should be a valid v1 IAM principal identifier. The format for these is
       documented at: https://cloud.google.com/iam/docs/principal-
       identifiers#v1
   """
@@ -27,14 +27,14 @@ class AccessControlEntry(_messages.Message):
 
 
 class Activated(_messages.Message):
-  r"""An event representing that the Grant was successfully activated."""
+  r"""An event representing that the grant was successfully activated."""
 
 
 class ActivationFailed(_messages.Message):
-  r"""An event representing that the Grant activation failed.
+  r"""An event representing that the grant activation failed.
 
   Fields:
-    error: Output only. The error that occurred while activating the Grant.
+    error: Output only. The error that occurred while activating the grant.
   """
 
   error = _messages.MessageField('Status', 1)
@@ -45,7 +45,7 @@ class AdditionalNotificationTargets(_messages.Message):
 
   Fields:
     adminEmailRecipients: Optional. Additional email addresses to be notified
-      when a principal(requester) is granted access.
+      when a principal (requester) is granted access.
     requesterEmailRecipients: Optional. Additional email address to be
       notified about an eligible entitlement.
   """
@@ -60,7 +60,7 @@ class ApprovalWorkflow(_messages.Message):
 
   Fields:
     manualApprovals: An approval workflow where users designated as approvers
-      review and act on the Grants.
+      review and act on the grants.
   """
 
   manualApprovals = _messages.MessageField('ManualApprovals', 1)
@@ -70,21 +70,21 @@ class ApproveGrantRequest(_messages.Message):
   r"""Request message for `ApproveGrant` method.
 
   Fields:
-    reason: Optional. The reason for approving this Grant. This is required if
-      `require_approver_justification` field of the ManualApprovals workflow
-      used in this Grant is true.
+    reason: Optional. The reason for approving this grant. This is required if
+      the `require_approver_justification` field of the `ManualApprovals`
+      workflow used in this grant is true.
   """
 
   reason = _messages.StringField(1)
 
 
 class Approved(_messages.Message):
-  r"""An event representing that the Grant was approved.
+  r"""An event representing that the grant was approved.
 
   Fields:
     actor: Output only. Username of the user who approved the grant.
     reason: Output only. The reason provided by the approver for approving the
-      Grant.
+      grant.
   """
 
   actor = _messages.StringField(1)
@@ -92,13 +92,13 @@ class Approved(_messages.Message):
 
 
 class AuditTrail(_messages.Message):
-  r"""Audit trail for the access provided by this Grant.
+  r"""Audit trail for the access provided by this grant.
 
   Fields:
     accessGrantTime: Output only. The time at which access was given.
-    accessRemoveTime: Output only. The time at which system removed access.
-      This could be because of an automatic expiry or because of a revocation.
-      If unspecified then access hasn't been removed yet.
+    accessRemoveTime: Output only. The time at which the system removed
+      access. This could be because of an automatic expiry or because of a
+      revocation. If unspecified, then access hasn't been removed yet.
   """
 
   accessGrantTime = _messages.StringField(1)
@@ -110,10 +110,9 @@ class CheckOnboardingStatusResponse(_messages.Message):
 
   Fields:
     findings: List of issues that are preventing PAM from functioning for this
-      resource and need to be fixed to complete onboarding. Not all issues
-      might be detected and reported.
-    serviceAccount: The service account that PAM will use to act on this
-      resource.
+      resource and need to be fixed to complete onboarding. Some issues might
+      not be detected or reported.
+    serviceAccount: The service account that PAM uses to act on this resource.
   """
 
   findings = _messages.MessageField('Finding', 1, repeated=True)
@@ -121,12 +120,12 @@ class CheckOnboardingStatusResponse(_messages.Message):
 
 
 class Denied(_messages.Message):
-  r"""An event representing that the Grant was denied.
+  r"""An event representing that the grant was denied.
 
   Fields:
     actor: Output only. Username of the user who denied the grant.
     reason: Output only. The reason provided by the approver for denying the
-      Grant.
+      grant.
   """
 
   actor = _messages.StringField(1)
@@ -137,46 +136,45 @@ class DenyGrantRequest(_messages.Message):
   r"""Request message for `DenyGrant` method.
 
   Fields:
-    reason: Optional. The reason for denying this Grant. This is required if
-      `require_approver_justification` field of the ManualApprovals workflow
-      used in this Grant is true.
+    reason: Optional. The reason for denying this grant. This is required if
+      `require_approver_justification` field of the `ManualApprovals` workflow
+      used in this grant is true.
   """
 
   reason = _messages.StringField(1)
 
 
 class Ended(_messages.Message):
-  r"""An event representing that the Grant has ended."""
+  r"""An event representing that the grant has ended."""
 
 
 class Entitlement(_messages.Message):
-  r"""An Entitlement defines the eligibility of a set of users to obtain a
+  r"""An entitlement defines the eligibility of a set of users to obtain
   predefined access for some time possibly after going through an approval
   workflow.
 
   Enums:
-    StateValueValuesEnum: Output only. Current state of this Entitlement.
+    StateValueValuesEnum: Output only. Current state of this entitlement.
 
   Fields:
-    additionalNotificationTargets: Optional. Additional email addresses who
-      will be notified based on actions taken.
-    approvalWorkflow: Optional. The approvals needed before access will be
-      granted to a requester. No approvals will be needed if this field is
-      null.
+    additionalNotificationTargets: Optional. Additional email addresses to be
+      notified based on actions taken.
+    approvalWorkflow: Optional. The approvals needed before access are granted
+      to a requester. No approvals are needed if this field is null.
     createTime: Output only. Create time stamp.
-    eligibleUsers: Optional. Who can create Grants using this Entitlement.
+    eligibleUsers: Optional. Who can create grants using this entitlement.
       This list should contain at most one entry.
-    etag: `etag` is used for optimistic concurrency control as a way to
-      prevent simultaneous updates to the same Entitlement. An`etag` is
+    etag: An `etag` is used for optimistic concurrency control as a way to
+      prevent simultaneous updates to the same entitlement. An `etag` is
       returned in the response to `GetEntitlement` and the caller should put
-      the etag in the request to `UpdateEntitlement` so that their change is
+      the `etag` in the request to `UpdateEntitlement` so that their change is
       applied on the same version. If this field is omitted or if there is a
-      mismatch while updating an entitlement, then the server will reject the
+      mismatch while updating an entitlement, then the server rejects the
       request.
-    maxRequestDuration: Required. The maximum amount of time for which access
-      would be granted for a request. A requester can choose to ask for access
-      for less than this duration but never more.
-    name: Identifier. Name of the Entitlement. Possible formats: *
+    maxRequestDuration: Required. The maximum amount of time that access is
+      granted for a request. A requester can ask for a duration less than
+      this, but never more.
+    name: Identifier. Name of the entitlement. Possible formats: *
       `organizations/{organization-
       number}/locations/{region}/entitlements/{entitlement-id}` *
       `folders/{folder-number}/locations/{region}/entitlements/{entitlement-
@@ -186,21 +184,21 @@ class Entitlement(_messages.Message):
       approval.
     requesterJustificationConfig: Required. The manner in which the requester
       should provide a justification for requesting access.
-    state: Output only. Current state of this Entitlement.
+    state: Output only. Current state of this entitlement.
     updateTime: Output only. Update time stamp.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of this Entitlement.
+    r"""Output only. Current state of this entitlement.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state. This value will never be returned
-        by the server.
-      CREATING: The Entitlement is being created.
-      AVAILABLE: The Entitlement is available for requesting access.
-      DELETING: The Entitlement is being deleted.
-      DELETED: The Entitlement has been deleted.
-      UPDATING: The Entitlement is being updated.
+      STATE_UNSPECIFIED: Unspecified state. This value is never returned by
+        the server.
+      CREATING: The entitlement is being created.
+      AVAILABLE: The entitlement is available for requesting access.
+      DELETING: The entitlement is being deleted.
+      DELETED: The entitlement has been deleted.
+      UPDATING: The entitlement is being updated.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -223,25 +221,25 @@ class Entitlement(_messages.Message):
 
 
 class Event(_messages.Message):
-  r"""A single operation on the Grant.
+  r"""A single operation on the grant.
 
   Fields:
-    activated: The Grant was successfully activated to give access.
+    activated: The grant was successfully activated to give access.
     activationFailed: There was a non-retriable error while trying to give
       access.
-    approved: The Grant was approved.
-    denied: The Grant was denied.
-    ended: Access given by the Grant ended automatically as the approved
+    approved: The grant was approved.
+    denied: The grant was denied.
+    ended: Access given by the grant ended automatically as the approved
       duration was over.
     eventTime: Output only. The time (as recorded at server) when this event
       occurred.
     expired: The approval workflow did not complete in the necessary duration,
-      hence the Grant has been expired.
-    externallyModified: The policy bindings made by Grant have been modified
+      and so the grant is expired.
+    externallyModified: The policy bindings made by grant have been modified
       outside of PAM.
-    requested: The Grant was requested.
-    revoked: The Grant was revoked.
-    scheduled: The Grant has been scheduled to give access.
+    requested: The grant was requested.
+    revoked: The grant was revoked.
+    scheduled: The grant has been scheduled to give access.
   """
 
   activated = _messages.MessageField('Activated', 1)
@@ -258,11 +256,11 @@ class Event(_messages.Message):
 
 
 class Expired(_messages.Message):
-  r"""An event representing that the Grant was expired."""
+  r"""An event representing that the grant was expired."""
 
 
 class ExternallyModified(_messages.Message):
-  r"""An event representing that the policy bindings made by this Grant were
+  r"""An event representing that the policy bindings made by this grant were
   modified externally.
   """
 
@@ -287,7 +285,8 @@ class GcpIamAccess(_messages.Message):
   Fields:
     resource: Required. Name of the resource.
     resourceType: Required. The type of this resource.
-    roleBindings: Required. Role bindings to be created on successful grant.
+    roleBindings: Required. Role bindings that are created on successful
+      grant.
   """
 
   resource = _messages.StringField(1)
@@ -305,51 +304,51 @@ class GoogleProtobufEmpty(_messages.Message):
 
 
 class Grant(_messages.Message):
-  r"""This is to ensure that the Grants and ProducerGrants proto are byte
-  compatible. A Grant represents a request by a user for obtaining the access
-  specified in an Entitlement they are eligible for.
+  r"""This is to ensure that the `Grants` and `ProducerGrants` proto are byte
+  compatible. A grant represents a request from a user for obtaining the
+  access specified in an entitlement they are eligible for.
 
   Enums:
-    StateValueValuesEnum: Output only. Current state of this Grant.
+    StateValueValuesEnum: Output only. Current state of this grant.
 
   Fields:
-    additionalEmailRecipients: Optional. Additional email addresses who will
-      be notified for all the actions performed on the grant.
-    auditTrail: Output only. Audit trail of access provided by this Grant. If
+    additionalEmailRecipients: Optional. Additional email addresses to notify
+      for all the actions performed on the grant.
+    auditTrail: Output only. Audit trail of access provided by this grant. If
       unspecified then access was never granted.
     createTime: Output only. Create time stamp.
     justification: Optional. Justification of why this access is needed.
-    name: Identifier. Name of this Grant. Possible formats: *
+    name: Identifier. Name of this grant. Possible formats: *
       `organizations/{organization-
       number}/locations/{region}/entitlements/{entitlement-id}/grants/{grant-
       id}` * `folders/{folder-
       number}/locations/{region}/entitlements/{entitlement-id}/grants/{grant-
       id}` * `projects/{project-id|project-
       number}/locations/{region}/entitlements/{entitlement-id}/grants/{grant-
-      id}` The last segment of this name i.e. "{grant-id}" is autogenerated.
+      id}` The last segment of this name (`{grant-id}`) is autogenerated.
     privilegedAccess: Output only. The access that would be granted by this
-      Grant.
+      grant.
     requestedDuration: Required. The amount of time access is needed for. This
       value should be less than the `max_request_duration` value of the
-      Entitlement.
-    requester: Output only. Username of the user who created this Grant.
-    state: Output only. Current state of this Grant.
-    timeline: Output only. Timeline of this Grant.
+      entitlement.
+    requester: Output only. Username of the user who created this grant.
+    state: Output only. Current state of this grant.
+    timeline: Output only. Timeline of this grant.
     updateTime: Output only. Update time stamp.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. Current state of this Grant.
+    r"""Output only. Current state of this grant.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state. This value will never be returned
-        by the server.
+      STATE_UNSPECIFIED: Unspecified state. This value is never returned by
+        the server.
       APPROVAL_AWAITED: The entitlement had an approval workflow configured
-        and this Grant is waiting for the same to complete.
+        and this grant is waiting for the workflow to complete.
       DENIED: The approval workflow completed with a denied result. No access
-        will be granted for this Grant. This is a terminal state.
+        is granted for this grant. This is a terminal state.
       SCHEDULED: The approval workflow completed successfully with an approved
-        result or none was configured. Access will be provided at appropriate
+        result or none was configured. Access is provided at an appropriate
         time.
       ACTIVATING: Access is being given.
       ACTIVE: Access was successfully given and is currently active.
@@ -401,22 +400,22 @@ class IAMAccessDenied(_messages.Message):
 
 
 class Justification(_messages.Message):
-  r"""Justification represents a jutification for requesting access.
+  r"""Justification represents a justification for requesting access.
 
   Fields:
     unstructuredJustification: A free form textual justification. The system
-      will only ensure that this is not empty. No other kind of validation
-      will happen on it.
+      only ensures that this is not empty. No other kind of validation is
+      performed on the string.
   """
 
   unstructuredJustification = _messages.StringField(1)
 
 
 class ListEntitlementsResponse(_messages.Message):
-  r"""Message for response to listing Entitlements.
+  r"""Message for response to listing entitlements.
 
   Fields:
-    entitlements: The list of Entitlements.
+    entitlements: The list of entitlements.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -428,10 +427,10 @@ class ListEntitlementsResponse(_messages.Message):
 
 
 class ListGrantsResponse(_messages.Message):
-  r"""Message for response to listing Grants.
+  r"""Message for response to listing grants.
 
   Fields:
-    grants: The list of Grants.
+    grants: The list of grants.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -550,23 +549,22 @@ class Location(_messages.Message):
 
 class ManualApprovals(_messages.Message):
   r"""A manual approval workflow where users who are designated as approvers
-  need to call the ApproveGrant/DenyGrant APIs for an Grant. The workflow can
-  consist of multiple serial steps where each step defines who can act as
-  Approver in that step and how many of those users should approve before the
+  need to call the `ApproveGrant`/`DenyGrant` APIs for a grant. The workflow
+  can consist of multiple serial steps where each step defines who can act as
+  approver in that step and how many of those users should approve before the
   workflow moves to the next step. This can be used to create approval
-  workflows such as * Require an approval from any user in a group G. *
+  workflows such as: * Require an approval from any user in a group G. *
   Require an approval from any k number of users from a Group G. * Require an
   approval from any user in a group G and then from a user U. A single user
-  might be part of `approvers` ACL for multiple steps in this workflow but
-  they can only approve once and that approval will only be considered to
+  might be part of the `approvers` ACL for multiple steps in this workflow,
+  but they can only approve once and that approval is only considered to
   satisfy the approval step at which it was granted.
 
   Fields:
     requireApproverJustification: Optional. Do the approvers need to provide a
       justification for their actions?
-    steps: Optional. List of approval steps in this workflow. These steps
-      would be followed in the specified order sequentially. Only 1 step is
-      supported for now.
+    steps: Optional. List of approval steps in this workflow. These steps are
+      followed in the specified order sequentially. Only 1 step is supported.
   """
 
   requireApproverJustification = _messages.BooleanField(1)
@@ -746,27 +744,27 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsCreateRequest(_messages
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    entitlementId: Required. The ID to use for this Entitlement. This will
-      become the last part of the resource name. This value should be 4-63
-      characters, and valid characters are "[a-z]", "[0-9]", and "-". The
-      first character should be from [a-z]. This value should be unique among
-      all other Entitlements under the specified `parent`.
-    parent: Required. Name of the parent resource for the to-be-created
-      Entitlement. Possible formats: * `organizations/{organization-
+    entitlementId: Required. The ID to use for this entitlement. This becomes
+      the last part of the resource name. This value should be 4-63 characters
+      in length, and valid characters are "[a-z]", "[0-9]", and "-". The first
+      character should be from [a-z]. This value should be unique among all
+      other entitlements under the specified `parent`.
+    parent: Required. Name of the parent resource for the entitlement.
+      Possible formats: * `organizations/{organization-
       number}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `projects/{project-id|project-
       number}/locations/{region}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request
-      and return the previous operations response. This prevents clients from
-      accidentally creating duplicate commitments. The request ID must be a
-      valid UUID with the exception that zero UUID is not supported
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request and returns the
+      previous operation's response. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -781,21 +779,21 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsDeleteRequest(_messages
   object.
 
   Fields:
-    force: Optional. If set to true, any child grant under this entitlement
-      will also be deleted. (Otherwise, the request will only work if the
-      entitlement has no child grant.)
+    force: Optional. If set to true, any child grant under this entitlement is
+      also deleted. (Otherwise, the request only works if the entitlement has
+      no child grant.)
     name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -821,7 +819,7 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsApproveRequest(_m
   Fields:
     approveGrantRequest: A ApproveGrantRequest resource to be passed as the
       request body.
-    name: Required. Name of the Grant resource which is being approved.
+    name: Required. Name of the grant resource which is being approved.
   """
 
   approveGrantRequest = _messages.MessageField('ApproveGrantRequest', 1)
@@ -834,19 +832,19 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsCreateRequest(_me
 
   Fields:
     grant: A Grant resource to be passed as the request body.
-    parent: Required. Name of the parent Entitlement for which this Grant is
+    parent: Required. Name of the parent entitlement for which this grant is
       being requested.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   grant = _messages.MessageField('Grant', 1)
@@ -861,7 +859,7 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsDenyRequest(_mess
   Fields:
     denyGrantRequest: A DenyGrantRequest resource to be passed as the request
       body.
-    name: Required. Name of the Grant resource which is being denied.
+    name: Required. Name of the grant resource which is being denied.
   """
 
   denyGrantRequest = _messages.MessageField('DenyGrantRequest', 1)
@@ -886,11 +884,11 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsListRequest(_mess
   Fields:
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent resource which owns the Grants.
+    parent: Required. The parent resource which owns the grants.
   """
 
   filter = _messages.StringField(1)
@@ -905,7 +903,7 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsRevokeRequest(_me
   object.
 
   Fields:
-    name: Required. Name of the Grant resource which is being revoked.
+    name: Required. Name of the grant resource which is being revoked.
     revokeGrantRequest: A RevokeGrantRequest resource to be passed as the
       request body.
   """
@@ -919,33 +917,33 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsGrantsSearchRequest(_me
   object.
 
   Enums:
-    CallerRelationshipValueValuesEnum: Required. Only Grants which the caller
-      is related to by this relationship will be returned in the response.
+    CallerRelationshipValueValuesEnum: Required. Only grants which the caller
+      is related to by this relationship are returned in the response.
 
   Fields:
-    callerRelationship: Required. Only Grants which the caller is related to
-      by this relationship will be returned in the response.
-    filter: Optional. Only Grants matching this filter will be returned in the
+    callerRelationship: Required. Only grants which the caller is related to
+      by this relationship are returned in the response.
+    filter: Optional. Only grants matching this filter are returned in the
       response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Grant resources.
+    parent: Required. The parent which owns the grant resources.
   """
 
   class CallerRelationshipValueValuesEnum(_messages.Enum):
-    r"""Required. Only Grants which the caller is related to by this
-    relationship will be returned in the response.
+    r"""Required. Only grants which the caller is related to by this
+    relationship are returned in the response.
 
     Values:
       CALLER_RELATIONSHIP_TYPE_UNSPECIFIED: Unspecified caller relationship
         type.
-      HAD_CREATED: The user had created this Grant by calling CreateGrant
+      HAD_CREATED: The user created this grant by calling `CreateGrant`
         earlier.
-      CAN_APPROVE: The user is an Approver for the Entitlement that this Grant
+      CAN_APPROVE: The user is an approver for the entitlement that this grant
         is parented under and can currently approve/deny it.
-      HAD_APPROVED: The caller had successfully approved/denied this Grant
+      HAD_APPROVED: The caller had successfully approved/denied this grant
         earlier.
     """
     CALLER_RELATIONSHIP_TYPE_UNSPECIFIED = 0
@@ -967,10 +965,10 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsListRequest(_messages.M
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   filter = _messages.StringField(1)
@@ -986,21 +984,21 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsPatchRequest(_messages.
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    name: Identifier. Name of the Entitlement. Possible formats: *
+    name: Identifier. Name of the entitlement. Possible formats: *
       `organizations/{organization-
       number}/locations/{region}/entitlements/{entitlement-id}` *
       `folders/{folder-number}/locations/{region}/entitlements/{entitlement-
       id}` * `projects/{project-id|project-
       number}/locations/{region}/entitlements/{entitlement-id}`
-    updateMask: Required. The list of fields to update. A field will be
-      overwritten if, and only if, it is in the mask. Any immutable fields set
-      in the mask will be ignored by the server. Repeated fields and map
-      fields are only allowed in the last position of a `paths` string and
-      will overwrite the existing values. Hence an update to a repeated field
-      or a map should contain the entire list of values. The fields specified
-      in the update_mask are relative to the resource and not to the request.
-      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
-      value of '*' for this field refers to full replacement of the resource.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. (e.g.
+      `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A value of
+      '*' for this field refers to full replacement of the resource.
   """
 
   entitlement = _messages.MessageField('Entitlement', 1)
@@ -1013,31 +1011,31 @@ class PrivilegedaccessmanagerFoldersLocationsEntitlementsSearchRequest(_messages
   object.
 
   Enums:
-    CallerAccessTypeValueValuesEnum: Required. Only Entitlements where the
-      calling user has this access will be returned.
+    CallerAccessTypeValueValuesEnum: Required. Only entitlements where the
+      calling user has this access are returned.
 
   Fields:
-    callerAccessType: Required. Only Entitlements where the calling user has
-      this access will be returned.
-    filter: Optional. Only Entitlements matching this filter will be returned
-      in the response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    callerAccessType: Required. Only entitlements where the calling user has
+      this access are returned.
+    filter: Optional. Only entitlements matching this filter are returned in
+      the response.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   class CallerAccessTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Only Entitlements where the calling user has this access
-    will be returned.
+    r"""Required. Only entitlements where the calling user has this access are
+    returned.
 
     Values:
       CALLER_ACCESS_TYPE_UNSPECIFIED: Unspecified access type.
-      GRANT_REQUESTER: The user has access to create Grants using this
-        Entitlement.
-      GRANT_APPROVER: The user has access to approve/deny Grants created under
-        this Entitlement.
+      GRANT_REQUESTER: The user has access to create grants using this
+        entitlement.
+      GRANT_APPROVER: The user has access to approve/deny grants created under
+        this entitlement.
     """
     CALLER_ACCESS_TYPE_UNSPECIFIED = 0
     GRANT_REQUESTER = 1
@@ -1121,7 +1119,7 @@ class PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest(_messages.Messa
 
   Fields:
     parent: Required. The parent resource for which this service needs to be
-      setup. Should be in one of the following formats: * `projects/{project-
+      set up. Should be in one of the following formats: * `projects/{project-
       number|project-id}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `organizations/{organization-
       number}/locations/{region}`
@@ -1155,27 +1153,27 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsCreateRequest(_me
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    entitlementId: Required. The ID to use for this Entitlement. This will
-      become the last part of the resource name. This value should be 4-63
-      characters, and valid characters are "[a-z]", "[0-9]", and "-". The
-      first character should be from [a-z]. This value should be unique among
-      all other Entitlements under the specified `parent`.
-    parent: Required. Name of the parent resource for the to-be-created
-      Entitlement. Possible formats: * `organizations/{organization-
+    entitlementId: Required. The ID to use for this entitlement. This becomes
+      the last part of the resource name. This value should be 4-63 characters
+      in length, and valid characters are "[a-z]", "[0-9]", and "-". The first
+      character should be from [a-z]. This value should be unique among all
+      other entitlements under the specified `parent`.
+    parent: Required. Name of the parent resource for the entitlement.
+      Possible formats: * `organizations/{organization-
       number}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `projects/{project-id|project-
       number}/locations/{region}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request
-      and return the previous operations response. This prevents clients from
-      accidentally creating duplicate commitments. The request ID must be a
-      valid UUID with the exception that zero UUID is not supported
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request and returns the
+      previous operation's response. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1190,21 +1188,21 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsDeleteRequest(_me
   object.
 
   Fields:
-    force: Optional. If set to true, any child grant under this entitlement
-      will also be deleted. (Otherwise, the request will only work if the
-      entitlement has no child grant.)
+    force: Optional. If set to true, any child grant under this entitlement is
+      also deleted. (Otherwise, the request only works if the entitlement has
+      no child grant.)
     name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -1230,7 +1228,7 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsApproveRequ
   Fields:
     approveGrantRequest: A ApproveGrantRequest resource to be passed as the
       request body.
-    name: Required. Name of the Grant resource which is being approved.
+    name: Required. Name of the grant resource which is being approved.
   """
 
   approveGrantRequest = _messages.MessageField('ApproveGrantRequest', 1)
@@ -1244,19 +1242,19 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsCreateReque
 
   Fields:
     grant: A Grant resource to be passed as the request body.
-    parent: Required. Name of the parent Entitlement for which this Grant is
+    parent: Required. Name of the parent entitlement for which this grant is
       being requested.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   grant = _messages.MessageField('Grant', 1)
@@ -1272,7 +1270,7 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsDenyRequest
   Fields:
     denyGrantRequest: A DenyGrantRequest resource to be passed as the request
       body.
-    name: Required. Name of the Grant resource which is being denied.
+    name: Required. Name of the grant resource which is being denied.
   """
 
   denyGrantRequest = _messages.MessageField('DenyGrantRequest', 1)
@@ -1299,11 +1297,11 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsListRequest
   Fields:
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent resource which owns the Grants.
+    parent: Required. The parent resource which owns the grants.
   """
 
   filter = _messages.StringField(1)
@@ -1319,7 +1317,7 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsRevokeReque
   object.
 
   Fields:
-    name: Required. Name of the Grant resource which is being revoked.
+    name: Required. Name of the grant resource which is being revoked.
     revokeGrantRequest: A RevokeGrantRequest resource to be passed as the
       request body.
   """
@@ -1334,33 +1332,33 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsGrantsSearchReque
   object.
 
   Enums:
-    CallerRelationshipValueValuesEnum: Required. Only Grants which the caller
-      is related to by this relationship will be returned in the response.
+    CallerRelationshipValueValuesEnum: Required. Only grants which the caller
+      is related to by this relationship are returned in the response.
 
   Fields:
-    callerRelationship: Required. Only Grants which the caller is related to
-      by this relationship will be returned in the response.
-    filter: Optional. Only Grants matching this filter will be returned in the
+    callerRelationship: Required. Only grants which the caller is related to
+      by this relationship are returned in the response.
+    filter: Optional. Only grants matching this filter are returned in the
       response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Grant resources.
+    parent: Required. The parent which owns the grant resources.
   """
 
   class CallerRelationshipValueValuesEnum(_messages.Enum):
-    r"""Required. Only Grants which the caller is related to by this
-    relationship will be returned in the response.
+    r"""Required. Only grants which the caller is related to by this
+    relationship are returned in the response.
 
     Values:
       CALLER_RELATIONSHIP_TYPE_UNSPECIFIED: Unspecified caller relationship
         type.
-      HAD_CREATED: The user had created this Grant by calling CreateGrant
+      HAD_CREATED: The user created this grant by calling `CreateGrant`
         earlier.
-      CAN_APPROVE: The user is an Approver for the Entitlement that this Grant
+      CAN_APPROVE: The user is an approver for the entitlement that this grant
         is parented under and can currently approve/deny it.
-      HAD_APPROVED: The caller had successfully approved/denied this Grant
+      HAD_APPROVED: The caller had successfully approved/denied this grant
         earlier.
     """
     CALLER_RELATIONSHIP_TYPE_UNSPECIFIED = 0
@@ -1383,10 +1381,10 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsListRequest(_mess
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   filter = _messages.StringField(1)
@@ -1402,21 +1400,21 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsPatchRequest(_mes
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    name: Identifier. Name of the Entitlement. Possible formats: *
+    name: Identifier. Name of the entitlement. Possible formats: *
       `organizations/{organization-
       number}/locations/{region}/entitlements/{entitlement-id}` *
       `folders/{folder-number}/locations/{region}/entitlements/{entitlement-
       id}` * `projects/{project-id|project-
       number}/locations/{region}/entitlements/{entitlement-id}`
-    updateMask: Required. The list of fields to update. A field will be
-      overwritten if, and only if, it is in the mask. Any immutable fields set
-      in the mask will be ignored by the server. Repeated fields and map
-      fields are only allowed in the last position of a `paths` string and
-      will overwrite the existing values. Hence an update to a repeated field
-      or a map should contain the entire list of values. The fields specified
-      in the update_mask are relative to the resource and not to the request.
-      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
-      value of '*' for this field refers to full replacement of the resource.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. (e.g.
+      `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A value of
+      '*' for this field refers to full replacement of the resource.
   """
 
   entitlement = _messages.MessageField('Entitlement', 1)
@@ -1429,31 +1427,31 @@ class PrivilegedaccessmanagerOrganizationsLocationsEntitlementsSearchRequest(_me
   object.
 
   Enums:
-    CallerAccessTypeValueValuesEnum: Required. Only Entitlements where the
-      calling user has this access will be returned.
+    CallerAccessTypeValueValuesEnum: Required. Only entitlements where the
+      calling user has this access are returned.
 
   Fields:
-    callerAccessType: Required. Only Entitlements where the calling user has
-      this access will be returned.
-    filter: Optional. Only Entitlements matching this filter will be returned
-      in the response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    callerAccessType: Required. Only entitlements where the calling user has
+      this access are returned.
+    filter: Optional. Only entitlements matching this filter are returned in
+      the response.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   class CallerAccessTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Only Entitlements where the calling user has this access
-    will be returned.
+    r"""Required. Only entitlements where the calling user has this access are
+    returned.
 
     Values:
       CALLER_ACCESS_TYPE_UNSPECIFIED: Unspecified access type.
-      GRANT_REQUESTER: The user has access to create Grants using this
-        Entitlement.
-      GRANT_APPROVER: The user has access to approve/deny Grants created under
-        this Entitlement.
+      GRANT_REQUESTER: The user has access to create grants using this
+        entitlement.
+      GRANT_APPROVER: The user has access to approve/deny grants created under
+        this entitlement.
     """
     CALLER_ACCESS_TYPE_UNSPECIFIED = 0
     GRANT_REQUESTER = 1
@@ -1541,7 +1539,7 @@ class PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest(_messages
 
   Fields:
     parent: Required. The parent resource for which this service needs to be
-      setup. Should be in one of the following formats: * `projects/{project-
+      set up. Should be in one of the following formats: * `projects/{project-
       number|project-id}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `organizations/{organization-
       number}/locations/{region}`
@@ -1574,27 +1572,27 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsCreateRequest(_message
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    entitlementId: Required. The ID to use for this Entitlement. This will
-      become the last part of the resource name. This value should be 4-63
-      characters, and valid characters are "[a-z]", "[0-9]", and "-". The
-      first character should be from [a-z]. This value should be unique among
-      all other Entitlements under the specified `parent`.
-    parent: Required. Name of the parent resource for the to-be-created
-      Entitlement. Possible formats: * `organizations/{organization-
+    entitlementId: Required. The ID to use for this entitlement. This becomes
+      the last part of the resource name. This value should be 4-63 characters
+      in length, and valid characters are "[a-z]", "[0-9]", and "-". The first
+      character should be from [a-z]. This value should be unique among all
+      other entitlements under the specified `parent`.
+    parent: Required. Name of the parent resource for the entitlement.
+      Possible formats: * `organizations/{organization-
       number}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `projects/{project-id|project-
       number}/locations/{region}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request
-      and return the previous operations response. This prevents clients from
-      accidentally creating duplicate commitments. The request ID must be a
-      valid UUID with the exception that zero UUID is not supported
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request and returns the
+      previous operation's response. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1609,21 +1607,21 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsDeleteRequest(_message
   object.
 
   Fields:
-    force: Optional. If set to true, any child grant under this entitlement
-      will also be deleted. (Otherwise, the request will only work if the
-      entitlement has no child grant.)
+    force: Optional. If set to true, any child grant under this entitlement is
+      also deleted. (Otherwise, the request only works if the entitlement has
+      no child grant.)
     name: Required. Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   force = _messages.BooleanField(1)
@@ -1649,7 +1647,7 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsApproveRequest(_
   Fields:
     approveGrantRequest: A ApproveGrantRequest resource to be passed as the
       request body.
-    name: Required. Name of the Grant resource which is being approved.
+    name: Required. Name of the grant resource which is being approved.
   """
 
   approveGrantRequest = _messages.MessageField('ApproveGrantRequest', 1)
@@ -1663,19 +1661,19 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsCreateRequest(_m
 
   Fields:
     grant: A Grant resource to be passed as the request body.
-    parent: Required. Name of the parent Entitlement for which this Grant is
+    parent: Required. Name of the parent entitlement for which this grant is
       being requested.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees this for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   grant = _messages.MessageField('Grant', 1)
@@ -1690,7 +1688,7 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsDenyRequest(_mes
   Fields:
     denyGrantRequest: A DenyGrantRequest resource to be passed as the request
       body.
-    name: Required. Name of the Grant resource which is being denied.
+    name: Required. Name of the grant resource which is being denied.
   """
 
   denyGrantRequest = _messages.MessageField('DenyGrantRequest', 1)
@@ -1715,11 +1713,11 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsListRequest(_mes
   Fields:
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent resource which owns the Grants.
+    parent: Required. The parent resource which owns the grants.
   """
 
   filter = _messages.StringField(1)
@@ -1735,7 +1733,7 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsRevokeRequest(_m
   object.
 
   Fields:
-    name: Required. Name of the Grant resource which is being revoked.
+    name: Required. Name of the grant resource which is being revoked.
     revokeGrantRequest: A RevokeGrantRequest resource to be passed as the
       request body.
   """
@@ -1750,33 +1748,33 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsGrantsSearchRequest(_m
   object.
 
   Enums:
-    CallerRelationshipValueValuesEnum: Required. Only Grants which the caller
-      is related to by this relationship will be returned in the response.
+    CallerRelationshipValueValuesEnum: Required. Only grants which the caller
+      is related to by this relationship are returned in the response.
 
   Fields:
-    callerRelationship: Required. Only Grants which the caller is related to
-      by this relationship will be returned in the response.
-    filter: Optional. Only Grants matching this filter will be returned in the
+    callerRelationship: Required. Only grants which the caller is related to
+      by this relationship are returned in the response.
+    filter: Optional. Only grants matching this filter are returned in the
       response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Grant resources.
+    parent: Required. The parent which owns the grant resources.
   """
 
   class CallerRelationshipValueValuesEnum(_messages.Enum):
-    r"""Required. Only Grants which the caller is related to by this
-    relationship will be returned in the response.
+    r"""Required. Only grants which the caller is related to by this
+    relationship are returned in the response.
 
     Values:
       CALLER_RELATIONSHIP_TYPE_UNSPECIFIED: Unspecified caller relationship
         type.
-      HAD_CREATED: The user had created this Grant by calling CreateGrant
+      HAD_CREATED: The user created this grant by calling `CreateGrant`
         earlier.
-      CAN_APPROVE: The user is an Approver for the Entitlement that this Grant
+      CAN_APPROVE: The user is an approver for the entitlement that this grant
         is parented under and can currently approve/deny it.
-      HAD_APPROVED: The caller had successfully approved/denied this Grant
+      HAD_APPROVED: The caller had successfully approved/denied this grant
         earlier.
     """
     CALLER_RELATIONSHIP_TYPE_UNSPECIFIED = 0
@@ -1799,10 +1797,10 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsListRequest(_messages.
     filter: Optional. Filtering results.
     orderBy: Optional. Hint for how to order the results.
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   filter = _messages.StringField(1)
@@ -1818,21 +1816,21 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsPatchRequest(_messages
 
   Fields:
     entitlement: A Entitlement resource to be passed as the request body.
-    name: Identifier. Name of the Entitlement. Possible formats: *
+    name: Identifier. Name of the entitlement. Possible formats: *
       `organizations/{organization-
       number}/locations/{region}/entitlements/{entitlement-id}` *
       `folders/{folder-number}/locations/{region}/entitlements/{entitlement-
       id}` * `projects/{project-id|project-
       number}/locations/{region}/entitlements/{entitlement-id}`
-    updateMask: Required. The list of fields to update. A field will be
-      overwritten if, and only if, it is in the mask. Any immutable fields set
-      in the mask will be ignored by the server. Repeated fields and map
-      fields are only allowed in the last position of a `paths` string and
-      will overwrite the existing values. Hence an update to a repeated field
-      or a map should contain the entire list of values. The fields specified
-      in the update_mask are relative to the resource and not to the request.
-      (e.g. `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A
-      value of '*' for this field refers to full replacement of the resource.
+    updateMask: Required. The list of fields to update. A field is overwritten
+      if, and only if, it is in the mask. Any immutable fields set in the mask
+      are ignored by the server. Repeated fields and map fields are only
+      allowed in the last position of a `paths` string and overwrite the
+      existing values. Hence an update to a repeated field or a map should
+      contain the entire list of values. The fields specified in the
+      update_mask are relative to the resource and not to the request. (e.g.
+      `MaxRequestDuration`; *not* `entitlement.MaxRequestDuration`) A value of
+      '*' for this field refers to full replacement of the resource.
   """
 
   entitlement = _messages.MessageField('Entitlement', 1)
@@ -1845,31 +1843,31 @@ class PrivilegedaccessmanagerProjectsLocationsEntitlementsSearchRequest(_message
   object.
 
   Enums:
-    CallerAccessTypeValueValuesEnum: Required. Only Entitlements where the
-      calling user has this access will be returned.
+    CallerAccessTypeValueValuesEnum: Required. Only entitlements where the
+      calling user has this access are returned.
 
   Fields:
-    callerAccessType: Required. Only Entitlements where the calling user has
-      this access will be returned.
-    filter: Optional. Only Entitlements matching this filter will be returned
-      in the response.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
+    callerAccessType: Required. Only entitlements where the calling user has
+      this access are returned.
+    filter: Optional. Only entitlements matching this filter are returned in
+      the response.
+    pageSize: Optional. Requested page size. The server may return fewer items
+      than requested. If unspecified, the server picks an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. The parent which owns the Entitlement resources.
+    parent: Required. The parent which owns the entitlement resources.
   """
 
   class CallerAccessTypeValueValuesEnum(_messages.Enum):
-    r"""Required. Only Entitlements where the calling user has this access
-    will be returned.
+    r"""Required. Only entitlements where the calling user has this access are
+    returned.
 
     Values:
       CALLER_ACCESS_TYPE_UNSPECIFIED: Unspecified access type.
-      GRANT_REQUESTER: The user has access to create Grants using this
-        Entitlement.
-      GRANT_APPROVER: The user has access to approve/deny Grants created under
-        this Entitlement.
+      GRANT_REQUESTER: The user has access to create grants using this
+        entitlement.
+      GRANT_APPROVER: The user has access to approve/deny grants created under
+        this entitlement.
     """
     CALLER_ACCESS_TYPE_UNSPECIFIED = 0
     GRANT_REQUESTER = 1
@@ -1954,7 +1952,7 @@ class PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest(_messages.Mess
 
   Fields:
     parent: Required. The parent resource for which this service needs to be
-      setup. Should be in one of the following formats: * `projects/{project-
+      set up. Should be in one of the following formats: * `projects/{project-
       number|project-id}/locations/{region}` * `folders/{folder-
       number}/locations/{region}` * `organizations/{organization-
       number}/locations/{region}`
@@ -1967,27 +1965,26 @@ class PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest(_messages.Mess
 
 
 class Requested(_messages.Message):
-  r"""An event representing that the Grant was requested.
+  r"""An event representing that a grant was requested.
 
   Fields:
-    expireTime: Output only. The time at which this Grant will expire unless
-      the approval workflow completes. If omitted then this request will never
-      expire.
+    expireTime: Output only. The time at which this grant expires unless the
+      approval workflow completes. If omitted, then the request never expires.
   """
 
   expireTime = _messages.StringField(1)
 
 
 class RequesterJustificationConfig(_messages.Message):
-  r"""Defines the ways in which a requester should provide the justification
-  while requesting for access.
+  r"""Defines how a requester must provide a justification when requesting
+  access.
 
   Fields:
-    notMandatory: This option means the requester will not be forced to
-      provide a justification.
-    unstructured: This option means the requester has to necessarily provide a
-      free flowing text as justification. If this is selected the server will
-      allow the requester to provide a justification but will not validate it.
+    notMandatory: This option means the requester isn't required to provide a
+      justification.
+    unstructured: This option means the requester must provide a string as
+      justification. If this is selected, the server allows the requester to
+      provide a justification but doesn't validate it.
   """
 
   notMandatory = _messages.MessageField('NotMandatory', 1)
@@ -1998,19 +1995,19 @@ class RevokeGrantRequest(_messages.Message):
   r"""Request message for `RevokeGrant` method.
 
   Fields:
-    reason: Optional. The reason for revoking this Grant.
+    reason: Optional. The reason for revoking this grant.
   """
 
   reason = _messages.StringField(1)
 
 
 class Revoked(_messages.Message):
-  r"""An event representing that the Grant was revoked.
+  r"""An event representing that the grant was revoked.
 
   Fields:
     actor: Output only. Username of the user who revoked the grant.
     reason: Output only. The reason provided by the user for revoking the
-      Grant.
+      grant.
   """
 
   actor = _messages.StringField(1)
@@ -2018,16 +2015,15 @@ class Revoked(_messages.Message):
 
 
 class RoleBinding(_messages.Message):
-  r"""IAM Role bindings that will be created on a successful grant.
+  r"""IAM Role bindings that are created after a successful grant.
 
   Fields:
     conditionExpression: Optional. The expression field of the IAM condition
       to be associated with the role. If specified, a user with an active
-      grant for this entitlement would be able to access the resource only if
-      this condition evaluates to true for their request. This field uses the
-      same CEL format as that of IAM and supports all attributes that IAM
-      supports, except tags. https://cloud.google.com/iam/docs/conditions-
-      overview#attributes.
+      grant for this entitlement is able to access the resource only if this
+      condition evaluates to true for their request. This field uses the same
+      CEL format as IAM and supports all attributes that IAM supports, except
+      tags. https://cloud.google.com/iam/docs/conditions-overview#attributes.
     role: Required. IAM role to be granted.
       https://cloud.google.com/iam/docs/roles-overview.
   """
@@ -2037,11 +2033,11 @@ class RoleBinding(_messages.Message):
 
 
 class Scheduled(_messages.Message):
-  r"""An event representing that the Grant has been scheduled to be activated
+  r"""An event representing that the grant has been scheduled to be activated
   later.
 
   Fields:
-    scheduledActivationTime: Output only. The time at which the access will be
+    scheduledActivationTime: Output only. The time at which the access is
       granted.
   """
 
@@ -2052,7 +2048,7 @@ class SearchEntitlementsResponse(_messages.Message):
   r"""Response message for `SearchEntitlements` method.
 
   Fields:
-    entitlements: The list of Entitlements.
+    entitlements: The list of entitlements.
     nextPageToken: A token identifying a page of results the server should
       return.
   """
@@ -2065,7 +2061,7 @@ class SearchGrantsResponse(_messages.Message):
   r"""Response message for `SearchGrants` method.
 
   Fields:
-    grants: The list of Grants.
+    grants: The list of grants.
     nextPageToken: A token identifying a page of results the server should
       return.
   """
@@ -2082,7 +2078,7 @@ class SetupServiceResponse(_messages.Message):
   r"""Response message for `SetupService` method.
 
   Fields:
-    serviceAccount: The service account that the service will use to act on
+    serviceAccount: The service account that the service uses to act on
       resources.
   """
 
@@ -2208,13 +2204,13 @@ class Step(_messages.Message):
 
   Fields:
     approvalsNeeded: Required. How many users from the above list need to
-      approve. If there are not enough distinct users in the list above then
-      the workflow will indefinitely block. Should always be greater than 0. 1
-      is the only supported value for now.
+      approve. If there aren't enough distinct users in the list, then the
+      workflow indefinitely blocks. Should always be greater than 0. 1 is the
+      only supported value.
     approverEmailRecipients: Optional. Additional email addresses to be
       notified when a grant is pending approval.
     approvers: Optional. The potential set of approvers in this step. This
-      list should contain at most one entry.
+      list must contain at most one entry.
   """
 
   approvalsNeeded = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2223,23 +2219,20 @@ class Step(_messages.Message):
 
 
 class Timeline(_messages.Message):
-  r"""Timeline of a Grant describing what happened to it and when.
+  r"""Timeline of a grant describing what happened to it and when.
 
   Fields:
-    events: Output only. The Events that have occurred on this Grant. This
-      list will contain entries in the same order as they occurred. So the
-      first entry will always be of type `Requested` and there will always be
-      at least one entry in this array.
+    events: Output only. The events that have occurred on this grant. This
+      list contains entries in the same order as they occurred. The first
+      entry is always be of type `Requested` and there is always at least one
+      entry in this array.
   """
 
   events = _messages.MessageField('Event', 1, repeated=True)
 
 
 class Unstructured(_messages.Message):
-  r"""The requester has to provide a justification in the form of free flowing
-  text.
-  """
-
+  r"""The requester has to provide a justification in the form of a string."""
 
 
 encoding.AddCustomJsonFieldMapping(
