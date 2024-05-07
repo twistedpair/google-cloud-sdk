@@ -656,6 +656,7 @@ class ConnectSettings(_messages.Message):
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
+      MYSQL_8_4: The database version is MySQL 8.4.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -703,14 +704,15 @@ class ConnectSettings(_messages.Message):
     MYSQL_8_0_38 = 31
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
-    SQLSERVER_2019_STANDARD = 34
-    SQLSERVER_2019_ENTERPRISE = 35
-    SQLSERVER_2019_EXPRESS = 36
-    SQLSERVER_2019_WEB = 37
-    SQLSERVER_2022_STANDARD = 38
-    SQLSERVER_2022_ENTERPRISE = 39
-    SQLSERVER_2022_EXPRESS = 40
-    SQLSERVER_2022_WEB = 41
+    MYSQL_8_4 = 34
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -969,6 +971,7 @@ class DatabaseInstance(_messages.Message):
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
+      MYSQL_8_4: The database version is MySQL 8.4.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1016,14 +1019,15 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_38 = 31
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
-    SQLSERVER_2019_STANDARD = 34
-    SQLSERVER_2019_ENTERPRISE = 35
-    SQLSERVER_2019_EXPRESS = 36
-    SQLSERVER_2019_WEB = 37
-    SQLSERVER_2022_STANDARD = 38
-    SQLSERVER_2022_ENTERPRISE = 39
-    SQLSERVER_2022_EXPRESS = 40
-    SQLSERVER_2022_WEB = 41
+    MYSQL_8_4 = 34
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -1082,6 +1086,7 @@ class DatabaseInstance(_messages.Message):
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
+      MYSQL_8_4: The database version is MySQL 8.4.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1129,14 +1134,15 @@ class DatabaseInstance(_messages.Message):
     MYSQL_8_0_38 = 31
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
-    SQLSERVER_2019_STANDARD = 34
-    SQLSERVER_2019_ENTERPRISE = 35
-    SQLSERVER_2019_EXPRESS = 36
-    SQLSERVER_2019_WEB = 37
-    SQLSERVER_2022_STANDARD = 38
-    SQLSERVER_2022_ENTERPRISE = 39
-    SQLSERVER_2022_EXPRESS = 40
-    SQLSERVER_2022_WEB = 41
+    MYSQL_8_4 = 34
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1690,6 +1696,7 @@ class Flag(_messages.Message):
         version is 39.
       MYSQL_8_0_40: The database major version is MySQL 8.0 and the minor
         version is 40.
+      MYSQL_8_4: The database version is MySQL 8.4.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
       SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
@@ -1737,14 +1744,15 @@ class Flag(_messages.Message):
     MYSQL_8_0_38 = 31
     MYSQL_8_0_39 = 32
     MYSQL_8_0_40 = 33
-    SQLSERVER_2019_STANDARD = 34
-    SQLSERVER_2019_ENTERPRISE = 35
-    SQLSERVER_2019_EXPRESS = 36
-    SQLSERVER_2019_WEB = 37
-    SQLSERVER_2022_STANDARD = 38
-    SQLSERVER_2022_ENTERPRISE = 39
-    SQLSERVER_2022_EXPRESS = 40
-    SQLSERVER_2022_WEB = 41
+    MYSQL_8_4 = 34
+    SQLSERVER_2019_STANDARD = 35
+    SQLSERVER_2019_ENTERPRISE = 36
+    SQLSERVER_2019_EXPRESS = 37
+    SQLSERVER_2019_WEB = 38
+    SQLSERVER_2022_STANDARD = 39
+    SQLSERVER_2022_ENTERPRISE = 40
+    SQLSERVER_2022_EXPRESS = 41
+    SQLSERVER_2022_WEB = 42
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -2676,6 +2684,15 @@ class Operation(_messages.Message):
         replica operation. Effect of a promote operation to the old primary is
         executed in this operation, asynchronously from the promote replica
         operation executed to the replica.
+      CLUSTER_MAINTENANCE: Indicates that the instance, its read replicas, and
+        its cascading replicas are in maintenance. Maintenance typically gets
+        initiated on groups of replicas first, followed by the primary
+        instance. For each instance, maintenance typically causes the instance
+        to be unavailable for 1-3 minutes.
+      SELF_SERVICE_MAINTENANCE: Indicates that the instance (and any of its
+        replicas) are currently in maintenance. This is initiated as a self-
+        service request by using SSM. Maintenance typically causes the
+        instance to be unavailable for 1-3 minutes.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2720,6 +2737,8 @@ class Operation(_messages.Message):
     ACQUIRE_SSRS_LEASE = 40
     RELEASE_SSRS_LEASE = 41
     RECONFIGURE_OLD_PRIMARY = 42
+    CLUSTER_MAINTENANCE = 43
+    SELF_SERVICE_MAINTENANCE = 44
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -3107,10 +3126,10 @@ class Settings(_messages.Message):
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
     edition: Optional. The edition of the instance.
-    enableDataplexSchemaExtraction: Optional. By default, Cloud SQL instances
-      enable schema extraction for Dataplex. When this parameter is set to
-      false, schema extraction for Dataplex on Cloud SQL instances is
-      deactivated.
+    enableDataplexIntegration: Optional. By default, Cloud SQL instances have
+      schema extraction disabled for Dataplex. When this parameter is set to
+      true, schema extraction for Dataplex on Cloud SQL instances is
+      activated.
     enableGoogleMlIntegration: Optional. When this parameter is set to true,
       Cloud SQL instances can connect to Vertex AI to pass requests for real-
       time predictions and insights to the AI. The default value is false.
@@ -3322,7 +3341,7 @@ class Settings(_messages.Message):
   deletionProtectionEnabled = _messages.BooleanField(15)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 16, repeated=True)
   edition = _messages.EnumField('EditionValueValuesEnum', 17)
-  enableDataplexSchemaExtraction = _messages.BooleanField(18)
+  enableDataplexIntegration = _messages.BooleanField(18)
   enableGoogleMlIntegration = _messages.BooleanField(19)
   insightsConfig = _messages.MessageField('InsightsConfig', 20)
   instanceVersion = _messages.StringField(21)

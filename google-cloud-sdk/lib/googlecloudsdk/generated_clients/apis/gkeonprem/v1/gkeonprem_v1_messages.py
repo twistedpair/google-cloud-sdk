@@ -7200,3 +7200,31 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalAdminClustersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalAdminClustersQueryVersionConfigRequest, 'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalClustersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest, 'createConfig_adminClusterMembership', 'createConfig.adminClusterMembership')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest, 'createConfig_adminClusterName', 'createConfig.adminClusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalClustersQueryVersionConfigRequest, 'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalClustersBareMetalNodePoolsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsBareMetalStandaloneClustersQueryVersionConfigRequest, 'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareAdminClustersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareClustersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest, 'createConfig_adminClusterMembership', 'createConfig.adminClusterMembership')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest, 'createConfig_adminClusterName', 'createConfig.adminClusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest, 'upgradeConfig_clusterName', 'upgradeConfig.clusterName')
+encoding.AddCustomJsonFieldMapping(
+    GkeonpremProjectsLocationsVmwareClustersVmwareNodePoolsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

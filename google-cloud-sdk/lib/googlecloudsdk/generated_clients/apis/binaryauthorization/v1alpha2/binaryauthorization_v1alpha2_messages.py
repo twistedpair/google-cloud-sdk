@@ -1266,3 +1266,9 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    BinaryauthorizationProjectsAttestorsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BinaryauthorizationProjectsContinuousValidationConfigGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BinaryauthorizationProjectsPolicyGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

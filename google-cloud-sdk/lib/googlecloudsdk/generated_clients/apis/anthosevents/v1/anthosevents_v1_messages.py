@@ -3552,3 +3552,29 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsApiV1NamespacesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsApiV1NamespacesSecretsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsBrokersListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsCustomresourcedefinitionsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesBrokersListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesCloudauditlogssourcesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesCloudpubsubsourcesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesCloudschedulersourcesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesCloudstoragesourcesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesTriggersListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsProjectsLocationsNamespacesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsProjectsLocationsSecretsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsTriggersListRequest, 'continue_', 'continue')

@@ -5559,3 +5559,37 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsBrowserDlpRulesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest, 'customGrouping_fieldFilter', 'customGrouping.fieldFilter')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpOrganizationsLocationsInsightsConfiguredInsightRequest, 'customGrouping_groupFields', 'customGrouping.groupFields')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsAppConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsAppConnectorsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsAppGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsApplicationDomainsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsApplicationsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsClientConnectorServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsClientGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsConnectorsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest, 'customGrouping_fieldFilter', 'customGrouping.fieldFilter')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest, 'customGrouping_groupFields', 'customGrouping.groupFields')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

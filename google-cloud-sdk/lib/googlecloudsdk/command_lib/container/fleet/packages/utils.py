@@ -65,8 +65,49 @@ def _VariantNameFromDir(path):
 
 
 def _SplitResourceBundleNameFromFleetPackage(fleet_package):
-  resource_bundle_name = fleet_package.resourceBundleSelector.resourceBundle
+  resource_bundle_name = (
+      fleet_package.resourceBundleSelector.resourceBundle.name
+  )
   return resource_bundle_name.split('/')
+
+
+def _ExpandPathForUserAndVars(path):
+  user_expanded_path = os.path.expanduser(path)
+  vars_expanded_path = os.path.expandvars(user_expanded_path)
+  return vars_expanded_path
+
+
+def GlobPatternFromSourceAndVariantsPattern(source, variants_pattern=None):
+  """Creates glob pattern by combining source and variants_pattern.
+
+  Args:
+    source: Directory or source configuration file.
+    variants_pattern: Optional variants_pattern for use with source.
+
+  Returns:
+    A glob_pattern for use with 'VariantsFromGlobPattern'. If source
+    is a directory, the pattern is applied within the directory. If source is
+    not a directory i.e., a file, the pattern is not applied.
+
+    Ex: source=/cfg/, variants_pattern='*.yaml'; returns '/cfg/*.yaml'.
+        source=manifest.yaml, variants_pattern=*; returns manifest.yaml.
+  """
+  if not variants_pattern:
+    return source
+  expanded_source = _ExpandPathForUserAndVars(source)
+  expanded_variants_pattern = _ExpandPathForUserAndVars(variants_pattern)
+  if os.path.isdir(expanded_source):
+    return os.path.join(expanded_source, expanded_variants_pattern)
+  else:
+    return expanded_source
+
+
+def ValidateSource(source):
+  expanded_source = _ExpandPathForUserAndVars(source)
+  if not os.path.isdir(expanded_source) and not os.path.isfile(expanded_source):
+    raise ValueError(
+        f'Source must be a directory or file, got {expanded_source}.'
+    )
 
 
 def ProjectFromFleetPackage(fleet_package):

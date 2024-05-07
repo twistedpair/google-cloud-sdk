@@ -2864,3 +2864,23 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsCreateDocumentRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsDeleteRequest, 'currentDocument_exists', 'currentDocument.exists')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsDeleteRequest, 'currentDocument_updateTime', 'currentDocument.updateTime')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsGetRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsListRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsListDocumentsRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'currentDocument_exists', 'currentDocument.exists')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'currentDocument_updateTime', 'currentDocument.updateTime')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'updateMask_fieldPaths', 'updateMask.fieldPaths')

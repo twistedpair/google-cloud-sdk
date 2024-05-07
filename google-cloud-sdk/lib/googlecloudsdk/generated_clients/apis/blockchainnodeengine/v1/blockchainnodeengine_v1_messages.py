@@ -72,6 +72,8 @@ class BlockchainNode(_messages.Message):
       UPDATING: The node is currently being updated.
       REPAIRING: The node is currently being repaired.
       RECONCILING: The node is currently being reconciled.
+      SYNCING: The node is syncing, which is the process by which it obtains
+        the latest block and current global state.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -81,6 +83,7 @@ class BlockchainNode(_messages.Message):
     UPDATING = 5
     REPAIRING = 6
     RECONCILING = 7
+    SYNCING = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

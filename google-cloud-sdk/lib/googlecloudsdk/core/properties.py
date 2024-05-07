@@ -107,6 +107,7 @@ def _DefaultToFastUpdate():
                                 'CLOUDSDK_INTERNAL_USER_FAST_UPDATE') == 'true')
       or config.INSTALLATION_CONFIG.IsAlternateReleaseChannel()
       or current_platform == platforms.OperatingSystem.WINDOWS
+      or current_platform == platforms.OperatingSystem.MACOSX
   )
 
 
@@ -1188,7 +1189,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudfunctions = self._Add(
         'cloudfunctions', command='gcloud functions')
     self.cloudidentity = self._Add('cloudidentity', command='gcloud identity')
-    self.cloudiot = self._Add('cloudiot', command='gcloud iot')
     self.cloudkms = self._Add('cloudkms', command='gcloud kms')
     self.cloudnumberregistry = self._Add(
         'cloudnumberregistry',

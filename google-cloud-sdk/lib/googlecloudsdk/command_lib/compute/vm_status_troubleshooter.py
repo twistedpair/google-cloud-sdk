@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
-from apitools.base.py import encoding
 
 from cloudsdk.google.protobuf import timestamp_pb2
 
@@ -35,11 +34,6 @@ _API_MONITORING_CLIENT_NAME = 'monitoring'
 _API_MONITORING_VERSION_V3 = 'v3'
 _API_COMPUTE_CLIENT_NAME = 'compute'
 _API_CLIENT_VERSION_V1 = 'v1'
-
-_CUSTOM_JSON_FIELD_MAPPINGS = {
-    'interval_startTime': 'interval.startTime',
-    'interval_endTime': 'interval.endTime',
-}
 
 MONITORING_API = 'monitoring.googleapis.com'
 
@@ -152,12 +146,6 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
 
   def _GetCpuUtilization(self):
     """Get CPU utilization from Cloud Monitoring API."""
-    # Mapping of apitools request message fields to json parameters.
-    for req_field, mapped_param in _CUSTOM_JSON_FIELD_MAPPINGS.items():
-      encoding.AddCustomJsonFieldMapping(
-          self.monitoring_message.MonitoringProjectsTimeSeriesListRequest,
-          req_field, mapped_param)
-
     request = self._CreateTimeSeriesListRequest(CPU_METRICS)
 
     response = self.monitoring_client.projects_timeSeries.List(request=request)

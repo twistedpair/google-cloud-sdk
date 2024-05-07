@@ -651,10 +651,30 @@ class ComplianceOccurrence(_messages.Message):
   Fields:
     nonComplianceReason: A string attribute.
     nonCompliantFiles: A NonCompliantFile attribute.
+    version: The OS and config version the benchmark was run on.
   """
 
   nonComplianceReason = _messages.StringField(1)
   nonCompliantFiles = _messages.MessageField('NonCompliantFile', 2, repeated=True)
+  version = _messages.MessageField('ComplianceVersion', 3)
+
+
+class ComplianceVersion(_messages.Message):
+  r"""Describes the CIS benchmark version that is applicable to a given OS and
+  os version.
+
+  Fields:
+    benchmarkDocument: The name of the document that defines this benchmark,
+      e.g. "CIS Container-Optimized OS".
+    cpeUri: The CPE URI (https://cpe.mitre.org/specification/) this benchmark
+      is applicable to.
+    version: The version of the benchmark. This is set to the version of the
+      OS-specific CIS document the benchmark is defined in.
+  """
+
+  benchmarkDocument = _messages.StringField(1)
+  cpeUri = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class DSSEAttestationOccurrence(_messages.Message):

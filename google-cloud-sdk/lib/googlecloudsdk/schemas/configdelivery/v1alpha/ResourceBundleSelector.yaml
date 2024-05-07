@@ -3,9 +3,6 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: configdelivery v1alpha ResourceBundleSelector export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
-required:
-- resourceBundle
-- tag
 additionalProperties: false
 properties:
   cloudBuildRepository:
@@ -15,13 +12,6 @@ properties:
     $ref: CloudBuildRepository.yaml
   resourceBundle:
     description: |-
-      resource_bundle refers to a resource bundle that is directly pushed by the
-      user. Format: projects/{p}/locations/{l}/resourceBundles/{pkg}
-    type: string
-  tag:
-    description: |-
-      tag will support both the exact version as well as explicit tag. System
-      will auto-generate tags which are useful such as tracking patch versions
-      to support the concept of release channels. examples: v1.0.1 or v1.1.* or
-      v1-stable
-    type: string
+      resource_bundle refers to a resource bundle that will contain
+      configuration.
+    $ref: ResourceBundleTag.yaml

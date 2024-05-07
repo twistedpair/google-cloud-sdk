@@ -9604,3 +9604,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    BigqueryJobsGetQueryResultsRequest, 'formatOptions_useInt64Timestamp', 'formatOptions.useInt64Timestamp')
+encoding.AddCustomJsonFieldMapping(
+    BigqueryTabledataListRequest, 'formatOptions_useInt64Timestamp', 'formatOptions.useInt64Timestamp')

@@ -1340,18 +1340,29 @@ class ResourceBundleSelector(_messages.Message):
   Fields:
     cloudBuildRepository: cloud_build_repository points to a gen 2 cloud build
       repository to use as the source of truth for KRM configs.
-    resourceBundle: Required. resource_bundle refers to a resource bundle that
-      is directly pushed by the user. Format:
-      projects/{p}/locations/{l}/resourceBundles/{pkg}
+    resourceBundle: resource_bundle refers to a resource bundle that will
+      contain configuration.
+  """
+
+  cloudBuildRepository = _messages.MessageField('CloudBuildRepository', 1)
+  resourceBundle = _messages.MessageField('ResourceBundleTag', 2)
+
+
+class ResourceBundleTag(_messages.Message):
+  r"""ResourceBundleTag refers to a resource bundle resource and a tag that
+  will identify one of the release resources under the ResourceBundle.
+
+  Fields:
+    name: Required. Name of the ResourceBundle. Format is
+      projects/{p}/locations/{l}/resourceBundles/{r}.
     tag: Required. tag will support both the exact version as well as explicit
       tag. System will auto-generate tags which are useful such as tracking
       patch versions to support the concept of release channels. examples:
       v1.0.1 or v1.1.* or v1-stable
   """
 
-  cloudBuildRepository = _messages.MessageField('CloudBuildRepository', 1)
-  resourceBundle = _messages.StringField(2)
-  tag = _messages.StringField(3)
+  name = _messages.StringField(1)
+  tag = _messages.StringField(2)
 
 
 class ResumeRolloutRequest(_messages.Message):

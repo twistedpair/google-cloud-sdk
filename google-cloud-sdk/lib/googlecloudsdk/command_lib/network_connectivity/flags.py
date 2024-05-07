@@ -93,6 +93,15 @@ def AddGroupFlag(parser):
   )
 
 
+def AddNetworkFlag(parser):
+  """Adds the --network argument to the given parser."""
+  parser.add_argument(
+      '--network',
+      required=True,
+      help="""VPC network that contains the PSA connection the spoke provides
+      connectivity to. The resource must already exist.""")
+
+
 def AddVPCNetworkFlag(parser):
   """Adds the --vpc-network argument to the given parser."""
   # TODO(b/233653552) Parse this with a resource argument.

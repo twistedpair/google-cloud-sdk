@@ -103,11 +103,12 @@ def DeleteDatabase(project, database, etag):
   )
 
 
-def ListDatabases(project):
+def ListDatabases(project, show_deleted):
   """Lists all Firestore databases under the project.
 
   Args:
     project: the project ID to list databases, a string.
+    show_deleted: if true, also returns deleted resources, a boolean.
 
   Returns:
     a List of Databases.
@@ -117,7 +118,8 @@ def ListDatabases(project):
       _GetDatabaseService()
       .List(
           messages.FirestoreProjectsDatabasesListRequest(
-              parent='projects/{}'.format(project)
+              parent='projects/{}'.format(project),
+              showDeleted=True if show_deleted else None,
           )
       )
       .databases

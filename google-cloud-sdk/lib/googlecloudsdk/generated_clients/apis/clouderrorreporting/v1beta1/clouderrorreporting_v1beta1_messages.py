@@ -680,3 +680,19 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsEventsListRequest, 'serviceFilter_resourceType', 'serviceFilter.resourceType')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsEventsListRequest, 'serviceFilter_service', 'serviceFilter.service')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsEventsListRequest, 'serviceFilter_version', 'serviceFilter.version')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsEventsListRequest, 'timeRange_period', 'timeRange.period')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsGroupStatsListRequest, 'serviceFilter_resourceType', 'serviceFilter.resourceType')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsGroupStatsListRequest, 'serviceFilter_service', 'serviceFilter.service')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsGroupStatsListRequest, 'serviceFilter_version', 'serviceFilter.version')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsGroupStatsListRequest, 'timeRange_period', 'timeRange.period')

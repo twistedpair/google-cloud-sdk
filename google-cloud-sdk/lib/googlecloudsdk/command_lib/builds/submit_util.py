@@ -372,6 +372,18 @@ def SetSource(
       )
       return build_config
 
+    if re.match(
+        r'projects/.*/locations/.*/connections/.*/gitRepositoryLinks/.*', source
+    ):
+      build_config.source = messages.Source(
+          developerConnectConfig=messages.DeveloperConnectConfig(
+              gitRepositoryLink=source,
+              dir=arg_dir,
+              revision=arg_revision,
+          )
+      )
+      return build_config
+
     suffix = '.tgz'
     if source.startswith('gs://') or os.path.isfile(source):
       _, suffix = os.path.splitext(source)

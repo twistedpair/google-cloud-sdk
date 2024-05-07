@@ -40917,3 +40917,21 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_orderBy', 'orderByAnnotation.orderBy')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_savedQuery', 'orderByAnnotation.savedQuery')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsEndpointsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeatureOnlineStoresGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsModelsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsNotebookRuntimeTemplatesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsPublishersModelsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

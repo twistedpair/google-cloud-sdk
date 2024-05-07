@@ -434,22 +434,6 @@ class Templates:
                                       'python3-template-launcher-base:latest')
   FLEX_TEMPLATE_GO_BASE_IMAGE = ('gcr.io/dataflow-templates-base/'
                                  'go-template-launcher-base:latest')
-  # Mapping of apitools request message fields to their json parameters
-  _CUSTOM_JSON_FIELD_MAPPINGS = {
-      'dynamicTemplate_gcsPath': 'dynamicTemplate.gcsPath',
-      'dynamicTemplate_stagingLocation': 'dynamicTemplate.stagingLocation'
-  }
-
-  # message fields.
-  @staticmethod
-  def ModifyDynamicTemplatesLaunchRequest(req):
-    """Add Api field query string mappings to req."""
-    updated_request_type = type(req)
-    for req_field, mapped_param in Templates._CUSTOM_JSON_FIELD_MAPPINGS.items(
-    ):
-      encoding.AddCustomJsonFieldMapping(updated_request_type, req_field,
-                                         mapped_param)
-    return req
 
   @staticmethod
   def GetService():
@@ -569,8 +553,6 @@ class Templates:
         launchTemplateParameters=body,
         projectId=template_args.project_id or GetProject(),
         validateOnly=False)
-
-    Templates.ModifyDynamicTemplatesLaunchRequest(request)
 
     try:
       return Templates.GetService().Launch(request)

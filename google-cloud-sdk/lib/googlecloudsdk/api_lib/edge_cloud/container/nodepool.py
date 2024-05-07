@@ -15,6 +15,7 @@
 """Helpers for the container node pool related commands."""
 
 from googlecloudsdk.api_lib.edge_cloud.container import util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import flags
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import resources
@@ -70,6 +71,8 @@ def GetNodePoolCreateRequest(args, release_track):
       parent=node_pool_ref.Parent().RelativeName(),
   )
   PopulateNodePoolCreateMessage(req, messages, args)
+  if release_track == base.ReleaseTrack.ALPHA:
+    PopulateNodePoolCreateAlphaMessage(req, messages, args)
   return req
 
 
@@ -129,6 +132,20 @@ def PopulateNodePoolCreateMessage(req, messages, args):
       v.key = key
       v.value = value
       req.nodePool.nodeConfig.labels.additionalProperties.append(v)
+
+
+def PopulateNodePoolCreateAlphaMessage(req, messages, args):
+  """Filled the Alpha node pool message from command arguments.
+
+  Args:
+    req: create node pool request message.
+    messages: message module of edgecontainer node pool.
+    args: command line arguments.
+  """
+  if flags.FlagIsExplicitlySet(args, 'node_storage_schema'):
+    if not req.nodePool.nodeConfig:
+      req.nodePool.nodeConfig = messages.NodeConfig()
+    req.nodePool.nodeConfig.nodeStorageSchema = args.node_storage_schema
 
 
 def PopulateNodePoolUpdateMessage(

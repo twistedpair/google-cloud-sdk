@@ -23,7 +23,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.core import resources as cloud_resources
@@ -95,14 +94,6 @@ class APIAdapter(object):
     """
     client = core_apis.GetClientInstance(API_NAME, self.api_version)
     messages = core_apis.GetMessagesModule(API_NAME, self.api_version)
-    encoding.AddCustomJsonFieldMapping(
-        messages
-        .GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest,
-        'connectAgent_namespace', 'connectAgent.namespace')
-    encoding.AddCustomJsonFieldMapping(
-        messages
-        .GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest,
-        'connectAgent_proxy', 'connectAgent.proxy')
     return self._ManifestResponse(client, messages, option)
 
 

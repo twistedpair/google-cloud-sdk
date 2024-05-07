@@ -340,6 +340,16 @@ def AddControlPlaneSharedDeploymentPolicy(parser):
   )
 
 
+def AddControlPlaneNodeStorageSchema(parser):
+  parser.add_argument(
+      '--control-plane-node-storage-schema',
+      help="""
+      Name for the storage schema of control plane nodes.
+      """,
+      hidden=True,
+  )
+
+
 def AddLROMaximumTimeout(parser):
   parser.add_argument(
       '--lro-timeout',
@@ -458,6 +468,16 @@ def AddNodeLabels(parser):
       """,
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
+  )
+
+
+def AddNodeStorageSchema(parser):
+  parser.add_argument(
+      '--node-storage-schema',
+      help="""
+      Name for the storage schema of worker nodes.
+      """,
+      hidden=True,
   )
 
 

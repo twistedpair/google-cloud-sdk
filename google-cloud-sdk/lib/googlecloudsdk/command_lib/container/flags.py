@@ -6361,6 +6361,64 @@ def AddEnableRayOperatorFlag(parser, hidden=True):
   )
 
 
+def AddEnableRayClusterLogging(parser, hidden=True, is_update=False):
+  """Adds --enable-ray-cluster-logging flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+
+  help_text = """\
+    Enable automatic log processing sidecar for Ray clusters.
+    """
+  if is_update:
+    parser.add_argument(
+        '--enable-ray-cluster-logging',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+        hidden=hidden,
+    )
+  else:
+    parser.add_argument(
+        '--enable-ray-cluster-logging',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=hidden,
+    )
+
+
+def AddEnableRayClusterMonitoring(parser, hidden=True, is_update=False):
+  """Adds --enable-ray-cluster-monitoring flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: Indicates that the flags are hidden.
+    is_update: Whether the flag is used for an update operation.
+  """
+
+  help_text = """\
+    Enable automatic metrics collection for Ray clusters.
+    """
+  if is_update:
+    parser.add_argument(
+        '--enable-ray-cluster-monitoring',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+        hidden=hidden,
+    )
+  else:
+    parser.add_argument(
+        '--enable-ray-cluster-monitoring',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=hidden,
+    )
+
+
 def AddConvertToAutopilotFlag(parser, hidden=True):
   """Adds --convert-to-autopilot flag to parser."""
 

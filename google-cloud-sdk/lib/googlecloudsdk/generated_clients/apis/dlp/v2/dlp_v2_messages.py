@@ -6369,7 +6369,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
 
 class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
   r"""Classification of infoTypes to organize them according to geographic
-  location, industry, and data type. NEXT_ID: 47
+  location, industry, and data type. NEXT_ID: 48
 
   Enums:
     IndustryCategoryValueValuesEnum: The group of relevant businesses where
@@ -6430,6 +6430,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       ISRAEL: The infoType is typically used in Israel.
       ITALY: The infoType is typically used in Italy.
       JAPAN: The infoType is typically used in Japan.
+      KAZAKHSTAN: The infoType is typically used in Kazakhstan.
       KOREA: The infoType is typically used in Korea.
       MEXICO: The infoType is typically used in Mexico.
       THE_NETHERLANDS: The infoType is typically used in the Netherlands.
@@ -6478,31 +6479,32 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     ISRAEL = 19
     ITALY = 20
     JAPAN = 21
-    KOREA = 22
-    MEXICO = 23
-    THE_NETHERLANDS = 24
-    NEW_ZEALAND = 25
-    NORWAY = 26
-    PARAGUAY = 27
-    PERU = 28
-    POLAND = 29
-    PORTUGAL = 30
-    RUSSIA = 31
-    SINGAPORE = 32
-    SOUTH_AFRICA = 33
-    SPAIN = 34
-    SWEDEN = 35
-    SWITZERLAND = 36
-    TAIWAN = 37
-    THAILAND = 38
-    TURKEY = 39
-    UKRAINE = 40
-    UNITED_KINGDOM = 41
-    UNITED_STATES = 42
-    URUGUAY = 43
-    UZBEKISTAN = 44
-    VENEZUELA = 45
-    INTERNAL = 46
+    KAZAKHSTAN = 22
+    KOREA = 23
+    MEXICO = 24
+    THE_NETHERLANDS = 25
+    NEW_ZEALAND = 26
+    NORWAY = 27
+    PARAGUAY = 28
+    PERU = 29
+    POLAND = 30
+    PORTUGAL = 31
+    RUSSIA = 32
+    SINGAPORE = 33
+    SOUTH_AFRICA = 34
+    SPAIN = 35
+    SWEDEN = 36
+    SWITZERLAND = 37
+    TAIWAN = 38
+    THAILAND = 39
+    TURKEY = 40
+    UKRAINE = 41
+    UNITED_KINGDOM = 42
+    UNITED_STATES = 43
+    URUGUAY = 44
+    UZBEKISTAN = 45
+    VENEZUELA = 46
+    INTERNAL = 47
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs

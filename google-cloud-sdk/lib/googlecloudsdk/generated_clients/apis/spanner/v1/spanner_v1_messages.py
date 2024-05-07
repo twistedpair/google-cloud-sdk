@@ -7182,3 +7182,9 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    SpannerProjectsInstancesBackupsCreateRequest, 'encryptionConfig_encryptionType', 'encryptionConfig.encryptionType')
+encoding.AddCustomJsonFieldMapping(
+    SpannerProjectsInstancesBackupsCreateRequest, 'encryptionConfig_kmsKeyName', 'encryptionConfig.kmsKeyName')
+encoding.AddCustomJsonFieldMapping(
+    SpannerProjectsInstancesBackupsCreateRequest, 'encryptionConfig_kmsKeyNames', 'encryptionConfig.kmsKeyNames')

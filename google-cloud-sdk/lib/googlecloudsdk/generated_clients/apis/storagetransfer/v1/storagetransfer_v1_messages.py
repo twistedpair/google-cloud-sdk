@@ -121,6 +121,8 @@ class AwsS3Data(_messages.Message):
       `credentials_secret` is specified, do not specify role_arn or
       aws_access_key. Format:
       `projects/{project_number}/secrets/{secret_name}`
+    managedPrivateNetwork: Egress bytes over a Google-managed private network.
+      This network is shared between other users of Storage Transfer Service.
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
@@ -137,8 +139,9 @@ class AwsS3Data(_messages.Message):
   bucketName = _messages.StringField(2)
   cloudfrontDomain = _messages.StringField(3)
   credentialsSecret = _messages.StringField(4)
-  path = _messages.StringField(5)
-  roleArn = _messages.StringField(6)
+  managedPrivateNetwork = _messages.BooleanField(5)
+  path = _messages.StringField(6)
+  roleArn = _messages.StringField(7)
 
 
 class AzureBlobStorageData(_messages.Message):

@@ -13559,3 +13559,15 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsEnvironmentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsEnvironmentsDeploymentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsEnvironmentsQueriesListRequest, 'from_', 'from')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsEnvironmentsSecurityReportsListRequest, 'from_', 'from')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsHostQueriesListRequest, 'from_', 'from')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsHostSecurityReportsListRequest, 'from_', 'from')

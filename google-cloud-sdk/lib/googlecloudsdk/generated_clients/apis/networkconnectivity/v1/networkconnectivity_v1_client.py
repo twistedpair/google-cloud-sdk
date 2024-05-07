@@ -66,60 +66,6 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Create a Group (e.g. creating default group during hub creation).
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/groups',
-        http_method='POST',
-        method_id='networkconnectivity.projects.locations.global.hubs.groups.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['groupId', 'requestId'],
-        relative_path='v1/{+parent}/groups',
-        request_field='group',
-        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete a Group.
-
-      Args:
-        request: (NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/global/hubs/{hubsId}/groups/{groupsId}',
-        http_method='DELETE',
-        method_id='networkconnectivity.projects.locations.global.hubs.groups.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details about a Network Connectivity Center group.
 

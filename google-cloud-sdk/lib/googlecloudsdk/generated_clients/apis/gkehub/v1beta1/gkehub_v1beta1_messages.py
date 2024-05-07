@@ -2083,3 +2083,11 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest, 'connectAgent_name', 'connectAgent.name')
+encoding.AddCustomJsonFieldMapping(
+    GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest, 'connectAgent_namespace', 'connectAgent.namespace')
+encoding.AddCustomJsonFieldMapping(
+    GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest, 'connectAgent_proxy', 'connectAgent.proxy')
+encoding.AddCustomJsonFieldMapping(
+    GkehubProjectsLocationsMembershipsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

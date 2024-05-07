@@ -505,7 +505,7 @@ def GetGCRRepos(buckets, project):
   def RepoMsg(bucket):
     return bucket["repository"]
 
-  return map(RepoMsg, existing_buckets)
+  return list(map(RepoMsg, existing_buckets))
 
 
 def GetExistingGCRBuckets(buckets, project):
@@ -1177,7 +1177,7 @@ def SetupAuthForProject(project, repos, repos_with_buckets):
   """Sets up auth for all repos in the given project."""
   missing_auth = False
   for repo in repos:
-    has_bucket = repo in repos_with_buckets
+    has_bucket = repo["repository"] in repos_with_buckets
     diffs_found, continue_auth_check = SetupAuthForRepository(
         project, project, repo["repository"], repo, has_bucket
     )

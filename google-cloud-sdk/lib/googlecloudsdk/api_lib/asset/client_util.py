@@ -47,16 +47,6 @@ _HEADERS = {
 }
 _HTTP_ERROR_FORMAT = ('HTTP request failed with status code {}. '
                       'Response content: {}')
-# A dictionary that captures version differences for IAM Policy Analyzer.
-_IAM_POLICY_ANALYZER_VERSION_DICT_JSON = {
-    DEFAULT_API_VERSION: {
-        'resource_selector': 'analysisQuery_resourceSelector',
-        'identity_selector': 'analysisQuery_identitySelector',
-        'access_selector': 'analysisQuery_accessSelector',
-        'condition_context': 'analysisQuery_conditionContext',
-        'options': 'analysisQuery_options',
-    },
-}
 
 
 class MessageDecodeError(core_exceptions.Error):
@@ -124,13 +114,6 @@ def MakeGetAssetsHistoryHttpRequests(args,
                                      api_version=DEFAULT_API_VERSION):
   """Manually make the get assets history request."""
   messages = GetMessages(api_version)
-
-  encoding.AddCustomJsonFieldMapping(
-      messages.CloudassetBatchGetAssetsHistoryRequest,
-      'readTimeWindow_startTime', 'readTimeWindow.startTime')
-  encoding.AddCustomJsonFieldMapping(
-      messages.CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_endTime',
-      'readTimeWindow.endTime')
 
   content_type = arg_utils.ChoiceToEnum(
       args.content_type, messages.CloudassetBatchGetAssetsHistoryRequest
@@ -341,40 +324,9 @@ class AnalyzeIamPolicyClient(object):
 
   def Analyze(self, args):
     """Calls MakeAnalyzeIamPolicy method."""
-    messages = self.EncodeMessages(args)
+    messages = GetMessages(self.api_version)
     return MakeAnalyzeIamPolicyHttpRequests(args, self.service, messages,
                                             self.api_version)
-
-  def EncodeMessages(self, args):
-    """Adds custom encoding for MakeAnalyzeIamPolicy request."""
-    messages = GetMessages(self.api_version)
-
-    def AddCustomJsonFieldMapping(prefix, suffix):
-      field = _IAM_POLICY_ANALYZER_VERSION_DICT_JSON[
-          self.api_version][prefix] + suffix
-      encoding.AddCustomJsonFieldMapping(
-          messages.CloudassetAnalyzeIamPolicyRequest,
-          field,
-          field.replace('_', '.'),
-      )
-
-    AddCustomJsonFieldMapping('resource_selector', '_fullResourceName')
-    AddCustomJsonFieldMapping('identity_selector', '_identity')
-    AddCustomJsonFieldMapping('access_selector', '_roles')
-    AddCustomJsonFieldMapping('access_selector', '_permissions')
-    AddCustomJsonFieldMapping('options', '_expandGroups')
-    AddCustomJsonFieldMapping('options', '_expandResources')
-    AddCustomJsonFieldMapping('options', '_expandRoles')
-    AddCustomJsonFieldMapping('options', '_outputResourceEdges')
-    AddCustomJsonFieldMapping('options', '_outputGroupEdges')
-    AddCustomJsonFieldMapping('options', '_analyzeServiceAccountImpersonation')
-
-    if args.IsKnownAndSpecified('include_deny_policy_analysis'):
-      AddCustomJsonFieldMapping('options', '_includeDenyPolicyAnalysis')
-
-    if args.IsKnownAndSpecified('access_time'):
-      AddCustomJsonFieldMapping('condition_context', '_accessTime')
-    return messages
 
 
 class AssetExportClient(object):

@@ -60,10 +60,9 @@ class TransactionOptions(proto.Message):
        (where Spanner will select a timestamp such that the read is
        guaranteed to see the effects of all transactions that have
        committed before the start of the read). Snapshot read-only
-       transactions do not need to be committed.
-
-       Queries on change streams must be performed with the snapshot
-       read-only transaction mode, specifying a strong read. Please see
+       transactions do not need to be committed. Queries on change
+       streams must be performed with the snapshot read-only transaction
+       mode, specifying a strong read. See
        [TransactionOptions.ReadOnly.strong][google.spanner.v1.TransactionOptions.ReadOnly.strong]
        for more details.
 

@@ -20,9 +20,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import service
+from googlecloudsdk.command_lib.run.printers import instance_split_printer
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.command_lib.run.printers import revision_printer
-from googlecloudsdk.command_lib.run.printers import traffic_printer
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -96,12 +96,17 @@ class WorkerPrinter(cp.CustomPrinterBase):
     worker_settings = self._GetWorkerSettings(record)
     fmt = cp.Lines([
         self._BuildWorkerHeader(record),
-        k8s_util.GetLabels(record.labels), ' ',
-        traffic_printer.TransformRouteFields(record), ' ', worker_settings,
+        k8s_util.GetLabels(record.labels),
+        ' ',
+        instance_split_printer.TransformInstanceSplitFields(record),
+        ' ',
+        worker_settings,
         (' ' if worker_settings.WillPrintOutput() else ''),
-        cp.Labeled([(k8s_util.LastUpdatedMessage(record),
-                     self._RevisionPrinters(record))]),
-        k8s_util.FormatReadyMessage(record)
+        cp.Labeled([(
+            k8s_util.LastUpdatedMessage(record),
+            self._RevisionPrinters(record),
+        )]),
+        k8s_util.FormatReadyMessage(record),
     ])
     return fmt
 

@@ -5647,3 +5647,33 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesConfigurationsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesDomainmappingsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesExecutionsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesJobsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesRevisionsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesRoutesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesServicesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunNamespacesTasksListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsConfigurationsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsDomainmappingsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsJobsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsRevisionsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsRoutesListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    RunProjectsLocationsServicesListRequest, 'continue_', 'continue')

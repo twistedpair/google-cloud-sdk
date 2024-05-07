@@ -57,6 +57,14 @@ AZURE_DOMAIN = 'blob.core.windows.net'
 GS_GENERATION_REGEX = re.compile(r'(?P<object>.+)#(?P<generation>[0-9]+)$')
 # Matches versioned object strings of the form 's3://bucket/obj#NULL'
 S3_VERSION_REGEX = re.compile(r'(?P<object>.+)#(?P<version_id>.+)$')
+# Matches the accesspoint part of S3 MRAP ARN of the form
+# 'arn:aws:s3::account-id:accesspoint/mrap_alias'
+_S3_MRAP_ARN_REGEX_ACCESS_POINT = re.compile(
+    r'^(?P<access_point>arn:aws:s3::.+:accesspoint\/(?:.+\.mrap))'
+)
+# Matches the key part of S3 MRAP ARN of the form
+# 'arn:aws:s3::account-id:accesspoint/mrap_alias//key'
+_S3_MRAP_ARN_REGEX_KEY = re.compile(r'.*\/\/(?P<key>.+)$')
 
 
 def is_named_pipe(path):
@@ -379,21 +387,40 @@ class CloudUrl(StorageUrl):
     scheme = _get_scheme_from_url_string(url_string)
 
     # gs://a/b/c/d#num => a/b/c/d#num
-    schemeless_url_string = url_string[len(scheme.value + SCHEME_DELIMITER):]
+    schemeless_url_string = url_string[len(scheme.value + SCHEME_DELIMITER) :]
 
     if schemeless_url_string.startswith('/'):
       raise errors.InvalidUrlError(
-          ('Cloud URL scheme should be followed by colon and two slashes: "{}".'
-           ' Found: "{}"').format(SCHEME_DELIMITER, url_string))
+          (
+              'Cloud URL scheme should be followed by colon and two slashes:'
+              ' "{}". Found: "{}"'
+          ).format(SCHEME_DELIMITER, url_string)
+      )
 
-    # a/b/c/d#num => a, b/c/d#num
-    bucket_name, _, object_name = schemeless_url_string.partition(
-        CLOUD_URL_DELIMITER)
-
-    # b/c/d#num => b/c/d, num
-    object_name, generation = get_generation_number_from_object_name(
-        scheme, object_name
+    s3_mrap_ap_match = (
+        _S3_MRAP_ARN_REGEX_ACCESS_POINT.match(schemeless_url_string)
+        if scheme == ProviderPrefix.S3
+        else None
     )
+    if s3_mrap_ap_match:
+      # s3://arn:aws:s3::<account-id>:accesspoint/<mrap_alias>.mrap//<key>
+      # Handles multi-region access point type buckets for S3 use-cases.
+      bucket_name = s3_mrap_ap_match.group('access_point')
+      s3_mrap_key_match = _S3_MRAP_ARN_REGEX_KEY.match(schemeless_url_string)
+      object_name = (
+          s3_mrap_key_match.group('key') if s3_mrap_key_match else None
+      )
+      generation = None
+    else:
+      # a/b/c/d#num => a, b/c/d#num
+      bucket_name, _, object_name = schemeless_url_string.partition(
+          CLOUD_URL_DELIMITER
+      )
+
+      # b/c/d#num => b/c/d, num
+      object_name, generation = get_generation_number_from_object_name(
+          scheme, object_name
+      )
 
     return cls(scheme, bucket_name, object_name, generation)
 
@@ -427,14 +454,29 @@ class CloudUrl(StorageUrl):
   def versionless_url_string(self):
     if self.is_provider():
       return '{}{}'.format(self.scheme.value, SCHEME_DELIMITER)
+    # We want to return the following URL pattern when we only have a bucket.
+    # We will follow the same pattern for S3 MRAP buckets as well
+    # when they do not have objects.
     elif self.is_bucket():
-      return '{}{}{}/'.format(self.scheme.value, SCHEME_DELIMITER,
-                              self.bucket_name)
-    return '{}{}{}/{}'.format(self.scheme.value, SCHEME_DELIMITER,
-                              self.bucket_name, self.object_name)
+      return '{}{}{}/'.format(
+          self.scheme.value, SCHEME_DELIMITER, self.bucket_name
+      )
+    elif self.is_s3_mrap_bucket():
+      return '{}{}{}//{}'.format(
+          self.scheme.value,
+          SCHEME_DELIMITER,
+          self.bucket_name,
+          self.object_name,
+      )
+    return '{}{}{}/{}'.format(
+        self.scheme.value, SCHEME_DELIMITER, self.bucket_name, self.object_name
+    )
 
   @property
   def delimiter(self):
+    if self.is_s3_mrap_bucket():
+      return '//'
+
     return self.CLOUD_URL_DELIM
 
   def is_bucket(self):
@@ -442,6 +484,9 @@ class CloudUrl(StorageUrl):
 
   def is_object(self):
     return bool(self.bucket_name and self.object_name)
+
+  def is_s3_mrap_bucket(self):
+    return bool(_S3_MRAP_ARN_REGEX_ACCESS_POINT.match(self.bucket_name))
 
   def is_provider(self):
     return bool(self.scheme and not self.bucket_name)

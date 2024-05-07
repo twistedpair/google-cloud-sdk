@@ -7926,3 +7926,67 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'aggregation_alignmentPeriod', 'aggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'aggregation_crossSeriesReducer', 'aggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'aggregation_groupByFields', 'aggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'aggregation_perSeriesAligner', 'aggregation.perSeriesAligner')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'interval_endTime', 'interval.endTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'interval_startTime', 'interval.startTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'secondaryAggregation_groupByFields', 'secondaryAggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringFoldersTimeSeriesListRequest, 'secondaryAggregation_perSeriesAligner', 'secondaryAggregation.perSeriesAligner')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'aggregation_alignmentPeriod', 'aggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'aggregation_crossSeriesReducer', 'aggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'aggregation_groupByFields', 'aggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'aggregation_perSeriesAligner', 'aggregation.perSeriesAligner')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'interval_endTime', 'interval.endTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'interval_startTime', 'interval.startTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'secondaryAggregation_groupByFields', 'secondaryAggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringOrganizationsTimeSeriesListRequest, 'secondaryAggregation_perSeriesAligner', 'secondaryAggregation.perSeriesAligner')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsGroupsMembersListRequest, 'interval_endTime', 'interval.endTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsGroupsMembersListRequest, 'interval_startTime', 'interval.startTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'aggregation_alignmentPeriod', 'aggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'aggregation_crossSeriesReducer', 'aggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'aggregation_groupByFields', 'aggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'aggregation_perSeriesAligner', 'aggregation.perSeriesAligner')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'interval_endTime', 'interval.endTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'interval_startTime', 'interval.startTime')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'secondaryAggregation_alignmentPeriod', 'secondaryAggregation.alignmentPeriod')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'secondaryAggregation_crossSeriesReducer', 'secondaryAggregation.crossSeriesReducer')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'secondaryAggregation_groupByFields', 'secondaryAggregation.groupByFields')
+encoding.AddCustomJsonFieldMapping(
+    MonitoringProjectsTimeSeriesListRequest, 'secondaryAggregation_perSeriesAligner', 'secondaryAggregation.perSeriesAligner')

@@ -5,7 +5,91 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 475.0.0 (2024-05-07)
+
+### Google Cloud CLI
+
+* Enabled faster component update mode by default on macOS. This avoids
+  making a backup copy of the installation directory when running certain
+  `gcloud components` commands, which should significantly improve the time
+  taken by these operations (including installation and updates).
+  * If for some reason this change causes problems, please file a bug report.
+    One can temporarily revert to the legacy update mode via `gcloud config set
+    experimental/fast_component_update False` or by setting the environment
+    variable `CLOUDSDK_EXPERIMENTAL_FAST_COMPONENT_UPDATE=False` (it may be
+    necessary to first reinstall the `gcloud` CLI either from scratch or by
+    running `gcloud components reinstall`). Note that the faster update mode
+    will eventually become the default on all platforms at which point the
+    `fast_component_update` mode property will be removed.
+  * Since the `gcloud` CLI no longer makes a full copy of the installation
+    directory to allow for this performance improvement, `gcloud components
+    restore` has been deprecated. However, equivalent functionality can be
+    achieved via `gcloud components update --version=<previous version>` or
+    `gcloud components reinstall`, depending on whether one needs to restore an
+    earlier version or reinstall the current version, respectively.
+
+### Anthos Multi-Cloud
+
+* Updated `gcloud container attached clusters register` to fail when using
+  `--has-private-issuer` with `--distribution=eks`.
+
+### Artifact Registry
+
+* Fixed bug where `gcloud artifacts docker upgrade migrate` sometimes excluded bucket auth from generated IAM policies.
+
+### Cloud Build
+
+* Modified `gcloud builds submit` to support submitting a build with a Developer Connect GitRepositoryLink resource.
+
+### Cloud Dataflow
+
+*   Promoted `gcloud dataflow yaml run` to GA.
+
+### Cloud Datastream
+
+* Fix bug where append only flag not recognized in BiQueryDestinationConfig.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.6
+  * Added `--import-data` and `--export-on-exit` flags.
+  * Fixed few bugs regarding transactions, including: read only commits, retriable transactions and contention errors on commits.
+
+### Cloud NetApp
+
+* Added flex as a `--service-level` option during `gcloud netapp storage-pools create`.
+
+### Compute Engine
+
+* Promoted dual stack IPv6 support for `gcloud compute instances create-with-container` and `gcloud compute instance-templates create-with-container` to GA.
+
+### Network Connectivity
+
+* Promote Regional API Endpoints to GA.
+* Added `--export-psc` and `--no-export-psc` flags to `gcloud network-connectivity hubs create` and `gcloud network-connectivity hubs update`.
+
+### Network Security
+
+* Fixed `gcloud network-security tls-inspection-policies import` not recognizing `minTlsVersion` and `tlsFeatureProfile`.
+* Fixed `gcloud network-security tls-inspection-policies export` not recognizing `minTlsVersion` and `tlsFeatureProfile`.
+
+### Security Command Center
+
+* Removed misleading documentation in `gcloud scc findings create` command that imply
+findings can be created at folder and project level. This command only allows findings
+to be created under an organization.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 474.0.0 (2024-04-30)
+
+### Breaking Changes
+
+*   **(Cloud Run)** `gcloud run jobs deploy` is not working with source builds in this release.
+Run `gcloud builds submit` and then `gcloud run jobs deploy` with the generated image, or use Google Cloud CLI version 472 or earlier.
+
 
 ### AI
 
@@ -2567,7 +2651,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 * Modified local ssd count value of `--ephemeral-storage-local-ssd`,
 `--ephemeral-storage`, and `--local-nvme-ssd-block` flags from `gcloud container
 cluster create/update` to be optional to support third generation machine types,
-which specifiy a static count. Pre-Gen3 behavior is unchanged.
+which specify a static count. Pre-Gen3 behavior is unchanged.
 
 ### Network Services
 
@@ -7940,7 +8024,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Deploy
 
-* Added support for absolute paths for "`--skaffold-file` flag of `gcloud deploy releases create` commmand".
+* Added support for absolute paths for "`--skaffold-file` flag of `gcloud deploy releases create` command".
 
 ### Cloud Memorystore
 
@@ -18732,7 +18816,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud DNS
 
-* Promoted `--enable-logging` flag of `gcloud dns polices` to GA.
+* Promoted `--enable-logging` flag of `gcloud dns policies` to GA.
 
 ### Cloud Dataproc
 
@@ -18807,7 +18891,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud DNS
 
-* Promoted `gcloud dns polices` to GA.
+* Promoted `gcloud dns policies` to GA.
 * Promoted `gcloud dns managed-zones forwarding-targets` to GA.
 
 ### Cloud Dataproc
@@ -18891,7 +18975,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 * Promoted `gcloud compute external-vpn-gateways` to GA.
 * Promoted `gcloud compute vpn-gateways` to GA.
-* Promoted Highly Available related comands for `gcloud compute vpn-tunnels` to GA.
+* Promoted Highly Available related commands for `gcloud compute vpn-tunnels` to GA.
 * Promoted `--logging-aggregation-interval`, `--logging-flow-sampling`, and
   `--logging-metadata` flags of
   `gcloud compute networks subnets <create|update>` to GA.
@@ -22173,7 +22257,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Cloud Bigtable
 
-*   Added new flags to the `cbt` commmand-line tool:
+*   Added new flags to the `cbt` command-line tool:
     *   `-user-agent` for specifying a custom User Agent
     *   `-columns` for specifying columns to read with `read` and `lookup`
     *   `-cells-per-column` for limiting number of cells read per column with `read` and `lookup`

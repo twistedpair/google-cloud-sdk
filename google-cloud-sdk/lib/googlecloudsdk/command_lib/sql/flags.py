@@ -380,7 +380,6 @@ def AddFinalbackupRetentionDays(parser):
       required=False,
       help=help_text,
       hidden=True,
-      default=30,
   )
 
 

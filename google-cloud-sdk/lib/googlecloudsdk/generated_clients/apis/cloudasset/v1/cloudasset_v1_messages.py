@@ -6712,3 +6712,31 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_accessSelector_permissions', 'analysisQuery.accessSelector.permissions')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_accessSelector_roles', 'analysisQuery.accessSelector.roles')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_conditionContext_accessTime', 'analysisQuery.conditionContext.accessTime')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_identitySelector_identity', 'analysisQuery.identitySelector.identity')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery.options.analyzeServiceAccountImpersonation')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_expandGroups', 'analysisQuery.options.expandGroups')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_expandResources', 'analysisQuery.options.expandResources')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_expandRoles', 'analysisQuery.options.expandRoles')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_includeDenyPolicyAnalysis', 'analysisQuery.options.includeDenyPolicyAnalysis')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_outputGroupEdges', 'analysisQuery.options.outputGroupEdges')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_options_outputResourceEdges', 'analysisQuery.options.outputResourceEdges')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'analysisQuery_resourceSelector_fullResourceName', 'analysisQuery.resourceSelector.fullResourceName')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_endTime', 'readTimeWindow.endTime')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_startTime', 'readTimeWindow.startTime')

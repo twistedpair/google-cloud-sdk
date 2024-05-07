@@ -815,6 +815,8 @@ class SignatureInfo(_messages.Message):
         curve is only supported for HSM protection level. Other hash functions
         can also be used: https://cloud.google.com/kms/docs/create-validate-
         signatures#ecdsa_support_for_other_hash_algorithms
+      EC_SIGN_ED25519: EdDSA on the Curve25519 in pure mode (taking data as
+        input).
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -852,12 +854,13 @@ class SignatureInfo(_messages.Message):
     EC_SIGN_P256_SHA256 = 26
     EC_SIGN_P384_SHA384 = 27
     EC_SIGN_SECP256K1_SHA256 = 28
-    HMAC_SHA256 = 29
-    HMAC_SHA1 = 30
-    HMAC_SHA384 = 31
-    HMAC_SHA512 = 32
-    HMAC_SHA224 = 33
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
+    EC_SIGN_ED25519 = 29
+    HMAC_SHA256 = 30
+    HMAC_SHA1 = 31
+    HMAC_SHA384 = 32
+    HMAC_SHA512 = 33
+    HMAC_SHA224 = 34
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 35
 
   customerKmsKeyVersion = _messages.StringField(1)
   googleKeyAlgorithm = _messages.EnumField('GoogleKeyAlgorithmValueValuesEnum', 2)

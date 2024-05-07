@@ -228,6 +228,9 @@ class KafkaSource(_messages.Message):
     brokerUris: Required. The Kafka broker URIs. e.g. 10.12.34.56:8080
     consumerGroupId: Required. The consumer group ID used by the Kafka broker
       to track the offsets of all topic partitions being read by this Stream.
+    initialOffset: Optional. The initial message offset from which to start
+      streaming. If unspecified, Stream will start streaming from the newest
+      message. Supported values: newest, oldest.
     kafkaAuthenticationConfig: Optional. Authentication configuration used to
       authenticate the Kafka client with the Kafka broker, and authorize to
       read the topic(s).
@@ -236,8 +239,9 @@ class KafkaSource(_messages.Message):
 
   brokerUris = _messages.StringField(1, repeated=True)
   consumerGroupId = _messages.StringField(2)
-  kafkaAuthenticationConfig = _messages.MessageField('KafkaAuthenticationConfig', 3)
-  topics = _messages.StringField(4, repeated=True)
+  initialOffset = _messages.StringField(3)
+  kafkaAuthenticationConfig = _messages.MessageField('KafkaAuthenticationConfig', 4)
+  topics = _messages.StringField(5, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -827,7 +831,9 @@ class SaslAuthConfig(_messages.Message):
   Fields:
     mechanism: A MechanismValueValuesEnum attribute.
     passwordSecret: Required. The password for the authentication identity may
-      be loaded from Secret Manager.
+      be loaded from Secret Manager. Supported Format: 1-
+      "projects/{project}/secrets/{secret}/versions/{version}" 2- "projects/{p
+      roject}/locations/{location}/secrets/{secret}/versions/{version}"
     username: Required. The SASL authentication identity (username).
   """
 

@@ -788,7 +788,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExternalLoadBalancerPool(_messages.Message):
   r"""External load balancer pool with custom config such as name, manual/auto
   assign, non-overlapping ipv4 and optional ipv6 address range.
@@ -960,17 +959,22 @@ class ListVpnConnectionsResponse(_messages.Message):
 
 class Local(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted locally.
+
   Warning: Local control plane clusters must be created in their own project.
-  Local control plane clusters cannot coexist in the same project with any
-  other type of clusters, including non-GDCE clusters. Mixing local control
-  plane GDCE clusters with any other type of clusters in the same project can
-  result in data loss.
+  Local control plane clusters cannot coexist in the same project with any other
+  type of clusters, including non-GDCE clusters. Mixing local control plane GDCE
+  clusters with any other type of clusters in the same project can result in
+  data loss.
 
   Enums:
     SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
       applications are deployed.
 
   Fields:
+    controlPlaneNodeStorageSchema: Optional. Name for the storage schema of
+      control plane nodes. Warning: Configurable node local storage schema
+      feature is an experimental feature, and is not recommended for general
+      use in production clusters/nodepools.
     machineFilter: Only machines matching this filter will be allowed to host
       control plane nodes. The filtering language accepts strings like
       "name=", and is documented here: [AIP-160](https://google.aip.dev/160).
@@ -995,10 +999,13 @@ class Local(_messages.Message):
     ALLOWED = 1
     DISALLOWED = 2
 
-  machineFilter = _messages.StringField(1)
-  nodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nodeLocation = _messages.StringField(3)
-  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 4)
+  controlPlaneNodeStorageSchema = _messages.StringField(1)
+  machineFilter = _messages.StringField(2)
+  nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  nodeLocation = _messages.StringField(4)
+  sharedDeploymentPolicy = _messages.EnumField(
+      'SharedDeploymentPolicyValueValuesEnum', 5
+  )
 
 
 class LocalDiskEncryption(_messages.Message):
@@ -1362,6 +1369,10 @@ class NodeConfig(_messages.Message):
 
   Fields:
     labels: Optional. The Kubernetes node labels
+    nodeStorageSchema: Optional. Name for the storage schema of worker nodes.
+      Warning: Configurable node local storage schema feature is an
+      experimental feature, and is not recommended for general use in
+      production clusters/nodepools.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1389,6 +1400,7 @@ class NodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   labels = _messages.MessageField('LabelsValue', 1)
+  nodeStorageSchema = _messages.StringField(2)
 
 
 class NodePool(_messages.Message):
@@ -1638,7 +1650,6 @@ class RecurringTimeWindow(_messages.Message):
 class Remote(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted remotely.
   """
-
 
 
 class SdsOperator(_messages.Message):

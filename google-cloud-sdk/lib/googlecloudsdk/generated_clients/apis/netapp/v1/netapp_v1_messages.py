@@ -27,8 +27,6 @@ class ActiveDirectory(_messages.Message):
     LabelsValue: Labels for the active directory.
 
   Fields:
-    administrators: Optional. Users to be added to the Built-in
-      Admininstrators group.
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
     backupOperators: Optional. Users to be added to the Built-in Backup
@@ -108,28 +106,27 @@ class ActiveDirectory(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  administrators = _messages.StringField(1, repeated=True)
-  aesEncryption = _messages.BooleanField(2)
-  backupOperators = _messages.StringField(3, repeated=True)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  dns = _messages.StringField(6)
-  domain = _messages.StringField(7)
-  encryptDcConnections = _messages.BooleanField(8)
-  kdcHostname = _messages.StringField(9)
-  kdcIp = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  ldapSigning = _messages.BooleanField(12)
-  name = _messages.StringField(13)
-  netBiosPrefix = _messages.StringField(14)
-  nfsUsersWithLdap = _messages.BooleanField(15)
-  organizationalUnit = _messages.StringField(16)
-  password = _messages.StringField(17)
-  securityOperators = _messages.StringField(18, repeated=True)
-  site = _messages.StringField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  stateDetails = _messages.StringField(21)
-  username = _messages.StringField(22)
+  aesEncryption = _messages.BooleanField(1)
+  backupOperators = _messages.StringField(2, repeated=True)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  dns = _messages.StringField(5)
+  domain = _messages.StringField(6)
+  encryptDcConnections = _messages.BooleanField(7)
+  kdcHostname = _messages.StringField(8)
+  kdcIp = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  ldapSigning = _messages.BooleanField(11)
+  name = _messages.StringField(12)
+  netBiosPrefix = _messages.StringField(13)
+  nfsUsersWithLdap = _messages.BooleanField(14)
+  organizationalUnit = _messages.StringField(15)
+  password = _messages.StringField(16)
+  securityOperators = _messages.StringField(17, repeated=True)
+  site = _messages.StringField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateDetails = _messages.StringField(20)
+  username = _messages.StringField(21)
 
 
 class Backup(_messages.Message):
@@ -1427,12 +1424,12 @@ class NetappProjectsLocationsStoragePoolsListRequest(_messages.Message):
   r"""A NetappProjectsLocationsStoragePoolsListRequest object.
 
   Fields:
-    filter: List filter.
-    orderBy: Sort results. Supported values are "name", "name desc" or ""
-      (unsorted).
-    pageSize: The maximum number of items to return.
-    pageToken: The next_page_token value to use if there are additional
-      results to retrieve for this list request.
+    filter: Optional. List filter.
+    orderBy: Optional. Sort results. Supported values are "name", "name desc"
+      or "" (unsorted).
+    pageSize: Optional. The maximum number of items to return.
+    pageToken: Optional. The next_page_token value to use if there are
+      additional results to retrieve for this list request.
     parent: Required. Parent value
   """
 
@@ -2366,26 +2363,28 @@ class StoragePool(_messages.Message):
     StateValueValuesEnum: Output only. State of the storage pool
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    activeDirectory: Specifies the Active Directory to be used for creating a
-      SMB volume.
+    activeDirectory: Optional. Specifies the Active Directory to be used for
+      creating a SMB volume.
     capacityGib: Required. Capacity in GIB of the pool
     createTime: Output only. Create time of the storage pool
-    description: Description of the storage pool
+    description: Optional. Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
     globalAccessAllowed: Deprecated. Used to allow SO pool to access AD or DNS
       server from other regions.
-    kmsConfig: Specifies the KMS config to be used for volume encryption.
-    labels: Labels as key value pairs
-    ldapEnabled: Flag indicating if the pool is NFS LDAP enabled or not.
+    kmsConfig: Optional. Specifies the KMS config to be used for volume
+      encryption.
+    labels: Optional. Labels as key value pairs
+    ldapEnabled: Optional. Flag indicating if the pool is NFS LDAP enabled or
+      not.
     name: Identifier. Name of the storage pool
     network: Required. VPC Network name. Format:
       projects/{project}/global/networks/{network}
-    psaRange: Name of the Private Service Access allocated range. If not
-      provided, any available range will be chosen.
+    psaRange: Optional. This field is not implemented. The values provided in
+      this field are ignored.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
@@ -2398,7 +2397,7 @@ class StoragePool(_messages.Message):
     r"""Output only. Specifies the current pool encryption key source.
 
     Values:
-      ENCRYPTION_TYPE_UNSPECIFIED: The source of encryption key is not
+      ENCRYPTION_TYPE_UNSPECIFIED: The source of the encryption key is not
         specified.
       SERVICE_MANAGED: Google managed encryption key.
       CLOUD_KMS: Customer managed encryption key, which is stored in KMS.
@@ -2414,12 +2413,14 @@ class StoragePool(_messages.Message):
       SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
-      STANDARD: Standard (Software offering)
+      STANDARD: Standard service level.
+      FLEX: Flex service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1
     EXTREME = 2
     STANDARD = 3
+    FLEX = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the storage pool
@@ -2445,7 +2446,7 @@ class StoragePool(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2484,6 +2485,39 @@ class StoragePool(_messages.Message):
   stateDetails = _messages.StringField(15)
   volumeCapacityGib = _messages.IntegerField(16)
   volumeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+
+
+class TieringPolicy(_messages.Message):
+  r"""Defines tiering policy for the volume.
+
+  Enums:
+    TierActionValueValuesEnum: Optional. Flag indicating if the volume has
+      tiering policy enable/pause. Default is PAUSED.
+
+  Fields:
+    coolingThresholdDays: Optional. Time in days to mark the volume's data
+      block as cold and make it eligible for tiering, can be range from 7-183.
+      Default is 31.
+    tierAction: Optional. Flag indicating if the volume has tiering policy
+      enable/pause. Default is PAUSED.
+  """
+
+  class TierActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Flag indicating if the volume has tiering policy
+    enable/pause. Default is PAUSED.
+
+    Values:
+      TIER_ACTION_UNSPECIFIED: Unspecified.
+      ENABLED: When tiering is enabled, new cold data will be tiered.
+      PAUSED: When paused, tiering won't be performed on new data. Existing
+        data stays tiered until accessed.
+    """
+    TIER_ACTION_UNSPECIFIED = 0
+    ENABLED = 1
+    PAUSED = 2
+
+  coolingThresholdDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  tierAction = _messages.EnumField('TierActionValueValuesEnum', 2)
 
 
 class TransferStats(_messages.Message):
@@ -2574,8 +2608,8 @@ class Volume(_messages.Message):
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
     protocols: Required. Protocols required for the volume
-    psaRange: Output only. Name of the Private Service Access allocated range.
-      This is optional. If not provided, any available range will be chosen.
+    psaRange: Output only. This field is not implemented. The values provided
+      in this field are ignored.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
     restrictedActions: Optional. List of actions that are restricted on this
@@ -2593,6 +2627,7 @@ class Volume(_messages.Message):
     state: Output only. State of the volume
     stateDetails: Output only. State details of the volume
     storagePool: Required. StoragePool name of the volume
+    tieringPolicy: Tiering policy for the volume.
     unixPermissions: Optional. Default unix style permission (e.g. 777) the
       mount point will be created with. Applicable for NFS protocol types
       only.
@@ -2604,7 +2639,7 @@ class Volume(_messages.Message):
     r"""Output only. Specified the current volume encryption key source.
 
     Values:
-      ENCRYPTION_TYPE_UNSPECIFIED: The source of encryption key is not
+      ENCRYPTION_TYPE_UNSPECIFIED: The source of the encryption key is not
         specified.
       SERVICE_MANAGED: Google managed encryption key.
       CLOUD_KMS: Customer managed encryption key, which is stored in KMS.
@@ -2643,7 +2678,7 @@ class Volume(_messages.Message):
     Values:
       SECURITY_STYLE_UNSPECIFIED: SecurityStyle is unspecified
       NTFS: SecurityStyle uses NTFS
-      UNIX: SecurityStyle uses NTFS
+      UNIX: SecurityStyle uses UNIX
     """
     SECURITY_STYLE_UNSPECIFIED = 0
     NTFS = 1
@@ -2656,12 +2691,14 @@ class Volume(_messages.Message):
       SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
       PREMIUM: Premium service level.
       EXTREME: Extreme service level.
-      STANDARD: Standard (Software offering)
+      STANDARD: Standard service level.
+      FLEX: Flex service level.
     """
     SERVICE_LEVEL_UNSPECIFIED = 0
     PREMIUM = 1
     EXTREME = 2
     STANDARD = 3
+    FLEX = 4
 
   class SmbSettingsValueListEntryValuesEnum(_messages.Enum):
     r"""SmbSettingsValueListEntryValuesEnum enum type.
@@ -2765,8 +2802,9 @@ class Volume(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 27)
   stateDetails = _messages.StringField(28)
   storagePool = _messages.StringField(29)
-  unixPermissions = _messages.StringField(30)
-  usedGib = _messages.IntegerField(31)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 30)
+  unixPermissions = _messages.StringField(31)
+  usedGib = _messages.IntegerField(32)
 
 
 class WeeklySchedule(_messages.Message):

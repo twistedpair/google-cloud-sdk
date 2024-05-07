@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from typing import Generator, Optional
 
-from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkeonprem import client
 from googlecloudsdk.api_lib.container.gkeonprem import update_mask
@@ -207,18 +206,6 @@ class ClustersClient(client.ClientBase):
         'upgradeConfig_clusterName': self._user_cluster_name(args),
         'parent': self._location_ref(args).RelativeName(),
     }
-
-    # This is a workaround for the limitation in apitools with nested messages.
-    encoding.AddCustomJsonFieldMapping(
-        messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
-        'createConfig_adminClusterMembership',
-        'createConfig.adminClusterMembership',
-    )
-    encoding.AddCustomJsonFieldMapping(
-        messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest,
-        'upgradeConfig_clusterName',
-        'upgradeConfig.clusterName',
-    )
 
     req = messages.GkeonpremProjectsLocationsVmwareClustersQueryVersionConfigRequest(
         **kwargs

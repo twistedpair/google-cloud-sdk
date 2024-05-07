@@ -356,6 +356,7 @@ DEPLOYMENT = 'DEPLOYMENT'
 STATEFULSET = 'STATEFULSET'
 CADVISOR = 'CADVISOR'
 KUBELET = 'KUBELET'
+DCGM = 'DCGM'
 LOGGING_OPTIONS = [
     NONE,
     SYSTEM,
@@ -380,6 +381,7 @@ MONITORING_OPTIONS = [
     STATEFULSET,
     CADVISOR,
     KUBELET,
+    DCGM,
 ]
 PRIMARY_LOGS_OPTIONS = [
     APISERVER,
@@ -726,6 +728,8 @@ class CreateClusterOptions(object):
       enable_secret_manager=None,
       enable_cilium_clusterwide_network_policy=None,
       storage_pools=None,
+      enable_ray_cluster_logging=None,
+      enable_ray_cluster_monitoring=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -951,6 +955,12 @@ class CreateClusterOptions(object):
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
     )
+    self.enable_ray_cluster_logging = (
+        enable_ray_cluster_logging
+    )
+    self.enable_ray_cluster_monitoring = (
+        enable_ray_cluster_monitoring
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1098,6 +1108,8 @@ class UpdateClusterOptions(object):
       enable_cilium_clusterwide_network_policy=None,
       enable_insecure_kubelet_readonly_port=None,
       autoprovisioning_enable_insecure_kubelet_readonly_port=None,
+      enable_ray_cluster_logging=None,
+      enable_ray_cluster_monitoring=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1253,6 +1265,12 @@ class UpdateClusterOptions(object):
     )
     self.autoprovisioning_enable_insecure_kubelet_readonly_port = (
         autoprovisioning_enable_insecure_kubelet_readonly_port
+    )
+    self.enable_ray_cluster_logging = (
+        enable_ray_cluster_logging
+    )
+    self.enable_ray_cluster_monitoring = (
+        enable_ray_cluster_monitoring
     )
 
 
@@ -1882,6 +1900,18 @@ class APIAdapter(object):
           raise util.Error(CONFIGCONNECTOR_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
         addons.configConnectorConfig = self.messages.ConfigConnectorConfig(
             enabled=True)
+      if options.enable_ray_cluster_logging is not None:
+        addons.rayOperatorConfig.rayClusterLoggingConfig = (
+            self.messages.RayClusterLoggingConfig(
+                enabled=options.enable_ray_cluster_logging
+            )
+        )
+      if options.enable_ray_cluster_monitoring is not None:
+        addons.rayOperatorConfig.rayClusterMonitoringConfig = (
+            self.messages.RayClusterMonitoringConfig(
+                enabled=options.enable_ray_cluster_monitoring
+            )
+        )
       cluster.addonsConfig = addons
     self.ParseMasterAuthorizedNetworkOptions(options, cluster)
 
@@ -3439,10 +3469,32 @@ class APIAdapter(object):
             self.messages.RayOperatorConfig(
                 enabled=not options.disable_addons.get(RAYOPERATOR)))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
+    elif (
+        options.enable_ray_cluster_logging is not None
+        or options.enable_ray_cluster_monitoring is not None
+    ):
+      addons = self._AddonsConfig(options, self.messages)
+
+      if options.enable_ray_cluster_logging is not None:
+        addons.rayOperatorConfig.rayClusterLoggingConfig = (
+            self.messages.RayClusterLoggingConfig(
+                enabled=options.enable_ray_cluster_logging
+            )
+        )
+
+      if options.enable_ray_cluster_monitoring is not None:
+        addons.rayOperatorConfig.rayClusterMonitoringConfig = (
+            self.messages.RayClusterMonitoringConfig(
+                enabled=options.enable_ray_cluster_monitoring
+            )
+        )
+
+      update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
       autoscaling = self.messages.NodePoolAutoscaling(
-          enabled=options.enable_autoscaling)
+          enabled=options.enable_autoscaling
+      )
       if options.enable_autoscaling:
         autoscaling.minNodeCount = options.min_nodes
         autoscaling.maxNodeCount = options.max_nodes
@@ -5483,6 +5535,56 @@ class APIAdapter(object):
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
 
+  def ModifyRayClusterLoggingConfig(
+      self, cluster_ref, enable_ray_cluster_logging
+  ):
+    """Enables Ray cluster log collection when using RayOperator addon."""
+
+    ray_operator_config = self.messages.RayOperatorConfig(
+        enabled=True,
+        rayClusterLoggingConfig=self.messages.RayClusterLoggingConfig(
+            enabled=enable_ray_cluster_logging
+        ),
+    )
+    addons_config = self.messages.AddonsConfig(
+        rayOperatorConfig=ray_operator_config
+    )
+    update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyRayClusterMonitoringConfig(
+      self, cluster_ref, enable_ray_cluster_monitoring
+  ):
+    """Enables Ray cluster metrics collection when using RayOperator addon."""
+
+    ray_operator_config = self.messages.RayOperatorConfig(
+        enabled=True,
+        rayClusterMonitoringConfig=self.messages.RayClusterMonitoringConfig(
+            enabled=enable_ray_cluster_monitoring
+        ),
+    )
+    addons_config = self.messages.AddonsConfig(
+        rayOperatorConfig=ray_operator_config
+    )
+    update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
 
 class V1Adapter(APIAdapter):
   """APIAdapter for v1."""
@@ -7088,6 +7190,10 @@ def _GetMonitoringConfig(options, messages):
       comp.enableComponents.append(
           messages.MonitoringComponentConfig
           .EnableComponentsValueListEntryValuesEnum.KUBELET)
+    if DCGM in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.DCGM)
 
     config.componentConfig = comp
 

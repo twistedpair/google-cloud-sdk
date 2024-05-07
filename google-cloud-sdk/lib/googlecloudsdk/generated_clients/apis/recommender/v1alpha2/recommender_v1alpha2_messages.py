@@ -1053,8 +1053,8 @@ class GoogleCloudRecommenderV1alpha2RecommenderConfig(_messages.Message):
   Fields:
     etag: Fingerprint of the RecommenderConfig. Provides optimistic locking
       when updating.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Identifier. Name of recommender config. Eg, projects/[PROJECT_NUMBER
+      ]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
     recommenderGenerationConfig: RecommenderGenerationConfig which configures
       the Generation of recommendations for this recommender.
     revisionId: Output only. Immutable. The revision ID of the config. A new
@@ -1327,7 +1327,7 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsMarkAcceptedRequest
     googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest', 1)
@@ -1343,7 +1343,7 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsMarkActiveRequest(_
     googleCloudRecommenderV1alpha2MarkInsightActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest', 1)
@@ -1359,7 +1359,7 @@ class RecommenderBillingAccountsLocationsInsightTypesInsightsMarkDismissedReques
     googleCloudRecommenderV1alpha2MarkInsightDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest', 1)
@@ -1448,7 +1448,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkActiveRe
     googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest', 1)
@@ -1463,7 +1463,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkClaimedR
     googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest', 1)
@@ -1478,7 +1478,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkDismisse
     googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest', 1)
@@ -1493,7 +1493,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkFailedRe
     googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest', 1)
@@ -1508,7 +1508,7 @@ class RecommenderBillingAccountsLocationsRecommendersRecommendationsMarkSucceede
     googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest', 1)
@@ -1573,7 +1573,7 @@ class RecommenderFoldersLocationsInsightTypesInsightsMarkAcceptedRequest(_messag
     googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest', 1)
@@ -1588,7 +1588,7 @@ class RecommenderFoldersLocationsInsightTypesInsightsMarkActiveRequest(_messages
     googleCloudRecommenderV1alpha2MarkInsightActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest', 1)
@@ -1603,7 +1603,7 @@ class RecommenderFoldersLocationsInsightTypesInsightsMarkDismissedRequest(_messa
     googleCloudRecommenderV1alpha2MarkInsightDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest', 1)
@@ -1691,7 +1691,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkActiveRequest(_m
     googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest', 1)
@@ -1707,7 +1707,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkClaimedRequest(_
     googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest', 1)
@@ -1723,7 +1723,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkDismissedRequest
     googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest', 1)
@@ -1739,7 +1739,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkFailedRequest(_m
     googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest', 1)
@@ -1755,7 +1755,7 @@ class RecommenderFoldersLocationsRecommendersRecommendationsMarkSucceededRequest
     googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest', 1)
@@ -1837,7 +1837,7 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkAcceptedRequest(_
     googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest', 1)
@@ -1852,7 +1852,7 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkActiveRequest(_me
     googleCloudRecommenderV1alpha2MarkInsightActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest', 1)
@@ -1868,7 +1868,7 @@ class RecommenderOrganizationsLocationsInsightTypesInsightsMarkDismissedRequest(
     googleCloudRecommenderV1alpha2MarkInsightDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest', 1)
@@ -1969,7 +1969,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkActiveRequ
     googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest', 1)
@@ -1984,7 +1984,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkClaimedReq
     googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest', 1)
@@ -1999,7 +1999,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkDismissedR
     googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest', 1)
@@ -2014,7 +2014,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkFailedRequ
     googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest', 1)
@@ -2029,7 +2029,7 @@ class RecommenderOrganizationsLocationsRecommendersRecommendationsMarkSucceededR
     googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest', 1)
@@ -2094,7 +2094,7 @@ class RecommenderProjectsLocationsInsightTypesInsightsMarkAcceptedRequest(_messa
     googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightAcceptedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightAcceptedRequest', 1)
@@ -2109,7 +2109,7 @@ class RecommenderProjectsLocationsInsightTypesInsightsMarkActiveRequest(_message
     googleCloudRecommenderV1alpha2MarkInsightActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightActiveRequest', 1)
@@ -2124,7 +2124,7 @@ class RecommenderProjectsLocationsInsightTypesInsightsMarkDismissedRequest(_mess
     googleCloudRecommenderV1alpha2MarkInsightDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest resource to be
       passed as the request body.
-    name: Name of the insight.
+    name: Required. Name of the insight.
   """
 
   googleCloudRecommenderV1alpha2MarkInsightDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkInsightDismissedRequest', 1)
@@ -2225,7 +2225,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkActiveRequest(_
     googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationActiveRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationActiveRequest', 1)
@@ -2241,7 +2241,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkClaimedRequest(
     googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationClaimedRequest', 1)
@@ -2257,7 +2257,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkDismissedReques
     googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationDismissedRequest', 1)
@@ -2273,7 +2273,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkFailedRequest(_
     googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest resource
       to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationFailedRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationFailedRequest', 1)
@@ -2289,7 +2289,7 @@ class RecommenderProjectsLocationsRecommendersRecommendationsMarkSucceededReques
     googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest: A
       GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest
       resource to be passed as the request body.
-    name: Name of the recommendation.
+    name: Required. Name of the recommendation.
   """
 
   googleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest = _messages.MessageField('GoogleCloudRecommenderV1alpha2MarkRecommendationSucceededRequest', 1)

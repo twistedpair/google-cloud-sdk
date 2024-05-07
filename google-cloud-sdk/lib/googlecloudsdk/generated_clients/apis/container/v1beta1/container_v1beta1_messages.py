@@ -990,6 +990,8 @@ class Cluster(_messages.Message):
     privateClusterConfig: Configuration for private cluster.
     protectConfig: Deprecated: Use SecurityPostureConfig instead.
       Enable/Disable Protect API features for the cluster.
+    rbacBindingConfig: RBACBindingConfig allows user to restrict
+      ClusterRoleBindings an RoleBindings that can be created.
     releaseChannel: Release channel configuration. If left unspecified on
       cluster creation and a version is specified, the cluster is enrolled in
       the most mature release channel where the version is available (first
@@ -1167,29 +1169,30 @@ class Cluster(_messages.Message):
   privateCluster = _messages.BooleanField(69)
   privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 70)
   protectConfig = _messages.MessageField('ProtectConfig', 71)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 72)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 73)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 74)
-  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 75)
-  satisfiesPzi = _messages.BooleanField(76)
-  satisfiesPzs = _messages.BooleanField(77)
-  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 78)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 79)
-  selfLink = _messages.StringField(80)
-  servicesIpv4Cidr = _messages.StringField(81)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 82)
-  status = _messages.EnumField('StatusValueValuesEnum', 83)
-  statusMessage = _messages.StringField(84)
-  subnetwork = _messages.StringField(85)
-  tpuConfig = _messages.MessageField('TpuConfig', 86)
-  tpuIpv4CidrBlock = _messages.StringField(87)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 88)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 89)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 90)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 91)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 92)
-  workloadMonitoringEnabledEap = _messages.BooleanField(93)
-  zone = _messages.StringField(94)
+  rbacBindingConfig = _messages.MessageField('RBACBindingConfig', 72)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 73)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 74)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 75)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 76)
+  satisfiesPzi = _messages.BooleanField(77)
+  satisfiesPzs = _messages.BooleanField(78)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 79)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 80)
+  selfLink = _messages.StringField(81)
+  servicesIpv4Cidr = _messages.StringField(82)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 83)
+  status = _messages.EnumField('StatusValueValuesEnum', 84)
+  statusMessage = _messages.StringField(85)
+  subnetwork = _messages.StringField(86)
+  tpuConfig = _messages.MessageField('TpuConfig', 87)
+  tpuIpv4CidrBlock = _messages.StringField(88)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 89)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 90)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 91)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 92)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 93)
+  workloadMonitoringEnabledEap = _messages.BooleanField(94)
+  zone = _messages.StringField(95)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1455,6 +1458,8 @@ class ClusterUpdate(_messages.Message):
       Google Services.
     desiredProtectConfig: Deprecated: Use DesiredSecurityPostureConfig
       instead. Enable/Disable Protect API features for the cluster.
+    desiredRbacBindingConfig: RBACBindingConfig allows user to restrict
+      ClusterRoleBindings an RoleBindings that can be created.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -1630,26 +1635,27 @@ class ClusterUpdate(_messages.Message):
   desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 65)
   desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 66)
   desiredProtectConfig = _messages.MessageField('ProtectConfig', 67)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 68)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 69)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 70)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 71)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 72)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 73)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 74)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 75)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 76)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 77)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 78)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 79)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 80)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 81)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 82)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 83)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 84)
-  etag = _messages.StringField(85)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 86)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 87)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 68)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 69)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 70)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 71)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 72)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 73)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 74)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 75)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 76)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 77)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 78)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 79)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 80)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 81)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 82)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 83)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 84)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 85)
+  etag = _messages.StringField(86)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 87)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 88)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):
@@ -5725,6 +5731,23 @@ class QueuedProvisioning(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class RBACBindingConfig(_messages.Message):
+  r"""RBACBindingConfig allows user to restrict ClusterRoleBindings an
+  RoleBindings that can be created.
+
+  Fields:
+    enableInsecureBindingSystemAuthenticated: Setting this to true will allow
+      any ClusterRoleBinding and RoleBinding with subjects
+      system:authenticated.
+    enableInsecureBindingSystemUnauthenticated: Setting this to true will
+      allow any ClusterRoleBinding and RoleBinding with subjets
+      system:anonymous or system:unauthenticated.
+  """
+
+  enableInsecureBindingSystemAuthenticated = _messages.BooleanField(1)
+  enableInsecureBindingSystemUnauthenticated = _messages.BooleanField(2)
 
 
 class RangeInfo(_messages.Message):

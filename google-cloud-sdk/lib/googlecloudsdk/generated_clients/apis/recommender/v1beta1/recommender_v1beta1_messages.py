@@ -412,8 +412,8 @@ class GoogleCloudRecommenderV1beta1InsightTypeConfig(_messages.Message):
       when updating.
     insightTypeGenerationConfig: InsightTypeGenerationConfig which configures
       the generation of insights for this insight type.
-    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
-      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    name: Identifier. Name of insight type config. Eg, projects/[PROJECT_NUMBE
+      R]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
     revisionId: Output only. Immutable. The revision ID of the config. A new
       revision is committed whenever the config is changed in any way. The
       format is an 8-character hexadecimal string.
@@ -1130,8 +1130,8 @@ class GoogleCloudRecommenderV1beta1RecommenderConfig(_messages.Message):
       used in user interfaces.
     etag: Fingerprint of the RecommenderConfig. Provides optimistic locking
       when updating.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Identifier. Name of recommender config. Eg, projects/[PROJECT_NUMBER
+      ]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
     recommenderGenerationConfig: RecommenderGenerationConfig which configures
       the Generation of recommendations for this recommender.
     revisionId: Output only. Immutable. The revision ID of the config. A new
@@ -1469,8 +1469,8 @@ class RecommenderBillingAccountsLocationsInsightTypesUpdateConfigRequest(_messag
     googleCloudRecommenderV1beta1InsightTypeConfig: A
       GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
       the request body.
-    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
-      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    name: Identifier. Name of insight type config. Eg, projects/[PROJECT_NUMBE
+      R]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
@@ -1641,8 +1641,8 @@ class RecommenderBillingAccountsLocationsRecommendersUpdateConfigRequest(_messag
     googleCloudRecommenderV1beta1RecommenderConfig: A
       GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
       the request body.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Identifier. Name of recommender config. Eg, projects/[PROJECT_NUMBER
+      ]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
@@ -1961,8 +1961,8 @@ class RecommenderOrganizationsLocationsInsightTypesUpdateConfigRequest(_messages
     googleCloudRecommenderV1beta1InsightTypeConfig: A
       GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
       the request body.
-    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
-      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    name: Identifier. Name of insight type config. Eg, projects/[PROJECT_NUMBE
+      R]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
@@ -2131,8 +2131,8 @@ class RecommenderOrganizationsLocationsRecommendersUpdateConfigRequest(_messages
     googleCloudRecommenderV1beta1RecommenderConfig: A
       GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
       the request body.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Identifier. Name of recommender config. Eg, projects/[PROJECT_NUMBER
+      ]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
@@ -2232,8 +2232,8 @@ class RecommenderProjectsLocationsInsightTypesUpdateConfigRequest(_messages.Mess
     googleCloudRecommenderV1beta1InsightTypeConfig: A
       GoogleCloudRecommenderV1beta1InsightTypeConfig resource to be passed as
       the request body.
-    name: Name of insight type config. Eg, projects/[PROJECT_NUMBER]/locations
-      /[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
+    name: Identifier. Name of insight type config. Eg, projects/[PROJECT_NUMBE
+      R]/locations/[LOCATION]/insightTypes/[INSIGHT_TYPE_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.
@@ -2404,8 +2404,8 @@ class RecommenderProjectsLocationsRecommendersUpdateConfigRequest(_messages.Mess
     googleCloudRecommenderV1beta1RecommenderConfig: A
       GoogleCloudRecommenderV1beta1RecommenderConfig resource to be passed as
       the request body.
-    name: Name of recommender config. Eg, projects/[PROJECT_NUMBER]/locations/
-      [LOCATION]/recommenders/[RECOMMENDER_ID]/config
+    name: Identifier. Name of recommender config. Eg, projects/[PROJECT_NUMBER
+      ]/locations/[LOCATION]/recommenders/[RECOMMENDER_ID]/config
     updateMask: The list of fields to be updated.
     validateOnly: If true, validate the request and preview the change, but do
       not actually update it.

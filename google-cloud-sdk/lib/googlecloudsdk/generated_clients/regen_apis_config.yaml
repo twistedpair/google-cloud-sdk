@@ -1287,9 +1287,11 @@ apis:
     v1alpha1:
       discovery_doc: sasportal_v1alpha1.json
   seclm:
+    v1:
+      discovery_doc: seclm_v1.json
+      default: true
     v1alpha:
       discovery_doc: seclm_v1alpha.json
-      default: true
   secretmanager:
     v1:
       discovery_doc: secretmanager_v1.json

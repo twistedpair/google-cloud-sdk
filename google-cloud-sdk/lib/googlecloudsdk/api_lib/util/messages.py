@@ -168,28 +168,3 @@ def DictToMessageWithErrorCheck(dict_,
       raise DecodeError.FromErrorPaths(message, errors)
 
     return message
-
-
-# This is a fix for b/124063772 that does not require an extensive re-write of
-# apitools client generation. You would call this method from either a
-# declarative request hook or a Python API wrapper when building the request.
-# Ex.
-# request_type = messages.AddCustomJSONFieldMappingsToRequest(
-#        self.messages.MsgType, CUSTOM_MAPPINGS_DICT))
-# request = request_type(...)
-def AddCustomJSONFieldMappingsToRequest(request_type, mappings):
-  """Adds CustomJsonFieldMappings to the provided request_type.
-
-  Args:
-    request_type: (protorpc.messages.Message) request type for this API call
-    mappings: (dict) Map from Python field names to JSON field names to be
-      used on the wire.
-
-  Returns:
-    Updated request class containing the desired custom JSON mappings.
-  """
-  for req_field, mapped_param in mappings.items():
-    _encoding.AddCustomJsonFieldMapping(message_type=request_type,
-                                        python_name=req_field,
-                                        json_name=mapped_param)
-  return request_type

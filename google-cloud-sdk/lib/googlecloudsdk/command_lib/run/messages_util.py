@@ -20,15 +20,20 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 
-def GetSuccessMessageForSynchronousDeploy(service):
+def GetSuccessMessageForSynchronousDeploy(service, no_traffic):
   """Returns a user message for a successful synchronous deploy.
 
   Args:
     service: googlecloudsdk.api_lib.run.service.Service, Deployed service for
       which to build a success message.
+    no_traffic: bool, whether the service was deployed with --no-traffic flag.
   """
   latest_ready = service.status.latestReadyRevisionName
-  latest_percent_traffic = service.latest_percent_traffic
+  # Use lastCreatedRevisionName if --no-traffic is set. This was due to a bug
+  # where the latestReadyRevisionName was not updated in time when traffic
+  # update was not needed in reconciliation steps.
+  latest_created = service.status.latestCreatedRevisionName
+  latest_percent_traffic = 0 if no_traffic else service.latest_percent_traffic
   msg = (
       'Service [{{bold}}{serv}{{reset}}] '
       'revision [{{bold}}{rev}{{reset}}] '
@@ -46,7 +51,7 @@ def GetSuccessMessageForSynchronousDeploy(service):
   return (
       msg.format(
           serv=service.name,
-          rev=latest_ready,
+          rev=latest_created if no_traffic else latest_ready,
           url=service.domain,
           latest_percent_traffic=latest_percent_traffic,
       )
@@ -183,7 +188,7 @@ def GetBuildEquivalentForSourceRunMessage(name, pack, source, subgroup=''):
   )
 
 
-def GetSuccessMessageForWorkerDeploy(worker):
+def GetSuccessMessageForWorkerDeploy(worker, no_promote):
   """Returns a user message for a successful synchronous deploy.
 
   TODO(b/322180968): Once Worker API is ready, replace Service related
@@ -191,8 +196,13 @@ def GetSuccessMessageForWorkerDeploy(worker):
   Args:
     worker: googlecloudsdk.api_lib.run.service.Service, Deployed service for
       which to build a success message.
+    no_promote: bool, whether the worker was deployed with --no-promote flag.
   """
   latest_ready = worker.status.latestReadyRevisionName
+  # Use lastCreatedRevisionName if --no-promote is set. This was due to a bug
+  # where the latestReadyRevisionName was not updated in time when traffic
+  # update was not needed in reconciliation steps.
+  latest_created = worker.status.latestCreatedRevisionName
   msg = (
       'Worker [{{bold}}{worker}{{reset}}] '
       'revision [{{bold}}{rev}{{reset}}] '
@@ -200,5 +210,5 @@ def GetSuccessMessageForWorkerDeploy(worker):
   )
   return msg.format(
       worker=worker.name,
-      rev=latest_ready,
+      rev=latest_created if no_promote else latest_ready,
   )

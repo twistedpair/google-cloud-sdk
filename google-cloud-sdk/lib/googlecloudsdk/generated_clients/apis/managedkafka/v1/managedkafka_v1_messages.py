@@ -1075,13 +1075,13 @@ class Topic(_messages.Message):
     name: Identifier. The name of the topic. The `topic` segment is used when
       connecting directly to the cluster. Structured like: projects/{project}/
       locations/{location}/clusters/{cluster}/topics/{topic}
-    partitionCount: Optional. The number of partitions this topic has. The
+    partitionCount: Required. The number of partitions this topic has. The
       partition count can only be increased, not decreased. Please note that
       if partitions are increased for a topic that has a key, the partitioning
       logic or the ordering of the messages will be affected.
-    replicationFactor: Optional. Immutable. The number of replicas of each
-      partition. If not specified during creation, the cluster's default
-      replication factor (3) is used.
+    replicationFactor: Required. Immutable. The number of replicas of each
+      partition. A replication factor of 3 is recommended for high
+      availability.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

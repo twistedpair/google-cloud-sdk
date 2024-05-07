@@ -45,6 +45,7 @@ def format_for_listing(pool_list, _):
 
   Args:
     pool_list: list of storage pools.
+
   Returns:
     the inputted pool list, with the added fields containing new formatting.
   """
@@ -55,8 +56,8 @@ def _format_single(pool):
   """Format a single pool for displaying it in the list response."""
   _add_types(pool)
   _add_capacity(pool)
-  _maybe_add_iops(pool)
-  _maybe_add_throughput(pool)
+  _add_iops(pool)
+  _add_throughput(pool)
 
   return pool
 
@@ -66,6 +67,7 @@ def _add_capacity(pool):
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     nothing, it changes the input value.
   """
@@ -84,15 +86,23 @@ def _add_capacity(pool):
   pool["formattedCapacity"] = formatted_capacity
 
 
-def _maybe_add_iops(pool):
+def _add_iops(pool):
   """Add iops formatting.
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     nothing, it changes the input value.
   """
   if not pool.get("poolProvisionedIops"):
+    pool["formattedIops"] = "<n/a>"
+    return
+
+  if not pool.get("status", {}).get("poolUsedIops"):
+    pool["formattedIops"] = "{:,}".format(
+        int(pool["poolProvisionedIops"])
+    )
     return
 
   provisioned_iops = int(pool["poolProvisionedIops"])
@@ -105,15 +115,23 @@ def _maybe_add_iops(pool):
   pool["formattedIops"] = formatted_iops
 
 
-def _maybe_add_throughput(pool):
+def _add_throughput(pool):
   """Add throughput formatting.
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     nothing, it changes the input value.
   """
   if not pool.get("poolProvisionedThroughput"):
+    pool["formattedThroughput"] = "<n/a>"
+    return
+
+  if not pool.get("status", {}).get("poolUsedThroughput"):
+    pool["formattedThroughput"] = "{:,}".format(
+        int(pool["poolProvisionedThroughput"])
+    )
     return
 
   provisioned_throughput = int(pool["poolProvisionedThroughput"])
@@ -133,6 +151,7 @@ def _add_types(pool):
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     nothing, it changes the input value.
   """
@@ -150,6 +169,7 @@ def _format_pool_type(pool):
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     the formatted string
   """
@@ -171,6 +191,7 @@ def _format_capacity_provisioning_type(pool):
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     the abbreviated string
   """
@@ -184,6 +205,7 @@ def _format_perf_provisioning_type(pool):
 
   Args:
     pool: the serializable storage pool
+
   Returns:
     the abbreviated string
   """

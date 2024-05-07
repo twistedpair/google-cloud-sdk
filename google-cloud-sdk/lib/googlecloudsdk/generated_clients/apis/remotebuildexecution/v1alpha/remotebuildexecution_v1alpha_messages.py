@@ -208,6 +208,14 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
   what filesystems are mounted where) is defined by and specific to the
   implementation of the remote execution API.
 
+  Enums:
+    OutputDirectoryFormatValueValuesEnum: The format that the worker should
+      use to store the contents of output directories. In case this field is
+      set to a value that is not supported by the worker, the worker SHOULD
+      interpret this field as TREE_ONLY. The worker MAY store output
+      directories in formats that are a superset of what was requested (e.g.,
+      interpreting DIRECTORY_ONLY as TREE_AND_DIRECTORY).
+
   Fields:
     arguments: The arguments to the command. The first argument specifies the
       command to run, which may be either an absolute path, a path relative to
@@ -250,6 +258,12 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       directories themselves) are created by the worker prior to execution,
       even if they are not explicitly part of the input root. DEPRECATED since
       2.1: Use `output_paths` instead.
+    outputDirectoryFormat: The format that the worker should use to store the
+      contents of output directories. In case this field is set to a value
+      that is not supported by the worker, the worker SHOULD interpret this
+      field as TREE_ONLY. The worker MAY store output directories in formats
+      that are a superset of what was requested (e.g., interpreting
+      DIRECTORY_ONLY as TREE_AND_DIRECTORY).
     outputFiles: A list of the output files that the client expects to
       retrieve from the action. Only the listed files, as well as directories
       listed in `output_directories`, will be returned to the client as
@@ -307,14 +321,37 @@ class BuildBazelRemoteExecutionV2Command(_messages.Message):
       tree. If it is left empty, then the action is run in the input root.
   """
 
+  class OutputDirectoryFormatValueValuesEnum(_messages.Enum):
+    r"""The format that the worker should use to store the contents of output
+    directories. In case this field is set to a value that is not supported by
+    the worker, the worker SHOULD interpret this field as TREE_ONLY. The
+    worker MAY store output directories in formats that are a superset of what
+    was requested (e.g., interpreting DIRECTORY_ONLY as TREE_AND_DIRECTORY).
+
+    Values:
+      TREE_ONLY: The client is only interested in receiving output directories
+        in the form of a single Tree object, using the `tree_digest` field.
+      DIRECTORY_ONLY: The client is only interested in receiving output
+        directories in the form of a hierarchy of separately stored Directory
+        objects, using the `root_directory_digest` field.
+      TREE_AND_DIRECTORY: The client is interested in receiving output
+        directories both in the form of a single Tree object and a hierarchy
+        of separately stored Directory objects, using both the `tree_digest`
+        and `root_directory_digest` fields.
+    """
+    TREE_ONLY = 0
+    DIRECTORY_ONLY = 1
+    TREE_AND_DIRECTORY = 2
+
   arguments = _messages.StringField(1, repeated=True)
   environmentVariables = _messages.MessageField('BuildBazelRemoteExecutionV2CommandEnvironmentVariable', 2, repeated=True)
   outputDirectories = _messages.StringField(3, repeated=True)
-  outputFiles = _messages.StringField(4, repeated=True)
-  outputNodeProperties = _messages.StringField(5, repeated=True)
-  outputPaths = _messages.StringField(6, repeated=True)
-  platform = _messages.MessageField('BuildBazelRemoteExecutionV2Platform', 7)
-  workingDirectory = _messages.StringField(8)
+  outputDirectoryFormat = _messages.EnumField('OutputDirectoryFormatValueValuesEnum', 4)
+  outputFiles = _messages.StringField(5, repeated=True)
+  outputNodeProperties = _messages.StringField(6, repeated=True)
+  outputPaths = _messages.StringField(7, repeated=True)
+  platform = _messages.MessageField('BuildBazelRemoteExecutionV2Platform', 8)
+  workingDirectory = _messages.StringField(9)
 
 
 class BuildBazelRemoteExecutionV2CommandEnvironmentVariable(_messages.Message):
@@ -357,8 +394,8 @@ class BuildBazelRemoteExecutionV2Digest(_messages.Message):
   concatenating two messages to merge them may produce duplicate fields.
 
   Fields:
-    hash: The hash. In the case of SHA-256, it will always be a lowercase hex
-      string exactly 64 characters long.
+    hash: The hash, represented as a lowercase hexadecimal string, padded with
+      leading zeroes up to the hash function length.
     sizeBytes: The size of the blob, in bytes.
   """
 
@@ -717,13 +754,18 @@ class BuildBazelRemoteExecutionV2OutputDirectory(_messages.Message):
       The path separator is a forward slash `/`. Since this is a relative
       path, it MUST NOT begin with a leading forward slash. The empty string
       value is allowed, and it denotes the entire working directory.
+    rootDirectoryDigest: The digest of the encoded Directory proto containing
+      the contents the directory's root. If both `tree_digest` and
+      `root_directory_digest` are set, this field MUST match the digest of the
+      root directory contained in the Tree message.
     treeDigest: The digest of the encoded Tree proto containing the
       directory's contents.
   """
 
   isTopologicallySorted = _messages.BooleanField(1)
   path = _messages.StringField(2)
-  treeDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 3)
+  rootDirectoryDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 3)
+  treeDigest = _messages.MessageField('BuildBazelRemoteExecutionV2Digest', 4)
 
 
 class BuildBazelRemoteExecutionV2OutputFile(_messages.Message):
@@ -1345,7 +1387,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaBackendIAMBinding(_messages.
 
   Fields:
     principal: Required. The IAM principal (i.e. twosync or twosync-src group)
-      this binding applies to.
+      this binding applies to. This should be prefixed with `group:`. Example
+      format: group:alphasource-foundry-team-policy@twosync.google.com
     role: Required. The RBE-managed IAM role this binding applies to. The set
       of eligible roles depends on which instance allowlist(s) the parent
       instance is a member of, specifically with regards to the

@@ -60,6 +60,36 @@ def _GetParentResourceFromArgs(args):
     )
 
 
+def GetServiceNameFromArgs(args) -> str:
+  """Returns the specified service name from args if it exists.
+
+  Otherwise, an exception is raised detailing the parsing error along with the
+  expectation.
+
+  Args:
+    args: The argument input as the gcloud command.
+
+  Raises:
+    InvalidServiceNameError: the specified service name was invalid.
+  """
+
+  parent = GetParentResourceNameFromArgs(args)
+  service_abbr = args.service_name.upper()
+  if (
+      service_name := constants.SecurityCenterServices.SERVICE_MAPPING.get(
+          service_abbr
+      )
+  ) is not None:
+    return f'{parent}/{constants.SecurityCenterServices.SERVICE}/{service_name}'
+  elif (
+      args.service_name
+      in constants.SecurityCenterServices.SERVICE_MAPPING.values()
+  ):
+    return f'{parent}/{constants.SecurityCenterServices.SERVICE}/{args.service_name}'
+  else:
+    raise errors.InvalidServiceNameError(args.service_name)
+
+
 def GetModuleIdFromArgs(args) -> str:
   """Returns the module id from args."""
   if not args.module_id_or_name:
@@ -259,4 +289,59 @@ def CreateUpdateMaskFromArgs(args):
         'Error parsing Update Mask. Either a custom configuration or an'
         ' enablement state (or both) must be provided to update the custom'
         ' module.'
+    )
+
+
+def GetModuleConfigValueFromArgs(file: str):
+  """Process the module config file for the service."""
+  if file is not None:
+    try:
+      config = yaml.load(file)
+      return encoding.DictToMessage(
+          config, messages.SecurityCenterService.ModulesValue
+      )
+    except (yaml.YAMLParseError, AttributeError) as ype:
+      raise errors.InvalidConfigValueFileError(
+          f'Error parsing config value file [{ype}]'
+      )
+  else:
+    return None
+
+
+def GetServiceEnablementStateFromArgs(enablement_state: str):
+  """Parse the service enablement state."""
+  state_enum = (
+      messages.SecurityCenterService.IntendedEnablementStateValueValuesEnum
+  )
+
+  if enablement_state is None:
+    return None
+
+  state = enablement_state.upper()
+  match state:
+    case 'ENABLED':
+      return state_enum.ENABLED
+    case 'DISABLED':
+      return state_enum.DISABLED
+    case 'INHERITED':
+      return state_enum.INHERITED
+    case _:
+      raise errors.InvalidEnablementStateError(
+          f'Error parsing enablement state. "{state}" is not a valid enablement'
+          ' state. Please provide one of ENABLED, DISABLED, or INHERITED.'
+      )
+
+
+def CreateUpdateMaskFromArgsForService(args):
+  """Create an update mask with the args given for the given service."""
+  if args.enablement_state is not None and args.module_config_file is not None:
+    return 'intended_enablement_state,modules'
+  elif args.enablement_state is not None:
+    return 'intended_enablement_state'
+  elif args.module_config_file is not None:
+    return 'modules'
+  else:
+    raise errors.InvalidUpdateMaskInputError(
+        'Error parsing Update Mask. Either a module configuration or an'
+        ' enablement state (or both) must be provided to update the service.'
     )

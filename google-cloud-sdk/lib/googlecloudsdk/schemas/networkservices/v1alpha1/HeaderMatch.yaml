@@ -34,7 +34,9 @@ properties:
       set.
     type: string
   headerName:
-    description: The header name to match on.
+    description: |-
+      The header name to match on. The `:method` pseudo- header may be used to
+      match on the request HTTP method.
     type: string
   invertMatch:
     description: |-

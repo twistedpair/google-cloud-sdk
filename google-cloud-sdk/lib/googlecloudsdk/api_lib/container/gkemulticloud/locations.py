@@ -17,7 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container.gkemulticloud import client
 from googlecloudsdk.command_lib.container.attached import flags as attached_flags
 
@@ -63,18 +62,6 @@ class LocationsClient(client.ClientBase):
         attached_flags.GetProxySecretNamespace(args),
     )
 
-    # This is a workaround for the limitation in apitools with nested messages.
-    encoding.AddCustomJsonFieldMapping(
-        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
-        'proxyConfig_kubernetesSecret_name',
-        'proxyConfig.kubernetesSecret.name',
-    )
-    encoding.AddCustomJsonFieldMapping(
-        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
-        'proxyConfig_kubernetesSecret_namespace',
-        'proxyConfig.kubernetesSecret.namespace',
-    )
-
     return self._service.GenerateAttachedClusterInstallManifest(req)
 
   def GenerateInstallManifestForImport(
@@ -90,15 +77,4 @@ class LocationsClient(client.ClientBase):
         attached_flags.GetProxySecretNamespace(args),
     )
 
-    # This is a workaround for the limitation in apitools with nested messages.
-    encoding.AddCustomJsonFieldMapping(
-        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
-        'proxyConfig_kubernetesSecret_name',
-        'proxyConfig.kubernetesSecret.name',
-    )
-    encoding.AddCustomJsonFieldMapping(
-        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
-        'proxyConfig_kubernetesSecret_namespace',
-        'proxyConfig.kubernetesSecret.namespace',
-    )
     return self._service.GenerateAttachedClusterInstallManifest(req)

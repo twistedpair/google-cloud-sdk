@@ -776,3 +776,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsKuberunsListRequest, 'continue_', 'continue')
+encoding.AddCustomJsonFieldMapping(
+    AnthoseventsNamespacesCloudrunsListRequest, 'continue_', 'continue')

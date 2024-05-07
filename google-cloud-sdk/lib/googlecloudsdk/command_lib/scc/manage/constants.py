@@ -40,3 +40,14 @@ class CustomModuleType(StrEnum):
   ETD = 'eventThreatDetectionCustomModules'
   EFFECTIVE_ETD = 'effectiveEventThreatDetectionCustomModules'
   EFFECTIVE_SHA = 'effectiveSecurityHealthAnalyticsCustomModules'
+
+
+class SecurityCenterServices:
+  SERVICE = 'securityCenterServices'
+  SERVICE_MAPPING = {
+      'CTD': 'container-threat-detection',
+      'ETD': 'event-threat-detection',
+      'SHA': 'security-health-analytics',
+      'VMTD': 'vm-threat-detection',
+      'WSS': 'web-security-scanner',
+  }

@@ -1198,6 +1198,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
     finishTime: Output only. Time at which execution of the build was
       finished. The difference between finish_time and start_time is the
       duration of the build's execution.
+    gitConfig: Optional. Configuration for git operations.
     id: Output only. Unique identifier of the build.
     images: A list of images to be pushed upon the successful completion of
       all build steps. The images are pushed using the builder service
@@ -1339,28 +1340,29 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Build(_messages.Message):
   createTime = _messages.StringField(5)
   failureInfo = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildFailureInfo', 6)
   finishTime = _messages.StringField(7)
-  id = _messages.StringField(8)
-  images = _messages.StringField(9, repeated=True)
-  logUrl = _messages.StringField(10)
-  logsBucket = _messages.StringField(11)
-  name = _messages.StringField(12)
-  options = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions', 13)
-  projectId = _messages.StringField(14)
-  queueTtl = _messages.StringField(15)
-  results = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Results', 16)
-  secrets = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Secret', 17, repeated=True)
-  serviceAccount = _messages.StringField(18)
-  source = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Source', 19)
-  sourceProvenance = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance', 20)
-  startTime = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusDetail = _messages.StringField(23)
-  steps = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep', 24, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 25)
-  tags = _messages.StringField(26, repeated=True)
-  timeout = _messages.StringField(27)
-  timing = _messages.MessageField('TimingValue', 28)
-  warnings = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning', 29, repeated=True)
+  gitConfig = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfig', 8)
+  id = _messages.StringField(9)
+  images = _messages.StringField(10, repeated=True)
+  logUrl = _messages.StringField(11)
+  logsBucket = _messages.StringField(12)
+  name = _messages.StringField(13)
+  options = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildOptions', 14)
+  projectId = _messages.StringField(15)
+  queueTtl = _messages.StringField(16)
+  results = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Results', 17)
+  secrets = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Secret', 18, repeated=True)
+  serviceAccount = _messages.StringField(19)
+  source = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Source', 20)
+  sourceProvenance = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance', 21)
+  startTime = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  statusDetail = _messages.StringField(24)
+  steps = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildStep', 25, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 26)
+  tags = _messages.StringField(27, repeated=True)
+  timeout = _messages.StringField(28)
+  timing = _messages.MessageField('TimingValue', 29)
+  warnings = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1BuildWarning', 30, repeated=True)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1BuildApproval(_messages.Message):
@@ -1831,6 +1833,23 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1ConnectedRepository(_messages.M
   revision = _messages.StringField(3)
 
 
+class ContaineranalysisGoogleDevtoolsCloudbuildV1DeveloperConnectConfig(_messages.Message):
+  r"""This config defines the location of a source through Developer Connect.
+
+  Fields:
+    dir: Required. Directory, relative to the source root, in which to run the
+      build.
+    gitRepositoryLink: Required. The Developer Connect Git repository link,
+      formatted as `projects/*/locations/*/connections/*/gitRepositoryLink/*`.
+    revision: Required. The revision to fetch from the Git repository such as
+      a branch, a tag, a commit SHA, or any Git ref.
+  """
+
+  dir = _messages.StringField(1)
+  gitRepositoryLink = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
 class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   r"""Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
@@ -1840,6 +1859,27 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   """
 
   fileHash = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfig(_messages.Message):
+  r"""GitConfig is a configuration for git operations.
+
+  Fields:
+    http: Configuration for HTTP related git operations.
+  """
+
+  http = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfigHttpConfig', 1)
+
+
+class ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfigHttpConfig(_messages.Message):
+  r"""HttpConfig is a configuration for HTTP related git operations.
+
+  Fields:
+    proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
+      proxy URL should be in format protocol://@]proxyhost[:port].
+  """
+
+  proxySecretVersionName = _messages.StringField(1)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource(_messages.Message):
@@ -2138,6 +2178,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
   Fields:
     connectedRepository: Optional. If provided, get the source from this 2nd-
       gen Google Cloud Build repository resource.
+    developerConnectConfig: If provided, get the source from this Developer
+      Connect config.
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
@@ -2150,10 +2192,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
   """
 
   connectedRepository = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ConnectedRepository', 1)
-  gitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 2)
-  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 3)
-  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 4)
-  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 5)
+  developerConnectConfig = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1DeveloperConnectConfig', 2)
+  gitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 3)
+  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 4)
+  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 5)
+  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 6)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):

@@ -307,6 +307,8 @@ class ConsumerPscConnection(_messages.Message):
     network: The consumer network whose PSC forwarding rule is connected to
       the service attachments in this service connection map. Note that the
       network could be on a different project (shared VPC).
+    producerInstanceId: Immutable. An immutable identifier for the producer
+      instance.
     project: The consumer project whose PSC forwarding rule is connected to
       the service attachments in this service connection map.
     pscConnectionId: The PSC connection id of the PSC forwarding rule
@@ -358,11 +360,12 @@ class ConsumerPscConnection(_messages.Message):
   gceOperation = _messages.StringField(5)
   ip = _messages.StringField(6)
   network = _messages.StringField(7)
-  project = _messages.StringField(8)
-  pscConnectionId = _messages.StringField(9)
-  selectedSubnetwork = _messages.StringField(10)
-  serviceAttachmentUri = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  producerInstanceId = _messages.StringField(8)
+  project = _messages.StringField(9)
+  pscConnectionId = _messages.StringField(10)
+  selectedSubnetwork = _messages.StringField(11)
+  serviceAttachmentUri = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class DeactivateSpokeRequest(_messages.Message):
@@ -902,11 +905,9 @@ class Hub(_messages.Message):
       POLICY_MODE_UNSPECIFIED: Policy mode is unspecified. It defaults to
         PRESET with preset_topology = MESH.
       PRESET: Hub uses one of the preset topologies.
-      CUSTOM: Hub can freely specify the topology using groups and policy.
     """
     POLICY_MODE_UNSPECIFIED = 0
     PRESET = 1
-    CUSTOM = 2
 
   class PresetTopologyValueValuesEnum(_messages.Enum):
     r"""Optional. The topology implemented in this hub. Currently, this field
@@ -918,8 +919,6 @@ class Hub(_messages.Message):
     Values:
       PRESET_TOPOLOGY_UNSPECIFIED: Preset topology is unspecified. When
         policy_mode = PRESET, it defaults to MESH.
-      PRESET_TOPOLOGY_DISALLOWED: No preset topology is allowed. It is used
-        when policy_mode is `custom`.
       MESH: Mesh topology is implemented. Group `default` is automatically
         created. All spokes in the hub are added to group `default`.
       STAR: Star topology is implemented. Two groups, `center` and `edge`, are
@@ -927,9 +926,8 @@ class Hub(_messages.Message):
         of the groups during creation.
     """
     PRESET_TOPOLOGY_UNSPECIFIED = 0
-    PRESET_TOPOLOGY_DISALLOWED = 1
-    MESH = 2
-    STAR = 3
+    MESH = 1
+    STAR = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this hub.
@@ -1187,6 +1185,23 @@ class LinkedInterconnectAttachments(_messages.Message):
   siteToSiteDataTransfer = _messages.BooleanField(1)
   uris = _messages.StringField(2, repeated=True)
   vpcNetwork = _messages.StringField(3)
+
+
+class LinkedPrivateServicesAccess(_messages.Message):
+  r"""Next ID: 4
+
+  Fields:
+    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
+      excluded from peering.
+    includeExportRanges: Optional. IP ranges allowed to be included from
+      peering.
+    network: Immutable. The URI of the home VPC uri where private services
+      access is peered with.
+  """
+
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  includeExportRanges = _messages.StringField(2, repeated=True)
+  network = _messages.StringField(3)
 
 
 class LinkedRouterApplianceInstances(_messages.Message):
@@ -1685,58 +1700,6 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGetRequest(_messages.Message
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest
-  object.
-
-  Fields:
-    group: A Group resource to be passed as the request body.
-    groupId: Required. A unique identifier for the group
-    parent: Required. The parent resource.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server knows to
-      ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check to see
-      whether the original operation was received. If it was, the server
-      ignores the second request. This behavior prevents clients from
-      mistakenly creating duplicate commitments. The request ID must be a
-      valid UUID, with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  group = _messages.MessageField('Group', 1)
-  groupId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. The name of the group to delete.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server knows to
-      ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check to see
-      whether the original operation was received. If it was, the server
-      ignores the second request. This behavior prevents clients from
-      mistakenly creating duplicate commitments. The request ID must be a
-      valid UUID, with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest(_messages.Message):
@@ -3607,6 +3570,8 @@ class PscConnection(_messages.Message):
     errorType: The error type indicates whether the error is consumer facing,
       producer facing or system internal.
     gceOperation: The last Compute Engine operation to setup PSC connection.
+    producerInstanceId: Immutable. An immutable identifier for the producer
+      instance.
     pscConnectionId: The PSC connection id of the PSC forwarding rule.
     selectedSubnetwork: Output only. The URI of the subnetwork selected to
       allocate IP address for this connection.
@@ -3653,9 +3618,10 @@ class PscConnection(_messages.Message):
   errorInfo = _messages.MessageField('GoogleRpcErrorInfo', 5)
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 6)
   gceOperation = _messages.StringField(7)
-  pscConnectionId = _messages.StringField(8)
-  selectedSubnetwork = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  producerInstanceId = _messages.StringField(8)
+  pscConnectionId = _messages.StringField(9)
+  selectedSubnetwork = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class RegionalEndpoint(_messages.Message):
@@ -3934,9 +3900,6 @@ class RouteTable(_messages.Message):
   Fields:
     createTime: Output only. The time the route table was created.
     description: An optional description of the route table.
-    group: Output only. The name of the group the route table is associated
-      with. Groups use the following form: `projects/{project_number}/location
-      s/global/hubs/{hub}/groups/{group_name}`
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
@@ -4009,12 +3972,11 @@ class RouteTable(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  group = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  uid = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class RouterApplianceInstance(_messages.Message):
@@ -4387,6 +4349,8 @@ class Spoke(_messages.Message):
       managing-labels#requirements).
     linkedInterconnectAttachments: VLAN attachments that are associated with
       the spoke.
+    linkedPrivateServicesAccess: Optional. The linked private service access
+      that is associated with the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
     linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
@@ -4414,12 +4378,14 @@ class Spoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
+    PRIVATE_SERVICES_ACCESS = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -4482,15 +4448,16 @@ class Spoke(_messages.Message):
   hub = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 6)
-  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 7)
-  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 8)
-  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 9)
-  name = _messages.StringField(10)
-  reasons = _messages.MessageField('StateReason', 11, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uniqueId = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  linkedPrivateServicesAccess = _messages.MessageField('LinkedPrivateServicesAccess', 7)
+  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 8)
+  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 9)
+  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 10)
+  name = _messages.StringField(11)
+  reasons = _messages.MessageField('StateReason', 12, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  uniqueId = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class SpokeStateCount(_messages.Message):
@@ -4615,12 +4582,14 @@ class SpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
+      PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
+    PRIVATE_SERVICES_ACCESS = 5
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)
@@ -4841,3 +4810,17 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsServiceClassesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsServiceConnectionMapsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsServiceConnectionPoliciesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

@@ -3170,3 +3170,11 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    CloudidentityGroupsLookupRequest, 'groupKey_id', 'groupKey.id')
+encoding.AddCustomJsonFieldMapping(
+    CloudidentityGroupsLookupRequest, 'groupKey_namespace', 'groupKey.namespace')
+encoding.AddCustomJsonFieldMapping(
+    CloudidentityGroupsMembershipsLookupRequest, 'memberKey_id', 'memberKey.id')
+encoding.AddCustomJsonFieldMapping(
+    CloudidentityGroupsMembershipsLookupRequest, 'memberKey_namespace', 'memberKey.namespace')

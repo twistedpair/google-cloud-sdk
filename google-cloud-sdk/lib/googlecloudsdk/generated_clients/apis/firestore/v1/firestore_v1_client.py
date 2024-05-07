@@ -1165,7 +1165,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=[],
+        query_params=['showDeleted'],
         relative_path='v1/{+parent}/databases',
         request_field='',
         request_type_name='FirestoreProjectsDatabasesListRequest',

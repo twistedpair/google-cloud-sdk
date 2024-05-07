@@ -195,6 +195,10 @@ def PopulateClusterAlphaMessage(req, messages, args):
         json.dumps(args.offline_reboot_ttl) + 's'
     )
   resource_args.SetExternalLoadBalancerAddressPoolsConfig(args, req)
+  if flags.FlagIsExplicitlySet(args, 'control_plane_node_storage_schema'):
+    req.cluster.controlPlane.local.controlPlaneNodeStorageSchema = (
+        args.control_plane_node_storage_schema
+    )
 
 
 def IsLCPCluster(args):

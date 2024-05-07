@@ -2307,3 +2307,299 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposDeleteRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposGetRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesCreateRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesDeleteRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesGetRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_name', 'sourceContext.cloudWorkspace.workspaceId.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesListFilesRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesUpdateRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_name', 'sourceContext.cloudWorkspace.workspaceId.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposAliasesFilesGetRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposFilesReadFromWorkspaceOrAliasRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsGetRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsGetBatchGetRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_name', 'sourceContext.cloudWorkspace.workspaceId.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsListFilesRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_name', 'sourceContext.cloudWorkspace.workspaceId.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_projectId', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_projectRepoId_repoName', 'sourceContext.cloudWorkspace.workspaceId.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposRevisionsFilesGetRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesDeleteRequest, 'workspaceId_repoId_uid', 'workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesGetRequest, 'workspaceId_repoId_uid', 'workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListRequest, 'repoId_uid', 'repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_projectId', 'sourceContext.cloudRepo.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_repoName', 'sourceContext.cloudRepo.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesListFilesRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_projectId', 'sourceContext.cloudRepo.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_repoName', 'sourceContext.cloudRepo.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudWorkspace_snapshotId', 'sourceContext.cloudWorkspace.snapshotId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesFilesGetRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsGetRequest, 'workspaceId_repoId_uid', 'workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListRequest, 'workspaceId_repoId_uid', 'workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_projectId', 'sourceContext.cloudRepo.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_repoName', 'sourceContext.cloudRepo.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsListFilesRequest, 'sourceContext_git_url', 'sourceContext.git.url')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_kind', 'sourceContext.cloudRepo.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_aliasContext_name', 'sourceContext.cloudRepo.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_aliasName', 'sourceContext.cloudRepo.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_projectId', 'sourceContext.cloudRepo.repoId.projectRepoId.projectId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_repoId_projectRepoId_repoName', 'sourceContext.cloudRepo.repoId.projectRepoId.repoName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_repoId_uid', 'sourceContext.cloudRepo.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudRepo_revisionId', 'sourceContext.cloudRepo.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_cloudWorkspace_workspaceId_repoId_uid', 'sourceContext.cloudWorkspace.workspaceId.repoId.uid')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_aliasContext_kind', 'sourceContext.gerrit.aliasContext.kind')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_aliasContext_name', 'sourceContext.gerrit.aliasContext.name')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_aliasName', 'sourceContext.gerrit.aliasName')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_gerritProject', 'sourceContext.gerrit.gerritProject')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_hostUri', 'sourceContext.gerrit.hostUri')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_gerrit_revisionId', 'sourceContext.gerrit.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_git_revisionId', 'sourceContext.git.revisionId')
+encoding.AddCustomJsonFieldMapping(
+    SourceProjectsReposWorkspacesSnapshotsFilesGetRequest, 'sourceContext_git_url', 'sourceContext.git.url')

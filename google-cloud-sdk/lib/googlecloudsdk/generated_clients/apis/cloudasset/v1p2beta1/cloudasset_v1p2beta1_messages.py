@@ -875,3 +875,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_endTime', 'readTimeWindow.endTime')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetBatchGetAssetsHistoryRequest, 'readTimeWindow_startTime', 'readTimeWindow.startTime')

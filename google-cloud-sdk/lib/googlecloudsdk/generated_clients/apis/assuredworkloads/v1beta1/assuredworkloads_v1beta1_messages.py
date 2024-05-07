@@ -1494,3 +1494,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest, 'interval_endTime', 'interval.endTime')
+encoding.AddCustomJsonFieldMapping(
+    AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest, 'interval_startTime', 'interval.startTime')

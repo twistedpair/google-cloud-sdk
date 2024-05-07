@@ -25431,3 +25431,15 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_orderBy', 'orderByAnnotation.orderBy')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsDatasetsSearchDataItemsRequest, 'orderByAnnotation_savedQuery', 'orderByAnnotation.savedQuery')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeaturestoresGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsFeaturestoresEntityTypesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsModelsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    AiplatformProjectsLocationsNotebookRuntimeTemplatesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

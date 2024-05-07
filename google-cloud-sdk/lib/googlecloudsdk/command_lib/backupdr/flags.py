@@ -33,6 +33,18 @@ def LocationAttributeConfig(arg_name='location'):
   )
 
 
+def BackupVaultAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='backup-vault', help_text='The ID of the Backup Vault.'
+  )
+
+
+def DataSourceAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='data-source', help_text='The ID of the Data Source.'
+  )
+
+
 def GetManagementServerResourceSpec():
   return concepts.ResourceSpec(
       'backupdr.projects.locations.managementServers',
@@ -60,10 +72,6 @@ def GetBackupPlanResourceSpec():
       resource_name='Backup Plan',
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      backupPlansId=concepts.ResourceParameterAttributeConfig(
-          name='backup_plan',
-          help_text='some help text',
-      ),
       disable_auto_completers=False,
   )
 
@@ -74,6 +82,18 @@ def GetBackupPlanAssociationResourceSpec():
       resource_name='Backup Plan Association',
       locationsId=LocationAttributeConfig(),
       projectsId=BackupPlanAssociationProjectAttributeConfig(),
+      disable_auto_completers=False,
+  )
+
+
+def GetBackupResourceSpec():
+  return concepts.ResourceSpec(
+      'backupdr.projects.locations.backupVaults.dataSources.backups',
+      resource_name='Backup',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      backupVaultsId=BackupVaultAttributeConfig(),
+      dataSourcesId=DataSourceAttributeConfig(),
       disable_auto_completers=False,
   )
 
@@ -95,6 +115,17 @@ def AddBackupPlanAssociationResourceArg(parser, help_text):
   concept_parsers.ConceptParser.ForResource(
       name,
       GetBackupPlanAssociationResourceSpec(),
+      help_text,
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddBackupResourceArg(parser, help_text):
+  """Adds an argument for backup to parser."""
+  name = 'backup'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetBackupResourceSpec(),
       help_text,
       required=True,
   ).AddToParser(parser)

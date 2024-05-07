@@ -591,7 +591,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -1003,7 +1002,7 @@ class FirestoreProjectsDatabasesCollectionGroupsFieldsListRequest(_messages.Mess
       FirestoreAdmin.ListFields only supports listing fields that have been
       explicitly overridden. To issue this query, call
       FirestoreAdmin.ListFields with a filter that includes
-      `indexConfig.usesAncestorConfig:false` .
+      `indexConfig.usesAncestorConfig:false` or `ttlConfig:*`.
     pageSize: The number of results to return.
     pageToken: A page token, returned from a previous call to
       FirestoreAdmin.ListFields, that may be used to get the next page of
@@ -1542,9 +1541,11 @@ class FirestoreProjectsDatabasesListRequest(_messages.Message):
 
   Fields:
     parent: Required. A parent name of the form `projects/{project_id}`
+    showDeleted: If true, also returns deleted resources.
   """
 
   parent = _messages.StringField(1, required=True)
+  showDeleted = _messages.BooleanField(2)
 
 
 class FirestoreProjectsDatabasesOperationsCancelRequest(_messages.Message):
@@ -1807,7 +1808,6 @@ class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   """
 
 
-
 class GoogleFirestoreAdminV1Database(_messages.Message):
   r"""A Cloud Firestore Database.
 
@@ -1833,6 +1833,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     createTime: Output only. The timestamp at which this database was created.
       Databases created before 2016 do not populate create_time.
     deleteProtectionState: State of delete protection for the database.
+    deleteTime: Output only. The timestamp at which this database was soft
+      deleted. Only set if the database has been soft deleted.
     earliestVersionTime: Output only. The earliest timestamp at which older
       versions of the data can be read from the database. See
       [version_retention_period] above; this field is populated with `now -
@@ -1957,16 +1959,19 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 3)
   createTime = _messages.StringField(4)
   deleteProtectionState = _messages.EnumField('DeleteProtectionStateValueValuesEnum', 5)
-  earliestVersionTime = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  keyPrefix = _messages.StringField(8)
-  locationId = _messages.StringField(9)
-  name = _messages.StringField(10)
-  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  versionRetentionPeriod = _messages.StringField(15)
+  deleteTime = _messages.StringField(6)
+  earliestVersionTime = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  keyPrefix = _messages.StringField(9)
+  locationId = _messages.StringField(10)
+  name = _messages.StringField(11)
+  pointInTimeRecoveryEnablement = _messages.EnumField(
+      'PointInTimeRecoveryEnablementValueValuesEnum', 12
+  )
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  versionRetentionPeriod = _messages.StringField(16)
 
 
 class GoogleFirestoreAdminV1DatabaseSnapshot(_messages.Message):
@@ -2188,7 +2193,6 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   r"""An index that stores vectors in a flat data structure, and supports
   exhaustive search.
   """
-
 
 
 class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):
@@ -4077,3 +4081,23 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsCreateDocumentRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsDeleteRequest, 'currentDocument_exists', 'currentDocument.exists')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsDeleteRequest, 'currentDocument_updateTime', 'currentDocument.updateTime')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsGetRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsListRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsListDocumentsRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'currentDocument_exists', 'currentDocument.exists')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'currentDocument_updateTime', 'currentDocument.updateTime')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'mask_fieldPaths', 'mask.fieldPaths')
+encoding.AddCustomJsonFieldMapping(
+    FirestoreProjectsDatabasesDocumentsPatchRequest, 'updateMask_fieldPaths', 'updateMask.fieldPaths')

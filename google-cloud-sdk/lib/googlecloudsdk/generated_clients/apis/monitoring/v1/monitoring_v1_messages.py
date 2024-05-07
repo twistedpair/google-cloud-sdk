@@ -599,6 +599,7 @@ class DashboardFilter(_messages.Message):
     FilterTypeValueValuesEnum: The specified filter type
 
   Fields:
+    applyToNewWidgets: Whether to apply this filter to new widgets by default
     filterType: The specified filter type
     labelKey: Required. The key for the label
     stringValue: A variable-length string value.
@@ -626,10 +627,11 @@ class DashboardFilter(_messages.Message):
     SYSTEM_METADATA_LABEL = 4
     GROUP = 5
 
-  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 1)
-  labelKey = _messages.StringField(2)
-  stringValue = _messages.StringField(3)
-  templateVariable = _messages.StringField(4)
+  applyToNewWidgets = _messages.BooleanField(1)
+  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 2)
+  labelKey = _messages.StringField(3)
+  stringValue = _messages.StringField(4)
+  templateVariable = _messages.StringField(5)
 
 
 class DataSet(_messages.Message):

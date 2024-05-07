@@ -104,11 +104,11 @@ properties:
       TTLs must be >= `0` (where `0` is "always revalidate") and <= `86400s` (1
       day) You can set only the following status codes: - HTTP redirection
       (`300`, `301`, `302`, `307`, or `308`) - Client error (`400`, `403`,
-      `404`, `405`, `410`, or `451`) - Server error (`500`, `501`, `502`, `503`,
-      or `504`) When you specify an explicit `negative_caching_policy`, ensure
-      that you also specify a cache TTL for all response codes that you wish to
-      cache. The CDNPolicy doesn't apply any default negative caching when a
-      policy exists.
+      `404`, `405`, `410`, `421`, or `451`) - Server error (`500`, `501`, `502`,
+      `503`, or `504`) When you specify an explicit `negative_caching_policy`,
+      ensure that you also specify a cache TTL for all response codes that you
+      wish to cache. The CDNPolicy doesn't apply any default negative caching
+      when a policy exists.
     $ref: NegativeCachingPolicyValue.yaml
   signedRequestKeyset:
     description: |-

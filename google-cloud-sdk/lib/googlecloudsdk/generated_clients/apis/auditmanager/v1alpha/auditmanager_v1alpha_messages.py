@@ -1306,15 +1306,17 @@ class ResourceEnrollmentStatus(_messages.Message):
   r"""Represents a resource (project or folder) with its enrollment status.
 
   Fields:
+    displayName: Output only. Display name of the project/folder.
     enrolled: Output only. Is resource enrolled.
     enrollment: Output only. Enrollment which contains enrolled destination
       details for a resource
     name: Identifier. The name of this resource.
   """
 
-  enrolled = _messages.BooleanField(1)
-  enrollment = _messages.MessageField('Enrollment', 2)
-  name = _messages.StringField(3)
+  displayName = _messages.StringField(1)
+  enrolled = _messages.BooleanField(2)
+  enrollment = _messages.MessageField('Enrollment', 3)
+  name = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

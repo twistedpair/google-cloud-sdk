@@ -29,15 +29,19 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
 
   def Transform(self, internal_proto):
     proto = encoding.MessageToDict(internal_proto)
-    if "pipelineSpec" in proto or "pipelineRef" in proto:
-      yaml_str = self.InternalPRToTektonPR(proto)
+    if (
+        "pipelineSpec" in proto
+        or "pipelineRef" in proto
+        or "pipelineSpecYaml" in proto
+    ):
+      yaml_str = self.PublicPRToTektonPR(proto)
       return yaml.dump(yaml_str, round_trip=True)
     elif "taskSpec" in proto or "taskRef" in proto:
-      yaml_str = self.InternalTRToTektonPR(proto)
+      yaml_str = self.PublicTRToTektonPR(proto)
       return yaml.dump(yaml_str, round_trip=True)
 
-  def InternalPRToTektonPR(self, internal):
-    """Convert Tekton yaml file into PipelineRun message."""
+  def PublicPRToTektonPR(self, internal):
+    """Convert a PipelineRun message into Tekton yaml."""
     pr = {
         "metadata": {},
         "spec": {},
@@ -58,9 +62,11 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
           internal.pop("pipelineSpec")
       )
     elif "pipelineRef" in internal:
-      pr["spec"]["pipelineRef"] = _TransformPipelineRef(
-          internal.pop("pipelineRef")
-      )
+      pr["spec"]["pipelineRef"] = TransformRef(internal.pop("pipelineRef"))
+    elif "pipelineSpecYaml" in internal:
+      yaml_string = internal.pop("pipelineSpecYaml")
+      formatted_yaml = yaml.load(yaml_string, round_trip=True)
+      pr["spec"]["pipelineSpecYaml"] = formatted_yaml
     if "timeout" in internal:
       pr["spec"]["timeout"] = internal.pop("timeout")
     if "workspaces" in internal:
@@ -92,8 +98,8 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
       }
     return pr
 
-  def InternalTRToTektonPR(self, internal):
-    """Convert Internal TR into Tekton yaml."""
+  def PublicTRToTektonPR(self, internal):
+    """Convert a TaskRun message into Tekton yaml."""
     tr = {
         "metadata": {},
         "spec": {},
@@ -110,7 +116,7 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
     if "taskSpec" in internal:
       tr["spec"]["taskSpec"] = _TransformTaskSpec(internal.pop("taskSpec"))
     elif "taskRef" in internal:
-      tr["spec"]["taskRef"] = _TransformTaskRef(internal.pop("taskRef"))
+      tr["spec"]["taskRef"] = TransformRef(internal.pop("taskRef"))
     if "timeout" in internal:
       tr["spec"]["timeout"] = internal.pop("timeout")
     if "workspaces" in internal:
@@ -132,7 +138,7 @@ class TektonPrinter(custom_printer_base.CustomPrinterBase):
       tr["status"]["taskSpec"] = _TransformTaskSpec(rts)
     # StepState
     if "steps" in internal:
-      tr["status"]["steps"] = internal.pop("steps")
+      tr["status"]["steps"] = _TransformStepStates(internal.pop("steps"))
     # TaskRunResults
     if "results" in internal:
       tr["status"]["results"] = _TransformTaskRunResults(
@@ -148,7 +154,7 @@ def _TransformPipelineSpec(ps):
   """Convert PipelineSpec into Tekton yaml."""
   pipeline_spec = {}
   if "params" in ps:
-    pipeline_spec["params"] = _TransformParamsSpec(ps.pop("params"))
+    pipeline_spec["params"] = TransformParamsSpec(ps.pop("params"))
   if "tasks" in ps:
     pipeline_spec["tasks"] = _TransformPipelineTasks(ps.pop("tasks"))
   if "results" in ps:
@@ -160,7 +166,7 @@ def _TransformPipelineSpec(ps):
   return pipeline_spec
 
 
-def _TransformParamsSpec(ps):
+def TransformParamsSpec(ps):
   """Convert ParamsSpecs into Tekton yaml."""
   param_spec = []
   for p in ps:
@@ -183,9 +189,9 @@ def _TransformTaskSpec(ts):
   """Convert TaskSpecs into Tekton yaml."""
   task_spec = {}
   if "params" in ts:
-    task_spec["params"] = _TransformParamsSpec(ts.pop("params"))
+    task_spec["params"] = TransformParamsSpec(ts.pop("params"))
   if "steps" in ts:
-    task_spec["steps"] = ts.pop("steps")
+    task_spec["steps"] = _TransformSteps(ts.pop("steps"))
   if "stepTemplate" in ts:
     task_spec["stepTemplate"] = ts.pop("stepTemplate")
   if "results" in ts:
@@ -195,6 +201,18 @@ def _TransformTaskSpec(ts):
   if "workspaces" in ts:
     task_spec["workspaces"] = ts.pop("workspaces")
   return task_spec
+
+
+def _TransformSteps(steps):
+  """Convert Steps into Tekton yaml."""
+  results = []
+  for step in steps:
+    if "ref" in step:
+      step["ref"] = TransformRef(step.pop("ref"))
+    if "params" in step:
+      step["params"] = _TransformParams(step.pop("params"))
+    results.append(step)
+  return results
 
 
 def _TransformPipelineTasks(ts):
@@ -249,6 +267,8 @@ def _TransformTaskResults(rs):
       result["type"] = r.pop("type").lower()
     if "properties" in r:
       result["properties"] = r.pop("properties")
+    if "value" in r:
+      result["value"] = _TransformParamValue(r.pop("value"))
     results.append(result)
   return results
 
@@ -264,6 +284,16 @@ def _TransformPipelineRunResults(rs):
       result["value"] = _TransformResultValue(r.pop("value"))
     results.append(result)
   return results
+
+
+def _TransformStepStates(steps):
+  """Convert StepState into Tekton yaml."""
+  step_states = []
+  for s in steps:
+    if "results" in s:
+      s["results"] = _TransformTaskRunResults(s.pop("results"))
+    step_states.append(s)
+  return step_states
 
 
 def _TransformTaskRunResults(rs):
@@ -346,25 +376,13 @@ def _TransformChildRefs(crs):
   return child_refs
 
 
-def _TransformPipelineRef(pr):
-  """Convert PipelineRef into Tekton yaml."""
-  pipeline_ref = {}
-  if "name" in pr:
-    pipeline_ref["name"] = pr.pop("name")
-  if "resolver" in pr:
-    pipeline_ref["resolver"] = pr.pop("resolver")
-  if "params" in pr:
-    pipeline_ref["params"] = _TransformParams(pr.pop("params"))
-  return pipeline_ref
-
-
-def _TransformTaskRef(tr):
-  """Convert TaskRef into Tekton yaml."""
-  task_ref = {}
-  if "name" in tr:
-    task_ref["name"] = tr.pop("name")
-  if "resolver" in tr:
-    task_ref["resolver"] = tr.pop("resolver")
-  if "params" in tr:
-    task_ref["params"] = _TransformParams(tr.pop("params"))
-  return task_ref
+def TransformRef(ref):
+  """Convert a generic reference (step, task, or pipeline) into Tekton yaml."""
+  result = {}
+  if "name" in ref:
+    result["name"] = ref.pop("name")
+  if "resolver" in ref:
+    result["resolver"] = ref.pop("resolver")
+  if "params" in ref:
+    result["params"] = _TransformParams(ref.pop("params"))
+  return result

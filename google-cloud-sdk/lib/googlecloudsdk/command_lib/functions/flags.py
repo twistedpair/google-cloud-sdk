@@ -950,7 +950,13 @@ def AddIgnoreFileFlag(parser):
   parser.add_argument(
       '--ignore-file',
       help=(
-          'Override the .gcloudignore file and use the specified file instead.'
+          'Override the .gcloudignore file in the source directory and use the'
+          ' specified file instead. By default, the source directory is your'
+          ' current directory. Note that it could be changed by the --source'
+          ' flag, in which case your .gcloudignore file will be searched in the'
+          ' overridden directory.  For example, `--ignore-file=.mygcloudignore`'
+          ' combined with `--source=./mydir` would point to'
+          ' `./mydir/.mygcloudignore`'
       ),
   )
 

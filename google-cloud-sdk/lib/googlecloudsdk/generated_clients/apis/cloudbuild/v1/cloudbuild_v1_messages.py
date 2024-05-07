@@ -440,6 +440,7 @@ class Build(_messages.Message):
     finishTime: Output only. Time at which execution of the build was
       finished. The difference between finish_time and start_time is the
       duration of the build's execution.
+    gitConfig: Optional. Configuration for git operations.
     id: Output only. Unique identifier of the build.
     images: A list of images to be pushed upon the successful completion of
       all build steps. The images are pushed using the builder service
@@ -580,28 +581,29 @@ class Build(_messages.Message):
   createTime = _messages.StringField(5)
   failureInfo = _messages.MessageField('FailureInfo', 6)
   finishTime = _messages.StringField(7)
-  id = _messages.StringField(8)
-  images = _messages.StringField(9, repeated=True)
-  logUrl = _messages.StringField(10)
-  logsBucket = _messages.StringField(11)
-  name = _messages.StringField(12)
-  options = _messages.MessageField('BuildOptions', 13)
-  projectId = _messages.StringField(14)
-  queueTtl = _messages.StringField(15)
-  results = _messages.MessageField('Results', 16)
-  secrets = _messages.MessageField('Secret', 17, repeated=True)
-  serviceAccount = _messages.StringField(18)
-  source = _messages.MessageField('Source', 19)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 20)
-  startTime = _messages.StringField(21)
-  status = _messages.EnumField('StatusValueValuesEnum', 22)
-  statusDetail = _messages.StringField(23)
-  steps = _messages.MessageField('BuildStep', 24, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 25)
-  tags = _messages.StringField(26, repeated=True)
-  timeout = _messages.StringField(27)
-  timing = _messages.MessageField('TimingValue', 28)
-  warnings = _messages.MessageField('Warning', 29, repeated=True)
+  gitConfig = _messages.MessageField('GitConfig', 8)
+  id = _messages.StringField(9)
+  images = _messages.StringField(10, repeated=True)
+  logUrl = _messages.StringField(11)
+  logsBucket = _messages.StringField(12)
+  name = _messages.StringField(13)
+  options = _messages.MessageField('BuildOptions', 14)
+  projectId = _messages.StringField(15)
+  queueTtl = _messages.StringField(16)
+  results = _messages.MessageField('Results', 17)
+  secrets = _messages.MessageField('Secret', 18, repeated=True)
+  serviceAccount = _messages.StringField(19)
+  source = _messages.MessageField('Source', 20)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 21)
+  startTime = _messages.StringField(22)
+  status = _messages.EnumField('StatusValueValuesEnum', 23)
+  statusDetail = _messages.StringField(24)
+  steps = _messages.MessageField('BuildStep', 25, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 26)
+  tags = _messages.StringField(27, repeated=True)
+  timeout = _messages.StringField(28)
+  timing = _messages.MessageField('TimingValue', 29)
+  warnings = _messages.MessageField('Warning', 30, repeated=True)
 
 
 class BuildApproval(_messages.Message):
@@ -2875,6 +2877,23 @@ class DeleteWorkerPoolOperationMetadata(_messages.Message):
   workerPool = _messages.StringField(3)
 
 
+class DeveloperConnectConfig(_messages.Message):
+  r"""This config defines the location of a source through Developer Connect.
+
+  Fields:
+    dir: Required. Directory, relative to the source root, in which to run the
+      build.
+    gitRepositoryLink: Required. The Developer Connect Git repository link,
+      formatted as `projects/*/locations/*/connections/*/gitRepositoryLink/*`.
+    revision: Required. The revision to fetch from the Git repository such as
+      a branch, a tag, a commit SHA, or any Git ref.
+  """
+
+  dir = _messages.StringField(1)
+  gitRepositoryLink = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2945,6 +2964,16 @@ class GCSLocation(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class GitConfig(_messages.Message):
+  r"""GitConfig is a configuration for git operations.
+
+  Fields:
+    http: Configuration for HTTP related git operations.
+  """
+
+  http = _messages.MessageField('HttpConfig', 1)
 
 
 class GitFileSource(_messages.Message):
@@ -3535,6 +3564,17 @@ class HttpBody(_messages.Message):
   contentType = _messages.StringField(1)
   data = _messages.BytesField(2)
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
+
+
+class HttpConfig(_messages.Message):
+  r"""HttpConfig is a configuration for HTTP related git operations.
+
+  Fields:
+    proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
+      proxy URL should be in format protocol://@]proxyhost[:port].
+  """
+
+  proxySecretVersionName = _messages.StringField(1)
 
 
 class HybridPoolConfig(_messages.Message):
@@ -4658,6 +4698,8 @@ class Source(_messages.Message):
   Fields:
     connectedRepository: Optional. If provided, get the source from this 2nd-
       gen Google Cloud Build repository resource.
+    developerConnectConfig: If provided, get the source from this Developer
+      Connect config.
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
@@ -4670,10 +4712,11 @@ class Source(_messages.Message):
   """
 
   connectedRepository = _messages.MessageField('ConnectedRepository', 1)
-  gitSource = _messages.MessageField('GitSource', 2)
-  repoSource = _messages.MessageField('RepoSource', 3)
-  storageSource = _messages.MessageField('StorageSource', 4)
-  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 5)
+  developerConnectConfig = _messages.MessageField('DeveloperConnectConfig', 2)
+  gitSource = _messages.MessageField('GitSource', 3)
+  repoSource = _messages.MessageField('RepoSource', 4)
+  storageSource = _messages.MessageField('StorageSource', 5)
+  storageSourceManifest = _messages.MessageField('StorageSourceManifest', 6)
 
 
 class SourceProvenance(_messages.Message):

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2022 Google LLC. All Rights Reserved.
+# Copyright 2024 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ class SpokesClient(object):
         limit=limit,
         batch_size_attribute='pageSize')
 
-  def CreateVPCSpoke(self, spoke_ref, spoke, request_id=None):
+  def CreateSpoke(self, spoke_ref, spoke, request_id=None):
     """Call API to create a new spoke."""
     parent = spoke_ref.Parent().RelativeName()
     spoke_id = spoke_ref.Name()
@@ -94,7 +94,7 @@ class SpokesClient(object):
             parent=parent, requestId=request_id, spoke=spoke, spokeId=spoke_id))
     return self.spoke_service.Create(create_req)
 
-  def UpdateVPCSpoke(self, spoke_ref, spoke, update_mask, request_id=None):
+  def UpdateSpoke(self, spoke_ref, spoke, update_mask, request_id=None):
     """Call API to update a existing spoke."""
     name = spoke_ref.RelativeName()
     update_mask_string = ','.join(update_mask)

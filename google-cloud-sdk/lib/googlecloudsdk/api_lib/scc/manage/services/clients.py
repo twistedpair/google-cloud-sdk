@@ -18,6 +18,8 @@ from typing import Generator
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.scc import util as scc_util
+from googlecloudsdk.core import log
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
 
 
@@ -57,3 +59,32 @@ class SecurityCenterServicesClient(object):
         batch_size=page_size,
         batch_size_attribute='pageSize',
     )
+
+  def Update(
+      self,
+      name: str,
+      validate_only: bool,
+      module_config: messages.SecurityCenterService.ModulesValue,
+      enablement_state: messages.SecurityCenterService.IntendedEnablementStateValueValuesEnum,
+      update_mask: str,
+  ) -> messages.SecurityCenterService:
+    """Update a Security Center Service."""
+
+    security_center_service = messages.SecurityCenterService(
+        modules=module_config,
+        intendedEnablementState=enablement_state,
+        name=name,
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest(
+        securityCenterService=security_center_service,
+        name=name,
+        updateMask=scc_util.CleanUpUserMaskInput(update_mask),
+        validateOnly=validate_only,
+    )
+    response = self._client.Patch(req)
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return response
+    log.UpdatedResource(name)
+    return response

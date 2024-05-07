@@ -17,8 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
-
 from googlecloudsdk.api_lib.util import apis
 
 API_NAME = 'cloudidentity'
@@ -80,9 +78,6 @@ def LookupGroupName(version, email):
   client = GetClient(version)
   messages = GetMessages(version)
 
-  encoding.AddCustomJsonFieldMapping(
-      messages.CloudidentityGroupsLookupRequest,
-      'groupKey_id', 'groupKey.id')
   return client.groups.Lookup(
       messages.CloudidentityGroupsLookupRequest(groupKey_id=email))
 
@@ -104,9 +99,6 @@ def LookupMembershipName(version, group_id, member_email):
   client = GetClient(version)
   messages = GetMessages(version)
 
-  encoding.AddCustomJsonFieldMapping(
-      messages.CloudidentityGroupsMembershipsLookupRequest,
-      'memberKey_id', 'memberKey.id')
   return client.groups_memberships.Lookup(
       messages.CloudidentityGroupsMembershipsLookupRequest(
           memberKey_id=member_email, parent=group_id))

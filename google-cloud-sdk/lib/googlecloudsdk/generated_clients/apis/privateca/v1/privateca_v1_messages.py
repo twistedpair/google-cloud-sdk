@@ -3304,3 +3304,9 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    PrivatecaProjectsLocationsCaPoolsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    PrivatecaProjectsLocationsCaPoolsCertificateAuthoritiesCertificateRevocationListsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    PrivatecaProjectsLocationsCertificateTemplatesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

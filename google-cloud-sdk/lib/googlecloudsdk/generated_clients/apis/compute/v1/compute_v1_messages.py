@@ -2210,37 +2210,6 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
 
 
-class AuthorizationLoggingOptions(_messages.Message):
-  r"""This is deprecated and has no effect. Do not use.
-
-  Enums:
-    PermissionTypeValueValuesEnum: This is deprecated and has no effect. Do
-      not use.
-
-  Fields:
-    permissionType: This is deprecated and has no effect. Do not use.
-  """
-
-  class PermissionTypeValueValuesEnum(_messages.Enum):
-    r"""This is deprecated and has no effect. Do not use.
-
-    Values:
-      ADMIN_READ: This is deprecated and has no effect. Do not use.
-      ADMIN_WRITE: This is deprecated and has no effect. Do not use.
-      DATA_READ: This is deprecated and has no effect. Do not use.
-      DATA_WRITE: This is deprecated and has no effect. Do not use.
-      PERMISSION_TYPE_UNSPECIFIED: This is deprecated and has no effect. Do
-        not use.
-    """
-    ADMIN_READ = 0
-    ADMIN_WRITE = 1
-    DATA_READ = 2
-    DATA_WRITE = 3
-    PERMISSION_TYPE_UNSPECIFIED = 4
-
-  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
-
-
 class Autoscaler(_messages.Message):
   r"""Represents an Autoscaler resource. Google Compute Engine has two
   Autoscaler resources: * [Zonal](/compute/docs/reference/rest/v1/autoscalers)
@@ -6497,6 +6466,7 @@ class Commitment(_messages.Message):
     Values:
       ACCELERATOR_OPTIMIZED: <no description>
       ACCELERATOR_OPTIMIZED_A3: <no description>
+      ACCELERATOR_OPTIMIZED_A3_MEGA: <no description>
       COMPUTE_OPTIMIZED: <no description>
       COMPUTE_OPTIMIZED_C2D: <no description>
       COMPUTE_OPTIMIZED_C3: <no description>
@@ -6516,22 +6486,23 @@ class Commitment(_messages.Message):
     """
     ACCELERATOR_OPTIMIZED = 0
     ACCELERATOR_OPTIMIZED_A3 = 1
-    COMPUTE_OPTIMIZED = 2
-    COMPUTE_OPTIMIZED_C2D = 3
-    COMPUTE_OPTIMIZED_C3 = 4
-    COMPUTE_OPTIMIZED_C3D = 5
-    COMPUTE_OPTIMIZED_H3 = 6
-    GENERAL_PURPOSE = 7
-    GENERAL_PURPOSE_E2 = 8
-    GENERAL_PURPOSE_N2 = 9
-    GENERAL_PURPOSE_N2D = 10
-    GENERAL_PURPOSE_N4 = 11
-    GENERAL_PURPOSE_T2D = 12
-    GRAPHICS_OPTIMIZED = 13
-    MEMORY_OPTIMIZED = 14
-    MEMORY_OPTIMIZED_M3 = 15
-    STORAGE_OPTIMIZED_Z3 = 16
-    TYPE_UNSPECIFIED = 17
+    ACCELERATOR_OPTIMIZED_A3_MEGA = 2
+    COMPUTE_OPTIMIZED = 3
+    COMPUTE_OPTIMIZED_C2D = 4
+    COMPUTE_OPTIMIZED_C3 = 5
+    COMPUTE_OPTIMIZED_C3D = 6
+    COMPUTE_OPTIMIZED_H3 = 7
+    GENERAL_PURPOSE = 8
+    GENERAL_PURPOSE_E2 = 9
+    GENERAL_PURPOSE_N2 = 10
+    GENERAL_PURPOSE_N2D = 11
+    GENERAL_PURPOSE_N4 = 12
+    GENERAL_PURPOSE_T2D = 13
+    GRAPHICS_OPTIMIZED = 14
+    MEMORY_OPTIMIZED = 15
+    MEMORY_OPTIMIZED_M3 = 16
+    STORAGE_OPTIMIZED_Z3 = 17
+    TYPE_UNSPECIFIED = 18
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -49565,8 +49536,6 @@ class LogConfigCloudAuditOptions(_messages.Message):
     LogNameValueValuesEnum: This is deprecated and has no effect. Do not use.
 
   Fields:
-    authorizationLoggingOptions: This is deprecated and has no effect. Do not
-      use.
     logName: This is deprecated and has no effect. Do not use.
   """
 
@@ -49582,8 +49551,7 @@ class LogConfigCloudAuditOptions(_messages.Message):
     DATA_ACCESS = 1
     UNSPECIFIED_LOG_NAME = 2
 
-  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
-  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+  logName = _messages.EnumField('LogNameValueValuesEnum', 1)
 
 
 class LogConfigCounterOptions(_messages.Message):
@@ -64259,6 +64227,11 @@ class RouterBgp(_messages.Message):
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
+    identifierRange: Explicitly specifies a range of valid BGP Identifiers for
+      this Router. It is provided as a link-local IPv4 range (from
+      169.254.0.0/16), of size at least /30, even if the BGP sessions are over
+      IPv6. It must not overlap with any IPv4 BGP session ranges. Other
+      vendors commonly call this "router ID".
     keepaliveInterval: The interval in seconds between BGP keepalive messages
       that are sent to the peer. Hold time is three times the interval at
       which keepalive messages are sent, and the hold time is the maximum
@@ -64293,7 +64266,8 @@ class RouterBgp(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  keepaliveInterval = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  identifierRange = _messages.StringField(5)
+  keepaliveInterval = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
@@ -64347,8 +64321,10 @@ class RouterBgpPeer(_messages.Message):
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
       established with routing information. The default is TRUE.
-    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
-      disabled by default.
+    enableIpv4: Enable IPv4 traffic over BGP Peer. It is enabled by default if
+      the peerIpAddress is version 4.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. It is enabled by default if
+      the peerIpAddress is version 6.
     exportPolicies: List of export policies applied to this peer, in the order
       they must be evaluated. The name must correspond to an existing policy
       that has ROUTE_POLICY_TYPE_EXPORT type. Note that Route Policies are
@@ -64360,8 +64336,9 @@ class RouterBgpPeer(_messages.Message):
       currently available in preview. Please use Beta API to use Route
       Policies.
     interfaceName: Name of the interface the BGP peer is associated with.
-    ipAddress: IP address of the interface inside Google Cloud Platform. Only
-      IPv4 is supported.
+    ipAddress: IP address of the interface inside Google Cloud Platform.
+    ipv4NexthopAddress: IPv4 address of the interface inside Google Cloud
+      Platform.
     ipv6NexthopAddress: IPv6 address of the interface inside Google Cloud
       Platform.
     managementType: [Output Only] The resource that configures and manages
@@ -64383,7 +64360,9 @@ class RouterBgpPeer(_messages.Message):
     peerAsn: Peer BGP Autonomous System Number (ASN). Each BGP interface may
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
-      Platform. Only IPv4 is supported.
+      Platform.
+    peerIpv4NexthopAddress: IPv4 address of the BGP interface outside Google
+      Cloud Platform.
     peerIpv6NexthopAddress: IPv6 address of the BGP interface outside Google
       Cloud Platform.
     routerApplianceInstance: URI of the VM instance that is used as third-
@@ -64456,19 +64435,22 @@ class RouterBgpPeer(_messages.Message):
   customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
   customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   enable = _messages.EnumField('EnableValueValuesEnum', 8)
-  enableIpv6 = _messages.BooleanField(9)
-  exportPolicies = _messages.StringField(10, repeated=True)
-  importPolicies = _messages.StringField(11, repeated=True)
-  interfaceName = _messages.StringField(12)
-  ipAddress = _messages.StringField(13)
-  ipv6NexthopAddress = _messages.StringField(14)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 15)
-  md5AuthenticationKeyName = _messages.StringField(16)
-  name = _messages.StringField(17)
-  peerAsn = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(19)
-  peerIpv6NexthopAddress = _messages.StringField(20)
-  routerApplianceInstance = _messages.StringField(21)
+  enableIpv4 = _messages.BooleanField(9)
+  enableIpv6 = _messages.BooleanField(10)
+  exportPolicies = _messages.StringField(11, repeated=True)
+  importPolicies = _messages.StringField(12, repeated=True)
+  interfaceName = _messages.StringField(13)
+  ipAddress = _messages.StringField(14)
+  ipv4NexthopAddress = _messages.StringField(15)
+  ipv6NexthopAddress = _messages.StringField(16)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 17)
+  md5AuthenticationKeyName = _messages.StringField(18)
+  name = _messages.StringField(19)
+  peerAsn = _messages.IntegerField(20, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(21)
+  peerIpv4NexthopAddress = _messages.StringField(22)
+  peerIpv6NexthopAddress = _messages.StringField(23)
+  routerApplianceInstance = _messages.StringField(24)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -64543,6 +64525,7 @@ class RouterInterface(_messages.Message):
   r"""A RouterInterface object.
 
   Enums:
+    IpVersionValueValuesEnum: IP version of this interface.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this interface. - MANAGED_BY_USER is the default value and
       can be managed directly by users. - MANAGED_BY_ATTACHMENT is an
@@ -64552,10 +64535,17 @@ class RouterInterface(_messages.Message):
       the PARTNER InterconnectAttachment is created, updated, or deleted.
 
   Fields:
-    ipRange: IP address and range of the interface. The IP range must be in
-      the RFC3927 link-local IP address space. The value must be a CIDR-
-      formatted string, for example: 169.254.0.1/30. NOTE: Do not truncate the
-      address as it represents the IP address of the interface.
+    ipRange: IP address and range of the interface. - For Internet Protocol
+      version 4 (IPv4), the IP range must be in the RFC3927 link-local IP
+      address space. The value must be a CIDR-formatted string, for example,
+      169.254.0.1/30. Note: Do not truncate the IP address, as it represents
+      the IP address of the interface. - For Internet Protocol version 6
+      (IPv6), the value must be a unique local address (ULA) range from
+      fdff:1::/64 with a mask length of 126 or less. This value should be a
+      CIDR-formatted string, for example, fc00:0:1:1::1/112. Within the
+      router's VPC, this IPv6 prefix will be reserved exclusively for this
+      connection and cannot be used for any other purpose.
+    ipVersion: IP version of this interface.
     linkedInterconnectAttachment: URI of the linked Interconnect attachment.
       It must be in the same region as the router. Each interface can have one
       linked resource, which can be a VPN tunnel, an Interconnect attachment,
@@ -64598,6 +64588,16 @@ class RouterInterface(_messages.Message):
       here.
   """
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""IP version of this interface.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this interface.
     - MANAGED_BY_USER is the default value and can be managed directly by
@@ -64620,13 +64620,14 @@ class RouterInterface(_messages.Message):
     MANAGED_BY_USER = 1
 
   ipRange = _messages.StringField(1)
-  linkedInterconnectAttachment = _messages.StringField(2)
-  linkedVpnTunnel = _messages.StringField(3)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  privateIpAddress = _messages.StringField(6)
-  redundantInterface = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 2)
+  linkedInterconnectAttachment = _messages.StringField(3)
+  linkedVpnTunnel = _messages.StringField(4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  privateIpAddress = _messages.StringField(7)
+  redundantInterface = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
 
 
 class RouterList(_messages.Message):
@@ -65174,9 +65175,12 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
     bfdStatus: A BfdStatus attribute.
-    enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
-      disabled by default.
+    enableIpv4: Enable IPv4 traffic over BGP Peer. It is enabled by default if
+      the peerIpAddress is version 4.
+    enableIpv6: Enable IPv6 traffic over BGP Peer. It is enabled by default if
+      the peerIpAddress is version 6.
     ipAddress: IP address of the local BGP interface.
+    ipv4NexthopAddress: IPv4 address of the local BGP interface.
     ipv6NexthopAddress: IPv6 address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     md5AuthEnabled: Informs whether MD5 authentication is enabled on this BGP
@@ -65184,6 +65188,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    peerIpv4NexthopAddress: IPv4 address of the remote BGP interface.
     peerIpv6NexthopAddress: IPv6 address of the remote BGP interface.
     routerApplianceInstance: [Output only] URI of the VM instance that is used
       as third-party router appliances such as Next Gen Firewalls, Virtual
@@ -65202,13 +65207,19 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     r"""Indicates why particular status was returned.
 
     Values:
+      IPV4_PEER_ON_IPV6_ONLY_CONNECTION: BGP peer disabled because it requires
+        IPv4 but the underlying connection is IPv6-only.
+      IPV6_PEER_ON_IPV4_ONLY_CONNECTION: BGP peer disabled because it requires
+        IPv6 but the underlying connection is IPv4-only.
       MD5_AUTH_INTERNAL_PROBLEM: Indicates internal problems with
         configuration of MD5 authentication. This particular reason can only
         be returned when md5AuthEnabled is true and status is DOWN.
       STATUS_REASON_UNSPECIFIED: <no description>
     """
-    MD5_AUTH_INTERNAL_PROBLEM = 0
-    STATUS_REASON_UNSPECIFIED = 1
+    IPV4_PEER_ON_IPV6_ONLY_CONNECTION = 0
+    IPV6_PEER_ON_IPV4_ONLY_CONNECTION = 1
+    MD5_AUTH_INTERNAL_PROBLEM = 2
+    STATUS_REASON_UNSPECIFIED = 3
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Status of the BGP peer: {UP, DOWN}
@@ -65224,21 +65235,24 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
   bfdStatus = _messages.MessageField('BfdStatus', 2)
-  enableIpv6 = _messages.BooleanField(3)
-  ipAddress = _messages.StringField(4)
-  ipv6NexthopAddress = _messages.StringField(5)
-  linkedVpnTunnel = _messages.StringField(6)
-  md5AuthEnabled = _messages.BooleanField(7)
-  name = _messages.StringField(8)
-  numLearnedRoutes = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(10)
-  peerIpv6NexthopAddress = _messages.StringField(11)
-  routerApplianceInstance = _messages.StringField(12)
-  state = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 15)
-  uptime = _messages.StringField(16)
-  uptimeSeconds = _messages.StringField(17)
+  enableIpv4 = _messages.BooleanField(3)
+  enableIpv6 = _messages.BooleanField(4)
+  ipAddress = _messages.StringField(5)
+  ipv4NexthopAddress = _messages.StringField(6)
+  ipv6NexthopAddress = _messages.StringField(7)
+  linkedVpnTunnel = _messages.StringField(8)
+  md5AuthEnabled = _messages.BooleanField(9)
+  name = _messages.StringField(10)
+  numLearnedRoutes = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(12)
+  peerIpv4NexthopAddress = _messages.StringField(13)
+  peerIpv6NexthopAddress = _messages.StringField(14)
+  routerApplianceInstance = _messages.StringField(15)
+  state = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  statusReason = _messages.EnumField('StatusReasonValueValuesEnum', 18)
+  uptime = _messages.StringField(19)
+  uptimeSeconds = _messages.StringField(20)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -69008,12 +69022,13 @@ class SnapshotSettingsStorageLocationSettings(_messages.Message):
 
   Messages:
     LocationsValue: When the policy is SPECIFIC_LOCATIONS, snapshots will be
-      stored in the locations listed in this field. Keys are GCS bucket
-      locations.
+      stored in the locations listed in this field. Keys are Cloud Storage
+      bucket locations. Only one location can be specified.
 
   Fields:
     locations: When the policy is SPECIFIC_LOCATIONS, snapshots will be stored
-      in the locations listed in this field. Keys are GCS bucket locations.
+      in the locations listed in this field. Keys are Cloud Storage bucket
+      locations. Only one location can be specified.
     policy: The chosen location policy.
   """
 
@@ -69023,9 +69038,9 @@ class SnapshotSettingsStorageLocationSettings(_messages.Message):
     Values:
       LOCAL_REGION: Store snapshot in the same region as with the originating
         disk. No additional parameters are needed.
-      NEAREST_MULTI_REGION: Store snapshot to the nearest multi region GCS
-        bucket, relative to the originating disk. No additional parameters are
-        needed.
+      NEAREST_MULTI_REGION: Store snapshot in the nearest multi region Cloud
+        Storage bucket, relative to the originating disk. No additional
+        parameters are needed.
       SPECIFIC_LOCATIONS: Store snapshot in the specific locations, as
         specified by the user. The list of regions to store must be defined
         under the `locations` field.
@@ -69039,7 +69054,8 @@ class SnapshotSettingsStorageLocationSettings(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LocationsValue(_messages.Message):
     r"""When the policy is SPECIFIC_LOCATIONS, snapshots will be stored in the
-    locations listed in this field. Keys are GCS bucket locations.
+    locations listed in this field. Keys are Cloud Storage bucket locations.
+    Only one location can be specified.
 
     Messages:
       AdditionalProperty: An additional property for a LocationsValue object.
@@ -69071,7 +69087,8 @@ class SnapshotSettingsStorageLocationSettingsStorageLocationPreference(_messages
   r"""A structure for specifying storage locations.
 
   Fields:
-    name: Name of the location. It should be one of the GCS buckets.
+    name: Name of the location. It should be one of the Cloud Storage buckets.
+      Only one location can be specified.
   """
 
   name = _messages.StringField(1)

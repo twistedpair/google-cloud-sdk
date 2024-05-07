@@ -23,6 +23,8 @@ from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
+location = None
+
 
 def ContextGenerator(args):
   """Generate k8s context from membership, location and project."""
@@ -31,10 +33,13 @@ def ContextGenerator(args):
   )
   membership_id = fleet_util.MembershipShortname(membership_resource_name)
   project_id = args.project
+  global location
   location = args.location
   if project_id is None:
     # read the default projectId from local configuration file
     project_id = properties.VALUES.core.project.Get()
+  if location is None:
+    location = fleet_util.MembershipLocation(membership_resource_name)
 
   # fetch clusterName from fleet API
 
@@ -97,7 +102,7 @@ def MeshInfoGenerator(args):
     )
     if matcher is None:
       continue
-    if matcher.group(2) != args.location or matcher.group(3) != args.membership:
+    if matcher.group(2) != location or matcher.group(3) != args.membership:
       continue
     else:
       matcher_new = re.match(r'.+/meshes/(.*)', mesh_info.name)

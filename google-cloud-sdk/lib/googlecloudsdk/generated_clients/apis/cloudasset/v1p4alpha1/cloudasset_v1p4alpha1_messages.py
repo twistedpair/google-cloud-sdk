@@ -503,3 +503,27 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'accessSelector_permissions', 'accessSelector.permissions')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'accessSelector_roles', 'accessSelector.roles')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'identitySelector_identity', 'identitySelector.identity')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_expandGroups', 'options.expandGroups')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_expandResources', 'options.expandResources')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_expandRoles', 'options.expandRoles')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_maxFanoutsPerGroup', 'options.maxFanoutsPerGroup')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_maxFanoutsPerResource', 'options.maxFanoutsPerResource')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_outputGroupEdges', 'options.outputGroupEdges')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_outputPartialResultBeforeTimeout', 'options.outputPartialResultBeforeTimeout')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'options_outputResourceEdges', 'options.outputResourceEdges')
+encoding.AddCustomJsonFieldMapping(
+    CloudassetAnalyzeIamPolicyRequest, 'resourceSelector_fullResourceName', 'resourceSelector.fullResourceName')

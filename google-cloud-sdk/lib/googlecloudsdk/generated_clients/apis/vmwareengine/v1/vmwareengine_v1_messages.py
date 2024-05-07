@@ -6377,3 +6377,9 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    VmwareengineProjectsLocationsPrivateCloudsClustersGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

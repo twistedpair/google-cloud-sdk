@@ -79,6 +79,18 @@ def AddLifecycleFlag(parser):
   )
 
 
+def AddVariantsPatternFlag(parser):
+  parser.add_argument(
+      '--variants-pattern',
+      required=False,
+      help="""Glob pattern to Variants of the Release, to be paired with the
+        ``--source'' arg.
+        ex: --source=/manifests-dir/ --variants-pattern=```**```,
+            --source=/manifests-dir/ --variants-pattern=us-```*```.yaml,
+            --source=/manifests/dir/ --variants-pattern=```*/*```.yaml""",
+  )
+
+
 def ProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='project',

@@ -825,6 +825,36 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class LocationMetadata(_messages.Message):
+  r"""Metadata for a given google.cloud.location.Location.
+
+  Enums:
+    SupportedServiceLevelsValueListEntryValuesEnum:
+
+  Fields:
+    supportedServiceLevels: Output only. Supported service levels in a
+      location.
+  """
+
+  class SupportedServiceLevelsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedServiceLevelsValueListEntryValuesEnum enum type.
+
+    Values:
+      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
+      PREMIUM: Premium service level.
+      EXTREME: Extreme service level.
+      STANDARD: Standard service level.
+      FLEX: Flex service level.
+    """
+    SERVICE_LEVEL_UNSPECIFIED = 0
+    PREMIUM = 1
+    EXTREME = 2
+    STANDARD = 3
+    FLEX = 4
+
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 1, repeated=True)
+
+
 class MonthlySchedule(_messages.Message):
   r"""Make a snapshot once a month e.g. at 2nd 04:00, 7th 05:20, 24th 23:50
 
@@ -2401,12 +2431,15 @@ class StoragePool(_messages.Message):
       projects/{project}/global/networks/{network}
     psaRange: Optional. This field is not implemented. The values provided in
       this field are ignored.
+    replicaZone: Optional. Specifies the replica zone for regional
+      storagePool.
     serviceLevel: Required. Service level of the storage pool
     state: Output only. State of the storage pool
     stateDetails: Output only. State details of the storage pool
     volumeCapacityGib: Output only. Allocated size of all volumes in GIB in
       the storage pool
     volumeCount: Output only. Volume count of the storage pool
+    zone: Optional. Specifies the active zone for regional storagePool.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -2497,11 +2530,13 @@ class StoragePool(_messages.Message):
   name = _messages.StringField(11)
   network = _messages.StringField(12)
   psaRange = _messages.StringField(13)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  stateDetails = _messages.StringField(16)
-  volumeCapacityGib = _messages.IntegerField(17)
-  volumeCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  replicaZone = _messages.StringField(14)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  stateDetails = _messages.StringField(17)
+  volumeCapacityGib = _messages.IntegerField(18)
+  volumeCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  zone = _messages.StringField(20)
 
 
 class SwitchActiveReplicaZoneRequest(_messages.Message):

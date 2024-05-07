@@ -3867,3 +3867,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest, 'proxyConfig_kubernetesSecret_name', 'proxyConfig.kubernetesSecret.name')
+encoding.AddCustomJsonFieldMapping(
+    GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest, 'proxyConfig_kubernetesSecret_namespace', 'proxyConfig.kubernetesSecret.namespace')

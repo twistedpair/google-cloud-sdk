@@ -3132,9 +3132,6 @@ def GetAllowUnauthenticated(args, client=None, service_ref=None, prompt=False):
   if getattr(args, 'allow_unauthenticated', None) is not None:
     return args.allow_unauthenticated
 
-  if FlagIsExplicitlySet(args, 'default_url') and not args.default_url:
-    return None
-
   if (
       FlagIsExplicitlySet(args, 'invoker_iam_check')
       and not args.invoker_iam_check

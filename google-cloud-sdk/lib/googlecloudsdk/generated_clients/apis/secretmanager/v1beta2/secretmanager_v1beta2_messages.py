@@ -1570,3 +1570,7 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    SecretmanagerProjectsSecretsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

@@ -202,3 +202,49 @@ def CreateDisplayNameFlag(required=True) -> base.Argument:
       metavar='DISPLAY-NAME',
       help="""The display name of the custom module.""",
   )
+
+
+def CreateServiceNameArg() -> base.Argument:
+  """A positional argument representing the service name."""
+  return base.Argument(
+      'service_name',
+      help="""The service name, provided either in lowercase hyphenated form
+      (e.g. security-health-analytics), or in abbreviated form (e.g. sha)""",
+  )
+
+
+def CreateServiceUpdateFlags(
+    file_type: str,
+    required: bool = True,
+) -> base.Argument:
+  """Returns a module-config flag or an enablement-state flag, or both."""
+
+  root = base.ArgumentGroup(mutex=False, required=required)
+  root.AddArgument(
+      base.Argument(
+          '--module-config-file',
+          required=False,
+          default=None,
+          help=(
+              f'Path to a {file_type} file that contains the module config to'
+              ' set for the given module and service.'
+          ),
+          type=arg_parsers.FileContents(),
+      )
+  )
+  root.AddArgument(CreateServiceEnablementStateFlag(required=False))
+  return root
+
+
+def CreateServiceEnablementStateFlag(
+    required: bool,
+):
+  """Creates a service enablement state flag."""
+  return base.Argument(
+      '--enablement-state',
+      required=required,
+      default=None,
+      help="""Sets the enablement state of the Security Center service.
+      Valid options are ENABLED, DISABLED, OR INHERITED. The INHERITED
+      state is only valid when setting the enablement state at the project or folder level.""",
+  )
