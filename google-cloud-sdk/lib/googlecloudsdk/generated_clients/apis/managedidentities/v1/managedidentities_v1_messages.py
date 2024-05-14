@@ -349,6 +349,10 @@ class Domain(_messages.Message):
   Messages:
     LabelsValue: Optional. Resource labels that can contain user-provided
       metadata.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this domain. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
 
   Fields:
     admin: Optional. The name of delegated administrator account used to
@@ -380,6 +384,10 @@ class Domain(_messages.Message):
     state: Output only. The current state of this domain.
     statusMessage: Output only. Additional information about the current
       status of this domain, if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this domain. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
     trusts: Output only. The current trusts associated with the domain.
     updateTime: Output only. The last update time.
   """
@@ -431,6 +439,32 @@ class Domain(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this domain. Each item in the map must be expressed as " : ". For example:
+    "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   admin = _messages.StringField(1)
   auditLogsEnabled = _messages.BooleanField(2)
   authorizedNetworks = _messages.StringField(3, repeated=True)
@@ -442,8 +476,9 @@ class Domain(_messages.Message):
   reservedIpRange = _messages.StringField(9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
   statusMessage = _messages.StringField(11)
-  trusts = _messages.MessageField('Trust', 12, repeated=True)
-  updateTime = _messages.StringField(13)
+  tags = _messages.MessageField('TagsValue', 12)
+  trusts = _messages.MessageField('Trust', 13, repeated=True)
+  updateTime = _messages.StringField(14)
 
 
 class DomainJoinMachineRequest(_messages.Message):

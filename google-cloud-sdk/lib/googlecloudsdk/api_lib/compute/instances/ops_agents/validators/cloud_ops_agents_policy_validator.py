@@ -14,10 +14,10 @@
 # limitations under the License.
 """Common validators for cloud ops agents policy create and update commands."""
 
-from collections.abc import Set
 import enum
 import re
 import sys
+from typing import Set
 
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_exceptions as exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_policy as agents_policy
@@ -80,7 +80,7 @@ _StrEnum = (
 
 class AgentsInstanceFilterConflictErrorMessage(*_StrEnum):
   ALL_TRUE = (
-      'No other values can be declared under if instance_filter if all is set'
+      'No other values can be declared under instanceFilter if all is set'
       ' to true'
   )
   EMPTY_INSTANCE_FILTER = (
@@ -107,8 +107,8 @@ class AgentsPackageStateInvalidFormatError(exceptions.PolicyValidationError):
 
   def __init__(self, package_state):
     super(AgentsPackageStateInvalidFormatError, self).__init__(
-        'The agents package_state [{}] is not allowed. Expected values: [true]'
-        ' or [false] '.format(package_state)
+        'The agents packageState [{}] is not allowed. Expected values:'
+        ' [installed] or [removed] '.format(package_state)
     )
 
 
@@ -194,8 +194,7 @@ def _ValidateAgentsRuleVersion(
     package_state: str,
 ) -> Set[AgentsVersionInvalidFormatError]:
   if not (
-      version == 'latest'
-      or (package_state == 'removed' and not version)
+      (package_state == 'removed' and not version)
       or _VERSION_RE.fullmatch(version)
   ):
     return [AgentsVersionInvalidFormatError(version)]

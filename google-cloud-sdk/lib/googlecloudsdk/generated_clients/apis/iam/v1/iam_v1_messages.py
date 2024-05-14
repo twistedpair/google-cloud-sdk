@@ -3486,6 +3486,159 @@ class IdentityAssignment(_messages.Message):
   singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 2, repeated=True)
 
 
+class InlineCertificateIssuanceConfig(_messages.Message):
+  r"""Represents configuration for generating mutual TLS (mTLS) certificates
+  for the identities within this pool.
+
+  Enums:
+    KeyAlgorithmValueValuesEnum: Optional. Key algorithm to use when
+      generating the key pair. This key pair will be used to create the
+      certificate. If unspecified, this will default to ECDSA_P256.
+
+  Messages:
+    CaPoolsValue: Optional. A required mapping of a cloud region to the CA
+      pool resource located in that region used for certificate issuance,
+      adhering to these constraints: * Key format: A supported cloud region
+      name equivalent to the location identifier in the corresponding map
+      entry's value. * Value format: A valid CA pool resource path format
+      like: "projects/{project}/locations/{location}/caPools/{ca_pool}" *
+      Region Matching: Workloads are ONLY issued certificates from CA pools
+      within the same region. Also the CA pool region (in value) must match
+      the workload's region (key).
+
+  Fields:
+    caPools: Optional. A required mapping of a cloud region to the CA pool
+      resource located in that region used for certificate issuance, adhering
+      to these constraints: * Key format: A supported cloud region name
+      equivalent to the location identifier in the corresponding map entry's
+      value. * Value format: A valid CA pool resource path format like:
+      "projects/{project}/locations/{location}/caPools/{ca_pool}" * Region
+      Matching: Workloads are ONLY issued certificates from CA pools within
+      the same region. Also the CA pool region (in value) must match the
+      workload's region (key).
+    keyAlgorithm: Optional. Key algorithm to use when generating the key pair.
+      This key pair will be used to create the certificate. If unspecified,
+      this will default to ECDSA_P256.
+    lifetime: Optional. Lifetime of the workload certificates issued by the CA
+      pool. Must be between 10 hours - 30 days. If unspecified, this will be
+      defaulted to 24 hours.
+    rotationWindowPercentage: Optional. Rotation window percentage indicating
+      when certificate rotation should be initiated based on remaining
+      lifetime. Must be between 10 - 80. If unspecified, this will be
+      defaulted to 50.
+  """
+
+  class KeyAlgorithmValueValuesEnum(_messages.Enum):
+    r"""Optional. Key algorithm to use when generating the key pair. This key
+    pair will be used to create the certificate. If unspecified, this will
+    default to ECDSA_P256.
+
+    Values:
+      KEY_ALGORITHM_UNSPECIFIED: Unspecified key algorithm. Defaults to
+        ECDSA_P256.
+      RSA_2048: Specifies RSA with a 2048-bit modulus.
+      RSA_3072: Specifies RSA with a 3072-bit modulus.
+      RSA_4096: Specifies RSA with a 4096-bit modulus.
+      ECDSA_P256: Specifies ECDSA with curve P256.
+      ECDSA_P384: Specifies ECDSA with curve P384.
+    """
+    KEY_ALGORITHM_UNSPECIFIED = 0
+    RSA_2048 = 1
+    RSA_3072 = 2
+    RSA_4096 = 3
+    ECDSA_P256 = 4
+    ECDSA_P384 = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CaPoolsValue(_messages.Message):
+    r"""Optional. A required mapping of a cloud region to the CA pool resource
+    located in that region used for certificate issuance, adhering to these
+    constraints: * Key format: A supported cloud region name equivalent to the
+    location identifier in the corresponding map entry's value. * Value
+    format: A valid CA pool resource path format like:
+    "projects/{project}/locations/{location}/caPools/{ca_pool}" * Region
+    Matching: Workloads are ONLY issued certificates from CA pools within the
+    same region. Also the CA pool region (in value) must match the workload's
+    region (key).
+
+    Messages:
+      AdditionalProperty: An additional property for a CaPoolsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type CaPoolsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CaPoolsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  caPools = _messages.MessageField('CaPoolsValue', 1)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 2)
+  lifetime = _messages.StringField(3)
+  rotationWindowPercentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class InlineTrustConfig(_messages.Message):
+  r"""Defines configuration for extending trust to additional trust domains.
+  By establishing trust with another domain, the current domain will recognize
+  and accept certificates issued by entities within the trusted domains. Note
+  that a trust domain automatically trusts itself, eliminating the need for
+  explicit configuration.
+
+  Messages:
+    AdditionalTrustBundlesValue: Optional. Maps specific trust domains (e.g.,
+      "example.com") to their corresponding TrustStore objects, which contain
+      the trusted root certificates for that domain. Note that a trust domain
+      automatically trusts itself and don't need to be specified here.
+
+  Fields:
+    additionalTrustBundles: Optional. Maps specific trust domains (e.g.,
+      "example.com") to their corresponding TrustStore objects, which contain
+      the trusted root certificates for that domain. Note that a trust domain
+      automatically trusts itself and don't need to be specified here.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalTrustBundlesValue(_messages.Message):
+    r"""Optional. Maps specific trust domains (e.g., "example.com") to their
+    corresponding TrustStore objects, which contain the trusted root
+    certificates for that domain. Note that a trust domain automatically
+    trusts itself and don't need to be specified here.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AdditionalTrustBundlesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AdditionalTrustBundlesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalTrustBundlesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TrustStore attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TrustStore', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalTrustBundles = _messages.MessageField('AdditionalTrustBundlesValue', 1)
+
+
 class IntermediateCA(_messages.Message):
   r"""Intermediate CA certificates used for building the trust chain to trust
   anchor
@@ -5055,7 +5208,7 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TrustAnchor(_messages.Message):
-  r"""TrustAnchor is the root of trust of x509 federation.
+  r"""Represents a root of trust.
 
   Fields:
     pemCertificate: PEM certificate of the PKI used for validation. Must only
@@ -5071,7 +5224,8 @@ class TrustStore(_messages.Message):
 
   Fields:
     intermediateCas: Optional. Set of intermediate CA certificates used for
-      building the trust chain to trust anchor.
+      building the trust chain to trust anchor. IMPORTANT: * Intermediate CAs
+      are only supported when configuring x509 federation.
     trustAnchors: Required. List of Trust Anchors to be used while performing
       validation against a given TrustStore. The incoming end entity's
       certificate must be chained up to one of the trust anchors here.
@@ -5603,6 +5757,11 @@ class WorkloadIdentityPool(_messages.Message):
     displayName: A display name for the pool. Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workload identity pool will
       be permanently purged and cannot be recovered.
+    inlineCertificateIssuanceConfig: Optional. Defines the Certificate
+      Authority (CA) pool resources and configurations required for issuance
+      and rotation of mTLS workload certificates.
+    inlineTrustConfig: Optional. Represents config to add additional trusted
+      trust domains.
     mode: Immutable. The mode the pool is operating in.
     name: Output only. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
@@ -5664,10 +5823,12 @@ class WorkloadIdentityPool(_messages.Message):
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
   expireTime = _messages.StringField(4)
-  mode = _messages.EnumField('ModeValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  sessionDuration = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  inlineCertificateIssuanceConfig = _messages.MessageField('InlineCertificateIssuanceConfig', 5)
+  inlineTrustConfig = _messages.MessageField('InlineTrustConfig', 6)
+  mode = _messages.EnumField('ModeValueValuesEnum', 7)
+  name = _messages.StringField(8)
+  sessionDuration = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
 class WorkloadIdentityPoolManagedIdentity(_messages.Message):

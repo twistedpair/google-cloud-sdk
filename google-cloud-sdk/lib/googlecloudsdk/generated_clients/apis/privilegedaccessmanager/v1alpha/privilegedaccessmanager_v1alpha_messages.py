@@ -279,8 +279,9 @@ class Finding(_messages.Message):
 
 
 class GcpIamAccess(_messages.Message):
-  r"""GcpIamAccess represents IAM based access control on a GCP resource.
-  Refer to https://cloud.google.com/iam/docs to understand more about IAM.
+  r"""GcpIamAccess represents IAM based access control on a Google Cloud
+  resource. Refer to https://cloud.google.com/iam/docs to understand more
+  about IAM.
 
   Fields:
     resource: Required. Name of the resource.
@@ -717,7 +718,7 @@ class PrivilegedAccess(_messages.Message):
   r"""Privileged access that this service can be used to gate.
 
   Fields:
-    gcpIamAccess: Access to a GCP resource through IAM.
+    gcpIamAccess: Access to a Google Cloud resource through IAM.
   """
 
   gcpIamAccess = _messages.MessageField('GcpIamAccess', 1)

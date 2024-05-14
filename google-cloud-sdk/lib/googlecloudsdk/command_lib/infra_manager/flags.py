@@ -34,6 +34,16 @@ def AddLabelsFlag(parser, help_text):
   )
 
 
+def AddAnnotationsFlag(parser, help_text):
+  """Add --annotations flag."""
+  parser.add_argument(
+      '--annotations',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text,
+  )
+
+
 def AddAsyncFlag(parser):
   """Add --async flag."""
   base.ASYNC_FLAG.AddToParser(parser)

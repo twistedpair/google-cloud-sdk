@@ -18,8 +18,77 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.dataplex import util as dataplex_api
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
+import six
+
+
+def GenerateAspectTypeForCreateRequest(args):
+  """Create Aspect Type Request."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1AspectType(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1AspectType, args
+      ),
+      metadataTemplate=GenerateAspectTypeMetadataTemplate(
+          args.metadata_template_file_name
+      ),
+  )
+
+  return request
+
+
+def GenerateAspectTypeMetadataTemplate(metadata_template_file_name):
+  """Create Metadata Template from specified file."""
+  if not os.path.exists(metadata_template_file_name):
+    raise exceptions.BadFileException('No such file [{0}]'.format(
+        metadata_template_file_name))
+  if os.path.isdir(metadata_template_file_name):
+    raise exceptions.BadFileException('[{0}] is a directory'.format(
+        metadata_template_file_name))
+  try:
+    with files.FileReader(metadata_template_file_name) as import_file:
+      return ConvertMetadataTemplateFileToProto(import_file)
+  except Exception as exp:
+    exp_msg = getattr(exp, 'message', six.text_type(exp))
+    msg = ('Unable to read Metadata Template config from specified file '
+           '[{0}] because [{1}]'.format(metadata_template_file_name, exp_msg))
+    raise exceptions.BadFileException(msg)
+
+
+def ConvertMetadataTemplateFileToProto(metadata_template_file_path):
+  """Construct an AspectTypeMetadataTemplate from a JSON/YAML formatted file.
+
+  Args:
+    metadata_template_file_path: Path to the JSON or YAML file.
+
+  Returns:
+    a protorpc.Message of type GoogleCloudDataplexV1AspectTypeMetadataTemplate
+    filled in from the JSON or YAML metadata template file.
+
+  Raises:
+    BadFileException if the JSON or YAML file is malformed.
+  """
+
+  try:
+    parsed_metadata_template = yaml.load(metadata_template_file_path)
+  except ValueError as e:
+    raise exceptions.BadFileException(
+        'Error parsing metadata template file: {0}'.format(six.text_type(e)))
+
+  metadata_template_message = dataplex_api.GetMessageModule(
+      ).GoogleCloudDataplexV1AspectTypeMetadataTemplate
+  metadata_template = encoding.PyValueToMessage(metadata_template_message,
+                                                parsed_metadata_template)
+  return metadata_template
 
 
 def WaitForOperation(operation):

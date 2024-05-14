@@ -49,6 +49,32 @@ _CREATE_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
              'selected, kms-key must be set.')
     })
 
+_CREATE_BACKUP_ENCRYPTION_CONFIG_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--encryption-type',
+    apis.GetMessagesModule(
+        'spanner', 'v1'
+    ).CreateBackupEncryptionConfig.EncryptionTypeValueValuesEnum,
+    help_str='The encryption type of the backup.',
+    required=False,
+    custom_mappings={
+        'USE_DATABASE_ENCRYPTION': (
+            'use-database-encryption',
+            'Use the same encryption configuration as the database.',
+        ),
+        'GOOGLE_DEFAULT_ENCRYPTION': (
+            'google-default-encryption',
+            'Use Google default encryption.',
+        ),
+        'CUSTOMER_MANAGED_ENCRYPTION': (
+            'customer-managed-encryption',
+            (
+                'Use the provided Cloud KMS key for encryption. If this option'
+                ' is selected, kms-key must be set.'
+            ),
+        ),
+    },
+)
+
 _COPY_BACKUP_ENCRYPTION_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
     '--encryption-type',
     apis.GetMessagesModule(
@@ -109,17 +135,6 @@ _INSTANCE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
              'They come with stricter usage limits and limited support.')),
     })
 
-_DEFAULT_STORAGE_TYPE_MAPPER = arg_utils.ChoiceEnumMapper(
-    '--default-storage-type',
-    apis.GetMessagesModule('spanner',
-                           'v1').Instance.DefaultStorageTypeValueValuesEnum,
-    help_str='Specifies the default storage type for this instance.',
-    required=False,
-    hidden=True,
-    custom_mappings={
-        'SSD': ('ssd', ('Use ssd as default storage type for this instance')),
-        'HDD': ('hdd', ('Use hdd as default storage type for this instance')),
-    })
 
 _EXPIRE_BEHAVIOR_MAPPER = arg_utils.ChoiceEnumMapper(
     '--expire-behavior',
@@ -433,6 +448,18 @@ def GetCreateBackupEncryptionType(args):
       args.encryption_type)
 
 
+def AddCreateBackupEncryptionConfigTypeArg(parser):
+  return _CREATE_BACKUP_ENCRYPTION_CONFIG_TYPE_MAPPER.choice_arg.AddToParser(
+      parser
+  )
+
+
+def GetCreateBackupEncryptionConfigType(args):
+  return _CREATE_BACKUP_ENCRYPTION_CONFIG_TYPE_MAPPER.GetEnumForChoice(
+      args.encryption_type
+  )
+
+
 def AddCopyBackupResourceArgs(parser):
   """Add backup resource args (source, destination) for copy command."""
   arg_specs = [
@@ -566,15 +593,6 @@ def AddInstanceTypeArg(parser):
 
 def GetInstanceType(args):
   return _INSTANCE_TYPE_MAPPER.GetEnumForChoice(args.instance_type)
-
-
-def AddDefaultStorageTypeArg(parser):
-  return _DEFAULT_STORAGE_TYPE_MAPPER.choice_arg.AddToParser(parser)
-
-
-def GetDefaultStorageTypeArg(args):
-  return _DEFAULT_STORAGE_TYPE_MAPPER.GetEnumForChoice(
-      args.default_storage_type)
 
 
 def AddExpireBehaviorArg(parser):

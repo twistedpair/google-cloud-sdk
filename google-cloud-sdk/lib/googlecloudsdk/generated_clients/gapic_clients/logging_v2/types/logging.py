@@ -255,6 +255,12 @@ class ListLogEntriesRequest(proto.Message):
             not listed in ``resource_names`` will cause the filter to
             return no results. The maximum length of a filter is 20,000
             characters.
+
+            To make queries faster, you can make the filter more
+            selective by using restrictions on [indexed fields]
+            (https://cloud.google.com/logging/docs/view/logging-query-language#indexed-fields)
+            as well as limit the time range of the query by adding range
+            restrictions on the ``timestamp`` field.
         order_by (str):
             Optional. How the results should be sorted. Presently, the
             only permitted values are ``"timestamp asc"`` (default) and
@@ -264,6 +270,12 @@ class ListLogEntriesRequest(proto.Message):
             decreasing timestamps (newest first). Entries with equal
             timestamps are returned in order of their ``insert_id``
             values.
+
+            We recommend setting the ``order_by`` field to
+            ``"timestamp desc"`` when listing recently ingested log
+            entries. If not set, the default value of
+            ``"timestamp asc"`` may take a long time to fetch matching
+            logs that are only recently ingested.
         page_size (int):
             Optional. The maximum number of results to return from this
             request. Default is 50. If the value is negative, the

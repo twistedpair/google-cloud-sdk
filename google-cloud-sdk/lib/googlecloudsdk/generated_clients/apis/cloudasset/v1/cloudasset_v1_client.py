@@ -449,7 +449,7 @@ class CloudassetV1(base_api.BaseApiClient):
     )
 
     def Verify(self, request, global_params=None):
-      r"""Verifies the validity of an other-cloud connection, and writes the validation result into spanner if the connection exists. A connection will be considered as valid if the GCP service account can be assumed to the AWS delegated role successfully.
+      r"""Verifies the validity of an other-cloud connection, and writes the validation result into spanner if the connection exists.
 
       Args:
         request: (VerifyOtherCloudConnectionRequest) input message

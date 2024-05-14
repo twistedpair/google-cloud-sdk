@@ -600,6 +600,35 @@ class Condition(_messages.Message):
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
+      CONFIG_APPLY_INTERNAL_ERROR: Configuration (Istio/k8s resources) failed
+        to apply due to internal error.
+      CONFIG_VALIDATION_ERROR: Configuration failed to be applied due to being
+        invalid.
+      CONFIG_VALIDATION_WARNING: Encountered configuration(s) with possible
+        unintended behavior or invalid configuration. These configs may not
+        have been applied.
+      QUOTA_EXCEEDED_BACKEND_SERVICES: BackendService quota exceeded error
+        code.
+      QUOTA_EXCEEDED_HEALTH_CHECKS: HealthCheck quota exceeded error code.
+      QUOTA_EXCEEDED_HTTP_ROUTES: HTTPRoute quota exceeded error code.
+      QUOTA_EXCEEDED_TCP_ROUTES: TCPRoute quota exceeded error code.
+      QUOTA_EXCEEDED_TLS_ROUTES: TLS routes quota exceeded error code.
+      QUOTA_EXCEEDED_TRAFFIC_POLICIES: TrafficPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_ENDPOINT_POLICIES: EndpointPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_GATEWAYS: Gateway quota exceeded error code.
+      QUOTA_EXCEEDED_MESHES: Mesh quota exceeded error code.
+      QUOTA_EXCEEDED_SERVER_TLS_POLICIES: ServerTLSPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_CLIENT_TLS_POLICIES: ClientTLSPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_SERVICE_LB_POLICIES: ServiceLBPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_HTTP_FILTERS: HTTPFilter quota exceeded error code.
+      QUOTA_EXCEEDED_TCP_FILTERS: TCPFilter quota exceeded error code.
+      QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS: NetworkEndpointGroup quota
+        exceeded error code.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -610,6 +639,24 @@ class Condition(_messages.Message):
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
     VPCSC_GA_SUPPORTED = 8
+    CONFIG_APPLY_INTERNAL_ERROR = 9
+    CONFIG_VALIDATION_ERROR = 10
+    CONFIG_VALIDATION_WARNING = 11
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 12
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 13
+    QUOTA_EXCEEDED_HTTP_ROUTES = 14
+    QUOTA_EXCEEDED_TCP_ROUTES = 15
+    QUOTA_EXCEEDED_TLS_ROUTES = 16
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 17
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 18
+    QUOTA_EXCEEDED_GATEWAYS = 19
+    QUOTA_EXCEEDED_MESHES = 20
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 21
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 22
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 23
+    QUOTA_EXCEEDED_HTTP_FILTERS = 24
+    QUOTA_EXCEEDED_TCP_FILTERS = 25
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 26
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.

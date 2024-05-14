@@ -91,6 +91,8 @@ class StoragePoolsClient(object):
                              capacity=None,
                              description=None,
                              allow_auto_tiering=None,
+                             zone=None,
+                             replica_zone=None,
                              labels=None):
     """Parses the command line arguments for Create Storage Pool into a config."""
     return self._adapter.ParseStoragePoolConfig(
@@ -103,6 +105,8 @@ class StoragePoolsClient(object):
         capacity=capacity,
         description=description,
         allow_auto_tiering=allow_auto_tiering,
+        zone=zone,
+        replica_zone=replica_zone,
         labels=labels
     )
 
@@ -156,6 +160,8 @@ class StoragePoolsClient(object):
                                     active_directory=None,
                                     description=None,
                                     allow_auto_tiering=None,
+                                    zone=None,
+                                    replica_zone=None,
                                     labels=None):
     """Parses updates into a storage pool config.
 
@@ -165,6 +171,8 @@ class StoragePoolsClient(object):
       active_directory: the Active Directory attached to a storage pool
       description: str, a new description, if any.
       allow_auto_tiering: bool indicate whether pool supports auto-tiering
+      zone: str, zone for storage pool
+      replica_zone: str, replica zone for storage pool
       labels: LabelsValue message, the new labels value, if any.
 
     Returns:
@@ -176,6 +184,8 @@ class StoragePoolsClient(object):
         active_directory=active_directory,
         description=description,
         allow_auto_tiering=allow_auto_tiering,
+        zone=zone,
+        replica_zone=replica_zone,
         labels=labels
     )
     return storage_pool
@@ -202,6 +212,25 @@ class StoragePoolsClient(object):
         update_op.name, collection=constants.OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
+  def SwitchStoragePool(self, storagepool_ref, async_):
+    """Switch the zone of a Regional Cloud NetApp Storage Pooln.
+
+    Args:
+      storagepool_ref: the reference to the storage pool.
+      async_: bool, if False, wait for the operation to complete.
+
+    Returns:
+      an Operation if async_ is set to true, or a switch message if the
+      SwtichStoragePool is successful.
+    """
+    switch_op = self._adapter.SwitchStoragePool(storagepool_ref)
+    if async_:
+      return switch_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        switch_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
+    return self.WaitForOperation(operation_ref)
+
 
 class StoragePoolsAdapter(object):
   """Adapter for the Cloud NetApp Files API for Storage Pools."""
@@ -226,6 +255,8 @@ class StoragePoolsAdapter(object):
       capacity,
       description,
       allow_auto_tiering,
+      zone,
+      replica_zone,
       labels,
   ):
     """Parses the command line arguments for Create Storage Pool into a config.
@@ -240,6 +271,8 @@ class StoragePoolsAdapter(object):
       capacity: the storage capacity of the Storage Pool
       description: the description of the Storage Pool
       allow_auto_tiering: Bool on whether Storage Pool supports auto tiering
+      zone: zone of the Storage Pool
+      replica_zone: Replica zone for the Storage Pool
       labels: the parsed labels value
 
     Returns:
@@ -259,6 +292,10 @@ class StoragePoolsAdapter(object):
     storage_pool.description = description
     if allow_auto_tiering is not None:
       storage_pool.allowAutoTiering = allow_auto_tiering
+    if zone is not None:
+      storage_pool.zone = zone
+    if replica_zone is not None:
+      storage_pool.replicaZone = replica_zone
     storage_pool.labels = labels
     return storage_pool
 
@@ -270,6 +307,8 @@ class StoragePoolsAdapter(object):
       labels=None,
       capacity=None,
       allow_auto_tiering=None,
+      zone=None,
+      replica_zone=None,
   ):
     """Parse update information into an updated Storage Pool message."""
     if capacity is not None:
@@ -280,6 +319,10 @@ class StoragePoolsAdapter(object):
       storagepool_config.description = description
     if allow_auto_tiering is not None:
       storagepool_config.allowAutoTiering = allow_auto_tiering
+    if zone is not None:
+      storagepool_config.zone = zone
+    if replica_zone is not None:
+      storagepool_config.replicaZone = replica_zone
     if labels is not None:
       storagepool_config.labels = labels
     return storagepool_config
@@ -312,6 +355,15 @@ class BetaStoragePoolsAdapter(StoragePoolsAdapter):
         release_track=self.release_track
     )
 
+  def SwitchStoragePool(self, storagepool_ref):
+    """Send a switch zone request for the Cloud NetApp storage pool."""
+    switch_request = (
+        self.messages.NetappProjectsLocationsStoragePoolsSwitchRequest(
+            name=storagepool_ref.RelativeName(),
+        )
+    )
+    return self.client.projects_locations_storagePools.Switch(switch_request)
+
 
 class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
   """Adapter for the Alpha Cloud NetApp Files API for Storage Pools."""
@@ -325,3 +377,12 @@ class AlphaStoragePoolsAdapter(BetaStoragePoolsAdapter):
     self.messages = netapp_api_util.GetMessagesModule(
         release_track=self.release_track
     )
+
+  def SwitchStoragePool(self, storagepool_ref):
+    """Send a switch zone request for the Cloud NetApp storage pool."""
+    switch_request = (
+        self.messages.NetappProjectsLocationsStoragePoolsSwitchRequest(
+            name=storagepool_ref.RelativeName(),
+        )
+    )
+    return self.client.projects_locations_storagePools.Switch(switch_request)

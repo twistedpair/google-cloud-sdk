@@ -988,6 +988,7 @@ class Device(_messages.Message):
     releaseVersion: Output only. OS release version. Example: 6.0.
     securityPatchTime: Output only. OS security patch update time on device.
     serialNumber: Serial Number of device. Example: HT82V1A01076.
+    unifiedDeviceId: Output only. Unified device id of the device.
     wifiMacAddresses: WiFi MAC addresses of device.
   """
 
@@ -1126,7 +1127,8 @@ class Device(_messages.Message):
   releaseVersion = _messages.StringField(29)
   securityPatchTime = _messages.StringField(30)
   serialNumber = _messages.StringField(31)
-  wifiMacAddresses = _messages.StringField(32, repeated=True)
+  unifiedDeviceId = _messages.StringField(32)
+  wifiMacAddresses = _messages.StringField(33, repeated=True)
 
 
 class DeviceUser(_messages.Message):
@@ -1940,6 +1942,7 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     releaseVersion: Output only. OS release version. Example: 6.0.
     securityPatchTime: Output only. OS security patch update time on device.
     serialNumber: Serial Number of device. Example: HT82V1A01076.
+    unifiedDeviceId: Output only. Unified device id of the device.
     wifiMacAddresses: WiFi MAC addresses of device.
   """
 
@@ -2058,7 +2061,8 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
   releaseVersion = _messages.StringField(28)
   securityPatchTime = _messages.StringField(29)
   serialNumber = _messages.StringField(30)
-  wifiMacAddresses = _messages.StringField(31, repeated=True)
+  unifiedDeviceId = _messages.StringField(31)
+  wifiMacAddresses = _messages.StringField(32, repeated=True)
 
 
 class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):

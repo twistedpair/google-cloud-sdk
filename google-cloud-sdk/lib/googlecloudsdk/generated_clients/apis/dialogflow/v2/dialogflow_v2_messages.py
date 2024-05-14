@@ -4346,13 +4346,19 @@ class GoogleCloudDialogflowCxV3AdvancedSettingsDtmfSettings(_messages.Message):
       the event (e.g. a "3" was pressed) in the incoming audio and pass the
       event to the bot to drive business logic (e.g. when 3 is pressed, return
       the account balance).
+    endpointingTimeoutDuration: Endpoint timeout setting for matching dtmf
+      input to regex.
     finishDigit: The digit that terminates a DTMF digit sequence.
+    interdigitTimeoutDuration: Interdigit timeout setting for matching dtmf
+      input to regex.
     maxDigits: Max length of DTMF digits.
   """
 
   enabled = _messages.BooleanField(1)
-  finishDigit = _messages.StringField(2)
-  maxDigits = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  endpointingTimeoutDuration = _messages.StringField(2)
+  finishDigit = _messages.StringField(3)
+  interdigitTimeoutDuration = _messages.StringField(4)
+  maxDigits = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDialogflowCxV3AdvancedSettingsLoggingSettings(_messages.Message):
@@ -7112,13 +7118,19 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettingsDtmfSettings(_messages.Messa
       the event (e.g. a "3" was pressed) in the incoming audio and pass the
       event to the bot to drive business logic (e.g. when 3 is pressed, return
       the account balance).
+    endpointingTimeoutDuration: Endpoint timeout setting for matching dtmf
+      input to regex.
     finishDigit: The digit that terminates a DTMF digit sequence.
+    interdigitTimeoutDuration: Interdigit timeout setting for matching dtmf
+      input to regex.
     maxDigits: Max length of DTMF digits.
   """
 
   enabled = _messages.BooleanField(1)
-  finishDigit = _messages.StringField(2)
-  maxDigits = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  endpointingTimeoutDuration = _messages.StringField(2)
+  finishDigit = _messages.StringField(3)
+  interdigitTimeoutDuration = _messages.StringField(4)
+  maxDigits = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDialogflowCxV3beta1AdvancedSettingsLoggingSettings(_messages.Message):

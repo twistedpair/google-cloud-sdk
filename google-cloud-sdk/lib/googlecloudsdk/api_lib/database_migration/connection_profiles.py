@@ -315,16 +315,8 @@ class ConnectionProfilesClient(object):
     Args:
       cp_type: str, the connection profile type.
       version: database version.
-
-    Raises:
-    BadArgumentException: database-version is MYSQL_8_0_36
     """
-    if version == 'MYSQL_8_0_36':
-      raise calliope_exceptions.BadArgumentException(
-          'database-version',
-          'The requested connection profile contains unsupported database'
-          ' version.',
-      )
+
     return cp_type.DatabaseVersionValueValuesEnum.lookup_by_name(version)
 
   def _GetAuthorizedNetworks(self, networks):

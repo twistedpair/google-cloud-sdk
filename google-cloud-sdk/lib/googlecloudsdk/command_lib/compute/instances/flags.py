@@ -300,11 +300,10 @@ def MakeSourceInstanceTemplateArg():
       global_collection='compute.instanceTemplates',
       regional_collection='compute.regionInstanceTemplates',
       short_help=(
-          'The name of the instance template that the instance will '
-          'be created from. An instance template can be a '
-          'global/regional resource.\n\nUsers can also override machine '
-          'type and labels. Values of other flags will be ignored and'
-          ' `--source-instance-template` will be used instead.'
+          'The name of the instance template that the instance will be created'
+          ' from. An instance template can be a global/regional'
+          ' resource.\n\nUsers can override instance properties using other'
+          ' flags.'
       ),
   )
 
@@ -1496,34 +1495,43 @@ def AddAddressArgs(parser,
   multiple_network_interface_cards_spec[
       'igmp-query'] = _ValidateNetworkInterfaceIgmpQuery
 
-  network_interface_help_texts = []
-  # IPv6 related fields are not supported in create-with-container commands yet.
-  if not containers:
-    multiple_network_interface_cards_spec['ipv6-public-ptr-domain'] = str
-    if support_ipv6_only:
-      multiple_network_interface_cards_spec[
-          'stack-type'] = ValidateNetworkInterfaceStackType
-    else:
-      multiple_network_interface_cards_spec[
-          'stack-type'] = ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
+  if support_ipv6_only:
     multiple_network_interface_cards_spec[
-        'ipv6-network-tier'] = _ValidateNetworkInterfaceIpv6NetworkTier
+        'stack-type'] = ValidateNetworkInterfaceStackType
+  else:
+    multiple_network_interface_cards_spec[
+        'stack-type'] = ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
+
+  multiple_network_interface_cards_spec[
+      'ipv6-network-tier'] = _ValidateNetworkInterfaceIpv6NetworkTier
+
+  network_interface_help_texts = []
+
+  if not containers:
+    # TODO(b/331951827): Determine whether ipv6-public-ptr-domain should be
+    # supported for create-with-container
+    multiple_network_interface_cards_spec['ipv6-public-ptr-domain'] = str
     network_interface_help_texts.append("""\
       Adds a network interface to the instance. Mutually exclusive with any
       of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
       *--private-network-ip*, *--stack-type*, *--ipv6-network-tier*,
-      *--ipv6-public-ptr-domain*, *--internal-ipv6-address*,
+      *--internal-ipv6-address*,
       *--internal-ipv6-prefix-length*, *--ipv6-address*, *--ipv6-prefix-length*,
-      *--external-ipv6-address*, *--external-ipv6-prefix-length*.
-      This flag can be repeated to specify multiple network interfaces.
+      *--external-ipv6-address*, *--external-ipv6-prefix-length*,
+      *--ipv6-public-ptr-domain*. This flag can be repeated to specify
+      multiple network interfaces.
     """)
   else:
     network_interface_help_texts.append("""\
       Adds a network interface to the instance. Mutually exclusive with any
       of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
-      *--private-network-ip*. This flag can be repeated to specify multiple
-      network interfaces.
+      *--private-network-ip*, *--stack-type*, *--ipv6-network-tier*,
+      *--internal-ipv6-address*,
+      *--internal-ipv6-prefix-length*, *--ipv6-address*, *--ipv6-prefix-length*,
+      *--external-ipv6-address*, *--external-ipv6-prefix-length*.
+      This flag can be repeated to specify multiple network interfaces.
     """)
+
   network_interface_help_texts.append("""
       The following keys are allowed:
       *address*::: Assigns the given external address to the instance that is
@@ -1564,22 +1572,50 @@ def AddAddressArgs(parser,
       more details.
       """)
 
-  if not containers:
-    if support_ipv6_only:
-      stack_types = '`IPV4_ONLY`, `IPV4_IPV6`, `IPV6_ONLY`'
-    else:
-      stack_types = '`IPV4_ONLY`, `IPV4_IPV6`'
-    network_interface_help_texts.append(f"""
-      *stack-type*::: Specifies whether IPv6 is enabled on the interface.
-      ``STACK_TYPE'' must be one of: {stack_types}.
-      The default value is `IPV4_ONLY`.
-    """)
+  if support_ipv6_only:
     network_interface_help_texts.append("""
-      *ipv6-network-tier*::: Specifies the IPv6 network tier that will be used
-      to configure the instance network interface IPv6 access config.
-      ``IPV6_NETWORK_TIER'' must be `PREMIUM` (currently only one value is
-      supported).
+      *stack-type*::: Specifies whether IPv6 is enabled on the interface.
+      ``STACK_TYPE'' must be one of: `IPV4_ONLY`, `IPV4_IPV6`, `IPV6_ONLY`.
+      The default value is `IPV4_ONLY`.
+      """)
+  else:
 
+    network_interface_help_texts.append("""
+      *stack-type*::: Specifies whether IPv6 is enabled on the interface.
+      ``STACK_TYPE'' must be one of: `IPV4_ONLY`, `IPV4_IPV6`.
+      The default value is `IPV4_ONLY`.
+      """)
+
+  network_interface_help_texts.append("""
+      *ipv6-network-tier*::: Specifies the IPv6 network tier that will be used
+        to configure the instance network interface IPv6 access config.
+        ``IPV6_NETWORK_TIER'' must be `PREMIUM` (currently only one value is
+        supported).
+
+      *internal-ipv6-address*::: Assigns the given internal IPv6 address or range
+        to the instance that is created. The address must be the first IP address
+        in the range or from a /96 IP address range. This option can be used only
+        when creating a single instance.
+
+      *internal-ipv6-prefix-length*::: Optional field that indicates the prefix
+        length of the internal IPv6 address range. It should be used together with
+        internal-ipv6-address. Only /96 IP address range is supported and the
+        default value is 96. If not set, either the prefix length from
+        --internal-ipv6-address will be used or the default value of 96 will be
+        assigned.
+
+      *external-ipv6-address*::: Assigns the given external IPv6 address to the
+        instance that is created. The address must be the first IP address in the
+        range. This option can be used only when creating a single instance.
+
+      *external-ipv6-prefix-length*::: The prefix length of the external IPv6
+        address range. This field should be used together with
+        external-ipv6-address. Only the /96 IP address range is supported, and the
+        default value is 96.
+      """)
+
+  if not containers:
+    network_interface_help_texts.append("""
       *ipv6-public-ptr-domain*::: Assigns a custom PTR domain for the external
       IPv6 in the IPv6 access configuration of instance. If its value is not
       specified, the default PTR record will be used. This option can only be
@@ -3158,7 +3194,7 @@ def ValidateReservationAffinityGroup(args):
     if not args.IsSpecified('reservation'):
       raise exceptions.InvalidArgumentException(
           '--reservation',
-          'The name the specific reservation must be specified.',
+          'The name of the specific reservation must be specified.',
       )
 
 

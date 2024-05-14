@@ -29,6 +29,16 @@ def GetLocation(args):
   )
 
 
+def AddLessFlag(parser):
+  parser.add_argument(
+      '--less',
+      required=False,
+      default=False,
+      action='store_true',
+      help='Show less verbose output.',
+  )
+
+
 def AddNameFlag(parser):
   parser.add_argument('name', help='Resource name.')
 

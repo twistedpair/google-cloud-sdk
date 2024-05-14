@@ -1271,6 +1271,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')
     self.looker = self._Add('looker', command='gcloud looker')
+    self.managedflink = self._Add(
+        'managedflink', command='gcloud managedflink', hidden=True
+    )
     self.managedidentities = self._Add(
         'managedidentities', command='gcloud active-directory')
     self.managedkafka = self._Add(

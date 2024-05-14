@@ -399,10 +399,11 @@ class GceInstance(_messages.Message):
       the pool for faster workstation startup.
     serviceAccount: Optional. The email address of the service account for
       Cloud Workstations VMs created with this configuration. When specified,
-      be sure that the service account has `logginglogEntries.create`
-      permission on the project so it can write logs out to Cloud Logging. If
-      using a custom container image, the service account must have [Artifact
-      Registry Reader](https://cloud.google.com/artifact-registry/docs/access-
+      be sure that the service account has `logging.logEntries.create` and
+      `monitoring.timeSeries.create` permissions on the project so it can
+      write logs out to Cloud Logging. If using a custom container image, the
+      service account must have [Artifact Registry
+      Reader](https://cloud.google.com/artifact-registry/docs/access-
       control#roles) permission to pull the specified image. If you as the
       administrator want to be able to `ssh` into the underlying VM, you need
       to set this value to a service account for which you have the
@@ -412,8 +413,7 @@ class GceInstance(_messages.Message):
       account provided by the Cloud Workstations service, and the image must
       be publicly accessible.
     serviceAccountScopes: Optional. Scopes to grant to the service_account.
-      Various scopes are automatically added based on feature usage. When
-      specified, users of workstations under this configuration must have
+      When specified, users of workstations under this configuration must have
       `iam.serviceAccounts.actAs` on the service account.
     shieldedInstanceConfig: Optional. A set of Compute Engine Shielded
       instance options.

@@ -575,6 +575,12 @@ def AddMaxInstancesFlag(parser):
       action='store_true',
       help="""\
         Clears the maximum instances setting for the function.
+
+        If it's any 2nd gen function or a 1st gen HTTP function, this flag sets
+        maximum instances  to 0, which means there is no limit to maximum
+        instances. If it's an event-driven 1st gen function, this flag sets
+        maximum instances to 3000, which is the default value for 1st gen
+        functions.
       """,
   )
 

@@ -851,6 +851,8 @@ class Instance(_messages.Message):
     labels: The resource labels for instance to use to annotate any related
       underlying resources such as Compute Engine VMs. The character '=' is
       not allowed to be used within the labels.
+    maintenancePolicy: Optional. Configure the maintenance policy for this
+      instance.
     name: Output only. The name of this instance is in the form of
       projects/{project}/locations/{location}/instances/{instance}.
     networkConfig: Network configuration options. These are required when a
@@ -1010,23 +1012,24 @@ class Instance(_messages.Message):
   eventPublishConfig = _messages.MessageField('EventPublishConfig', 15)
   gcsBucket = _messages.StringField(16)
   labels = _messages.MessageField('LabelsValue', 17)
-  name = _messages.StringField(18)
-  networkConfig = _messages.MessageField('NetworkConfig', 19)
-  options = _messages.MessageField('OptionsValue', 20)
-  p4ServiceAccount = _messages.StringField(21)
-  patchRevision = _messages.StringField(22)
-  privateInstance = _messages.BooleanField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  serviceAccount = _messages.StringField(25)
-  serviceEndpoint = _messages.StringField(26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  stateMessage = _messages.StringField(28)
-  tenantProjectId = _messages.StringField(29)
-  type = _messages.EnumField('TypeValueValuesEnum', 30)
-  updateTime = _messages.StringField(31)
-  version = _messages.StringField(32)
-  workforceIdentityServiceEndpoint = _messages.StringField(33)
-  zone = _messages.StringField(34)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 18)
+  name = _messages.StringField(19)
+  networkConfig = _messages.MessageField('NetworkConfig', 20)
+  options = _messages.MessageField('OptionsValue', 21)
+  p4ServiceAccount = _messages.StringField(22)
+  patchRevision = _messages.StringField(23)
+  privateInstance = _messages.BooleanField(24)
+  satisfiesPzs = _messages.BooleanField(25)
+  serviceAccount = _messages.StringField(26)
+  serviceEndpoint = _messages.StringField(27)
+  state = _messages.EnumField('StateValueValuesEnum', 28)
+  stateMessage = _messages.StringField(29)
+  tenantProjectId = _messages.StringField(30)
+  type = _messages.EnumField('TypeValueValuesEnum', 31)
+  updateTime = _messages.StringField(32)
+  version = _messages.StringField(33)
+  workforceIdentityServiceEndpoint = _messages.StringField(34)
+  zone = _messages.StringField(35)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1187,6 +1190,30 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy of the instance.
+
+  Fields:
+    maintenanceExclusionWindow: Optional. The maintenance exclusion window of
+      the instance.
+    maintenanceWindow: Optional. The maintenance window of the instance.
+  """
+
+  maintenanceExclusionWindow = _messages.MessageField('TimeWindow', 1)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 2)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""Maintenance window of the instance.
+
+  Fields:
+    recurringTimeWindow: Required. The recurring time window of the
+      maintenance window.
+  """
+
+  recurringTimeWindow = _messages.MessageField('RecurringTimeWindow', 1)
 
 
 class Namespace(_messages.Message):
@@ -1570,6 +1597,29 @@ class PrivateServiceConnectConfig(_messages.Message):
   unreachableCidrBlock = _messages.StringField(3)
 
 
+class RecurringTimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time that recurs.
+
+  Fields:
+    recurrence: Required. An RRULE with format
+      [RFC-5545](https://tools.ietf.org/html/rfc5545#section-3.8.5.3) for how
+      this window reccurs. They go on for the span of time between the start
+      and end time. The only supported FREQ value is "WEEKLY". To have
+      something repeat every weekday, use: "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR".
+      This specifies how frequently the window starts. To have a 9 am - 5 pm
+      UTC-4 window every weekday, use something like: ``` start time =
+      2019-01-01T09:00:00-0400 end time = 2019-01-01T17:00:00-0400 recurrence
+      = FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR ```
+    window: Required. The window representing the start and end time of
+      recurrences. This field ignores the date components of the provided
+      timestamps. Only the time of day and duration between start and end time
+      are relevant.
+  """
+
+  recurrence = _messages.StringField(1)
+  window = _messages.MessageField('TimeWindow', 2)
+
+
 class RemoveIamPolicyRequest(_messages.Message):
   r"""Request message for RemoveIamPolicy method."""
 
@@ -1748,6 +1798,22 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TimeWindow(_messages.Message):
+  r"""Represents an arbitrary window of time.
+
+  Fields:
+    endTime: Required. The end time of the time window provided in [RFC
+      3339](https://www.ietf.org/rfc/rfc3339.txt) format. The end time should
+      take place after the start time. Example: "2024-01-02T12:04:06-06:00"
+    startTime: Required. The start time of the time window provided in [RFC
+      3339](https://www.ietf.org/rfc/rfc3339.txt) format. Example:
+      "2024-01-01T12:04:06-04:00"
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class UpgradeInstanceRequest(_messages.Message):

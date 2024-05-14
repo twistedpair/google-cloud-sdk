@@ -1173,6 +1173,9 @@ class LinkedInterconnectAttachments(_messages.Message):
   capable of advertising the same prefixes.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -1182,13 +1185,14 @@ class LinkedInterconnectAttachments(_messages.Message):
       located.
   """
 
-  siteToSiteDataTransfer = _messages.BooleanField(1)
-  uris = _messages.StringField(2, repeated=True)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(2)
+  uris = _messages.StringField(3, repeated=True)
+  vpcNetwork = _messages.StringField(4)
 
 
 class LinkedPrivateServicesAccess(_messages.Message):
-  r"""Next ID: 4
+  r"""Next ID: 4 Deprecated. Use LinkedProducerVpcNetwork instead.
 
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
@@ -1204,6 +1208,27 @@ class LinkedPrivateServicesAccess(_messages.Message):
   network = _messages.StringField(3)
 
 
+class LinkedProducerVpcNetwork(_messages.Message):
+  r"""Next ID: 5
+
+  Fields:
+    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
+      excluded from peering.
+    includeExportRanges: Optional. IP ranges allowed to be included from
+      peering.
+    network: Immutable. The URI of the home VPC that Private Services Access
+      is peered with.
+    peering: Immutable. The name of the VPC peering between the home VPC and
+      the Producer remote VPC (defined in the Tenant project) which is added
+      to the NCC hub. This peering must be in ACTIVE state.
+  """
+
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  includeExportRanges = _messages.StringField(2, repeated=True)
+  network = _messages.StringField(3)
+  peering = _messages.StringField(4)
+
+
 class LinkedRouterApplianceInstances(_messages.Message):
   r"""A collection of router appliance instances. If you configure multiple
   router appliance instances to receive data from the same set of sites
@@ -1211,6 +1236,9 @@ class LinkedRouterApplianceInstances(_messages.Message):
   with the same spoke.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
@@ -1220,9 +1248,10 @@ class LinkedRouterApplianceInstances(_messages.Message):
       instances are located.
   """
 
-  instances = _messages.MessageField('RouterApplianceInstance', 1, repeated=True)
-  siteToSiteDataTransfer = _messages.BooleanField(2)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  instances = _messages.MessageField('RouterApplianceInstance', 2, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(3)
+  vpcNetwork = _messages.StringField(4)
 
 
 class LinkedVpcNetwork(_messages.Message):
@@ -1248,6 +1277,9 @@ class LinkedVpnTunnels(_messages.Message):
   be capable of advertising the same prefixes.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -1257,9 +1289,10 @@ class LinkedVpnTunnels(_messages.Message):
       located.
   """
 
-  siteToSiteDataTransfer = _messages.BooleanField(1)
-  uris = _messages.StringField(2, repeated=True)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(2)
+  uris = _messages.StringField(3, repeated=True)
+  vpcNetwork = _messages.StringField(4)
 
 
 class ListGroupsResponse(_messages.Message):
@@ -4351,6 +4384,8 @@ class Spoke(_messages.Message):
       the spoke.
     linkedPrivateServicesAccess: Optional. The linked private service access
       that is associated with the spoke.
+    linkedProducerVpcNetwork: Optional. The linked producer VPC that is
+      associated with the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
     linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
@@ -4449,15 +4484,16 @@ class Spoke(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 6)
   linkedPrivateServicesAccess = _messages.MessageField('LinkedPrivateServicesAccess', 7)
-  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 8)
-  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 9)
-  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 10)
-  name = _messages.StringField(11)
-  reasons = _messages.MessageField('StateReason', 12, repeated=True)
-  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  uniqueId = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  linkedProducerVpcNetwork = _messages.MessageField('LinkedProducerVpcNetwork', 8)
+  linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 9)
+  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 10)
+  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 11)
+  name = _messages.StringField(12)
+  reasons = _messages.MessageField('StateReason', 13, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uniqueId = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class SpokeStateCount(_messages.Message):

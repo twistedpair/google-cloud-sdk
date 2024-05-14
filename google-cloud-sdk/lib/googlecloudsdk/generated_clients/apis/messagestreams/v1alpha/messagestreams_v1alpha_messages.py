@@ -228,9 +228,8 @@ class KafkaSource(_messages.Message):
     brokerUris: Required. The Kafka broker URIs. e.g. 10.12.34.56:8080
     consumerGroupId: Required. The consumer group ID used by the Kafka broker
       to track the offsets of all topic partitions being read by this Stream.
-    initialOffset: Optional. The initial message offset from which to start
-      streaming. If unspecified, Stream will start streaming from the newest
-      message. Supported values: newest, oldest.
+    initialOffset: Required. The initial message offset from which to start
+      streaming. Supported values: newest, oldest.
     kafkaAuthenticationConfig: Optional. Authentication configuration used to
       authenticate the Kafka client with the Kafka broker, and authorize to
       read the topic(s).

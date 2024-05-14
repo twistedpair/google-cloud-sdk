@@ -585,26 +585,75 @@ def GetDockerImages(resource, args):
 
   if isinstance(resource, DockerRepo):
     _ValidateDockerRepo(resource.GetRepositoryName())
-
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
-            resource.project, resource.location, resource.repo))
-    return _GetDockerPackagesAndVersions(resource, args.include_tags,
-                                         args.page_size, order_by, limit)
+            resource.project, resource.location, resource.repo
+        )
+    )
+
+    # Docker util predates avaliblity of ListDockerImages API, thus doesn't
+    # use DockerImage resource. Converting to legacy shape is requrired to
+    # prevent breaking change.
+    return [
+        DockerImageToLegacy(img, args.include_tags)
+        for img in ar_requests.ListDockerImages(
+            resource.GetRepositoryName(), args.page_size, limit
+        )
+    ]
   elif isinstance(resource, DockerImage):
     _ValidateDockerRepo(resource.docker_repo.GetRepositoryName())
     log.status.Print(
         "Listing items under project {}, location {}, repository {}.\n".format(
-            resource.docker_repo.project, resource.docker_repo.location,
-            resource.docker_repo.repo))
+            resource.docker_repo.project,
+            resource.docker_repo.location,
+            resource.docker_repo.repo,
+        )
+    )
     return _GetDockerVersions(
         resource,
         args.include_tags,
         args.page_size,
         order_by,
         limit,
-        search_subdirs=True)
+        search_subdirs=True,
+    )
   return []
+
+
+def DockerImageToLegacy(img, include_tags: bool) -> map:
+  """Converts a docker image resource from generated client into legacy format.
+
+  Args:
+    img: The docker image to convert to legacy format
+    include_tags: Bool to specify if tags should be included
+
+  Returns:
+    Legacy representation of a docker image.
+  """
+  splits = img.uri.split("@")
+  if len(splits) != 2:
+    raise ar_exceptions.ArtifactRegistryError(
+        "Unable to parse docker image URI: {}".format(img.uri)
+    )
+
+  return {
+      # Package is URI without the version.
+      "package": splits[0],
+      "version": splits[1],
+      "createTime": img.uploadTime,
+      "updateTime": img.updateTime,
+      "metadata": {
+          "buildTime": img.buildTime,
+          "mediaType": img.mediaType,
+          # Legacy format uses a string here instead of a int.
+          "imageSizeBytes": str(img.imageSizeBytes),
+          "name": img.name,
+      },
+      # Historically tags were not queried from backend by default. Now tags
+      # are always included, but to prevent breaking change only include if
+      # requested.
+      "tags": ", ".join(img.tags) if include_tags else "",
+  }
 
 
 def WaitForOperation(operation, message):

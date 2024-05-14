@@ -980,10 +980,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_RAGCORPORA = (
       'projects.locations.ragCorpora',
-      'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
-      '{ragCorporaId}',
-      {},
-      ['projectsId', 'locationsId', 'ragCorporaId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_RAGCORPORA_OPERATIONS = (
@@ -999,10 +1002,13 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES = (
       'projects.locations.ragCorpora.ragFiles',
-      'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
-      '{ragCorporaId}/ragFiles/{ragFilesId}',
-      {},
-      ['projectsId', 'locationsId', 'ragCorporaId', 'ragFilesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/ragCorpora/'
+              '{ragCorporaId}/ragFiles/{ragFilesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_RAGCORPORA_RAGFILES_OPERATIONS = (
@@ -1256,6 +1262,17 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'trainingPipelines/{trainingPipelinesId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TUNINGJOBS = (
+      'projects.locations.tuningJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tuningJobs/'
+              '{tuningJobsId}',
       },
       ['name'],
       True

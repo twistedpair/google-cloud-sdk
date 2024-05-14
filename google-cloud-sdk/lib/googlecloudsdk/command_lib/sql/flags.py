@@ -39,6 +39,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.core import properties
 
 messages = apis.GetMessagesModule('sql', 'v1beta4')
 DEFAULT_INSTANCE_DATABASE_VERSION = 'MYSQL_8_0'
@@ -809,7 +810,10 @@ def AddStorageType(parser, hidden=False):
   parser.add_argument(
       '--storage-type',
       required=False,
-      choices=['SSD', 'HDD'],
+      # TODO(b/339092559): Remove SSD from the list for non-default universe
+      choices=(
+          ['SSD', 'HDD'] if properties.IsDefaultUniverse() else ['SSD', 'HDB']
+      ),
       default=None,
       hidden=hidden,
       help='The storage type for the instance. The default is SSD.',

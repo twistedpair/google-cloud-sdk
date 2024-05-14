@@ -196,12 +196,12 @@ class EffectiveEventThreatDetectionCustomModule(_messages.Message):
     enablementState: Output only. The effective state of enablement for the
       module at the given level of the hierarchy.
     name: Identifier. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/locations/{location}/effectiveEventT
+      is: * `organizations/{organization}/locations/{location}/effectiveEventT
       hreatDetectionCustomModules/{effective_event_threat_detection_custom_mod
-      ule}". * "folders/{folder}/locations/{location}/effectiveEventThreatDete
-      ctionCustomModules/{effective_event_threat_detection_custom_module}". *
-      "projects/{project}/locations/{location}/effectiveEventThreatDetectionCu
-      stomModules/{effective_event_threat_detection_custom_module}".
+      ule}`. * `folders/{folder}/locations/{location}/effectiveEventThreatDete
+      ctionCustomModules/{effective_event_threat_detection_custom_module}`. *
+      `projects/{project}/locations/{location}/effectiveEventThreatDetectionCu
+      stomModules/{effective_event_threat_detection_custom_module}`.
     type: Output only. Type for the module. e.g. CONFIGURABLE_BAD_IP.
   """
 
@@ -274,14 +274,13 @@ class EffectiveSecurityHealthAnalyticsCustomModule(_messages.Message):
       contain alphanumeric characters or underscores only.
     enablementState: Output only. The effective state of enablement for the
       module at the given level of the hierarchy.
-    name: Identifier. The resource name of the custom module. Its format is "o
-      rganizations/{organization}/locations/{location}/effectiveSecurityHealth
-      AnalyticsCustomModules/{effective_security_health_analytics_custom_modul
-      e}", or "folders/{folder}/locations/{location}/effectiveSecurityHealthAn
-      alyticsCustomModules/{effective_security_health_analytics_custom_module}
-      ", or "projects/{project}/locations/{location}/effectiveSecurityHealthAn
-      alyticsCustomModules/{effective_security_health_analytics_custom_module}
-      "
+    name: Identifier. The full resource name of the custom module, specified
+      in one of the following formats: * `organizations/organization/{location
+      }/effectiveSecurityHealthAnalyticsCustomModules/{effective_security_heal
+      th_analytics_custom_module}` * `folders/folder/{location}/effectiveSecur
+      ityHealthAnalyticsCustomModules/{effective_security_health_analytics_cus
+      tom_module}` * `projects/project/{location}/effectiveSecurityHealthAnaly
+      ticsCustomModules/{effective_security_health_analytics_custom_module}`
   """
 
   class EnablementStateValueValuesEnum(_messages.Enum):
@@ -342,12 +341,12 @@ class EventThreatDetectionCustomModule(_messages.Message):
       given level of the hierarchy.
     lastEditor: Output only. The editor the module was last updated by.
     name: Identifier. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/locations/{location}/eventThreatDete
-      ctionCustomModules/{event_threat_detection_custom_module}". * "folders/{
+      is: * `organizations/{organization}/locations/{location}/eventThreatDete
+      ctionCustomModules/{event_threat_detection_custom_module}`. * `folders/{
       folder}/locations/{location}/eventThreatDetectionCustomModules/{event_th
-      reat_detection_custom_module}". * "projects/{project}/locations/{locatio
+      reat_detection_custom_module}`. * `projects/{project}/locations/{locatio
       n}/eventThreatDetectionCustomModules/{event_threat_detection_custom_modu
-      le}".
+      le}`.
     type: Optional. Type for the module. e.g. CONFIGURABLE_BAD_IP.
     updateTime: Output only. The time the module was last updated.
   """
@@ -699,7 +698,7 @@ class ListLocationsResponse(_messages.Message):
 
 
 class ListSecurityCenterServicesResponse(_messages.Message):
-  r"""Response message for listing Security Center services.
+  r"""Response message for listing Security Command Center services.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
@@ -922,7 +921,7 @@ class SecurityCenterService(_messages.Message):
   Messages:
     ModulesValue: Optional. The configurations including the state of
       enablement for the service's different modules. The absence of a module
-      in the map implies its configuration is inherited from its parent's.
+      in the map implies its configuration is inherited from its parents.
     ServiceConfigValue: Optional. Additional service specific configuration.
       Not all services will utilize this field.
 
@@ -938,11 +937,14 @@ class SecurityCenterService(_messages.Message):
       will override all module enablement_states to DISABLED.
     modules: Optional. The configurations including the state of enablement
       for the service's different modules. The absence of a module in the map
-      implies its configuration is inherited from its parent's.
-    name: Identifier. The name of the service Formats: * organizations/{organi
-      zation}/locations/{location}/securityCenterServices/{service} *
+      implies its configuration is inherited from its parents.
+    name: Identifier. The name of the service. Its format is: * organizations/
+      {organization}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
     serviceConfig: Optional. Additional service specific configuration. Not
       all services will utilize this field.
     updateTime: Output only. The time the service was last updated. This could
@@ -990,7 +992,7 @@ class SecurityCenterService(_messages.Message):
   class ModulesValue(_messages.Message):
     r"""Optional. The configurations including the state of enablement for the
     service's different modules. The absence of a module in the map implies
-    its configuration is inherited from its parent's.
+    its configuration is inherited from its parents.
 
     Messages:
       AdditionalProperty: An additional property for a ModulesValue object.
@@ -1071,14 +1073,13 @@ class SecurityHealthAnalyticsCustomModule(_messages.Message):
       contain alphanumeric characters or underscores only.
     enablementState: Optional. The enablement state of the custom module.
     lastEditor: Output only. The editor that last updated the custom module.
-    name: Identifier. The resource name of the custom module. Its format is "o
-      rganizations/{organization}/locations/{location}/securityHealthAnalytics
-      CustomModules/{security_health_analytics_custom_module}", or "folders/{f
-      older}/locations/{location}/securityHealthAnalyticsCustomModules/{securi
-      ty_health_analytics_custom_module}", or "projects/{project}/locations/{l
-      ocation}/securityHealthAnalyticsCustomModules/{security_health_analytics
-      _custom_module}" The id {customModule} is server-generated and is not
-      user settable. It will be a numeric id containing 1-20 digits.
+    name: Identifier. The full resource name of the custom module, specified
+      in one of the following formats: * `organizations/{organization}/locatio
+      ns/{location}/securityHealthAnalyticsCustomModules/{security_health_anal
+      ytics_custom_module}` * `folders/{folder}/locations/{location}/securityH
+      ealthAnalyticsCustomModules/{security_health_analytics_custom_module}` *
+      `projects/{project}/locations/{location}/securityHealthAnalyticsCustomMo
+      dules/{security_health_analytics_custom_module}`
     updateTime: Output only. The time at which the custom module was last
       updated.
   """
@@ -1116,12 +1117,12 @@ class SecuritycentermanagementFoldersLocationsEffectiveEventThreatDetectionCusto
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveEventThrea
+      * `organizations/{organization}/locations/{location}/effectiveEventThrea
       tDetectionCustomModules/{effective_event_threat_detection_custom_module}
-      ". * "folders/{folder}/locations/{location}/effectiveEventThreatDetectio
-      nCustomModules/{effective_event_threat_detection_custom_module}". * "pro
+      `. * `folders/{folder}/locations/{location}/effectiveEventThreatDetectio
+      nCustomModules/{effective_event_threat_detection_custom_module}`. * `pro
       jects/{project}/locations/{location}/effectiveEventThreatDetectionCustom
-      Modules/{effective_event_threat_detection_custom_module}".
+      Modules/{effective_event_threat_detection_custom_module}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1137,9 +1138,9 @@ class SecuritycentermanagementFoldersLocationsEffectiveEventThreatDetectionCusto
     pageToken: Optional. The value returned by the last call indicating a
       continuation
     parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      format is `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1152,12 +1153,13 @@ class SecuritycentermanagementFoldersLocationsEffectiveSecurityHealthAnalyticsCu
   csCustomModulesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveSecurityHe
-      althAnalyticsCustomModules/{module_id}". * "folders/{folder}/locations/{
-      location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}". *
-      "projects/{project}/locations/{location}/effectiveSecurityHealthAnalytic
-      sCustomModules/{module_id}".
+    name: Required. The full resource name of the custom module, specified in
+      one of the following formats: * `organizations/organization/{location}/e
+      ffectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_
+      analytics_custom_module}` * `folders/folder/{location}/effectiveSecurity
+      HealthAnalyticsCustomModules/{effective_security_health_analytics_custom
+      _module}` * `projects/project/{location}/effectiveSecurityHealthAnalytic
+      sCustomModules/{effective_security_health_analytics_custom_module}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1172,10 +1174,11 @@ class SecuritycentermanagementFoldersLocationsEffectiveSecurityHealthAnalyticsCu
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
       continuation.
-    parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent to list effective custom modules.
+      specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1191,9 +1194,9 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesC
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     parent: Required. Name of parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (no module will be created). An OK
       response indicates the request is valid while an error response
@@ -1214,11 +1217,11 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesD
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
@@ -1239,11 +1242,11 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesG
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
   """
 
@@ -1262,9 +1265,9 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesL
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1287,9 +1290,9 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesL
       `ListEventThreatDetectionCustomModules` must match the call that
       provided the page token.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1305,12 +1308,12 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesP
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     name: Identifier. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/locations/{location}/eventThreatDete
-      ctionCustomModules/{event_threat_detection_custom_module}". * "folders/{
+      is: * `organizations/{organization}/locations/{location}/eventThreatDete
+      ctionCustomModules/{event_threat_detection_custom_module}`. * `folders/{
       folder}/locations/{location}/eventThreatDetectionCustomModules/{event_th
-      reat_detection_custom_module}". * "projects/{project}/locations/{locatio
+      reat_detection_custom_module}`. * `projects/{project}/locations/{locatio
       n}/eventThreatDetectionCustomModules/{event_threat_detection_custom_modu
-      le}".
+      le}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the EventThreatDetectionCustomModule resource by the
       update. The fields specified in the update_mask are relative to the
@@ -1339,7 +1342,7 @@ class SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesV
   Fields:
     parent: Required. Resource name of the parent to validate the Custom
       Module under. Its format is: *
-      "organizations/{organization}/locations/{location}".
+      `organizations/{organization}/locations/{location}`.
     validateEventThreatDetectionCustomModuleRequest: A
       ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
       the request body.
@@ -1355,11 +1358,14 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
   object.
 
   Fields:
-    name: Required. The Security Center service to retrieve. Formats: * organi
-      zations/{organization}/locations/{location}/securityCenterServices/{serv
-      ice} *
+    name: Required. The Security Command Center service to retrieve. Formats:
+      * organizations/{organization}/locations/{location}/securityCenterServic
+      es/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
   """
 
   name = _messages.StringField(1, required=True)
@@ -1374,9 +1380,9 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest(
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
-    parent: Required. The name of the parent to list Security Center services.
-      Formats: * organizations/{organization}/locations/{location} *
+      continuation.
+    parent: Required. The name of the parent to list Security Command Center
+      services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
   """
@@ -1392,13 +1398,17 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
   object.
 
   Fields:
-    name: Identifier. The name of the service Formats: * organizations/{organi
-      zation}/locations/{location}/securityCenterServices/{service} *
+    name: Identifier. The name of the service. Its format is: * organizations/
+      {organization}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The list of fields to be updated.
+    updateMask: Required. The list of fields to be updated. Possible values: *
+      "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (service will not be updated). An OK
       response indicates the request is valid while an error response
@@ -1419,10 +1429,11 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
   odulesCreateRequest object.
 
   Fields:
-    parent: Required. Name of the parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project of
+      the module, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     validateOnly: Optional. When set to true, only validations (including IAM
@@ -1445,12 +1456,12 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
 
   Fields:
     name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/securityHealthAnaly
-      ticsCustomModules/{security_health_analytics_custom_module}". * "folders
+      * `organizations/{organization}/locations/{location}/securityHealthAnaly
+      ticsCustomModules/{security_health_analytics_custom_module}`. * `folders
       /{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{sec
-      urity_health_analytics_custom_module}". * "projects/{project}/locations/
+      urity_health_analytics_custom_module}`. * `projects/{project}/locations/
       {location}/securityHealthAnalyticsCustomModules/{security_health_analyti
-      cs_custom_module}".
+      cs_custom_module}`.
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
       response indicates the request is valid while an error response
@@ -1484,10 +1495,11 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project in
+      which to list custom modules, specified in one of the following formats:
+      * `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1504,10 +1516,11 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent organization, folder, or project in which
+      to list custom modules, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1520,14 +1533,13 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
   odulesPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the custom module. Its format is "o
-      rganizations/{organization}/locations/{location}/securityHealthAnalytics
-      CustomModules/{security_health_analytics_custom_module}", or "folders/{f
-      older}/locations/{location}/securityHealthAnalyticsCustomModules/{securi
-      ty_health_analytics_custom_module}", or "projects/{project}/locations/{l
-      ocation}/securityHealthAnalyticsCustomModules/{security_health_analytics
-      _custom_module}" The id {customModule} is server-generated and is not
-      user settable. It will be a numeric id containing 1-20 digits.
+    name: Identifier. The full resource name of the custom module, specified
+      in one of the following formats: * `organizations/{organization}/locatio
+      ns/{location}/securityHealthAnalyticsCustomModules/{security_health_anal
+      ytics_custom_module}` * `folders/{folder}/locations/{location}/securityH
+      ealthAnalyticsCustomModules/{security_health_analytics_custom_module}` *
+      `projects/{project}/locations/{location}/securityHealthAnalyticsCustomMo
+      dules/{security_health_analytics_custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     updateMask: Required. The list of fields to be updated. The only fields
@@ -1573,12 +1585,12 @@ class SecuritycentermanagementOrganizationsLocationsEffectiveEventThreatDetectio
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveEventThrea
+      * `organizations/{organization}/locations/{location}/effectiveEventThrea
       tDetectionCustomModules/{effective_event_threat_detection_custom_module}
-      ". * "folders/{folder}/locations/{location}/effectiveEventThreatDetectio
-      nCustomModules/{effective_event_threat_detection_custom_module}". * "pro
+      `. * `folders/{folder}/locations/{location}/effectiveEventThreatDetectio
+      nCustomModules/{effective_event_threat_detection_custom_module}`. * `pro
       jects/{project}/locations/{location}/effectiveEventThreatDetectionCustom
-      Modules/{effective_event_threat_detection_custom_module}".
+      Modules/{effective_event_threat_detection_custom_module}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1594,9 +1606,9 @@ class SecuritycentermanagementOrganizationsLocationsEffectiveEventThreatDetectio
     pageToken: Optional. The value returned by the last call indicating a
       continuation
     parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      format is `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1609,12 +1621,13 @@ class SecuritycentermanagementOrganizationsLocationsEffectiveSecurityHealthAnaly
   nalyticsCustomModulesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveSecurityHe
-      althAnalyticsCustomModules/{module_id}". * "folders/{folder}/locations/{
-      location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}". *
-      "projects/{project}/locations/{location}/effectiveSecurityHealthAnalytic
-      sCustomModules/{module_id}".
+    name: Required. The full resource name of the custom module, specified in
+      one of the following formats: * `organizations/organization/{location}/e
+      ffectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_
+      analytics_custom_module}` * `folders/folder/{location}/effectiveSecurity
+      HealthAnalyticsCustomModules/{effective_security_health_analytics_custom
+      _module}` * `projects/project/{location}/effectiveSecurityHealthAnalytic
+      sCustomModules/{effective_security_health_analytics_custom_module}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1629,10 +1642,11 @@ class SecuritycentermanagementOrganizationsLocationsEffectiveSecurityHealthAnaly
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
       continuation.
-    parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent to list effective custom modules.
+      specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1648,9 +1662,9 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     parent: Required. Name of parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (no module will be created). An OK
       response indicates the request is valid while an error response
@@ -1671,11 +1685,11 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
@@ -1696,11 +1710,11 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
   """
 
@@ -1719,9 +1733,9 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1744,9 +1758,9 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
       `ListEventThreatDetectionCustomModules` must match the call that
       provided the page token.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1762,12 +1776,12 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     name: Identifier. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/locations/{location}/eventThreatDete
-      ctionCustomModules/{event_threat_detection_custom_module}". * "folders/{
+      is: * `organizations/{organization}/locations/{location}/eventThreatDete
+      ctionCustomModules/{event_threat_detection_custom_module}`. * `folders/{
       folder}/locations/{location}/eventThreatDetectionCustomModules/{event_th
-      reat_detection_custom_module}". * "projects/{project}/locations/{locatio
+      reat_detection_custom_module}`. * `projects/{project}/locations/{locatio
       n}/eventThreatDetectionCustomModules/{event_threat_detection_custom_modu
-      le}".
+      le}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the EventThreatDetectionCustomModule resource by the
       update. The fields specified in the update_mask are relative to the
@@ -1796,7 +1810,7 @@ class SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomMo
   Fields:
     parent: Required. Resource name of the parent to validate the Custom
       Module under. Its format is: *
-      "organizations/{organization}/locations/{location}".
+      `organizations/{organization}/locations/{location}`.
     validateEventThreatDetectionCustomModuleRequest: A
       ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
       the request body.
@@ -1811,11 +1825,14 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
   tRequest object.
 
   Fields:
-    name: Required. The Security Center service to retrieve. Formats: * organi
-      zations/{organization}/locations/{location}/securityCenterServices/{serv
-      ice} *
+    name: Required. The Security Command Center service to retrieve. Formats:
+      * organizations/{organization}/locations/{location}/securityCenterServic
+      es/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
   """
 
   name = _messages.StringField(1, required=True)
@@ -1829,9 +1846,9 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRe
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
-    parent: Required. The name of the parent to list Security Center services.
-      Formats: * organizations/{organization}/locations/{location} *
+      continuation.
+    parent: Required. The name of the parent to list Security Command Center
+      services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
   """
@@ -1846,13 +1863,17 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
   tchRequest object.
 
   Fields:
-    name: Identifier. The name of the service Formats: * organizations/{organi
-      zation}/locations/{location}/securityCenterServices/{service} *
+    name: Identifier. The name of the service. Its format is: * organizations/
+      {organization}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The list of fields to be updated.
+    updateMask: Required. The list of fields to be updated. Possible values: *
+      "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (service will not be updated). An OK
       response indicates the request is valid while an error response
@@ -1873,10 +1894,11 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
   ustomModulesCreateRequest object.
 
   Fields:
-    parent: Required. Name of the parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project of
+      the module, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     validateOnly: Optional. When set to true, only validations (including IAM
@@ -1899,12 +1921,12 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
 
   Fields:
     name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/securityHealthAnaly
-      ticsCustomModules/{security_health_analytics_custom_module}". * "folders
+      * `organizations/{organization}/locations/{location}/securityHealthAnaly
+      ticsCustomModules/{security_health_analytics_custom_module}`. * `folders
       /{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{sec
-      urity_health_analytics_custom_module}". * "projects/{project}/locations/
+      urity_health_analytics_custom_module}`. * `projects/{project}/locations/
       {location}/securityHealthAnalyticsCustomModules/{security_health_analyti
-      cs_custom_module}".
+      cs_custom_module}`.
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
       response indicates the request is valid while an error response
@@ -1938,10 +1960,11 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project in
+      which to list custom modules, specified in one of the following formats:
+      * `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1958,10 +1981,11 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent organization, folder, or project in which
+      to list custom modules, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1974,14 +1998,13 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
   ustomModulesPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the custom module. Its format is "o
-      rganizations/{organization}/locations/{location}/securityHealthAnalytics
-      CustomModules/{security_health_analytics_custom_module}", or "folders/{f
-      older}/locations/{location}/securityHealthAnalyticsCustomModules/{securi
-      ty_health_analytics_custom_module}", or "projects/{project}/locations/{l
-      ocation}/securityHealthAnalyticsCustomModules/{security_health_analytics
-      _custom_module}" The id {customModule} is server-generated and is not
-      user settable. It will be a numeric id containing 1-20 digits.
+    name: Identifier. The full resource name of the custom module, specified
+      in one of the following formats: * `organizations/{organization}/locatio
+      ns/{location}/securityHealthAnalyticsCustomModules/{security_health_anal
+      ytics_custom_module}` * `folders/{folder}/locations/{location}/securityH
+      ealthAnalyticsCustomModules/{security_health_analytics_custom_module}` *
+      `projects/{project}/locations/{location}/securityHealthAnalyticsCustomMo
+      dules/{security_health_analytics_custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     updateMask: Required. The list of fields to be updated. The only fields
@@ -2027,12 +2050,12 @@ class SecuritycentermanagementProjectsLocationsEffectiveEventThreatDetectionCust
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveEventThrea
+      * `organizations/{organization}/locations/{location}/effectiveEventThrea
       tDetectionCustomModules/{effective_event_threat_detection_custom_module}
-      ". * "folders/{folder}/locations/{location}/effectiveEventThreatDetectio
-      nCustomModules/{effective_event_threat_detection_custom_module}". * "pro
+      `. * `folders/{folder}/locations/{location}/effectiveEventThreatDetectio
+      nCustomModules/{effective_event_threat_detection_custom_module}`. * `pro
       jects/{project}/locations/{location}/effectiveEventThreatDetectionCustom
-      Modules/{effective_event_threat_detection_custom_module}".
+      Modules/{effective_event_threat_detection_custom_module}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2048,9 +2071,9 @@ class SecuritycentermanagementProjectsLocationsEffectiveEventThreatDetectionCust
     pageToken: Optional. The value returned by the last call indicating a
       continuation
     parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      format is `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2063,12 +2086,13 @@ class SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsC
   icsCustomModulesGetRequest object.
 
   Fields:
-    name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/effectiveSecurityHe
-      althAnalyticsCustomModules/{module_id}". * "folders/{folder}/locations/{
-      location}/effectiveSecurityHealthAnalyticsCustomModules/{module_id}". *
-      "projects/{project}/locations/{location}/effectiveSecurityHealthAnalytic
-      sCustomModules/{module_id}".
+    name: Required. The full resource name of the custom module, specified in
+      one of the following formats: * `organizations/organization/{location}/e
+      ffectiveSecurityHealthAnalyticsCustomModules/{effective_security_health_
+      analytics_custom_module}` * `folders/folder/{location}/effectiveSecurity
+      HealthAnalyticsCustomModules/{effective_security_health_analytics_custom
+      _module}` * `projects/project/{location}/effectiveSecurityHealthAnalytic
+      sCustomModules/{effective_security_health_analytics_custom_module}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2083,10 +2107,11 @@ class SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsC
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
       continuation.
-    parent: Required. Name of parent to list effective custom modules. Its
-      format is "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent to list effective custom modules.
+      specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2102,9 +2127,9 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     parent: Required. Name of parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (no module will be created). An OK
       response indicates the request is valid while an error response
@@ -2125,11 +2150,11 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
@@ -2150,11 +2175,11 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
 
   Fields:
     name: Required. The resource name of the ETD custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/eventThreatDetectio
-      nCustomModules/{event_threat_detection_custom_module}". * "folders/{fold
+      * `organizations/{organization}/locations/{location}/eventThreatDetectio
+      nCustomModules/{event_threat_detection_custom_module}`. * `folders/{fold
       er}/locations/{location}/eventThreatDetectionCustomModules/{event_threat
-      _detection_custom_module}". * "projects/{project}/locations/{location}/e
-      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}"
+      _detection_custom_module}`. * `projects/{project}/locations/{location}/e
+      ventThreatDetectionCustomModules/{event_threat_detection_custom_module}`
       .
   """
 
@@ -2173,9 +2198,9 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2198,9 +2223,9 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
       `ListEventThreatDetectionCustomModules` must match the call that
       provided the page token.
     parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+      `organizations/{organization}/locations/{location}`,
+      `folders/{folder}/locations/{location}`, or
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2216,12 +2241,12 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
     eventThreatDetectionCustomModule: A EventThreatDetectionCustomModule
       resource to be passed as the request body.
     name: Identifier. The resource name of the ETD custom module. Its format
-      is: * "organizations/{organization}/locations/{location}/eventThreatDete
-      ctionCustomModules/{event_threat_detection_custom_module}". * "folders/{
+      is: * `organizations/{organization}/locations/{location}/eventThreatDete
+      ctionCustomModules/{event_threat_detection_custom_module}`. * `folders/{
       folder}/locations/{location}/eventThreatDetectionCustomModules/{event_th
-      reat_detection_custom_module}". * "projects/{project}/locations/{locatio
+      reat_detection_custom_module}`. * `projects/{project}/locations/{locatio
       n}/eventThreatDetectionCustomModules/{event_threat_detection_custom_modu
-      le}".
+      le}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the EventThreatDetectionCustomModule resource by the
       update. The fields specified in the update_mask are relative to the
@@ -2250,7 +2275,7 @@ class SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModules
   Fields:
     parent: Required. Resource name of the parent to validate the Custom
       Module under. Its format is: *
-      "organizations/{organization}/locations/{location}".
+      `organizations/{organization}/locations/{location}`.
     validateEventThreatDetectionCustomModuleRequest: A
       ValidateEventThreatDetectionCustomModuleRequest resource to be passed as
       the request body.
@@ -2296,11 +2321,14 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
   object.
 
   Fields:
-    name: Required. The Security Center service to retrieve. Formats: * organi
-      zations/{organization}/locations/{location}/securityCenterServices/{serv
-      ice} *
+    name: Required. The Security Command Center service to retrieve. Formats:
+      * organizations/{organization}/locations/{location}/securityCenterServic
+      es/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
   """
 
   name = _messages.StringField(1, required=True)
@@ -2315,9 +2343,9 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
-    parent: Required. The name of the parent to list Security Center services.
-      Formats: * organizations/{organization}/locations/{location} *
+      continuation.
+    parent: Required. The name of the parent to list Security Command Center
+      services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
   """
@@ -2333,13 +2361,17 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
   object.
 
   Fields:
-    name: Identifier. The name of the service Formats: * organizations/{organi
-      zation}/locations/{location}/securityCenterServices/{service} *
+    name: Identifier. The name of the service. Its format is: * organizations/
+      {organization}/locations/{location}/securityCenterServices/{service} *
       folders/{folder}/locations/{location}/securityCenterServices/{service} *
       projects/{project}/locations/{location}/securityCenterServices/{service}
+      The possible values for id {service} are: * container-threat-detection *
+      event-threat-detection * security-health-analytics * vm-threat-detection
+      * web-security-scanner
     securityCenterService: A SecurityCenterService resource to be passed as
       the request body.
-    updateMask: Required. The list of fields to be updated.
+    updateMask: Required. The list of fields to be updated. Possible values: *
+      "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (service will not be updated). An OK
       response indicates the request is valid while an error response
@@ -2360,10 +2392,11 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
   ModulesCreateRequest object.
 
   Fields:
-    parent: Required. Name of the parent for the module. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project of
+      the module, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     validateOnly: Optional. When set to true, only validations (including IAM
@@ -2386,12 +2419,12 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
 
   Fields:
     name: Required. The resource name of the SHA custom module. Its format is:
-      * "organizations/{organization}/locations/{location}/securityHealthAnaly
-      ticsCustomModules/{security_health_analytics_custom_module}". * "folders
+      * `organizations/{organization}/locations/{location}/securityHealthAnaly
+      ticsCustomModules/{security_health_analytics_custom_module}`. * `folders
       /{folder}/locations/{location}/securityHealthAnalyticsCustomModules/{sec
-      urity_health_analytics_custom_module}". * "projects/{project}/locations/
+      urity_health_analytics_custom_module}`. * `projects/{project}/locations/
       {location}/securityHealthAnalyticsCustomModules/{security_health_analyti
-      cs_custom_module}".
+      cs_custom_module}`.
     validateOnly: Optional. When set to true, only validations (including IAM
       checks) will done for the request (module will not be deleted). An OK
       response indicates the request is valid while an error response
@@ -2425,10 +2458,11 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of the parent organization, folder, or project in
+      which to list custom modules, specified in one of the following formats:
+      * `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2445,10 +2479,11 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Name of parent to list custom modules. Its format is
-      "organizations/{organization}/locations/{location}",
-      "folders/{folder}/locations/{location}", or
-      "projects/{project}/locations/{location}"
+    parent: Required. Name of parent organization, folder, or project in which
+      to list custom modules, specified in one of the following formats: *
+      `organizations/{organization}/locations/{location}` *
+      `folders/{folder}/locations/{location}` *
+      `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2461,14 +2496,13 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
   ModulesPatchRequest object.
 
   Fields:
-    name: Identifier. The resource name of the custom module. Its format is "o
-      rganizations/{organization}/locations/{location}/securityHealthAnalytics
-      CustomModules/{security_health_analytics_custom_module}", or "folders/{f
-      older}/locations/{location}/securityHealthAnalyticsCustomModules/{securi
-      ty_health_analytics_custom_module}", or "projects/{project}/locations/{l
-      ocation}/securityHealthAnalyticsCustomModules/{security_health_analytics
-      _custom_module}" The id {customModule} is server-generated and is not
-      user settable. It will be a numeric id containing 1-20 digits.
+    name: Identifier. The full resource name of the custom module, specified
+      in one of the following formats: * `organizations/{organization}/locatio
+      ns/{location}/securityHealthAnalyticsCustomModules/{security_health_anal
+      ytics_custom_module}` * `folders/{folder}/locations/{location}/securityH
+      ealthAnalyticsCustomModules/{security_health_analytics_custom_module}` *
+      `projects/{project}/locations/{location}/securityHealthAnalyticsCustomMo
+      dules/{security_health_analytics_custom_module}`
     securityHealthAnalyticsCustomModule: A SecurityHealthAnalyticsCustomModule
       resource to be passed as the request body.
     updateMask: Required. The list of fields to be updated. The only fields
@@ -2564,14 +2598,14 @@ class SimulatedFinding(_messages.Message):
     findingClass: The class of the finding.
     name: Identifier. The [relative resource name](https://cloud.google.com/ap
       is/design/resource_names#relative_resource_name) of the finding.
-      Example: "organizations/{organization_id}/sources/{source_id}/findings/{
-      finding_id}",
-      "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
-      "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
+      Example: `organizations/{organization_id}/sources/{source_id}/findings/{
+      finding_id}`,
+      `folders/{folder_id}/sources/{source_id}/findings/{finding_id}`,
+      `projects/{project_id}/sources/{source_id}/findings/{finding_id}`.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
-      "organizations/{organization_id}/sources/{source_id}"
+      `organizations/{organization_id}/sources/{source_id}`
     resourceName: For findings on Google Cloud resources, the full resource
       name of the Google Cloud resource this finding is for. See:
       https://cloud.google.com/apis/design/resource_names#full_resource_name

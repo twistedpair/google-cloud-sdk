@@ -345,7 +345,7 @@ class DlpOrganizationsLocationsConnectionsSearchRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Parent name, typically an organization, without
-      location. For example: "organizations/12345678".
+      location. For example: `organizations/12345678`.
   """
 
   filter = _messages.StringField(1)
@@ -1833,7 +1833,7 @@ class DlpProjectsLocationsConnectionsCreateRequest(_messages.Message):
       GooglePrivacyDlpV2CreateConnectionRequest resource to be passed as the
       request body.
     parent: Required. Parent resource name in the format:
-      "projects/{project}/locations/{location}".
+      `projects/{project}/locations/{location}`.
   """
 
   googlePrivacyDlpV2CreateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2CreateConnectionRequest', 1)
@@ -1846,7 +1846,7 @@ class DlpProjectsLocationsConnectionsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Resource name of the Connection to be deleted, in the
       format:
-      "projects/{project}/locations/{location}/connections/{connection}".
+      `projects/{project}/locations/{location}/connections/{connection}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1857,7 +1857,7 @@ class DlpProjectsLocationsConnectionsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Resource name in the format:
-      "projects/{project}/locations/{location}/connections/{connection}".
+      `projects/{project}/locations/{location}/connections/{connection}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1873,8 +1873,8 @@ class DlpProjectsLocationsConnectionsListRequest(_messages.Message):
     pageToken: Optional. Page token from a previous page to return the next
       set of results. If set, all other request fields must match the original
       request.
-    parent: Required. Parent name, for example: "projects/project-
-      id/locations/global".
+    parent: Required. Parent name, for example: `projects/project-
+      id/locations/global`.
   """
 
   filter = _messages.StringField(1)
@@ -1891,7 +1891,7 @@ class DlpProjectsLocationsConnectionsPatchRequest(_messages.Message):
       GooglePrivacyDlpV2UpdateConnectionRequest resource to be passed as the
       request body.
     name: Required. Resource name in the format:
-      "projects/{project}/locations/{location}/connections/{connection}".
+      `projects/{project}/locations/{location}/connections/{connection}`.
   """
 
   googlePrivacyDlpV2UpdateConnectionRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateConnectionRequest', 1)
@@ -1909,7 +1909,7 @@ class DlpProjectsLocationsConnectionsSearchRequest(_messages.Message):
       set of results. If set, all other request fields must match the original
       request.
     parent: Required. Parent name, typically an organization, without
-      location. For example: "organizations/12345678".
+      location. For example: `organizations/12345678`.
   """
 
   filter = _messages.StringField(1)
@@ -3529,8 +3529,8 @@ class GooglePrivacyDlpV2CloudSqlProperties(_messages.Message):
       can only be set at creation time, and cannot be updated. It is an error
       to use a connection_name from different project or region than the one
       that holds the connection. For example, a Connection resource for Cloud
-      SQL connection_name "project-id:us-central1:sql-instance" must be
-      created under the parent "projects/project-id/locations/us-central1"
+      SQL connection_name `project-id:us-central1:sql-instance` must be
+      created under the parent `projects/project-id/locations/us-central1`
     databaseEngine: Required. The database engine used by the Cloud SQL
       instance that this connection configures.
     maxConnections: Required. DLP will limit its connections to
@@ -3822,9 +3822,9 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
       TYPE_BIGNUMERIC: Decimal type.
       TYPE_JSON: Json type.
       TYPE_INTERVAL: Interval type.
-      TYPE_RANGE_DATE: Range type.
-      TYPE_RANGE_DATETIME: Range type.
-      TYPE_RANGE_TIMESTAMP: Range type.
+      TYPE_RANGE_DATE: `Range` type.
+      TYPE_RANGE_DATETIME: `Range` type.
+      TYPE_RANGE_TIMESTAMP: `Range` type.
     """
     COLUMN_DATA_TYPE_UNSPECIFIED = 0
     TYPE_INT64 = 1
@@ -4002,7 +4002,7 @@ class GooglePrivacyDlpV2Connection(_messages.Message):
       details. Will store the last 10 errors sorted with the most recent
       first.
     name: Output only. Name of the connection:
-      projects/{project}/locations/{location}/connections/{name}.
+      `projects/{project}/locations/{location}/connections/{name}`.
     state: Required. The connection's state in its lifecycle.
   """
 
@@ -4616,10 +4616,9 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
     Values:
       EVENT_TYPE_UNSPECIFIED: Unused.
       NEW_PROFILE: New profile (not a re-profile).
-      CHANGED_PROFILE: Changed one of the following profile metrics: * Table
-        data risk score * Table sensitivity score * Table resource visibility
-        * Table encryption type * Table predicted infoTypes * Table other
-        infoTypes
+      CHANGED_PROFILE: Changed one of the following profile metrics: * Data
+        risk score * Sensitivity score * Resource visibility * Encryption type
+        * Predicted infoTypes * Other infoTypes
       SCORE_INCREASED: Table data risk score or sensitivity score increased.
       ERROR_CHANGED: A user (non-internal) error occurred.
     """
@@ -6369,7 +6368,7 @@ class GooglePrivacyDlpV2InfoType(_messages.Message):
 
 class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
   r"""Classification of infoTypes to organize them according to geographic
-  location, industry, and data type. NEXT_ID: 48
+  location, industry, and data type.
 
   Enums:
     IndustryCategoryValueValuesEnum: The group of relevant businesses where
@@ -7928,7 +7927,7 @@ class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
     Values:
       DETAIL_LEVEL_UNSPECIFIED: Unused.
       TABLE_PROFILE: The full table data profile.
-      RESOURCE_NAME: The resource name of the table.
+      RESOURCE_NAME: The name of the profiled resource.
     """
     DETAIL_LEVEL_UNSPECIFIED = 0
     TABLE_PROFILE = 1
@@ -7941,10 +7940,9 @@ class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
     Values:
       EVENT_TYPE_UNSPECIFIED: Unused.
       NEW_PROFILE: New profile (not a re-profile).
-      CHANGED_PROFILE: Changed one of the following profile metrics: * Table
-        data risk score * Table sensitivity score * Table resource visibility
-        * Table encryption type * Table predicted infoTypes * Table other
-        infoTypes
+      CHANGED_PROFILE: Changed one of the following profile metrics: * Data
+        risk score * Sensitivity score * Resource visibility * Encryption type
+        * Predicted infoTypes * Other infoTypes
       SCORE_INCREASED: Table data risk score or sensitivity score increased.
       ERROR_CHANGED: A user (non-internal) error occurred.
     """
@@ -8503,8 +8501,8 @@ class GooglePrivacyDlpV2SecretManagerCredential(_messages.Message):
 
   Fields:
     passwordSecretVersionName: Required. The name of the Secret Manager
-      resource that stores the password, in the form "projects/project-
-      id/secrets/secret-name/versions/version".
+      resource that stores the password, in the form `projects/project-
+      id/secrets/secret-name/versions/version`.
     username: Required. The username.
   """
 
@@ -8857,11 +8855,15 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     Values:
       RESOURCE_VISIBILITY_UNSPECIFIED: Unused.
       RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
+      RESOURCE_VISIBILITY_INCONCLUSIVE: May contain public items. For example,
+        if a GCS bucket has uniform bucket level access disabled, some objects
+        inside it may be public.
       RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
     """
     RESOURCE_VISIBILITY_UNSPECIFIED = 0
     RESOURCE_VISIBILITY_PUBLIC = 1
-    RESOURCE_VISIBILITY_RESTRICTED = 2
+    RESOURCE_VISIBILITY_INCONCLUSIVE = 2
+    RESOURCE_VISIBILITY_RESTRICTED = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""State of a profile.
@@ -9043,7 +9045,7 @@ class GooglePrivacyDlpV2TimespanConfig(_messages.Message):
       scanning files that have not been modified since the last time the
       JobTrigger executed. This will be based on the time of the execution of
       the last run of the JobTrigger or the timespan end_time used in the last
-      run of the JobTrigger. *For BigQuery* Inspect jobs triggered by
+      run of the JobTrigger. **For BigQuery** Inspect jobs triggered by
       automatic population will scan data that is at least three hours old
       when the job starts. This is because streaming buffer rows are not read
       during inspection and reading up to the current timestamp will result in

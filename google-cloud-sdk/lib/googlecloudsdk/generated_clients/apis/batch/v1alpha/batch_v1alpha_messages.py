@@ -302,9 +302,14 @@ class BatchProjectsLocationsJobsPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Mask of fields to update. UpdateJob request now only
-      supports update on `task_count` field in a job's first task group. Other
-      fields will be ignored.
+    updateMask: Required. Mask of fields to update. The `jobs.patch` method
+      can only be used while a job is in the `QUEUED`, `SCHEDULED`, or
+      `RUNNING` state and currently only supports increasing the value of the
+      first `taskCount` field in the job's `taskGroups` field. Therefore, you
+      must set the value of `updateMask` to `taskGroups`. Any other job fields
+      in the update request will be ignored. For example, to update a job's
+      `taskCount` to 2, set `updateMask` to `taskGroups` and use the following
+      request body: { "taskGroups":[{ "taskCount": 2 }] }
   """
 
   job = _messages.MessageField('Job', 1)
@@ -934,6 +939,8 @@ class InstancePolicyOrTemplate(_messages.Message):
       non Container-Optimized Image cases, following
       https://github.com/GoogleCloudPlatform/compute-gpu-
       installation/blob/main/linux/install_gpu_driver.py.
+    installOpsAgent: Optional. Set this field true if users want Batch to
+      install Ops Agent on their behalf. Default is false.
     instanceTemplate: Name of an instance template used to create VMs. Named
       the field as 'instance_template' instead of 'template' to avoid c++
       keyword conflict.
@@ -941,8 +948,9 @@ class InstancePolicyOrTemplate(_messages.Message):
   """
 
   installGpuDrivers = _messages.BooleanField(1)
-  instanceTemplate = _messages.StringField(2)
-  policy = _messages.MessageField('InstancePolicy', 3)
+  installOpsAgent = _messages.BooleanField(2)
+  instanceTemplate = _messages.StringField(3)
+  policy = _messages.MessageField('InstancePolicy', 4)
 
 
 class InstanceStatus(_messages.Message):

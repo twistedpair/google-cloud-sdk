@@ -70,7 +70,24 @@ class WorkerPrinter(cp.CustomPrinterBase):
     labels = [
         cp.Labeled([
             ('Binary Authorization', k8s_util.GetBinAuthzPolicy(record)),
-            ('Min Instances', GetMinInstances(record)),
+            (
+                'Min Instances',
+                record.annotations.get(
+                    service.SERVICE_MIN_SCALE_ANNOTATION, ''
+                ),
+            ),
+            (
+                'Max Instances',
+                record.annotations.get(
+                    service.SERVICE_MAX_SCALE_ANNOTATION, ''
+                ),
+            ),
+            (
+                'Max Surge',
+                record.annotations.get(
+                    service.SERVICE_MAX_SURGE_ANNOTATION, ''
+                ),
+            ),
         ])
     ]
 
@@ -109,7 +126,3 @@ class WorkerPrinter(cp.CustomPrinterBase):
         k8s_util.FormatReadyMessage(record),
     ])
     return fmt
-
-
-def GetMinInstances(record):
-  return record.annotations.get(service.SERVICE_MIN_SCALE_ANNOTATION, '')

@@ -46,6 +46,7 @@ class CloudbuildV2(base_api.BaseApiClient):
     self.projects_locations_results_records = self.ProjectsLocationsResultsRecordsService(self)
     self.projects_locations_results = self.ProjectsLocationsResultsService(self)
     self.projects_locations_taskRuns = self.ProjectsLocationsTaskRunsService(self)
+    self.projects_locations_workerPoolSecondGen = self.ProjectsLocationsWorkerPoolSecondGenService(self)
     self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -980,6 +981,151 @@ class CloudbuildV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='taskRun',
         request_type_name='CloudbuildProjectsLocationsTaskRunsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkerPoolSecondGenService(base_api.BaseApiService):
+    """Service class for the projects_locations_workerPoolSecondGen resource."""
+
+    _NAME = 'projects_locations_workerPoolSecondGen'
+
+    def __init__(self, client):
+      super(CloudbuildV2.ProjectsLocationsWorkerPoolSecondGenService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a `WorkerPoolSecondGen`.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkerPoolSecondGenCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workerPoolSecondGen',
+        http_method='POST',
+        method_id='cloudbuild.projects.locations.workerPoolSecondGen.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['validateOnly', 'workerPoolSecondGenId'],
+        relative_path='v2/{+parent}/workerPoolSecondGen',
+        request_field='workerPoolSecondGen',
+        request_type_name='CloudbuildProjectsLocationsWorkerPoolSecondGenCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `WorkerPoolSecondGen`.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkerPoolSecondGenDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workerPoolSecondGen/{workerPoolSecondGenId}',
+        http_method='DELETE',
+        method_id='cloudbuild.projects.locations.workerPoolSecondGen.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'etag', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkerPoolSecondGenDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns details of a `WorkerPoolSecondGen`.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkerPoolSecondGenGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WorkerPoolSecondGen) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workerPoolSecondGen/{workerPoolSecondGenId}',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.workerPoolSecondGen.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkerPoolSecondGenGetRequest',
+        response_type_name='WorkerPoolSecondGen',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `WorkerPoolSecondGen`.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkerPoolSecondGenListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkerPoolSecondGenResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workerPoolSecondGen',
+        http_method='GET',
+        method_id='cloudbuild.projects.locations.workerPoolSecondGen.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/workerPoolSecondGen',
+        request_field='',
+        request_type_name='CloudbuildProjectsLocationsWorkerPoolSecondGenListRequest',
+        response_type_name='ListWorkerPoolSecondGenResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a `WorkerPoolSecondGen`.
+
+      Args:
+        request: (CloudbuildProjectsLocationsWorkerPoolSecondGenPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/workerPoolSecondGen/{workerPoolSecondGenId}',
+        http_method='PATCH',
+        method_id='cloudbuild.projects.locations.workerPoolSecondGen.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'updateMask', 'validateOnly'],
+        relative_path='v2/{+name}',
+        request_field='workerPoolSecondGen',
+        request_type_name='CloudbuildProjectsLocationsWorkerPoolSecondGenPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

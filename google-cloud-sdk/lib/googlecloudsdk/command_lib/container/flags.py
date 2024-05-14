@@ -6478,7 +6478,7 @@ def AddSecretManagerEnableFlag(parser, hidden=True):
 
   Args:
     parser: A given parser.
-    hidden: hidden status
+    hidden: hidden status.
   """
   help_text = """\
         Enables the Secret Manager CSI driver provider component. See
@@ -6493,5 +6493,42 @@ def AddSecretManagerEnableFlag(parser, hidden=True):
       action='store_true',
       default=None,
       help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddComplianceFlags(parser, hidden=True):
+  """Adds --compliance and --compliance-standards flag group to the parser.
+
+  Args:
+    parser: A given parser.
+    hidden: hidden status.
+  """
+  compliance_group = parser.add_group(
+      mutex=False,
+      help='Flags for Compliance configuration:',
+      hidden=hidden,
+  )
+  mode_help = (
+      'Sets enablement mode for Compliance. Must provide one of: enabled,'
+      ' disabled.'
+  )
+
+  # TODO(b/336593802) This help link needs to be updated to include the actual
+  # string values that the user should pass.
+  standards_help = """\
+        Comma-delimited list of standards to be enabled. See
+        https://cloud.google.com/kubernetes-engine/fleet-management/docs/about-compliance-dashboard#how-compliance-works
+    """
+  compliance_group.add_argument(
+      '--compliance',
+      default=None,
+      help=mode_help,
+      hidden=hidden,
+  )
+  compliance_group.add_argument(
+      '--compliance-standards',
+      default=None,
+      help=standards_help,
       hidden=hidden,
   )

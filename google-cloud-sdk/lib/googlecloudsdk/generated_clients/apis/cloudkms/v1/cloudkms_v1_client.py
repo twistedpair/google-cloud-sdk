@@ -39,14 +39,81 @@ class CloudkmsV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.folders = self.FoldersService(self)
     self.projects_locations_ekmConfig = self.ProjectsLocationsEkmConfigService(self)
     self.projects_locations_ekmConnections = self.ProjectsLocationsEkmConnectionsService(self)
+    self.projects_locations_keyHandles = self.ProjectsLocationsKeyHandlesService(self)
     self.projects_locations_keyRings_cryptoKeys_cryptoKeyVersions = self.ProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsService(self)
     self.projects_locations_keyRings_cryptoKeys = self.ProjectsLocationsKeyRingsCryptoKeysService(self)
     self.projects_locations_keyRings_importJobs = self.ProjectsLocationsKeyRingsImportJobsService(self)
     self.projects_locations_keyRings = self.ProjectsLocationsKeyRingsService(self)
+    self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class FoldersService(base_api.BaseApiService):
+    """Service class for the folders resource."""
+
+    _NAME = 'folders'
+
+    def __init__(self, client):
+      super(CloudkmsV1.FoldersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetAutokeyConfig(self, request, global_params=None):
+      r"""Returns the AutokeyConfig for a folder.
+
+      Args:
+        request: (CloudkmsFoldersGetAutokeyConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutokeyConfig) The response message.
+      """
+      config = self.GetMethodConfig('GetAutokeyConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetAutokeyConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/autokeyConfig',
+        http_method='GET',
+        method_id='cloudkms.folders.getAutokeyConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsFoldersGetAutokeyConfigRequest',
+        response_type_name='AutokeyConfig',
+        supports_download=False,
+    )
+
+    def UpdateAutokeyConfig(self, request, global_params=None):
+      r"""Updates the AutokeyConfig for a folder. The caller must have both `cloudkms.autokeyConfigs.update` permission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy` permission on the provided key project. A KeyHandle creation in the folder's descendant projects will use this configuration to determine where to create the resulting CryptoKey.
+
+      Args:
+        request: (CloudkmsFoldersUpdateAutokeyConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AutokeyConfig) The response message.
+      """
+      config = self.GetMethodConfig('UpdateAutokeyConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateAutokeyConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/autokeyConfig',
+        http_method='PATCH',
+        method_id='cloudkms.folders.updateAutokeyConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='autokeyConfig',
+        request_type_name='CloudkmsFoldersUpdateAutokeyConfigRequest',
+        response_type_name='AutokeyConfig',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEkmConfigService(base_api.BaseApiService):
     """Service class for the projects_locations_ekmConfig resource."""
@@ -362,6 +429,97 @@ class CloudkmsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudkmsProjectsLocationsEkmConnectionsVerifyConnectivityRequest',
         response_type_name='VerifyConnectivityResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsKeyHandlesService(base_api.BaseApiService):
+    """Service class for the projects_locations_keyHandles resource."""
+
+    _NAME = 'projects_locations_keyHandles'
+
+    def __init__(self, client):
+      super(CloudkmsV1.ProjectsLocationsKeyHandlesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new KeyHandle, triggering the provisioning of a new CryptoKey for CMEK use with the given resource type in the configured key project and the same location. GetOperation should be used to resolve the resulting long-running operation and get the resulting KeyHandle and CryptoKey.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyHandlesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyHandles',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.keyHandles.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['keyHandleId'],
+        relative_path='v1/{+parent}/keyHandles',
+        request_field='keyHandle',
+        request_type_name='CloudkmsProjectsLocationsKeyHandlesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the KeyHandle.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyHandlesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (KeyHandle) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyHandles/{keyHandlesId}',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.keyHandles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsKeyHandlesGetRequest',
+        response_type_name='KeyHandle',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists KeyHandles.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyHandlesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListKeyHandlesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyHandles',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.keyHandles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter'],
+        relative_path='v1/{+parent}/keyHandles',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsKeyHandlesListRequest',
+        response_type_name='ListKeyHandlesResponse',
         supports_download=False,
     )
 
@@ -1377,6 +1535,43 @@ class CloudkmsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operations resource."""
+
+    _NAME = 'projects_locations_operations'
+
+    def __init__(self, client):
+      super(CloudkmsV1.ProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (CloudkmsProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='cloudkms.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='CloudkmsProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -1531,3 +1726,30 @@ class CloudkmsV1(base_api.BaseApiClient):
       super(CloudkmsV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ShowEffectiveAutokeyConfig(self, request, global_params=None):
+      r"""Returns the effective Cloud KMS Autokey configuration for a given project.
+
+      Args:
+        request: (CloudkmsProjectsShowEffectiveAutokeyConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ShowEffectiveAutokeyConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('ShowEffectiveAutokeyConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ShowEffectiveAutokeyConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:showEffectiveAutokeyConfig',
+        http_method='GET',
+        method_id='cloudkms.projects.showEffectiveAutokeyConfig',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:showEffectiveAutokeyConfig',
+        request_field='',
+        request_type_name='CloudkmsProjectsShowEffectiveAutokeyConfigRequest',
+        response_type_name='ShowEffectiveAutokeyConfigResponse',
+        supports_download=False,
+    )

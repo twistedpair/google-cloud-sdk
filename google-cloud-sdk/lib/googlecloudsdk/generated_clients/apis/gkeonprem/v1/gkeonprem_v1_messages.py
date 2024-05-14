@@ -5650,10 +5650,15 @@ class ResourceStatus(_messages.Message):
       controller creates a cluster or node pool. If the error message persists
       for a longer period of time, it can be used to surface error message to
       indicate real problems requiring user intervention.
+    version: Reflect current version of the resource.
+    versions: Shows the mapping of a given version to the number of machines
+      under this version.
   """
 
   conditions = _messages.MessageField('ResourceCondition', 1, repeated=True)
   errorMessage = _messages.StringField(2)
+  version = _messages.StringField(3)
+  versions = _messages.MessageField('Versions', 4)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -5917,6 +5922,31 @@ class ValidationCheckStatus(_messages.Message):
   """
 
   result = _messages.MessageField('ValidationCheckResult', 1, repeated=True)
+
+
+class Version(_messages.Message):
+  r"""Version describes the number of nodes at a given version under a
+  resource.
+
+  Fields:
+    count: Number of machines under the above version.
+    version: Resource version.
+  """
+
+  count = _messages.IntegerField(1)
+  version = _messages.StringField(2)
+
+
+class Versions(_messages.Message):
+  r"""Versions describes the mapping of a given version to the number of
+  machines under this version.
+
+  Fields:
+    versions: Shows the mapping of a given version to the number of machines
+      under this version.
+  """
+
+  versions = _messages.MessageField('Version', 1, repeated=True)
 
 
 class VmwareAAGConfig(_messages.Message):

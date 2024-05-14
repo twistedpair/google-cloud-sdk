@@ -30,6 +30,8 @@ class AvroConfig(_messages.Message):
   and metadata will be written to files as an Avro binary.
 
   Fields:
+    useTopicSchema: Optional. When true, the output Cloud Storage file will be
+      serialized using the topic schema, if it exists.
     writeMetadata: Optional. When true, write the subscription name,
       message_id, publish_time, attributes, and ordering_key as additional
       fields in the output. The subscription name, message_id, and
@@ -38,7 +40,8 @@ class AvroConfig(_messages.Message):
       are added as entries in the attributes map.
   """
 
-  writeMetadata = _messages.BooleanField(1)
+  useTopicSchema = _messages.BooleanField(1)
+  writeMetadata = _messages.BooleanField(2)
 
 
 class AvroFormat(_messages.Message):
@@ -283,8 +286,8 @@ class CloudStorage(_messages.Message):
     bucket: Optional. Cloud Storage bucket. The bucket name must be without
       any prefix like "gs://". See the [bucket naming requirements]
       (https://cloud.google.com/storage/docs/buckets#naming).
-    minimumObjectCreateTime: Optional. Only objects with a larger creation
-      timestamp will be ingested.
+    minimumObjectCreateTime: Optional. Only objects with a larger or equal
+      creation timestamp will be ingested.
     pubsubAvroFormat: Optional. It will be assumed data from Cloud Storage was
       written via [Cloud Storage
       subscriptions](https://cloud.google.com/pubsub/docs/cloudstorage).
@@ -318,8 +321,6 @@ class CloudStorage(_messages.Message):
       BUCKET_NOT_FOUND: The provided Cloud Storage bucket doesn't exist.
       TOO_MANY_OBJECTS: The Cloud Storage bucket has too many objects,
         ingestion will be paused.
-      TOO_MANY_ERRORS: Pub/Sub has encountered a large number of errors when
-        parsing the objects and attempting to publish. Ingestion will stop.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -327,7 +328,6 @@ class CloudStorage(_messages.Message):
     PUBLISH_PERMISSION_DENIED = 3
     BUCKET_NOT_FOUND = 4
     TOO_MANY_OBJECTS = 5
-    TOO_MANY_ERRORS = 6
 
   avroFormat = _messages.MessageField('AvroFormat', 1)
   bucket = _messages.StringField(2)
@@ -398,12 +398,15 @@ class CloudStorageConfig(_messages.Message):
       IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
         enforce_in_transit is set to true and the destination locations are
         not in the allowed regions.
+      SCHEMA_MISMATCH: Cannot write to the Cloud Storage bucket due to an
+        incompatibility between the topic schema and subscription settings.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PERMISSION_DENIED = 2
     NOT_FOUND = 3
     IN_TRANSIT_LOCATION_RESTRICTION = 4
+    SCHEMA_MISMATCH = 5
 
   avroConfig = _messages.MessageField('AvroConfig', 1)
   bucket = _messages.StringField(2)

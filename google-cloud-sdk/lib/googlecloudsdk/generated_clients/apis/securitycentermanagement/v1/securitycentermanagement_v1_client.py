@@ -399,7 +399,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets service settings for the specified Security Center service.
+      r"""Gets service settings for the specified Security Command Center service.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest) input message
@@ -426,7 +426,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all Security Center services for the given parent.
+      r"""Returns a list of all Security Command Center services for the given parent.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest) input message
@@ -453,7 +453,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Security Center service using the given update mask.
+      r"""Updates a Security Command Center service using the given update mask.
 
       Args:
         request: (SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest) input message
@@ -1036,7 +1036,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets service settings for the specified Security Center service.
+      r"""Gets service settings for the specified Security Command Center service.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetRequest) input message
@@ -1063,7 +1063,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all Security Center services for the given parent.
+      r"""Returns a list of all Security Command Center services for the given parent.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRequest) input message
@@ -1090,7 +1090,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Security Center service using the given update mask.
+      r"""Updates a Security Command Center service using the given update mask.
 
       Args:
         request: (SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchRequest) input message
@@ -1673,7 +1673,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets service settings for the specified Security Center service.
+      r"""Gets service settings for the specified Security Command Center service.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest) input message
@@ -1700,7 +1700,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns a list of all Security Center services for the given parent.
+      r"""Returns a list of all Security Command Center services for the given parent.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest) input message
@@ -1727,7 +1727,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a Security Center service using the given update mask.
+      r"""Updates a Security Command Center service using the given update mask.
 
       Args:
         request: (SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest) input message

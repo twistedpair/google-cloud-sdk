@@ -788,6 +788,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExternalLoadBalancerPool(_messages.Message):
   r"""External load balancer pool with custom config such as name, manual/auto
   assign, non-overlapping ipv4 and optional ipv6 address range.
@@ -959,12 +960,11 @@ class ListVpnConnectionsResponse(_messages.Message):
 
 class Local(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted locally.
-
   Warning: Local control plane clusters must be created in their own project.
-  Local control plane clusters cannot coexist in the same project with any other
-  type of clusters, including non-GDCE clusters. Mixing local control plane GDCE
-  clusters with any other type of clusters in the same project can result in
-  data loss.
+  Local control plane clusters cannot coexist in the same project with any
+  other type of clusters, including non-GDCE clusters. Mixing local control
+  plane GDCE clusters with any other type of clusters in the same project can
+  result in data loss.
 
   Enums:
     SharedDeploymentPolicyValueValuesEnum: Policy configuration about how user
@@ -1003,9 +1003,7 @@ class Local(_messages.Message):
   machineFilter = _messages.StringField(2)
   nodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   nodeLocation = _messages.StringField(4)
-  sharedDeploymentPolicy = _messages.EnumField(
-      'SharedDeploymentPolicyValueValuesEnum', 5
-  )
+  sharedDeploymentPolicy = _messages.EnumField('SharedDeploymentPolicyValueValuesEnum', 5)
 
 
 class LocalDiskEncryption(_messages.Message):
@@ -1650,6 +1648,7 @@ class RecurringTimeWindow(_messages.Message):
 class Remote(_messages.Message):
   r"""Configuration specific to clusters with a control plane hosted remotely.
   """
+
 
 
 class SdsOperator(_messages.Message):

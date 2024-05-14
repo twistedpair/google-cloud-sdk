@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import List
+
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.artifacts import requests as ar_requests
@@ -467,7 +469,7 @@ def _RaiseArtifactRegistryUpstreamUnsupportedError(facade: str):
 
 
 def _RaiseCustomUpstreamUnsupportedError(
-    facade: str, remote_input: str, allowed: list[str]
+    facade: str, remote_input: str, allowed: List[str]
 ):
   allowed_choices = ", ".join(allowed)
   raise ar_exceptions.InvalidInputValueError(

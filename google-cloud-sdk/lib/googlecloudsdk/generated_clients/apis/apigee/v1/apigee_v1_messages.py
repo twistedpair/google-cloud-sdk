@@ -11422,6 +11422,9 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
       and Public Cloud Google.
     developerApps: Optional. A list of developer apps. Limit 1000 per action.
     developers: Optional. A list of developers. Limit 1000 per action.
+    httpMethods: Optional. Act only on particular HTTP methods. E.g. A read-
+      only API can block POST/PUT/DELETE methods. Accepted values are: GET,
+      HEAD, POST, PUT, DELETE, CONNECT, OPTIONS, TRACE and PATCH.
     ipAddressRanges: Optional. A list of IP addresses. This could be either
       IPv4 or IPv6. Limited to 100 per action.
     regionCodes: Optional. A list of countries/region codes to act on, e.g.
@@ -11437,9 +11440,10 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
   botReasons = _messages.StringField(5, repeated=True)
   developerApps = _messages.StringField(6, repeated=True)
   developers = _messages.StringField(7, repeated=True)
-  ipAddressRanges = _messages.StringField(8, repeated=True)
-  regionCodes = _messages.StringField(9, repeated=True)
-  userAgents = _messages.StringField(10, repeated=True)
+  httpMethods = _messages.StringField(8, repeated=True)
+  ipAddressRanges = _messages.StringField(9, repeated=True)
+  regionCodes = _messages.StringField(10, repeated=True)
+  userAgents = _messages.StringField(11, repeated=True)
 
 
 class GoogleCloudApigeeV1SecurityActionDeny(_messages.Message):

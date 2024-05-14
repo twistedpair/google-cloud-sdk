@@ -1807,7 +1807,10 @@ class DefaultClusterConfig(_messages.Message):
   Fields:
     binaryAuthorizationConfig: Optional. Enable/Disable binary authorization
       features for the cluster.
-    compliancePostureConfig: A CompliancePostureConfig attribute.
+    compliancePostureConfig: Optional. Enable/Disable Compliance Posture
+      features for the cluster. Note that on UpdateFleet, only full
+      replacement of this field is allowed. Users are not allowed for partial
+      updates through field mask.
     securityPostureConfig: Enable/Disable Security Posture features for the
       cluster.
   """
@@ -6278,6 +6281,35 @@ class ServiceMeshCondition(_messages.Message):
       UNSUPPORTED_MULTIPLE_CONTROL_PLANES: Multiple control planes unsupported
         error code
       VPCSC_GA_SUPPORTED: VPC-SC GA is supported for this control plane.
+      CONFIG_APPLY_INTERNAL_ERROR: Configuration (Istio/k8s resources) failed
+        to apply due to internal error.
+      CONFIG_VALIDATION_ERROR: Configuration failed to be applied due to being
+        invalid.
+      CONFIG_VALIDATION_WARNING: Encountered configuration(s) with possible
+        unintended behavior or invalid configuration. These configs may not
+        have been applied.
+      QUOTA_EXCEEDED_BACKEND_SERVICES: BackendService quota exceeded error
+        code.
+      QUOTA_EXCEEDED_HEALTH_CHECKS: HealthCheck quota exceeded error code.
+      QUOTA_EXCEEDED_HTTP_ROUTES: HTTPRoute quota exceeded error code.
+      QUOTA_EXCEEDED_TCP_ROUTES: TCPRoute quota exceeded error code.
+      QUOTA_EXCEEDED_TLS_ROUTES: TLS routes quota exceeded error code.
+      QUOTA_EXCEEDED_TRAFFIC_POLICIES: TrafficPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_ENDPOINT_POLICIES: EndpointPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_GATEWAYS: Gateway quota exceeded error code.
+      QUOTA_EXCEEDED_MESHES: Mesh quota exceeded error code.
+      QUOTA_EXCEEDED_SERVER_TLS_POLICIES: ServerTLSPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_CLIENT_TLS_POLICIES: ClientTLSPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_SERVICE_LB_POLICIES: ServiceLBPolicy quota exceeded error
+        code.
+      QUOTA_EXCEEDED_HTTP_FILTERS: HTTPFilter quota exceeded error code.
+      QUOTA_EXCEEDED_TCP_FILTERS: TCPFilter quota exceeded error code.
+      QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS: NetworkEndpointGroup quota
+        exceeded error code.
     """
     CODE_UNSPECIFIED = 0
     MESH_IAM_PERMISSION_DENIED = 1
@@ -6288,6 +6320,24 @@ class ServiceMeshCondition(_messages.Message):
     CNI_POD_UNSCHEDULABLE = 6
     UNSUPPORTED_MULTIPLE_CONTROL_PLANES = 7
     VPCSC_GA_SUPPORTED = 8
+    CONFIG_APPLY_INTERNAL_ERROR = 9
+    CONFIG_VALIDATION_ERROR = 10
+    CONFIG_VALIDATION_WARNING = 11
+    QUOTA_EXCEEDED_BACKEND_SERVICES = 12
+    QUOTA_EXCEEDED_HEALTH_CHECKS = 13
+    QUOTA_EXCEEDED_HTTP_ROUTES = 14
+    QUOTA_EXCEEDED_TCP_ROUTES = 15
+    QUOTA_EXCEEDED_TLS_ROUTES = 16
+    QUOTA_EXCEEDED_TRAFFIC_POLICIES = 17
+    QUOTA_EXCEEDED_ENDPOINT_POLICIES = 18
+    QUOTA_EXCEEDED_GATEWAYS = 19
+    QUOTA_EXCEEDED_MESHES = 20
+    QUOTA_EXCEEDED_SERVER_TLS_POLICIES = 21
+    QUOTA_EXCEEDED_CLIENT_TLS_POLICIES = 22
+    QUOTA_EXCEEDED_SERVICE_LB_POLICIES = 23
+    QUOTA_EXCEEDED_HTTP_FILTERS = 24
+    QUOTA_EXCEEDED_TCP_FILTERS = 25
+    QUOTA_EXCEEDED_NETWORK_ENDPOINT_GROUPS = 26
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""Severity level of the condition.
@@ -6315,12 +6365,30 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
   r"""Status of control plane management.
 
   Enums:
+    ImplementationValueValuesEnum: Output only. Implementation of managed
+      control plane.
     StateValueValuesEnum: LifecycleState of control plane management.
 
   Fields:
     details: Explanation of state.
+    implementation: Output only. Implementation of managed control plane.
     state: LifecycleState of control plane management.
   """
+
+  class ImplementationValueValuesEnum(_messages.Enum):
+    r"""Output only. Implementation of managed control plane.
+
+    Values:
+      IMPLEMENTATION_UNSPECIFIED: Unspecified
+      ISTIOD: A Google build of istiod is used for the managed control plane.
+      TRAFFIC_DIRECTOR: Traffic director is used for the managed control
+        plane.
+      UPDATING: The control plane implementation is being updated.
+    """
+    IMPLEMENTATION_UNSPECIFIED = 0
+    ISTIOD = 1
+    TRAFFIC_DIRECTOR = 2
+    UPDATING = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""LifecycleState of control plane management.
@@ -6349,7 +6417,8 @@ class ServiceMeshControlPlaneManagement(_messages.Message):
     DEGRADED = 7
 
   details = _messages.MessageField('ServiceMeshStatusDetails', 1, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  implementation = _messages.EnumField('ImplementationValueValuesEnum', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ServiceMeshDataPlaneManagement(_messages.Message):

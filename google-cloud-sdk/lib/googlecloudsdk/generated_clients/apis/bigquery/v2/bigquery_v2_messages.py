@@ -8431,8 +8431,9 @@ class TableReplicationInfo(_messages.Message):
       source.
     replicationError: Optional. Output only. Replication error that will
       permanently stopped table replication.
-    replicationIntervalMs: Required. Specifies the interval at which the
-      source table is polled for updates.
+    replicationIntervalMs: Optional. Specifies the interval at which the
+      source table is polled for updates. It's Optional. If not specified,
+      default replication interval would be applied.
     replicationStatus: Optional. Output only. Replication status of configured
       replication.
     sourceTable: Required. Source table reference that is replicated.

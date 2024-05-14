@@ -22,6 +22,71 @@ from googlecloudsdk.api_lib.dataplex import util as dataplex_api
 from googlecloudsdk.command_lib.iam import iam_util
 
 
+def GenerateEntryTypeForCreateRequest(args):
+  """Create Entry Type Request."""
+  module = dataplex_api.GetMessageModule()
+  request = module.GoogleCloudDataplexV1EntryType(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1EntryType,
+                                       args),
+      platform=args.platform,
+      system=args.system,
+      typeAliases=args.type_aliases,
+      requiredAspects=GenerateEntryTypeRequiredAspects(args))
+
+  return request
+
+
+def GenerateEntryTypeForUpdateRequest(args):
+  """Update Entry Type Request."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1EntryType(
+      description=args.description,
+      displayName=args.display_name,
+      etag=args.etag,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1EntryType,
+                                       args),
+      platform=args.platform,
+      system=args.system,
+      typeAliases=args.type_aliases,
+      requiredAspects=GenerateEntryTypeRequiredAspects(args))
+
+
+def GenerateEntryTypeUpdateMask(args):
+  """Create Update Mask for EntryType."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('platform'):
+    update_mask.append('platform')
+  if args.IsSpecified('system'):
+    update_mask.append('system')
+  if args.IsSpecified('type_aliases'):
+    update_mask.append('typeAliases')
+  if args.IsSpecified('required_aspects'):
+    update_mask.append('requiredAspects')
+  return update_mask
+
+
+def GenerateEntryTypeRequiredAspects(args):
+  """Create Required Aspects."""
+  module = dataplex_api.GetMessageModule()
+  required_aspects = []
+  if args.required_aspects is not None:
+    for required_aspect in args.required_aspects:
+      required_aspects.append(
+          module.GoogleCloudDataplexV1EntryTypeAspectInfo(
+              type=required_aspect.get('type')
+          )
+      )
+  return required_aspects
+
+
 def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   return dataplex_api.WaitForOperation(

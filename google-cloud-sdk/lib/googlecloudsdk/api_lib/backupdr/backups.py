@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.backupdr import util
+from googlecloudsdk.api_lib.backupdr.restore_util import ComputeUtil
 from googlecloudsdk.command_lib.backupdr import util as command_util
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.backupdr.v1 import backupdr_v1_messages
@@ -32,6 +33,7 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "Name",
         "TargetZone",
         "TargetProject",
+        "NetworkInterfaces",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -86,6 +88,15 @@ class BackupsClient(util.BackupDrClientBase):
             project=restore_config["TargetProject"],
         )
     )
+
+    if "NetworkInterfaces" in restore_config:
+      network_interfaces_message = ComputeUtil.ParserNetworkInterface(
+          self.messages, restore_config["NetworkInterfaces"]
+      )
+      if network_interfaces_message:
+        restore_request.computeInstanceRestoreProperties.networkInterfaces.extend(
+            network_interfaces_message
+        )
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
         name=resource.RelativeName(), restoreBackupRequest=restore_request

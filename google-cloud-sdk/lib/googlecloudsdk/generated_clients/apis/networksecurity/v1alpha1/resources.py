@@ -199,6 +199,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_SACREALMS = (
+      'projects.locations.global.sacRealms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/sacRealms/{sacRealmsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTGROUPS = (
       'projects.locations.mirroringDeploymentGroups',
       '{+name}',

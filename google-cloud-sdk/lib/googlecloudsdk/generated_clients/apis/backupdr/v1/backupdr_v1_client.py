@@ -550,7 +550,7 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag', 'force', 'requestId', 'validateOnly'],
+        query_params=['allowMissing', 'etag', 'force', 'requestId', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDeleteRequest',
@@ -636,33 +636,6 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='backupVault',
         request_type_name='BackupdrProjectsLocationsBackupVaultsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
-
-      Args:
-        request: (BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestIamPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}:testIamPermissions',
-        http_method='POST',
-        method_id='backupdr.projects.locations.backupVaults.testIamPermissions',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1/{+resource}:testIamPermissions',
-        request_field='testIamPermissionsRequest',
-        request_type_name='BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest',
-        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

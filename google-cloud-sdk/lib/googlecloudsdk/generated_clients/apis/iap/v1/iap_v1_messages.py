@@ -36,23 +36,46 @@ class AccessDeniedPageSettings(_messages.Message):
 class AccessSettings(_messages.Message):
   r"""Access related settings for IAP protected apps.
 
+  Enums:
+    IdentitySourcesValueListEntryValuesEnum:
+
   Fields:
     allowedDomainsSettings: Settings to configure and enable allowed domains.
     corsSettings: Configuration to allow cross-origin requests via IAP.
     gcipSettings: GCIP claims and endpoint configurations for 3p identity
       providers.
+    identitySources: Optional. Identity sources that IAP can use to
+      authenticate the end user. Only one identity source can be configured.
     oauthSettings: Settings to configure IAP's OAuth behavior.
     policyDelegationSettings: Settings to configure Policy delegation for apps
       hosted in tenant projects. INTERNAL_ONLY.
     reauthSettings: Settings to configure reauthentication policies in IAP.
+    workforceIdentitySettings: Optional. Settings to configure the workforce
+      identity federation, including workforce pools and OAuth 2.0 settings.
   """
+
+  class IdentitySourcesValueListEntryValuesEnum(_messages.Enum):
+    r"""IdentitySourcesValueListEntryValuesEnum enum type.
+
+    Values:
+      IDENTITY_SOURCE_UNSPECIFIED: IdentitySource Unspecified. When selected,
+        IAP relies on which identity settings are fully configured to redirect
+        the traffic to. The precedence order is WorkforceIdentitySettings >
+        GcipSettings. If none is set, default to use Google identity.
+      WORKFORCE_IDENTITY_FEDERATION: Use external identities set up on Google
+        Cloud Workforce Identity Federation.
+    """
+    IDENTITY_SOURCE_UNSPECIFIED = 0
+    WORKFORCE_IDENTITY_FEDERATION = 1
 
   allowedDomainsSettings = _messages.MessageField('AllowedDomainsSettings', 1)
   corsSettings = _messages.MessageField('CorsSettings', 2)
   gcipSettings = _messages.MessageField('GcipSettings', 3)
-  oauthSettings = _messages.MessageField('OAuthSettings', 4)
-  policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 5)
-  reauthSettings = _messages.MessageField('ReauthSettings', 6)
+  identitySources = _messages.EnumField('IdentitySourcesValueListEntryValuesEnum', 4, repeated=True)
+  oauthSettings = _messages.MessageField('OAuthSettings', 5)
+  policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 6)
+  reauthSettings = _messages.MessageField('ReauthSettings', 7)
+  workforceIdentitySettings = _messages.MessageField('WorkforceIdentitySettings', 8)
 
 
 class AllowedDomainsSettings(_messages.Message):
@@ -724,6 +747,23 @@ class ListTunnelDestGroupsResponse(_messages.Message):
   tunnelDestGroups = _messages.MessageField('TunnelDestGroup', 2, repeated=True)
 
 
+class OAuth2(_messages.Message):
+  r"""The OAuth 2.0 Settings
+
+  Fields:
+    clientId: The OAuth 2.0 client ID registered in the workforce identity
+      federation OAuth 2.0 Server.
+    clientSecret: Input only. The OAuth 2.0 client secret created while
+      registering the client ID.
+    clientSecretSha256: Output only. SHA256 hash value for the client secret.
+      This field is returned by IAP when the settings are retrieved.
+  """
+
+  clientId = _messages.StringField(1)
+  clientSecret = _messages.StringField(2)
+  clientSecretSha256 = _messages.StringField(3)
+
+
 class OAuthSettings(_messages.Message):
   r"""Configuration for OAuth login&consent flow behavior as well as for OAuth
   Credentials.
@@ -1220,6 +1260,22 @@ class ValidateIapAttributeExpressionResponse(_messages.Message):
   AST validation info.
   """
 
+
+
+class WorkforceIdentitySettings(_messages.Message):
+  r"""WorkforceIdentitySettings allows customers to configure workforce pools
+  and OAuth 2.0 settings to gate their applications using a third-party IdP
+  with access control.
+
+  Fields:
+    oauth2: OAuth 2.0 settings for IAP to perform OIDC flow with workforce
+      identity federation services.
+    workforcePools: The workforce pool resources. Only one workforce pool is
+      accepted.
+  """
+
+  oauth2 = _messages.MessageField('OAuth2', 1)
+  workforcePools = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

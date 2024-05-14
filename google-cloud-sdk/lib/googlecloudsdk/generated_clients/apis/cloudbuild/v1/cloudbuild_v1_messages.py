@@ -4528,7 +4528,8 @@ class Results(_messages.Message):
       in the order corresponding to build step indices. [Cloud
       Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
-      first 50KB of data is stored.
+      first 50KB of data is stored. Note that the `$BUILDER_OUTPUT` variable
+      is read-only and can't be substituted.
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.

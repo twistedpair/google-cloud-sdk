@@ -33,8 +33,12 @@ from googlecloudsdk.core.console import console_io
 
 DEFAULT_RELEASE_TRACK = base.ReleaseTrack.GA
 
-# PD = Persistent Disk. This is prefixed to all storage type payloads.
-STORAGE_TYPE_PREFIX = 'PD_'
+# Argument mapping to internal storage type.
+STORAGE_TYPE_MAPPING = {
+    'HDD': 'PD_HDD',
+    'SSD': 'PD_SSD',
+    'HDB': 'HYPERDISK_BALANCED',
+}
 
 
 def GetInstanceRef(args, client):
@@ -494,7 +498,7 @@ class _BaseInstances(object):
 
     if args.storage_type:
       settings.dataDiskType = _ParseStorageType(
-          sql_messages, STORAGE_TYPE_PREFIX + args.storage_type
+          sql_messages, STORAGE_TYPE_MAPPING.get(args.storage_type)
       )
 
     if args.active_directory_domain is not None:

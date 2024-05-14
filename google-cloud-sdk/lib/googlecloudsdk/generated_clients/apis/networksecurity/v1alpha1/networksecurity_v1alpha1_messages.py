@@ -1400,6 +1400,21 @@ class ListPartnerSSERealmsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListSACRealmsResponse(_messages.Message):
+  r"""Message for response to listing SACRealms
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    sacRealms: The list of SACRealms
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sacRealms = _messages.MessageField('SACRealm', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSSEGatewayReferencesResponse(_messages.Message):
   r"""Message for response to listing SSEGatewayReferences
 
@@ -3611,6 +3626,86 @@ class NetworksecurityProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sACRealm: A SACRealm resource to be passed as the request body.
+    sacRealmId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and sac_realm_id from the
+      method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sACRealm = _messages.MessageField('SACRealm', 3)
+  sacRealmId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsGlobalSacRealmsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSACRealmsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsListRequest object.
 
@@ -5385,6 +5480,7 @@ class PartnerSSERealm(_messages.Message):
     name: name of resource
     pairingKey: Required. value of the key to establish global handshake from
       SSERealm
+    panOptions: Optional. Required only for PAN.
     partnerNetwork: Optional. Partner-owned network to be peered with CDEN's
       sse_network in sse_project
     partnerVpc: Optional. VPC owned by the partner to be peered with CDEN
@@ -5444,13 +5540,28 @@ class PartnerSSERealm(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   pairingKey = _messages.StringField(4)
-  partnerNetwork = _messages.StringField(5)
-  partnerVpc = _messages.StringField(6)
-  sseNetwork = _messages.StringField(7)
-  sseProject = _messages.StringField(8)
-  sseVpc = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  panOptions = _messages.MessageField('PartnerSSERealmPartnerSSERealmPanOptions', 5)
+  partnerNetwork = _messages.StringField(6)
+  partnerVpc = _messages.StringField(7)
+  sseNetwork = _messages.StringField(8)
+  sseProject = _messages.StringField(9)
+  sseVpc = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
+
+
+class PartnerSSERealmPartnerSSERealmPanOptions(_messages.Message):
+  r"""Fields specific to PAN realms.
+
+  Fields:
+    serialNumber: Optional. serial_number is provided by PAN to identify GCP
+      customer on PAN side.
+    tenantId: Optional. tenant_id is provided by PAN to identify GCP customer
+      on PAN side.
+  """
+
+  serialNumber = _messages.StringField(1)
+  tenantId = _messages.StringField(2)
 
 
 class RemoveAddressGroupItemsRequest(_messages.Message):
@@ -5492,6 +5603,134 @@ class Rule(_messages.Message):
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
   sources = _messages.MessageField('Source', 2, repeated=True)
+
+
+class SACRealm(_messages.Message):
+  r"""Message describing SACRealm object
+
+  Enums:
+    SecurityServiceValueValuesEnum: Immutable. SSE service provider
+    StateValueValuesEnum: Output only. [Output only] State of the realm
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. Resource name. It matches the pattern
+      `projects/{project}/locations/global/sacRealms/{sacRealm}`
+    pairingKey: Output only. [Output only] Key to be shared with SSE service
+      provider to establish global handshake
+    partnerEnvironment: Optional. Full URI of environment that this Realm is
+      using. Only used in Symantec Realms today.
+    securityService: Immutable. SSE service provider
+    state: Output only. [Output only] State of the realm
+    symantecOptions: Optional. Required only if using SYMANTEC_CLOUD_SWG.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class SecurityServiceValueValuesEnum(_messages.Enum):
+    r"""Immutable. SSE service provider
+
+    Values:
+      SECURITY_SERVICE_UNSPECIFIED: The default value. This value is used if
+        the state is omitted.
+      PALO_ALTO_PRISMA_ACCESS: [Palo Alto Networks Prisma
+        Access](https://www.paloaltonetworks.com/sase/access).
+      SYMANTEC_CLOUD_SWG: Symantec Cloud SWG is not fully supported yet.
+    """
+    SECURITY_SERVICE_UNSPECIFIED = 0
+    PALO_ALTO_PRISMA_ACCESS = 1
+    SYMANTEC_CLOUD_SWG = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. [Output only] State of the realm
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ATTACHED: This realm is attached to a partner realm. Used only for
+        Prisma Access.
+      UNATTACHED: This realm is not attached to a partner realm. Used only for
+        Prisma Access.
+      KEY_EXPIRED: This realm is not attached to a partner realm, and its
+        pairing key has expired and needs key regeneration. Used only for
+        Prisma Access.
+      KEY_VALIDATION_PENDING: API key is pending validation for Symantec.
+      KEY_VALIDATED: API key validation succeeded for Symantec, and customers
+        can proceed to further steps.
+      KEY_INVALID: API key validation failed for Symantec, please use a new
+        API key.
+    """
+    STATE_UNSPECIFIED = 0
+    ATTACHED = 1
+    UNATTACHED = 2
+    KEY_EXPIRED = 3
+    KEY_VALIDATION_PENDING = 4
+    KEY_VALIDATED = 5
+    KEY_INVALID = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  pairingKey = _messages.MessageField('SACRealmPairingKey', 4)
+  partnerEnvironment = _messages.StringField(5)
+  securityService = _messages.EnumField('SecurityServiceValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  symantecOptions = _messages.MessageField('SACRealmSACRealmSymantecOptions', 8)
+  updateTime = _messages.StringField(9)
+
+
+class SACRealmPairingKey(_messages.Message):
+  r"""Key to be shared with SSE service provider to establish global handshake
+
+  Fields:
+    expireTime: Output only. Timestamp in UTC of when this resource is
+      considered expired.
+    key: Output only. The name of the key. It expires 7 days after creation.
+  """
+
+  expireTime = _messages.StringField(1)
+  key = _messages.StringField(2)
+
+
+class SACRealmSACRealmSymantecOptions(_messages.Message):
+  r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
+
+  Fields:
+    apiKey: Optional. API Key used to call Symantec APIs on the user's behalf.
+      Required if using SYMANTEC_CLOUD_SWG.
+    availableSymantecSites: Output only. Symantec site IDs that the user can
+      choose to connect to.
+  """
+
+  apiKey = _messages.StringField(1)
+  availableSymantecSites = _messages.StringField(2, repeated=True)
 
 
 class SSEGateway(_messages.Message):

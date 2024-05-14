@@ -27,6 +27,17 @@ class AllAtOnceStrategy(_messages.Message):
   r"""AllAtOnceStrategy causes all clusters to be updated concurrently."""
 
 
+class AllAtOnceStrategyInfo(_messages.Message):
+  r"""AllAtOnceStrategyInfo represents the status of execution of AllAtOnce
+  rollout strategy.
+
+  Fields:
+    clusters: resource bundle's deployment status for all targeted clusters.
+  """
+
+  clusters = _messages.MessageField('ClusterInfo', 1, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -54,20 +65,52 @@ class ClusterInfo(_messages.Message):
   r"""ClusterInfo represents status of a resource bundle rollout for a
   cluster.
 
+  Enums:
+    StateValueValuesEnum: Output only. State of the rollout for the cluster.
+
   Fields:
-    currentResourceBundleInfo: Output only. Current state of the resource
-      bundle.
-    desiredResourceBundleInfo: Output only. Desired state for the resource
-      bundle.
-    initialResourceBundleInfo: Output only. Initial state of the resource
-      bundle prior to the deployment.
+    current: Output only. Current state of the resource bundle.
+    desired: Output only. Desired state for the resource bundle.
+    endTime: Output only. Timestamp when reconciliation ends.
+    initial: Output only. Initial state of the resource bundle prior to the
+      deployment.
     membership: Output only. gkehub membership of target cluster
+    messages: Output only. Messages convey additional information related to
+      the deployment.
+    startTime: Output only. Timestamp when reconciliation starts.
+    state: Output only. State of the rollout for the cluster.
   """
 
-  currentResourceBundleInfo = _messages.MessageField('ResourceBundleDeploymentInfo', 1)
-  desiredResourceBundleInfo = _messages.MessageField('ResourceBundleDeploymentInfo', 2)
-  initialResourceBundleInfo = _messages.MessageField('ResourceBundleDeploymentInfo', 3)
-  membership = _messages.StringField(4)
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the rollout for the cluster.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      WAITING: Waiting state.
+      IN_PROGRESS: In progress state.
+      STALLED: Stalled state.
+      COMPLETED: Completed state.
+      ABORTED: Aborted state.
+      CANCELLED: Cancelled state.
+      ERROR: Error state.
+    """
+    STATE_UNSPECIFIED = 0
+    WAITING = 1
+    IN_PROGRESS = 2
+    STALLED = 3
+    COMPLETED = 4
+    ABORTED = 5
+    CANCELLED = 6
+    ERROR = 7
+
+  current = _messages.MessageField('ResourceBundleDeploymentInfo', 1)
+  desired = _messages.MessageField('ResourceBundleDeploymentInfo', 2)
+  endTime = _messages.StringField(3)
+  initial = _messages.MessageField('ResourceBundleDeploymentInfo', 4)
+  membership = _messages.StringField(5)
+  messages = _messages.StringField(6, repeated=True)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
 
 
 class ConfigdeliveryProjectsLocationsFleetPackagesCreateRequest(_messages.Message):
@@ -1256,7 +1299,7 @@ class ResourceBundleDeploymentInfo(_messages.Message):
   Enums:
     DeletionPropagationPolicyValueValuesEnum: Output only. Deletion
       propagation policy.
-    StateValueValuesEnum: Output only. State of synchronization of the
+    SyncStateValueValuesEnum: Output only. Synchronization state of the
       resource bundle deployment.
 
   Fields:
@@ -1265,11 +1308,8 @@ class ResourceBundleDeploymentInfo(_messages.Message):
       the package deployment. For example, in case of an error, indicate the
       reason for the error. In case of a pending deployment, reason for why
       the deployment of new release is pending.
-    reconciliationEndTime: Output only. Timestamp when reconciliation ends.
-    reconciliationStartTime: Output only. Timestamp when reconciliation
-      starts.
     release: Output only. Refers to a package release.
-    state: Output only. State of synchronization of the resource bundle
+    syncState: Output only. Synchronization state of the resource bundle
       deployment.
     variant: Output only. Refers to a package variant.
     version: Output only. Refers to a package version.
@@ -1290,47 +1330,36 @@ class ResourceBundleDeploymentInfo(_messages.Message):
     FOREGROUND = 1
     ORPHAN = 2
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of synchronization of the resource bundle
-    deployment.
+  class SyncStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Synchronization state of the resource bundle deployment.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state.
+      SYNC_STATE_UNSPECIFIED: Unspecified state.
       RECONCILING: Reconciling state.
       STALLED: Stalled state.
       SYNCED: Synced state.
       PENDING: Pending state.
       ERROR: Error state.
-      WAITING: Waiting state.
       DELETION_PENDING: Deletion pending state.
       DELETING: Deleting state.
       DELETED: Deleted state.
-      INITIATED: Initiated state.
-      ABORTED: Aborted state.
-      CANCELLED: Cancelled state.
     """
-    STATE_UNSPECIFIED = 0
+    SYNC_STATE_UNSPECIFIED = 0
     RECONCILING = 1
     STALLED = 2
     SYNCED = 3
     PENDING = 4
     ERROR = 5
-    WAITING = 6
-    DELETION_PENDING = 7
-    DELETING = 8
-    DELETED = 9
-    INITIATED = 10
-    ABORTED = 11
-    CANCELLED = 12
+    DELETION_PENDING = 6
+    DELETING = 7
+    DELETED = 8
 
   deletionPropagationPolicy = _messages.EnumField('DeletionPropagationPolicyValueValuesEnum', 1)
   messages = _messages.StringField(2, repeated=True)
-  reconciliationEndTime = _messages.StringField(3)
-  reconciliationStartTime = _messages.StringField(4)
-  release = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  variant = _messages.StringField(7)
-  version = _messages.StringField(8)
+  release = _messages.StringField(3)
+  syncState = _messages.EnumField('SyncStateValueValuesEnum', 4)
+  variant = _messages.StringField(5)
+  version = _messages.StringField(6)
 
 
 class ResourceBundleSelector(_messages.Message):
@@ -1385,6 +1414,17 @@ class RollingStrategy(_messages.Message):
   """
 
   maxConcurrent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class RollingStrategyInfo(_messages.Message):
+  r"""RollingStrategyInfo represents the status of execution of Rolling
+  rollout strategy.
+
+  Fields:
+    clusters: resource bundle's deployment status for all targeted clusters.
+  """
+
+  clusters = _messages.MessageField('ClusterInfo', 1, repeated=True)
 
 
 class Rollout(_messages.Message):
@@ -1445,13 +1485,12 @@ class RolloutInfo(_messages.Message):
       Rollout.
 
   Fields:
-    clusterInfo: resource bundle's deployment status for each target cluster.
+    endTime: Output only. Timestamp when the overall rollout ends.
     message: Output only. Message convey additional information related to the
       rollout.
-    reconciliationEndTime: Output only. Timestamp when reconciliation ends for
-      the overall rollout.
-    reconciliationStartTime: Output only. Timestamp when reconciliation starts
-      for the overall rollout.
+    rolloutStrategyInfo: Output only. Rollout strategy info represents the
+      status of execution of rollout strategy.
+    startTime: Output only. Timestamp when the overall rollout starts.
     state: Output only. state conveys the overall status of the Rollout.
   """
 
@@ -1477,10 +1516,10 @@ class RolloutInfo(_messages.Message):
     STALLED = 6
     CANCELLED = 7
 
-  clusterInfo = _messages.MessageField('ClusterInfo', 1, repeated=True)
+  endTime = _messages.StringField(1)
   message = _messages.StringField(2)
-  reconciliationEndTime = _messages.StringField(3)
-  reconciliationStartTime = _messages.StringField(4)
+  rolloutStrategyInfo = _messages.MessageField('RolloutStrategyInfo', 3)
+  startTime = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
@@ -1497,6 +1536,22 @@ class RolloutStrategy(_messages.Message):
 
   allAtOnce = _messages.MessageField('AllAtOnceStrategy', 1)
   rolling = _messages.MessageField('RollingStrategy', 2)
+
+
+class RolloutStrategyInfo(_messages.Message):
+  r"""RolloutStrategyInfo represents the status of execution of different
+  types of rollout strategies. Only the field corresponding to the rollout
+  strategy specified at the rollout resource will be populated.
+
+  Fields:
+    allAtOnceStrategyInfo: AllAtOnceStrategyInfo represents the status of
+      AllAtOnce rollout strategy execution.
+    rollingStrategyInfo: RollingStrategyInfo represents the status of Rolling
+      rollout strategy execution.
+  """
+
+  allAtOnceStrategyInfo = _messages.MessageField('AllAtOnceStrategyInfo', 1)
+  rollingStrategyInfo = _messages.MessageField('RollingStrategyInfo', 2)
 
 
 class StandardQueryParameters(_messages.Message):

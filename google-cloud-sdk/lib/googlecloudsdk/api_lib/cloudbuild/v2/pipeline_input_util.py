@@ -25,7 +25,6 @@ from googlecloudsdk.core import log
 _WORKER_POOL_ANNOTATION = "cloudbuild.googleapis.com/worker-pool"
 _MANAGED_SIDECARS_ANNOTATION = "cloudbuild.googleapis.com/managed-sidecars"
 _MACHINE_TYPE = "cloudbuild.googleapis.com/worker/machine-type"
-_PRIVILEGE_MODE = "cloudbuild.googleapis.com/security/privilege-mode"
 _PROVENANCE_ENABLED = "cloudbuild.googleapis.com/provenance/enabled"
 _PROVENANCE_STORAGE = "cloudbuild.googleapis.com/provenance/storage"
 _PROVENANCE_REGION = "cloudbuild.googleapis.com/provenance/region"
@@ -125,8 +124,6 @@ def _MetadataTransform(data):
     spec["worker"] = {"machineType": annotations[_MACHINE_TYPE]}
 
   security = {}
-  if _PRIVILEGE_MODE in annotations:
-    security["privilegeMode"] = annotations[_PRIVILEGE_MODE].upper()
   if security:
     spec["security"] = security
 

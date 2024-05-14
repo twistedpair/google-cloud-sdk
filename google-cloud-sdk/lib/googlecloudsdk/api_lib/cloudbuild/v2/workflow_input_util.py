@@ -27,7 +27,6 @@ from googlecloudsdk.core import yaml
 
 
 _WORKFLOW_OPTIONS_ENUMS = [
-    "options.security.privilegeMode",
     "options.provenance.enabled",
     "options.provenance.storage",
     "options.provenance.region",

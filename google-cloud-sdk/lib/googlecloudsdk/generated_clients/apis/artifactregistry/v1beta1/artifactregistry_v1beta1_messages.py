@@ -102,7 +102,8 @@ class ArtifactregistryProjectsLocationsRepositoriesFilesListRequest(_messages.Me
       with "a/b/". * `owner="projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Files owned
       by the version `1.0` in package `pkg1`.
-    pageSize: The maximum number of files to return.
+    pageSize: The maximum number of files to return. Maximum page size is
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: Required. The name of the repository whose files will be listed.
@@ -258,7 +259,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Tags that
       are applied to the version `1.0` in package `pkg1`.
     pageSize: The maximum number of tags to return. Maximum page size is
-      10,000.
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent package whose tags will be listed. For
@@ -384,7 +385,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
 
   Fields:
     name: The name of the repository, for example: `projects/p1/locations/us-
-      central1/repositories/repo1`.
+      central1/repositories/repo1`. For each location in a project, repository
+      names must be unique.
     repository: A Repository resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -569,8 +571,8 @@ class File(_messages.Message):
   Fields:
     createTime: Output only. The time when the File was created.
     hashes: The hashes of the file content.
-    name: The name of the file, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/files/a%2Fb%2Fc.txt". If the file ID part
+    name: The name of the file, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/files/a%2Fb%2Fc.txt`. If the file ID part
       contains slashes, they are escaped.
     owner: The name of the Package or Version that owns this file, if any.
     sizeBytes: The size of the File in bytes.
@@ -1001,7 +1003,10 @@ class Repository(_messages.Message):
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
     name: The name of the repository, for example: `projects/p1/locations/us-
-      central1/repositories/repo1`.
+      central1/repositories/repo1`. For each location in a project, repository
+      names must be unique.
+    satisfiesPzi: Output only. If set, the repository satisfies physical zone
+      isolation.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
@@ -1065,9 +1070,10 @@ class Repository(_messages.Message):
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  satisfiesPzs = _messages.BooleanField(7)
-  sizeBytes = _messages.IntegerField(8)
-  updateTime = _messages.StringField(9)
+  satisfiesPzi = _messages.BooleanField(7)
+  satisfiesPzs = _messages.BooleanField(8)
+  sizeBytes = _messages.IntegerField(9)
+  updateTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

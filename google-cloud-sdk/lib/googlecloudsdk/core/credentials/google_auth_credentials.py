@@ -21,6 +21,13 @@ from __future__ import unicode_literals
 
 import json
 
+from google.auth import _helpers
+from google.auth import credentials as google_auth_credentials
+from google.auth import exceptions as google_auth_exceptions
+from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
+from google.oauth2 import _client as google_auth_client
+from google.oauth2 import credentials
+from google.oauth2 import reauth as google_auth_reauth
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
@@ -28,21 +35,12 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import retry
-
 from oauth2client import client as oauth2client_client
 from oauth2client.contrib import reauth
-
+from pyu2f import errors as pyu2f_errors
 import six
 from six.moves import http_client
 from six.moves import urllib
-
-from google.auth import _helpers
-from google.auth import credentials as google_auth_credentials
-from google.auth import external_account_authorized_user as google_auth_external_account_authorized_user
-from google.auth import exceptions as google_auth_exceptions
-from google.oauth2 import _client as google_auth_client
-from google.oauth2 import credentials
-from google.oauth2 import reauth as google_auth_reauth
 
 GOOGLE_REVOKE_URI = 'https://accounts.google.com/o/oauth2/revoke'
 
@@ -128,6 +126,15 @@ class Credentials(credentials.Credentials):
               self._token_uri,
               list(self.scopes or []),
           )
+
+        except pyu2f_errors.OsHidError as e:
+          # The device does not have a security key attached.
+          # Sometimes manually re-authenticating gets around this.
+          raise google_auth_exceptions.ReauthFailError(
+              'A security key reauthentication challenge was issued but no key'
+              ' was found. Try manually reauthenticating.'
+          ) from e
+
         except KeyError:
           # context: b/328663283
           # pyu2f lib doesn't handle the timeout well. When timeout happens, the

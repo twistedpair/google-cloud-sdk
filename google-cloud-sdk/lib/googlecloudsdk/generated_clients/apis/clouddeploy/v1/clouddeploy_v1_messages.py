@@ -32,7 +32,7 @@ class AdvanceChildRolloutJobRun(_messages.Message):
   Fields:
     rollout: Output only. Name of the `ChildRollout`. Format is `projects/{pro
       ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases
-      /{release}/rollouts/a-z{0,62}`.
+      /{release}/rollouts/{rollout}`.
     rolloutPhaseId: Output only. the ID of the ChildRollout's Phase.
   """
 
@@ -63,7 +63,7 @@ class AdvanceRolloutRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
     phaseId: Required. The phase ID to advance the `Rollout` to.
   """
 
@@ -87,7 +87,8 @@ class AdvanceRolloutRule(_messages.Message):
     condition: Output only. Information around the state of the Automation
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is `a-z{0,62}`.
+      resource to which this rule belongs. The format is
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
     sourcePhases: Optional. Proceeds only after phase name matched any one in
       the list. This value must consist of lower-case letters, numbers, and
       hyphens, start with a letter and end with a letter or a number, and have
@@ -123,8 +124,8 @@ class AnthosCluster(_messages.Message):
   r"""Information specifying an Anthos Cluster.
 
   Fields:
-    membership: Membership of the GKE Hub-registered cluster to which to apply
-      the Skaffold configuration. Format is
+    membership: Optional. Membership of the GKE Hub-registered cluster to
+      which to apply the Skaffold configuration. Format is
       `projects/{project}/locations/{location}/memberships/{membership_name}`.
   """
 
@@ -137,7 +138,7 @@ class ApproveRolloutRequest(_messages.Message):
   Fields:
     approved: Required. True = approve; false = reject
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
   """
 
   approved = _messages.BooleanField(1)
@@ -774,7 +775,7 @@ class CancelRolloutRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
   """
 
   overrideDeployPolicy = _messages.StringField(1, repeated=True)
@@ -1004,8 +1005,10 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
       does not exist will result in the creation of a new `CustomTargetType`.
     customTargetType: A CustomTargetType resource to be passed as the request
       body.
-    name: Optional. Name of the `CustomTargetType`. Format is
-      `projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}`.
+    name: Optional. Name of the `CustomTargetType`. Format is `projects/{proje
+      ct}/locations/{location}/customTargetTypes/{customTargetType}`. The
+      `customTargetType` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1398,8 +1401,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
       does not exist will result in the creation of a new `DeliveryPipeline`.
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
-    name: Optional. Name of the `DeliveryPipeline`. Format is
-      `projects/{project}/locations/{location}/deliveryPipelines/a-z{0,62}`.
+    name: Optional. Name of the `DeliveryPipeline`. Format is `projects/{proje
+      ct}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
+      `deliveryPipeline` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -1449,7 +1454,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
     parent: Required. The parent collection in which the `Release` should be
       created. Format should be `projects/{project_id}/locations/{location_nam
       e}/deliveryPipelines/{pipeline_name}`.
@@ -1576,7 +1581,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
     parent: Required. The parent collection in which the `Rollout` should be
       created. Format should be `projects/{project_id}/locations/{location_nam
       e}/deliveryPipelines/{pipeline_name}/releases/{release_name}`.
@@ -1901,7 +1906,9 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
       does not exist will result in the creation of a new `DeployPolicy`.
     deployPolicy: A DeployPolicy resource to be passed as the request body.
     name: Output only. Name of the `DeployPolicy`. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
+      The `deployPolicy` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -2153,7 +2160,8 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
     name: Optional. Name of the `Target`. Format is
-      `projects/{project}/locations/{location}/targets/a-z{0,62}`.
+      `projects/{project}/locations/{location}/targets/{target}`. The `target`
+      component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server knows to
       ignore the request if it has already been completed. The server
@@ -2241,7 +2249,7 @@ class CreateChildRolloutJobRun(_messages.Message):
   Fields:
     rollout: Output only. Name of the `ChildRollout`. Format is `projects/{pro
       ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases
-      /{release}/rollouts/a-z{0,62}`.
+      /{release}/rollouts/{rollout}`.
     rolloutPhaseId: Output only. The ID of the childRollout Phase initiated by
       this JobRun.
   """
@@ -2387,8 +2395,10 @@ class CustomTargetType(_messages.Message):
       start with a lowercase letter or international character. * Each
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
-    name: Optional. Name of the `CustomTargetType`. Format is
-      `projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}`.
+    name: Optional. Name of the `CustomTargetType`. Format is `projects/{proje
+      ct}/locations/{location}/customTargetTypes/{customTargetType}`. The
+      `customTargetType` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     uid: Output only. Unique identifier of the `CustomTargetType`.
     updateTime: Output only. Most recent time at which the `CustomTargetType`
       was updated.
@@ -2544,8 +2554,10 @@ class DeliveryPipeline(_messages.Message):
       letter or international character. * Each resource is limited to a
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
-    name: Optional. Name of the `DeliveryPipeline`. Format is
-      `projects/{project}/locations/{location}/deliveryPipelines/a-z{0,62}`.
+    name: Optional. Name of the `DeliveryPipeline`. Format is `projects/{proje
+      ct}/locations/{location}/deliveryPipelines/{deliveryPipeline}`. The
+      `deliveryPipeline` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     serialPipeline: SerialPipeline defines a sequential set of stages for a
       `DeliveryPipeline`.
     suspended: When suspended, no new releases or rollouts can be created, but
@@ -2940,7 +2952,9 @@ class DeployPolicy(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     name: Output only. Name of the `DeployPolicy`. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
+      The `deployPolicy` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     rules: Required. Rules to apply. At least one rule must be present.
     selectors: Required. Selected resources to which the policy will be
       applied. At least one selector is required. If one selector matches the
@@ -3198,7 +3212,7 @@ class GkeCluster(_messages.Message):
   r"""Information specifying a GKE Cluster.
 
   Fields:
-    cluster: Information specifying a GKE Cluster. Format is
+    cluster: Optional. Information specifying a GKE Cluster. Format is
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`.
     internalIp: Optional. If true, `cluster` is accessed using the private IP
       address of the control plane endpoint. Otherwise, the default IP address
@@ -3219,7 +3233,7 @@ class IgnoreJobRequest(_messages.Message):
   Fields:
     jobId: Required. The job ID for the Job to ignore.
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
     phaseId: Required. The phase ID the Job to ignore belongs to.
   """
 
@@ -4271,7 +4285,8 @@ class PromoteReleaseRule(_messages.Message):
       sequence defined in the pipeline. * "@next", the next target in the
       promotion sequence.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is `a-z{0,62}`.
+      resource to which this rule belongs. The format is
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
     wait: Optional. How long the release need to be paused until being
       promoted to the next target.
     waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
@@ -4399,8 +4414,8 @@ class Release(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     name: Optional. Name of the `Release`. Format is `projects/{project}/locat
-      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/a-
-      z{0,62}`.
+      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}`
+      . The `release` component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
@@ -4817,7 +4832,8 @@ class RepairRolloutRule(_messages.Message):
     condition: Output only. Information around the state of the 'Automation'
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is `a-z{0,62}`.
+      resource to which this rule belongs. The format is
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
     jobs: Optional. Jobs to repair. Proceeds only after job name matched any
       one in the list, or for all jobs if unspecified or empty. The phase that
       includes the job must match the phase ID specified in `source_phase`.
@@ -4874,7 +4890,7 @@ class RestrictRollout(_messages.Message):
       restricted.
     name: Required. Restriction rule name. Required and must be unique within
       a DeployPolicy.
-    timeWindow: Optional. Time Window within which actions are restricted.
+    timeWindow: Required. Time Window within which actions are restricted.
   """
 
   class ActionsValueListEntryValuesEnum(_messages.Enum):
@@ -5003,7 +5019,7 @@ class RetryJobRequest(_messages.Message):
   Fields:
     jobId: Required. The job ID for the Job to retry.
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
     phaseId: Required. The phase ID the Job to retry belongs to.
   """
 
@@ -5195,7 +5211,7 @@ class Rollout(_messages.Message):
     approveTime: Output only. Time at which the `Rollout` was approved.
     controllerRollout: Output only. Name of the `ControllerRollout`. Format is
       `projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipe
-      line}/releases/{release}/rollouts/a-z{0,62}`.
+      line}/releases/{release}/rollouts/{rollout}`.
     createTime: Output only. Time at which the `Rollout` was created.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
@@ -5225,7 +5241,8 @@ class Rollout(_messages.Message):
     metadata: Output only. Metadata contains information about the rollout.
     name: Optional. Name of the `Rollout`. Format is `projects/{project}/locat
       ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/
-      rollouts/a-z{0,62}`.
+      rollouts/{rollout}`. The `rollout` component must match
+      `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     phases: Output only. The phases that represent the workflows of this
       `Rollout`.
     rollbackOfRollout: Output only. Name of the `Rollout` that is rolled back
@@ -5951,7 +5968,8 @@ class Target(_messages.Message):
       additionally constrained to be <= 128 bytes.
     multiTarget: Optional. Information specifying a multiTarget.
     name: Optional. Name of the `Target`. Format is
-      `projects/{project}/locations/{location}/targets/a-z{0,62}`.
+      `projects/{project}/locations/{location}/targets/{target}`. The `target`
+      component must match `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`
     requireApproval: Optional. Whether or not the `Target` requires approval.
     run: Optional. Information specifying a Cloud Run deployment target.
     targetId: Output only. Resource id of the `Target`.
@@ -6320,7 +6338,7 @@ class TerminateJobRunRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
+      `projects/{project}/locations/{location}/deployPolicies/{deployPolicy}`.
   """
 
   overrideDeployPolicy = _messages.StringField(1, repeated=True)
@@ -6379,7 +6397,7 @@ class TimeWindow(_messages.Message):
   r"""Time Window within which actions are restricted.
 
   Fields:
-    ranges: Range within which actions are restricted.
+    ranges: Required. Range within which actions are restricted.
     timeZone: Required. The time zone in IANA format [IANA Time Zone
       Database](https://www.iana.org/time-zones) (e.g. America/New_York).
   """

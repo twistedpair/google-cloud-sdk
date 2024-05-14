@@ -138,14 +138,18 @@ def AddCreateBackupPlanAssociationFlags(parser):
           presentation_specs.ResourcePresentationSpec(
               'BACKUP_PLAN_ASSOCIATION',
               GetBackupPlanAssociationResourceSpec(),
-              'Name of the backup plan association to be created',
+              'Name of the backup plan association to be created. Once the'
+              " backup plan association is created, this name can't be changed."
+              ' The name must be unique for a project and location. To create'
+              " backup plan associations in a project that's different from the"
+              ' backup plan, use the --workload-project flag.',
               required=True,
           ),
           presentation_specs.ResourcePresentationSpec(
               '--backup-plan',
               GetBackupPlanResourceSpec(),
-              'Name of the backup plan to be applied to the specified'
-              ' resource.',
+              'The backup plan to be applied to the resource. E.g.,'
+              ' projects/sample-project/locations/us-central1/backupPlans/sample-backup-plan',
               # This hides the location flag for backup plan.
               flag_name_overrides={
                   'location': '',
@@ -162,7 +166,10 @@ def AddCreateBackupPlanAssociationFlags(parser):
       '--resource',
       required=True,
       type=str,
-      help='Resource to which the Backup Plan will be applied.',
+      help=(
+          'The resource to which the backup plan is to be applied. E.g.,'
+          ' projects/sample-project/zones/us-central1-a/instances/sample-instance'
+      ),
   )
 
 

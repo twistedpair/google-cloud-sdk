@@ -149,6 +149,23 @@ class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Messa
   spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
 
 
+class GoogleCloudNetworkconnectivityV1betaAutoAccept(_messages.Message):
+  r"""The auto-accept setting for a group controls whether proposed spokes are
+  automatically attached to the hub. If auto-accept is enabled, the spoke
+  immediately is attached to the hub and becomes part of the group. In this
+  case, the new spoke is in the ACTIVE state. If auto-accept is disabled, the
+  spoke goes to the INACTIVE state, and it must be reviewed and accepted by a
+  hub administrator.
+
+  Fields:
+    autoAcceptProjects: A list of project ids or project numbers for which you
+      want to enable auto-accept. The auto-accept setting is applied to spokes
+      being created or updated in these projects.
+  """
+
+  autoAcceptProjects = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareInstance(_messages.Message):
   r"""Message describing CustomHardwareInstance object
 
@@ -332,6 +349,7 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
       managing-labels#requirements).
 
   Fields:
+    autoAccept: Optional. The auto-accept setting for this group.
     createTime: Output only. The time the group was created.
     description: Optional. The description of the group.
     labels: Optional. Labels in key-value pair format. For more information
@@ -341,6 +359,9 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
     name: Immutable. The name of the group. Group names must be unique. They
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub}/groups/{group_id}`
+    routeTable: Output only. The name of the route table that corresponds to
+      this group. They use the following form: `projects/{project_number}/loca
+      tions/global/hubs/{hub_id}/routeTables/{route_table_id}`
     state: Output only. The current lifecycle state of this group.
     uid: Output only. The Google-generated UUID for the group. This value is
       unique across all group resources. If a group is deleted and another
@@ -400,13 +421,15 @@ class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  autoAccept = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaAutoAccept', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  routeTable = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
@@ -418,6 +441,15 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
   be associated with any VPC network in your project.
 
   Enums:
+    PolicyModeValueValuesEnum: Optional. The policy mode of this hub. This
+      field can be either PRESET or CUSTOM. If unspecified, the policy_mode
+      defaults to PRESET.
+    PresetTopologyValueValuesEnum: Optional. The topology implemented in this
+      hub. Currently, this field is only used when policy_mode = PRESET. The
+      available preset topologies are MESH and STAR. If preset_topology is
+      unspecified and policy_mode = PRESET, the preset_topology defaults to
+      MESH. When policy_mode = CUSTOM, the preset_topology is set to
+      PRESET_TOPOLOGY_UNSPECIFIED.
     StateValueValuesEnum: Output only. The current lifecycle state of this
       hub.
 
@@ -430,6 +462,10 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
   Fields:
     createTime: Output only. The time the hub was created.
     description: An optional description of the hub.
+    exportPsc: Optional. Whether Private Service Connect transitivity is
+      enabled for the hub. If true, Private Service Connect endpoints in VPC
+      spokes attached to the hub are made accessible to other VPC spokes
+      attached to the hub. The default value is false.
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
@@ -437,6 +473,15 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
+    policyMode: Optional. The policy mode of this hub. This field can be
+      either PRESET or CUSTOM. If unspecified, the policy_mode defaults to
+      PRESET.
+    presetTopology: Optional. The topology implemented in this hub. Currently,
+      this field is only used when policy_mode = PRESET. The available preset
+      topologies are MESH and STAR. If preset_topology is unspecified and
+      policy_mode = PRESET, the preset_topology defaults to MESH. When
+      policy_mode = CUSTOM, the preset_topology is set to
+      PRESET_TOPOLOGY_UNSPECIFIED.
     routeTables: Output only. The route tables that belong to this hub. They
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub_id}/routeTables/{route_table_id}` This field is read-only. Network
@@ -455,6 +500,38 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
       the same name is created, the new hub is assigned a different unique_id.
     updateTime: Output only. The time the hub was last updated.
   """
+
+  class PolicyModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The policy mode of this hub. This field can be either PRESET
+    or CUSTOM. If unspecified, the policy_mode defaults to PRESET.
+
+    Values:
+      POLICY_MODE_UNSPECIFIED: Policy mode is unspecified. It defaults to
+        PRESET with preset_topology = MESH.
+      PRESET: Hub uses one of the preset topologies.
+    """
+    POLICY_MODE_UNSPECIFIED = 0
+    PRESET = 1
+
+  class PresetTopologyValueValuesEnum(_messages.Enum):
+    r"""Optional. The topology implemented in this hub. Currently, this field
+    is only used when policy_mode = PRESET. The available preset topologies
+    are MESH and STAR. If preset_topology is unspecified and policy_mode =
+    PRESET, the preset_topology defaults to MESH. When policy_mode = CUSTOM,
+    the preset_topology is set to PRESET_TOPOLOGY_UNSPECIFIED.
+
+    Values:
+      PRESET_TOPOLOGY_UNSPECIFIED: Preset topology is unspecified. When
+        policy_mode = PRESET, it defaults to MESH.
+      MESH: Mesh topology is implemented. Group `default` is automatically
+        created. All spokes in the hub are added to group `default`.
+      STAR: Star topology is implemented. Two groups, `center` and `edge`, are
+        automatically created along with hub creation. Spokes have to join one
+        of the groups during creation.
+    """
+    PRESET_TOPOLOGY_UNSPECIFIED = 0
+    MESH = 1
+    STAR = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this hub.
@@ -509,14 +586,17 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  routeTables = _messages.StringField(5, repeated=True)
-  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 6, repeated=True)
-  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uniqueId = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  exportPsc = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 6)
+  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 7)
+  routeTables = _messages.StringField(8, repeated=True)
+  routingVpcs = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRoutingVPC', 9, repeated=True)
+  spokeSummary = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpokeSummary', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_messages.Message):
@@ -2540,6 +2620,42 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGroupsListRequest(_messages.
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest
+  object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaGroup: A
+      GoogleCloudNetworkconnectivityV1betaGroup resource to be passed as the
+      request body.
+    name: Immutable. The name of the group. Group names must be unique. They
+      use the following form: `projects/{project_number}/locations/global/hubs
+      /{hub}/groups/{group_id}`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check to see
+      whether the original operation was received. If it was, the server
+      ignores the second request. This behavior prevents clients from
+      mistakenly creating duplicate commitments. The request ID must be a
+      valid UUID, with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. In the case of an update to an existing group, field
+      mask is used to specify the fields to be overwritten. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field is overwritten if it is in the mask. If the user does
+      not provide a mask, then all fields are overwritten.
+  """
+
+  googleCloudNetworkconnectivityV1betaGroup = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest(_messages.Message):

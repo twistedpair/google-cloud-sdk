@@ -15,14 +15,20 @@
 """Util for cloud ops agents policy commands."""
 
 import json
+from typing import Optional
 
+from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_exceptions as exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_policy
+from googlecloudsdk.api_lib.compute.instances.ops_agents.converters import os_policy_assignment_to_cloud_ops_agents_policy_converter as to_ops_agents_policy
+from googlecloudsdk.api_lib.compute.instances.ops_agents.validators import cloud_ops_agents_policy_validator
+from googlecloudsdk.api_lib.compute.os_config import utils as osconfig_api_utils
+from googlecloudsdk.command_lib.compute.os_config import utils as osconfig_command_utils
 
 
 def GetAgentsRuleFromDescription(
     description: str,
-) -> cloud_ops_agents_policy.OpsAgentsPolicy.AgentsRule | None:
+) -> Optional[cloud_ops_agents_policy.OpsAgentsPolicy.AgentsRule]:
   """Returns an agents rule from a OSPolicy description."""
   if description is None:
     return None
@@ -37,3 +43,50 @@ def GetAgentsRuleFromDescription(
     return cloud_ops_agents_policy.CreateAgentsRule(agents_rule_json)
   except exceptions.PolicyValidationError:
     return None
+
+
+def GetOpsAgentsPolicyFromApi(
+    release_track: str, policy_id: str, project: str, zone: str
+) -> cloud_ops_agents_policy.OpsAgentsPolicy:
+  """Retrieves an Ops Agents policy from the OS Config API.
+
+  Args:
+    release_track: API release track.
+    policy_id: User's POLICY_ID from command prompt.
+    project: User's project.
+    zone: User's zone.
+
+  Returns:
+    A validated OpsAgentsPolicy.
+
+  Raises:
+    PolicyNotFoundError: The policy_id does not exist.
+    PolicyMalformedError: The policy is not an Ops Agents policy.
+    PolicyValidationMultiError: The policy is not a valid Ops Agents policy.
+  """
+  messages = osconfig_api_utils.GetClientMessages(release_track)
+  client = osconfig_api_utils.GetClientInstance(release_track)
+  service = client.projects_locations_osPolicyAssignments
+
+  parent_path = osconfig_command_utils.GetProjectLocationUriPath(project, zone)
+
+  assignment_id = osconfig_command_utils.GetOsPolicyAssignmentRelativePath(
+      parent_path, policy_id
+  )
+
+  get_request = messages.OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest(
+      name=assignment_id
+  )
+  try:
+    get_response = service.Get(get_request)
+  except apitools_exceptions.HttpNotFoundError:
+    raise exceptions.PolicyNotFoundError(policy_id=policy_id)
+
+  ops_agents_policy = (
+      to_ops_agents_policy.ConvertOsPolicyAssignmentToCloudOpsAgentPolicy(
+          get_response
+      )
+  )
+  cloud_ops_agents_policy_validator.ValidateOpsAgentsPolicy(ops_agents_policy)
+
+  return ops_agents_policy

@@ -38,15 +38,6 @@ class DestinationParallelstore(_messages.Message):
   path = _messages.StringField(1)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
-
-
 class ExportDataRequest(_messages.Message):
   r"""Message representing the request exporting data from Cloud Storage to
   parallelstore.
@@ -70,6 +61,15 @@ class ExportDataRequest(_messages.Message):
   destinationGcsBucket = _messages.MessageField('DestinationGcsBucket', 1)
   requestId = _messages.StringField(2)
   sourceParallelstore = _messages.MessageField('SourceParallelstore', 3)
+
+
+class GoogleProtobufEmpty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
 
 
 class ImportDataRequest(_messages.Message):

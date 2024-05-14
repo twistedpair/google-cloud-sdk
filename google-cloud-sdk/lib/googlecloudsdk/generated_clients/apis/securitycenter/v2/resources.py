@@ -150,6 +150,40 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_RESOURCEVALUECONFIGS = (
+      'organizations.locations.resourceValueConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'resourceValueConfigs/{resourceValueConfigsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SIMULATIONS = (
+      'organizations.locations.simulations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'simulations/{simulationsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SIMULATIONS_VALUEDRESOURCES = (
+      'organizations.locations.simulations.valuedResources',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'simulations/{simulationsId}/valuedResources/'
+              '{valuedResourcesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_MUTECONFIGS = (
       'organizations.muteConfigs',
       '{+name}',

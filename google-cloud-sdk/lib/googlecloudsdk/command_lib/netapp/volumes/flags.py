@@ -520,8 +520,7 @@ can be range from 7-183. Default is 31.
       '--tiering-policy',
       type=arg_parsers.ArgDict(spec=tiering_policy_arg_spec),
       metavar='tier-action=ENABLED|PAUSED',
-      help=tiering_policy_help,
-      hidden=True
+      help=tiering_policy_help
   )
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 

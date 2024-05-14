@@ -183,7 +183,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
       GoogleDevtoolsArtifactregistryV1alpha1Repository resource to be passed
       as the request body.
     name: The name of the repository, for example: `projects/p1/locations/us-
-      central1/repositories/repo1`.
+      central1/repositories/repo1`. For each location in a project, repository
+      names must be unique.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -463,7 +464,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       lowercase letters, numeric characters, underscores, and dashes.
     mode: Optional. The mode of the repository.
     name: The name of the repository, for example: `projects/p1/locations/us-
-      central1/repositories/repo1`.
+      central1/repositories/repo1`. For each location in a project, repository
+      names must be unique.
+    satisfiesPzi: Output only. If set, the repository satisfies physical zone
+      isolation.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in
@@ -541,9 +545,10 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   mode = _messages.EnumField('ModeValueValuesEnum', 6)
   name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  sizeBytes = _messages.IntegerField(9)
-  updateTime = _messages.StringField(10)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  sizeBytes = _messages.IntegerField(10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1UploadAptArtifactMediaResponse(_messages.Message):

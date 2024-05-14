@@ -118,6 +118,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_WORKERPOOLSECONDGEN = (
+      'projects.locations.workerPoolSecondGen',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'workerPoolSecondGen/{workerPoolSecondGenId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_WORKFLOWS = (
       'projects.locations.workflows',
       '{+name}',

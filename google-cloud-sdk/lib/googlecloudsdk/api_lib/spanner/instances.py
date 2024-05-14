@@ -59,7 +59,6 @@ def Create(
     autoscaling_storage_target=None,
     instance_type=None,
     expire_behavior=None,
-    default_storage_type=None,
     ssd_cache=None,
 ):
   """Create a new instance."""
@@ -103,8 +102,6 @@ def Create(
   if expire_behavior is not None:
     instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
         expireBehavior=expire_behavior)
-  if default_storage_type is not None:
-    instance_obj.defaultStorageType = default_storage_type
   if ssd_cache and ssd_cache.strip():
     instance_obj.ssdCache = (
         config_ref.RelativeName() + '/ssdCaches/' + ssd_cache.strip()

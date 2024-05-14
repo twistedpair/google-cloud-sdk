@@ -6200,9 +6200,8 @@ class GroupFindingsRequest(_messages.Message):
     groupBy: Required. Expression that defines what assets fields to use for
       grouping (including `state_change`). The string value should follow SQL
       syntax: comma separated list of fields. For example:
-      "parent,resource_name". The following fields are supported: *
-      resource_name * category * state * parent * severity The following
-      fields are supported when compare_duration is set: * state_change
+      "parent,resource_name". The following fields are supported when
+      compare_duration is set: * state_change
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `GroupFindingsResponse`;

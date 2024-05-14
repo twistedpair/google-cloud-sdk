@@ -44,7 +44,7 @@ def MakeRegionalPublicDelegatedPrefixesArg():
   )
 
 
-def AddCreatePdpArgsToParser(parser, support_ipv6_pdp):
+def AddCreatePdpArgsToParser(parser):
   """Adds flags for public delegated prefixes create command."""
   parent_prefix_args = parser.add_mutually_exclusive_group(required=True)
   parent_prefix_args.add_argument(
@@ -81,16 +81,15 @@ def AddCreatePdpArgsToParser(parser, support_ipv6_pdp):
           'migrated.'
       ),
   )
-  if support_ipv6_pdp:
-    parser.add_argument(
-        '--mode',
-        choices=['EXTERNAL_IPV6_FORWARDING_RULE_CREATION', 'DELEGATION'],
-        help='Specifies the mode of this IPv6 PDP.',
-    )
-    parser.add_argument(
-        '--allocatable-prefix-length',
-        help='The allocatable prefix length supported by this PDP.',
-    )
+  parser.add_argument(
+      '--mode',
+      choices=['EXTERNAL_IPV6_FORWARDING_RULE_CREATION', 'DELEGATION'],
+      help='Specifies the mode of this IPv6 PDP.',
+  )
+  parser.add_argument(
+      '--allocatable-prefix-length',
+      help='The allocatable prefix length supported by this PDP.',
+  )
 
 
 def _AddCommonSubPrefixArgs(parser, verb):
@@ -130,6 +129,19 @@ def AddCreateSubPrefixArgs(parser):
       help=(
           'Specify if the sub prefix is delegated to create address '
           'resources in the delegatee project. Default is false.'
+      ),
+  )
+  parser.add_argument(
+      '--mode',
+      choices=['DELEGATION', 'EXTERNAL_IPV6_FORWARDING_RULE_CREATION'],
+      help=(
+          'Specify mode for the sub prefix.'
+      ),
+  )
+  parser.add_argument(
+      '--allocatable-prefix-length',
+      help=(
+          'Specify allocatable prefix length supported by this sub prefix.'
       ),
   )
 

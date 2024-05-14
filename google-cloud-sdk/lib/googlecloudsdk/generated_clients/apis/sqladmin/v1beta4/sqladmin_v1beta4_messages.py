@@ -875,8 +875,8 @@ class DatabaseInstance(_messages.Message):
       failure. Only applicable to MySQL.
     rootPassword: Initial root password. Use only on creation. You must set
       root passwords before you can connect to PostgreSQL instances.
-    satisfiesPzs: The status indicating if instance satisfiesPzs. Reserved for
-      future use.
+    satisfiesPzs: This status indicates whether the instance satisfies PZS.
+      The status is reserved for future use.
     scheduledMaintenance: The start time of any upcoming scheduled maintenance
       for this instance.
     secondaryGceZone: The Compute Engine zone that the failover instance is
@@ -2674,7 +2674,8 @@ class Operation(_messages.Message):
       AUTO_RESTART: Performs auto-restart of an HA-enabled Cloud SQL database
         for auto recovery.
       REENCRYPT: Re-encrypts CMEK instances with latest key version.
-      SWITCHOVER: Switches over to replica instance from primary.
+      SWITCHOVER: Switches the roles of the primary and replica pair. The
+        target instance should be the replica.
       UPDATE_BACKUP: Update a backup.
       ACQUIRE_SSRS_LEASE: Acquire a lease for the setup of SQL Server
         Reporting Services (SSRS).
@@ -2693,6 +2694,9 @@ class Operation(_messages.Message):
         replicas) are currently in maintenance. This is initiated as a self-
         service request by using SSM. Maintenance typically causes the
         instance to be unavailable for 1-3 minutes.
+      SWITCHOVER_TO_REPLICA: Switches a primary instance to a replica. This
+        operation runs as part of a switchover operation to the original
+        primary instance.
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2739,6 +2743,7 @@ class Operation(_messages.Message):
     RECONFIGURE_OLD_PRIMARY = 42
     CLUSTER_MAINTENANCE = 43
     SELF_SERVICE_MAINTENANCE = 44
+    SWITCHOVER_TO_REPLICA = 45
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.

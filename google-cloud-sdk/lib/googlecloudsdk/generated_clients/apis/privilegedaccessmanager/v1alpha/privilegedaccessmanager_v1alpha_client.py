@@ -609,7 +609,7 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a GCP project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
+      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
 
       Args:
         request: (PrivilegedaccessmanagerFoldersLocationsSetupServiceRequest) input message
@@ -1199,7 +1199,7 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a GCP project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
+      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
 
       Args:
         request: (PrivilegedaccessmanagerOrganizationsLocationsSetupServiceRequest) input message
@@ -1789,7 +1789,7 @@ class PrivilegedaccessmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def SetupService(self, request, global_params=None):
-      r"""SetupService sets up PAM service for a GCP project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
+      r"""SetupService sets up PAM service for a Google Cloud project/folder/organization. This needs to be done before entitlements parented under the project/folder/organization can be created.
 
       Args:
         request: (PrivilegedaccessmanagerProjectsLocationsSetupServiceRequest) input message

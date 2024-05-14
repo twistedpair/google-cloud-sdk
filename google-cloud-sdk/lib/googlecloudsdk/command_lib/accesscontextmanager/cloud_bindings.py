@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
@@ -41,6 +42,31 @@ def AddUpdateMask(ref, args, req):
   return req
 
 
+def AddUpdateMaskAlpha(ref, args, req):
+  """Hook to add update mask in Alpha track."""
+  del ref
+  update_mask = []
+  if args.IsKnownAndSpecified('level'):
+    update_mask.append('access_levels')
+  if args.IsKnownAndSpecified('dry_run_level'):
+    update_mask.append('dry_run_access_levels')
+  if args.IsKnownAndSpecified(
+      'restricted_client_application_client_ids'
+  ) or args.IsKnownAndSpecified('restricted_client_application_names'):
+    update_mask.append('restricted_client_applications')
+
+  if not update_mask:
+    raise calliope_exceptions.MinimumArgumentException([
+        '--level',
+        '--dry_run_level',
+        '--restricted_client_application_names',
+        '--restricted_client_application_client_ids',
+    ])
+
+  req.updateMask = ','.join(update_mask)
+  return req
+
+
 def ProcessOrganization(ref, args, req):
   """Hook to process organization input."""
   del ref, args
@@ -58,6 +84,102 @@ def ProcessOrganization(ref, args, req):
       org, collection='accesscontextmanager.organizations')
   req.parent = org_ref.RelativeName()
   return req
+
+
+def ProcessRestrictedClientApplicationsAlpha(unused_ref, args, req):
+  """Hook to process restricted client applications input in Alpha track."""
+  del unused_ref
+  return _ProcessRestrictedClientApplications(args, req, version='v1alpha')
+
+
+def _ProcessRestrictedClientApplications(args, req, version=None):
+  """Process restricted client applications input for the given version."""
+  # Processing application client ids if available
+  if args.IsKnownAndSpecified('restricted_client_application_client_ids'):
+    client_ids = args.restricted_client_application_client_ids
+    restricted_client_application_refs = (
+        _MakeRestrictedClientApplicationsFromIdentifiers(
+            client_ids,
+            'restricted_client_application_client_ids',
+            version=version,
+        )
+    )
+    # req.gcpUserAccessBinding is None when no access levels are specified
+    # during update. Access Levels are optional when updating restricted client
+    # applications, but they are required when creating a new binding.
+    if req.gcpUserAccessBinding is None:
+      req.gcpUserAccessBinding = util.GetMessages(
+          version=version
+      ).GcpUserAccessBinding()
+    for restricted_client_application_ref in restricted_client_application_refs:
+      req.gcpUserAccessBinding.restrictedClientApplications.append(
+          restricted_client_application_ref
+      )
+  # processing application names if available
+  if args.IsKnownAndSpecified('restricted_client_application_names'):
+    client_names = args.restricted_client_application_names
+    restricted_client_application_refs = (
+        _MakeRestrictedClientApplicationsFromIdentifiers(
+            client_names,
+            'restricted_client_application_names',
+            version=version,
+        )
+    )
+    # req.gcpUserAccessBinding is None when no access levels are specified
+    # during update. Access Levels are optional when updating restricted client
+    # applications, but they are required when creating a new binding.
+    if req.gcpUserAccessBinding is None:
+      req.gcpUserAccessBinding = util.GetMessages(
+          version=version
+      ).GcpUserAccessBinding()
+    for restricted_client_application_ref in restricted_client_application_refs:
+      req.gcpUserAccessBinding.restrictedClientApplications.append(
+          restricted_client_application_ref
+      )
+  return req
+
+
+def _MakeRestrictedClientApplicationsFromIdentifiers(
+    app_identifiers, arg_name, version=None
+):
+  """Parse restricted client applications and return their resource references."""
+  resource_refs = []
+  if app_identifiers is not None:
+    app_identifiers = [
+        # remove empty strings
+        identifier
+        for identifier in app_identifiers
+        if identifier
+    ]
+    for app_identifier in app_identifiers:
+      if arg_name == 'restricted_client_application_client_ids':
+        try:
+          resource_refs.append(
+              util.GetMessages(version=version).Application(
+                  clientId=app_identifier
+              )
+          )
+        except:
+          raise calliope_exceptions.InvalidArgumentException(
+              '--{}'.format('restricted_client_application_client_ids'),
+              'Unable to parse input. The input must be of type string[].',
+          )
+      elif arg_name == 'restricted_client_application_names':
+        try:
+          resource_refs.append(
+              util.GetMessages(version=version).Application(name=app_identifier)
+          )
+        except:
+          raise calliope_exceptions.InvalidArgumentException(
+              '--{}'.format('restricted_client_application_names'),
+              'Unable to parse input. The input must be of type string[].',
+          )
+      else:
+        raise calliope_exceptions.InvalidArgumentException(
+            '--{}'.format('arg_name'),
+            'The input is not valid for Restricted Client Applications.',
+        )
+  return resource_refs
 
 
 def _ParseLevelRefs(req, param, is_dry_run):

@@ -536,6 +536,8 @@ class Dashboard(_messages.Message):
     LabelsValue: Labels applied to the dashboard
 
   Fields:
+    annotations: Configuration for event annotations to display on this
+      dashboard.
     columnLayout: The content is divided into equally spaced columns and the
       widgets are arranged vertically.
     dashboardFilters: Filters to reduce the amount of data charted based on
@@ -581,15 +583,33 @@ class Dashboard(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  columnLayout = _messages.MessageField('ColumnLayout', 1)
-  dashboardFilters = _messages.MessageField('DashboardFilter', 2, repeated=True)
-  displayName = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  gridLayout = _messages.MessageField('GridLayout', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mosaicLayout = _messages.MessageField('MosaicLayout', 7)
-  name = _messages.StringField(8)
-  rowLayout = _messages.MessageField('RowLayout', 9)
+  annotations = _messages.MessageField('DashboardAnnotations', 1)
+  columnLayout = _messages.MessageField('ColumnLayout', 2)
+  dashboardFilters = _messages.MessageField('DashboardFilter', 3, repeated=True)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  gridLayout = _messages.MessageField('GridLayout', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mosaicLayout = _messages.MessageField('MosaicLayout', 8)
+  name = _messages.StringField(9)
+  rowLayout = _messages.MessageField('RowLayout', 10)
+
+
+class DashboardAnnotations(_messages.Message):
+  r"""Dashboard-level configuration for annotations
+
+  Fields:
+    defaultResourceNames: Dashboard level defaults for names of logging
+      resources to search for events. Currently only projects are supported.
+      Each individual EventAnnotation may have its own overrides. If both this
+      field and the per annotation field is empty, then the scoping project is
+      used. Limit: 50 projects. For example: "projects/some-project-id"
+    eventAnnotations: List of annotation configurations for this dashboard.
+      Each entry specifies one event type.
+  """
+
+  defaultResourceNames = _messages.StringField(1, repeated=True)
+  eventAnnotations = _messages.MessageField('EventAnnotation', 2, repeated=True)
 
 
 class DashboardFilter(_messages.Message):
@@ -854,6 +874,79 @@ class ErrorReportingPanel(_messages.Message):
   projectNames = _messages.StringField(1, repeated=True)
   services = _messages.StringField(2, repeated=True)
   versions = _messages.StringField(3, repeated=True)
+
+
+class EventAnnotation(_messages.Message):
+  r"""Annotation configuration for one event type on a dashboard
+
+  Enums:
+    EventTypeValueValuesEnum: The type of event to display.
+
+  Fields:
+    displayName: Solely for UI display. Should not be used programmatically.
+    enabled: Whether or not to show the events on the dashboard by default
+    eventType: The type of event to display.
+    filter: string filtering the events - event dependant. Example values:
+      "resource.labels.pod_name = 'pod-1'"
+      "protoPayload.authenticationInfo.principalEmail='user@example.com'"
+    resourceNames: Per annotation level override for the names of logging
+      resources to search for events. Currently only projects are supported.
+      If both this field and the per annotation field is empty, it will
+      default to the host project. Limit: 50 projects. For example:
+      "projects/another-project-id"
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of event to display.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: No event type specified.
+      GKE_WORKLOAD_DEPLOYMENT: Patch/update of GKE workload.
+      GKE_POD_CRASH: Crash events for a GKE Pod.
+      GKE_POD_UNSCHEDULABLE: Scheduling failures for GKE Pods.
+      GKE_CONTAINER_CREATION_FAILED: Failure to create a GKE container.
+      GKE_CLUSTER_CREATE_DELETE: Create/delete of a GKE cluster.
+      GKE_CLUSTER_UPDATE: Update of a GKE cluster.
+      GKE_NODE_POOL_UPDATE: Update of a GKE node pool.
+      GKE_CLUSTER_AUTOSCALER: GKE cluster autoscaler event.
+      GKE_POD_AUTOSCALER: GKE pod autoscaler event.
+      VM_TERMINATION: Termination of a virtual machine.
+      VM_GUEST_OS_ERROR: Guest OS error on a virtual machine.
+      VM_START_FAILED: Start failure on a virtual machine.
+      MIG_UPDATE: Update of a managed instance group.
+      MIG_AUTOSCALER: Autoscaler event for a managed instance group.
+      CLOUD_RUN_DEPLOYMENT: New deployment of a Cloud Run service.
+      CLOUD_SQL_FAILOVER: Failover of a Cloud SQL instance.
+      CLOUD_SQL_START_STOP: Start/stop of a Cloud SQL instance.
+      CLOUD_SQL_STORAGE: Storage event for a Cloud SQL instance.
+      UPTIME_CHECK_FAILURE: Failure of a Cloud Monitoring uptime check.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    GKE_WORKLOAD_DEPLOYMENT = 1
+    GKE_POD_CRASH = 2
+    GKE_POD_UNSCHEDULABLE = 3
+    GKE_CONTAINER_CREATION_FAILED = 4
+    GKE_CLUSTER_CREATE_DELETE = 5
+    GKE_CLUSTER_UPDATE = 6
+    GKE_NODE_POOL_UPDATE = 7
+    GKE_CLUSTER_AUTOSCALER = 8
+    GKE_POD_AUTOSCALER = 9
+    VM_TERMINATION = 10
+    VM_GUEST_OS_ERROR = 11
+    VM_START_FAILED = 12
+    MIG_UPDATE = 13
+    MIG_AUTOSCALER = 14
+    CLOUD_RUN_DEPLOYMENT = 15
+    CLOUD_SQL_FAILOVER = 16
+    CLOUD_SQL_START_STOP = 17
+    CLOUD_SQL_STORAGE = 18
+    UPTIME_CHECK_FAILURE = 19
+
+  displayName = _messages.StringField(1)
+  enabled = _messages.BooleanField(2)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 3)
+  filter = _messages.StringField(4)
+  resourceNames = _messages.StringField(5, repeated=True)
 
 
 class Field(_messages.Message):

@@ -207,7 +207,7 @@ class BackupInfo(_messages.Message):
 
 class BackupSchedule(_messages.Message):
   r"""BackupSchedule expresses the automated backup creation specification for
-  a Spanner database.
+  a Spanner database. Next ID: 10
 
   Fields:
     encryptionConfig: Optional. The encryption configuration that will be used
@@ -220,11 +220,14 @@ class BackupSchedule(_messages.Message):
       of the form
       `projects//instances//databases//backupSchedules/a-z*[a-z0-9]` The final
       segment of the name must be between 2 and 60 characters in length.
-    retentionDuration: Required. The retention duration of a backup that must
-      be at least 1 day and at most 365 days. The backup is eligible to be
+    retentionDuration: Optional. The retention duration of a backup that must
+      be at least 1 day and at most 366 days. The backup is eligible to be
       automatically deleted once the retention period has elapsed.
-    spec: Required. The schedule specification based on which the backup
+    spec: Optional. The schedule specification based on which the backup
       creations are triggered.
+    updateTime: Output only. The timestamp at which the schedule was last
+      updated. If the schedule has never been updated, this field contains the
+      timestamp when the schedule was first created.
   """
 
   encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 1)
@@ -232,6 +235,7 @@ class BackupSchedule(_messages.Message):
   name = _messages.StringField(3)
   retentionDuration = _messages.StringField(4)
   spec = _messages.MessageField('BackupScheduleSpec', 5)
+  updateTime = _messages.StringField(6)
 
 
 class BackupScheduleSpec(_messages.Message):
@@ -1889,6 +1893,8 @@ class Instance(_messages.Message):
     nodeCount: The number of nodes allocated to this instance. At most one of
       either node_count or processing_units should be present in the message.
       Users can set the node_count field to specify the target number of nodes
+      allocated to the instance. If autoscaling is enabled, node_count is
+      treated as an OUTPUT_ONLY field and reflects the current number of nodes
       allocated to the instance. This may be zero in API responses for
       instances that are not yet in state `READY`. See [the
       documentation](https://cloud.google.com/spanner/docs/compute-capacity)
@@ -1897,8 +1903,10 @@ class Instance(_messages.Message):
       instance. At most one of processing_units or node_count should be
       present in the message. Users can set the processing_units field to
       specify the target number of processing units allocated to the instance.
-      This may be zero in API responses for instances that are not yet in
-      state `READY`. See [the
+      If autoscaling is enabled, processing_units is treated as an OUTPUT_ONLY
+      field and reflects the current number of processing units allocated to
+      the instance. This may be zero in API responses for instances that are
+      not yet in state `READY`. See [the
       documentation](https://cloud.google.com/spanner/docs/compute-capacity)
       for more information about nodes and processing units.
     ssdCache: Optional. The name of the SSD cache to be used with this
@@ -2630,9 +2638,9 @@ class ListInstancePartitionsResponse(_messages.Message):
     nextPageToken: `next_page_token` can be sent in a subsequent
       ListInstancePartitions call to fetch more of the matching instance
       partitions.
-    unreachable: The list of unreachable instance partitions. It includes the
-      names of instance partitions whose metadata could not be retrieved
-      within instance_partition_deadline.
+    unreachable: The list of unreachable instances or instance partitions. It
+      includes the names of instances or instance partitions whose metadata
+      could not be retrieved within instance_partition_deadline.
   """
 
   instancePartitions = _messages.MessageField('InstancePartition', 1, repeated=True)
@@ -5816,7 +5824,9 @@ class SpannerProjectsInstancesInstancePartitionsListRequest(_messages.Message):
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListInstancePartitionsResponse.
     parent: Required. The instance whose instance partitions should be listed.
-      Values are of the form `projects//instances/`.
+      Values are of the form `projects//instances/`. Use `{instance} = '-'` to
+      list instance partitions for all Instances in a project, e.g.,
+      `projects/myproject/instances/-`.
   """
 
   instancePartitionDeadline = _messages.StringField(1)
@@ -6485,7 +6495,7 @@ class TransactionOptions(_messages.Message):
   guaranteed to see the effects of all transactions that have committed before
   the start of the read). Snapshot read-only transactions do not need to be
   committed. Queries on change streams must be performed with the snapshot
-  read-only transaction mode, specifying a strong read. Please see
+  read-only transaction mode, specifying a strong read. See
   TransactionOptions.ReadOnly.strong for more details. 3. Partitioned DML.
   This type of transaction is used to execute a single Partitioned DML
   statement. Partitioned DML partitions the key space and runs the DML

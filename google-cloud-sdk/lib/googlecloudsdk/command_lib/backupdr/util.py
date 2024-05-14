@@ -82,3 +82,12 @@ class OptionsMapValidator(object):
           )
       )
     return self.options.get(s[: self.key_len].upper(), 'UNKNOWN')
+
+
+def GetOneOfValidator(name, options):
+  validtor = arg_parsers.CustomFunctionValidator(
+      lambda arg: arg in options,
+      '{} should be one of the following: '.format(name) + ', '.join(options),
+      str,
+  )
+  return validtor

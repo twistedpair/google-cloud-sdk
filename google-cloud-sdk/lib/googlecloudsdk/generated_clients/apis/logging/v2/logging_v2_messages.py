@@ -1325,13 +1325,21 @@ class ListLogEntriesRequest(_messages.Message):
       all log entries in the resources listed in resource_names. Referencing a
       parent resource that is not listed in resource_names will cause the
       filter to return no results. The maximum length of a filter is 20,000
-      characters.
+      characters.To make queries faster, you can make the filter more
+      selective by using restrictions on indexed fields
+      (https://cloud.google.com/logging/docs/view/logging-query-
+      language#indexed-fields) as well as limit the time range of the query by
+      adding range restrictions on the timestamp field.
     orderBy: Optional. How the results should be sorted. Presently, the only
       permitted values are "timestamp asc" (default) and "timestamp desc". The
       first option returns entries in order of increasing values of
       LogEntry.timestamp (oldest first), and the second option returns entries
       in order of decreasing timestamps (newest first). Entries with equal
-      timestamps are returned in order of their insert_id values.
+      timestamps are returned in order of their insert_id values.We recommend
+      setting the order_by field to "timestamp desc" when listing recently
+      ingested log entries. If not set, the default value of "timestamp asc"
+      may take a long time to fetch matching logs that are only recently
+      ingested.
     pageSize: Optional. The maximum number of results to return from this
       request. Default is 50. If the value is negative, the request is
       rejected.The presence of next_page_token in the response indicates that
@@ -2271,6 +2279,8 @@ class LogMetric(_messages.Message):
       Example: If the resource name of a metric is "projects/my-
       project/metrics/nginx%2Frequests", this field's value is
       "nginx/requests".
+    resourceName: Output only. The resource name of the metric:
+      "projects/[PROJECT_ID]/metrics/[METRIC_ID]"
     updateTime: Output only. The last update timestamp of the metric.This
       field may not be present for older metrics.
     valueExtractor: Optional. A value_extractor is required when using a
@@ -2347,9 +2357,10 @@ class LogMetric(_messages.Message):
   labelExtractors = _messages.MessageField('LabelExtractorsValue', 7)
   metricDescriptor = _messages.MessageField('MetricDescriptor', 8)
   name = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-  valueExtractor = _messages.StringField(11)
-  version = _messages.EnumField('VersionValueValuesEnum', 12)
+  resourceName = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  valueExtractor = _messages.StringField(12)
+  version = _messages.EnumField('VersionValueValuesEnum', 13)
 
 
 class LogSink(_messages.Message):
@@ -7992,6 +8003,10 @@ class QueryDataLocalRequest(_messages.Message):
   QueryDataRequest except for the associated resources.
 
   Fields:
+    clientId: Optional. An identifier for the client who sent this query. This
+      should be the same (or one of a small number of values) for all queries
+      sent by a given client such as Alerting or Dashboards. It is ultimately
+      propagated to metric labels in Monarch.
     disableQueryCaching: Optional. If set to true, turns off all query caching
       on both the Log Analytics and BigQuery sides.
     parent: Required. The project in which the query will be run. The calling
@@ -8002,18 +8017,27 @@ class QueryDataLocalRequest(_messages.Message):
       job if this duration is exceeded. If not set, the default is 5 minutes.
   """
 
-  disableQueryCaching = _messages.BooleanField(1)
-  parent = _messages.StringField(2)
-  query = _messages.MessageField('AnalyticsQuery', 3)
-  timeout = _messages.StringField(4)
+  clientId = _messages.StringField(1)
+  disableQueryCaching = _messages.BooleanField(2)
+  parent = _messages.StringField(3)
+  query = _messages.MessageField('AnalyticsQuery', 4)
+  timeout = _messages.StringField(5)
 
 
 class QueryDataRequest(_messages.Message):
   r"""The parameters to QueryData.
 
+  Messages:
+    LabelsValue: Optional. A set of labels to be propagated to the BigQuery
+      job.
+
   Fields:
+    clientId: Optional. An identifier for the client who sent this query. This
+      should be the same (or one of a small number of values) for all queries
+      sent by a given client such as Alerting or Dashboards.
     disableQueryCaching: Optional. If set to true, turns off all query caching
       on both the Log Analytics and BigQuery sides.
+    labels: Optional. A set of labels to be propagated to the BigQuery job.
     query: Optional. The contents of the query. If this field is populated,
       query_steps will be ignored.
     resourceNames: Required. Names of one or more log views to run a SQL
@@ -8024,10 +8048,36 @@ class QueryDataRequest(_messages.Message):
       job if this duration is exceeded. If not set, the default is 5 minutes.
   """
 
-  disableQueryCaching = _messages.BooleanField(1)
-  query = _messages.MessageField('AnalyticsQuery', 2)
-  resourceNames = _messages.StringField(3, repeated=True)
-  timeout = _messages.StringField(4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. A set of labels to be propagated to the BigQuery job.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientId = _messages.StringField(1)
+  disableQueryCaching = _messages.BooleanField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  query = _messages.MessageField('AnalyticsQuery', 4)
+  resourceNames = _messages.StringField(5, repeated=True)
+  timeout = _messages.StringField(6)
 
 
 class QueryDataResponse(_messages.Message):
@@ -8209,8 +8259,8 @@ class QueryResults(_messages.Message):
       that were requested. Any restrictions present here were ignored when
       executing the query.
     resultReference: An opaque string that can be used as a reference to this
-      query result. This result reference can be used in the QueryData query
-      to fetch this result up to 24 hours in the future.
+      query result. This result reference can be used in the ReadQueryResults
+      query to fetch this result up to 24 hours in the future.
     rows: Query result rows. The number of rows returned depends upon the page
       size requested. To get any additional rows, you can call
       ReadQueryResults and specify the result_reference and the page_token.The
@@ -8323,6 +8373,10 @@ class ReadQueryResultsRequest(_messages.Message):
   r"""Parameters to ReadQueryResults.
 
   Fields:
+    clientId: Optional. An identifier for the client who sent this query. This
+      should be the same (or one of a small number of values) for all queries
+      sent by a given client such as Alerting or Dashboards. It is ultimately
+      propagated to metric labels in Monarch.
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB in size.By default, there is no maximum
       row count, and only the byte limit applies. When the byte limit is
@@ -8344,12 +8398,13 @@ class ReadQueryResultsRequest(_messages.Message):
       the state at that time.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  queryStepHandle = _messages.StringField(3)
-  readMetadataOnly = _messages.BooleanField(4)
-  resourceNames = _messages.StringField(5, repeated=True)
-  timeout = _messages.StringField(6)
+  clientId = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  queryStepHandle = _messages.StringField(4)
+  readMetadataOnly = _messages.BooleanField(5)
+  resourceNames = _messages.StringField(6, repeated=True)
+  timeout = _messages.StringField(7)
 
 
 class RecentQuery(_messages.Message):

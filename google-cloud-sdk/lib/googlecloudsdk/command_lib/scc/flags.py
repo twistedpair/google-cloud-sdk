@@ -20,7 +20,9 @@ from __future__ import division
 from __future__ import print_function
 
 import re
+import textwrap
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.command_lib.util.args import resource_args
@@ -42,6 +44,15 @@ READ_TIME_FLAG = base.Argument(
       Time used as a reference point when filtering. Absence of this field
       will default to the API's version of NOW. See $ gcloud topic datetimes
       for information on supported time formats.""",
+    action=actions.DeprecationAction(
+        "--read-time",
+        warn=textwrap.dedent("""\
+            The --read-time option is deprecated.
+            For more information, [see the deprecation notice]
+            (https://cloud.google.com/security-command-center/docs/release-notes#April_15_2024)
+            on the SCC release notes page."""),
+        removed=False,
+    ),
 )
 
 API_VERSION_FLAG = base.ChoiceArgument(

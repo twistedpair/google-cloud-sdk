@@ -26,6 +26,7 @@ LIST_FORMAT = """
       name.basename(),
       name.segment(3):label=LOCATION,
       hub.basename(),
+      group.basename(),
       format(
         "{0}{1}{2}{3}",
         linkedVpnTunnels.yesno(yes="VPN tunnel", no=""),
@@ -46,6 +47,7 @@ LIST_FORMAT = """
 LIST_SPOKES_FORMAT = """
     table(
       name.basename(),
+      group.basename(),
       name.segment(1):label=PROJECT,
       name.segment(3):label=LOCATION,
       spokeType:label=TYPE,

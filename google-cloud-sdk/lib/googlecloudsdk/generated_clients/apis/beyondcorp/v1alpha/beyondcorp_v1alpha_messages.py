@@ -1072,6 +1072,28 @@ class BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest(_messages.Messag
   updateMask = _messages.StringField(4)
 
 
+class BeyondcorpOrganizationsLocationsSubscriptionsRestartRequest(_messages.Message):
+  r"""A BeyondcorpOrganizationsLocationsSubscriptionsRestartRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class BeyondcorpProjectsLocationsAppConnectionsCreateRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsAppConnectionsCreateRequest object.
 
@@ -2698,6 +2720,32 @@ class BeyondcorpProjectsLocationsSecurityGatewaysDeleteRequest(_messages.Message
   validateOnly = _messages.BooleanField(3)
 
 
+class BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class BeyondcorpProjectsLocationsSecurityGatewaysGetRequest(_messages.Message):
   r"""A BeyondcorpProjectsLocationsSecurityGatewaysGetRequest object.
 
@@ -2767,6 +2815,40 @@ class BeyondcorpProjectsLocationsSecurityGatewaysPatchRequest(_messages.Message)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysSetIamPolicyRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest(_messages.Message):
+  r"""A BeyondcorpProjectsLocationsSecurityGatewaysTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class CloudPubSubNotificationConfig(_messages.Message):
@@ -4494,6 +4576,10 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaListSubscriptionsResp
   subscriptions = _messages.MessageField('GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription', 2, repeated=True)
 
 
+class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaRestartSubscriptionResponse(_messages.Message):
+  r"""Response message for BeyondCorp.RestartSubscription"""
+
+
 class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_messages.Message):
   r"""A BeyondCorp Subscription resource represents BeyondCorp Enterprise
   Subscription. BeyondCorp Enterprise Subscription enables BeyondCorp
@@ -5593,3 +5679,5 @@ encoding.AddCustomJsonFieldMapping(
     BeyondcorpProjectsLocationsInsightsConfiguredInsightRequest, 'customGrouping_groupFields', 'customGrouping.groupFields')
 encoding.AddCustomJsonFieldMapping(
     BeyondcorpProjectsLocationsNetConnectionsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    BeyondcorpProjectsLocationsSecurityGatewaysGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

@@ -17,6 +17,7 @@
 import glob
 import os
 
+from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import yaml
 
 _DEFAULT_API_VERSION = 'v1alpha'
@@ -75,6 +76,27 @@ def _ExpandPathForUserAndVars(path):
   user_expanded_path = os.path.expanduser(path)
   vars_expanded_path = os.path.expandvars(user_expanded_path)
   return vars_expanded_path
+
+
+def _GetClientInstance(no_http=False):
+  return apis.GetClientInstance('configdelivery', ApiVersion(), no_http=no_http)
+
+
+def _GetMessagesModule():
+  return _GetClientInstance().MESSAGES_MODULE
+
+
+def UpsertDefaultVariants(fleet_package):
+  if (
+      fleet_package.resourceBundleSelector
+      and fleet_package.resourceBundleSelector.cloudBuildRepository
+  ):
+    if not fleet_package.resourceBundleSelector.cloudBuildRepository.variants:
+      messages = _GetMessagesModule()
+      fleet_package.resourceBundleSelector.cloudBuildRepository.variants = (
+          messages.Variants(directories=messages.Directories(pattern='.'))
+      )
+  return fleet_package
 
 
 def GlobPatternFromSourceAndVariantsPattern(source, variants_pattern=None):
@@ -175,3 +197,84 @@ def VariantsFromGlobPattern(glob_pattern):
           variant_name = _VariantNameFromDir(path)
           variants[variant_name] = all_resources
   return variants
+
+
+def TransformTrimMessage(resource):
+  """Trims rollout-level message if it's too long.
+
+  Args:
+    resource: A RolloutInfo resource
+
+  Returns:
+    Message limited to 40 characters
+  """
+  truncated_message_length = 40
+  if not resource.get('info') or not resource.get('info').get('message'):
+    return ''
+  message = resource.get('info').get('message')
+  if len(message) > truncated_message_length:
+    return message[:truncated_message_length] + '...'
+  return message
+
+
+def TransformAllMessages(resource):
+  """Gathers messages from all levels from a Rollout resource.
+
+  Args:
+    resource: A RolloutInfo resource, from `... rollouts describe ...`
+
+  Returns:
+    All messages on a Rollout, including sync-level, cluster-level, and
+    rollout-level messages.
+  """
+  messages = []
+  if 'message' in resource.get('info'):
+    messages.append(resource.get('info').get('message'))
+  if (
+      'rolloutStrategyInfo.rollingStrategyInfo.clusters.messages'
+      in resource.get('info')
+  ):
+    messages.extend(
+        resource.get('info')
+        .get('rolloutStrategyInfo')
+        .get('rollingStrategyInfo')
+        .get('clusters')
+        .get('messages')
+    )
+  if (
+      'rolloutStrategyInfo.rollingStrategyInfo.clusters.current.messages'
+      in resource.get('info')
+  ):
+    messages.extend(
+        resource.get('info')
+        .get('rolloutStrategyInfo')
+        .get('rollingStrategyInfo')
+        .get('clusters')
+        .get('current')
+        .get('messages')
+    )
+  if (
+      'rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.messages'
+      in resource.get('info')
+  ):
+    messages.extend(
+        resource.get('info')
+        .get('rolloutStrategyInfo')
+        .get('allAtOnceStrategyInfo')
+        .get('clusters')
+        .get('messages')
+    )
+  if (
+      'rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.messages'
+      in resource.get('info')
+  ):
+    messages.extend(
+        resource.get('info')
+        .get('rolloutStrategyInfo')
+        .get('allAtOnceStrategyInfo')
+        .get('clusters')
+        .get('current')
+        .get('messages')
+    )
+
+  return messages

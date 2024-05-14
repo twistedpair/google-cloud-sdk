@@ -268,6 +268,28 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutokeyConfig(_messages.Message):
+  r"""Cloud KMS Autokey configuration for a folder.
+
+  Fields:
+    keyProject: Optional. Name of the key project, e.g.
+      `projects/{PROJECT_ID}` or `projects/{PROJECT_NUMBER}`, where Cloud KMS
+      Autokey will provision a new CryptoKey when a KeyHandle is created. On
+      UpdateAutokeyConfig, the caller will require
+      `cloudkms.cryptoKeys.setIamPolicy` permission on this key project. Once
+      configured, for Cloud KMS Autokey to function properly, this key project
+      must have the Cloud KMS API activated and the Cloud KMS Service Agent
+      for this key project must be granted the `cloudkms.admin` role (or
+      pertinent permissions). A request with an empty key project field will
+      clear the configuration.
+    name: Identifier. Name of the AutokeyConfig resource, e.g.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+  """
+
+  keyProject = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -405,6 +427,33 @@ class CertificateChains(_messages.Message):
   caviumCerts = _messages.StringField(1, repeated=True)
   googleCardCerts = _messages.StringField(2, repeated=True)
   googlePartitionCerts = _messages.StringField(3, repeated=True)
+
+
+class CloudkmsFoldersGetAutokeyConfigRequest(_messages.Message):
+  r"""A CloudkmsFoldersGetAutokeyConfigRequest object.
+
+  Fields:
+    name: Required. Name of the AutokeyConfig resource, e.g.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsFoldersUpdateAutokeyConfigRequest(_messages.Message):
+  r"""A CloudkmsFoldersUpdateAutokeyConfigRequest object.
+
+  Fields:
+    autokeyConfig: A AutokeyConfig resource to be passed as the request body.
+    name: Identifier. Name of the AutokeyConfig resource, e.g.
+      `folders/{FOLDER_NUMBER}/autokeyConfig`.
+    updateMask: Required. Masks which fields of the AutokeyConfig to update,
+      e.g. `keyProject`.
+  """
+
+  autokeyConfig = _messages.MessageField('AutokeyConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CloudkmsProjectsLocationsEkmConfigGetIamPolicyRequest(_messages.Message):
@@ -637,6 +686,47 @@ class CloudkmsProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsKeyHandlesCreateRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyHandlesCreateRequest object.
+
+  Fields:
+    keyHandle: A KeyHandle resource to be passed as the request body.
+    keyHandleId: Optional. Id of the KeyHandle. Must be unique to the resource
+      project and location. If not provided by the caller, a new UUID is used.
+    parent: Required. Name of the resource project and location to create the
+      KeyHandle in, e.g. `projects/{PROJECT_ID}/locations/{LOCATION}`.
+  """
+
+  keyHandle = _messages.MessageField('KeyHandle', 1)
+  keyHandleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudkmsProjectsLocationsKeyHandlesGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyHandlesGetRequest object.
+
+  Fields:
+    name: Required. Name of the KeyHandle resource, e.g.
+      `projects/{PROJECT_ID}/locations/{LOCATION}/keyHandles/{KEY_HANDLE_ID}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudkmsProjectsLocationsKeyHandlesListRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsKeyHandlesListRequest object.
+
+  Fields:
+    filter: Optional. Filter to apply when listing KeyHandles, e.g.
+      `resource_type_selector="{SERVICE}.googleapis.com/{TYPE}"`.
+    parent: Required. Name of the resource project and location from which to
+      list KeyHandles, e.g. `projects/{PROJECT_ID}/locations/{LOCATION}`.
+  """
+
+  filter = _messages.StringField(1)
+  parent = _messages.StringField(2, required=True)
 
 
 class CloudkmsProjectsLocationsKeyRingsCreateRequest(_messages.Message):
@@ -1321,6 +1411,16 @@ class CloudkmsProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudkmsProjectsLocationsOperationsGetRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudkmsProjectsLocationsUpdateEkmConfigRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsUpdateEkmConfigRequest object.
 
@@ -1334,6 +1434,18 @@ class CloudkmsProjectsLocationsUpdateEkmConfigRequest(_messages.Message):
   ekmConfig = _messages.MessageField('EkmConfig', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class CloudkmsProjectsShowEffectiveAutokeyConfigRequest(_messages.Message):
+  r"""A CloudkmsProjectsShowEffectiveAutokeyConfigRequest object.
+
+  Fields:
+    parent: Required. Name of the resource project to the show effective Cloud
+      KMS Autokey configuration for. This may be helpful for interrogating the
+      effect of nested folder configurations on a given resource project.
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class CryptoKey(_messages.Message):
@@ -1565,6 +1677,8 @@ class CryptoKeyVersion(_messages.Message):
         curve is only supported for HSM protection level. Other hash functions
         can also be used: https://cloud.google.com/kms/docs/create-validate-
         signatures#ecdsa_support_for_other_hash_algorithms
+      EC_SIGN_ED25519: EdDSA on the Curve25519 in pure mode (taking data as
+        input).
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -1602,12 +1716,13 @@ class CryptoKeyVersion(_messages.Message):
     EC_SIGN_P256_SHA256 = 26
     EC_SIGN_P384_SHA384 = 27
     EC_SIGN_SECP256K1_SHA256 = 28
-    HMAC_SHA256 = 29
-    HMAC_SHA1 = 30
-    HMAC_SHA384 = 31
-    HMAC_SHA512 = 32
-    HMAC_SHA224 = 33
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
+    EC_SIGN_ED25519 = 29
+    HMAC_SHA256 = 30
+    HMAC_SHA1 = 31
+    HMAC_SHA384 = 32
+    HMAC_SHA512 = 33
+    HMAC_SHA224 = 34
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 35
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1775,6 +1890,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
         curve is only supported for HSM protection level. Other hash functions
         can also be used: https://cloud.google.com/kms/docs/create-validate-
         signatures#ecdsa_support_for_other_hash_algorithms
+      EC_SIGN_ED25519: EdDSA on the Curve25519 in pure mode (taking data as
+        input).
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -1812,12 +1929,13 @@ class CryptoKeyVersionTemplate(_messages.Message):
     EC_SIGN_P256_SHA256 = 26
     EC_SIGN_P384_SHA384 = 27
     EC_SIGN_SECP256K1_SHA256 = 28
-    HMAC_SHA256 = 29
-    HMAC_SHA1 = 30
-    HMAC_SHA384 = 31
-    HMAC_SHA512 = 32
-    HMAC_SHA224 = 33
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
+    EC_SIGN_ED25519 = 29
+    HMAC_SHA256 = 30
+    HMAC_SHA1 = 31
+    HMAC_SHA384 = 32
+    HMAC_SHA512 = 33
+    HMAC_SHA224 = 34
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 35
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -2360,6 +2478,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
         curve is only supported for HSM protection level. Other hash functions
         can also be used: https://cloud.google.com/kms/docs/create-validate-
         signatures#ecdsa_support_for_other_hash_algorithms
+      EC_SIGN_ED25519: EdDSA on the Curve25519 in pure mode (taking data as
+        input).
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -2397,12 +2517,13 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     EC_SIGN_P256_SHA256 = 26
     EC_SIGN_P384_SHA384 = 27
     EC_SIGN_SECP256K1_SHA256 = 28
-    HMAC_SHA256 = 29
-    HMAC_SHA1 = 30
-    HMAC_SHA384 = 31
-    HMAC_SHA512 = 32
-    HMAC_SHA224 = 33
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
+    EC_SIGN_ED25519 = 29
+    HMAC_SHA256 = 30
+    HMAC_SHA1 = 31
+    HMAC_SHA384 = 32
+    HMAC_SHA512 = 33
+    HMAC_SHA224 = 34
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 35
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   cryptoKeyVersion = _messages.StringField(2)
@@ -2566,6 +2687,31 @@ class ImportJob(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 10)
 
 
+class KeyHandle(_messages.Message):
+  r"""Resource-oriented representation of a request to Cloud KMS Autokey and
+  the resulting provisioning of a CryptoKey.
+
+  Fields:
+    kmsKey: Output only. Name of a CryptoKey that has been provisioned for
+      Customer Managed Encryption Key (CMEK) use in the KeyHandle project and
+      location for the requested resource type. The CryptoKey project will
+      reflect the value configured in the AutokeyConfig on the resource
+      project's ancestor folder at the time of the KeyHandle creation. If more
+      than one ancestor folder has a configured AutokeyConfig, the nearest of
+      these configurations is used.
+    name: Output only. Identifier. Name of the KeyHandle resource, e.g.
+      `projects/{PROJECT_ID}/locations/{LOCATION}/keyHandles/{KEY_HANDLE_ID}`.
+    resourceTypeSelector: Required. Indicates the resource type that the
+      resulting CryptoKey is meant to protect, e.g.
+      `{SERVICE}.googleapis.com/{TYPE}`. See documentation for supported
+      resource types.
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
+  resourceTypeSelector = _messages.StringField(3)
+
+
 class KeyOperationAttestation(_messages.Message):
   r"""Contains an HSM-generated attestation about a key operation. For more
   information, see [Verifying attestations]
@@ -2678,6 +2824,16 @@ class ListImportJobsResponse(_messages.Message):
   importJobs = _messages.MessageField('ImportJob', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ListKeyHandlesResponse(_messages.Message):
+  r"""Response message for Autokey.ListKeyHandles.
+
+  Fields:
+    keyHandles: Resulting KeyHandles.
+  """
+
+  keyHandles = _messages.MessageField('KeyHandle', 1, repeated=True)
 
 
 class ListKeyRingsResponse(_messages.Message):
@@ -2983,6 +3139,114 @@ class MacVerifyResponse(_messages.Message):
   verifiedSuccessIntegrity = _messages.BooleanField(6)
 
 
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -3145,6 +3409,8 @@ class PublicKey(_messages.Message):
         curve is only supported for HSM protection level. Other hash functions
         can also be used: https://cloud.google.com/kms/docs/create-validate-
         signatures#ecdsa_support_for_other_hash_algorithms
+      EC_SIGN_ED25519: EdDSA on the Curve25519 in pure mode (taking data as
+        input).
       HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       HMAC_SHA1: HMAC-SHA1 signing with a 160 bit key.
       HMAC_SHA384: HMAC-SHA384 signing with a 384 bit key.
@@ -3182,12 +3448,13 @@ class PublicKey(_messages.Message):
     EC_SIGN_P256_SHA256 = 26
     EC_SIGN_P384_SHA384 = 27
     EC_SIGN_SECP256K1_SHA256 = 28
-    HMAC_SHA256 = 29
-    HMAC_SHA1 = 30
-    HMAC_SHA384 = 31
-    HMAC_SHA512 = 32
-    HMAC_SHA224 = 33
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 34
+    EC_SIGN_ED25519 = 29
+    HMAC_SHA256 = 30
+    HMAC_SHA1 = 31
+    HMAC_SHA384 = 32
+    HMAC_SHA512 = 33
+    HMAC_SHA224 = 34
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 35
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.
@@ -3568,6 +3835,17 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class ShowEffectiveAutokeyConfigResponse(_messages.Message):
+  r"""Response message for ShowEffectiveAutokeyConfig.
+
+  Fields:
+    keyProject: Name of the key project configured in the resource project's
+      folder ancestry.
+  """
+
+  keyProject = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -3629,6 +3907,57 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class TestIamPermissionsRequest(_messages.Message):

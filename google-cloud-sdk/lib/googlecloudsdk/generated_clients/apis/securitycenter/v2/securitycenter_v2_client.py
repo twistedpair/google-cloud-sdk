@@ -60,6 +60,12 @@ class SecuritycenterV2(base_api.BaseApiClient):
     self.organizations_locations_findings = self.OrganizationsLocationsFindingsService(self)
     self.organizations_locations_muteConfigs = self.OrganizationsLocationsMuteConfigsService(self)
     self.organizations_locations_notificationConfigs = self.OrganizationsLocationsNotificationConfigsService(self)
+    self.organizations_locations_resourceValueConfigs = self.OrganizationsLocationsResourceValueConfigsService(self)
+    self.organizations_locations_simulations_attackExposureResults_attackPaths = self.OrganizationsLocationsSimulationsAttackExposureResultsAttackPathsService(self)
+    self.organizations_locations_simulations_attackExposureResults = self.OrganizationsLocationsSimulationsAttackExposureResultsService(self)
+    self.organizations_locations_simulations_valuedResources_attackPaths = self.OrganizationsLocationsSimulationsValuedResourcesAttackPathsService(self)
+    self.organizations_locations_simulations_valuedResources = self.OrganizationsLocationsSimulationsValuedResourcesService(self)
+    self.organizations_locations_simulations = self.OrganizationsLocationsSimulationsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
@@ -1813,6 +1819,309 @@ class SecuritycenterV2(base_api.BaseApiClient):
         request_field='notificationConfig',
         request_type_name='SecuritycenterOrganizationsLocationsNotificationConfigsPatchRequest',
         response_type_name='NotificationConfig',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsResourceValueConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_resourceValueConfigs resource."""
+
+    _NAME = 'organizations_locations_resourceValueConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsResourceValueConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Creates a ResourceValueConfig for an organization. Maps user's tags to difference resource values for use by the attack path simulation.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsResourceValueConfigsBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BatchCreateResourceValueConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/resourceValueConfigs:batchCreate',
+        http_method='POST',
+        method_id='securitycenter.organizations.locations.resourceValueConfigs.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/resourceValueConfigs:batchCreate',
+        request_field='batchCreateResourceValueConfigsRequest',
+        request_type_name='SecuritycenterOrganizationsLocationsResourceValueConfigsBatchCreateRequest',
+        response_type_name='BatchCreateResourceValueConfigsResponse',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a ResourceValueConfig.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsResourceValueConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/resourceValueConfigs/{resourceValueConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.locations.resourceValueConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsResourceValueConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a ResourceValueConfig.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsResourceValueConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV2ResourceValueConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/resourceValueConfigs/{resourceValueConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.resourceValueConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsResourceValueConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV2ResourceValueConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all ResourceValueConfigs.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsResourceValueConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListResourceValueConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/resourceValueConfigs',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.resourceValueConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/resourceValueConfigs',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsResourceValueConfigsListRequest',
+        response_type_name='ListResourceValueConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing ResourceValueConfigs with new rules.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsResourceValueConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV2ResourceValueConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/resourceValueConfigs/{resourceValueConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.locations.resourceValueConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudSecuritycenterV2ResourceValueConfig',
+        request_type_name='SecuritycenterOrganizationsLocationsResourceValueConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV2ResourceValueConfig',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSimulationsAttackExposureResultsAttackPathsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_simulations_attackExposureResults_attackPaths resource."""
+
+    _NAME = 'organizations_locations_simulations_attackExposureResults_attackPaths'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsSimulationsAttackExposureResultsAttackPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the attack paths for a set of simulation results or valued resources and filter.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsSimulationsAttackExposureResultsAttackPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttackPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/simulations/{simulationsId}/attackExposureResults/{attackExposureResultsId}/attackPaths',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.simulations.attackExposureResults.attackPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/attackPaths',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsSimulationsAttackExposureResultsAttackPathsListRequest',
+        response_type_name='ListAttackPathsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSimulationsAttackExposureResultsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_simulations_attackExposureResults resource."""
+
+    _NAME = 'organizations_locations_simulations_attackExposureResults'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsSimulationsAttackExposureResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsLocationsSimulationsValuedResourcesAttackPathsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_simulations_valuedResources_attackPaths resource."""
+
+    _NAME = 'organizations_locations_simulations_valuedResources_attackPaths'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsSimulationsValuedResourcesAttackPathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the attack paths for a set of simulation results or valued resources and filter.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsSimulationsValuedResourcesAttackPathsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttackPathsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/simulations/{simulationsId}/valuedResources/{valuedResourcesId}/attackPaths',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.simulations.valuedResources.attackPaths.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/attackPaths',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsSimulationsValuedResourcesAttackPathsListRequest',
+        response_type_name='ListAttackPathsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSimulationsValuedResourcesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_simulations_valuedResources resource."""
+
+    _NAME = 'organizations_locations_simulations_valuedResources'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsSimulationsValuedResourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the valued resource by name.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsSimulationsValuedResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValuedResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/simulations/{simulationsId}/valuedResources/{valuedResourcesId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.simulations.valuedResources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsSimulationsValuedResourcesGetRequest',
+        response_type_name='ValuedResource',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSimulationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_simulations resource."""
+
+    _NAME = 'organizations_locations_simulations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsLocationsSimulationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get the simulation by name or the latest simulation for the given organization.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsSimulationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Simulation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/simulations/{simulationsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.simulations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsSimulationsGetRequest',
+        response_type_name='Simulation',
         supports_download=False,
     )
 

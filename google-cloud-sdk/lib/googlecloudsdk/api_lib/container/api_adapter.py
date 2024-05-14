@@ -262,6 +262,10 @@ MANGED_CONFIG_TYPE_NOT_SUPPORTED = """\
 Invalid managed config type '{type}' for argument --managed-config. Valid values are: autofleet, disabled'
 """
 
+COMPLIANCE_MODE_NOT_SUPPORTED = """\
+Invalid mode '{mode}' for '--compliance' (must be one of 'enabled', 'disabled').
+"""
+
 SECURITY_POSTURE_MODE_NOT_SUPPORTED = """\
 Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard', 'enterprise').
 """
@@ -714,6 +718,8 @@ class CreateClusterOptions(object):
       enable_insecure_kubelet_readonly_port=None,
       autoprovisioning_enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
+      compliance=None,
+      compliance_standards=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
@@ -936,6 +942,8 @@ class CreateClusterOptions(object):
     )
 
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
+    self.compliance = compliance
+    self.compliance_standards = compliance_standards
     self.security_posture = security_posture
     self.workload_vulnerability_scanning = workload_vulnerability_scanning
     self.enable_runtime_vulnerability_insight = (
@@ -1821,7 +1829,21 @@ class APIAdapter(object):
     return cluster_ref.zone
 
   def CreateClusterCommon(self, cluster_ref, options):
-    """Returns a CreateCluster operation."""
+    """Returns a CreateCluster operation.
+
+    This function is for code that is common across all channels, and the
+    return value is intended to be modified by each.
+
+    Args:
+      cluster_ref: A Cluster message from the calling channel.
+      options: User selected options passed to the cluster creation.
+
+    Returns:
+      A CreateCluster operation.
+
+    Raises:
+      A util.Error if options selected are invalid.
+    """
     node_config = self.ParseNodeConfig(options)
     pools = self.ParseNodePools(options, node_config)
 
@@ -2343,6 +2365,37 @@ class APIAdapter(object):
             enableMultiNetworking=options.enable_multi_networking)
       else:
         cluster.networkConfig.enableMultiNetworking = options.enable_multi_networking
+
+    if options.compliance is not None:
+      if cluster.compliancePostureConfig is None:
+        cluster.compliancePostureConfig = (
+            self.messages.CompliancePostureConfig()
+        )
+      if options.compliance.lower() == 'enabled':
+        cluster.compliancePostureConfig.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+        )
+      elif options.compliance.lower() == 'disabled':
+        cluster.compliancePostureConfig.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      else:
+        raise util.Error(
+            COMPLIANCE_MODE_NOT_SUPPORTED.format(
+                mode=options.compliance.lower()
+            )
+        )
+
+    if options.compliance_standards is not None:
+      if options.compliance is None:
+        cluster.compliancePostureConfig = (
+            self.messages.CompliancePostureConfig()
+        )
+
+      cluster.compliancePostureConfig.complianceStandards = [
+          self.messages.ComplianceStandard(standard=standard)
+          for standard in options.compliance_standards.split(',')
+      ]
 
     if options.enable_security_posture is not None:
       if cluster.securityPostureConfig is None:

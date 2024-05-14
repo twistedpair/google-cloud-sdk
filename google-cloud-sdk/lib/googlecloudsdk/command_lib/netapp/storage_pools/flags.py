@@ -179,8 +179,25 @@ def AddStoragePoolAllowAutoTieringArg(parser):
       '--allow-auto-tiering',
       type=arg_parsers.ArgBoolean(
           truthy_strings=netapp_util.truthy, falsey_strings=netapp_util.falsey),
-      help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering""",
-      hidden=True
+      help="""Boolean flag indicating whether Storage Pool is allowed to use auto-tiering"""
+  )
+
+
+def AddStoragePoolZoneArg(parser):
+  """Adds the Zone arg to the arg parser."""
+  parser.add_argument(
+      '--zone',
+      type=str,
+      help="""String indicating active zone of the Storage Pool""",
+  )
+
+
+def AddStoragePoolReplicaZoneArg(parser):
+  """Adds the Replica Zone arg to the arg parser."""
+  parser.add_argument(
+      '--replica-zone',
+      type=str,
+      help="""String indicating replica zone for the Storage Pool""",
   )
 
 ## Helper functions to combine Storage Pools args / flags for gcloud commands ##
@@ -206,6 +223,8 @@ def AddStoragePoolCreateArgs(parser, release_track):
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolAllowAutoTieringArg(parser)
+    AddStoragePoolZoneArg(parser)
+    AddStoragePoolReplicaZoneArg(parser)
 
 
 def AddStoragePoolDeleteArgs(parser):
@@ -229,3 +248,13 @@ def AddStoragePoolUpdateArgs(parser, release_track):
   if (release_track == base.ReleaseTrack.ALPHA or
       release_track == base.ReleaseTrack.BETA):
     AddStoragePoolAllowAutoTieringArg(parser)
+    AddStoragePoolZoneArg(parser)
+    AddStoragePoolReplicaZoneArg(parser)
+
+
+def AddStoragePoolSwitchArg(parser):
+  """Add args for switching zones of a Storage Pool."""
+  concept_parsers.ConceptParser([
+      flags.GetStoragePoolPresentationSpec('The Storage Pool to switch.')
+  ]).AddToParser(parser)
+  flags.AddResourceAsyncFlag(parser)

@@ -84,15 +84,17 @@ class AdaptiveMtTranslateRequest(_messages.Message):
   r"""The request for sending an AdaptiveMt translation query.
 
   Fields:
-    content: Required. The content of the input in string format. For now only
-      one sentence per request is supported.
+    content: Required. The content of the input in string format.
     dataset: Required. The resource name for the dataset to use for adaptive
       MT. `projects/{project}/locations/{location-
       id}/adaptiveMtDatasets/{dataset}`
+    referenceSentenceConfig: Configuration for caller provided reference
+      sentences.
   """
 
   content = _messages.StringField(1, repeated=True)
   dataset = _messages.StringField(2)
+  referenceSentenceConfig = _messages.MessageField('ReferenceSentenceConfig', 3)
 
 
 class AdaptiveMtTranslateResponse(_messages.Message):
@@ -1458,6 +1460,45 @@ class OutputConfig(_messages.Message):
   """
 
   gcsDestination = _messages.MessageField('GcsDestination', 1)
+
+
+class ReferenceSentenceConfig(_messages.Message):
+  r"""Message of caller-provided reference configuration.
+
+  Fields:
+    referenceSentencePairLists: Reference sentences pair lists. Each list will
+      be used as the references to translate the sentence under "content"
+      field at the corresponding index. Length of the list is required to be
+      equal to the length of "content" field.
+    sourceLanguageCode: Source language code.
+    targetLanguageCode: Target language code.
+  """
+
+  referenceSentencePairLists = _messages.MessageField('ReferenceSentencePairList', 1, repeated=True)
+  sourceLanguageCode = _messages.StringField(2)
+  targetLanguageCode = _messages.StringField(3)
+
+
+class ReferenceSentencePair(_messages.Message):
+  r"""A pair of sentences used as reference in source and target languages.
+
+  Fields:
+    sourceSentence: Source sentence in the sentence pair.
+    targetSentence: Target sentence in the sentence pair.
+  """
+
+  sourceSentence = _messages.StringField(1)
+  targetSentence = _messages.StringField(2)
+
+
+class ReferenceSentencePairList(_messages.Message):
+  r"""A list of reference sentence pairs.
+
+  Fields:
+    referenceSentencePairs: Reference sentence pairs.
+  """
+
+  referenceSentencePairs = _messages.MessageField('ReferenceSentencePair', 1, repeated=True)
 
 
 class Romanization(_messages.Message):

@@ -149,13 +149,13 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
       insights_config_record_client_address=args.insights_config_record_client_address,
   )
 
-  instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+  instance_resource.clientConnectionConfig = ClientConnectionConfig(
       alloydb_messages,
       args.ssl_mode,
       args.require_connectors,
   )
 
-  instance_resource.networkConfig = _NetworkConfig(
+  instance_resource.networkConfig = NetworkConfig(
       alloydb_messages,
       args.assign_inbound_public_ip,
       None,
@@ -305,13 +305,13 @@ def ConstructInstanceAndUpdatePathsFromArgs(
     ssl_mode_path = 'clientConnectionConfig.sslConfig.sslMode'
     paths.append(ssl_mode_path)
   if args.require_connectors is not None or args.ssl_mode:
-    instance_resource.clientConnectionConfig = _ClientConnectionConfig(
+    instance_resource.clientConnectionConfig = ClientConnectionConfig(
         alloydb_messages, args.ssl_mode, args.require_connectors
     )
 
   if (args.assign_inbound_public_ip or
       args.authorized_external_networks is not None):
-    instance_resource.networkConfig = _NetworkConfig(
+    instance_resource.networkConfig = NetworkConfig(
         alloydb_messages,
         args.assign_inbound_public_ip,
         args.authorized_external_networks,
@@ -388,7 +388,7 @@ def _QueryInsightsConfig(
   return insights_config
 
 
-def _ClientConnectionConfig(
+def ClientConnectionConfig(
     alloydb_messages,
     ssl_mode=None,
     require_connectors=None,
@@ -454,7 +454,7 @@ def _ParseSSLMode(alloydb_messages, ssl_mode):
   return None
 
 
-def _NetworkConfig(
+def NetworkConfig(
     alloydb_messages,
     assign_inbound_public_ip=None,
     authorized_external_networks=None,

@@ -7459,6 +7459,8 @@ class StreamingConfigTask(_messages.Message):
       harness to windmill.
     maxWorkItemCommitBytes: Maximum size for work item commit supported
       windmill storage layer.
+    operationalLimits: Operational limits for the streaming job. Can be used
+      by the worker to validate outputs sent to the backend.
     streamingComputationConfigs: Set of computation configuration information.
     userStepToStateFamilyNameMap: Map from user step names to state families.
     windmillServiceEndpoint: If present, the worker must use this endpoint to
@@ -7499,10 +7501,36 @@ class StreamingConfigTask(_messages.Message):
   commitStreamChunkSizeBytes = _messages.IntegerField(1)
   getDataStreamChunkSizeBytes = _messages.IntegerField(2)
   maxWorkItemCommitBytes = _messages.IntegerField(3)
-  streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 4, repeated=True)
-  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 5)
-  windmillServiceEndpoint = _messages.StringField(6)
-  windmillServicePort = _messages.IntegerField(7)
+  operationalLimits = _messages.MessageField('StreamingOperationalLimits', 4)
+  streamingComputationConfigs = _messages.MessageField('StreamingComputationConfig', 5, repeated=True)
+  userStepToStateFamilyNameMap = _messages.MessageField('UserStepToStateFamilyNameMapValue', 6)
+  windmillServiceEndpoint = _messages.StringField(7)
+  windmillServicePort = _messages.IntegerField(8)
+
+
+class StreamingOperationalLimits(_messages.Message):
+  r"""Operational limits imposed on streaming jobs by the backend.
+
+  Fields:
+    maxBagElementBytes: The maximum size for an element in bag state.
+    maxGlobalDataBytes: The maximum size for an element in global data.
+    maxKeyBytes: The maximum size allowed for a key.
+    maxProductionOutputBytes: The maximum size for a single output element.
+    maxSortedListElementBytes: The maximum size for an element in sorted list
+      state.
+    maxSourceStateBytes: The maximum size for a source state update.
+    maxTagBytes: The maximum size for a state tag.
+    maxValueBytes: The maximum size for a value state field.
+  """
+
+  maxBagElementBytes = _messages.IntegerField(1)
+  maxGlobalDataBytes = _messages.IntegerField(2)
+  maxKeyBytes = _messages.IntegerField(3)
+  maxProductionOutputBytes = _messages.IntegerField(4)
+  maxSortedListElementBytes = _messages.IntegerField(5)
+  maxSourceStateBytes = _messages.IntegerField(6)
+  maxTagBytes = _messages.IntegerField(7)
+  maxValueBytes = _messages.IntegerField(8)
 
 
 class StreamingScalingReport(_messages.Message):

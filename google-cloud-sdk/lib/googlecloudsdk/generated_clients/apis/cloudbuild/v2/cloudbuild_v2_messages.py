@@ -884,6 +884,106 @@ class CloudbuildProjectsLocationsTaskRunsPatchRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class CloudbuildProjectsLocationsWorkerPoolSecondGenCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolSecondGenCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this worker pool will be
+      created. Format: `projects/{project}/locations/{location}`.
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+    workerPoolSecondGen: A WorkerPoolSecondGen resource to be passed as the
+      request body.
+    workerPoolSecondGenId: Required. Immutable. The ID to use for the
+      `WorkerPoolSecondGen`, which will become the final component of the
+      resource name. This value should be 1-63 characters, and valid
+      characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+  workerPoolSecondGen = _messages.MessageField('WorkerPoolSecondGen', 3)
+  workerPoolSecondGenId = _messages.StringField(4)
+
+
+class CloudbuildProjectsLocationsWorkerPoolSecondGenDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolSecondGenDeleteRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the `WorkerPoolSecondGen` is
+      not found, the request will succeed but no action will be taken on the
+      server.
+    etag: Optional. If provided, it must match the server's etag on the
+      WorkerPoolSecondGen for the request to be processed.
+    name: Required. The name of the `WorkerPoolSecondGen` to delete. Format: `
+      projects/{project}/locations/{location}/workerPoolSecondGen/{workerPoolS
+      econdGen}`.
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class CloudbuildProjectsLocationsWorkerPoolSecondGenGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolSecondGenGetRequest object.
+
+  Fields:
+    name: Required. The name of the `WorkerPoolSecondGen` to retrieve. Format:
+      `projects/{project}/locations/{location}/workerPoolSecondGen/{workerPool
+      SecondGen}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsWorkerPoolSecondGenListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolSecondGenListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of `WorkerPoolSecondGen`s to
+      return. The service may return fewer than this value. If omitted, the
+      server will use a sensible default.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkerPoolSecondGen` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. The parent of the collection of `WorkerPoolSecondGen`.
+      Format: `projects/{project}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsWorkerPoolSecondGenPatchRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolSecondGenPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. If set to true, and the `WorkerPoolSecondGen` is
+      not found, a new `WorkerPoolSecondGen` will be created. In this
+      situation, `update_mask` is ignored.
+    name: Output only. Identifier. The resource name of the
+      `WorkerPoolSecondGen`, with format `projects/{project}/locations/{locati
+      on}/workerPoolSecondGen/{worker_pool_second_gen}`.
+    updateMask: Required. A mask specifying which fields in
+      `worker_pool_second_gen` to update.
+    validateOnly: Optional. If set, validate the request and preview the
+      response, but do not actually post it.
+    workerPoolSecondGen: A WorkerPoolSecondGen resource to be passed as the
+      request body.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+  workerPoolSecondGen = _messages.MessageField('WorkerPoolSecondGen', 5)
+
+
 class CloudbuildProjectsLocationsWorkflowsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsWorkflowsCreateRequest object.
 
@@ -1756,6 +1856,20 @@ class ListTaskRunsResponse(_messages.Message):
   taskRuns = _messages.MessageField('TaskRun', 2, repeated=True)
 
 
+class ListWorkerPoolSecondGenResponse(_messages.Message):
+  r"""Response containing existing `WorkerPoolSecondGen`.
+
+  Fields:
+    nextPageToken: Continuation token used to page through large result sets.
+      Provide this value in a subsequent ListWorkerPoolSecondGenRequest to
+      return the next page of results.
+    workerPoolSecondGen: `WorkerPoolSecondGen` for the specified project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workerPoolSecondGen = _messages.MessageField('WorkerPoolSecondGen', 2, repeated=True)
+
+
 class ListWorkflowsResponse(_messages.Message):
   r"""Message for response to listing Workflows.
 
@@ -2609,6 +2723,16 @@ class PullRequest(_messages.Message):
 
   comment = _messages.StringField(1)
   pusher = _messages.EnumField('PusherValueValuesEnum', 2)
+
+
+class ReadyWorkers(_messages.Message):
+  r"""Defines the configuration for ready workers in the WorkerPoolSecondGen.
+
+  Fields:
+    count: Optional. Amount of ready workers for the WorkerPoolSecondGen.
+  """
+
+  count = _messages.IntegerField(1)
 
 
 class Record(_messages.Message):
@@ -3782,6 +3906,125 @@ class Worker(_messages.Message):
   """
 
   machineType = _messages.StringField(1)
+
+
+class WorkerConfig(_messages.Message):
+  r"""Defines the configuration to be used for creating workers in the
+  WorkerPoolSecondGen.
+
+  Fields:
+    diskStorage: Optional. Disk space for user workloads, in GB. Specify a
+      value of up to 2000. If `0` is specified, Cloud Build will use a default
+      disk size of 100GB.
+    machineType: Optional. Machine type of a worker in the pool, such as
+      `e2-standard-2`. If left blank, Cloud Build will use a sensible default.
+  """
+
+  diskStorage = _messages.IntegerField(1)
+  machineType = _messages.StringField(2)
+
+
+class WorkerPoolSecondGen(_messages.Message):
+  r"""Configuration for a `WorkerPoolSecondGen`. If your workload needs access
+  to resources on a private network, create and use a `WorkerPoolSecondGen` to
+  run your workloads. `WorkerPoolSecondGen`s give your workloads access to any
+  single VPC network that you administer, including any on-prem resources
+  connected to that VPC network.
+
+  Enums:
+    StateValueValuesEnum: Output only. `WorkerPoolSecondGen` state.
+
+  Messages:
+    AnnotationsValue: Optional. User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+
+  Fields:
+    annotations: Optional. User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+    createTime: Output only. Time at which the request to create the
+      `WorkerPoolSecondGen` was received.
+    deleteTime: Output only. Time at which the request to delete the
+      `WorkerPoolSecondGen` was received.
+    displayName: Optional. A user-specified, human-readable name for the
+      `WorkerPoolSecondGen`. If provided, this value must be 1-63 characters.
+    etag: Output only. Checksum computed by the server. May be sent on update
+      and delete requests to ensure that the client has an up-to-date value
+      before proceeding.
+    name: Output only. Identifier. The resource name of the
+      `WorkerPoolSecondGen`, with format `projects/{project}/locations/{locati
+      on}/workerPoolSecondGen/{worker_pool_second_gen}`.
+    readyWorkers: Optional. Configuration for ready workers in the
+      WorkerPoolSecondGen.
+    reconciling: Output only. If true, this WorkerPoolSecondGen is being
+      updated. If false, this WorkerPoolSecondGen matches the user's intent.
+    state: Output only. `WorkerPoolSecondGen` state.
+    uid: Output only. A unique identifier for the `WorkerPoolSecondGen`.
+    updateTime: Output only. Time at which the request to update the
+      `WorkerPoolSecondGen` was received.
+    worker: Optional. Worker configuration for the `WorkerPoolSecondGen`.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. `WorkerPoolSecondGen` state.
+
+    Values:
+      STATE_UNSPECIFIED: State of the `WorkerPoolSecondGen` is unknown.
+      CREATING: `WorkerPoolSecondGen` is being created.
+      RUNNING: `WorkerPoolSecondGen` is running.
+      DELETING: `WorkerPoolSecondGen` is being deleted: cancelling runs and
+        draining workers.
+      DELETED: `WorkerPoolSecondGen` is deleted.
+      UPDATING: `WorkerPoolSecondGen` is being updated; new runs cannot be
+        performed.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    RUNNING = 2
+    DELETING = 3
+    DELETED = 4
+    UPDATING = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User specified annotations. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  readyWorkers = _messages.MessageField('ReadyWorkers', 7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+  worker = _messages.MessageField('WorkerConfig', 12)
 
 
 class Workflow(_messages.Message):

@@ -2409,6 +2409,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'managedflink': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.managedflink.v1alpha',
+                    client_classpath='managedflink_v1alpha_client.ManagedflinkV1alpha',
+                    base_url='https://managedflink.googleapis.com/',
+                    messages_modulepath='managedflink_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'managedidentities': {
         'v1':
             APIDef(

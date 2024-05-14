@@ -52,6 +52,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_KEYHANDLES = (
+      'projects.locations.keyHandles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/keyHandles/'
+              '{keyHandlesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KEYRINGS = (
       'projects.locations.keyRings',
       '{+name}',
@@ -93,6 +104,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/keyRings/'
               '{keyRingsId}/importJobs/{importJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONS = (
+      'projects.locations.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

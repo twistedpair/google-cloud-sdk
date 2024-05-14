@@ -5739,9 +5739,7 @@ class GroupFindingsRequest(_messages.Message):
       * resource.project_display_name: `=`, `:` * resource.type: `=`, `:`
     groupBy: Required. Expression that defines what assets fields to use for
       grouping. The string value should follow SQL syntax: comma separated
-      list of fields. For example: "parent,resource_name". The following
-      fields are supported: * resource_name * category * state * parent *
-      severity
+      list of fields. For example: "parent,resource_name".
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `GroupFindingsResponse`;
@@ -8524,6 +8522,169 @@ class SecuritycenterOrganizationsLocationsNotificationConfigsPatchRequest(_messa
   name = _messages.StringField(1, required=True)
   notificationConfig = _messages.MessageField('NotificationConfig', 2)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsLocationsResourceValueConfigsBatchCreateRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsLocationsResourceValueConfigsBatchCreateRequest
+  object.
+
+  Fields:
+    batchCreateResourceValueConfigsRequest: A
+      BatchCreateResourceValueConfigsRequest resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new ResourceValueConfig's parent.
+      The parent field in the CreateResourceValueConfigRequest messages must
+      either be empty or match this field.
+  """
+
+  batchCreateResourceValueConfigsRequest = _messages.MessageField('BatchCreateResourceValueConfigsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterOrganizationsLocationsResourceValueConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsResourceValueConfigsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the ResourceValueConfig to delete
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsResourceValueConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsResourceValueConfigsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource value config to retrieve. Its format
+      is organizations/{organization}/resourceValueConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsResourceValueConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsResourceValueConfigsListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous
+      `ListResourceValueConfigs` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListResourceValueConfigs` must match the call that provided the page
+      token. page_size can be specified, and the new page_size will be used.
+    parent: Required. The parent, which owns the collection of resource value
+      configs. Its format is "organizations/[organization_id]"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsLocationsResourceValueConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsResourceValueConfigsPatchRequest
+  object.
+
+  Fields:
+    googleCloudSecuritycenterV2ResourceValueConfig: A
+      GoogleCloudSecuritycenterV2ResourceValueConfig resource to be passed as
+      the request body.
+    name: Name for the resource value config
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated. To update nested fields, include the top level field in
+      the mask For example, to update gcp_metadata.resource_type, include the
+      "gcp_metadata" field mask
+  """
+
+  googleCloudSecuritycenterV2ResourceValueConfig = _messages.MessageField('GoogleCloudSecuritycenterV2ResourceValueConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsLocationsSimulationsAttackExposureResultsAttackPathsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsSimulationsAttackExposureResultsAt
+  tackPathsListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}" "organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsLocationsSimulationsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsSimulationsGetRequest object.
+
+  Fields:
+    name: Required. The organization name or simulation name of this
+      simulation Valid format:
+      "organizations/{organization}/simulations/latest"
+      "organizations/{organization}/simulations/{simulation}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsSimulationsValuedResourcesAttackPathsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsSimulationsValuedResourcesAttackPa
+  thsListRequest object.
+
+  Fields:
+    filter: The filter expression that filters the attack path in the
+      response. Supported fields: * `valued_resources` supports =
+    pageSize: The maximum number of results to return in a single response.
+      Default is 10, minimum is 1, maximum is 1000.
+    pageToken: The value returned by the last `ListAttackPathsResponse`;
+      indicates that this is a continuation of a prior `ListAttackPaths` call,
+      and that the system should return the next page of data.
+    parent: Required. Name of parent to list attack paths. Valid formats:
+      "organizations/{organization}",
+      "organizations/{organization}/simulations/{simulation}" "organizations/{
+      organization}/simulations/{simulation}/attackExposureResults/{attack_exp
+      osure_result_v2}" "organizations/{organization}/simulations/{simulation}
+      /valuedResources/{valued_resource}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecuritycenterOrganizationsLocationsSimulationsValuedResourcesGetRequest(_messages.Message):
+  r"""A
+  SecuritycenterOrganizationsLocationsSimulationsValuedResourcesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of this valued resource Valid format: "organizati
+      ons/{organization}/simulations/{simulation}/valuedResources/{valued_reso
+      urce}"
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class SecuritycenterOrganizationsMuteConfigsCreateRequest(_messages.Message):

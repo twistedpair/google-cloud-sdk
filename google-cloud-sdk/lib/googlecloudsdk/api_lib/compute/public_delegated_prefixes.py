@@ -214,6 +214,8 @@ class PublicDelegatedPrefixesClient(object):
       description,
       delegatee_project,
       is_addresses,
+      mode,
+      allocatable_prefix_length,
   ):
     """Adds a delegated sub prefix to public delegated prefix using PATCH.
 
@@ -224,6 +226,9 @@ class PublicDelegatedPrefixesClient(object):
       description: sub prefix description.
       delegatee_project: sub prefix target project.
       is_addresses: sub prefix isAddress parameter.
+      mode: sub prefix mode.
+      allocatable_prefix_length: sub prefix allocatable prefix length for IPv6
+        NetLb
 
     Returns:
       Operation result from the poller.
@@ -249,6 +254,8 @@ class PublicDelegatedPrefixesClient(object):
             ipCidrRange=ip_cidr_range,
             delegateeProject=delegatee_project,
             isAddress=is_addresses,
+            mode=mode,
+            allocatablePrefixLength=allocatable_prefix_length,
         )
     )
 

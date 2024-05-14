@@ -293,6 +293,7 @@ def Apply(
     inputs_file=None,
     labels=None,
     quota_validation=None,
+    annotations=None,
 ):
   """Updates the deployment if one exists, otherwise creates a deployment.
 
@@ -337,6 +338,7 @@ def Apply(
     labels: User-defined metadata for the deployment.
     quota_validation: Input to control quota checks for resources in terraform'
       configuration files.
+    annotations: User-defined annotations for the deployment.
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
@@ -347,18 +349,9 @@ def Apply(
       trying to run with --target-git-subdir but without --target-git).
   """
 
-  labels_message = {}
-  # Whichever labels the user provides will become the full set of labels in the
-  # resulting deployment.
-  if labels is not None:
-    labels_message = messages.Deployment.LabelsValue(
-        additionalProperties=[
-            messages.Deployment.LabelsValue.AdditionalProperty(
-                key=key, value=value
-            )
-            for key, value in six.iteritems(labels)
-        ]
-    )
+  labels_message, annotations_message = _GeneratesLabelsAnnotations(
+      messages.Deployment(), labels, annotations
+  )
 
   additional_properties = []
   if input_values is not None:
@@ -439,6 +432,7 @@ def Apply(
       workerPool=worker_pool,
       terraformBlueprint=tf_blueprint,
       labels=labels_message,
+      annotations=annotations_message,
       tfVersionConstraint=tf_version_constraint,
       quotaValidation=quota_validation,
   )
@@ -578,8 +572,9 @@ def ImportStateFile(messages, deployment_full_name, lock_id, file=None):
   if file is None:
     return state_file
   state_file_url = state_file.signedUri
-  state_file_obj = files.BinaryFileReader(os.path.abspath(file))
-  requests.GetSession().put(state_file_url, data=state_file_obj)
+  with files.BinaryFileReader(os.path.abspath(file)) as state_file_obj:
+    requests.GetSession().put(state_file_url, data=state_file_obj)
+
   log.status.Print(f'Statefile {file} uploaded successfully.')
   return
 
@@ -928,6 +923,7 @@ def Create(
     input_values=None,
     inputs_file=None,
     labels=None,
+    annotations=None,
 ):
   """Creates a preview.
 
@@ -967,9 +963,10 @@ def Create(
       accepts (key, value) pairs where value is a scalar value.
     inputs_file: Accepts .tfvars file.
     labels: User-defined metadata for the preview.
+    annotations: User-defined annotations for the preview.
 
   Returns:
-    The resulting Deployment resource or, in the case that async_ is True, a
+    The resulting Preview resource or, in the case that async_ is True, a
       long-running operation.
 
   Raises:
@@ -979,7 +976,9 @@ def Create(
 
   additional_properties = _ParseInputValuesAndFile(
       input_values, inputs_file, messages)
-  labels_message = _GenerateLabels(labels, messages, 'preview')
+  labels_message, annotations_message = _GeneratesLabelsAnnotations(
+      messages.Preview(), labels, annotations
+  )
 
   tf_input_values = messages.TerraformBlueprint.InputValuesValue(
       additionalProperties=additional_properties
@@ -1019,6 +1018,7 @@ def Create(
       serviceAccount=service_account,
       workerPool=worker_pool,
       labels=labels_message,
+      annotations=annotations_message,
   )
 
   # set tf_blueprint only when one of the three sources is specified.
@@ -1146,38 +1146,34 @@ def _ParseInputValuesAndFile(input_values, inputs_file, messages):
   return additional_properties
 
 
-def _GenerateLabels(labels, messages, resource):
-  """Parses input file or values and returns a list of additional properties.
+def _GeneratesLabelsAnnotations(resource, labels=None, annotations=None):
+  """Generates labels and annotations messages.
 
   Args:
-    labels: User-defined metadata for the deployment.
-    messages: ModuleType, the messages module that lets us form blueprints API
-      messages based on our protos.
     resource: Resource type, can be deployment or preview.
+    labels: dict[str,str], labels to be associated with the resource.
+    annotations: dict[str,str], annotations to be associated with the resource.
 
   Returns:
-    The additional_properties list.
+    Label and annotation messages.
   """
   labels_message = {}
+  annotations_message = {}
   # Whichever labels the user provides will become the full set of labels in the
   # resulting deployment or preview.
   if labels is not None:
-    if resource == 'deployment':
-      labels_message = messages.Deployment.LabelsValue(
-          additionalProperties=[
-              messages.Deployment.LabelsValue.AdditionalProperty(
-                  key=key, value=value
-              )
-              for key, value in six.iteritems(labels)
-          ]
-      )
-    elif resource == 'preview':
-      labels_message = messages.Preview.LabelsValue(
-          additionalProperties=[
-              messages.Preview.LabelsValue.AdditionalProperty(
-                  key=key, value=value
-              )
-              for key, value in six.iteritems(labels)
-          ]
-      )
-    return labels_message
+    labels_message = resource.LabelsValue(
+        additionalProperties=[
+            resource.LabelsValue.AdditionalProperty(key=key, value=value)
+            for key, value in six.iteritems(labels)
+        ]
+    )
+
+  if annotations is not None:
+    annotations_message = resource.AnnotationsValue(
+        additionalProperties=[
+            resource.AnnotationsValue.AdditionalProperty(key=key, value=value)
+            for key, value in six.iteritems(annotations)
+        ]
+    )
+  return labels_message, annotations_message

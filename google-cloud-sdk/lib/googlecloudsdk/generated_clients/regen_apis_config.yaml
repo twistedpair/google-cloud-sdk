@@ -979,6 +979,10 @@ apis:
     v2beta:
       discovery_doc: lifesciences_v2beta.json
       default: true
+  managedflink:
+    v1alpha:
+      discovery_doc: managedflink_v1alpha.json
+      default: true
   managedidentities:
     v1alpha1:
       discovery_doc: managedidentities_v1alpha1.json
@@ -1968,6 +1972,10 @@ canonical_surfaces:
   looker:
     name: looker
     command: looker
+  managedflink:
+    name: managedflink
+    command: managedflink
+    hidden: true
   managedidentities:
     name: managedidentities
     command: active-directory

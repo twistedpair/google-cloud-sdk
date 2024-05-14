@@ -447,6 +447,10 @@ class Workflow(_messages.Message):
       start with "GOOGLE" or "WORKFLOWS".
 
   Fields:
+    allKmsKeys: Output only. A list of all KMS crypto keys used to encrypt or
+      decrpt the data associated with the workflow.
+    allKmsKeysVersions: Output only. A list of all KMS crypto keys versions
+      used to encrypt or decrpt the data associated with the workflow.
     callLogLevel: Optional. Describes the level of platform logging to apply
       to calls and call responses during executions of this workflow. If both
       the workflow and the execution specify a logging level, the execution
@@ -459,6 +463,10 @@ class Workflow(_messages.Message):
       ey} Using `-` as a wildcard for the `{project}` or not providing one at
       all will infer the project from the account. If not provided, data
       associated with the workflow will not be CMEK-encrypted.
+    cryptoKeyVersion: Output only. The resource name of a KMS crypto key
+      version used to encrypt or decrypt the data associated with the
+      workflow. Format: projects/{project}/locations/{location}/keyRings/{keyR
+      ing}/cryptoKeys/{cryptoKey}/cryptoKeyVersions/{cryptoKeyVersion}
     description: Description of the workflow provided by the user. Must be at
       most 1000 Unicode characters long. This is a workflow-wide field and is
       not tied to a specific revision.
@@ -589,20 +597,23 @@ class Workflow(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 1)
-  createTime = _messages.StringField(2)
-  cryptoKeyName = _messages.StringField(3)
-  description = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  revisionCreateTime = _messages.StringField(7)
-  revisionId = _messages.StringField(8)
-  serviceAccount = _messages.StringField(9)
-  sourceContents = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateError = _messages.MessageField('StateError', 12)
-  updateTime = _messages.StringField(13)
-  userEnvVars = _messages.MessageField('UserEnvVarsValue', 14)
+  allKmsKeys = _messages.StringField(1, repeated=True)
+  allKmsKeysVersions = _messages.StringField(2, repeated=True)
+  callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  cryptoKeyName = _messages.StringField(5)
+  cryptoKeyVersion = _messages.StringField(6)
+  description = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  revisionCreateTime = _messages.StringField(10)
+  revisionId = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  sourceContents = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateError = _messages.MessageField('StateError', 15)
+  updateTime = _messages.StringField(16)
+  userEnvVars = _messages.MessageField('UserEnvVarsValue', 17)
 
 
 class WorkflowsProjectsLocationsGetRequest(_messages.Message):

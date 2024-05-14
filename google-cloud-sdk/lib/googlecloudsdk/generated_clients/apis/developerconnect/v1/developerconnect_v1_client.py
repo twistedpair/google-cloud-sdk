@@ -300,7 +300,7 @@ class DeveloperconnectV1(base_api.BaseApiClient):
         method_id='developerconnect.projects.locations.connections.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['etag', 'force', 'requestId', 'validateOnly'],
+        query_params=['etag', 'requestId', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='DeveloperconnectProjectsLocationsConnectionsDeleteRequest',

@@ -92,12 +92,14 @@ class GoogleCloudOrgpolicyV2CustomConstraint(_messages.Message):
       DELETE: Constraint applied when deleting the resource. Not supported
         yet.
       REMOVE_GRANT: Constraint applied when removing an IAM grant.
+      GOVERN_TAGS: Constraint applied when enforcing forced tagging.
     """
     METHOD_TYPE_UNSPECIFIED = 0
     CREATE = 1
     UPDATE = 2
     DELETE = 3
     REMOVE_GRANT = 4
+    GOVERN_TAGS = 5
 
   actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
   condition = _messages.StringField(2)

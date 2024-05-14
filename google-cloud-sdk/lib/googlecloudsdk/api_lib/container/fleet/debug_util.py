@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Util package for memberships debug API."""
+
 import re
+
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib import network_services
 from googlecloudsdk.api_lib.container import util as container_util
@@ -22,6 +24,7 @@ from googlecloudsdk.command_lib.container.fleet import api_util as hubapi_util
 from googlecloudsdk.command_lib.container.fleet.features import base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
+
 
 location = None
 
@@ -66,13 +69,23 @@ def ContextGenerator(args):
         )
     )
   cluster_resourcelink = membership_resource.endpoint.gkeCluster.resourceLink
-  cluster_location = cluster_resourcelink.split('/')[-3]
-  cluster_name = cluster_resourcelink.split('/')[-1]
-  print('Found cluster=' + cluster_name)
-
-  cluster_context = container_util.ClusterConfig.KubeContext(
-      cluster_name, cluster_location, project_id
+  # override the project_id for cross-project membership use case
+  matcher = re.match(
+      r'.*/projects/(.*)/.*/(.*)/clusters/(.*)', cluster_resourcelink
   )
+  if matcher is None:
+    raise exceptions.Error(
+        'Failed to parse gke cluster resource link. resourceLink = {}'
+        .format(cluster_resourcelink)
+    )
+  cluster_project_id = matcher.group(1)
+  cluster_location = matcher.group(2)
+  cluster_name = matcher.group(3)
+  print('Found cluster=' + cluster_name)
+  cluster_context = container_util.ClusterConfig.KubeContext(
+      cluster_name, cluster_location, cluster_project_id
+  )
+  print('Using kube context=' + cluster_context)
   return cluster_context
 
 

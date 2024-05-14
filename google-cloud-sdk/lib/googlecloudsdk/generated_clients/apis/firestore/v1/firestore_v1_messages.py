@@ -591,6 +591,7 @@ class Empty(_messages.Message):
   """
 
 
+
 class ExecutionStats(_messages.Message):
   r"""Execution statistics for the query.
 
@@ -1808,6 +1809,7 @@ class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   """
 
 
+
 class GoogleFirestoreAdminV1Database(_messages.Message):
   r"""A Cloud Firestore Database.
 
@@ -1965,9 +1967,7 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   keyPrefix = _messages.StringField(9)
   locationId = _messages.StringField(10)
   name = _messages.StringField(11)
-  pointInTimeRecoveryEnablement = _messages.EnumField(
-      'PointInTimeRecoveryEnablementValueValuesEnum', 12
-  )
+  pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 12)
   type = _messages.EnumField('TypeValueValuesEnum', 13)
   uid = _messages.StringField(14)
   updateTime = _messages.StringField(15)
@@ -2193,6 +2193,7 @@ class GoogleFirestoreAdminV1FlatIndex(_messages.Message):
   r"""An index that stores vectors in a flat data structure, and supports
   exhaustive search.
   """
+
 
 
 class GoogleFirestoreAdminV1ImportDocumentsMetadata(_messages.Message):

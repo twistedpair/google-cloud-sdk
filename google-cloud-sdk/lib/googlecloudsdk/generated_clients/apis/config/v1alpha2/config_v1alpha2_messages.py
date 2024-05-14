@@ -872,14 +872,14 @@ class Deployment(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. Arbitrary key-value metadata storage e.g. to
-      help client tools identifiy deployments during automation. See
+      help client tools identify deployments during automation. See
       https://google.aip.dev/148#annotations for details on format and size
       limitations.
     LabelsValue: User-defined metadata for the deployment.
 
   Fields:
     annotations: Optional. Arbitrary key-value metadata storage e.g. to help
-      client tools identifiy deployments during automation. See
+      client tools identify deployments during automation. See
       https://google.aip.dev/148#annotations for details on format and size
       limitations.
     artifactsGcsBucket: Optional. User-defined location of Cloud Build logs
@@ -1034,7 +1034,7 @@ class Deployment(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. Arbitrary key-value metadata storage e.g. to help client
-    tools identifiy deployments during automation. See
+    tools identify deployments during automation. See
     https://google.aip.dev/148#annotations for details on format and size
     limitations.
 
@@ -1712,9 +1712,17 @@ class Preview(_messages.Message):
     StateValueValuesEnum: Output only. Current state of the preview.
 
   Messages:
+    AnnotationsValue: Optional. Arbitrary key-value metadata storage e.g. to
+      help client tools identifiy preview during automation. See
+      https://google.aip.dev/148#annotations for details on format and size
+      limitations.
     LabelsValue: Optional. User-defined labels for the preview.
 
   Fields:
+    annotations: Optional. Arbitrary key-value metadata storage e.g. to help
+      client tools identifiy preview during automation. See
+      https://google.aip.dev/148#annotations for details on format and size
+      limitations.
     artifactsGcsBucket: Optional. User-defined location of Cloud Build logs,
       artifacts, and in Google Cloud Storage. Format: `gs://{bucket}/{folder}`
       A default bucket will be bootstrapped if the field is not set or empty
@@ -1829,6 +1837,34 @@ class Preview(_messages.Message):
     DELETED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Arbitrary key-value metadata storage e.g. to help client
+    tools identifiy preview during automation. See
+    https://google.aip.dev/148#annotations for details on format and size
+    limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. User-defined labels for the preview.
 
@@ -1852,25 +1888,26 @@ class Preview(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  artifactsGcsBucket = _messages.StringField(1)
-  build = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deployment = _messages.StringField(4)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
-  errorLogs = _messages.StringField(6)
-  errorStatus = _messages.MessageField('Status', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  logs = _messages.StringField(9)
-  name = _messages.StringField(10)
-  previewArtifacts = _messages.MessageField('PreviewArtifacts', 11)
-  previewMode = _messages.EnumField('PreviewModeValueValuesEnum', 12)
-  serviceAccount = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
-  tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
-  tfVersion = _messages.StringField(17)
-  tfVersionConstraint = _messages.StringField(18)
-  workerPool = _messages.StringField(19)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  artifactsGcsBucket = _messages.StringField(2)
+  build = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  deployment = _messages.StringField(5)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 6)
+  errorLogs = _messages.StringField(7)
+  errorStatus = _messages.MessageField('Status', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  logs = _messages.StringField(10)
+  name = _messages.StringField(11)
+  previewArtifacts = _messages.MessageField('PreviewArtifacts', 12)
+  previewMode = _messages.EnumField('PreviewModeValueValuesEnum', 13)
+  serviceAccount = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 16)
+  tfErrors = _messages.MessageField('TerraformError', 17, repeated=True)
+  tfVersion = _messages.StringField(18)
+  tfVersionConstraint = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
 
 
 class PreviewArtifacts(_messages.Message):

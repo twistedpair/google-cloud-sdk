@@ -179,7 +179,7 @@ class BatchRecognizeRequest(_messages.Message):
       provided, config completely overrides and replaces the config in the
       recognizer for this recognition request.
     files: Audio files with file metadata for ASR. The maximum number of files
-      allowed to be specified is 5.
+      allowed to be specified is 15.
     processingStrategy: Processing strategy to use for this request.
     recognitionOutputConfig: Configuration options for where to output the
       transcripts of each file.

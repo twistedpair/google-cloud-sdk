@@ -66,6 +66,12 @@ class LogMetric(proto.Message):
             resource name of a metric is
             ``"projects/my-project/metrics/nginx%2Frequests"``, this
             field's value is ``"nginx/requests"``.
+        resource_name (str):
+            Output only. The resource name of the metric:
+
+            ::
+
+                "projects/[PROJECT_ID]/metrics/[METRIC_ID]".
         description (str):
             Optional. A description of this metric, which
             is used in documentation. The maximum length of
@@ -195,6 +201,10 @@ class LogMetric(proto.Message):
     name: str = proto.Field(
         proto.STRING,
         number=1,
+    )
+    resource_name: str = proto.Field(
+        proto.STRING,
+        number=15,
     )
     description: str = proto.Field(
         proto.STRING,

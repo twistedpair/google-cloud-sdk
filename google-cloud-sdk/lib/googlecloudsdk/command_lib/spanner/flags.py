@@ -23,6 +23,7 @@ from cloudsdk.google.protobuf import descriptor_pb2
 from googlecloudsdk.api_lib.spanner import databases
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.spanner import ddl_parser
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.core.util import files
@@ -36,6 +37,17 @@ class BackupCompleter(completers.ListCommandCompleter):
         list_command='spanner backups list --uri',
         flags=['instance'],
         **kwargs)
+
+
+class BackupScheduleCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(BackupScheduleCompleter, self).__init__(
+        collection='spanner.projects.instances.databases.backupSchedules',
+        list_command='spanner backup-schedules list --uri',
+        flags=['database', 'instance'],
+        **kwargs
+    )
 
 
 class DatabaseCompleter(completers.ListCommandCompleter):
@@ -778,3 +790,18 @@ def GetSpannerMigrationCleanupMonitoringResourceFlag():
       action='store_true',
       help='Cleanup monitoring dashboard(s).',
   )
+
+
+# Checks that user only specified instance partition, or database, or backup
+# flag for LRO operations given --instance.
+# TODO(b/339032416): Consider using gcloud mutex.
+def CheckExclusiveLROFlagsUnderInstance(args):
+  exlusive_flag_count = 0
+  for flag in ['instance_partition', 'database', 'backup']:
+    if args.IsSpecified(flag):
+      exlusive_flag_count += 1
+  if exlusive_flag_count > 1:
+    raise c_exceptions.InvalidArgumentException(
+        '--database or --backup or --instance-partition',
+        'Must specify only --database or --backup or --instance-partition.',
+    )

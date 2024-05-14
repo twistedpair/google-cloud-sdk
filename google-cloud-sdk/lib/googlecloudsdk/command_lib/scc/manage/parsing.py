@@ -318,18 +318,17 @@ def GetServiceEnablementStateFromArgs(enablement_state: str):
     return None
 
   state = enablement_state.upper()
-  match state:
-    case 'ENABLED':
-      return state_enum.ENABLED
-    case 'DISABLED':
-      return state_enum.DISABLED
-    case 'INHERITED':
-      return state_enum.INHERITED
-    case _:
-      raise errors.InvalidEnablementStateError(
-          f'Error parsing enablement state. "{state}" is not a valid enablement'
-          ' state. Please provide one of ENABLED, DISABLED, or INHERITED.'
-      )
+  if state == 'ENABLED':
+    return state_enum.ENABLED
+  elif state == 'DISABLED':
+    return state_enum.DISABLED
+  elif state == 'INHERITED':
+    return state_enum.INHERITED
+  else:
+    raise errors.InvalidEnablementStateError(
+        f'Error parsing enablement state. "{state}" is not a valid enablement'
+        ' state. Please provide one of ENABLED, DISABLED, or INHERITED.'
+    )
 
 
 def CreateUpdateMaskFromArgsForService(args):

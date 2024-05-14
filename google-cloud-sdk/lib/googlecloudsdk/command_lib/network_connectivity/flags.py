@@ -98,8 +98,19 @@ def AddNetworkFlag(parser):
   parser.add_argument(
       '--network',
       required=True,
-      help="""VPC network that contains the PSA connection the spoke provides
-      connectivity to. The resource must already exist.""")
+      help="""Your VPC network that contains the peering to the Producer VPC,
+      which this spoke connects to the Hub. The peering must already exist and
+      be in the ACTIVE state.""")
+
+
+def AddPeeringFlag(parser):
+  """Adds the --peering argument to the given parser."""
+  parser.add_argument(
+      '--peering',
+      required=True,
+      help="""Peering between your network and the Producer VPC, which this
+      spoke connects to the Hub. The peering must already exist and be in the
+      ACTIVATE state.""")
 
 
 def AddVPCNetworkFlag(parser):

@@ -241,8 +241,8 @@ class NoopCommand(_Command):
     return isinstance(other, NoopCommand)
 
 
-class CreateJava17ProjectCommand(_Command):
-  """A command that creates a java17 runtime app.yaml."""
+class CreateJava21ProjectCommand(_Command):
+  """A command that creates a java21 runtime app.yaml."""
 
   def EnsureInstalled(self):
     pass
@@ -255,7 +255,7 @@ class CreateJava17ProjectCommand(_Command):
 
   def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     # Logic is: copy/symlink the project in the staged area, and create a
-    # simple file app.yaml for runtime: java17 if it does not exist.
+    # simple file app.yaml for runtime: java21 if it does not exist.
     # If it exists in the standard and documented default location
     # (in project_dir/src/main/appengine/app.yaml), copy it in the staged
     # area.
@@ -272,10 +272,10 @@ class CreateJava17ProjectCommand(_Command):
         # as required by the Cloud SDK.
         shutil.copy2(appyaml, staging_area)
       else:
-        # Create a very simple 1 liner app.yaml for Java17 runtime.
+        # Create a very simple 2 liner app.yaml for Java21 runtime.
         files.WriteFileContents(
             os.path.join(staging_area, 'app.yaml'),
-            'runtime: java17\ninstance_class: F2\n')
+            'runtime: java21\ninstance_class: F2\n')
 
     for name in os.listdir(app_dir):
       # Do not deploy locally built artifacts, buildpack will clean this anyway.
@@ -301,35 +301,35 @@ class CreateJava17ProjectCommand(_Command):
     return staging_area
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava17ProjectCommand)
+    return isinstance(other, CreateJava21ProjectCommand)
 
 
-class CreateJava17MavenProjectCommand(CreateJava17ProjectCommand):
-  """A command that creates a java17 runtime app.yaml from a pom.xml file."""
+class CreateJava21MavenProjectCommand(CreateJava21ProjectCommand):
+  """A command that creates a java21 runtime app.yaml from a pom.xml file."""
 
   def __init__(self):
     self.error = MavenPomNotSupported
     self.ignore = 'target'
-    super(CreateJava17MavenProjectCommand, self).__init__()
+    super(CreateJava21MavenProjectCommand, self).__init__()
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava17GradleProjectCommand)
+    return isinstance(other, CreateJava21GradleProjectCommand)
 
 
-class CreateJava17GradleProjectCommand(CreateJava17ProjectCommand):
-  """A command that creates a java17 runtime app.yaml from a build.gradle file."""
+class CreateJava21GradleProjectCommand(CreateJava21ProjectCommand):
+  """A command that creates a java21 runtime app.yaml from a build.gradle file."""
 
   def __init__(self):
     self.error = GradleBuildNotSupported
     self.ignore = 'build'
-    super(CreateJava17GradleProjectCommand, self).__init__()
+    super(CreateJava21GradleProjectCommand, self).__init__()
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava17GradleProjectCommand)
+    return isinstance(other, CreateJava21GradleProjectCommand)
 
 
-class CreateJava17YamlCommand(_Command):
-  """A command that creates a java17 runtime app.yaml from a jar file."""
+class CreateJava21YamlCommand(_Command):
+  """A command that creates a java21 runtime app.yaml from a jar file."""
 
   def EnsureInstalled(self):
     pass
@@ -342,14 +342,14 @@ class CreateJava17YamlCommand(_Command):
 
   def Run(self, staging_area, descriptor, app_dir, explicit_appyaml=None):
     # Logic is simple: copy the jar in the staged area, and create a simple
-    # file app.yaml for runtime: java17.
+    # file app.yaml for runtime: java21.
     shutil.copy2(descriptor, staging_area)
     if explicit_appyaml:
       shutil.copyfile(explicit_appyaml, os.path.join(staging_area, 'app.yaml'))
     else:
       files.WriteFileContents(
           os.path.join(staging_area, 'app.yaml'),
-          'runtime: java17\ninstance_class: F2\n',
+          'runtime: java21\ninstance_class: F2\n',
           private=True)
     manifest = jarfile.ReadManifest(descriptor)
     if manifest:
@@ -376,7 +376,7 @@ class CreateJava17YamlCommand(_Command):
     return staging_area
 
   def __eq__(self, other):
-    return isinstance(other, CreateJava17YamlCommand)
+    return isinstance(other, CreateJava21YamlCommand)
 
 
 class StageAppWithoutAppYamlCommand(_Command):
@@ -558,11 +558,11 @@ _STAGING_REGISTRY = {
             component='app-engine-java',
             mapper=_JavaStagingMapper),
     runtime_registry.RegistryEntry('java-jar', {env.STANDARD}):
-        CreateJava17YamlCommand(),
+        CreateJava21YamlCommand(),
     runtime_registry.RegistryEntry('java-maven-project', {env.STANDARD}):
-        CreateJava17MavenProjectCommand(),
+        CreateJava21MavenProjectCommand(),
     runtime_registry.RegistryEntry('java-gradle-project', {env.STANDARD}):
-        CreateJava17GradleProjectCommand(),
+        CreateJava21GradleProjectCommand(),
     runtime_registry.RegistryEntry('generic-copy', {env.FLEX, env.STANDARD}):
         StageAppWithoutAppYamlCommand(),
 }

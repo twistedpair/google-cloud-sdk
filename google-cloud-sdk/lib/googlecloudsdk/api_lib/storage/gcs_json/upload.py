@@ -85,8 +85,12 @@ class _Upload(six.with_metaclass(abc.ABCMeta, object)):
     if (
         isinstance(self._source_resource, resource_reference.ObjectResource)
         and self._request_config.resource_args.preserve_acl
+        and hasattr(self._source_resource.metadata, 'acl')
     ):
-      destination_metadata.acl = copy.deepcopy(self._source_resource.acl)
+
+      destination_metadata.acl = copy.deepcopy(
+          self._source_resource.metadata.acl
+      )
 
   def _get_validated_insert_request(self):
     """Get an insert request that includes validated object metadata."""

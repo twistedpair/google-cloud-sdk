@@ -5,6 +5,141 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 476.0.0 (2024-05-14)
+
+### Google Cloud CLI
+
+* Updated `pyopenssl` package to version 24.0.0 to enable `cryptography`
+  version 42.0.5.
+
+### AlloyDB
+
+* Added flag `--assign-inbound-public-ip` to enable or disable public IP for an
+instance to `gcloud alloydb instances create-secondary`.
+* Added flag `--ssl-mode` to configure an instance's SSL mode to
+`gcloud alloydb instances create-secondary`.
+* Added flag `--require-connectors` to enforce whether or not all connections
+need to come from connectors (e.g. AlloyDB Auth Proxy) to
+`gcloud alloydb instances create-secondary`.
+
+### App Engine
+
+* Use java21 as the default runtime for app.yaml generated configuration.
+  This change is compatible with `gcloud app deploy` command, when there is
+  no app.yaml configuration for Java projects (Maven, or Gradle, or simple jar).
+  Instead of using a java17 runtime target, App Engine deploys the application
+  using the java21 runtime with an F2 instance class. To continue using the java17
+  runtime, create an app.yaml file, and specify `runtime: java17`.
+* Updated the Java SDK to version 2.0.27 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.27>.
+
+### Cloud Bigtable
+
+* Rebuilding cbt cli with golang.org/x/net 0.24.0 which fixed CVE-2023-45288.
+* Added Authorized Views feature.
+
+### Cloud Dataplex
+
+*   Added `gcloud dataplex entries` commands which allow manipulating Dataplex
+    Catalog Entries.
+
+### Cloud Infrastructure Manager
+
+* Added `--annotations` flag for `gcloud infra-manager previews create` and
+`gcloud infra-manager deployments apply` commands.
+
+### Cloud Key Management Service
+
+*   Added a new value `ec-sign-ed25519` to the flag `default-algorithm` to support the asymmetric signing algorithm `ED25529` through `gcloud kms keys create|update` and `gcloud kms keys versions import`.
+
+### Cloud Logging
+
+* Promoted `gcloud logging views get-iam-policy` command to GA.
+* Promoted `gcloud logging views set-iam-policy` command to GA.
+* Promoted `gcloud logging views add-iam-policy-binding` command to GA.
+* Promoted `gcloud logging views remove-iam-policy-binding` command to GA.
+
+### Cloud NetApp
+
+* Added `--allow-auto-tiering` to `gcloud beta netapp storagepools` to allow storage pool enable auto tiering.
+* Added `--tiering-policy` to `gcloud beta netapp volumes` to allow volume enable auto tiering.
+
+### Cloud Run
+
+* `gcloud run jobs deploy --source` has been fixed.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.29.
+
+### Compute Engine
+
+* Deprecated `gcloud compute instances move`. See <https://cloud.google.com/compute/docs/instances/moving-instance-across-zones> for an alternative method.
+* Fixed inconsistency in IPv6 flag support for `gcloud compute instances create-with-container` and `gcloud compute instance-templates create-with-container` commands. Changes include added support for `--internal-ipv6-address` and `--internal-ipv6-prefix-length` flags, as well as `stack-type`, and `ipv6-network-tier` arguments for `--network-interface` flag.
+* Fixed inconsistency in reservation flag support for `gcloud compute instances create-with-container` and `gcloud compute instance-templates create-with-container` commands. Changes include added support for `--reservation` and `--reservation-affinity` flags.
+* Added `specific-then-any-reservation` and `specific-then-no-reservation` to the flag `--reservation-affinity` for alpha and beta in `gcloud compute instances create` and `gcloud compute instance-templates create-with-container` commands.
+* Promoted `--mode` flag of `gcloud compute public-delegated-prefixes create` to GA.
+* Promoted `--allocatable-prefix-length` flag of `gcloud compute public-delegated-prefixes create` to GA.
+* Promoted `--mode` flag of `gcloud compute public-delegated-prefixes delegated-sub-prefixes create` to GA.
+* Promoted `--allocatable-prefix-length` flag of `gcloud compute public-delegated-prefixes delegated-sub-prefixes create` to GA.
+* Added `gcloud compute routers add-route-policy` which creates an empty Route Policy in Cloud Router.
+* Promoted `gcloud compute routers add-route-policy` to beta.
+* Added `gcloud compute routers get-route-policy` which describe Route Policy from Cloud Router.
+* Promoted `gcloud compute routers get-route-policy` to beta.
+* Added `gcloud compute routers download-route-policy` which downloads Cloud Router's Route Policy into a file.
+* Promoted `gcloud compute routers download-route-policy` to beta.
+* Added `gcloud compute routers list-bgp-routes` which lists the routes advertised and learned on individual BGP sessions, both pre- and post-policy evaluation.
+* Promoted `gcloud compute routers list-bgp-routes` to beta.
+* Added `gcloud compute routers list-route-policies` which lists all Route Policy within Cloud Router.
+* Promoted `gcloud compute routers list-route-policies` to beta.
+* Added `gcloud compute routers remove-route-policy` which removes Cloud Router's Route Policy.
+* Promoted `gcloud compute routers remove-route-policy` to beta.
+* Added `gcloud compute routers upload-route-policy` which uploads Route Policy from a file and adds it to Cloud Router.
+* Promoted `gcloud compute routers upload-route-policy` to beta.
+* Added `--import-policies` and `--export-policies` flags to `gcloud compute routers add-bgp-peer` and `gcloud compute routers update-bgp-peer` to apply Cloud Router's Route Policies to Cloud Router Bgp Peer.
+* Promoted `--import-policies` and `--export-policies`  flags of `gcloud compute routers add-bgp-peer` and `gcloud compute routers update-bgp-peer` to beta.
+* Added `--bgp-identifier-range` flag to `gcloud compute routers create` and `gcloud compute routers update`.
+* Added `--enable-ipv4`, `--ipv4-nexthop-address`, and `--peer-ipv4-nexthop-address` flags to `gcloud compute routers add-bgp-peer` and `gcloud compute routers update-bgp-peer`.
+* Added `--ip-version` flag to `gcloud compute routers add-interface` and `gcloud compute routers update-interface`. Additionally, `--ip-address` flag of these commands will now accept IPv6 addresses.
+* Promoted `--maintenance-interval` flag for `gcloud compute sole-tenancy node-groups create` to GA.
+* Promoted `gcloud compute sole-tenancy node-groups perform-maintenance` to GA.
+* Added `--terraform-script-output-file`, `--exclusion-patterns-file` and `--export-exclusion-patterns` flags to `gcloud (alpha|beta) compute firewall-rules migrate` commands.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support MySQL_8_0_36 minor version option for Cloud SQL connection profiles.
+
+### Eventarc
+
+*  Removed `gcloud beta eventarc`, including warnings and errors. User are expected to use `gcloud eventarc` instead.
+
+### Kpt
+
+* Updated kpt to v1.0.0-beta.50. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.50> for more details.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.26.15 to 1.27.13.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.13)
+  * kubectl.1.28 (1.28.9)
+  * kubectl.1.29 (1.29.4)
+  * kubectl.1.30 (1.30.0)
+
+### Network Connectivity
+
+* Added `--policy-mode` and `--preset-topology` flags to `gcloud network-connectivity hubs create`.
+* Added `gcloud network-connectivity hubs groups update`.
+
+### Security Command Center
+
+*   Deprecated `read-time` and `compare-duration` flags from the `findings list` and `findings group` commands.
+*   Promoted management api `gcloud scc manage services ...` commands to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 475.0.0 (2024-05-07)
 
 ### Google Cloud CLI

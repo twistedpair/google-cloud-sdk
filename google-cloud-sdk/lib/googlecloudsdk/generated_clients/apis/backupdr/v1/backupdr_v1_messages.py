@@ -705,6 +705,8 @@ class BackupVault(_messages.Message):
 
   Fields:
     backupCount: Output only. The number of backups in this backup vault.
+    backupMinimumEnforcedRetentionDuration: Required. The minimum enforced
+      retention for each backup within the backup vault.
     createTime: Output only. The time when the instance was created.
     deletable: Output only. Set to true when there are no backups nested under
       this resource.
@@ -713,7 +715,7 @@ class BackupVault(_messages.Message):
     effectiveTime: Optional. Time after which the BackupVault resource is
       locked.
     enforcedRetentionDuration: Required. The default retention period for each
-      backup in the backup vault.
+      backup in the backup vault (Deprecated).
     etag: Optional. Server specified ETag for the backup vault resource to
       prevent simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -771,18 +773,19 @@ class BackupVault(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupCount = _messages.IntegerField(1)
-  createTime = _messages.StringField(2)
-  deletable = _messages.BooleanField(3)
-  description = _messages.StringField(4)
-  effectiveTime = _messages.StringField(5)
-  enforcedRetentionDuration = _messages.StringField(6)
-  etag = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  totalStoredBytes = _messages.IntegerField(12)
-  updateTime = _messages.StringField(13)
+  backupMinimumEnforcedRetentionDuration = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deletable = _messages.BooleanField(4)
+  description = _messages.StringField(5)
+  effectiveTime = _messages.StringField(6)
+  enforcedRetentionDuration = _messages.StringField(7)
+  etag = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  serviceAccount = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  totalStoredBytes = _messages.IntegerField(13)
+  updateTime = _messages.StringField(14)
 
 
 class BackupWindow(_messages.Message):
@@ -1161,6 +1164,8 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsDeleteRequest object.
 
   Fields:
+    allowMissing: Optional. If true and the BackupVault is not found, the
+      request will succeed but no action will be taken.
     etag: The current etag of the backup vault. If an etag is provided and
       does not match the current etag of the connection, deletion will be
       blocked.
@@ -1182,11 +1187,12 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
       mutations. The default is `false`.
   """
 
-  etag = _messages.StringField(1)
-  force = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  force = _messages.BooleanField(3)
+  name = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class BackupdrProjectsLocationsBackupVaultsGetRequest(_messages.Message):
@@ -1257,22 +1263,6 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
-
-
-class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
-  r"""A BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See [Resource
-      names](https://cloud.google.com/apis/design/resource_names) for the
-      appropriate value for this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BackupdrProjectsLocationsGetRequest(_messages.Message):
@@ -3362,13 +3352,12 @@ class StandardSchedule(_messages.Message):
       https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the
       list of valid timezone names. The default value is UTC. For e.g.,
       Europe/Paris.
-    weekDayOfMonth: Optional. This will be supported in GA not in PP.
-      Specifies a week day of the month like, FIRST SUNDAY or LAST MONDAY, on
-      which jobs will run. This will be specified by two fields in
-      `WeekDayOfMonth`, one for the day, e.g. `MONDAY`, and one for the week,
-      e.g. `LAST`. This field is only applicable for `recurrence_type`,
-      `MONTHLY` and `YEARLY`. A validation error will occur if other values
-      are supplied.
+    weekDayOfMonth: Optional. Specifies a week day of the month like, FIRST
+      SUNDAY or LAST MONDAY, on which jobs will run. This will be specified by
+      two fields in `WeekDayOfMonth`, one for the day, e.g. `MONDAY`, and one
+      for the week, e.g. `LAST`. This field is only applicable for
+      `recurrence_type`, `MONTHLY` and `YEARLY`. A validation error will occur
+      if other values are supplied.
   """
 
   class DaysOfWeekValueListEntryValuesEnum(_messages.Enum):

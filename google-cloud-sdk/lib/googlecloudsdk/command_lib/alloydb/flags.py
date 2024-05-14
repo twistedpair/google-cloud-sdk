@@ -1138,18 +1138,36 @@ def AddUpdateMode(parser):
   )
 
 
-def AddSSLMode(parser, update=False):
+def AddSSLMode(parser, default_from_primary=False, update=False):
   """Adds SSL Mode flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    default_from_primary: If true, we get the default SSL mode from the primary.
+      This is always true for secondary instances.
     update: If True, does not set the default SSL mode.
   """
   ssl_mode_help = (
-      'Specify the SSL mode to use when the instance connects to the '
-      'database.'
+      'Specify the SSL mode to use when the instance connects to the database.'
   )
   if update:
+    parser.add_argument(
+        '--ssl-mode',
+        required=False,
+        type=str,
+        choices={
+            'ENCRYPTED_ONLY': (
+                'SSL connections are required. CA verification is not enforced.'
+            ),
+            'ALLOW_UNENCRYPTED_AND_ENCRYPTED': (
+                'SSL connections are optional. CA verification is not enforced.'
+            ),
+        },
+        help=ssl_mode_help
+    )
+  elif default_from_primary:
+    ssl_mode_help += (' Default SSL mode will match what is set on the '
+                      'primary instance.')
     parser.add_argument(
         '--ssl-mode',
         required=False,
@@ -1194,7 +1212,7 @@ def AddRequireConnectors(parser):
       required=False,
       action=arg_parsers.StoreTrueFalseAction,
       help=(
-          'Enable or disable enforcing connectors only (ex: AuthProxy)'
+          'Enable or disable enforcing connectors only (ex: AuthProxy) '
           'connections to the database.'
       ),
   )

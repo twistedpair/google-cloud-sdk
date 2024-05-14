@@ -49,7 +49,7 @@ def Await(operation, message):
   return waiter.WaitFor(poller, ref, message)
 
 
-def ListGeneric(instance_partition, instance):
+def ListGeneric(instance, instance_partition):
   """List operations on an instance partition with generic LRO API."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
@@ -101,7 +101,7 @@ def List(instance):
   )
 
 
-def Cancel(instance_partition, instance, operation):
+def Cancel(instance, instance_partition, operation):
   """Cancel the specified operation."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)
@@ -120,7 +120,7 @@ def Cancel(instance_partition, instance, operation):
   return client.projects_instances_instancePartitions_operations.Cancel(req)
 
 
-def Get(instance_partition, instance, operation):
+def Get(instance, instance_partition, operation):
   """Get the specified operation."""
   client = apis.GetClientInstance(_API_NAME, _API_VERSION)
   msgs = apis.GetMessagesModule(_API_NAME, _API_VERSION)

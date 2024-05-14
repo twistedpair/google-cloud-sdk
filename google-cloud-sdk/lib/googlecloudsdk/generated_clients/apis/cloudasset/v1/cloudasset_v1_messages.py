@@ -417,6 +417,33 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AzureInfo(_messages.Message):
+  r"""Additional information for an asset fetched from Azure
+
+  Fields:
+    managementGroups: The Azure Management Group
+      (https://learn.microsoft.com/en-us/azure/governance/management-
+      groups/overview) Order is from leaf management group to the root
+      management group E.g.:
+      /providers/Microsoft.Management/managementGroups/group-name
+    resourceGroup: The Azure Resource Group (https://learn.microsoft.com/en-
+      us/azure/azure-resource-manager/management/manage-resource-groups-
+      portal) E.g.: /subscriptions/1a11aad8-de27-1234-85e9-
+      0f675821f15c/resourceGroups/group-name
+    subscriptionId: The Azure Subscription (https://learn.microsoft.com/en-
+      us/azure/cost-management-billing/manage/) E.g.:
+      /subscriptions/1a11aad8-de27-1234-85e9-0f675821f15c
+    tenantId: The Azure Tenant id (https://learn.microsoft.com/en-
+      us/azure/azure-portal/get-subscription-tenant-id) E.g.:
+      /tenants/a11aaa11-aa11-1aa1-11aa-1aaa11a
+  """
+
+  managementGroups = _messages.StringField(1, repeated=True)
+  resourceGroup = _messages.StringField(2)
+  subscriptionId = _messages.StringField(3)
+  tenantId = _messages.StringField(4)
+
+
 class BatchGetAssetsHistoryResponse(_messages.Message):
   r"""Batch get assets history response.
 
@@ -1211,8 +1238,8 @@ class CloudassetIngestAssetRequest(_messages.Message):
 
   Fields:
     closestCrmAncestor: The closest Google Cloud Resource Manager ancestor of
-      this asset. The format will be: organizations/, or folders/, or
-      projects/
+      the other-cloud connection through which this asset is collected. The
+      format will be: organizations/, or folders/, or projects/
     ingestAssetRequest: A IngestAssetRequest resource to be passed as the
       request body.
   """
@@ -1239,8 +1266,8 @@ class CloudassetOtherCloudConnectionsCreateRequest(_messages.Message):
       request body.
     otherCloudConnectionId: Required. The ID to use for the other-cloud
       connection, which will become the final component of the other-cloud
-      connection's resource name. Currently only "aws" is allowed as the
-      other_cloud_connection_id.
+      connection's resource name. Currently only "aws" and "azure" is allowed
+      as the other_cloud_connection_id.
     parent: Required. The parent resource where this connection will be
       created. It can only be an organization number (such as
       "organizations/123") for now. Format:
@@ -1309,10 +1336,11 @@ class CloudassetOtherCloudConnectionsPatchRequest(_messages.Message):
       field is used to uniquely identify other-cloud connection resource. It
       contains organization number and other_cloud_connection_id when creating
       other-cloud connection. This field is immutable once resource is
-      created. And currently only "aws" is allowed as the
+      created. And currently "aws" and "azure" are allowed as the
       other_cloud_connection_id. Format: organizations/{organization_number}/o
       therCloudConnections/{other_cloud_connection_id} E.g. -
-      `organizations/123/otherCloudConnections/aws`.
+      `organizations/123/otherCloudConnections/aws` -
+      `organizations/123/otherCloudConnections/azure`
     otherCloudConnection: A OtherCloudConnection resource to be passed as the
       request body.
     updateMask: Required. The list of fields to update. A field represent
@@ -1322,7 +1350,10 @@ class CloudassetOtherCloudConnectionsPatchRequest(_messages.Message):
       `*`, meaning full replacement. The following immutable fields cannot be
       updated: - `name`, - `service_agent_id`, -
       `collect_aws_asset_setting.collector_role_name`, -
-      `collect_aws_asset_setting.delegate_role_name`.
+      `collect_aws_asset_setting.delegate_role_name`, -
+      `collect_azure_asset_setting.tenant_id`, -
+      `collect_azure_asset_setting.managed_identity_client_id`, -
+      `collect_azure_asset_setting.managed_identity_object_id`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1704,7 +1735,7 @@ class CollectAwsAssetSetting(_messages.Message):
       used. Most AWS services and APIs are region specific. If region(s) is
       not specified, the data collection process can be very time consuming as
       all regions must be queried for all metadata.
-    scanSensitiveDataSetting: Scan sensitive data setting.
+    scanSensitiveDataSetting: Optional. Scan sensitive data setting.
     stsEndpointUri: Optional. AWS security token service endpoint. If a user
       disables the default global endpoint, user must provide regional
       endpoint to call for authentication.
@@ -4978,11 +5009,14 @@ class OtherCloudAssetEvent(_messages.Message):
     assetUri: The URI that an end-user should be able to call GET to get data
       directly from the publishers' API.
     awsInfo: For an asset fetched from AWS.
+    azureInfo: For an asset fetched from Azure.
     connection: The full name of the Other-Cloud Connection resource used to
       collect this asset in the format of
       `//cloudasset.googleapis.com/organizations//OtherCloudConnections/`
-      E.g.:
+      E.g.: For AWS:
       cloudasset.googleapis.com/organizations/123/otherCloudConnections/aws
+      For Azure
+      cloudasset.googleapis.com/organizations/123/otherCloudConnections/azure
     contents: A representation of other-cloud asset events.
     createTime: A timestamp to represent the time when the asset was created.
       For other-cloud assets, this is optional.
@@ -4996,7 +5030,11 @@ class OtherCloudAssetEvent(_messages.Message):
       https://docs.aws.amazon.com/general/latest/gr/rande.html#learn-more For
       AWS Gov, see GovCloud regions in:
       https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
-      endpoints
+      endpoints For Azure assets, it is the location id for regions listed in
+      https://azure.microsoft.com/en-us/explore/global-
+      infrastructure/geographies/#geographies. An example is "eastus2". Use az
+      account list-locations | grep "name" to list all location ids available
+      for the subscription of the logged in account.
     parent: The immediate parent of this asset, and it must be other-cloud
       asset. Otherwise, empty. Note: for AWS, we will populate this field only
       when the parent can be extracted from this asset's ARN.
@@ -5017,14 +5055,15 @@ class OtherCloudAssetEvent(_messages.Message):
 
   assetUri = _messages.StringField(1)
   awsInfo = _messages.MessageField('AWSInfo', 2)
-  connection = _messages.StringField(3)
-  contents = _messages.MessageField('Content', 4, repeated=True)
-  createTime = _messages.StringField(5)
-  eventTime = _messages.StringField(6)
-  id = _messages.MessageField('OtherCloudAssetId', 7)
-  location = _messages.StringField(8)
-  parent = _messages.MessageField('OtherCloudAssetId', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  azureInfo = _messages.MessageField('AzureInfo', 3)
+  connection = _messages.StringField(4)
+  contents = _messages.MessageField('Content', 5, repeated=True)
+  createTime = _messages.StringField(6)
+  eventTime = _messages.StringField(7)
+  id = _messages.MessageField('OtherCloudAssetId', 8)
+  location = _messages.StringField(9)
+  parent = _messages.MessageField('OtherCloudAssetId', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class OtherCloudAssetId(_messages.Message):
@@ -5036,9 +5075,12 @@ class OtherCloudAssetId(_messages.Message):
 
   Fields:
     assetName: The name of this asset in the data source provider. It is the
-      original name of the resource. For AWS assets, use
-      [ARN](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-
-      arns.html)
+      original name of the resource. The AWS asset name follows [Amazon
+      Resource Name (ARN)
+      format](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-
+      arns.html) The Microsoft Azure asset name follows [Microsoft Azure
+      Resource Id format](https://learn.microsoft.com/en-us/azure/azure-
+      resource-manager/templates/template-functions-resource#resourceid)
     assetType: The type of this asset.
     dataCollector: The data collector party collecting the asset.
     dataSourceProvider: The data source provider of this asset.
@@ -5050,9 +5092,11 @@ class OtherCloudAssetId(_messages.Message):
     Values:
       PROVIDER_UNSPECIFIED: The unspecified value for data source provider.
       AMAZON_WEB_SERVICES: The value for AWS.
+      MICROSOFT_AZURE: The value for Microsoft Azure.
     """
     PROVIDER_UNSPECIFIED = 0
     AMAZON_WEB_SERVICES = 1
+    MICROSOFT_AZURE = 2
 
   assetName = _messages.StringField(1)
   assetType = _messages.StringField(2)
@@ -5069,7 +5113,7 @@ class OtherCloudConnection(_messages.Message):
     ConnectionTypeValueValuesEnum: Required. The other-cloud connection type.
 
   Fields:
-    collectAwsAssetSetting: A CollectAwsAssetSetting attribute.
+    collectAwsAssetSetting: AWS connection setting.
     connectionType: Required. The other-cloud connection type.
     createTime: Output only. The absolute point in time when the other-cloud
       connection was created.
@@ -5079,10 +5123,11 @@ class OtherCloudConnection(_messages.Message):
       field is used to uniquely identify other-cloud connection resource. It
       contains organization number and other_cloud_connection_id when creating
       other-cloud connection. This field is immutable once resource is
-      created. And currently only "aws" is allowed as the
+      created. And currently "aws" and "azure" are allowed as the
       other_cloud_connection_id. Format: organizations/{organization_number}/o
       therCloudConnections/{other_cloud_connection_id} E.g. -
-      `organizations/123/otherCloudConnections/aws`.
+      `organizations/123/otherCloudConnections/aws` -
+      `organizations/123/otherCloudConnections/azure`
     serviceAgentId: Output only. Immutable. The service agent ID that will be
       used to connect to the provider.
     validationResults: Output only. The latest 10 validation results of the
@@ -6443,25 +6488,32 @@ class ValidationResult(_messages.Message):
       parsed from the above CauseProto in JSON format.
     connectionState: NOTE: Deprecated The state of the other-cloud connection
     connectionStatus: Required. The status of the other-cloud connection with
-      one of the following values VALID: The connection has been set up at AWS
-      properly: the GCP Service Agent can be properly assumed to the AWS
-      delegated role, the AWS Delegated Role can be assumed to the Collector
-      Role, and the AWS Collector Role has required permissions.
-      AWS_FAILED_TO_ASSUME_DELEGATED_ROLE: The connection is invalid because
-      the GCP service agent can not be properly assumed to an AWS delegated
-      role. AWS_FAILED_TO_LIST_ACCOUNTS: The connection is invalid because the
-      APS auto-discovery is enabled and the permission to allow the Delegated
-      Role to list accounts in the organization has not been set properly.
-      AWS_INVALID_COLLECTOR_ACCOUNTS: The connection has invalid Collector
-      accounts. A predefined threshold of the maximum number of invalid
-      Collector accounts will be defined. When the number of invalid Collector
-      accounts exceeds this limit, the validation will stop. The reason for
-      one Collector account's invalidity can be one of the following values.
-      The detailed reason will be included in the cause field.
-      AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE: The Delegated Role can not be
-      properly assumed to the AWS Collector Role in the account.
-      AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION: The Collector
-      Role misses required policy settings.
+      one of the following values VALID: If the connection is a AWS
+      connection, it will be set as VALID if: the GCP Service Agent can be
+      properly assumed to the AWS delegated role, the AWS Delegated Role can
+      be assumed to the Collector Role, and the AWS Collector Role has
+      required permissions; If the connection is an Azure connection, it will
+      be set as VALID if: the GCP Service Agent can be properly assumed to the
+      User-assigned Azure Managed Identity, and the Azure Managed Identity has
+      required permissions. AWS_FAILED_TO_ASSUME_DELEGATED_ROLE: The
+      connection is invalid because the GCP service agent can not be properly
+      assumed to an AWS delegated role. AWS_FAILED_TO_LIST_ACCOUNTS: The
+      connection is invalid because the APS auto-discovery is enabled and the
+      permission to allow the Delegated Role to list accounts in the
+      organization has not been set properly. AWS_INVALID_COLLECTOR_ACCOUNTS:
+      The connection has invalid Collector accounts. A predefined threshold of
+      the maximum number of invalid Collector accounts will be defined. When
+      the number of invalid Collector accounts exceeds this limit, the
+      validation will stop. The reason for one Collector account's invalidity
+      can be one of the following values. The detailed reason will be included
+      in the cause field. AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE: The Delegated
+      Role can not be properly assumed to the AWS Collector Role in the
+      account. AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION: The
+      Collector Role misses required policy settings.
+      AZURE_FAILED_TO_ASSUME_MANAGED_IDENTITY: Failed in assume the Azure
+      Managed Identity with OCAI SA.
+      AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION: Azure Managed
+      Identity missing required permissions.
     validationTime: Required. The time when the connection was validated.
   """
 
@@ -6497,9 +6549,10 @@ class VerifyOtherCloudConnectionRequest(_messages.Message):
   Fields:
     name: The relative resource name of an other-cloud connection. Format: org
       anizations/{organization_number}/otherCloudConnections/{other_cloud_conn
-      ection_id} currently only "aws" is allowed as the
+      ection_id} currently "aws" and "azure" are allowed as the
       `other_cloud_connection_id`. E.g. -
-      `organizations/123/otherCloudConnections/aws`. This field will be used
+      `organizations/123/otherCloudConnections/aws` -
+      `organizations/123/otherCloudConnections/azure` This field will be used
       to validate the connection after its being created.
     targetConnection: An other-cloud connection to verify before its being
       created. A connection's name will not exist until the connection gets

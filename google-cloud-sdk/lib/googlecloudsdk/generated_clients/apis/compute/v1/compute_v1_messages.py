@@ -651,7 +651,7 @@ class AccessConfig(_messages.Message):
     publicPtrDomainName: The DNS domain name for the public PTR record. You
       can set this field only if the `setPublicPtr` field is enabled in
       accessConfig. If this field is unspecified in ipv6AccessConfig, a
-      default PTR record will be createc for first IP in associated external
+      default PTR record will be created for first IP in associated external
       IPv6 range.
     securityPolicy: [Output Only] The resource URL for the security policy
       associated with this access config.
@@ -37708,7 +37708,7 @@ class HTTP2HealthCheck(_messages.Message):
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP/2 health check request. The
-      default value is /.
+      default value is /. Must comply with RFC3986.
     response: Creates a content-based HTTP/2 health check. In addition to the
       required HTTP 200 (OK) status code, you can configure the health check
       to pass only when the backend sends this specific ASCII response string
@@ -37834,7 +37834,7 @@ class HTTPHealthCheck(_messages.Message):
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTP health check request. The
-      default value is /.
+      default value is /. Must comply with RFC3986.
     response: Creates a content-based HTTP health check. In addition to the
       required HTTP 200 (OK) status code, you can configure the health check
       to pass only when the backend sends this specific ASCII response string
@@ -37959,7 +37959,7 @@ class HTTPSHealthCheck(_messages.Message):
     proxyHeader: Specifies the type of proxy header to append before sending
       data to the backend, either NONE or PROXY_V1. The default is NONE.
     requestPath: The request path of the HTTPS health check request. The
-      default value is /.
+      default value is /. Must comply with RFC3986.
     response: Creates a content-based HTTPS health check. In addition to the
       required HTTP 200 (OK) status code, you can configure the health check
       to pass only when the backend sends this specific ASCII response string
@@ -59717,6 +59717,7 @@ class Quota(_messages.Message):
       TPU_LITE_PODSLICE_V5: <no description>
       TPU_PODSLICE_V4: <no description>
       URL_MAPS: <no description>
+      VARIABLE_IPV6_PUBLIC_DELEGATED_PREFIXES: <no description>
       VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
       XPN_SERVICE_PROJECTS: <no description>
@@ -59881,9 +59882,10 @@ class Quota(_messages.Message):
     TPU_LITE_PODSLICE_V5 = 157
     TPU_PODSLICE_V4 = 158
     URL_MAPS = 159
-    VPN_GATEWAYS = 160
-    VPN_TUNNELS = 161
-    XPN_SERVICE_PROJECTS = 162
+    VARIABLE_IPV6_PUBLIC_DELEGATED_PREFIXES = 160
+    VPN_GATEWAYS = 161
+    VPN_TUNNELS = 162
+    XPN_SERVICE_PROJECTS = 163
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

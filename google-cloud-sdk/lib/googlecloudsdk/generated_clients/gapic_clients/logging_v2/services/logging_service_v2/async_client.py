@@ -575,6 +575,12 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 cause the filter to return no results. The maximum
                 length of a filter is 20,000 characters.
 
+                To make queries faster, you can make the filter more
+                selective by using restrictions on [indexed fields]
+                (https://cloud.google.com/logging/docs/view/logging-query-language#indexed-fields)
+                as well as limit the time range of the query by adding
+                range restrictions on the ``timestamp`` field.
+
                 This corresponds to the ``filter`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
@@ -587,6 +593,12 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 option returns entries in order of decreasing timestamps
                 (newest first). Entries with equal timestamps are
                 returned in order of their ``insert_id`` values.
+
+                We recommend setting the ``order_by`` field to
+                ``"timestamp desc"`` when listing recently ingested log
+                entries. If not set, the default value of
+                ``"timestamp asc"`` may take a long time to fetch
+                matching logs that are only recently ingested.
 
                 This corresponds to the ``order_by`` field
                 on the ``request`` instance; if ``request`` is provided, this

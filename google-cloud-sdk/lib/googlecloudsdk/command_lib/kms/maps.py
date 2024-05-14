@@ -69,6 +69,7 @@ VALID_ALGORITHMS_MAP = {
         'aes-256-ctr',
     ],
     PURPOSE_ENUM.ASYMMETRIC_SIGN: [
+        'ec-sign-ed25519',
         'ec-sign-p256-sha256',
         'ec-sign-p384-sha384',
         'ec-sign-secp256k1-sha256',

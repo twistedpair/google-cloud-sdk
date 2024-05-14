@@ -241,6 +241,8 @@ class BackupConfig(_messages.Message):
   r"""BackupConfig contains backup related config on a volume.
 
   Fields:
+    backupChainBytes: Output only. Total size of all backups in a chain in
+      bytes = baseline backup size + sum(incremental backup size).
     backupPolicies: Optional. When specified, schedule backups will be created
       based on the policy configuration.
     backupVault: Optional. Name of backup vault. Format:
@@ -251,9 +253,10 @@ class BackupConfig(_messages.Message):
       policy attached.
   """
 
-  backupPolicies = _messages.StringField(1, repeated=True)
-  backupVault = _messages.StringField(2)
-  scheduledBackupEnabled = _messages.BooleanField(3)
+  backupChainBytes = _messages.IntegerField(1)
+  backupPolicies = _messages.StringField(2, repeated=True)
+  backupVault = _messages.StringField(3)
+  scheduledBackupEnabled = _messages.BooleanField(4)
 
 
 class BackupPolicy(_messages.Message):
