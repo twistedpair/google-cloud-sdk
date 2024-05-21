@@ -41,10 +41,10 @@ from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources as core_resources
-
 import six
 
 ZONE_PROPERTY_EXPLANATION = """\
@@ -738,6 +738,7 @@ def AddCreateDiskArgs(
     support_replica_zones=True,
     enable_source_instant_snapshots=False,
     enable_confidential_compute=False,
+    support_disk_labels=False,
 ):
   """Adds create-disk argument for instances and instance-templates."""
 
@@ -898,6 +899,7 @@ def AddCreateDiskArgs(
       'disk-resource-policy': arg_parsers.ArgList(max_length=1),
       'architecture': str,
       'storage-pool': str,
+      'labels': arg_parsers.ArgList(min_length=1, custom_delim_char=':'),
   }
 
   if include_name:
@@ -991,6 +993,20 @@ def AddCreateDiskArgs(
       must be the same as the instance zone.
     """
     spec['replica-zones'] = arg_parsers.ArgList(max_length=2)
+
+  if support_disk_labels:
+    disk_help += """
+      *labels*::: List of label KEY=VALUE pairs separated by `:` character to
+      add to the disk.
+
+      Example: `Key1=Value1:Key2=Value2:Key3=Value3`.\n
+
+      {KEY_FORMAT_HELP} {VALUE_FORMAT_HELP}
+    """.format(
+        KEY_FORMAT_HELP=labels_util.KEY_FORMAT_HELP,
+        VALUE_FORMAT_HELP=labels_util.VALUE_FORMAT_HELP,
+    )
+    spec['labels'] = arg_parsers.ArgList(min_length=1, custom_delim_char=':')
 
   parser.add_argument(
       '--create-disk',

@@ -264,9 +264,13 @@ class TaskGraph:
             task_wrapper.id for task_wrapper in parent_tasks_for_next_layer
         ]
 
-        parent_tasks_for_next_layer = [
-            self.add(task, dependent_task_ids=dependent_task_ids)
-            for task in task_iterator
-        ]
-
+        parent_tasks_for_next_layer = []
+        for task in task_iterator:
+          task_wrapper = self.add(task, dependent_task_ids=dependent_task_ids)
+          if task_wrapper is not None:
+            parent_tasks_for_next_layer.append(task_wrapper)
+      # If the dependent tasks are skipped, then the parent tasks needs to be
+      # marked as completed
+      if not parent_tasks_for_next_layer:
+        self.complete(executed_task_wrapper)
       return parent_tasks_for_next_layer

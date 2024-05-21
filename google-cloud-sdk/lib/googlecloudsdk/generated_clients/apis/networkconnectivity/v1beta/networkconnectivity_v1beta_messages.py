@@ -288,6 +288,12 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_messages.Message):
   r"""Message describing CustomHardwareLinkConnectPair object
 
+  Enums:
+    LinkSpeedValueValuesEnum: Required. The link speed of custom hardware link
+      connect pair
+    LinkTypeValueValuesEnum: Required. The link type of custom hardware link
+      pair.
+
   Messages:
     LabelsValue: Optional. User-defined labels.
 
@@ -295,6 +301,8 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
     createTime: Output only. Time when the CustomHardwareLinkConnectPair was
       created.
     labels: Optional. User-defined labels.
+    linkSpeed: Required. The link speed of custom hardware link connect pair
+    linkType: Required. The link type of custom hardware link pair.
     name: Identifier. The name of a CustomHardwareLinkConnectPair. The name is
       restricted to letters, numbers and with the first character being a
       letter, the last a letter or a number. Format: `projects/{project}/locat
@@ -303,7 +311,34 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
       `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
     updateTime: Output only. Time when the CustomHardwareLinkConnectPair was
       updated.
+    zone: Required. The zone associated with the custom hardware link pair.
+      Example: us-central1-b
   """
+
+  class LinkSpeedValueValuesEnum(_messages.Enum):
+    r"""Required. The link speed of custom hardware link connect pair
+
+    Values:
+      LINK_SPEED_UNSPECIFIED: An invalid type as the default case.
+      LINK_SPEED_10_G: Link speed of 10 G. Supported by ULL and Regular link
+        types
+      LINK_SPEED_100_G: Link speed of 100 G. Supported by Regular link type
+    """
+    LINK_SPEED_UNSPECIFIED = 0
+    LINK_SPEED_10_G = 1
+    LINK_SPEED_100_G = 2
+
+  class LinkTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The link type of custom hardware link pair.
+
+    Values:
+      LINK_TYPE_UNSPECIFIED: An invalid type as the default case.
+      REGULAR: Regular traffic type.
+      ULL: Ultra-low latency traffic type.
+    """
+    LINK_TYPE_UNSPECIFIED = 0
+    REGULAR = 1
+    ULL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -331,8 +366,53 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  linkSpeed = _messages.EnumField('LinkSpeedValueValuesEnum', 3)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  zone = _messages.StringField(7)
+
+
+class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
+  r"""Filter matches L4 traffic.
+
+  Enums:
+    ProtocolVersionValueValuesEnum: Required. Internet protocol versions this
+      policy-based route applies to. For this version, only IPV4 is supported.
+      IPV6 is supported in preview.
+
+  Fields:
+    destRange: Optional. The destination IP range of outgoing packets that
+      this policy-based route applies to. Default is "0.0.0.0/0" if protocol
+      version is IPv4.
+    ipProtocol: Optional. The IP protocol that this policy-based route applies
+      to. Valid values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
+    protocolVersion: Required. Internet protocol versions this policy-based
+      route applies to. For this version, only IPV4 is supported. IPV6 is
+      supported in preview.
+    srcRange: Optional. The source IP range of outgoing packets that this
+      policy-based route applies to. Default is "0.0.0.0/0" if protocol
+      version is IPv4.
+  """
+
+  class ProtocolVersionValueValuesEnum(_messages.Enum):
+    r"""Required. Internet protocol versions this policy-based route applies
+    to. For this version, only IPV4 is supported. IPV6 is supported in
+    preview.
+
+    Values:
+      PROTOCOL_VERSION_UNSPECIFIED: Default value.
+      IPV4: The PBR is for IPv4 internet protocol traffic.
+      IPV6: The PBR is for IPv6 internet protocol traffic.
+    """
+    PROTOCOL_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+    IPV6 = 2
+
+  destRange = _messages.StringField(1)
+  ipProtocol = _messages.StringField(2)
+  protocolVersion = _messages.EnumField('ProtocolVersionValueValuesEnum', 3)
+  srcRange = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaGroup(_messages.Message):
@@ -599,6 +679,18 @@ class GoogleCloudNetworkconnectivityV1betaHub(_messages.Message):
   updateTime = _messages.StringField(13)
 
 
+class GoogleCloudNetworkconnectivityV1betaInterconnectAttachment(_messages.Message):
+  r"""InterconnectAttachment that this route applies to.
+
+  Fields:
+    region: Optional. Cloud region to install this policy-based route on
+      interconnect attachment. Use `all` to install it on all interconnect
+      attachments.
+  """
+
+  region = _messages.StringField(1)
+
+
 class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_messages.Message):
   r"""A collection of VLAN attachment resources. These resources should be
   redundant attachments that all advertise the same prefixes to Google Cloud.
@@ -772,6 +864,22 @@ class GoogleCloudNetworkconnectivityV1betaListHubsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class GoogleCloudNetworkconnectivityV1betaListPolicyBasedRoutesResponse(_messages.Message):
+  r"""Response for PolicyBasedRouting.ListPolicyBasedRoutes method.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    policyBasedRoutes: Policy-based routes to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyBasedRoutes = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class GoogleCloudNetworkconnectivityV1betaListRegionalEndpointsResponse(_messages.Message):
   r"""Response for ListRegionalEndpoints.
 
@@ -898,6 +1006,109 @@ class GoogleCloudNetworkconnectivityV1betaOperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute(_messages.Message):
+  r"""Policy-based routes route L4 network traffic based on not just
+  destination IP address, but also source IP address, protocol, and more. If a
+  policy-based route conflicts with other types of routes, the policy-based
+  route always takes precedence.
+
+  Enums:
+    NextHopOtherRoutesValueValuesEnum: Optional. Other routes that will be
+      referenced to determine the next hop of the packet.
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Output only. Time when the policy-based route was created.
+    description: Optional. An optional description of this resource. Provide
+      this field when you create the resource.
+    filter: Required. The filter to match L4 traffic.
+    interconnectAttachment: Optional. The interconnect attachments that this
+      policy-based route applies to.
+    kind: Output only. Type of this resource. Always
+      networkconnectivity#policyBasedRoute for policy-based Route resources.
+    labels: User-defined labels.
+    name: Immutable. A unique name of the resource in the form of `projects/{p
+      roject_number}/locations/global/PolicyBasedRoutes/{policy_based_route_id
+      }`
+    network: Required. Fully-qualified URL of the network that this route
+      applies to, for example: projects/my-project/global/networks/my-network.
+    nextHopIlbIp: Optional. The IP address of a global-access-enabled L4 ILB
+      that is the next hop for matching packets. For this version, only
+      nextHopIlbIp is supported.
+    nextHopOtherRoutes: Optional. Other routes that will be referenced to
+      determine the next hop of the packet.
+    priority: Optional. The priority of this policy-based route. Priority is
+      used to break ties in cases where there are more than one matching
+      policy-based routes found. In cases where multiple policy-based routes
+      are matched, the one with the lowest-numbered priority value wins. The
+      default value is 1000. The priority value must be from 1 to 65535,
+      inclusive.
+    selfLink: Output only. Server-defined fully-qualified URL for this
+      resource.
+    updateTime: Output only. Time when the policy-based route was updated.
+    virtualMachine: Optional. VM instances that this policy-based route
+      applies to.
+    warnings: Output only. If potential misconfigurations are detected for
+      this route, this field will be populated with warning messages.
+  """
+
+  class NextHopOtherRoutesValueValuesEnum(_messages.Enum):
+    r"""Optional. Other routes that will be referenced to determine the next
+    hop of the packet.
+
+    Values:
+      OTHER_ROUTES_UNSPECIFIED: Default value.
+      DEFAULT_ROUTING: Use the routes from the default routing tables (system-
+        generated routes, custom routes, peering route) to determine the next
+        hop. This effectively excludes matching packets being applied on other
+        PBRs with a lower priority.
+    """
+    OTHER_ROUTES_UNSPECIFIED = 0
+    DEFAULT_ROUTING = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  filter = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaFilter', 3)
+  interconnectAttachment = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaInterconnectAttachment', 4)
+  kind = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  nextHopIlbIp = _messages.StringField(9)
+  nextHopOtherRoutes = _messages.EnumField('NextHopOtherRoutesValueValuesEnum', 10)
+  priority = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
+  virtualMachine = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaVirtualMachine', 14)
+  warnings = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaWarnings', 15, repeated=True)
 
 
 class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
@@ -1576,6 +1787,93 @@ class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
   userDetails = _messages.StringField(3)
 
 
+class GoogleCloudNetworkconnectivityV1betaVirtualMachine(_messages.Message):
+  r"""VM instances that this policy-based route applies to.
+
+  Fields:
+    tags: Optional. A list of VM instance tags that this policy-based route
+      applies to. VM instances that have ANY of tags specified here installs
+      this PBR.
+  """
+
+  tags = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaWarnings(_messages.Message):
+  r"""Informational warning message.
+
+  Enums:
+    CodeValueValuesEnum: Output only. A warning code, if applicable.
+
+  Messages:
+    DataValue: Output only. Metadata about this warning in key: value format.
+      The key should provides more detail on the warning being returned. For
+      example, for warnings where there are no results in a list request for a
+      particular zone, this key might be scope and the key value might be the
+      zone name. Other examples might be a key indicating a deprecated
+      resource and a suggested replacement.
+
+  Fields:
+    code: Output only. A warning code, if applicable.
+    data: Output only. Metadata about this warning in key: value format. The
+      key should provides more detail on the warning being returned. For
+      example, for warnings where there are no results in a list request for a
+      particular zone, this key might be scope and the key value might be the
+      zone name. Other examples might be a key indicating a deprecated
+      resource and a suggested replacement.
+    warningMessage: Output only. A human-readable description of the warning
+      code.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. A warning code, if applicable.
+
+    Values:
+      WARNING_UNSPECIFIED: Default value.
+      RESOURCE_NOT_ACTIVE: The policy-based route is not active and
+        functioning. Common causes are that the dependent network was deleted
+        or the resource project was turned off.
+      RESOURCE_BEING_MODIFIED: The policy-based route is being modified (e.g.
+        created/deleted) at this time.
+    """
+    WARNING_UNSPECIFIED = 0
+    RESOURCE_NOT_ACTIVE = 1
+    RESOURCE_BEING_MODIFIED = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Output only. Metadata about this warning in key: value format. The key
+    should provides more detail on the warning being returned. For example,
+    for warnings where there are no results in a list request for a particular
+    zone, this key might be scope and the key value might be the zone name.
+    Other examples might be a key indicating a deprecated resource and a
+    suggested replacement.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  data = _messages.MessageField('DataValue', 2)
+  warningMessage = _messages.StringField(3)
+
+
 class GoogleIamV1AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -2114,6 +2412,33 @@ class NetworkconnectivityProjectsLocationsCustomHardwareInstancesDeleteRequest(_
   requestId = _messages.StringField(2)
 
 
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolic
+  yRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetRequest
   object.
@@ -2184,6 +2509,41 @@ class NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest(_m
   updateMask = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolic
+  yRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPerm
+  issionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreat
   eRequest object.
@@ -2237,6 +2597,33 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsDeleteReq
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIa
+  mPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetRequest(_messages.Message):
@@ -2310,6 +2697,41 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsPatchRequ
   updateMask = _messages.StringField(4)
 
 
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIa
+  mPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestI
+  amPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsCrea
   teRequest object.
@@ -2370,6 +2792,33 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsDeleteRe
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetI
+  amPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetRequest(_messages.Message):
@@ -2449,6 +2898,41 @@ class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchReq
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetI
+  amPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTest
+  IamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
@@ -2911,6 +3395,154 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
   resource = _messages.StringField(2, required=True)
 
 
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
+  object.
+
+  Fields:
+    googleCloudNetworkconnectivityV1betaPolicyBasedRoute: A
+      GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute resource to be
+      passed as the request body.
+    parent: Required. The parent resource's name of the PolicyBasedRoute.
+    policyBasedRouteId: Required. Unique id for the policy-based route to
+      create.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  googleCloudNetworkconnectivityV1betaPolicyBasedRoute = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute', 1)
+  parent = _messages.StringField(2, required=True)
+  policyBasedRouteId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the policy-based route resource to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolic
+  yRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the PolicyBasedRoute resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolic
+  yRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPerm
+  issionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsListRequest object.
 
@@ -3313,8 +3945,16 @@ encoding.AddCustomJsonEnumMapping(
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
 encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
     NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

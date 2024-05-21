@@ -501,6 +501,8 @@ class Endpoint(_messages.Message):
     name: Output only. The name of the endpoint.
     network: Required. The fully qualified URL of the network to which the IDS
       Endpoint is attached.
+    satisfiesPzi: Output only. [Output Only] Reserved for future use.
+    satisfiesPzs: Output only. [Output Only] Reserved for future use.
     severity: Required. Lowest threat severity that this endpoint will alert
       on.
     state: Output only. Current state of the endpoint.
@@ -576,11 +578,13 @@ class Endpoint(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   network = _messages.StringField(7)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  threatExceptions = _messages.StringField(10, repeated=True)
-  trafficLogs = _messages.BooleanField(11)
-  updateTime = _messages.StringField(12)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  threatExceptions = _messages.StringField(12, repeated=True)
+  trafficLogs = _messages.BooleanField(13)
+  updateTime = _messages.StringField(14)
 
 
 class Exemplar(_messages.Message):

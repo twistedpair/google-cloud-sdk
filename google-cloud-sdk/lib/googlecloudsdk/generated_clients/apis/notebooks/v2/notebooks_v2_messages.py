@@ -64,6 +64,20 @@ class AcceleratorConfig(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class AccessConfig(_messages.Message):
+  r"""An access configuration attached to an instance's network interface.
+
+  Fields:
+    externalIp: An external IP address associated with this instance. Specify
+      an unused static external IP address available to the project or leave
+      this field undefined to use an IP from a shared ephemeral IP address
+      pool. If you specify a static external IP address, it must live in the
+      same region as the zone of the instance.
+  """
+
+  externalIp = _messages.StringField(1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -639,6 +653,8 @@ class Instance(_messages.Message):
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
+    satisfiesPzi: Output only. Reserved for future use for Zone Isolation.
+    satisfiesPzs: Output only. Reserved for future use for Zone Separation.
     state: Output only. The state of this instance.
     thirdPartyProxyUrl: Output only. The workforce pools proxy endpoint that
       is used to access the Jupyter notebook.
@@ -758,10 +774,12 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
   proxyUri = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  thirdPartyProxyUrl = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 15, repeated=True)
+  satisfiesPzi = _messages.BooleanField(12)
+  satisfiesPzs = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  thirdPartyProxyUrl = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 17, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -895,6 +913,10 @@ class NetworkInterface(_messages.Message):
       interface. This may be gVNIC or VirtioNet.
 
   Fields:
+    accessConfigs: Optional. An array of configurations for this interface.
+      Currently, only one access config, ONE_TO_ONE_NAT, is supported. If no
+      accessConfigs specified, the instance will have an external internet
+      access through an ephemeral external IP address.
     network: Optional. The name of the VPC that this VM instance is in.
       Format: `projects/{project_id}/global/networks/{network_id}`
     nicType: Optional. The type of vNIC to be used on this interface. This may
@@ -917,9 +939,10 @@ class NetworkInterface(_messages.Message):
     VIRTIO_NET = 1
     GVNIC = 2
 
-  network = _messages.StringField(1)
-  nicType = _messages.EnumField('NicTypeValueValuesEnum', 2)
-  subnet = _messages.StringField(3)
+  accessConfigs = _messages.MessageField('AccessConfig', 1, repeated=True)
+  network = _messages.StringField(2)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 3)
+  subnet = _messages.StringField(4)
 
 
 class NotebooksProjectsLocationsGetRequest(_messages.Message):

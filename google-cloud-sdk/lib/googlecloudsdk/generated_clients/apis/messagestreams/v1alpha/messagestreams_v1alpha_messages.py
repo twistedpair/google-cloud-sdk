@@ -30,19 +30,19 @@ class AuthenticationConfig(_messages.Message):
   googleOidc = _messages.MessageField('GoogleOidc', 2)
 
 
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
-class Conversion(_messages.Message):
-  r"""Conversion defines how to transform an incoming message payload from one
-  format to another.
+class AvroFormat(_messages.Message):
+  r"""The format of an AVRO message payload.
 
   Fields:
-    outputDataFormat: Required. The output data format of the conversion.
+    schemaDefinition: Optional. The entire schema definition is stored in this
+      field.
   """
 
-  outputDataFormat = _messages.MessageField('DataFormat', 1)
+  schemaDefinition = _messages.StringField(1)
+
+
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
 
 
 class CreateReferenceRequest(_messages.Message):
@@ -70,35 +70,6 @@ class CreateReferenceRequest(_messages.Message):
   reference = _messages.MessageField('Reference', 2)
   referenceId = _messages.StringField(3)
   requestId = _messages.StringField(4)
-
-
-class DataFormat(_messages.Message):
-  r"""The data format of a message payload.
-
-  Enums:
-    TypeValueValuesEnum: Required. The format type of a message payload.
-
-  Fields:
-    schema: Optional. The schema of a message payload.
-    type: Required. The format type of a message payload.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The format type of a message payload.
-
-    Values:
-      TYPE_UNSPECIFIED: FORMAT types unspecified.
-      JSON: JSON
-      PROTOCOL_BUFFERS: PROTO
-      AVRO: AVRO
-    """
-    TYPE_UNSPECIFIED = 0
-    JSON = 1
-    PROTOCOL_BUFFERS = 2
-    AVRO = 3
-
-  schema = _messages.MessageField('Schema', 1)
-  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -131,6 +102,11 @@ class Destination(_messages.Message):
       and should be set only by users interested in authenticated push.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
+    outputDataFormat: Optional. The output format of the data. If the input
+      data format (either configured via the stream's input data format, or by
+      the format specified on the message) is of schemaless type (JSON, XML,
+      etc.) then this field is optional even if there is a transformation
+      mediation.
     serviceEndpoint: Required. The URL of a endpoint to route traffic to. If a
       DNS FQDN is provided as the endpoint, Message Streams will create a
       peering zone to the consumer VPC and forward DNS requests to the VPC
@@ -140,7 +116,8 @@ class Destination(_messages.Message):
 
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
   networkConfig = _messages.MessageField('NetworkConfig', 2)
-  serviceEndpoint = _messages.StringField(3)
+  outputDataFormat = _messages.MessageField('MessageDataFormat', 3)
+  serviceEndpoint = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -209,6 +186,10 @@ class GoogleOidc(_messages.Message):
 
   audience = _messages.StringField(1)
   serviceAccount = _messages.StringField(2)
+
+
+class JsonFormat(_messages.Message):
+  r"""The format of a JSON message payload."""
 
 
 class KafkaAuthenticationConfig(_messages.Message):
@@ -404,15 +385,26 @@ class Mediation(_messages.Message):
     bindAttributesAsRawHeaders: Optional. If bind_attributes_as_raw_headers
       set true, we will bind the attributes of an incoming cloud event as raw
       HTTP headers.
-    conversion: Optional. Conversion defines the way to convert an incoming
-      message payload from one format to another.
     transformation: Optional. Transformation defines the way to transform an
       incoming message.
   """
 
   bindAttributesAsRawHeaders = _messages.BooleanField(1)
-  conversion = _messages.MessageField('Conversion', 2)
-  transformation = _messages.MessageField('Transformation', 3)
+  transformation = _messages.MessageField('Transformation', 2)
+
+
+class MessageDataFormat(_messages.Message):
+  r"""The format of a message data.
+
+  Fields:
+    avro: Optional. AVRO format.
+    json: Optional. JSON format.
+    protobuf: Optional. PROTOBUF format.
+  """
+
+  avro = _messages.MessageField('AvroFormat', 1)
+  json = _messages.MessageField('JsonFormat', 2)
+  protobuf = _messages.MessageField('ProtobufFormat', 3)
 
 
 class MessagestreamsProjectsLocationsGetRequest(_messages.Message):
@@ -760,6 +752,17 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class ProtobufFormat(_messages.Message):
+  r"""The format of a Protobuf message payload.
+
+  Fields:
+    schemaDefinition: Optional. The entire schema definition is stored in this
+      field.
+  """
+
+  schemaDefinition = _messages.StringField(1)
+
+
 class Reference(_messages.Message):
   r"""Represents a reference to a resource.
 
@@ -853,18 +856,6 @@ class SaslAuthConfig(_messages.Message):
   mechanism = _messages.EnumField('MechanismValueValuesEnum', 1)
   passwordSecret = _messages.StringField(2)
   username = _messages.StringField(3)
-
-
-class Schema(_messages.Message):
-  r"""The value of a schema, either a schema definition or a schema uri. For
-  now only schema definition is supported.
-
-  Fields:
-    schemaDefinition: Optional. The entire schema definition is stored in this
-      field.
-  """
-
-  schemaDefinition = _messages.StringField(1)
 
 
 class Source(_messages.Message):
@@ -1020,11 +1011,12 @@ class Stream(_messages.Message):
       details of the final HTTP response of a message stream and is sent to
       the message bus that the message was received from. Ignored if the
       message did not come from a bus.
-    inputDataFormat: Optional. An input data format must be set if there is a
-      Conversion or Transformation mediation, otherwise it is optional. An
-      input schema is required if the payload is in AVRO or PROTOCOL_BINDING
-      content types. An input schema is not required for JSON, and XML content
-      types but will be used if specified.
+    inputDataFormat: Optional. An input data format of messages in a stream.
+      If an input format is specified then the stream will enforce it, meaning
+      that it will fail messages that do not match the input format. If an
+      input format is not specified then the stream will try to make sense of
+      the messages based on the value of "datacontenttype" attribute in the
+      message.
     labels: Optional. Labels as key value pairs
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
@@ -1134,7 +1126,7 @@ class Stream(_messages.Message):
   etag = _messages.StringField(4)
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
   generateReplies = _messages.BooleanField(6)
-  inputDataFormat = _messages.MessageField('DataFormat', 7)
+  inputDataFormat = _messages.MessageField('MessageDataFormat', 7)
   labels = _messages.MessageField('LabelsValue', 8)
   mediations = _messages.MessageField('Mediation', 9, repeated=True)
   name = _messages.StringField(10)

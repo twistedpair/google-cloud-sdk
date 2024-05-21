@@ -1502,7 +1502,6 @@ class RolloutInfo(_messages.Message):
       COMPLETED: Rollout completed.
       SUSPENDED: Rollout suspended.
       ABORTED: Rollout aborted.
-      ERRORED: Rollout errored.
       IN_PROGRESS: Rollout in progress.
       STALLED: Rollout stalled.
       CANCELLED: Rollout cancelled.
@@ -1511,10 +1510,9 @@ class RolloutInfo(_messages.Message):
     COMPLETED = 1
     SUSPENDED = 2
     ABORTED = 3
-    ERRORED = 4
-    IN_PROGRESS = 5
-    STALLED = 6
-    CANCELLED = 7
+    IN_PROGRESS = 4
+    STALLED = 5
+    CANCELLED = 6
 
   endTime = _messages.StringField(1)
   message = _messages.StringField(2)

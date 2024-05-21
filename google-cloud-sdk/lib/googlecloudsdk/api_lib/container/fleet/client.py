@@ -341,6 +341,45 @@ class FleetClient(object):
     )
     return self.client.projects_locations_scopes.Get(req)
 
+  def GetScopeIamPolicy(self, scope_path):
+    """Gets the IAM policy for a scope resource.
+
+    Args:
+      scope_path: Full resource path of the scope.
+
+    Returns:
+      An Iam Policy.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    req = self.messages.GkehubProjectsLocationsScopesGetIamPolicyRequest(
+        resource=scope_path
+    )
+    return self.client.projects_locations_scopes.GetIamPolicy(req)
+
+  def SetScopeIamPolicy(self, scope_path, policy):
+    """Sets the IAM policy for a scope resource.
+
+    Args:
+      scope_path: Full resource path of the scope.
+      policy: IAM policy to be set for the scope.
+
+    Returns:
+      An Iam Policy.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error
+    """
+    policy_request = self.messages.SetIamPolicyRequest(
+        policy=policy,
+    )
+    req = self.messages.GkehubProjectsLocationsScopesSetIamPolicyRequest(
+        resource=scope_path,
+        setIamPolicyRequest=policy_request,
+    )
+    return self.client.projects_locations_scopes.SetIamPolicy(req)
+
   def ListScopes(self, project):
     """Lists scopes in a project.
 

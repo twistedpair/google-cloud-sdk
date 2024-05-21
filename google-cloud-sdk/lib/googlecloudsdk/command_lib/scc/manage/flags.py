@@ -206,10 +206,18 @@ def CreateDisplayNameFlag(required=True) -> base.Argument:
 
 def CreateServiceNameArg() -> base.Argument:
   """A positional argument representing the service name."""
+  valid_service_names = '\n\n* '.join(
+      [str(service) for service in constants.SUPPORTED_SERVICES]
+  )
+
   return base.Argument(
       'service_name',
-      help="""The service name, provided either in lowercase hyphenated form
-      (e.g. security-health-analytics), or in abbreviated form (e.g. sha)""",
+      help=(
+          'The service name, provided either in lowercase hyphenated form'
+          ' (e.g. security-health-analytics), or in abbreviated form (e.g.'
+          ' sha) if applicable.\n\nThe list of supported services is:\n\n*'
+          f' {valid_service_names}'
+      ),
   )
 
 

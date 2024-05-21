@@ -428,3 +428,28 @@ def GetTokenUserFlag():
   return base.Argument(
       '--user', required=False, help='User used in kubeconfig.'
   )
+
+
+def GetNoBrowserFlag():
+  """Used to start authentication on a device without a browser in order to perform login on a second device with browser."""
+  return base.Argument(
+      '--no-browser',
+      action='store_true',
+      required=False,
+      help=(
+          'Option to indicate login completion on a second device with browser.'
+          'Used with `server` option.'
+      ),
+  )
+
+
+def GetRemoteBootstrapFlag():
+  """Used to complete authentication that was started on a remote device without a browser, on the current device with a browser."""
+  return base.Argument(
+      '--remote-bootstrap',
+      required=False,
+      help=(
+          'Option to complete login that was started using `no-browser` option'
+          'on a remote device that does not have a browser.'
+      ),
+  )

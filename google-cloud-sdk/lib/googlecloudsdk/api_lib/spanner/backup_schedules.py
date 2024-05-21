@@ -49,9 +49,11 @@ def CreateBackupScheduleMessage(
     BackupSchedule message.
   """
   backup_schedule = msgs.BackupSchedule(name=backup_schedule_ref.RelativeName())
-  backup_schedule.retentionDuration = ParseAndFormatRetentionDuration(
-      args.retention_duration
-  )
+
+  if args.retention_duration:
+    backup_schedule.retentionDuration = ParseAndFormatRetentionDuration(
+        args.retention_duration
+    )
 
   if encryption_type or kms_key:
     encryption_config = msgs.CreateBackupEncryptionConfig()
@@ -66,9 +68,10 @@ def CreateBackupScheduleMessage(
 
   backup_schedule.fullBackupSpec = msgs.FullBackupSpec()
 
-  backup_schedule.spec = msgs.BackupScheduleSpec(
-      cronSpec=msgs.CrontabSpec(text=args.cron)
-  )
+  if args.cron:
+    backup_schedule.spec = msgs.BackupScheduleSpec(
+        cronSpec=msgs.CrontabSpec(text=args.cron)
+    )
   return backup_schedule
 
 
@@ -116,9 +119,39 @@ def List(database_ref):
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
   req = msgs.SpannerProjectsInstancesDatabasesBackupSchedulesListRequest(
-      parent=database_ref.RelativeName())
+      parent=database_ref.RelativeName()
+  )
   return list_pager.YieldFromList(
       client.projects_instances_databases_backupSchedules,
       req,
       field='backupSchedules',
-      batch_size_attribute='pageSize')
+      batch_size_attribute='pageSize',
+  )
+
+
+def Update(
+    backup_schedule_ref,
+    args,
+    encryption_type,
+    kms_key,
+):
+  """Update a backup schedule."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  req = msgs.SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest(
+      name=backup_schedule_ref.RelativeName()
+  )
+  req.backupSchedule = CreateBackupScheduleMessage(
+      backup_schedule_ref, args, msgs, encryption_type, kms_key
+  )
+
+  update_mask_paths = []
+  if args.cron:
+    update_mask_paths.append('spec.cron_spec.text')
+  if args.retention_duration:
+    update_mask_paths.append('retention_duration')
+  if encryption_type or kms_key:
+    update_mask_paths.append('encryption_config')
+  req.updateMask = ','.join(update_mask_paths)
+
+  return client.projects_instances_databases_backupSchedules.Patch(req)

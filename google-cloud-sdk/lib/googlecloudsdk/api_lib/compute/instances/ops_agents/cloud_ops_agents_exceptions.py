@@ -43,6 +43,17 @@ class PolicyMalformedError(PolicyError):
     super(PolicyMalformedError, self).__init__(message)
 
 
+class PolicyInternalError(PolicyError):
+  """Raised when the specified Ops Agents policy is malformed."""
+
+  def __init__(self, policy_id, detail):
+    message = (
+        'Encountered an internal error when processing the Ops Agents policy'
+        ' [{policy_id}]. Please try again later.'.format(policy_id=policy_id)
+    )
+    super(PolicyInternalError, self).__init__(message)
+
+
 class PolicyNotFoundError(PolicyError):
   """Raised when the specified Ops Agents policy is not found."""
 

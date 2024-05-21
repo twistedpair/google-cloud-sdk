@@ -37,6 +37,13 @@ def AddSourceDetailsFlag(parser):
   AddProviderFlag(source_cp_params_group)
 
 
+def AddSourceUpdateFlag(parser):
+  """Adds the source connection profile parameters to the given parser during update command."""
+  source_cp_params_group = parser.add_group(hidden=True)
+  AddGcsBucket(source_cp_params_group)
+  AddGcsPrefix(source_cp_params_group)
+
+
 def AddGcsBucket(parser):
   """Add the gcs bucket field to the parser."""
   parser.add_argument(

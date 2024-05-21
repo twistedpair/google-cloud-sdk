@@ -1399,6 +1399,24 @@ class _SectionApiEndpointOverrides(_Section):
         hidden=hidden,
         validator=self.EndpointValidator)
 
+  def UniversifyAddress(self, address: str):
+    """Update a URL based on the current universe domain."""
+    default_universe_domain = 'googleapis.com'
+    try:
+      active_config = named_configs.ConfigurationStore.ActiveConfig()
+      active_config_properties = active_config.GetProperties()
+    except Exception:  # pylint: disable=broad-except
+      universe_domain = default_universe_domain
+    else:
+      universe_domain = active_config_properties.get('core', {}).get(
+          'universe_domain', default_universe_domain
+      )
+    if address is not None and default_universe_domain != universe_domain:
+      address = address.replace(
+          default_universe_domain, universe_domain, 1
+      )
+    return address
+
   def GetDefaultEndpoint(self, api_name):
     """Returns the BASE_URL for the respective api and version."""
     api = apis_map.MAP.get(api_name)
@@ -1406,7 +1424,7 @@ class _SectionApiEndpointOverrides(_Section):
       for api_version in api:
         api_def = api.get(api_version)
         if api_def.default_version and api_def.apitools:
-          return api_def.apitools.base_url
+          return self.UniversifyAddress(api_def.apitools.base_url)
 
 
 class _SectionApp(_Section):

@@ -338,7 +338,7 @@ class DlpOrganizationsLocationsConnectionsSearchRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsConnectionsSearchRequest object.
 
   Fields:
-    filter: Optional. * Supported fields/values - `state` -
+    filter: Optional. Supported field/value: - `state` -
       MISSING|AVAILABLE|ERROR
     pageSize: Optional. Number of results per page, max 1000.
     pageToken: Optional. Page token from a previous page to return the next
@@ -1867,8 +1867,7 @@ class DlpProjectsLocationsConnectionsListRequest(_messages.Message):
   r"""A DlpProjectsLocationsConnectionsListRequest object.
 
   Fields:
-    filter: Optional. * Supported fields/values - `state` -
-      MISSING|AVAILABLE|ERROR
+    filter: Optional. Supported field/value: `state` - MISSING|AVAILABLE|ERROR
     pageSize: Optional. Number of results per page, max 1000.
     pageToken: Optional. Page token from a previous page to return the next
       set of results. If set, all other request fields must match the original
@@ -1902,7 +1901,7 @@ class DlpProjectsLocationsConnectionsSearchRequest(_messages.Message):
   r"""A DlpProjectsLocationsConnectionsSearchRequest object.
 
   Fields:
-    filter: Optional. * Supported fields/values - `state` -
+    filter: Optional. Supported field/value: - `state` -
       MISSING|AVAILABLE|ERROR
     pageSize: Optional. Number of results per page, max 1000.
     pageToken: Optional. Page token from a previous page to return the next
@@ -3506,9 +3505,9 @@ class GooglePrivacyDlpV2CloudSqlDiscoveryTarget(_messages.Message):
 
 
 class GooglePrivacyDlpV2CloudSqlIamCredential(_messages.Message):
-  r"""Use IAM auth to connect. This requires the Cloud SQL IAM feature to be
-  enabled on the instance, which is not the default for Cloud SQL. See
-  https://cloud.google.com/sql/docs/postgres/authentication and
+  r"""Use IAM authentication to connect. This requires the Cloud SQL IAM
+  feature to be enabled on the instance, which is not the default for Cloud
+  SQL. See https://cloud.google.com/sql/docs/postgres/authentication and
   https://cloud.google.com/sql/docs/mysql/authentication.
   """
 
@@ -3544,9 +3543,9 @@ class GooglePrivacyDlpV2CloudSqlProperties(_messages.Message):
 
     Values:
       DATABASE_ENGINE_UNKNOWN: An engine that is not currently supported by
-        SDP.
+        Sensitive Data Protection.
       DATABASE_ENGINE_MYSQL: Cloud SQL for MySQL instance.
-      DATABASE_ENGINE_POSTGRES: Cloud SQL for Postgres instance.
+      DATABASE_ENGINE_POSTGRES: Cloud SQL for PostgreSQL instance.
     """
     DATABASE_ENGINE_UNKNOWN = 0
     DATABASE_ENGINE_MYSQL = 1
@@ -4016,9 +4015,11 @@ class GooglePrivacyDlpV2Connection(_messages.Message):
       AVAILABLE: A configured connection that has not encountered any errors.
       ERROR: A configured connection that encountered errors during its last
         use. It will not be used again until it is set to AVAILABLE. If the
-        resolution requires external action, then a request to set the status
-        to AVAILABLE will mark this connection for use. Otherwise, any changes
-        to the connection properties will automatically mark it as AVAILABLE.
+        resolution requires external action, then the client must send a
+        request to set the status to AVAILABLE when the connection is ready
+        for use. If the resolution doesn't require external action, then any
+        changes to the connection properties will automatically mark it as
+        AVAILABLE.
     """
     CONNECTION_STATE_UNSPECIFIED = 0
     MISSING_CREDENTIALS = 1
@@ -4616,9 +4617,9 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
     Values:
       EVENT_TYPE_UNSPECIFIED: Unused.
       NEW_PROFILE: New profile (not a re-profile).
-      CHANGED_PROFILE: Changed one of the following profile metrics: * Data
-        risk score * Sensitivity score * Resource visibility * Encryption type
-        * Predicted infoTypes * Other infoTypes
+      CHANGED_PROFILE: One of the following profile metrics changed: Data risk
+        score, Sensitivity score, Resource visibility, Encryption type,
+        Predicted infoTypes, Other infoTypes
       SCORE_INCREASED: Table data risk score or sensitivity score increased.
       ERROR_CHANGED: A user (non-internal) error occurred.
     """
@@ -4695,14 +4696,19 @@ class GooglePrivacyDlpV2DatabaseResourceReference(_messages.Message):
   r"""Identifies a single database resource, like a table within a database.
 
   Fields:
+    database: Required. Name of a database within the instance.
+    databaseResource: Required. Name of a database resource, for example, a
+      table within the database.
     instance: Required. The instance where this resource is located. For
-      example: Cloud SQL's instance id.
+      example: Cloud SQL instance ID.
     projectId: Required. If within a project-level config, then this must
-      match the config's project id.
+      match the config's project ID.
   """
 
-  instance = _messages.StringField(1)
-  projectId = _messages.StringField(2)
+  database = _messages.StringField(1)
+  databaseResource = _messages.StringField(2)
+  instance = _messages.StringField(3)
+  projectId = _messages.StringField(4)
 
 
 class GooglePrivacyDlpV2DatabaseResourceRegex(_messages.Message):
@@ -4721,7 +4727,7 @@ class GooglePrivacyDlpV2DatabaseResourceRegex(_messages.Message):
     instanceRegex: Regex to test the instance name against. If empty, all
       instances match.
     projectIdRegex: For organizations, if unset, will match all projects. Has
-      no effect for Data Profile configurations created within a project.
+      no effect for configurations created within a project.
   """
 
   databaseRegex = _messages.StringField(1)
@@ -5237,6 +5243,9 @@ class GooglePrivacyDlpV2DiscoveryBigQueryFilter(_messages.Message):
       because anything above it will apply first. Should only appear once in a
       configuration. If none is specified, a default one will be added
       automatically.
+    tableReference: The table to scan. Discovery configurations including this
+      can only include one DiscoveryTarget (the DiscoveryTarget with this
+      TableReference).
     tables: A specific set of tables for this filter to apply to. A table
       collection must be specified in only one filter per config. If a table
       id or dataset is empty, Cloud DLP assumes all tables in that collection
@@ -5244,7 +5253,8 @@ class GooglePrivacyDlpV2DiscoveryBigQueryFilter(_messages.Message):
   """
 
   otherTables = _messages.MessageField('GooglePrivacyDlpV2AllOtherBigQueryTables', 1)
-  tables = _messages.MessageField('GooglePrivacyDlpV2BigQueryTableCollection', 2)
+  tableReference = _messages.MessageField('GooglePrivacyDlpV2TableReference', 2)
+  tables = _messages.MessageField('GooglePrivacyDlpV2BigQueryTableCollection', 3)
 
 
 class GooglePrivacyDlpV2DiscoveryCloudSqlConditions(_messages.Message):
@@ -5269,8 +5279,8 @@ class GooglePrivacyDlpV2DiscoveryCloudSqlConditions(_messages.Message):
     Values:
       DATABASE_ENGINE_UNSPECIFIED: Unused.
       ALL_SUPPORTED_DATABASE_ENGINES: Include all supported database engines.
-      MYSQL: MySql database.
-      POSTGRES: PostGres database.
+      MYSQL: MySQL database.
+      POSTGRES: PostgreSQL database.
     """
     DATABASE_ENGINE_UNSPECIFIED = 0
     ALL_SUPPORTED_DATABASE_ENGINES = 1
@@ -5563,10 +5573,14 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
       table will be the one applied.
     cloudSqlTarget: Cloud SQL target for Discovery. The first target to match
       a table will be the one applied.
+    secretsTarget: Discovery target that looks for credentials and secrets
+      stored in cloud resource metadata and reports them as vulnerabilities to
+      Security Command Center. Only one target of this type is allowed.
   """
 
   bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
   cloudSqlTarget = _messages.MessageField('GooglePrivacyDlpV2CloudSqlDiscoveryTarget', 2)
+  secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 3)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -6931,7 +6945,7 @@ class GooglePrivacyDlpV2JobNotificationEmails(_messages.Message):
 
 
 class GooglePrivacyDlpV2JobTrigger(_messages.Message):
-  r"""Contains a configuration to make api calls on a repeating basis. See
+  r"""Contains a configuration to make API calls on a repeating basis. See
   https://cloud.google.com/sensitive-data-protection/docs/concepts-job-
   triggers to learn more.
 
@@ -7940,9 +7954,9 @@ class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
     Values:
       EVENT_TYPE_UNSPECIFIED: Unused.
       NEW_PROFILE: New profile (not a re-profile).
-      CHANGED_PROFILE: Changed one of the following profile metrics: * Data
-        risk score * Sensitivity score * Resource visibility * Encryption type
-        * Predicted infoTypes * Other infoTypes
+      CHANGED_PROFILE: One of the following profile metrics changed: Data risk
+        score, Sensitivity score, Resource visibility, Encryption type,
+        Predicted infoTypes, Other infoTypes
       SCORE_INCREASED: Table data risk score or sensitivity score increased.
       ERROR_CHANGED: A user (non-internal) error occurred.
     """
@@ -8363,8 +8377,8 @@ class GooglePrivacyDlpV2Result(_messages.Message):
     hybridStats: Statistics related to the processing of hybrid inspect.
     infoTypeStats: Statistics of how many instances of each info type were
       found during inspect job.
-    numRowsProcessed: Number of rows scanned post sampling and time filtering
-      (Applicable for row based stores such as BigQuery).
+    numRowsProcessed: Number of rows scanned after sampling and time filtering
+      (applicable for row based stores such as BigQuery).
     processedBytes: Total size in bytes that were processed.
     totalEstimatedBytes: Estimate of the number of bytes to process.
   """
@@ -8430,7 +8444,8 @@ class GooglePrivacyDlpV2Schedule(_messages.Message):
 
 
 class GooglePrivacyDlpV2SchemaModifiedCadence(_messages.Message):
-  r"""How frequency to modify the profile when the table's schema is modified.
+  r"""How frequently to modify the profile when the table's schema is
+  modified.
 
   Enums:
     FrequencyValueValuesEnum: Frequency to regenerate data profiles when the
@@ -8467,7 +8482,7 @@ class GooglePrivacyDlpV2SchemaModifiedCadence(_messages.Message):
 
     Values:
       SQL_SCHEMA_MODIFICATION_UNSPECIFIED: Unused.
-      NEW_COLUMNS: New columns has appeared.
+      NEW_COLUMNS: New columns have appeared.
       REMOVED_COLUMNS: Columns have been removed from the table.
     """
     SQL_SCHEMA_MODIFICATION_UNSPECIFIED = 0
@@ -8508,6 +8523,19 @@ class GooglePrivacyDlpV2SecretManagerCredential(_messages.Message):
 
   passwordSecretVersionName = _messages.StringField(1)
   username = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2SecretsDiscoveryTarget(_messages.Message):
+  r"""Discovery target for credentials and secrets in Cloud resource metadata.
+  This target does not include any filtering or frequency controls. Cloud DLP
+  will scan Cloud resource metadata for secrets daily. No inspect template
+  should be included in the discovery config for a security benchmarks scan.
+  Instead, the built-in list of Secrets and Credentials infoTypes will be used
+  (see https://cloud.google.com/sensitive-data-protection/docs/infotypes-
+  reference#credentials_and_secrets). Credentials and secrets discovered will
+  be reported as vulnerabilities to Security Command Center.
+  """
+
 
 
 class GooglePrivacyDlpV2SelectedInfoTypes(_messages.Message):
@@ -8856,8 +8884,8 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
       RESOURCE_VISIBILITY_UNSPECIFIED: Unused.
       RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
       RESOURCE_VISIBILITY_INCONCLUSIVE: May contain public items. For example,
-        if a GCS bucket has uniform bucket level access disabled, some objects
-        inside it may be public.
+        if a Cloud Storage bucket has uniform bucket level access disabled,
+        some objects inside it may be public.
       RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
     """
     RESOURCE_VISIBILITY_UNSPECIFIED = 0
@@ -8959,6 +8987,19 @@ class GooglePrivacyDlpV2TableOptions(_messages.Message):
   """
 
   identifyingFields = _messages.MessageField('GooglePrivacyDlpV2FieldId', 1, repeated=True)
+
+
+class GooglePrivacyDlpV2TableReference(_messages.Message):
+  r"""Message defining the location of a BigQuery table with the projectId
+  inferred from the parent project.
+
+  Fields:
+    datasetId: Dataset ID of the table.
+    tableId: Name of the table.
+  """
+
+  datasetId = _messages.StringField(1)
+  tableId = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2TaggedField(_messages.Message):

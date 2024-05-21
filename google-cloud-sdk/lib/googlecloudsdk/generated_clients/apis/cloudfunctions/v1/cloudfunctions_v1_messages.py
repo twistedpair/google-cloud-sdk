@@ -1691,7 +1691,7 @@ class OnDeployUpdatePolicy(_messages.Message):
   r"""Security patches are only applied when a function is redeployed.
 
   Fields:
-    runtimeVersion: Output only. contains the runtime version which was used
+    runtimeVersion: Output only. Contains the runtime version which was used
       during latest function deployment.
   """
 

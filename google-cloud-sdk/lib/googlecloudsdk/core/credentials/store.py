@@ -1065,10 +1065,9 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
   # pylint: enable=g-import-not-at-top
   try:
     yield
-  except reauth_errors.ReauthSamlLoginRequiredError:
+  except google_auth_exceptions.ReauthSamlChallengeFailError:
     raise creds_exceptions.WebLoginRequiredReauthError(for_adc=for_adc)
-  except (reauth_errors.ReauthError,
-          c_google_auth.ReauthRequiredError) as e:
+  except c_google_auth.ReauthRequiredError as e:
     raise creds_exceptions.TokenRefreshReauthError(str(e), for_adc=for_adc)
   except google_auth_exceptions.RefreshError as e:
     if context_aware.IsContextAwareAccessDeniedError(e):

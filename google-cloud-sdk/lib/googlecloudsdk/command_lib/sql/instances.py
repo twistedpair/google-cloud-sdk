@@ -110,6 +110,30 @@ def _GetSecondaryZone(args):
   return None
 
 
+def DoesEnterprisePlusReplicaInferTierForDatabaseType(
+    sql_messages, replica_database_version
+):
+  """Checks if the replica inherits the tier of the primary for E+ instances.
+
+  Ideally, this would be the case for all database versions. However, changing
+  it now is technically a breaking change, so we are only adding support for new
+  database types going forward.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    replica_database_version: The database version of the replica.
+
+  Returns:
+    True if the replica infers the tier from the primary (database version is
+    PG16+).
+  """
+  database_type = ParseDatabaseVersion(sql_messages, replica_database_version)
+  return (
+      database_type
+      == sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.POSTGRES_16
+  )
+
+
 def _IsAlpha(release_track):
   return release_track == base.ReleaseTrack.ALPHA
 

@@ -16,6 +16,7 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.container.fleet.packages import utils
 from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import resources
@@ -59,6 +60,10 @@ class FleetPackagesClient(object):
     self.client = client or GetClientInstance()
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_locations_fleetPackages
+    self.fleet_package_waiter = waiter.CloudOperationPollerNoResources(
+        operation_service=self.client.projects_locations_operations,
+        get_name_func=lambda x: x.name,
+    )
 
   def List(self, project, location, limit=None, page_size=100):
     """List FleetPackages from Package Rollouts API.
@@ -105,7 +110,11 @@ class FleetPackagesClient(object):
             parent=parent,
         )
     )
-    return self._service.Create(create_request)
+    return waiter.WaitFor(
+        self.fleet_package_waiter,
+        self._service.Create(create_request),
+        f'Creating FleetPackage {fleet_package_id}',
+    )
 
   def Delete(self, project, location, name, force=False):
     """Delete a FleetPackage resource.
@@ -125,7 +134,11 @@ class FleetPackagesClient(object):
             name=fully_qualified_path, force=force
         )
     )
-    return self._service.Delete(delete_req)
+    return waiter.WaitFor(
+        self.fleet_package_waiter,
+        self._service.Delete(delete_req),
+        f'Deleting FleetPackage {fully_qualified_path}',
+    )
 
   def Describe(self, project, location, name):
     """Describe a FleetPackage resource.
@@ -161,4 +174,8 @@ class FleetPackagesClient(object):
             fleetPackage=fleet_package, name=name, updateMask=None
         )
     )
-    return self._service.Patch(update_request)
+    return waiter.WaitFor(
+        self.fleet_package_waiter,
+        self._service.Patch(update_request),
+        f'Updating FleetPackage {name}',
+    )

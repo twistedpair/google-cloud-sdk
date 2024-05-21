@@ -1777,6 +1777,69 @@ class CollectAwsAssetSetting(_messages.Message):
   stsEndpointUri = _messages.StringField(9)
 
 
+class CollectAzureAssetSetting(_messages.Message):
+  r"""The connection settings to collect asset data from Azure. This needs to
+  be populated with at least the required fields if connection type is
+  COLLECT_AZURE_ASSET. The Azure built-in Reader role will be assigned to the
+  user-assigned managed identity to collect data. This role allows read access
+  to resources of all types, and will include the read permissions needed by
+  both Attack Path Simulation and Sensitive Data Protection. And therefore
+  ScanSensitiveDataSetting used to configure third-party cloud environment for
+  Sensitive Data Protection is not included in CollectAzureAssetSetting.
+
+  Fields:
+    excludedSubscriptionIds: Optional. Excluded subscription IDs.
+    includedSubscriptionIds: Optional. Included subscription IDs.
+    locations: Optional. A list of locations where the data will be collected
+      from. It is in the same format as used in the location name in Azure
+      list locations response https://learn.microsoft.com/en-
+      us/rest/api/resources/subscriptions/list-locations?view=rest-
+      resources-2022-12-01&tabs=HTTP#getlocationswithasubscriptionid Like
+      eastus, eastus2. The location name list can be found at https://gist.git
+      hub.com/ausfestivus/04e55c7d80229069bf3bc75870630ec8#results
+    managedIdentityClientId: Required. Immutable. The client ID of the Azure
+      User-assigned Managed Identity which the Google Cloud Service Agent will
+      be authenticated with. Refer [here] (https://learn.microsoft.com/en-
+      us/entra/identity/managed-identities-azure-resources/how-manage-user-
+      assigned-managed-identities) for the definition of a user-assigned
+      managed identity. You can find its client ID following [these
+      steps](https://learn.microsoft.com/en-us/entra/identity/managed-
+      identities-azure-resources/how-managed-identities-work-vm#user-assigned-
+      managed-identity)
+    managedIdentityObjectId: Required. Immutable. The object/principal ID of
+      the Azure User-assigned Managed Identity which the Google Cloud Service
+      Agent will be authenticated with. A service principal will be created
+      when a Managed Identity is enabled. This service principal
+      (object/principal ID) will be used to do role assignment to the Managed
+      Identity to access the Azure resources. Refer
+      [here](https://learn.microsoft.com/en-us/entra/identity/managed-
+      identities-azure-resources/how-to-view-managed-identity-service-
+      principal-portal) for detailed documentation about Managed Identity's
+      Service Principal. Managed Identity's Object/principal ID can be found
+      following [these steps](https://learn.microsoft.com/en-
+      us/entra/identity/managed-identities-azure-resources/how-managed-
+      identities-work-vm#user-assigned-managed-identity)
+    sensitiveDataProtectionDiscoveryAzureSetting: Optional. Scan sensitive
+      data setting.
+    tenantId: Required. Immutable. The ID of the tenant where the data will be
+      collected from Azure. A tenant is a dedicated and trusted instance of
+      Microsoft Entra ID. The tenant is automatically created when your
+      organization signs up for a Microsoft cloud service subscription. Refer
+      [here] (https://learn.microsoft.com/en-
+      us/entra/fundamentals/whatis#terminology) for detailed documentation,
+      and find the tenant ID at https://learn.microsoft.com/en-
+      us/entra/fundamentals/how-to-find-tenant
+  """
+
+  excludedSubscriptionIds = _messages.MessageField('ExcludedSubscriptionIds', 1)
+  includedSubscriptionIds = _messages.MessageField('IncludedSubscriptionIds', 2)
+  locations = _messages.StringField(3, repeated=True)
+  managedIdentityClientId = _messages.StringField(4)
+  managedIdentityObjectId = _messages.StringField(5)
+  sensitiveDataProtectionDiscoveryAzureSetting = _messages.MessageField('SensitiveDataProtectionDiscoveryAzureSetting', 6)
+  tenantId = _messages.StringField(7)
+
+
 class ConditionContext(_messages.Message):
   r"""The IAM conditions context.
 
@@ -2000,6 +2063,18 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class ExcludedSubscriptionIds(_messages.Message):
+  r"""Excluded subscription IDs.
+
+  Fields:
+    excludedSubscriptionIds: Optional. List of subscriptions to be excluded in
+      the data collection. This list should be mutually exclusive with
+      included_subscription_ids.
+  """
+
+  excludedSubscriptionIds = _messages.StringField(1, repeated=True)
 
 
 class Explanation(_messages.Message):
@@ -4504,6 +4579,18 @@ class IdentitySelector(_messages.Message):
   identity = _messages.StringField(1)
 
 
+class IncludedSubscriptionIds(_messages.Message):
+  r"""Included subscription IDs.
+
+  Fields:
+    includedSubscriptionIds: Optional. List of subscriptions where the data
+      will be collected from. This list should be mutually exclusive with
+      excluded_subscription_ids.
+  """
+
+  includedSubscriptionIds = _messages.StringField(1, repeated=True)
+
+
 class IngestAssetRequest(_messages.Message):
   r"""Request to ingest an other-cloud asset.
 
@@ -5114,6 +5201,7 @@ class OtherCloudConnection(_messages.Message):
 
   Fields:
     collectAwsAssetSetting: AWS connection setting.
+    collectAzureAssetSetting: Azure connection setting.
     connectionType: Required. The other-cloud connection type.
     createTime: Output only. The absolute point in time when the other-cloud
       connection was created.
@@ -5143,17 +5231,20 @@ class OtherCloudConnection(_messages.Message):
     Values:
       CONNECTION_TYPE_UNSPECIFIED: Connection type unspecified.
       COLLECT_AWS_ASSET: Collects asset config data from AWS.
+      COLLECT_AZURE_ASSET: Collects asset config data from Azure.
     """
     CONNECTION_TYPE_UNSPECIFIED = 0
     COLLECT_AWS_ASSET = 1
+    COLLECT_AZURE_ASSET = 2
 
   collectAwsAssetSetting = _messages.MessageField('CollectAwsAssetSetting', 1)
-  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  serviceAgentId = _messages.StringField(6)
-  validationResults = _messages.MessageField('ValidationResult', 7, repeated=True)
+  collectAzureAssetSetting = _messages.MessageField('CollectAzureAssetSetting', 2)
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  name = _messages.StringField(6)
+  serviceAgentId = _messages.StringField(7)
+  validationResults = _messages.MessageField('ValidationResult', 8, repeated=True)
 
 
 class OtherCloudProperties(_messages.Message):
@@ -6174,6 +6265,20 @@ class SearchAllResourcesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   results = _messages.MessageField('ResourceSearchResult', 2, repeated=True)
+
+
+class SensitiveDataProtectionDiscoveryAzureSetting(_messages.Message):
+  r"""Scan sensitive data setting for Azure.
+
+  Fields:
+    isEnabled: Optional. Whether we enable scanning sensitive data or not.
+      Setting this to true means that this connection is enabled for SDP
+      (Sensitive Data Protection) to scan sensitive data in customers' AWS
+      accounts, which requires extra scan sensitive data related permissions
+      otherwise scanning sensitive data will fail.
+  """
+
+  isEnabled = _messages.BooleanField(1)
 
 
 class SoftwarePackage(_messages.Message):

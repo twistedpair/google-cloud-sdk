@@ -2699,7 +2699,7 @@ class KeyHandle(_messages.Message):
       project's ancestor folder at the time of the KeyHandle creation. If more
       than one ancestor folder has a configured AutokeyConfig, the nearest of
       these configurations is used.
-    name: Output only. Identifier. Name of the KeyHandle resource, e.g.
+    name: Identifier. Name of the KeyHandle resource, e.g.
       `projects/{PROJECT_ID}/locations/{LOCATION}/keyHandles/{KEY_HANDLE_ID}`.
     resourceTypeSelector: Required. Indicates the resource type that the
       resulting CryptoKey is meant to protect, e.g.

@@ -98,8 +98,8 @@ class AppconfigmanagerProjectsLocationsConfigsPatchRequest(_messages.Message):
 
   Fields:
     config: A Config resource to be passed as the request body.
-    name: Immutable. Identifier. [Output only] The resource name of the Config
-      in the format `projects/*/configs/*`.
+    name: Identifier. [Output only] The resource name of the Config in the
+      format `projects/*locations/*/configs/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -181,7 +181,7 @@ class AppconfigmanagerProjectsLocationsConfigsVersionRendersListRequest(_message
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListConfigsRequest
+    parent: Required. Parent value for ListConfigVersionRendersRequest.
     view: Optional. View of the ConfigVersionRender. In the default BASIC
       view, only the metadata associated with the ConfigVersionRender will be
       returned.
@@ -317,7 +317,7 @@ class AppconfigmanagerProjectsLocationsConfigsVersionsListRequest(_messages.Mess
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListConfigsRequest
+    parent: Required. Parent value for ListConfigVersionsRequest.
     view: Optional. View of the ConfigVersion. In the default BASIC view, only
       the metadata associated with the ConfigVersion will be returned.
   """
@@ -354,8 +354,8 @@ class AppconfigmanagerProjectsLocationsConfigsVersionsPatchRequest(_messages.Mes
 
   Fields:
     configVersion: A ConfigVersion resource to be passed as the request body.
-    name: Immutable. Identifier. [Output only] The resource name of the
-      ConfigVersion in the format `projects/*/configs/*/versions/*`.
+    name: Identifier. [Output only] The resource name of the ConfigVersion in
+      the format `projects/*/locations/*/configs/*/versions/*`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -428,8 +428,8 @@ class Config(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     format: Optional. Specifies the format
     labels: Optional. Labels as key value pairs
-    name: Immutable. Identifier. [Output only] The resource name of the Config
-      in the format `projects/*/configs/*`.
+    name: Identifier. [Output only] The resource name of the Config in the
+      format `projects/*locations/*/configs/*`.
     serviceAgentEmail: Output only. Per-resource service agent email
     updateTime: Output only. [Output only] Update time stamp
   """
@@ -496,8 +496,8 @@ class ConfigVersion(_messages.Message):
       as a deleted (but recoverable) resource. Default value is False.
     labels: Optional. Labels as key value pairs Labels are not supported for
       ConfigVersions. They are only supported at the Configs level.
-    name: Immutable. Identifier. [Output only] The resource name of the
-      ConfigVersion in the format `projects/*/configs/*/versions/*`.
+    name: Identifier. [Output only] The resource name of the ConfigVersion in
+      the format `projects/*/locations/*/configs/*/versions/*`.
     payload: Required. Immutable. Payload content of a ConfigVersion resource.
       If the parent Config has a RAW ConfigType the payload data must point to
       a RawPayload & if the parent Config has a TEMPLATED ConfigType the
@@ -570,7 +570,7 @@ class ConfigVersionRender(_messages.Message):
       ConfigVersionRenders. They are only supported at the Configs level.
     name: Output only. Identifier. [Output only] The resource name of the
       ConfigVersionRender in the format
-      `projects/*/configs/*/versionRenders/*`.
+      `projects/*/locations/*/configs/*/versionRenders/*`.
     payload: Required. Immutable. Payload content of a ConfigVersion resource.
       If the parent Config has a RAW ConfigType the payload data must point to
       a RawPayload & if the parent Config has a TEMPLATED ConfigType the

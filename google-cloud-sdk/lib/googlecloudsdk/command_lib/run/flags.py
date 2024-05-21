@@ -2980,6 +2980,14 @@ def GetWorkerConfigurationChanges(
     # disable default url
     changes.append(config_changes.DefaultUrlChange(default_url=False))
     changes.append(config_changes.SandboxChange('gen2'))
+    # when not provided, max_surge defaults to 20%
+    if not FlagIsExplicitlySet(args, 'max_surge'):
+      changes.append(
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_SURGE_ANNOTATION,
+              '20',
+          )
+      )
 
   changes.extend(_GetConfigurationChanges(args, release_track=release_track))
   changes.extend(_GetWorkerScalingChanges(args))

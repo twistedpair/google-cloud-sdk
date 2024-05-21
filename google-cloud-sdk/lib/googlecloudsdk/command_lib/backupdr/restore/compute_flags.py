@@ -19,9 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.backupdr import util
-from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
 def AddNameArg(parser, required=True):
@@ -43,19 +41,12 @@ def AddTargetZoneArg(parser, required=True):
 
 
 def AddTargetProjectArg(parser, required=True):
-  name = '--target-project'
-  project_spec = concepts.ResourceSpec(
-      'backupdr.projects',
-      resource_name='Target Project',
-      disable_auto_completers=False,
-  )
-
-  concept_parsers.ConceptParser.ForResource(
-      name,
-      project_spec,
-      'Project where the restore should happen.',
+  parser.add_argument(
+      '--target-project',
+      type=str,
       required=required,
-  ).AddToParser(parser)
+      help='Project where the restore should happen.',
+  )
 
 
 def AddNetworkInterfaceArg(parser, required=True):
@@ -104,4 +95,51 @@ def AddNetworkInterfaceArg(parser, required=True):
           ' public-ptr-domain, ipv6-public-ptr-domain, network-tier, aliases,'
           ' stack-type, queue-count, nic-type, network-attachment'
       ),
+  )
+
+
+def AddServiceAccountArg(parser, required=True):
+  """Service account used to restore."""
+  parser.add_argument(
+      '--service-account',
+      type=str,
+      required=required,
+      help=(
+          'A service account is an identity attached to the instance. Its'
+          ' access tokens can be accessed through the instance metadata server'
+          ' and are used to authenticate applications on the instance. The'
+          ' account can be set using an email address corresponding to the'
+          ' required service account. If not provided, the instance will use'
+          " the project's default service account."
+      ),
+  )
+
+
+def AddScopesArg(parser, required=True):
+  """Scopes for the service account used to restore."""
+  scopes_group = parser.add_mutually_exclusive_group()
+
+  scopes_group.add_argument(
+      '--scopes',
+      type=arg_parsers.ArgList(str),
+      required=required,
+      metavar='SCOPE',
+      help=(
+          'If not provided, the instance will be assigned the default scopes,'
+          ' described below. However, if neither --scopes nor --no-scopes are'
+          ' specified and the project has no default service account, then the'
+          ' instance will be created with no scopes. Note that the level of'
+          ' access that a service account has is determined by a combination of'
+          ' access scopes and IAM roles so you must configure both access'
+          ' scopes and IAM roles for the service account to work properly.'
+          ' SCOPE can be either the full URI of the scope or an alias. Default'
+          ' scopes are assigned to all instances. Available aliases are:'
+          ' https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes'
+      ),
+  )
+
+  scopes_group.add_argument(
+      '--no-scopes',
+      action='store_true',
+      help='Create the instance with no scopes.',
   )

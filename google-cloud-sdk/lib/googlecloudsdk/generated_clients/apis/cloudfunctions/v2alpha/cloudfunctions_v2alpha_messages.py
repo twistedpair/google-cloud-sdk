@@ -2185,6 +2185,8 @@ class ServiceConfig(_messages.Message):
       value is interpreted as bytes. See https://github.com/kubernetes/kuberne
       tes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantit
       y.go a full description.
+    binaryAuthorizationPolicy: Optional. The binary authorization policy to be
+      checked when deploying the Cloud Run service.
     environmentVariables: Environment variables that shall be available during
       function execution.
     ingressSettings: The ingress settings for the function, controlling what
@@ -2311,21 +2313,22 @@ class ServiceConfig(_messages.Message):
   allTrafficOnLatestRevision = _messages.BooleanField(1)
   availableCpu = _messages.StringField(2)
   availableMemory = _messages.StringField(3)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 4)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 5)
-  maxInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  maxInstanceRequestConcurrency = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  revision = _messages.StringField(9)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 10, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 11, repeated=True)
-  securityLevel = _messages.EnumField('SecurityLevelValueValuesEnum', 12)
-  service = _messages.StringField(13)
-  serviceAccountEmail = _messages.StringField(14)
-  timeoutSeconds = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(16)
-  vpcConnector = _messages.StringField(17)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 18)
+  binaryAuthorizationPolicy = _messages.StringField(4)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 6)
+  maxInstanceCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  maxInstanceRequestConcurrency = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  revision = _messages.StringField(10)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 11, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 12, repeated=True)
+  securityLevel = _messages.EnumField('SecurityLevelValueValuesEnum', 13)
+  service = _messages.StringField(14)
+  serviceAccountEmail = _messages.StringField(15)
+  timeoutSeconds = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(17)
+  vpcConnector = _messages.StringField(18)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 19)
 
 
 class SetIamPolicyRequest(_messages.Message):

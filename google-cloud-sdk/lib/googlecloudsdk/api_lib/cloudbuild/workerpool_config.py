@@ -45,12 +45,12 @@ def LoadWorkerpoolConfigFromStream(stream, messages, path=None):
   return wp
 
 
-def LoadWorkerpoolConfigFromPath(path, messages):
+def LoadWorkerpoolConfigFromPath(path, msg_type):
   """Load a workerpool config file into a WorkerPool message.
 
   Args:
     path: str. Path to the JSON or YAML data to be decoded.
-    messages: module, The messages module that has a WorkerPool type.
+    msg_type: The protobuf message type to create.
 
   Raises:
     files.MissingFileError: If the file does not exist.
@@ -61,7 +61,7 @@ def LoadWorkerpoolConfigFromPath(path, messages):
   Returns:
     WorkerPool message, The worker pool that got decoded.
   """
-  wp = cloudbuild_util.LoadMessageFromPath(path, messages.WorkerPool,
+  wp = cloudbuild_util.LoadMessageFromPath(path, msg_type,
                                            _WORKERPOOL_CONFIG_FRIENDLY_NAME)
   return wp
 

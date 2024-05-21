@@ -1,0 +1,35 @@
+project:
+  name: project
+  collection: managedflink.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: The Google Cloud Platform project name.
+    property: core/project
+
+location:
+  name: location
+  collection: managedflink.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      ID of the location of the Apache Flink for BigQuery resource. See
+      https://cloud.google.com/managed-flink/docs/locations for a list of supported
+      locations.
+
+
+deployment:
+  name: deployment
+  collection: managedflink.projects.locations.deployments
+  request_id_field: deploymentId
+  attributes:
+  - *location
+  - &deployment
+    parameter_name: deploymentsId
+    attribute_name: deployment
+    help: |
+      The deployment name.

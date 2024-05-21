@@ -1,0 +1,25 @@
+deployment-name:
+  api_field: deploymentId
+  arg_name: deployment
+  help_text: |
+    deployment name.
+
+parallelism:
+  api_field: deployment.spec.job.autoscalingConfig.parallelism
+  arg_name: parallelism
+  help_text: |
+    parallelism of the Flink job.
+
+jar-uri:
+  api_field: deployment.spec.job.jarUris
+  arg_name: jar-uris
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  help_text: |
+    URI of the job jar within the Flink docker container. For example:
+    `gs:///opt/flink/examples/streaming/StateMachineExample.jar`.
+
+entry-class:
+  api_field: deployment.spec.entryClass
+  arg_name: entry-class
+  help_text: |
+    fully qualified main class name of the Flink job. For example: `com.package.Main`.

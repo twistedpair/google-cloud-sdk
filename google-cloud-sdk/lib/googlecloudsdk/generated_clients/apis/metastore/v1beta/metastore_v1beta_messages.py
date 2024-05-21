@@ -552,6 +552,21 @@ class Consumer(_messages.Message):
   subnetwork = _messages.StringField(3)
 
 
+class CustomRegionMetadata(_messages.Message):
+  r"""Metadata about a custom region. This is only populated if the region is
+  a custom region. For single/multi regions, it will be empty.
+
+  Fields:
+    optionalReadOnlyRegions: The read-only regions for this custom region.
+    requiredReadWriteRegions: The read-write regions for this custom region.
+    witnessRegion: The Spanner witness region for this custom region.
+  """
+
+  optionalReadOnlyRegions = _messages.StringField(1, repeated=True)
+  requiredReadWriteRegions = _messages.StringField(2, repeated=True)
+  witnessRegion = _messages.StringField(3)
+
+
 class DataCatalogConfig(_messages.Message):
   r"""Specifies how metastore metadata should be integrated with the Data
   Catalog service.
@@ -1339,6 +1354,8 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
+    customRegionMetadata: Possible configurations supported if the current
+      region is a custom region.
     multiRegionMetadata: The multi-region metadata if the current region is a
       multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
@@ -1347,8 +1364,9 @@ class LocationMetadata(_messages.Message):
       is_default.
   """
 
-  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 1)
-  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 2, repeated=True)
+  customRegionMetadata = _messages.MessageField('CustomRegionMetadata', 1, repeated=True)
+  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 2)
+  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 3, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -2645,7 +2663,7 @@ class MoveTableToDatabaseResponse(_messages.Message):
 class MultiRegionMetadata(_messages.Message):
   r"""The metadata for the multi-region that includes the constituent regions.
   The metadata is only populated if the region is multi-region. For single
-  region, it will be empty.
+  region or custom dual region, it will be empty.
 
   Fields:
     constituentRegions: The regions constituting the multi-region.

@@ -110,10 +110,9 @@ class ResourceBundlesClient(object):
         parent=_ParentPath(project, location),
         resourceBundleId=name,
     )
-    create_operation = self._service.Create(create_request)
     result = waiter.WaitFor(
         self.resource_bundle_waiter,
-        create_operation,
+        self._service.Create(create_request),
         f'Creating ResourceBundle {name}',
     )
     return result
@@ -134,7 +133,11 @@ class ResourceBundlesClient(object):
     delete_req = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesDeleteRequest(
         name=fully_qualified_path, force=force
     )
-    return self._service.Delete(delete_req)
+    return waiter.WaitFor(
+        self.resource_bundle_waiter,
+        self._service.Delete(delete_req),
+        f'Deleting ResourceBundle {name}',
+    )
 
   def Describe(self, project, location, name):
     """Describe a ResourceBundle resource.
@@ -186,4 +189,8 @@ class ResourceBundlesClient(object):
         name=fully_qualified_path,
         updateMask=update_mask,
     )
-    return self._service.Patch(update_request)
+    return waiter.WaitFor(
+        self.resource_bundle_waiter,
+        self._service.Patch(update_request),
+        f'Updating ResourceBundle {name}',
+    )

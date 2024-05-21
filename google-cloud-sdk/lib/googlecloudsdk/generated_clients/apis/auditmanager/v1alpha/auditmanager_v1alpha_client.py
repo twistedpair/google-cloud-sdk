@@ -1183,33 +1183,6 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Fetches all resources under the parent along with their enrollment.
-
-      Args:
-        request: (AuditmanagerProjectsLocationsResourceEnrollmentStatusesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListResourceEnrollmentStatusesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/resourceEnrollmentStatuses',
-        http_method='GET',
-        method_id='auditmanager.projects.locations.resourceEnrollmentStatuses.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/resourceEnrollmentStatuses',
-        request_field='',
-        request_type_name='AuditmanagerProjectsLocationsResourceEnrollmentStatusesListRequest',
-        response_type_name='ListResourceEnrollmentStatusesResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsStandardsControlsService(base_api.BaseApiService):
     """Service class for the projects_locations_standards_controls resource."""
 

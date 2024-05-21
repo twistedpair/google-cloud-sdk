@@ -734,8 +734,30 @@ workforce_pool_provider:
       should be mail enabled and security enabled. See
       https://learn.microsoft.com/en-us/graph/search-query-parameter for more details.
 
+  clear_extra_attributes_config: &clear_extra_attributes_config
+    arg_name: clear-extra-attributes-config
+    api_field: workforcePoolProvider.extraAttributesOauth2Client
+    action: store_true
+    processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
+    help_text: |-
+      Clear the extra attributes configuration
+
   create_extra_attributes_group:
     group:
+      params:
+      - <<: *extra_attributes_issuer_uri
+        required: true
+      - <<: *extra_attributes_client_id
+        required: true
+      - <<: *extra_attributes_client_secret_value
+        required: true
+      - <<: *extra_attributes_type
+        required: true
+      - <<: *extra_attributes_filter
+
+  hidden_create_extra_attributes_group:
+    group:
+      hidden: true
       params:
       - <<: *extra_attributes_issuer_uri
         required: true
@@ -760,12 +782,15 @@ workforce_pool_provider:
     group:
       mutex: true
       params:
-      - arg_name: clear-extra-attributes-config
-        api_field: workforcePoolProvider.extraAttributesOauth2Client
-        action: store_true
-        processor: googlecloudsdk.command_lib.iam.hooks:ClearFlag
-        help_text: |-
-          Clear the extra attributes configuration
+      - *clear_extra_attributes_config
+      - *update_extra_attributes_group
+
+  hidden_clearable_extra_attributes_group:
+    group:
+      hidden: true
+      mutex: true
+      params:
+      - *clear_extra_attributes_config
       - *update_extra_attributes_group
 
 workforce_pool_provider_key:

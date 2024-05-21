@@ -849,6 +849,8 @@ class Instance(_messages.Message):
     reservedIpRangeId: Optional. Contains the id of allocated IP address
       ranges associated with the private service access connection for
       example, "test-default" associated with IP range 10.0.0.0/29.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     state: Output only. The state of this Memcached instance.
     updateTime: Output only. The time the instance was updated.
     zones: Zones in which Memcached nodes should be provisioned. Memcached
@@ -938,9 +940,11 @@ class Instance(_messages.Message):
   nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   parameters = _messages.MessageField('MemcacheParameters', 15)
   reservedIpRangeId = _messages.StringField(16, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
-  zones = _messages.StringField(19, repeated=True)
+  satisfiesPzi = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  updateTime = _messages.StringField(20)
+  zones = _messages.StringField(21, repeated=True)
 
 
 class InstanceMessage(_messages.Message):

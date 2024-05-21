@@ -23,6 +23,7 @@ import re
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.resource import resource_property
 
 _API_NAME = 'cloudbuild'
 GA_API_VERSION = 'v2'
@@ -34,6 +35,12 @@ RELEASE_TRACK_TO_API_VERSION = {
 }
 
 CLUSTER_NAME_SELECTOR = r'projects/.*/locations/.*/memberships/(.*)'
+WORKERPOOL_SECOND_GEN_NAME_MATCHER = (
+    r'projects/.*/locations/.*/workerPoolSecondGen/.*'
+)
+WORKERPOOL_SECOND_GEN_NAME_SELECTOR = (
+    r'projects/.*/locations/.*/workerPoolSecondGen/(.*)'
+)
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
@@ -140,3 +147,55 @@ def ListLocations(project):
           name='projects/{}'.format(project)
       )
   )
+
+
+def WorkerPoolSecondGenShortName(resource_name):
+  """Get the name part of a worker pool second gen's full resource name.
+
+  E.g. "projects/abc/locations/def/workerPoolSecondGen/ghi" returns "ghi".
+
+  Args:
+    resource_name: A worker pool second gen's full resource name.
+
+  Raises:
+    ValueError: If the full resource name was not well-formatted.
+
+  Returns:
+    The worker pool's short name.
+  """
+  match = re.search(WORKERPOOL_SECOND_GEN_NAME_SELECTOR, resource_name)
+  if match:
+    return match.group(1)
+  raise ValueError('The worker pool second gen resource name must match "%s"' %
+                   (WORKERPOOL_SECOND_GEN_NAME_MATCHER,))
+
+
+def MessageToFieldPaths(msg):
+  """Produce field paths from a message object.
+
+  The result is used to create a FieldMask proto message that contains all field
+  paths presented in the object.
+  https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto
+
+  Args:
+    msg: A user defined message object that extends the messages.Message class.
+    https://github.com/google/apitools/blob/master/apitools/base/protorpclite/messages.py
+
+  Returns:
+    The list of field paths.
+  """
+  fields = []
+  for field in msg.all_fields():
+    v = msg.get_assigned_value(field.name)
+    if field.repeated and not v:
+      # Repeated field is initialized as an empty list.
+      continue
+    if v is not None:
+      name = resource_property.ConvertToSnakeCase(field.name)
+      if hasattr(v, 'all_fields'):
+        # message has sub-messages, constructing subpaths.
+        for f in MessageToFieldPaths(v):
+          fields.append('{}.{}'.format(name, f))
+      else:
+        fields.append(name)
+  return fields

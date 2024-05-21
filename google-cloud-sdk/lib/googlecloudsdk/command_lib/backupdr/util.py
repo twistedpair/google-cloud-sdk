@@ -61,27 +61,26 @@ def ResetEnforcedRetention():
   return '0001-01-01T00:00:00.000Z'
 
 
-# TODO: b/332661929 - Add unit tests for this class.
 class OptionsMapValidator(object):
   """Option that are passed as key(alternative) value(actual) pairs are validated on the args."""
 
   def __init__(self, options):
-    self.key_len = max(len(option) for option in options.keys())
-    self.options = options
-
-  def IsValid(self, s):
-    if not s:
-      return False
-    return s[: self.key_len].upper() in self.options.keys()
+    self.options = {opt.upper(): options[opt] for opt in options}
 
   def Parse(self, s):
-    if not self.IsValid(s):
+    if s.upper() in self.options.keys():
+      return self.options[s.upper()]
+    elif s in self.options.values():
+      return s
+    else:
       raise arg_parsers.ArgumentTypeError(
           'Failed to parse the arg ({}). Value should be one of {}'.format(
-              s, ', '.join(self.options.keys())
+              s,
+              ', '.join(
+                  list(self.options.keys()) + list(self.options.values())
+              ),
           )
       )
-    return self.options.get(s[: self.key_len].upper(), 'UNKNOWN')
 
 
 def GetOneOfValidator(name, options):

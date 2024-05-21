@@ -1359,7 +1359,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a OauthClientCredential. Before deleting an oauth client credential, it should first be disabled.
+      r"""Deletes an OauthClientCredential. Before deleting an OauthClientCredential, it should first be disabled.
 
       Args:
         request: (IamProjectsLocationsOauthClientsCredentialsDeleteRequest) input message
@@ -1413,7 +1413,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all OauthClientCredentialss in a OauthClient.
+      r"""Lists all OauthClientCredentials in an OauthClient.
 
       Args:
         request: (IamProjectsLocationsOauthClientsCredentialsListRequest) input message
@@ -1477,7 +1477,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new OauthClient. You cannot reuse the name of a deleted oauth client until 30 days after deletion.
+      r"""Creates a new OauthClient. You cannot reuse the name of a deleted OauthClient until 30 days after deletion.
 
       Args:
         request: (IamProjectsLocationsOauthClientsCreateRequest) input message
@@ -1504,7 +1504,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a OauthClient. You cannot use a deleted oauth client. However, deletion does not revoke access tokens that have already been issued; they continue to grant access. Deletion does revoke refresh tokens that have already been issued; They cannot be used to renew an access token. If the oauth client is undeleted, and the refresh tokens are not expired, they are valid for token exchange again. You can undelete an oauth client for 30 days. After 30 days, deletion is permanent. You cannot update deleted oauth clients. However, you can view and list them.
+      r"""Deletes an OauthClient. You cannot use a deleted OauthClient. However, deletion does not revoke access tokens that have already been issued. They continue to grant access. Deletion does revoke refresh tokens that have already been issued. They cannot be used to renew an access token. If the OauthClient is undeleted, and the refresh tokens are not expired, they are valid for token exchange again. You can undelete an OauthClient for 30 days. After 30 days, deletion is permanent. You cannot update deleted OauthClients. However, you can view and list them.
 
       Args:
         request: (IamProjectsLocationsOauthClientsDeleteRequest) input message
@@ -1558,7 +1558,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted OauthClientss in a project. If `show_deleted` is set to `true`, then deleted oauth clients are also listed.
+      r"""Lists all non-deleted OauthClients in a project. If `show_deleted` is set to `true`, then deleted OauthClients are also listed.
 
       Args:
         request: (IamProjectsLocationsOauthClientsListRequest) input message
@@ -1612,7 +1612,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a OauthClient, as long as it was deleted fewer than 30 days ago.
+      r"""Undeletes an OauthClient, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamProjectsLocationsOauthClientsUndeleteRequest) input message
@@ -1867,6 +1867,33 @@ class IamV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AddAttestationRule(self, request, global_params=None):
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set for each target resource container.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddAttestationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:addAttestationRule',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.addAttestationRule',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:addAttestationRule',
+        request_field='addAttestationRuleRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace.
 
@@ -2002,6 +2029,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListAttestationRules(self, request, global_params=None):
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListAttestationRulesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAttestationRulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListAttestationRules')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListAttestationRules.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:listAttestationRules',
+        http_method='GET',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.listAttestationRules',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+resource}:listAttestationRules',
+        request_field='',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListAttestationRulesRequest',
+        response_type_name='ListAttestationRulesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing WorkloadIdentityPoolManagedIdentity in a WorkloadIdentityPoolNamespace.
 
@@ -2025,6 +2079,33 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='workloadIdentityPoolManagedIdentity',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def RemoveAttestationRule(self, request, global_params=None):
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RemoveAttestationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RemoveAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:removeAttestationRule',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.removeAttestationRule',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:removeAttestationRule',
+        request_field='removeAttestationRuleRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -3935,7 +4016,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the IAM policy that is attached to a ServiceAccount. This IAM policy specifies which principals have access to the service account. This method does not tell you whether the service account has been granted any roles on other resources. To check whether a service account has role grants on a resource, use the `getIamPolicy` method for that resource. For example, to view the role grants for a project, call the Resource Manager API's [`projects.getIamPolicy`](https://cloud.google.com/resource-manager/reference/rest/v1/projects/getIamPolicy) method.
+      r"""Gets the IAM policy that is attached to a ServiceAccount. This IAM policy specifies which principals have access to the service account. This method does not tell you whether the service account has been granted any roles on other resources. To check whether a service account has role grants on a resource, use the `getIamPolicy` method for that resource. For example, to view the role grants for a project, call the Resource Manager API's [projects.getIamPolicy](https://cloud.google.com/resource-manager/reference/rest/v1/projects/getIamPolicy) method.
 
       Args:
         request: (IamProjectsServiceAccountsGetIamPolicyRequest) input message
@@ -4043,7 +4124,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SignBlob(self, request, global_params=None):
-      r"""**Note:** This method is deprecated. Use the [`signBlob`](https://cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signBlob) method in the IAM Service Account Credentials API instead. If you currently use this method, see the [migration guide](https://cloud.google.com/iam/help/credentials/migrate-api) for instructions. Signs a blob using the system-managed private key for a ServiceAccount.
+      r"""**Note:** This method is deprecated. Use the [signBlob](https://cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signBlob) method in the IAM Service Account Credentials API instead. If you currently use this method, see the [migration guide](https://cloud.google.com/iam/help/credentials/migrate-api) for instructions. Signs a blob using the system-managed private key for a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsSignBlobRequest) input message
@@ -4070,7 +4151,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def SignJwt(self, request, global_params=None):
-      r"""**Note:** This method is deprecated. Use the [`signJwt`](https://cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signJwt) method in the IAM Service Account Credentials API instead. If you currently use this method, see the [migration guide](https://cloud.google.com/iam/help/credentials/migrate-api) for instructions. Signs a JSON Web Token (JWT) using the system-managed private key for a ServiceAccount.
+      r"""**Note:** This method is deprecated. Use the [signJwt](https://cloud.google.com/iam/help/rest-credentials/v1/projects.serviceAccounts/signJwt) method in the IAM Service Account Credentials API instead. If you currently use this method, see the [migration guide](https://cloud.google.com/iam/help/credentials/migrate-api) for instructions. Signs a JSON Web Token (JWT) using the system-managed private key for a ServiceAccount.
 
       Args:
         request: (IamProjectsServiceAccountsSignJwtRequest) input message

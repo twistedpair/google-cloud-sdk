@@ -45,7 +45,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.iam import iam_util
-from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import messages_util
@@ -774,20 +773,13 @@ class ServerlessOperations(object):
           aborted_message='aborted',
       )
 
-    # TODO(b/321837261): Use Build API to create Repository
-    if repo_to_create:
-      self._CreateRepository(
-          tracker,
-          repo_to_create,
-          skip_activation_prompt=already_activated_services,
-      )
-
     if build_source is not None:
       image_digest = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
           build_pack,
+          repo_to_create,
           release_track,
           already_activated_services,
           self._region,
@@ -1306,20 +1298,13 @@ class ServerlessOperations(object):
           aborted_message='aborted',
       )
 
-    # TODO(b/321837261): Use Build API to create Repository
-    if repo_to_create:
-      self._CreateRepository(
-          tracker,
-          repo_to_create,
-          skip_activation_prompt=already_activated_services,
-      )
-
     if build_source is not None:
       image_digest = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
           build_pack,
+          repo_to_create,
           release_track,
           already_activated_services,
           self._region,
@@ -1671,13 +1656,6 @@ class ServerlessOperations(object):
         request
     )
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))
-
-  def _CreateRepository(self, tracker, repo_to_create, skip_activation_prompt):
-    """Create an artifact repository."""
-    tracker.StartStage(stages.CREATE_REPO)
-    tracker.UpdateHeaderMessage('Creating Container Repository.')
-    artifact_registry.CreateRepository(repo_to_create, skip_activation_prompt)
-    tracker.CompleteStage(stages.CREATE_REPO)
 
   def ValidateConfigOverrides(self, job_ref, config_overrides):
     """Apply config changes to Job resource to validate.

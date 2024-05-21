@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import types
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
+from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.calliope import exceptions
 
 
@@ -145,3 +146,33 @@ class ComputeUtil(object):
         message.accessConfigs.extend([access_config])
       messages.append(message)
     return messages
+
+  @staticmethod
+  def ParserServiceAccount(
+      client_messages: types.ModuleType, service_account: str, scopes: List[str]
+  ):
+    """Parses the service account data into client messages.
+
+    Args:
+      client_messages:
+      service_account: An email id of the service account
+      scopes: A list containing the scopes
+
+    Returns:
+      List of parsed client messages for Service Account
+    """
+
+    def _ConvertAliasToScopes(scopes):
+      converted_scopes = list()
+      for scope in scopes:
+        scope = compute_constants.SCOPES.get(scope, [scope])
+        converted_scopes.extend(scope)
+      return converted_scopes
+
+    if service_account is None:
+      service_account = "default"
+    if scopes is None:
+      scopes = compute_constants.DEFAULT_SCOPES
+    return [client_messages.ServiceAccount(
+        email=service_account, scopes=_ConvertAliasToScopes(scopes)
+    )]

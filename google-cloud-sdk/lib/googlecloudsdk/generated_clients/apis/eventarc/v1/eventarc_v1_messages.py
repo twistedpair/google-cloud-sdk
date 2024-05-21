@@ -1384,13 +1384,12 @@ class Location(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  r"""Represents a network config to be used for destination resolution and
-  connectivity.
+  r"""Network Configuration that can be inherited by other protos.
 
   Fields:
     networkAttachment: Required. Name of the NetworkAttachment that allows
-      access to the destination VPC. Format: `projects/{PROJECT_ID}/regions/{R
-      EGION}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
+      access to the customer's VPC. Format: `projects/{PROJECT_ID}/regions/{RE
+      GION}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
   """
 
   networkAttachment = _messages.StringField(1)

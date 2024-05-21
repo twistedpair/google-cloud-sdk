@@ -310,6 +310,7 @@ class PipelinesClient(object):
         displayName=display_name,
         type=pipeline_type,
         scheduleInfo=schedule_info,
+        schedulerServiceAccountEmail=args.scheduler_service_account_email,
         workload=workload)
 
     create_req = self.messages.DatapipelinesProjectsLocationsPipelinesCreateRequest(
@@ -440,6 +441,7 @@ class PipelinesClient(object):
         name=pipeline,
         displayName=args.display_name,
         scheduleInfo=schedule_info,
+        schedulerServiceAccountEmail=args.scheduler_service_account_email,
         workload=workload)
 
     update_req = self.messages.DatapipelinesProjectsLocationsPipelinesPatchRequest(

@@ -19,6 +19,7 @@ for combining settings from many sources together.
 """
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
 
@@ -56,8 +57,8 @@ def _MergeFields(left, right):
 
 
 def _MergeScalingThresholds(
-    left: ScalingThresholds, right: ScalingThresholds
-) -> ScalingThresholds:
+    left: ScalingThresholds | None, right: ScalingThresholds | None
+) -> ScalingThresholds | None:
   """Merges two ScalingThresholds objects, favoring right one.
 
   Args:
@@ -65,12 +66,16 @@ def _MergeScalingThresholds(
     right: Second ScalingThresholds object.
 
   Returns:
-    Merged ScalingThresholds.
+    Merged ScalingThresholds - It contains the updated scale_in and scale_out
+    values, favoring the right one.
+    None - It indicates removal of threshold from autoscaling policy, favoring
+    right one. Therefore, if right is None, return None.
+
   """
   if left is None:
     return right
   if right is None:
-    return left
+    return None
 
   return ScalingThresholds(
       scale_in=_MergeFields(left.scale_in, right.scale_in),

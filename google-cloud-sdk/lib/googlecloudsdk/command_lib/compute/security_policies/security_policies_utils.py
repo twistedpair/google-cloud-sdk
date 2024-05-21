@@ -68,6 +68,66 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
             .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
                 enable=parsed_security_policy['adaptiveProtectionConfig']
                 ['layer7DdosDefenseConfig']['enable']),))
+    for parsed_threshold_config in parsed_security_policy[
+        'adaptiveProtectionConfig'
+    ]['layer7DdosDefenseConfig'].get('thresholdConfigs', []):
+      threshold_config = messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig(
+          name=parsed_threshold_config['name']
+      )
+      if 'autoDeployConfidenceThreshold' in parsed_threshold_config:
+        threshold_config.autoDeployConfidenceThreshold = (
+            parsed_threshold_config['autoDeployConfidenceThreshold']
+        )
+      if 'autoDeployExpirationSec' in parsed_threshold_config:
+        threshold_config.autoDeployExpirationSec = parsed_threshold_config[
+            'autoDeployExpirationSec'
+        ]
+      if 'autoDeployImpactedBaselineThreshold' in parsed_threshold_config:
+        threshold_config.autoDeployImpactedBaselineThreshold = (
+            parsed_threshold_config['autoDeployImpactedBaselineThreshold']
+        )
+      if 'autoDeployLoadThreshold' in parsed_threshold_config:
+        threshold_config.autoDeployLoadThreshold = parsed_threshold_config[
+            'autoDeployLoadThreshold'
+        ]
+      if 'detectionAbsoluteQps' in parsed_threshold_config:
+        threshold_config.detectionAbsoluteQps = parsed_threshold_config[
+            'detectionAbsoluteQps'
+        ]
+      if 'detectionLoadThreshold' in parsed_threshold_config:
+        threshold_config.detectionLoadThreshold = parsed_threshold_config[
+            'detectionLoadThreshold'
+        ]
+      if 'detectionRelativeToBaselineQps' in parsed_threshold_config:
+        threshold_config.detectionRelativeToBaselineQps = (
+            parsed_threshold_config['detectionRelativeToBaselineQps']
+        )
+      for parsed_traffic_granularity_config in parsed_threshold_config.get(
+          'trafficGranularityConfigs', []
+      ):
+        traffic_granularity_config = (
+            messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig()
+        )
+        if 'enableEachUniqueValue' in parsed_traffic_granularity_config:
+          traffic_granularity_config.enableEachUniqueValue = (
+              parsed_traffic_granularity_config['enableEachUniqueValue']
+          )
+        if 'type' in parsed_traffic_granularity_config:
+          traffic_granularity_config.type = messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig.TypeValueValuesEnum(
+              parsed_traffic_granularity_config['type']
+          )
+        if 'value' in parsed_traffic_granularity_config:
+          traffic_granularity_config.value = parsed_traffic_granularity_config[
+              'value'
+          ]
+        threshold_config.trafficGranularityConfigs.append(
+            traffic_granularity_config
+        )
+
+      security_policy.adaptiveProtectionConfig.layer7DdosDefenseConfig.thresholdConfigs.append(
+          threshold_config
+      )
+
     if 'autoDeployConfig' in parsed_security_policy['adaptiveProtectionConfig']:
       security_policy.adaptiveProtectionConfig.autoDeployConfig = (
           messages.SecurityPolicyAdaptiveProtectionConfigAutoDeployConfig())

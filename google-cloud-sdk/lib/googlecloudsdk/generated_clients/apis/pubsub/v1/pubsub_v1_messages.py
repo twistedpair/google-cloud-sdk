@@ -286,6 +286,10 @@ class CloudStorage(_messages.Message):
     bucket: Optional. Cloud Storage bucket. The bucket name must be without
       any prefix like "gs://". See the [bucket naming requirements]
       (https://cloud.google.com/storage/docs/buckets#naming).
+    matchGlob: Optional. Glob pattern used to match objects that will be
+      ingested. If unset, all objects will be ingested. See the [supported pat
+      terns](https://cloud.google.com/storage/docs/json_api/v1/objects/list#li
+      st-objects-and-prefixes-using-glob).
     minimumObjectCreateTime: Optional. Only objects with a larger or equal
       creation timestamp will be ingested.
     pubsubAvroFormat: Optional. It will be assumed data from Cloud Storage was
@@ -294,9 +298,6 @@ class CloudStorage(_messages.Message):
     state: Output only. An output-only field that indicates the state of the
       Cloud Storage ingestion source.
     textFormat: Optional. Data from Cloud Storage will be interpreted as text.
-    uriWildcard: Optional. URI wildcard used to match objects that will be
-      ingested. If unset, all objects will be ingested. See the [supported
-      patterns](https://cloud.google.com/storage/docs/wildcards).
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -331,11 +332,11 @@ class CloudStorage(_messages.Message):
 
   avroFormat = _messages.MessageField('AvroFormat', 1)
   bucket = _messages.StringField(2)
-  minimumObjectCreateTime = _messages.StringField(3)
-  pubsubAvroFormat = _messages.MessageField('PubSubAvroFormat', 4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  textFormat = _messages.MessageField('TextFormat', 6)
-  uriWildcard = _messages.StringField(7)
+  matchGlob = _messages.StringField(3)
+  minimumObjectCreateTime = _messages.StringField(4)
+  pubsubAvroFormat = _messages.MessageField('PubSubAvroFormat', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  textFormat = _messages.MessageField('TextFormat', 7)
 
 
 class CloudStorageConfig(_messages.Message):

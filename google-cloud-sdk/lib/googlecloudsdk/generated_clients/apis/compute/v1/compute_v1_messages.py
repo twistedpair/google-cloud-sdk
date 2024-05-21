@@ -1791,9 +1791,10 @@ class AttachedDisk(_messages.Message):
       when you attach the disk to a virtual machine instance. If you do not
       provide an encryption key, then the disk will be encrypted using an
       automatically generated key and you do not need to provide a key to use
-      the disk later. Instance templates do not store customer-supplied
+      the disk later. Note: Instance templates do not store customer-supplied
       encryption keys, so you cannot use your own keys to encrypt disks in a
-      managed instance group.
+      managed instance group. You cannot create VMs that have disks with
+      customer-supplied keys using the bulk insert method.
     diskSizeGb: The size of the disk in GB.
     forceAttach: [Input Only] Whether to force attach the regional disk even
       if it's currently attached to another instance. If you try to force
@@ -79382,9 +79383,11 @@ class VpnGateway(_messages.Message):
     Values:
       IPV4_IPV6: Enable VPN gateway with both IPv4 and IPv6 protocols.
       IPV4_ONLY: Enable VPN gateway with only IPv4 protocol.
+      IPV6_ONLY: Enable VPN gateway with only IPv6 protocol.
     """
     IPV4_IPV6 = 0
     IPV4_ONLY = 1
+    IPV6_ONLY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

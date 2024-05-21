@@ -108,6 +108,9 @@ class ConnectionProfilesClient(object):
   def _SupportsOracle(self):
     return self._release_track == base.ReleaseTrack.GA
 
+  def _SupportsSqlServer(self):
+    return self._release_track == base.ReleaseTrack.GA
+
   def _ValidateArgs(self, args):
     self._ValidateHostArgs(args)
     self._ValidateSslConfigArgs(args)
@@ -279,7 +282,7 @@ class ConnectionProfilesClient(object):
   def _UpdateOracleConnectionProfile(
       self, connection_profile, args, update_fields
   ):
-    """Updates PostgreSQL connection profile."""
+    """Updates Oracle connection profile."""
     if args.IsSpecified('host'):
       connection_profile.oracle.host = args.host
       update_fields.append('oracle.host')
@@ -296,6 +299,31 @@ class ConnectionProfilesClient(object):
       connection_profile.oracle.databaseService = args.databaseService
       update_fields.append('oracle.databaseService')
     self._UpdateOracleSslConfig(connection_profile, args, update_fields)
+
+  def _UpdateSqlServerConnectionProfile(
+      self, connection_profile, args, update_fields
+  ):
+    """Updates SqlServer connection profile."""
+    if args.IsSpecified('cloudsql_instance'):
+      if connection_profile.sqlserver.cloudSqlId is None:
+        raise calliope_exceptions.InvalidArgumentException(
+            'cloudsql_instance',
+            'Cannot update Cloud SQL instance for a source SQL Server'
+            ' connection profile.',
+        )
+      connection_profile.sqlserver.cloudSqlId = args.GetValue(
+          self._InstanceArgName()
+      )
+      update_fields.append('sqlserver.cloudSqlId')
+    if args.IsSpecified('gcs_bucket'):
+      if connection_profile.sqlserver.backups is None:
+        raise calliope_exceptions.InvalidArgumentException(
+            'gcs_bucket',
+            'Cannot update GCS Bucket or GCS Prefix for a destination SQL'
+            ' Server connection profile.',
+        )
+      connection_profile.sqlserver.backups = self._GetSqlServerBackups(args)
+      update_fields.append('sqlserver.backups')
 
   def _GetProvider(self, cp_type, provider):
     if provider is None:
@@ -623,6 +651,10 @@ class ConnectionProfilesClient(object):
                                               update_fields)
     elif self._SupportsOracle() and connection_profile.oracle is not None:
       self._UpdateOracleConnectionProfile(
+          connection_profile, args, update_fields
+      )
+    elif self._SupportsSqlServer() and connection_profile.sqlserver is not None:
+      self._UpdateSqlServerConnectionProfile(
           connection_profile, args, update_fields
       )
     else:

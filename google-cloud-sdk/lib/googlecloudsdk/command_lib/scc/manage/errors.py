@@ -37,17 +37,13 @@ class InvalidServiceNameError(Error):
   """An error representing an invalid service name."""
 
   def __init__(self, bad_service_name_arg: str):
-
-    key_value_strings = [
-        f'{key} or {value}'
-        for key, value in constants.SecurityCenterServices.SERVICE_MAPPING.items()
-    ]
-
-    valid_service_names = '\n\t\t'.join(key_value_strings)
+    valid_service_names = '\n\t\t• '.join(
+        [str(service) for service in constants.SUPPORTED_SERVICES]
+    )
 
     super(Error, self).__init__(
-        f'"{bad_service_name_arg}" is not a valid service name.\n\n\tThe'
-        f' expected service name is one of:\n\t\t{valid_service_names}\n'
+        f"'{bad_service_name_arg}' is not a valid service name.\n\n\tThe"
+        f' service name must be one of:\n\t\t• {valid_service_names}\n'
     )
 
 

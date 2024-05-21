@@ -958,10 +958,12 @@ class ComplianceOccurrence(_messages.Message):
   Fields:
     nonComplianceReason: The reason for non compliance of these files.
     nonCompliantFiles: A list of files which are violating compliance checks.
+    version: The OS and config version the benchmark was run on.
   """
 
   nonComplianceReason = _messages.StringField(1)
   nonCompliantFiles = _messages.MessageField('NonCompliantFile', 2, repeated=True)
+  version = _messages.MessageField('ComplianceVersion', 3)
 
 
 class ComplianceVersion(_messages.Message):
@@ -1861,6 +1863,23 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   fileHash = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
 
 
+class ContaineranalysisGoogleDevtoolsCloudbuildV1GCSLocation(_messages.Message):
+  r"""Represents a storage location in Cloud Storage
+
+  Fields:
+    bucket: Cloud Storage bucket. See
+      https://cloud.google.com/storage/docs/naming#requirements
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object. See
+      https://cloud.google.com/storage/docs/naming#objectnames
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
 class ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfig(_messages.Message):
   r"""GitConfig is a configuration for git operations.
 
@@ -1877,9 +1896,12 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1GitConfigHttpConfig(_messages.M
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
       proxy URL should be in format protocol://@]proxyhost[:port].
+    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
+      use with the HTTP proxy.
   """
 
   proxySecretVersionName = _messages.StringField(1)
+  proxySslCaInfo = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GCSLocation', 2)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource(_messages.Message):

@@ -136,6 +136,14 @@ def AddSecurityGatewayTunnelArgs(parser):
       default=None,
       required=True,
       help='Configure the security gateway resource for connecting.')
+  # TODO(b/196572980): Make dest-group required in beta/GA.
+  parser.add_argument(
+      '--use-dest-group',
+      default=False,
+      action='store_true',
+      required=False,
+      help=('Configures the destination group to use when connecting via IP '
+            'address or FQDN.'))
 
 
 def AddProxyServerHelperArgs(parser):
@@ -602,7 +610,8 @@ class _StdinSocket(object):
 class SecurityGatewayTunnelHelper(object):
   """Helper class for starting a Security Gateaway tunnel."""
 
-  def __init__(self, args, project, region, security_gateway, host, port):
+  def __init__(self, args, project, region, security_gateway, host, port,
+               use_dest_group=False):
     # Re-use the same args as IAP to prevent adding more flags than necessary.
     self._tunnel_url_override = args.iap_tunnel_url_override
     self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
@@ -612,6 +621,8 @@ class SecurityGatewayTunnelHelper(object):
     self._security_gateway = security_gateway
     self._host = host
     self._port = port
+
+    self._use_dest_group = use_dest_group
 
     self._shutdown = False
 
@@ -640,6 +651,7 @@ class SecurityGatewayTunnelHelper(object):
         port=self._port,
         url_override=self._tunnel_url_override,
         proxy_info=proxy_info,
+        use_dest_group=self._use_dest_group,
     )
 
   def RunReceiveLocalData(self, local_conn, socket_address, user_agent,

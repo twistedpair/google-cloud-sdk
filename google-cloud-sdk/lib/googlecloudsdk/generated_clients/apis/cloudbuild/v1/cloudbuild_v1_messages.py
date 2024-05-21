@@ -3572,9 +3572,12 @@ class HttpConfig(_messages.Message):
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
       proxy URL should be in format protocol://@]proxyhost[:port].
+    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
+      use with the HTTP proxy.
   """
 
   proxySecretVersionName = _messages.StringField(1)
+  proxySslCaInfo = _messages.MessageField('GCSLocation', 2)
 
 
 class HybridPoolConfig(_messages.Message):

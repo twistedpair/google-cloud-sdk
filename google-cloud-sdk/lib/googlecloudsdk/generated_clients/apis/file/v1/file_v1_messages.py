@@ -1191,6 +1191,7 @@ class Instance(_messages.Message):
       `projects/{project}/locations/{location}/instances/{instance}`.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
+    replication: Optional. Replicaition configuration.
     satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
@@ -1309,12 +1310,13 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
-  satisfiesPzi = _messages.BooleanField(9)
-  satisfiesPzs = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  statusMessage = _messages.StringField(12)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 13, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 14)
+  replication = _messages.MessageField('Replication', 9)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  statusMessage = _messages.StringField(13)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 14, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 15)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -1837,6 +1839,86 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ReplicaConfig(_messages.Message):
+  r"""Replica configuration for the instance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The replica state.
+    StateReasonsValueListEntryValuesEnum:
+
+  Fields:
+    lastActiveSyncTime: Output only. The timestamp of the latest replication
+      snapshot taken on the active instance and is already replicated safely.
+    peerInstance: Optional. The peer instance.
+    state: Output only. The replica state.
+    stateReasons: Output only. Additional information about the replication
+      state, if available.
+  """
+
+  class StateReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""StateReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      STATE_REASON_UNSPECIFIED: Reason not specified.
+      PEER_INSTANCE_UNREACHABLE: The peer instance is unreachable.
+    """
+    STATE_REASON_UNSPECIFIED = 0
+    PEER_INSTANCE_UNREACHABLE = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The replica state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: The replica is being created.
+      READY: The replica is ready.
+      REMOVING: The replica is being removed.
+      FAILED: The replica is experiencing an issue and might be unusable. You
+        can get further details from the `stateReasons` field of the
+        `ReplicaConfig` object.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    REMOVING = 3
+    FAILED = 4
+
+  lastActiveSyncTime = _messages.StringField(1)
+  peerInstance = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  stateReasons = _messages.EnumField('StateReasonsValueListEntryValuesEnum', 4, repeated=True)
+
+
+class Replication(_messages.Message):
+  r"""Replication specifications.
+
+  Enums:
+    RoleValueValuesEnum: Optional. The replication role.
+
+  Fields:
+    replicas: Optional. Replicas configuration on the instance. For now, only
+      a single replica config is supported.
+    role: Optional. The replication role.
+  """
+
+  class RoleValueValuesEnum(_messages.Enum):
+    r"""Optional. The replication role.
+
+    Values:
+      ROLE_UNSPECIFIED: Role not set.
+      ACTIVE: The instance is a Active replication member, functions as the
+        replication source instance.
+      STANDBY: The instance is a Standby replication member, functions as the
+        replication destination instance.
+    """
+    ROLE_UNSPECIFIED = 0
+    ACTIVE = 1
+    STANDBY = 2
+
+  replicas = _messages.MessageField('ReplicaConfig', 1, repeated=True)
+  role = _messages.EnumField('RoleValueValuesEnum', 2)
 
 
 class RestoreInstanceRequest(_messages.Message):

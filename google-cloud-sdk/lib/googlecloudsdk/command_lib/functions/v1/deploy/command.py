@@ -548,11 +548,16 @@ def Run(args, track=None):
 
   vpc_connector_ref = args.CONCEPTS.vpc_connector.Parse()
 
-  if vpc_connector_ref or args.clear_vpc_connector:
-    function.vpcConnector = (
-        '' if args.clear_vpc_connector else vpc_connector_ref.RelativeName()
-    )
+  if args.clear_vpc_connector:
+    function.vpcConnector = ''
+    function.vpcConnectorEgressSettings = None
     updated_fields.append('vpcConnector')
+    updated_fields.append('vpcConnectorEgressSettings')
+
+  if vpc_connector_ref:
+    function.vpcConnector = vpc_connector_ref.RelativeName()
+    updated_fields.append('vpcConnector')
+
   if args.IsSpecified('egress_settings'):
     will_have_vpc_connector = (
         had_vpc_connector and not args.clear_vpc_connector

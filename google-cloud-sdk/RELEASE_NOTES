@@ -5,6 +5,87 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 477.0.0 (2024-05-21)
+
+### Anthos
+
+*   To support second device login in `gcloud anthos auth` command.
+
+### Cloud Functions
+
+* Fixed issue where `gcloud functions deploy` would crash on disconnecting vpc connector when `--clear-vpc-connector` flag was specified.
+
+### Cloud Memorystore
+
+*   Added `--[no-]deletion-protection` flag to `gcloud redis clusters create` and `gcloud redis clusters update`to allow enabling/disabling deletion protection for Redis Clusters.
+
+### Cloud SQL
+
+*   When creating a replica instance with `gcloud sql instances create --edition=enterprise-plus`,
+    infer `--tier` from the primary instance if `--tier` is not provided for new
+    database types.
+
+### Compute Engine
+
+* Added support for adding labels to the disk in the following commands:
+  - `gcloud beta compute instances create`
+  - `gcloud beta compute instance-templates create`
+  - `gcloud beta compute instances create-with-container`
+  - `gcloud beta compute instance-templates create-with-container`.
+* Added support for `--resource-policies` in the following commands:
+  - `gcloud compute instances create-with-container`
+  - `gcloud compute instance-templates create-with-container`.
+*  Changed all `gcloud compute` list commands to log a warning instead of raising an exception when receiving an empty response from AggregatedList requests, even if there are partial errors.
+
+### Declarative Workflows
+
+* Fixed issue where using `gcloud beta resource-config bulk-export` with certain
+  `--resource-types` values (e.g. `ComputeVPNTunnel`, `ComputeURLMap`) would
+  fail with `INVALID_ARGUMENT` when looking up the resources in Cloud Asset
+  Inventory.
+
+### GKE Hub
+
+* Support `--security-posture=enterprise` flag in `gcloud container fleet create`, `gcloud container fleet update` in beta and GA track.
+* Support `--security-posture=enterprise` flag in `gcloud container hub create`, `gcloud container hub update` in beta and GA track.
+
+### Kubernetes Engine
+
+* Added flags `--[no]-enable-insecure-kubelet-readonly-port and
+  `--[no]-autoprovisioning-enable-insecure-kubelet-readonly-port`
+  to enable/disable the insecure Kubelet readonly port on clusters
+  and node-pools.
+* Increased maximum argument to `--num-nodes` flag of `gcloud container clusters create` from 1000 to 2000.
+* Updated default kubectl from 1.27.13 to 1.27.14.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.14)
+  * kubectl.1.28 (1.28.10)
+  * kubectl.1.25 (1.29.5)
+  * kubectl.1.30 (1.30.1)
+
+### Network Connectivity
+
+* Added `gcloud network-connectivity policy-based-routes` to beta.
+* Added IPV6 option to `--protocol-version` flag of `gcloud network-connectivity
+  policy-based-routes`.
+
+### Network Security
+
+* Renamed FIREWALL_POLICY column to SOURCE_RESOURCE column in `gcloud beta
+  networksecurity address-groups list-references` command.
+* Added security policies in the output of `gcloud beta networksecurity
+  address-groups list-references` command.
+
+### Vmware Engine
+
+* Added `GOOGLE_CLOUD_NETAPP_VOLUMES` option to `--peer-network-type` flag of
+`gcloud vmware network-peerings create` to allow peering with Google Cloud
+NetApp Volumes projects.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 476.0.0 (2024-05-14)
 
 ### Google Cloud CLI

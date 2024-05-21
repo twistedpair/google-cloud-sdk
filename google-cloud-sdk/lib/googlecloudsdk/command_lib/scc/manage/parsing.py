@@ -74,18 +74,12 @@ def GetServiceNameFromArgs(args) -> str:
   """
 
   parent = GetParentResourceNameFromArgs(args)
-  service_abbr = args.service_name.upper()
-  if (
-      service_name := constants.SecurityCenterServices.SERVICE_MAPPING.get(
-          service_abbr
-      )
-  ) is not None:
-    return f'{parent}/{constants.SecurityCenterServices.SERVICE}/{service_name}'
-  elif (
-      args.service_name
-      in constants.SecurityCenterServices.SERVICE_MAPPING.values()
-  ):
-    return f'{parent}/{constants.SecurityCenterServices.SERVICE}/{args.service_name}'
+
+  maybe_service_name_or_abbr = args.service_name.lower()
+  service = constants.SERVICE_INVENTORY.get(maybe_service_name_or_abbr)
+
+  if service:
+    return f'{parent}/{constants.SERVICE_RESOURCE_PLURAL_NAME}/{service.name}'
   else:
     raise errors.InvalidServiceNameError(args.service_name)
 

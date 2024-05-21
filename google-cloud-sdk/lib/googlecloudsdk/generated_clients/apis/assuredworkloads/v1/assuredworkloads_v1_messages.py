@@ -357,23 +357,33 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      REGIONAL_CONTROLS_PREMIUM_US: Assured Workloads For US Regions data
+        protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      REGIONAL_CONTROLS_PREMIUM_EU: Assured Workloads For EU Regions and
+        Support controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
+      REGIONAL_CONTROLS_PREMIUM_CA: Assured Workloads For Canada Regions and
+        Support controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      REGIONAL_CONTROLS_PREMIUM_AU: Assured Workloads for Australia Regions
+        and Support controls
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
-      ISR_REGIONS: Assured Workloads for Israel
+      REGIONAL_CONTROLS_PREMIUM_ISR: Assured Workloads for Israel
+      ISR_REGIONS: Assured Workloads for Israel Regions
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
+      REGIONAL_CONTROLS_PREMIUM_JP: Assured Workloads for Japan Regions
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls/Free Regions
@@ -384,23 +394,29 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
-    US_REGIONAL_ACCESS = 5
-    HIPAA = 6
-    HITRUST = 7
-    EU_REGIONS_AND_SUPPORT = 8
-    CA_REGIONS_AND_SUPPORT = 9
-    ITAR = 10
-    AU_REGIONS_AND_US_SUPPORT = 11
-    ASSURED_WORKLOADS_FOR_PARTNERS = 12
-    ISR_REGIONS = 13
-    ISR_REGIONS_AND_SUPPORT = 14
-    CA_PROTECTED_B = 15
-    IL5 = 16
-    IL2 = 17
-    JP_REGIONS_AND_SUPPORT = 18
-    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
-    REGIONAL_CONTROLS = 20
-    FREE_REGIONS = 21
+    REGIONAL_CONTROLS_PREMIUM_US = 5
+    US_REGIONAL_ACCESS = 6
+    HIPAA = 7
+    HITRUST = 8
+    REGIONAL_CONTROLS_PREMIUM_EU = 9
+    EU_REGIONS_AND_SUPPORT = 10
+    REGIONAL_CONTROLS_PREMIUM_CA = 11
+    CA_REGIONS_AND_SUPPORT = 12
+    ITAR = 13
+    REGIONAL_CONTROLS_PREMIUM_AU = 14
+    AU_REGIONS_AND_US_SUPPORT = 15
+    ASSURED_WORKLOADS_FOR_PARTNERS = 16
+    REGIONAL_CONTROLS_PREMIUM_ISR = 17
+    ISR_REGIONS = 18
+    ISR_REGIONS_AND_SUPPORT = 19
+    CA_PROTECTED_B = 20
+    IL5 = 21
+    IL2 = 22
+    REGIONAL_CONTROLS_PREMIUM_JP = 23
+    JP_REGIONS_AND_SUPPORT = 24
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 25
+    REGIONAL_CONTROLS = 26
+    FREE_REGIONS = 27
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -836,23 +852,33 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       CJIS: Criminal Justice Information Services (CJIS) Security policies.
       FEDRAMP_HIGH: FedRAMP High data protection controls
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
+      REGIONAL_CONTROLS_PREMIUM_US: Assured Workloads For US Regions data
+        protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      REGIONAL_CONTROLS_PREMIUM_EU: Assured Workloads For EU Regions and
+        Support controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
+      REGIONAL_CONTROLS_PREMIUM_CA: Assured Workloads For Canada Regions and
+        Support controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
       ITAR: International Traffic in Arms Regulations
+      REGIONAL_CONTROLS_PREMIUM_AU: Assured Workloads for Australia Regions
+        and Support controls
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
-      ISR_REGIONS: Assured Workloads for Israel
+      REGIONAL_CONTROLS_PREMIUM_ISR: Assured Workloads for Israel
+      ISR_REGIONS: Assured Workloads for Israel Regions
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
+      REGIONAL_CONTROLS_PREMIUM_JP: Assured Workloads for Japan Regions
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls/Free Regions
@@ -863,23 +889,29 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     CJIS = 2
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
-    US_REGIONAL_ACCESS = 5
-    HIPAA = 6
-    HITRUST = 7
-    EU_REGIONS_AND_SUPPORT = 8
-    CA_REGIONS_AND_SUPPORT = 9
-    ITAR = 10
-    AU_REGIONS_AND_US_SUPPORT = 11
-    ASSURED_WORKLOADS_FOR_PARTNERS = 12
-    ISR_REGIONS = 13
-    ISR_REGIONS_AND_SUPPORT = 14
-    CA_PROTECTED_B = 15
-    IL5 = 16
-    IL2 = 17
-    JP_REGIONS_AND_SUPPORT = 18
-    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
-    REGIONAL_CONTROLS = 20
-    FREE_REGIONS = 21
+    REGIONAL_CONTROLS_PREMIUM_US = 5
+    US_REGIONAL_ACCESS = 6
+    HIPAA = 7
+    HITRUST = 8
+    REGIONAL_CONTROLS_PREMIUM_EU = 9
+    EU_REGIONS_AND_SUPPORT = 10
+    REGIONAL_CONTROLS_PREMIUM_CA = 11
+    CA_REGIONS_AND_SUPPORT = 12
+    ITAR = 13
+    REGIONAL_CONTROLS_PREMIUM_AU = 14
+    AU_REGIONS_AND_US_SUPPORT = 15
+    ASSURED_WORKLOADS_FOR_PARTNERS = 16
+    REGIONAL_CONTROLS_PREMIUM_ISR = 17
+    ISR_REGIONS = 18
+    ISR_REGIONS_AND_SUPPORT = 19
+    CA_PROTECTED_B = 20
+    IL5 = 21
+    IL2 = 22
+    REGIONAL_CONTROLS_PREMIUM_JP = 23
+    JP_REGIONS_AND_SUPPORT = 24
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 25
+    REGIONAL_CONTROLS = 26
+    FREE_REGIONS = 27
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

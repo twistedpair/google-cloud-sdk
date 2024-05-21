@@ -34,6 +34,9 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "TargetZone",
         "TargetProject",
         "NetworkInterfaces",
+        "ServiceAccount",
+        "Scopes",
+        "NoScopes",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -97,6 +100,18 @@ class BackupsClient(util.BackupDrClientBase):
         restore_request.computeInstanceRestoreProperties.networkInterfaces.extend(
             network_interfaces_message
         )
+
+    service_accounts_message = ComputeUtil.ParserServiceAccount(
+        self.messages,
+        restore_config.get("ServiceAccount", None),
+        restore_config.get(
+            "Scopes", [] if restore_config.get("NoScopes", False) else None
+        ),
+    )
+    if service_accounts_message:
+      restore_request.computeInstanceRestoreProperties.serviceAccounts = (
+          service_accounts_message
+      )
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
         name=resource.RelativeName(), restoreBackupRequest=restore_request

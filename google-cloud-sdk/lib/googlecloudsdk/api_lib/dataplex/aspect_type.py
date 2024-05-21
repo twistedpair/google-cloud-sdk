@@ -46,6 +46,44 @@ def GenerateAspectTypeForCreateRequest(args):
   return request
 
 
+def GenerateAspectTypeForUpdateRequest(args):
+  """Update Aspect Type Request."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1AspectType(
+      description=args.description,
+      displayName=args.display_name,
+      etag=args.etag,
+      labels=dataplex_api.CreateLabels(
+          module.GoogleCloudDataplexV1AspectType, args
+      ),
+      metadataTemplate=GenerateUpdateAspectTypeMetadataTemplate(
+          args.metadata_template_file_name
+      ),
+  )
+
+
+def GenerateAspectTypeUpdateMask(args):
+  """Create Update Mask for AspectType."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('metadata_template_file_name'):
+    update_mask.append('metadataTemplate')
+  return update_mask
+
+
+def GenerateUpdateAspectTypeMetadataTemplate(metadata_template_file_name):
+  """Update Metadata Template for AspectType."""
+  if metadata_template_file_name is None:
+    return None
+
+  return GenerateAspectTypeMetadataTemplate(metadata_template_file_name)
+
+
 def GenerateAspectTypeMetadataTemplate(metadata_template_file_name):
   """Create Metadata Template from specified file."""
   if not os.path.exists(metadata_template_file_name):

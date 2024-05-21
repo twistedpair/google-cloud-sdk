@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.instances.create import utils as create_utils
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.networks.subnets import flags as subnet_flags
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
 EPHEMERAL_ADDRESS = object()
@@ -300,6 +301,7 @@ def CreateDiskMessages(
     support_multi_writer=False,
     match_container_mount_disks=False,
     support_replica_zones=True,
+    support_disk_labels=False,
 ):
   """Create disk messages for a single instance template."""
   container_mount_disk = (
@@ -311,15 +313,16 @@ def CreateDiskMessages(
           args.disk or [],
           container_mount_disk=container_mount_disk))
 
-  persistent_create_disks = (
-      CreatePersistentCreateDiskMessages(
-          client,
-          resources,
-          project,
-          getattr(args, 'create_disk', []),
-          support_kms=support_kms,
-          support_multi_writer=support_multi_writer,
-          support_replica_zones=support_replica_zones))
+  persistent_create_disks = CreatePersistentCreateDiskMessages(
+      client,
+      resources,
+      project,
+      getattr(args, 'create_disk', []),
+      support_kms=support_kms,
+      support_multi_writer=support_multi_writer,
+      support_replica_zones=support_replica_zones,
+      support_disk_labels=support_disk_labels,
+  )
 
   if create_boot_disk:
     boot_disk_list = [
@@ -424,6 +427,7 @@ def CreatePersistentCreateDiskMessages(
     container_mount_disk=None,
     support_multi_writer=False,
     support_replica_zones=True,
+    support_disk_labels=False,
 ):
   """Returns a list of AttachedDisk messages.
 
@@ -431,29 +435,23 @@ def CreatePersistentCreateDiskMessages(
     client: Compute client adapter
     resources: Compute resources registry
     user_project: name of user project
-    create_disks: disk objects - contains following properties
-             * name - the name of disk,
-             * description - an optional description for the disk,
-             * mode - 'rw' (R/W), 'ro' (R/O) access mode,
-             * size - the size of the disk,
-             * provisioned-iops - Indicates how many IOPS must be provisioned
-               for the disk.
-             * provisioned-throughput - Indicates how much throughput is
-               provisioned for the disks.
-             * type - the type of the disk (HDD or SSD),
-             * image - the name of the image to initialize from,
-             * image-family - the image family name,
-             * image-project - the project name that has the image,
-             * auto-delete - whether disks is deleted when VM is deleted ('yes'
-               if True),
-             * device-name - device name on VM,
-             * disk-resource-policy - resource policies applied to disk.
-             * storage-pool: the storage pool in which the new disk is created.
-
+    create_disks: disk objects - contains following properties * name - the name
+      of disk, * description - an optional description for the disk, * mode -
+      'rw' (R/W), 'ro' (R/O) access mode, * size - the size of the disk, *
+      provisioned-iops - Indicates how many IOPS must be provisioned for the
+      disk. * provisioned-throughput - Indicates how much throughput is
+      provisioned for the disks. * type - the type of the disk (HDD or SSD), *
+      image - the name of the image to initialize from, * image-family - the
+      image family name, * image-project - the project name that has the image,
+      * auto-delete - whether disks is deleted when VM is deleted ('yes' if
+      True), * device-name - device name on VM, * disk-resource-policy -
+      resource policies applied to disk. * storage-pool: the storage pool in
+      which the new disk is created.
     support_kms: if KMS is supported
     container_mount_disk: list of disks to be mounted to container, if any.
     support_multi_writer: if multi writer disks are supported.
     support_replica_zones: True if we allow creation of regional disks.
+    support_disk_labels: True if we allow adding disk labels.
 
   Returns:
     list of API messages for attached disks
@@ -527,6 +525,17 @@ def CreatePersistentCreateDiskMessages(
               disk_architecture
           )
       )
+
+    if support_disk_labels:
+      dict_labels = labels_util.ValidateAndParseLabels(disk.get('labels'))
+      if dict_labels:
+        labels_value = messages.AttachedDiskInitializeParams.LabelsValue()
+        labels_value.additionalProperties = [
+            labels_value.AdditionalProperty(key=key, value=value)
+            for key, value in dict_labels.items()
+        ]
+
+        init_params.labels = labels_value
 
     init_params.provisionedThroughput = disk.get('provisioned-throughput')
 

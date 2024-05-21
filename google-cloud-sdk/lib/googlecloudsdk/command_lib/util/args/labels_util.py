@@ -304,6 +304,56 @@ def _GetExistingLabelsDict(labels):
   return {l.key: l.value for l in labels.additionalProperties}
 
 
+def ValidateAndParseLabels(
+    list_of_labels=None, delimiter='=', validate_keys=True, validate_values=True
+):
+  """Validates and returns labels in dictionary format.
+
+  Args:
+    list_of_labels: List of labels in format ["K1=V1", "K2=V2", ...].
+    delimiter: delimiters which separates key and its corresponding values.
+    validate_keys: if true, performs regex validation.
+    validate_values: if true, performs regex validation.
+
+  Returns:
+    None: if list_of_labels is empty.
+    Otheriwse: dictionary of labels {"K1": "V1", "K2": "V2", ...}.
+
+  Raises:
+    InvalidArgumentException: if invalid format.
+  """
+  if not list_of_labels:
+    return None
+  dict_of_labels = {}
+  for label in list_of_labels:
+    try:
+      key, value = label.split(delimiter)
+    except ValueError:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--labels', 'Invalid label format: {}'.format(label)
+      )
+    if validate_keys and not IsValidLabelKey(key):
+      raise calliope_exceptions.InvalidArgumentException(
+          '--labels',
+          'Invalid key format: {key}\n{_KEY_FORMAT_ERROR}'.format(
+              key=key, _KEY_FORMAT_ERROR=_KEY_FORMAT_ERROR
+          ),
+      )
+    if validate_values and not IsValidLabelValue(value):
+      raise calliope_exceptions.InvalidArgumentException(
+          '--labels',
+          'Invalid value format: {value}\n{_VALUE_FORMAT_ERROR}'.format(
+              value=value, _VALUE_FORMAT_ERROR=_VALUE_FORMAT_ERROR
+          ),
+      )
+    if key in dict_of_labels:
+      raise calliope_exceptions.InvalidArgumentException(
+          '--labels', 'Duplicate key: {}'.format(key)
+      )
+    dict_of_labels[key] = value
+  return dict_of_labels
+
+
 class UpdateResult(object):
   """Result type for Diff application.
 

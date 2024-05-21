@@ -509,10 +509,6 @@ class BackupPlan(_messages.Message):
       custom labels to be supplied by the user. Example, {"tag": "Weekly"}.
 
   Fields:
-    adminScope: Optional. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. The resource name of AdminScope
-      with which this `BackupPlan` is associated. Format :
-      projects/{project}/locations/{location}/adminScopes/{admin_scope}
     backupRules: Required. The backup rules for this `BackupPlan`. There must
       be at least one `BackupRule` message.
     createTime: Output only. When the `BackupPlan` was created.
@@ -521,9 +517,6 @@ class BackupPlan(_messages.Message):
       cases to be provided. An example description is the following: "This is
       a backup plan that performs a daily backup at 6pm and retains data for 3
       months". The description must be at most 2048 characters.
-    displayName: Optional. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. The display name of the
-      `BackupPlan`.
     etag: Optional. `etag` is returned from the service in the response. As a
       user of the service, you may provide an etag value in this field to
       prevent stale resources.
@@ -546,16 +539,13 @@ class BackupPlan(_messages.Message):
       CREATING: The resource is being created.
       ACTIVE: The resource has been created and is fully usable.
       DELETING: The resource is being deleted.
-      READY: TODO b/325560313: Deprecated and field will be removed after UI
-        integration change. The resource has been created.
       INACTIVE: The resource has been created but is not usable.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    READY = 4
-    INACTIVE = 5
+    INACTIVE = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -582,17 +572,15 @@ class BackupPlan(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  adminScope = _messages.StringField(1)
-  backupRules = _messages.MessageField('BackupRule', 2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  resourceType = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  updateTime = _messages.StringField(11)
+  backupRules = _messages.MessageField('BackupRule', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  resourceType = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -604,10 +592,6 @@ class BackupPlanAssociation(_messages.Message):
       state.
 
   Fields:
-    backupCollectionId: Output only. TODO b/325560313: Deprecated and field
-      will be removed after UI integration change. Output only. This will
-      return the relative url of the AGM application object which will be used
-      to redirect to AGM UI from the pantheon to show a list of backups.
     backupPlan: Required. Resource name of backup plan which needs to be
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
@@ -620,9 +604,6 @@ class BackupPlanAssociation(_messages.Message):
     resourceType: Output only. Output Only. Resource type of workload on which
       backupplan is applied
     rulesConfigInfo: Output only. The config info related to backup rules.
-    scopeId: Output only. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. This will return the scope with
-      which this backup plan association is associated with.
     state: Output only. The BackupPlanAssociation resource state.
     updateTime: Output only. The time when the instance was updated.
   """
@@ -635,27 +616,22 @@ class BackupPlanAssociation(_messages.Message):
       CREATING: The resource is being created.
       ACTIVE: The resource has been created and is fully usable.
       DELETING: The resource is being deleted.
-      READY: TODO b/325560313: Deprecated and field will be removed after UI
-        integration change. The resource has been created and is fully usable.
       INACTIVE: The resource has been created but is not usable.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
-    READY = 4
-    INACTIVE = 5
+    INACTIVE = 4
 
-  backupCollectionId = _messages.StringField(1)
-  backupPlan = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  resource = _messages.StringField(5)
-  resourceType = _messages.StringField(6)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 7, repeated=True)
-  scopeId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  backupPlan = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resource = _messages.StringField(4)
+  resourceType = _messages.StringField(5)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 6, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class BackupRule(_messages.Message):
@@ -673,9 +649,6 @@ class BackupRule(_messages.Message):
       email address of the Backup Vault Service Account. (precedent: https://s
       ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
       service.proto;l=1014-1019)
-    displayName: Optional. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. The display name of the
-      `BackupRule`.
     ruleId: Required. Immutable. The unique id of this `BackupRule`. The
       `rule_id` is unique per `BackupPlan`.The `rule_id` must start with a
       lowercase letter followed by up to 62 lowercase letters, numbers, or
@@ -687,9 +660,8 @@ class BackupRule(_messages.Message):
   backupRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   backupVault = _messages.StringField(2)
   backupVaultServiceAccount = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  ruleId = _messages.StringField(5)
-  standardSchedule = _messages.MessageField('StandardSchedule', 6)
+  ruleId = _messages.StringField(4)
+  standardSchedule = _messages.MessageField('StandardSchedule', 5)
 
 
 class BackupVault(_messages.Message):
@@ -705,8 +677,9 @@ class BackupVault(_messages.Message):
 
   Fields:
     backupCount: Output only. The number of backups in this backup vault.
-    backupMinimumEnforcedRetentionDuration: Required. The minimum enforced
-      retention for each backup within the backup vault.
+    backupMinimumEnforcedRetentionDuration: Required. The default and minimum
+      enforced retention for each backup within the backup vault. The enforced
+      retention for each backup can be extended.
     createTime: Output only. The time when the instance was created.
     deletable: Output only. Set to true when there are no backups nested under
       this resource.
@@ -728,6 +701,8 @@ class BackupVault(_messages.Message):
     state: Output only. The BackupVault resource instance state.
     totalStoredBytes: Output only. Total size of the storage used by all
       backup resources.
+    uid: Output only. Output only Immutable after resource creation until
+      resource deletion.
     updateTime: Output only. The time when the instance was updated.
   """
 
@@ -785,7 +760,8 @@ class BackupVault(_messages.Message):
   serviceAccount = _messages.StringField(11)
   state = _messages.EnumField('StateValueValuesEnum', 12)
   totalStoredBytes = _messages.IntegerField(13)
-  updateTime = _messages.StringField(14)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class BackupWindow(_messages.Message):
@@ -799,21 +775,13 @@ class BackupWindow(_messages.Message):
       start_hour_of_day < end_hour_of_day <= 24 End hour of day is not include
       in backup window that mean if end_hour_of_day= 10 jobs should start
       before 10:00.
-    endTime: Optional. TODO b/325560313: Deprecated and field will be removed
-      after UI integration change. The end time of the window in which to pick
-      backup jobs to run.
     startHourOfDay: Required. The hour of day (0-23) when the window starts
       for e.g. if value of start hour of day is 6 that mean backup window
       start at 6:00.
-    startTime: Optional. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. The start time of the window in
-      which to pick backup jobs to run.
   """
 
   endHourOfDay = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  endTime = _messages.MessageField('TimeOfDay', 2)
-  startHourOfDay = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  startTime = _messages.MessageField('TimeOfDay', 4)
+  startHourOfDay = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class BackupdrProjectsLocationsBackupPlanAssociationsCreateRequest(_messages.Message):
@@ -2048,22 +2016,6 @@ class DisplayDevice(_messages.Message):
   enableDisplay = _messages.BooleanField(1)
 
 
-class Duration(_messages.Message):
-  r"""A Duration represents a fixed-length span of time represented as a count
-  of seconds and fractions of seconds at nanosecond resolution. It is
-  independent of any calendar and concepts like "day" or "month". Range is
-  approximately 10,000 years.
-
-  Fields:
-    nanos: Optional. Span of time that's a fraction of a second at nanosecond
-      resolution.
-    seconds: Optional. Span of time at a resolution of a second.
-  """
-
-  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(2)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -3176,12 +3128,28 @@ class Scheduling(_messages.Message):
 
   automaticRestart = _messages.BooleanField(1)
   instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 2)
-  localSsdRecoveryTimeout = _messages.MessageField('Duration', 3)
+  localSsdRecoveryTimeout = _messages.MessageField('SchedulingDuration', 3)
   minNodeCpus = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   nodeAffinities = _messages.MessageField('NodeAffinity', 5, repeated=True)
   onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 6)
   preemptible = _messages.BooleanField(7)
   provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 8)
+
+
+class SchedulingDuration(_messages.Message):
+  r"""A SchedulingDuration represents a fixed-length span of time represented
+  as a count of seconds and fractions of seconds at nanosecond resolution. It
+  is independent of any calendar and concepts like "day" or "month". Range is
+  approximately 10,000 years.
+
+  Fields:
+    nanos: Optional. Span of time that's a fraction of a second at nanosecond
+      resolution.
+    seconds: Optional. Span of time at a resolution of a second.
+  """
+
+  nanos = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(2)
 
 
 class ServiceAccount(_messages.Message):
@@ -3344,8 +3312,6 @@ class StandardSchedule(_messages.Message):
       `recurrence_type` is `YEARLY`. A validation error will occur if other
       values are supplied.
     recurrenceType: Required. Specifies the `RecurrenceType` for the schedule.
-    repeatInterval: Required. TODO b/325560313: Deprecated and field will be
-      removed after UI integration change. Repeat interval
     timeZone: Optional. The time zone to be used when interpreting the
       schedule. The value of this field must be a time zone name from the IANA
       tz database. See
@@ -3438,9 +3404,8 @@ class StandardSchedule(_messages.Message):
   hourlyFrequency = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   months = _messages.EnumField('MonthsValueListEntryValuesEnum', 5, repeated=True)
   recurrenceType = _messages.EnumField('RecurrenceTypeValueValuesEnum', 6)
-  repeatInterval = _messages.IntegerField(7)
-  timeZone = _messages.StringField(8)
-  weekDayOfMonth = _messages.MessageField('WeekDayOfMonth', 9)
+  timeZone = _messages.StringField(7)
+  weekDayOfMonth = _messages.MessageField('WeekDayOfMonth', 8)
 
 
 class Status(_messages.Message):
@@ -3527,27 +3492,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class TimeOfDay(_messages.Message):
-  r"""Represents a time of day. The date and time zone are either not
-  significant or are specified elsewhere. An API may choose to allow leap
-  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
-
-  Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
-  """
-
-  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class TriggerBackupRequest(_messages.Message):

@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.compute.instances import utils as instances_utils
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.compute import scope as compute_scopes
 from googlecloudsdk.command_lib.compute.instances import flags as instances_flags
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 
@@ -93,6 +94,7 @@ def CreateDiskMessages(
     support_source_instant_snapshot=False,
     support_boot_instant_snapshot_uri=False,
     support_enable_confidential_compute=False,
+    support_disk_labels=False,
 ):
   """Creates disk messages for a single instance."""
 
@@ -133,6 +135,7 @@ def CreateDiskMessages(
       support_multi_writer=support_multi_writer,
       enable_source_instant_snapshots=support_source_instant_snapshot,
       support_enable_confidential_compute=support_enable_confidential_compute,
+      support_disk_labels=support_disk_labels,
   )
 
   local_nvdimms = []
@@ -282,6 +285,7 @@ def CreatePersistentCreateDiskMessages(
     support_image_family_scope=False,
     enable_source_instant_snapshots=False,
     support_enable_confidential_compute=False,
+    support_disk_labels=False,
 ):
   """Returns a list of AttachedDisk messages for newly creating disks.
 
@@ -319,6 +323,7 @@ def CreatePersistentCreateDiskMessages(
     enable_source_instant_snapshots: True if instant snapshot initialization is
       supported for the disk.
     support_enable_confidential_compute: True to use confidential mode for disk.
+    support_disk_labels: True to add disk labels.
 
   Returns:
     list of API messages for attached disks
@@ -471,6 +476,17 @@ def CreatePersistentCreateDiskMessages(
               disk_architecture
           )
       )
+
+    if support_disk_labels:
+      dict_labels = labels_util.ValidateAndParseLabels(disk.get('labels'))
+      if dict_labels:
+        labels_value = messages.AttachedDiskInitializeParams.LabelsValue()
+        labels_value.additionalProperties = [
+            labels_value.AdditionalProperty(key=key, value=value)
+            for key, value in dict_labels.items()
+        ]
+
+        initialize_params.labels = labels_value
 
     device_name = instance_utils.GetDiskDeviceName(disk, name,
                                                    container_mount_disk)

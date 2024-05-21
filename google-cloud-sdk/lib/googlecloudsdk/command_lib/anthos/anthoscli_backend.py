@@ -229,6 +229,8 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
       dry_run=None,
       preferred_auth=None,
       server_url=None,
+      no_browser=None,
+      remote_bootstrap=None,
       **kwargs
   ):
     del kwargs  # Not Used Here
@@ -252,6 +254,10 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['--preferred-auth', preferred_auth])
     if server_url:
       exec_args.extend(['--server', server_url])
+    if no_browser:
+      exec_args.extend(['--remote-login'])
+    if remote_bootstrap:
+      exec_args.extend(['--remote-bootstrap', remote_bootstrap])
 
     return exec_args
 

@@ -890,6 +890,8 @@ apis:
         projects.locations.global:
           path: projects/{projectsId}/locations/global
       default: true
+    v2alpha:
+      discovery_doc: osconfig_v2alpha.json
   iam:
     v1beta:
       discovery_doc: iam_v1beta.json
@@ -1131,6 +1133,8 @@ apis:
           path: projects/{projectsId}/global/networks/{networksId}
         projects.regions.addresses:
           path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
     v1beta:
       discovery_doc: parallelstore_v1beta.json
       resources:
@@ -1138,6 +1142,8 @@ apis:
           path: projects/{projectsId}/global/networks/{networksId}
         projects.regions.addresses:
           path: projects/{projectsId}/regions/{regionsId}/addresses/{addressesId}
+        projects.serviceAccounts:
+          path: projects/{projectsId}/serviceAccounts/{serviceAccountsId}
   policytroubleshooter:
     v1beta:
       enable_mtls: false

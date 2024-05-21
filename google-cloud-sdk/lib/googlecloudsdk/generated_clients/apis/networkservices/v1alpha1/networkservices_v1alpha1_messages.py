@@ -1474,6 +1474,27 @@ class Gateway(_messages.Message):
   updateTime = _messages.StringField(19)
 
 
+class GatewayRouteView(_messages.Message):
+  r"""GatewayRouteView defines view-only resource for Routes to a Gateway
+
+  Fields:
+    name: Output only. Full path name of the GatewayRouteView resource.
+      Format: projects/{project_number}/locations/{location}/gateways/{gateway
+      _name}/routeViews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
+
+
 class GrpcRoute(_messages.Message):
   r"""GrpcRoute is the resource defining how gRPC traffic routed by a Mesh or
   Gateway resource is routed.
@@ -3110,6 +3131,19 @@ class ListEndpointPoliciesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListGatewayRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListGatewayRouteViews method.
+
+  Fields:
+    gatewayRouteViews: List of GatewayRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  gatewayRouteViews = _messages.MessageField('GatewayRouteView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListGatewaysResponse(_messages.Message):
   r"""Response returned by the ListGateways method.
 
@@ -3228,6 +3262,19 @@ class ListLocationsResponse(_messages.Message):
   """
 
   locations = _messages.MessageField('Location', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListMeshRouteViewsResponse(_messages.Message):
+  r"""Response returned by the ListMeshRouteViews method.
+
+  Fields:
+    meshRouteViews: List of MeshRouteView resources.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  meshRouteViews = _messages.MessageField('MeshRouteView', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -3695,6 +3742,27 @@ class Mesh(_messages.Message):
   name = _messages.StringField(6)
   selfLink = _messages.StringField(7)
   updateTime = _messages.StringField(8)
+
+
+class MeshRouteView(_messages.Message):
+  r"""MeshRouteView defines view-only resource for Routes to a Mesh
+
+  Fields:
+    name: Output only. Full path name of the MeshRouteView resource. Format: p
+      rojects/{project_number}/locations/{location}/meshes/{mesh_name}/routeVi
+      ews/{route_view_name}
+    routeId: Output only. The resource id for the route.
+    routeLocation: Output only. Location where the route exists.
+    routeProjectNumber: Output only. Project number where the route exists.
+    routeType: Output only. Type of the route: HttpRoute,GrpcRoute,TcpRoute,
+      or TlsRoute
+  """
+
+  name = _messages.StringField(1)
+  routeId = _messages.StringField(2)
+  routeLocation = _messages.StringField(3)
+  routeProjectNumber = _messages.IntegerField(4)
+  routeType = _messages.StringField(5)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -4816,6 +4884,35 @@ class NetworkservicesProjectsLocationsGatewaysPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the GatewayRouteView resource. Formats: projects/{
+      project_number}/locations/{location}/gateways/{gateway_name}/routeViews/
+      {route_view_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of GatewayRouteViews to return per call.
+    pageToken: The value returned by the last `ListGatewayRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListGatewayRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Gateway to which a Route is associated. Formats:
+      projects/{project_number}/locations/{location}/gateways/{gateway_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest(_messages.Message):
   r"""A NetworkservicesProjectsLocationsGatewaysSetIamPolicyRequest object.
 
@@ -5843,6 +5940,35 @@ class NetworkservicesProjectsLocationsMeshesPatchRequest(_messages.Message):
   mesh = _messages.MessageField('Mesh', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest object.
+
+  Fields:
+    name: Required. Name of the MeshRouteView resource. Format: projects/{proj
+      ect_number}/locations/{location}/meshes/{mesh_name}/routeViews/{route_vi
+      ew_name}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMeshesRouteViewsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMeshesRouteViewsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of MeshRouteViews to return per call.
+    pageToken: The value returned by the last `ListMeshRouteViewsResponse`
+      Indicates that this is a continuation of a prior `ListMeshRouteViews`
+      call, and that the system should return the next page of data.
+    parent: Required. The Mesh to which a Route is associated. Format:
+      projects/{project_number}/locations/{location}/meshes/{mesh_name}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class NetworkservicesProjectsLocationsMeshesSetIamPolicyRequest(_messages.Message):
@@ -8074,7 +8200,7 @@ class Routing(_messages.Message):
     hostRules: Required. A list of HostRule rules to match against.
       `RouteRule` rules support advanced routing behavior, and can match on
       paths, headers and query parameters, as well as status codes and HTTP
-      methods. You can specify up to 10 host rules.
+      methods. You can specify up to 20 host rules.
     pathMatchers: Required. A list of PathMatcher values referenced by name by
       HostRule values. `PathMatcher` is used to match the path portion of the
       URL when a`HostRule` value matches the URL's host portion. You can

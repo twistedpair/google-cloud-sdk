@@ -43,6 +43,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_edgeCacheOrigins = self.ProjectsLocationsEdgeCacheOriginsService(self)
     self.projects_locations_edgeCacheServices = self.ProjectsLocationsEdgeCacheServicesService(self)
     self.projects_locations_endpointPolicies = self.ProjectsLocationsEndpointPoliciesService(self)
+    self.projects_locations_gateways_routeViews = self.ProjectsLocationsGatewaysRouteViewsService(self)
     self.projects_locations_gateways = self.ProjectsLocationsGatewaysService(self)
     self.projects_locations_global_serviceObserver = self.ProjectsLocationsGlobalServiceObserverService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
@@ -52,6 +53,7 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
     self.projects_locations_lbObservabilityExtensions = self.ProjectsLocationsLbObservabilityExtensionsService(self)
     self.projects_locations_lbRouteExtensions = self.ProjectsLocationsLbRouteExtensionsService(self)
     self.projects_locations_lbTrafficExtensions = self.ProjectsLocationsLbTrafficExtensionsService(self)
+    self.projects_locations_meshes_routeViews = self.ProjectsLocationsMeshesRouteViewsService(self)
     self.projects_locations_meshes = self.ProjectsLocationsMeshesService(self)
     self.projects_locations_multicastConsumerAssociations = self.ProjectsLocationsMulticastConsumerAssociationsService(self)
     self.projects_locations_multicastDomainActivations = self.ProjectsLocationsMulticastDomainActivationsService(self)
@@ -999,6 +1001,70 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGatewaysRouteViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_gateways_routeViews resource."""
+
+    _NAME = 'projects_locations_gateways_routeViews'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsGatewaysRouteViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a single RouteView of a Gateway.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GatewayRouteView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}/routeViews/{routeViewsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.routeViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysRouteViewsGetRequest',
+        response_type_name='GatewayRouteView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RouteViews.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListGatewayRouteViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/gateways/{gatewaysId}/routeViews',
+        http_method='GET',
+        method_id='networkservices.projects.locations.gateways.routeViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/routeViews',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsGatewaysRouteViewsListRequest',
+        response_type_name='ListGatewayRouteViewsResponse',
         supports_download=False,
     )
 
@@ -2493,6 +2559,70 @@ class NetworkservicesV1alpha1(base_api.BaseApiClient):
         request_field='lbTrafficExtension',
         request_type_name='NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsMeshesRouteViewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_meshes_routeViews resource."""
+
+    _NAME = 'projects_locations_meshes_routeViews'
+
+    def __init__(self, client):
+      super(NetworkservicesV1alpha1.ProjectsLocationsMeshesRouteViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a single RouteView of a Mesh.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MeshRouteView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/meshes/{meshesId}/routeViews/{routeViewsId}',
+        http_method='GET',
+        method_id='networkservices.projects.locations.meshes.routeViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMeshesRouteViewsGetRequest',
+        response_type_name='MeshRouteView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists RouteViews.
+
+      Args:
+        request: (NetworkservicesProjectsLocationsMeshesRouteViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMeshRouteViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/meshes/{meshesId}/routeViews',
+        http_method='GET',
+        method_id='networkservices.projects.locations.meshes.routeViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/routeViews',
+        request_field='',
+        request_type_name='NetworkservicesProjectsLocationsMeshesRouteViewsListRequest',
+        response_type_name='ListMeshRouteViewsResponse',
         supports_download=False,
     )
 

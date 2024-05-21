@@ -128,8 +128,9 @@ def generate_cc_update_map():
         continue
     resources_already_seen.add((apitools_api_name, apitools_collection_name))
 
+    # Convert e.g. ComputeVPNTunnel => compute.googleapis.com/VpnTunnel.
     asset_inventory_api_name = apitools_api_name
-    asset_inventory_resource_name = krm_kind
+    asset_inventory_resource_name = capitalize_interior_acronyms(krm_kind)
     if krm_group in asset_inventory_resource_name.lower():
       asset_inventory_resource_name = asset_inventory_resource_name[
           len(krm_group):]

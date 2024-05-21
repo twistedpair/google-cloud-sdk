@@ -1400,6 +1400,21 @@ class ListPartnerSSERealmsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListSACAttachmentsResponse(_messages.Message):
+  r"""Message for response to listing SACAttachments
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    sacAttachments: The list of SACAttachments
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sacAttachments = _messages.MessageField('SACAttachment', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSACRealmsResponse(_messages.Message):
   r"""Message for response to listing SACRealms
 
@@ -4404,6 +4419,86 @@ class NetworksecurityProjectsLocationsPartnerSSERealmsListRequest(_messages.Mess
   parent = _messages.StringField(5, required=True)
 
 
+class NetworksecurityProjectsLocationsSacAttachmentsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacAttachmentsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sACAttachment: A SACAttachment resource to be passed as the request body.
+    sacAttachmentId: Required. Id of the requesting object If auto-generating
+      Id server-side, remove this field and sac_attachment_id from the
+      method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sACAttachment = _messages.MessageField('SACAttachment', 3)
+  sacAttachmentId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacAttachmentsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSacAttachmentsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacAttachmentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsSacAttachmentsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacAttachmentsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSACAttachmentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest
   object.
@@ -5603,6 +5698,58 @@ class Rule(_messages.Message):
 
   destinations = _messages.MessageField('Destination', 1, repeated=True)
   sources = _messages.MessageField('Source', 2, repeated=True)
+
+
+class SACAttachment(_messages.Message):
+  r"""Configuration for an attachment within a SAC realm.
+
+  Messages:
+    LabelsValue: Optional. Optional list of labels applied to the resource.
+
+  Fields:
+    createTime: Output only. [Output only] Timestamp when the attachment was
+      created.
+    labels: Optional. Optional list of labels applied to the resource.
+    name: Identifier. Resource name, in the form
+      `projects/{project}/locations/{location}/sacAttachments/{sac_attachment}
+      `.
+    nccGateway: Required. ID of the NCC Gateway which connects to the
+      attachment.
+    sacRealm: Required. ID of the SAC Realm which owns the attachment.
+    updateTime: Output only. [Output only] Timestamp when the attachment was
+      last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Optional list of labels applied to the resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  nccGateway = _messages.StringField(4)
+  sacRealm = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class SACRealm(_messages.Message):

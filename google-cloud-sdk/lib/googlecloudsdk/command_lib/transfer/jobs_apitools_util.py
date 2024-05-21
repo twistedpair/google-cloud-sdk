@@ -468,26 +468,31 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
     ]
 
 
-def _create_or_modify_logging_config(job, args, messages):
+def _enable_onprem_gcs_transfer_logs(job, args, is_update):
+  """Sets enableOnpremGcsTransferLogs boolean."""
+  enable_posix_transfer_logs = getattr(args, 'enable_posix_transfer_logs', None)
+  # GCS transfer logs only supported for POSIX.
+  if not (job.transferSpec.posixDataSource or job.transferSpec.posixDataSink):
+    job.loggingConfig.enableOnpremGcsTransferLogs = False
+  # Caller has specifically enabled or disabled logs.
+  elif enable_posix_transfer_logs is not None:
+    job.loggingConfig.enableOnpremGcsTransferLogs = enable_posix_transfer_logs
+  # Default to creating new POSIX transfers with GCS transfer logs enabled.
+  elif not is_update:
+    job.loggingConfig.enableOnpremGcsTransferLogs = True
+  # Avoid modifying existing POSIX transfers on UpdateTransferJob.
+  else:
+    pass
+  return
+
+
+def _create_or_modify_logging_config(job, args, messages, is_update):
   """Creates or modifies transfer LoggingConfig object based on args."""
+  if not job.loggingConfig:
+    job.loggingConfig = messages.LoggingConfig()
   # TODO(b/322289474): enable-posix-transfer-logs logic can be cleaned up once
   #                    POSIX logs are deprecated.
-  enable_posix_transfer_logs = getattr(args, 'enable_posix_transfer_logs', None)
-  if not job.loggingConfig:
-    if enable_posix_transfer_logs is None:
-      # Default to creating new jobs with logging enabled.
-      job.loggingConfig = messages.LoggingConfig(
-          enableOnpremGcsTransferLogs=True)
-    else:
-      job.loggingConfig = messages.LoggingConfig()
-
-  if enable_posix_transfer_logs is not None:
-    # Update new and existing jobs with user setting.
-    job.loggingConfig.enableOnpremGcsTransferLogs = enable_posix_transfer_logs
-
-  if job.transferSpec.hdfsDataSource is not None:
-    # HDFS supports only the newer logging.
-    job.loggingConfig.enableOnpremGcsTransferLogs = False
+  _enable_onprem_gcs_transfer_logs(job, args, is_update)
 
   log_actions = getattr(args, 'log_actions', None)
   log_action_states = getattr(args, 'log_action_states', None)
@@ -577,7 +582,9 @@ def generate_transfer_job_message(args, messages, existing_job=None):
       has_event_stream_flag=has_event_stream_flag)
   _create_or_modify_notification_config(
       job, args, messages, is_update=bool(existing_job))
-  _create_or_modify_logging_config(job, args, messages)
+  _create_or_modify_logging_config(
+      job, args, messages, is_update=bool(existing_job)
+  )
 
   if existing_job:
     return generate_patch_transfer_job_message(messages, job, UPDATE_FIELD_MASK)

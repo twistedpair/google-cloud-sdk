@@ -221,7 +221,7 @@ class BackupSchedule(_messages.Message):
       `projects//instances//databases//backupSchedules/a-z*[a-z0-9]` The final
       segment of the name must be between 2 and 60 characters in length.
     retentionDuration: Optional. The retention duration of a backup that must
-      be at least 1 day and at most 366 days. The backup is eligible to be
+      be at least 6 hours and at most 366 days. The backup is eligible to be
       automatically deleted once the retention period has elapsed.
     spec: Optional. The schedule specification based on which the backup
       creations are triggered.

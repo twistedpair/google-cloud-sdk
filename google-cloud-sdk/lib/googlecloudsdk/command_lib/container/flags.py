@@ -1021,17 +1021,18 @@ def AddLocationFlags(parser):
       '--location',
       help=(
           'Compute zone or region (e.g. us-central1-a or us-central1) for the '
-          'cluster.'
+          'cluster. Prefer using this flag over the --region or --zone flags.'
       ),
   )
   group.add_argument(
       '--zone',
       '-z',
-      help='Compute zone (e.g. us-central1-a) for the cluster.',
+      help='Compute zone (e.g. us-central1-a) for a zonal cluster.',
       action=actions.StoreProperty(properties.VALUES.compute.zone),
   )
   group.add_argument(
-      '--region', help='Compute region (e.g. us-central1) for the cluster.'
+      '--region',
+      help='Compute region (e.g. us-central1) for a regional cluster.'
   )
 
 
@@ -3989,7 +3990,7 @@ def AddRuntimeVulnerabilityInsightFlag(parser):
   )
 
 
-def AddEnableKubeletReadonlyPortFlag(parser, hidden=True):
+def AddEnableKubeletReadonlyPortFlag(parser, hidden=False):
   """Adds Kubernetes Read Only Port's enablement flag to the parser."""
   parser.add_argument(
       '--enable-insecure-kubelet-readonly-port',
@@ -4005,7 +4006,7 @@ def AddEnableKubeletReadonlyPortFlag(parser, hidden=True):
   )
 
 
-def AddAutoprovisioningEnableKubeletReadonlyPortFlag(parser, hidden=True):
+def AddAutoprovisioningEnableKubeletReadonlyPortFlag(parser, hidden=False):
   """Adds Kubernetes Read Only Port's enablement flag to the parser."""
   parser.add_argument(
       '--autoprovisioning-enable-insecure-kubelet-readonly-port',

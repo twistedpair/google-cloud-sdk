@@ -1806,8 +1806,14 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
 class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   r"""Represents a recurring schedule that runs every day. The time zone is
   UTC.
+
+  Fields:
+    time: Time of the day. The first run scheduled will be either on the same
+      day if schedule creation time precedes time_of_day or the next day
+      otherwise.
   """
 
+  time = _messages.MessageField('TimeOfDay', 1)
 
 
 class GoogleFirestoreAdminV1Database(_messages.Message):
@@ -1859,6 +1865,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
       `projects/{project}/databases/{database}`
     pointInTimeRecoveryEnablement: Whether to enable the PITR feature on this
       database.
+    previousId: Output only. The database resource's prior database ID. This
+      field is only populated for deleted databases.
     type: The type of the database. See
       https://cloud.google.com/datastore/docs/firestore-or-datastore for
       information about how to choose.
@@ -1968,10 +1976,11 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   locationId = _messages.StringField(10)
   name = _messages.StringField(11)
   pointInTimeRecoveryEnablement = _messages.EnumField('PointInTimeRecoveryEnablementValueValuesEnum', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  versionRetentionPeriod = _messages.StringField(16)
+  previousId = _messages.StringField(13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  versionRetentionPeriod = _messages.StringField(17)
 
 
 class GoogleFirestoreAdminV1DatabaseSnapshot(_messages.Message):
@@ -2803,6 +2812,9 @@ class GoogleFirestoreAdminV1WeeklyRecurrence(_messages.Message):
 
   Fields:
     day: The day of week to run. DAY_OF_WEEK_UNSPECIFIED is not allowed.
+    time: Time of the day. If day is today, the first run will happen today if
+      schedule creation time precedes time_of_day, and the next week
+      otherwise.
   """
 
   class DayValueValuesEnum(_messages.Enum):
@@ -2828,6 +2840,7 @@ class GoogleFirestoreAdminV1WeeklyRecurrence(_messages.Message):
     SUNDAY = 7
 
   day = _messages.EnumField('DayValueValuesEnum', 1)
+  time = _messages.MessageField('TimeOfDay', 2)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -3848,6 +3861,27 @@ class TargetChange(_messages.Message):
   resumeToken = _messages.BytesField(3)
   targetChangeType = _messages.EnumField('TargetChangeTypeValueValuesEnum', 4)
   targetIds = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
+
+
+class TimeOfDay(_messages.Message):
+  r"""Represents a time of day. The date and time zone are either not
+  significant or are specified elsewhere. An API may choose to allow leap
+  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
+
+  Fields:
+    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
+      choose to allow the value "24:00:00" for scenarios like business closing
+      time.
+    minutes: Minutes of hour of day. Must be from 0 to 59.
+    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
+    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
+      API may allow the value 60 if it allows leap-seconds.
+  """
+
+  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class TransactionOptions(_messages.Message):

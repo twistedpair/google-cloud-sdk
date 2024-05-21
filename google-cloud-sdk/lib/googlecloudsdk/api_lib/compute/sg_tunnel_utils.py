@@ -32,7 +32,7 @@ SECURITY_GATEWAY_PROXY_PORT = 443
 SecurityGatewayTargetInfo = collections.namedtuple(
     'SecurityGatewayTarget',
     ['project', 'region', 'security_gateway', 'host', 'port', 'url_override',
-     'proxy_info'])
+     'proxy_info', 'use_dest_group'])
 
 
 class MissingSecurityGatewayParameter(exceptions.Error):
@@ -53,8 +53,16 @@ class PythonVersionMissingSNI(exceptions.Error):
 
 def GenerateSecurityGatewayResourcePath(project, location, sg_id):
   return (
-      'projects/{}/iap_tunnel/locations/{}/destGroups/{}'.format(
+      'projects/{}/locations/{}/securityGateways/{}'.format(
           project, location, sg_id
+      )
+  )
+
+
+def GenerateDestGroupResourcePath(project, location, dg_id):
+  return (
+      'projects/{}/iap_tunnel/locations/{}/destGroups/{}'.format(
+          project, location, dg_id
       )
   )
 

@@ -2026,6 +2026,13 @@ class Dataset(_messages.Message):
       organize and group your datasets. You can set this property when
       inserting or updating a dataset. See Creating and Updating Dataset
       Labels for more information.
+    ResourceTagsValue: Optional. The [tags](/bigquery/docs/tags) attached to
+      this dataset. Tag keys are globally unique. Tag key is expected to be in
+      the namespaced format, for example "123456789012/environment" where
+      123456789012 is the ID of the parent organization or project resource
+      for this tag key. Tag value is expected to be the short name, for
+      example "Production". See [Tag definitions](/iam/docs/tags-access-
+      control#definitions) for more details.
     TagsValueListEntry: A global tag managed by Resource Manager.
       https://cloud.google.com/iam/docs/tags-access-control#definitions
 
@@ -2121,6 +2128,13 @@ class Dataset(_messages.Message):
     maxTimeTravelHours: Optional. Defines the time travel window in hours. The
       value can be from 48 to 168 hours (2 to 7 days). The default value is
       168 hours if this is not set.
+    resourceTags: Optional. The [tags](/bigquery/docs/tags) attached to this
+      dataset. Tag keys are globally unique. Tag key is expected to be in the
+      namespaced format, for example "123456789012/environment" where
+      123456789012 is the ID of the parent organization or project resource
+      for this tag key. Tag value is expected to be the short name, for
+      example "Production". See [Tag definitions](/iam/docs/tags-access-
+      control#definitions) for more details.
     restrictions: Optional. Output only. Restriction config for all tables and
       dataset. If set, restrict certain accesses on the dataset and all its
       tables based on the config. See [Data egress](/bigquery/docs/analytics-
@@ -2256,6 +2270,36 @@ class Dataset(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceTagsValue(_messages.Message):
+    r"""Optional. The [tags](/bigquery/docs/tags) attached to this dataset.
+    Tag keys are globally unique. Tag key is expected to be in the namespaced
+    format, for example "123456789012/environment" where 123456789012 is the
+    ID of the parent organization or project resource for this tag key. Tag
+    value is expected to be the short name, for example "Production". See [Tag
+    definitions](/iam/docs/tags-access-control#definitions) for more details.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceTagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   class TagsValueListEntry(_messages.Message):
     r"""A global tag managed by Resource Manager.
     https://cloud.google.com/iam/docs/tags-access-control#definitions
@@ -2292,13 +2336,14 @@ class Dataset(_messages.Message):
   linkedDatasetSource = _messages.MessageField('LinkedDatasetSource', 20)
   location = _messages.StringField(21)
   maxTimeTravelHours = _messages.IntegerField(22)
-  restrictions = _messages.MessageField('RestrictionConfig', 23)
-  satisfiesPzi = _messages.BooleanField(24)
-  satisfiesPzs = _messages.BooleanField(25)
-  selfLink = _messages.StringField(26)
-  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 27)
-  tags = _messages.MessageField('TagsValueListEntry', 28, repeated=True)
-  type = _messages.StringField(29)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 23)
+  restrictions = _messages.MessageField('RestrictionConfig', 24)
+  satisfiesPzi = _messages.BooleanField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  selfLink = _messages.StringField(27)
+  storageBillingModel = _messages.EnumField('StorageBillingModelValueValuesEnum', 28)
+  tags = _messages.MessageField('TagsValueListEntry', 29, repeated=True)
+  type = _messages.StringField(30)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -3274,6 +3319,20 @@ class ForeignTypeInfo(_messages.Message):
   typeSystem = _messages.EnumField('TypeSystemValueValuesEnum', 1)
 
 
+class ForeignViewDefinition(_messages.Message):
+  r"""A view can be represented in multiple ways. Each representation has its
+  own dialect. This message stores the metadata required for these
+  representations.
+
+  Fields:
+    dialect: Optional. Represents the dialect of the query.
+    query: Required. The query that defines the view.
+  """
+
+  dialect = _messages.StringField(1)
+  query = _messages.StringField(2)
+
+
 class GetIamPolicyRequest(_messages.Message):
   r"""Request message for `GetIamPolicy` method.
 
@@ -3950,6 +4009,10 @@ class JobConfigurationLoad(_messages.Message):
   data into a destination table.
 
   Enums:
+    ColumnNameCharacterMapValueValuesEnum: Optional. Character map supported
+      for column names in CSV/Parquet loads. Defaults to STRICT and can be
+      overridden by Project Config Service. Using this option with
+      unsupporting load formats will result in an error.
     DecimalTargetTypesValueListEntryValuesEnum:
     FileSetSpecTypeValueValuesEnum: Optional. Specifies how source URIs are
       interpreted for constructing the file set to load. By default, source
@@ -3974,6 +4037,10 @@ class JobConfigurationLoad(_messages.Message):
     autodetect: Optional. Indicates if we should automatically infer the
       options and schema for CSV and JSON sources.
     clustering: Clustering specification for the destination table.
+    columnNameCharacterMap: Optional. Character map supported for column names
+      in CSV/Parquet loads. Defaults to STRICT and can be overridden by
+      Project Config Service. Using this option with unsupporting load formats
+      will result in an error.
     connectionProperties: Optional. Connection properties which can modify the
       load job behavior. Currently, only the 'session_id' connection property
       is supported, and is used to resolve _SESSION appearing as the dataset
@@ -4172,6 +4239,25 @@ class JobConfigurationLoad(_messages.Message):
       actions occur as one atomic update upon job completion.
   """
 
+  class ColumnNameCharacterMapValueValuesEnum(_messages.Enum):
+    r"""Optional. Character map supported for column names in CSV/Parquet
+    loads. Defaults to STRICT and can be overridden by Project Config Service.
+    Using this option with unsupporting load formats will result in an error.
+
+    Values:
+      COLUMN_NAME_CHARACTER_MAP_UNSPECIFIED: Unspecified column name character
+        map.
+      STRICT: Support flexible column name and reject invalid column names.
+      V1: Support alphanumeric + underscore characters and names must start
+        with a letter or underscore. Invalid column names will be normalized.
+      V2: Support flexible column name. Invalid column names will be
+        normalized.
+    """
+    COLUMN_NAME_CHARACTER_MAP_UNSPECIFIED = 0
+    STRICT = 1
+    V1 = 2
+    V2 = 3
+
   class DecimalTargetTypesValueListEntryValuesEnum(_messages.Enum):
     r"""DecimalTargetTypesValueListEntryValuesEnum enum type.
 
@@ -4224,38 +4310,39 @@ class JobConfigurationLoad(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   autodetect = _messages.BooleanField(3)
   clustering = _messages.MessageField('Clustering', 4)
-  connectionProperties = _messages.MessageField('ConnectionProperty', 5, repeated=True)
-  copyFilesOnly = _messages.BooleanField(6)
-  createDisposition = _messages.StringField(7)
-  createSession = _messages.BooleanField(8)
-  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 9, repeated=True)
-  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 10)
-  destinationTable = _messages.MessageField('TableReference', 11)
-  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 12)
-  encoding = _messages.StringField(13)
-  fieldDelimiter = _messages.StringField(14)
-  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 15)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 16)
-  ignoreUnknownValues = _messages.BooleanField(17)
-  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 18)
-  maxBadRecords = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  nullMarker = _messages.StringField(20)
-  parquetOptions = _messages.MessageField('ParquetOptions', 21)
-  preserveAsciiControlCharacters = _messages.BooleanField(22)
-  projectionFields = _messages.StringField(23, repeated=True)
-  quote = _messages.StringField(24, default='"')
-  rangePartitioning = _messages.MessageField('RangePartitioning', 25)
-  referenceFileSchemaUri = _messages.StringField(26)
-  schema = _messages.MessageField('TableSchema', 27)
-  schemaInline = _messages.StringField(28)
-  schemaInlineFormat = _messages.StringField(29)
-  schemaUpdateOptions = _messages.StringField(30, repeated=True)
-  skipLeadingRows = _messages.IntegerField(31, variant=_messages.Variant.INT32)
-  sourceFormat = _messages.StringField(32)
-  sourceUris = _messages.StringField(33, repeated=True)
-  timePartitioning = _messages.MessageField('TimePartitioning', 34)
-  useAvroLogicalTypes = _messages.BooleanField(35)
-  writeDisposition = _messages.StringField(36)
+  columnNameCharacterMap = _messages.EnumField('ColumnNameCharacterMapValueValuesEnum', 5)
+  connectionProperties = _messages.MessageField('ConnectionProperty', 6, repeated=True)
+  copyFilesOnly = _messages.BooleanField(7)
+  createDisposition = _messages.StringField(8)
+  createSession = _messages.BooleanField(9)
+  decimalTargetTypes = _messages.EnumField('DecimalTargetTypesValueListEntryValuesEnum', 10, repeated=True)
+  destinationEncryptionConfiguration = _messages.MessageField('EncryptionConfiguration', 11)
+  destinationTable = _messages.MessageField('TableReference', 12)
+  destinationTableProperties = _messages.MessageField('DestinationTableProperties', 13)
+  encoding = _messages.StringField(14)
+  fieldDelimiter = _messages.StringField(15)
+  fileSetSpecType = _messages.EnumField('FileSetSpecTypeValueValuesEnum', 16)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 17)
+  ignoreUnknownValues = _messages.BooleanField(18)
+  jsonExtension = _messages.EnumField('JsonExtensionValueValuesEnum', 19)
+  maxBadRecords = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  nullMarker = _messages.StringField(21)
+  parquetOptions = _messages.MessageField('ParquetOptions', 22)
+  preserveAsciiControlCharacters = _messages.BooleanField(23)
+  projectionFields = _messages.StringField(24, repeated=True)
+  quote = _messages.StringField(25, default='"')
+  rangePartitioning = _messages.MessageField('RangePartitioning', 26)
+  referenceFileSchemaUri = _messages.StringField(27)
+  schema = _messages.MessageField('TableSchema', 28)
+  schemaInline = _messages.StringField(29)
+  schemaInlineFormat = _messages.StringField(30)
+  schemaUpdateOptions = _messages.StringField(31, repeated=True)
+  skipLeadingRows = _messages.IntegerField(32, variant=_messages.Variant.INT32)
+  sourceFormat = _messages.StringField(33)
+  sourceUris = _messages.StringField(34, repeated=True)
+  timePartitioning = _messages.MessageField('TimePartitioning', 35)
+  useAvroLogicalTypes = _messages.BooleanField(36)
+  writeDisposition = _messages.StringField(37)
 
 
 class JobConfigurationQuery(_messages.Message):
@@ -5733,27 +5820,27 @@ class ParquetOptions(_messages.Message):
   r"""Parquet Options for load and make external tables.
 
   Enums:
-    MapTargetTypeValueValuesEnum: Optional. Will indicate how to represent a
-      parquet map if present.
+    MapTargetTypeValueValuesEnum: Optional. Indicates how to represent a
+      Parquet map if present.
 
   Fields:
     enableListInference: Optional. Indicates whether to use schema inference
       specifically for Parquet LIST logical type.
     enumAsString: Optional. Indicates whether to infer Parquet ENUM logical
       type as STRING instead of BYTES by default.
-    mapTargetType: Optional. Will indicate how to represent a parquet map if
+    mapTargetType: Optional. Indicates how to represent a Parquet map if
       present.
   """
 
   class MapTargetTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Will indicate how to represent a parquet map if present.
+    r"""Optional. Indicates how to represent a Parquet map if present.
 
     Values:
-      MAP_TARGET_TYPE_UNSPECIFIED: In this mode, we fall back to the default.
-        Currently (3/24) we represent the map as: struct map_field_name {
-        repeated struct key_value { key value } }
-      ARRAY_OF_STRUCT: In this mode, we omit parquet's key_value struct and
-        represent the map as: repeated struct map_field_name { key value }
+      MAP_TARGET_TYPE_UNSPECIFIED: In this mode, the map will have the
+        following schema: struct map_field_name { repeated struct key_value {
+        key value } }.
+      ARRAY_OF_STRUCT: In this mode, the map will have the following schema:
+        repeated struct map_field_name { key value }.
     """
     MAP_TARGET_TYPE_UNSPECIFIED = 0
     ARRAY_OF_STRUCT = 1
@@ -9577,6 +9664,7 @@ class ViewDefinition(_messages.Message):
   r"""Describes the definition of a logical view.
 
   Fields:
+    foreignDefinitions: Optional. Foreign view representations.
     privacyPolicy: Optional. Specifices the privacy policy for the view.
     query: Required. A query that BigQuery executes when the view is
       referenced.
@@ -9592,11 +9680,12 @@ class ViewDefinition(_messages.Message):
       used in the query.
   """
 
-  privacyPolicy = _messages.MessageField('PrivacyPolicy', 1)
-  query = _messages.StringField(2)
-  useExplicitColumnNames = _messages.BooleanField(3)
-  useLegacySql = _messages.BooleanField(4)
-  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 5, repeated=True)
+  foreignDefinitions = _messages.MessageField('ForeignViewDefinition', 1, repeated=True)
+  privacyPolicy = _messages.MessageField('PrivacyPolicy', 2)
+  query = _messages.StringField(3)
+  useExplicitColumnNames = _messages.BooleanField(4)
+  useLegacySql = _messages.BooleanField(5)
+  userDefinedFunctionResources = _messages.MessageField('UserDefinedFunctionResource', 6, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

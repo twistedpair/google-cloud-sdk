@@ -2870,6 +2870,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.osconfig.v2alpha',
+                    client_classpath='osconfig_v2alpha_client.OsconfigV2alpha',
+                    base_url='',
+                    messages_modulepath='osconfig_v2alpha_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'oslogin': {
         'v1':

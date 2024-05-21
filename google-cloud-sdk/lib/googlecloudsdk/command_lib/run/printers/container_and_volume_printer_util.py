@@ -116,12 +116,10 @@ def GetSecrets(container: container_resource.Container) -> cp.Table:
   secrets.update(
       {k: _FormatSecretKeyRef(v) for k, v in container.env_vars.secrets.items()}
   )
-  secrets.update(
-      {
-          k: _FormatSecretVolumeSource(v)
-          for k, v in container.MountedVolumeJoin('secrets').items()
-      }
-  )
+  secrets.update({
+      k: _FormatSecretVolumeSource(v)
+      for k, v in container.MountedVolumeJoin('secrets').items()
+  })
   return cp.Mapped(k8s_util.OrderByKey(secrets))
 
 
@@ -184,29 +182,32 @@ def _FormatVolume(volume):
   elif volume.csi:
     if volume.csi.driver == 'gcsfuse.run.googleapis.com':
       bucket = None
+      mount_options = None
       for prop in volume.csi.volumeAttributes.additionalProperties:
         if prop.key == 'bucketName':
           bucket = prop.value
+        if prop.key == 'mountOptions':
+          mount_options_list = prop.value.split(',')
+          mount_options = cp.Table(
+              [tuple(opt.split('=', 1)) for opt in mount_options_list]
+          )
       return cp.Labeled([
           ('type', 'cloud-storage'),
           ('bucket', bucket),
           ('read-only', volume.csi.readOnly),
+          ('mount-options', mount_options),
       ])
 
 
 def GetConfigMaps(container: container_resource.Container) -> cp.Table:
   """Returns a print mapping for env var and volume-mounted config maps."""
   config_maps = {}
-  config_maps.update(
-      {
-          k: _FormatConfigMapKeyRef(v)
-          for k, v in container.env_vars.config_maps.items()
-      }
-  )
-  config_maps.update(
-      {
-          k: _FormatConfigMapVolumeSource(v)
-          for k, v in container.MountedVolumeJoin('config_maps').items()
-      }
-  )
+  config_maps.update({
+      k: _FormatConfigMapKeyRef(v)
+      for k, v in container.env_vars.config_maps.items()
+  })
+  config_maps.update({
+      k: _FormatConfigMapVolumeSource(v)
+      for k, v in container.MountedVolumeJoin('config_maps').items()
+  })
   return cp.Mapped(k8s_util.OrderByKey(config_maps))

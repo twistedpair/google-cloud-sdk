@@ -2719,12 +2719,19 @@ class GoogleCloudDatacatalogV1VertexModelSourceInfo(_messages.Message):
       CUSTOM: The Model is uploaded by user or custom training pipeline.
       BQML: The Model is registered and sync'ed from BigQuery ML.
       MODEL_GARDEN: The Model is saved or tuned from Model Garden.
+      GENIE: The Model is saved or tuned from Genie.
+      CUSTOM_TEXT_EMBEDDING: The Model is uploaded by text embedding
+        finetuning pipeline.
+      MARKETPLACE: The Model is saved or tuned from Marketplace.
     """
     MODEL_SOURCE_TYPE_UNSPECIFIED = 0
     AUTOML = 1
     CUSTOM = 2
     BQML = 3
     MODEL_GARDEN = 4
+    GENIE = 5
+    CUSTOM_TEXT_EMBEDDING = 6
+    MARKETPLACE = 7
 
   copy = _messages.BooleanField(1)
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 2)

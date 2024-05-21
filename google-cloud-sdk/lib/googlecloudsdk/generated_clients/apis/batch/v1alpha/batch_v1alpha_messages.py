@@ -308,8 +308,8 @@ class BatchProjectsLocationsJobsPatchRequest(_messages.Message):
       first `taskCount` field in the job's `taskGroups` field. Therefore, you
       must set the value of `updateMask` to `taskGroups`. Any other job fields
       in the update request will be ignored. For example, to update a job's
-      `taskCount` to 2, set `updateMask` to `taskGroups` and use the following
-      request body: { "taskGroups":[{ "taskCount": 2 }] }
+      `taskCount` to `2`, set `updateMask` to `taskGroups` and use the
+      following request body: ``` { "taskGroups":[{ "taskCount": 2 }] } ```
   """
 
   job = _messages.MessageField('Job', 1)
@@ -930,17 +930,17 @@ class InstancePolicyOrTemplate(_messages.Message):
   resources such as GPUs and extra disks.
 
   Fields:
-    installGpuDrivers: Set this field true if users want Batch to help fetch
+    installGpuDrivers: Set this field true if you want Batch to help fetch
       drivers from a third party location and install them for GPUs specified
-      in policy.accelerators or instance_template on their behalf. Default is
-      false. For Container-Optimized Image cases, Batch will install the
+      in `policy.accelerators` or `instance_template` on your behalf. Default
+      is false. For Container-Optimized Image cases, Batch will install the
       accelerator driver following milestones of
       https://cloud.google.com/container-optimized-os/docs/release-notes. For
       non Container-Optimized Image cases, following
       https://github.com/GoogleCloudPlatform/compute-gpu-
       installation/blob/main/linux/install_gpu_driver.py.
-    installOpsAgent: Optional. Set this field true if users want Batch to
-      install Ops Agent on their behalf. Default is false.
+    installOpsAgent: Optional. Set this field true if you want Batch to
+      install Ops Agent on your behalf. Default is false.
     instanceTemplate: Name of an instance template used to create VMs. Named
       the field as 'instance_template' instead of 'template' to avoid c++
       keyword conflict.
@@ -2286,12 +2286,12 @@ class TaskExecution(_messages.Message):
     exitCode: The exit code of a finished task. If the task succeeded, the
       exit code will be 0. If the task failed but not due to the following
       reasons, the exit code will be 50000. Otherwise, it can be from
-      different sources: - Batch known failures as
+      different sources: * Batch known failures:
       https://cloud.google.com/batch/docs/troubleshooting#reserved-exit-codes.
-      - Batch runnable execution failures: You can rely on Batch logs for
+      * Batch runnable execution failures; you can rely on Batch logs to
       further diagnose: https://cloud.google.com/batch/docs/analyze-job-using-
       logs. If there are multiple runnables failures, Batch only exposes the
-      first error caught for now.
+      first error.
     stderrSnippet: Optional. The tail end of any content written to standard
       error by the task execution. This field will be populated only when the
       execution failed.
@@ -2495,9 +2495,15 @@ class TaskSpec(_messages.Message):
       code, retry the task with max_retry_count.
     maxRetryCount: Maximum number of retries on failures. The default, 0,
       which means never retry. The valid value range is [0, 10].
-    maxRunDuration: Maximum duration the task should run. The task will be
-      killed and marked as FAILED if over this limit. The valid value range
-      for max_run_duration in seconds is [0, 315576000000.999999999],
+    maxRunDuration: Maximum duration the task should run before being
+      automatically retried (if enabled) or automatically failed. Format the
+      value of this field as a time limit in seconds followed by `s`-for
+      example, `3600s` for 1 hour. The field accepts any value between 0 and
+      the maximum listed for the `Duration` field type at
+      https://protobuf.dev/reference/protobuf/google.protobuf/#duration;
+      however, the actual maximum run time for a job will be limited to the
+      maximum run time for a job listed at
+      https://cloud.google.com/batch/quotas#max-job-duration.
     runnables: The sequence of scripts or containers to run for this Task.
       Each Task using this TaskSpec executes its list of runnables in order.
       The Task succeeds if all of its runnables either exit with a zero status

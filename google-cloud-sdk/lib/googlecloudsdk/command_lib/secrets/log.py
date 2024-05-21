@@ -54,6 +54,11 @@ class Secrets(Logger):
 class Versions(Logger):
   """Logger for versions."""
 
+  _SCHEDULED_DESTROY_MESSAGE = (
+      'Disabled version [{version}] of the secret [{secret}] and scheduled for'
+      ' destruction at [{time}].'
+  )
+
   def _Print(self, action, version_ref):
     self.Print('{action} version [{version}] of the secret [{secret}].'.format(
         action=action,
@@ -65,6 +70,15 @@ class Versions(Logger):
 
   def Destroyed(self, version_ref):
     self._Print('Destroyed', version_ref)
+
+  def ScheduledDestroy(self, scheduled_destroy_time, version_ref):
+    self.Print(
+        self._SCHEDULED_DESTROY_MESSAGE.format(
+            version_ref.Name(),
+            version_ref.Parent().Name(),
+            scheduled_destroy_time,
+        )
+    )
 
   def Disabled(self, version_ref):
     self._Print('Disabled', version_ref)

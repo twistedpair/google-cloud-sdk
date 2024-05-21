@@ -963,6 +963,19 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PortRange(_messages.Message):
+  r"""A PortsConfig defines a range of ports. Both first and last are
+  inclusive. To specify a single port, both first and last should be same.
+
+  Fields:
+    first: Required. Starting port number for the current range of ports.
+    last: Required. Ending port number for the current range of ports.
+  """
+
+  first = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  last = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class PrivateClusterConfig(_messages.Message):
   r"""Configuration options for private workstation clusters.
 
@@ -1491,6 +1504,9 @@ class WorkstationConfig(_messages.Message):
       propagated to the underlying Compute Engine resources.
 
   Fields:
+    allowedPorts: Optional. Single or Range of ports externally accessible in
+      the workstation. If not specified defaults to ports 22, 80 and ports
+      1024-65535.
     annotations: Optional. Client-specified annotations.
     conditions: Output only. Status conditions describing the current resource
       state.
@@ -1633,29 +1649,30 @@ class WorkstationConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  conditions = _messages.MessageField('Status', 2, repeated=True)
-  container = _messages.MessageField('Container', 3)
-  createTime = _messages.StringField(4)
-  degraded = _messages.BooleanField(5)
-  deleteTime = _messages.StringField(6)
-  disableTcpConnections = _messages.BooleanField(7)
-  displayName = _messages.StringField(8)
-  enableAuditAgent = _messages.BooleanField(9)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 11, repeated=True)
-  etag = _messages.StringField(12)
-  host = _messages.MessageField('Host', 13)
-  idleTimeout = _messages.StringField(14)
-  labels = _messages.MessageField('LabelsValue', 15)
-  name = _messages.StringField(16)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 17, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 18, repeated=True)
-  reconciling = _messages.BooleanField(19)
-  replicaZones = _messages.StringField(20, repeated=True)
-  runningTimeout = _messages.StringField(21)
-  uid = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
+  allowedPorts = _messages.MessageField('PortRange', 1, repeated=True)
+  annotations = _messages.MessageField('AnnotationsValue', 2)
+  conditions = _messages.MessageField('Status', 3, repeated=True)
+  container = _messages.MessageField('Container', 4)
+  createTime = _messages.StringField(5)
+  degraded = _messages.BooleanField(6)
+  deleteTime = _messages.StringField(7)
+  disableTcpConnections = _messages.BooleanField(8)
+  displayName = _messages.StringField(9)
+  enableAuditAgent = _messages.BooleanField(10)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 12, repeated=True)
+  etag = _messages.StringField(13)
+  host = _messages.MessageField('Host', 14)
+  idleTimeout = _messages.StringField(15)
+  labels = _messages.MessageField('LabelsValue', 16)
+  name = _messages.StringField(17)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 18, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 19, repeated=True)
+  reconciling = _messages.BooleanField(20)
+  replicaZones = _messages.StringField(21, repeated=True)
+  runningTimeout = _messages.StringField(22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

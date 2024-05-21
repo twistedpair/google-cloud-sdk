@@ -282,7 +282,7 @@ NODECONFIGDEFAULTS_READONLY_PORT_NOT_SUPPORTED = """\
 nodePoolDefaults.nodeKubeletConfig is not supported on GKE Autopilot clusters.
 """
 
-MAX_NODES_PER_POOL = 1000
+MAX_NODES_PER_POOL = 2000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
 MAX_AUTHORIZED_NETWORKS_CIDRS_PUBLIC = 50
@@ -1099,6 +1099,8 @@ class UpdateClusterOptions(object):
       enable_security_posture=None,
       network_performance_config=None,
       enable_k8s_beta_apis=None,
+      compliance=None,
+      compliance_standards=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
       enable_runtime_vulnerability_insight=None,
@@ -1247,6 +1249,8 @@ class UpdateClusterOptions(object):
     self.enable_security_posture = enable_security_posture
     self.network_performance_config = network_performance_config
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
+    self.compliance = compliance
+    self.compliance_standards = compliance_standards
     self.security_posture = security_posture
     self.workload_vulnerability_scanning = workload_vulnerability_scanning
     self.enable_runtime_vulnerability_insight = (
@@ -3827,6 +3831,29 @@ class APIAdapter(object):
     if options.clear_fleet_project:
       update = self.messages.ClusterUpdate(
           desiredFleet=self.messages.Fleet(project=''))
+
+    if (
+        options.compliance is not None
+        or options.compliance_standards is not None
+    ):
+      compliance_config = self.messages.CompliancePostureConfig()
+      if options.compliance is not None:
+        if options.compliance.lower() == 'enabled':
+          compliance_config.mode = (
+              self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+          )
+        elif options.compliance.lower() == 'disabled':
+          compliance_config.mode = (
+              self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
+          )
+      if options.compliance_standards is not None:
+        compliance_config.complianceStandards = [
+            self.messages.ComplianceStandard(standard=standard)
+            for standard in options.compliance_standards.split(',')
+        ]
+      update = self.messages.ClusterUpdate(
+          desiredCompliancePostureConfig=compliance_config
+      )
 
     if options.enable_security_posture is not None:
       security_posture_config = self.messages.SecurityPostureConfig()

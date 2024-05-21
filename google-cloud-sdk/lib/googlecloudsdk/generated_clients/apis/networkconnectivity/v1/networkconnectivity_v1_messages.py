@@ -4414,6 +4414,7 @@ class Spoke(_messages.Message):
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
       PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
+      PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
@@ -4421,6 +4422,7 @@ class Spoke(_messages.Message):
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
     PRIVATE_SERVICES_ACCESS = 5
+    PRODUCER_VPC_NETWORK = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -4619,6 +4621,7 @@ class SpokeTypeCount(_messages.Message):
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
       PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
+      PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
     VPN_TUNNEL = 1
@@ -4626,6 +4629,7 @@ class SpokeTypeCount(_messages.Message):
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
     PRIVATE_SERVICES_ACCESS = 5
+    PRODUCER_VPC_NETWORK = 6
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)

@@ -3132,11 +3132,13 @@ class TargetVMDetails(_messages.Message):
       BALANCED: An alternative to SSD persistent disks that balance
         performance and cost.
       SSD: SSD hard disk type.
+      HYPERDISK_BALANCED: Hyperdusk balanced disk type.
     """
     DISK_TYPE_UNSPECIFIED = 0
     STANDARD = 1
     BALANCED = 2
     SSD = 3
+    HYPERDISK_BALANCED = 4
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""The license type to use in OS adaptation.

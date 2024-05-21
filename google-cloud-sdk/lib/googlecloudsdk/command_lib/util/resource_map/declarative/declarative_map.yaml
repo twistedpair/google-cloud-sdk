@@ -1691,7 +1691,7 @@ compute:
     - beta
     - v1
   externalVpnGateways:
-    asset_inventory_type: compute.googleapis.com/ExternalVPNGateway
+    asset_inventory_type: compute.googleapis.com/ExternalVpnGateway
     home_directory: compute.external_vpn_gateways
     krm_group: compute
     krm_kind: ComputeExternalVPNGateway
@@ -1778,7 +1778,7 @@ compute:
     - beta
     - v1
   httpHealthChecks:
-    asset_inventory_type: compute.googleapis.com/HTTPHealthCheck
+    asset_inventory_type: compute.googleapis.com/HttpHealthCheck
     home_directory: compute.http_health_checks
     krm_group: compute
     krm_kind: ComputeHTTPHealthCheck
@@ -1790,7 +1790,7 @@ compute:
     - beta
     - v1
   httpsHealthChecks:
-    asset_inventory_type: compute.googleapis.com/HTTPSHealthCheck
+    asset_inventory_type: compute.googleapis.com/HttpsHealthCheck
     home_directory: compute.https_health_checks
     krm_group: compute
     krm_kind: ComputeHTTPSHealthCheck
@@ -2207,7 +2207,7 @@ compute:
     - beta
     - v1
   sslCertificates:
-    asset_inventory_type: compute.googleapis.com/SSLCertificate
+    asset_inventory_type: compute.googleapis.com/SslCertificate
     home_directory: compute.ssl_certificates
     krm_group: compute
     krm_kind: ComputeSSLCertificate
@@ -2219,7 +2219,7 @@ compute:
     - beta
     - v1
   sslPolicies:
-    asset_inventory_type: compute.googleapis.com/SSLPolicy
+    asset_inventory_type: compute.googleapis.com/SslPolicy
     enable_single_resource_autogen: true
     home_directory: compute.ssl_policies
     krm_group: compute
@@ -2260,7 +2260,7 @@ compute:
     - beta
     - v1
   targetHttpProxies:
-    asset_inventory_type: compute.googleapis.com/TargetHTTPProxy
+    asset_inventory_type: compute.googleapis.com/TargetHttpProxy
     enable_single_resource_autogen: true
     home_directory: compute.target_http_proxies
     krm_group: compute
@@ -2273,7 +2273,7 @@ compute:
     - beta
     - v1
   targetHttpsProxies:
-    asset_inventory_type: compute.googleapis.com/TargetHTTPSProxy
+    asset_inventory_type: compute.googleapis.com/TargetHttpsProxy
     enable_single_resource_autogen: true
     home_directory: compute.target_https_proxies
     krm_group: compute
@@ -2312,7 +2312,7 @@ compute:
     - beta
     - v1
   targetSslProxies:
-    asset_inventory_type: compute.googleapis.com/TargetSSLProxy
+    asset_inventory_type: compute.googleapis.com/TargetSslProxy
     enable_single_resource_autogen: true
     home_directory: compute.target_ssl_proxies
     krm_group: compute
@@ -2325,7 +2325,7 @@ compute:
     - beta
     - v1
   targetTcpProxies:
-    asset_inventory_type: compute.googleapis.com/TargetTCPProxy
+    asset_inventory_type: compute.googleapis.com/TargetTcpProxy
     enable_single_resource_autogen: true
     home_directory: compute.target_tcp_proxies
     krm_group: compute
@@ -2338,7 +2338,7 @@ compute:
     - beta
     - v1
   targetVpnGateways:
-    asset_inventory_type: compute.googleapis.com/TargetVPNGateway
+    asset_inventory_type: compute.googleapis.com/TargetVpnGateway
     enable_single_resource_autogen: true
     home_directory: compute.target_vpn_gateways
     krm_group: compute
@@ -2351,7 +2351,7 @@ compute:
     - beta
     - v1
   urlMaps:
-    asset_inventory_type: compute.googleapis.com/URLMap
+    asset_inventory_type: compute.googleapis.com/UrlMap
     enable_single_resource_autogen: false
     home_directory: compute.url_maps
     krm_group: compute
@@ -2364,7 +2364,7 @@ compute:
     - beta
     - v1
   vpnGateways:
-    asset_inventory_type: compute.googleapis.com/VPNGateway
+    asset_inventory_type: compute.googleapis.com/VpnGateway
     enable_single_resource_autogen: true
     home_directory: compute.vpn_gateways
     krm_group: compute
@@ -2377,7 +2377,7 @@ compute:
     - beta
     - v1
   vpnTunnels:
-    asset_inventory_type: compute.googleapis.com/VPNTunnel
+    asset_inventory_type: compute.googleapis.com/VpnTunnel
     enable_single_resource_autogen: true
     home_directory: compute.vpn_tunnels
     krm_group: compute
@@ -5283,7 +5283,7 @@ sqladmin:
     supported_apis:
     - v1beta4
   sslCerts:
-    asset_inventory_type: sqladmin.googleapis.com/SSLCert
+    asset_inventory_type: sqladmin.googleapis.com/SslCert
     # Complication with sha1 fingerprint attribute.
     enable_single_resource_autogen: false
     home_directory: sql.ssl_certs

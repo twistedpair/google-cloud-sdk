@@ -816,6 +816,18 @@ class DatabaseResourceHealthSignalData(_messages.Message):
         transaction logs settings
       SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
         without indexes
+      SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES: Detects events where a
+        Cloud SQL superuser (postgres for PostgreSQL servers or root for MySQL
+        users) writes to non-system tables.
+      SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS: Detects events where a
+        database user or role has been granted all privileges to a database,
+        or to all tables, procedures, or functions in a schema.
+      SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket outside of
+        the organization.
+      SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket that is
+        owned by the organization and is publicly accessible.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -884,6 +896,10 @@ class DatabaseResourceHealthSignalData(_messages.Message):
     SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
     SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
     SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -1380,6 +1396,18 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
         transaction logs settings
       SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
         without indexes
+      SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES: Detects events where a
+        Cloud SQL superuser (postgres for PostgreSQL servers or root for MySQL
+        users) writes to non-system tables.
+      SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS: Detects events where a
+        database user or role has been granted all privileges to a database,
+        or to all tables, procedures, or functions in a schema.
+      SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket outside of
+        the organization.
+      SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket that is
+        owned by the organization and is publicly accessible.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -1448,6 +1476,10 @@ class DatabaseResourceRecommendationSignalData(_messages.Message):
     SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
     SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
     SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

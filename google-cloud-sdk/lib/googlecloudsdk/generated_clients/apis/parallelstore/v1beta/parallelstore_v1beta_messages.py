@@ -89,12 +89,18 @@ class ImportDataRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    serviceAccount: Optional. User-specified Service Account (SA) credentials
+      to be used when performing the transfer. Format:
+      `projects/{project_id}/serviceAccounts/{service_account}` If
+      unspecified, the Parallelstore service agent is used: service-@gcp-sa-
+      parallelstore.iam.gserviceaccount.com)
     sourceGcsBucket: Cloud Storage source.
   """
 
   destinationParallelstore = _messages.MessageField('DestinationParallelstore', 1)
   requestId = _messages.StringField(2)
-  sourceGcsBucket = _messages.MessageField('SourceGcsBucket', 3)
+  serviceAccount = _messages.StringField(3)
+  sourceGcsBucket = _messages.MessageField('SourceGcsBucket', 4)
 
 
 class Instance(_messages.Message):

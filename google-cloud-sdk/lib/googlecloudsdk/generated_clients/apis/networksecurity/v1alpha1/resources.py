@@ -287,6 +287,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SACATTACHMENTS = (
+      'projects.locations.sacAttachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sacAttachments/'
+              '{sacAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_SECURITYPROFILEGROUPS = (
       'projects.locations.securityProfileGroups',
       '{+name}',

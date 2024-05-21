@@ -61,3 +61,13 @@ def AddListReferencesFormat(parser):
           rulePriority
         )
     """)
+
+
+def AddListReferencesBetaFormat(parser):
+  """Add default list reference format to ListReferences command."""
+  parser.display_info.AddFormat("""
+        table(
+          extract(firewallPolicy,securityPolicy).list():label=SOURCE_RESOURCE,
+          rulePriority:label=RULE_PRIORITY
+        )
+    """)

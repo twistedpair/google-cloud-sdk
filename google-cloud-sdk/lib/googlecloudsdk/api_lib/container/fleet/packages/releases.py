@@ -16,6 +16,7 @@
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
 
 _LIST_REQUEST_BATCH_SIZE_ATTRIBUTE = 'pageSize'
@@ -59,6 +60,10 @@ class ReleasesClient(object):
     self.client = client or GetClientInstance()
     self.messages = messages or GetMessagesModule(client)
     self._service = self.client.projects_locations_resourceBundles_releases
+    self.release_waiter = waiter.CloudOperationPollerNoResources(
+        operation_service=self.client.projects_locations_operations,
+        get_name_func=lambda x: x.name,
+    )
 
   def GetLifecycleEnum(self, lifecycle_str):
     """Converts input-format lifecycle to internal enum."""
@@ -162,7 +167,11 @@ class ReleasesClient(object):
         release=release,
         releaseId=version.replace('.', '-'),
     )
-    return self._service.Create(create_request)
+    return waiter.WaitFor(
+        self.release_waiter,
+        self._service.Create(create_request),
+        f'Creating Release {fully_qualified_path}',
+    )
 
   def Delete(self, project, location, resource_bundle, release):
     """Delete a ResourceBundle resource.
@@ -182,7 +191,11 @@ class ReleasesClient(object):
     delete_req = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesDeleteRequest(
         name=fully_qualified_path
     )
-    return self._service.Delete(delete_req)
+    return waiter.WaitFor(
+        self.release_waiter,
+        self._service.Delete(delete_req),
+        f'Deleting Release {fully_qualified_path}',
+    )
 
   def Describe(self, project, location, resource_bundle, release):
     """Describe a Release resource.
@@ -242,4 +255,8 @@ class ReleasesClient(object):
     update_request = self.messages.ConfigdeliveryProjectsLocationsResourceBundlesReleasesPatchRequest(
         name=fully_qualified_path, release=release, updateMask=update_mask
     )
-    return self._service.Patch(update_request)
+    return waiter.WaitFor(
+        self.release_waiter,
+        self._service.Patch(update_request),
+        f'Updating Release {fully_qualified_path}',
+    )

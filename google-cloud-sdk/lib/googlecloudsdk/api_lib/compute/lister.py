@@ -1184,13 +1184,11 @@ class MultiScopeLister(object):
         if request[1] == 'List':
           request[2].view = self.instance_view_flag
     errors = []
-    response_count = 0
     for item in request_helper.ListJson(
         requests=requests,
         http=self.client.apitools_client.http,
         batch_url=self.client.batch_url,
         errors=errors):
-      response_count += 1
 
       yield item
 
@@ -1201,7 +1199,6 @@ class MultiScopeLister(object):
       if (
           _AllowPartialError()
           and self.allow_partial_server_failure
-          and response_count > 0
       ):
         utils.WarnIfPartialRequestFail(errors)
       else:

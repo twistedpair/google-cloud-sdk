@@ -270,6 +270,14 @@ def GetDataflowServiceAccountEmailArg(required=False):
       help="""Default service account to run the dataflow workers as.""")
 
 
+def GetSchedulerServiceAccountEmailArg(required=False):
+  return base.Argument(
+      '--scheduler-service-account-email',
+      required=required,
+      default=None,
+      help="""Default service account used by the Cloud Scheduler job for launching jobs.""")
+
+
 def GetEnableStreamingEngineArg(required=False):
   return base.Argument(
       '--enable-streaming-engine',

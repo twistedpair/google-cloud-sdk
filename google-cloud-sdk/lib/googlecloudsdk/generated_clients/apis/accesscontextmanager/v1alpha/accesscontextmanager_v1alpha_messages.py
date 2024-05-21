@@ -1383,6 +1383,7 @@ class GcpUserAccessBinding(_messages.Message):
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+    reauthSettings: Optional. GCSL policy for the group key.
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
       binding restrictions will universally apply to all applications.
@@ -1392,7 +1393,8 @@ class GcpUserAccessBinding(_messages.Message):
   dryRunAccessLevels = _messages.StringField(2, repeated=True)
   groupKey = _messages.StringField(3)
   name = _messages.StringField(4)
-  restrictedClientApplications = _messages.MessageField('Application', 5, repeated=True)
+  reauthSettings = _messages.MessageField('ReauthSettings', 5)
+  restrictedClientApplications = _messages.MessageField('Application', 6, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -1869,6 +1871,62 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class ReauthSettings(_messages.Message):
+  r"""The settings below can generate several special cases: 1. No
+  reauth_settings When none of the fields are set. 2. Reauth_settings has only
+  is_enforced = false. Any other fields in Reauth_settings will be ignored. It
+  indicates this group should use the app's session setting. 3.
+  Reauth_settings has only is_enforced = true, but no max_age_sec. It
+  indicates this group's session length is infinite. 4. Reauth_settings has
+  is_enforced = true and max_age_sec is positive number. It indicates the
+  group's session time is set as max_age_sec.
+
+  Enums:
+    ReauthMethodValueValuesEnum: Reauth method when users GCP session is up.
+
+  Fields:
+    maxAgeSec: The session length. Setting this field to zero is equal to
+      disabling. Reauth. Also can set infinite session by flipping the enabled
+      bit to false below. If use_oidc_max_age is true, for OIDC apps, the
+      session length will be the minimum of this field and OIDC max_age param.
+    maxInactivity: How long a user is allowed to take between actions before a
+      new access token must be issued. Presently only set for Cloud Apps.
+    reauthMethod: Reauth method when users GCP session is up.
+    sessionLengthEnabled: Big red button to turn off GCSL. When false, all
+      fields set above will be disregarded and the session length is basically
+      infinite.
+    useOidcMaxAge: Only useful for OIDC apps. When false, the OIDC max_age
+      param, if passed in the authentication request will be ignored. When
+      true, the re-auth period will be the minimum of the max_age_sec field
+      and the max_age OIDC param.
+  """
+
+  class ReauthMethodValueValuesEnum(_messages.Enum):
+    r"""Reauth method when users GCP session is up.
+
+    Values:
+      REAUTH_METHOD_UNSPECIFIED: If method undefined in API, we will use LOGIN
+        by default.
+      LOGIN: The user will prompted to perform regular login. Users who are
+        enrolled for two-step verification and haven't chosen to "Remember
+        this computer" will be prompted for their second factor.
+      SECURITY_KEY: The user will be prompted to autheticate using their
+        security key. If no security key has been configured, then we will
+        fallback to LOGIN.
+      PASSWORD: The user will be prompted for their password.
+    """
+    REAUTH_METHOD_UNSPECIFIED = 0
+    LOGIN = 1
+    SECURITY_KEY = 2
+    PASSWORD = 3
+
+  maxAgeSec = _messages.StringField(1)
+  maxInactivity = _messages.StringField(2)
+  reauthMethod = _messages.EnumField('ReauthMethodValueValuesEnum', 3)
+  sessionLengthEnabled = _messages.BooleanField(4)
+  useOidcMaxAge = _messages.BooleanField(5)
 
 
 class ReplaceAccessLevelsRequest(_messages.Message):

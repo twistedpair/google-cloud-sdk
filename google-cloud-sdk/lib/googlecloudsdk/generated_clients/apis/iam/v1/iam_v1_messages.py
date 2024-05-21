@@ -35,6 +35,16 @@ class AccessRestrictions(_messages.Message):
   disableProgrammaticSignin = _messages.BooleanField(2)
 
 
+class AddAttestationRuleRequest(_messages.Message):
+  r"""Request message for AddAttestationRule.
+
+  Fields:
+    attestationRule: Required. The attestation rule to be added.
+  """
+
+  attestationRule = _messages.MessageField('AttestationRule', 1)
+
+
 class AdminAuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -46,6 +56,24 @@ class AdminAuditData(_messages.Message):
   """
 
   permissionDelta = _messages.MessageField('PermissionDelta', 1)
+
+
+class AttestationRule(_messages.Message):
+  r"""Defines which workloads can receive an identity within a pool. When an
+  AttestationRule is defined under a managed identity, matching workloads may
+  receive that identity.
+
+  Fields:
+    googleCloudResource: Optional. A single workload operating on Google
+      Cloud. For example: `//compute.googelapis.com/projects/123/uid/zones/us-
+      central1-a/instances/12345`.
+    googleCloudResourceSet: Optional. A set of workloads operating on Google
+      Cloud. For example:
+      `//compute.googleapis.com/projects/123/type/BackendService/*`.
+  """
+
+  googleCloudResource = _messages.StringField(1)
+  googleCloudResourceSet = _messages.StringField(2)
 
 
 class AttributeTranslatorCEL(_messages.Message):
@@ -642,9 +670,20 @@ class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages
         us/graph/api/resources/group?view=graph-rest-1.0#properties for more
         details on `microsoft.graph.group` properties. The attributes obtained
         from idntity provider are mapped to `assertion.groups`.
+      AZURE_AD_GROUPS_ID: Used to get the user's group claims from the Azure
+        AD identity provider using configuration provided in
+        ExtraAttributesOAuth2Client and `id` property of the
+        `microsoft.graph.group` object is used for claim mapping. See
+        https://learn.microsoft.com/en-
+        us/graph/api/resources/group?view=graph-rest-1.0#properties for more
+        details on `microsoft.graph.group` properties. The group IDs obtained
+        from Azure AD are present in `assertion.groups` for OIDC providers and
+        `assertion.attributes.groups` for SAML providers for attribute
+        mapping.
     """
     ATTRIBUTES_TYPE_UNSPECIFIED = 0
     AZURE_AD_GROUPS_MAIL = 1
+    AZURE_AD_GROUPS_ID = 2
 
   attributesType = _messages.EnumField('AttributesTypeValueValuesEnum', 1)
   clientId = _messages.StringField(2)
@@ -1331,17 +1370,17 @@ class IamOrganizationsRolesCreateRequest(_messages.Message):
     createRoleRequest: A CreateRoleRequest resource to be passed as the
       request body.
     parent: The `parent` parameter's value depends on the target resource for
-      the request, namely [`projects`](https://cloud.google.com/iam/docs/refer
-      ence/rest/v1/projects.roles) or [`organizations`](https://cloud.google.c
-      om/iam/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `parent` value format is described below: * [`projects.roles.create()`](
-      https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/creat
-      e): `projects/{PROJECT_ID}`. This method creates project-level [custom
+      the request, namely [projects](https://cloud.google.com/iam/docs/referen
+      ce/rest/v1/projects.roles) or [organizations](https://cloud.google.com/i
+      am/docs/reference/rest/v1/organizations.roles). Each resource type's
+      `parent` value format is described below: * [projects.roles.create](http
+      s://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/create):
+      `projects/{PROJECT_ID}`. This method creates project-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
-      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [`organiza
-      tions.roles.create()`](https://cloud.google.com/iam/docs/reference/rest/
-      v1/organizations.roles/create): `organizations/{ORGANIZATION_ID}`. This
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [organizat
+      ions.roles.create](https://cloud.google.com/iam/docs/reference/rest/v1/o
+      rganizations.roles/create): `organizations/{ORGANIZATION_ID}`. This
       method creates organization-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
@@ -1360,17 +1399,17 @@ class IamOrganizationsRolesDeleteRequest(_messages.Message):
   Fields:
     etag: Used to perform a consistent read-modify-write.
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.delete()`](ht
-      tps://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/delete)
-      : `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method deletes
-      only [custom roles](https://cloud.google.com/iam/docs/understanding-
-      custom-roles) that have been created at the project level. Example
-      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
-      {CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](https://cloud.googl
-      e.com/iam/docs/reference/rest/v1/organizations.roles/delete):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.delete](https://cloud
+      .google.com/iam/docs/reference/rest/v1/projects.roles/delete):
+      `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method deletes only
+      [custom roles](https://cloud.google.com/iam/docs/understanding-custom-
+      roles) that have been created at the project level. Example request URL:
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_
+      ID}` * [organizations.roles.delete](https://cloud.google.com/iam/docs/re
+      ference/rest/v1/organizations.roles/delete):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       deletes only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -1390,24 +1429,23 @@ class IamOrganizationsRolesGetRequest(_messages.Message):
   Fields:
     name: The `name` parameter's value depends on the target resource for the
       request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `name` value format
-      is described below: * [`roles.get()`](https://cloud.google.com/iam/docs/
-      reference/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns
-      results from all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `name` value format is
+      described below: * [roles.get](https://cloud.google.com/iam/docs/referen
+      ce/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns results
+      from all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [`projects.roles.get
-      ()`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/
-      get): `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method
-      returns only [custom
-      roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
-      that have been created at the project level. Example request URL: `https
-      ://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}` *
-      [`organizations.roles.get()`](https://cloud.google.com/iam/docs/referenc
-      e/rest/v1/organizations.roles/get):
+      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [projects.roles.get]
+      (https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/get)
+      : `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns
+      only [custom roles](https://cloud.google.com/iam/docs/understanding-
+      custom-roles) that have been created at the project level. Example
+      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
+      {CUSTOM_ROLE_ID}` * [organizations.roles.get](https://cloud.google.com/i
+      am/docs/reference/rest/v1/organizations.roles/get):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       returns only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -1436,24 +1474,24 @@ class IamOrganizationsRolesListRequest(_messages.Message):
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
       the request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `parent` value
-      format is described below: * [`roles.list()`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/roles/list): An empty string. This method
-      doesn't require a resource; it simply returns all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `parent` value format is
+      described below: * [roles.list](https://cloud.google.com/iam/docs/refere
+      nce/rest/v1/roles/list): An empty string. This method doesn't require a
+      resource; it simply returns all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles` * [`projects.roles.list()`](https:
-      //cloud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
+      `https://iam.googleapis.com/v1/roles` * [projects.roles.list](https://cl
+      oud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
       `projects/{PROJECT_ID}`. This method lists all project-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
-      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [`organiza
-      tions.roles.list()`](https://cloud.google.com/iam/docs/reference/rest/v1
-      /organizations.roles/list): `organizations/{ORGANIZATION_ID}`. This
-      method lists all organization-level [custom
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [organizat
+      ions.roles.list](https://cloud.google.com/iam/docs/reference/rest/v1/org
+      anizations.roles/list): `organizations/{ORGANIZATION_ID}`. This method
+      lists all organization-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
       `https://iam.googleapis.com/v1/organizations/{ORGANIZATION_ID}/roles`
@@ -1492,17 +1530,17 @@ class IamOrganizationsRolesPatchRequest(_messages.Message):
 
   Fields:
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.patch()`](htt
-      ps://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/patch):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.patch](https://cloud.
+      google.com/iam/docs/reference/rest/v1/projects.roles/patch):
       `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method updates only
       [custom roles](https://cloud.google.com/iam/docs/understanding-custom-
       roles) that have been created at the project level. Example request URL:
       `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_
-      ID}` * [`organizations.roles.patch()`](https://cloud.google.com/iam/docs
-      /reference/rest/v1/organizations.roles/patch):
+      ID}` * [organizations.roles.patch](https://cloud.google.com/iam/docs/ref
+      erence/rest/v1/organizations.roles/patch):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       updates only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -1524,18 +1562,17 @@ class IamOrganizationsRolesUndeleteRequest(_messages.Message):
 
   Fields:
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.undelete()`](
-      https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/undel
-      ete): `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method
-      undeletes only [custom
-      roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
-      that have been created at the project level. Example request URL: `https
-      ://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}` *
-      [`organizations.roles.undelete()`](https://cloud.google.com/iam/docs/ref
-      erence/rest/v1/organizations.roles/undelete):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.undelete](https://clo
+      ud.google.com/iam/docs/reference/rest/v1/projects.roles/undelete):
+      `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method undeletes
+      only [custom roles](https://cloud.google.com/iam/docs/understanding-
+      custom-roles) that have been created at the project level. Example
+      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
+      {CUSTOM_ROLE_ID}` * [organizations.roles.undelete](https://cloud.google.
+      com/iam/docs/reference/rest/v1/organizations.roles/undelete):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       undeletes only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -1556,12 +1593,12 @@ class IamProjectsLocationsOauthClientsCreateRequest(_messages.Message):
 
   Fields:
     oauthClient: A OauthClient resource to be passed as the request body.
-    oauthClientId: Required. The ID to use for the oauth client, which becomes
+    oauthClientId: Required. The ID to use for the OauthClient, which becomes
       the final component of the resource name. This value should be a string
       of 6 to 63 lowercase letters, digits, or hyphens. It must start with a
       letter, and cannot have a trailing hyphen. The prefix `gcp-` is reserved
       for use by Google, and may not be specified.
-    parent: Required. The parent resource to create the oauth client in. The
+    parent: Required. The parent resource to create the OauthClient in. The
       only supported location is `global`.
   """
 
@@ -1576,13 +1613,13 @@ class IamProjectsLocationsOauthClientsCredentialsCreateRequest(_messages.Message
   Fields:
     oauthClientCredential: A OauthClientCredential resource to be passed as
       the request body.
-    oauthClientCredentialId: Required. The ID to use for the oauth client
-      credential, which becomes the final component of the resource name. This
-      value should be 4-32 characters, and may contain the characters
-      [a-z0-9-]. The prefix `gcp-` is reserved for use by Google, and may not
-      be specified.
-    parent: Required. The parent resource to create the oauth client
-      Credential in.
+    oauthClientCredentialId: Required. The ID to use for the
+      OauthClientCredential, which becomes the final component of the resource
+      name. This value should be 4-32 characters, and may contain the
+      characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google,
+      and may not be specified.
+    parent: Required. The parent resource to create the OauthClientCredential
+      in.
   """
 
   oauthClientCredential = _messages.MessageField('OauthClientCredential', 1)
@@ -1594,9 +1631,9 @@ class IamProjectsLocationsOauthClientsCredentialsDeleteRequest(_messages.Message
   r"""A IamProjectsLocationsOauthClientsCredentialsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the oauth client credential to delete. Format:
-      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
-      dentials/{credential}`.
+    name: Required. The name of the OauthClientCredential to delete. Format: `
+      projects/{project}/locations/{location}/oauthClients/{oauth_client}/cred
+      entials/{credential}`.
     validateOnly: Optional. If set, validate the request and preview the
       response, but do not actually post it.
   """
@@ -1609,9 +1646,9 @@ class IamProjectsLocationsOauthClientsCredentialsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsCredentialsGetRequest object.
 
   Fields:
-    name: Required. The name of the oauth client credential to retrieve.
-      Format: `projects/{project}/locations/{location}/oauthClients/{oauth_cli
-      ent}/credentials/{credential}`.
+    name: Required. The name of the OauthClientCredential to retrieve. Format:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
+      dentials/{credential}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1621,7 +1658,7 @@ class IamProjectsLocationsOauthClientsCredentialsListRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsCredentialsListRequest object.
 
   Fields:
-    parent: Required. The parent to list oauth client credentials for.
+    parent: Required. The parent to list OauthClientCredentials for.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1631,9 +1668,9 @@ class IamProjectsLocationsOauthClientsCredentialsPatchRequest(_messages.Message)
   r"""A IamProjectsLocationsOauthClientsCredentialsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the oauth client credential. Format:
-      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
-      dentials/{credential}`
+    name: Immutable. The resource name of the OauthClientCredential. Format: `
+      projects/{project}/locations/{location}/oauthClients/{oauth_client}/cred
+      entials/{credential}`
     oauthClientCredential: A OauthClientCredential resource to be passed as
       the request body.
     updateMask: Required. The list of fields to update.
@@ -1648,7 +1685,7 @@ class IamProjectsLocationsOauthClientsDeleteRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the oauth client to delete. Format:
+    name: Required. The name of the OauthClient to delete. Format:
       `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
     validateOnly: Optional. If set, validate the request and preview the
       response, but do not actually post it.
@@ -1662,7 +1699,7 @@ class IamProjectsLocationsOauthClientsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsGetRequest object.
 
   Fields:
-    name: Required. The name of the oauth client to retrieve. Format:
+    name: Required. The name of the OauthClient to retrieve. Format:
       `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
   """
 
@@ -1673,13 +1710,13 @@ class IamProjectsLocationsOauthClientsListRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsListRequest object.
 
   Fields:
-    pageSize: Optional. The maximum number of oauth clients to return. If
-      unspecified, at most 50 oauth clients will be returned. The maximum
-      value is 100; values above 100 are truncated to 100.
+    pageSize: Optional. The maximum number of OauthClients to return. If
+      unspecified, at most 50 OauthClients will be returned. The maximum value
+      is 100; values above 100 are truncated to 100.
     pageToken: Optional. A page token, received from a previous
       `ListOauthClients` call. Provide this to retrieve the subsequent page.
-    parent: Required. The parent to list oauth clients for.
-    showDeleted: Optional. Whether to return soft-deleted oauth clients.
+    parent: Required. The parent to list OauthClients for.
+    showDeleted: Optional. Whether to return soft-deleted OauthClients.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1692,8 +1729,8 @@ class IamProjectsLocationsOauthClientsPatchRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsPatchRequest object.
 
   Fields:
-    name: Immutable. The resource name of the oauth client. Format:`projects/{
-      project}/locations/{location}/oauthClients/{oauth_client}`.
+    name: Immutable. The resource name of the OauthClient. Format:`projects/{p
+      roject}/locations/{location}/oauthClients/{oauth_client}`.
     oauthClient: A OauthClient resource to be passed as the request body.
     updateMask: Required. The list of fields to update.
   """
@@ -1707,7 +1744,7 @@ class IamProjectsLocationsOauthClientsUndeleteRequest(_messages.Message):
   r"""A IamProjectsLocationsOauthClientsUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the oauth client to undelete. Format:
+    name: Required. The name of the OauthClient to undelete. Format:
       `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
     undeleteOauthClientRequest: A UndeleteOauthClientRequest resource to be
       passed as the request body.
@@ -1871,6 +1908,21 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest(_messages.M
   showDeleted = _messages.BooleanField(4)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAd
+  dAttestationRuleRequest object.
+
+  Fields:
+    addAttestationRuleRequest: A AddAttestationRuleRequest resource to be
+      passed as the request body.
+    resource: Required. The resource name of the managed identity to add an
+      attestation rule to.
+  """
+
+  addAttestationRuleRequest = _messages.MessageField('AddAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCreateRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesCr
   eateRequest object.
@@ -1931,6 +1983,32 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetReq
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListAttestationRulesRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesLi
+  stAttestationRulesRequest object.
+
+  Fields:
+    filter: Optional. A query filter. Supports the following function: *
+      `container_ids()`: Returns only the AttestationRules under the specific
+      container ids. The function expects a comma-delimited list with only
+      project numbers and must use the format `projects/`. For example:
+      `container_ids(projects/, projects/,...)`.
+    pageSize: Optional. The maximum number of AttestationRules to return. If
+      unspecified, at most 50 AttestationRules are returned. The maximum value
+      is 100; values above 100 are truncated to 100.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkloadIdentityPoolProviderKeys` call. Provide this to retrieve
+      the subsequent page.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to list attestation rules of.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  resource = _messages.StringField(4, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesLi
   stRequest object.
@@ -1977,6 +2055,21 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRe
+  moveAttestationRuleRequest object.
+
+  Fields:
+    removeAttestationRuleRequest: A RemoveAttestationRuleRequest resource to
+      be passed as the request body.
+    resource: Required. The resource name of the managed identity to remove an
+      attestation rule from.
+  """
+
+  removeAttestationRuleRequest = _messages.MessageField('RemoveAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest(_messages.Message):
@@ -2561,17 +2654,17 @@ class IamProjectsRolesCreateRequest(_messages.Message):
     createRoleRequest: A CreateRoleRequest resource to be passed as the
       request body.
     parent: The `parent` parameter's value depends on the target resource for
-      the request, namely [`projects`](https://cloud.google.com/iam/docs/refer
-      ence/rest/v1/projects.roles) or [`organizations`](https://cloud.google.c
-      om/iam/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `parent` value format is described below: * [`projects.roles.create()`](
-      https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/creat
-      e): `projects/{PROJECT_ID}`. This method creates project-level [custom
+      the request, namely [projects](https://cloud.google.com/iam/docs/referen
+      ce/rest/v1/projects.roles) or [organizations](https://cloud.google.com/i
+      am/docs/reference/rest/v1/organizations.roles). Each resource type's
+      `parent` value format is described below: * [projects.roles.create](http
+      s://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/create):
+      `projects/{PROJECT_ID}`. This method creates project-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
-      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [`organiza
-      tions.roles.create()`](https://cloud.google.com/iam/docs/reference/rest/
-      v1/organizations.roles/create): `organizations/{ORGANIZATION_ID}`. This
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [organizat
+      ions.roles.create](https://cloud.google.com/iam/docs/reference/rest/v1/o
+      rganizations.roles/create): `organizations/{ORGANIZATION_ID}`. This
       method creates organization-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
@@ -2590,17 +2683,17 @@ class IamProjectsRolesDeleteRequest(_messages.Message):
   Fields:
     etag: Used to perform a consistent read-modify-write.
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.delete()`](ht
-      tps://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/delete)
-      : `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method deletes
-      only [custom roles](https://cloud.google.com/iam/docs/understanding-
-      custom-roles) that have been created at the project level. Example
-      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
-      {CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](https://cloud.googl
-      e.com/iam/docs/reference/rest/v1/organizations.roles/delete):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.delete](https://cloud
+      .google.com/iam/docs/reference/rest/v1/projects.roles/delete):
+      `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method deletes only
+      [custom roles](https://cloud.google.com/iam/docs/understanding-custom-
+      roles) that have been created at the project level. Example request URL:
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_
+      ID}` * [organizations.roles.delete](https://cloud.google.com/iam/docs/re
+      ference/rest/v1/organizations.roles/delete):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       deletes only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -2620,24 +2713,23 @@ class IamProjectsRolesGetRequest(_messages.Message):
   Fields:
     name: The `name` parameter's value depends on the target resource for the
       request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `name` value format
-      is described below: * [`roles.get()`](https://cloud.google.com/iam/docs/
-      reference/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns
-      results from all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `name` value format is
+      described below: * [roles.get](https://cloud.google.com/iam/docs/referen
+      ce/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns results
+      from all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [`projects.roles.get
-      ()`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/
-      get): `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method
-      returns only [custom
-      roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
-      that have been created at the project level. Example request URL: `https
-      ://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}` *
-      [`organizations.roles.get()`](https://cloud.google.com/iam/docs/referenc
-      e/rest/v1/organizations.roles/get):
+      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [projects.roles.get]
+      (https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/get)
+      : `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns
+      only [custom roles](https://cloud.google.com/iam/docs/understanding-
+      custom-roles) that have been created at the project level. Example
+      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
+      {CUSTOM_ROLE_ID}` * [organizations.roles.get](https://cloud.google.com/i
+      am/docs/reference/rest/v1/organizations.roles/get):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       returns only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -2666,24 +2758,24 @@ class IamProjectsRolesListRequest(_messages.Message):
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
       the request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `parent` value
-      format is described below: * [`roles.list()`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/roles/list): An empty string. This method
-      doesn't require a resource; it simply returns all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `parent` value format is
+      described below: * [roles.list](https://cloud.google.com/iam/docs/refere
+      nce/rest/v1/roles/list): An empty string. This method doesn't require a
+      resource; it simply returns all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles` * [`projects.roles.list()`](https:
-      //cloud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
+      `https://iam.googleapis.com/v1/roles` * [projects.roles.list](https://cl
+      oud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
       `projects/{PROJECT_ID}`. This method lists all project-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
-      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [`organiza
-      tions.roles.list()`](https://cloud.google.com/iam/docs/reference/rest/v1
-      /organizations.roles/list): `organizations/{ORGANIZATION_ID}`. This
-      method lists all organization-level [custom
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [organizat
+      ions.roles.list](https://cloud.google.com/iam/docs/reference/rest/v1/org
+      anizations.roles/list): `organizations/{ORGANIZATION_ID}`. This method
+      lists all organization-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
       `https://iam.googleapis.com/v1/organizations/{ORGANIZATION_ID}/roles`
@@ -2722,17 +2814,17 @@ class IamProjectsRolesPatchRequest(_messages.Message):
 
   Fields:
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.patch()`](htt
-      ps://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/patch):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.patch](https://cloud.
+      google.com/iam/docs/reference/rest/v1/projects.roles/patch):
       `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method updates only
       [custom roles](https://cloud.google.com/iam/docs/understanding-custom-
       roles) that have been created at the project level. Example request URL:
       `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_
-      ID}` * [`organizations.roles.patch()`](https://cloud.google.com/iam/docs
-      /reference/rest/v1/organizations.roles/patch):
+      ID}` * [organizations.roles.patch](https://cloud.google.com/iam/docs/ref
+      erence/rest/v1/organizations.roles/patch):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       updates only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -2754,18 +2846,17 @@ class IamProjectsRolesUndeleteRequest(_messages.Message):
 
   Fields:
     name: The `name` parameter's value depends on the target resource for the
-      request, namely [`projects`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/projects.roles) or [`organizations`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/organizations.roles). Each resource type's
-      `name` value format is described below: * [`projects.roles.undelete()`](
-      https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/undel
-      ete): `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method
-      undeletes only [custom
-      roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
-      that have been created at the project level. Example request URL: `https
-      ://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}` *
-      [`organizations.roles.undelete()`](https://cloud.google.com/iam/docs/ref
-      erence/rest/v1/organizations.roles/undelete):
+      request, namely [projects](https://cloud.google.com/iam/docs/reference/r
+      est/v1/projects.roles) or [organizations](https://cloud.google.com/iam/d
+      ocs/reference/rest/v1/organizations.roles). Each resource type's `name`
+      value format is described below: * [projects.roles.undelete](https://clo
+      ud.google.com/iam/docs/reference/rest/v1/projects.roles/undelete):
+      `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method undeletes
+      only [custom roles](https://cloud.google.com/iam/docs/understanding-
+      custom-roles) that have been created at the project level. Example
+      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
+      {CUSTOM_ROLE_ID}` * [organizations.roles.undelete](https://cloud.google.
+      com/iam/docs/reference/rest/v1/organizations.roles/undelete):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       undeletes only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -3372,24 +3463,23 @@ class IamRolesGetRequest(_messages.Message):
   Fields:
     name: The `name` parameter's value depends on the target resource for the
       request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `name` value format
-      is described below: * [`roles.get()`](https://cloud.google.com/iam/docs/
-      reference/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns
-      results from all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `name` value format is
+      described below: * [roles.get](https://cloud.google.com/iam/docs/referen
+      ce/rest/v1/roles/get): `roles/{ROLE_NAME}`. This method returns results
+      from all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [`projects.roles.get
-      ()`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/
-      get): `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method
-      returns only [custom
-      roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
-      that have been created at the project level. Example request URL: `https
-      ://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}` *
-      [`organizations.roles.get()`](https://cloud.google.com/iam/docs/referenc
-      e/rest/v1/organizations.roles/get):
+      `https://iam.googleapis.com/v1/roles/{ROLE_NAME}` * [projects.roles.get]
+      (https://cloud.google.com/iam/docs/reference/rest/v1/projects.roles/get)
+      : `projects/{PROJECT_ID}/roles/{CUSTOM_ROLE_ID}`. This method returns
+      only [custom roles](https://cloud.google.com/iam/docs/understanding-
+      custom-roles) that have been created at the project level. Example
+      request URL: `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles/
+      {CUSTOM_ROLE_ID}` * [organizations.roles.get](https://cloud.google.com/i
+      am/docs/reference/rest/v1/organizations.roles/get):
       `organizations/{ORGANIZATION_ID}/roles/{CUSTOM_ROLE_ID}`. This method
       returns only [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles)
@@ -3418,24 +3508,24 @@ class IamRolesListRequest(_messages.Message):
       ListRolesResponse.
     parent: The `parent` parameter's value depends on the target resource for
       the request, namely
-      [`roles`](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [`
-      projects`](https://cloud.google.com/iam/docs/reference/rest/v1/projects.
-      roles), or [`organizations`](https://cloud.google.com/iam/docs/reference
-      /rest/v1/organizations.roles). Each resource type's `parent` value
-      format is described below: * [`roles.list()`](https://cloud.google.com/i
-      am/docs/reference/rest/v1/roles/list): An empty string. This method
-      doesn't require a resource; it simply returns all [predefined
+      [roles](https://cloud.google.com/iam/docs/reference/rest/v1/roles), [pro
+      jects](https://cloud.google.com/iam/docs/reference/rest/v1/projects.role
+      s), or [organizations](https://cloud.google.com/iam/docs/reference/rest/
+      v1/organizations.roles). Each resource type's `parent` value format is
+      described below: * [roles.list](https://cloud.google.com/iam/docs/refere
+      nce/rest/v1/roles/list): An empty string. This method doesn't require a
+      resource; it simply returns all [predefined
       roles](https://cloud.google.com/iam/docs/understanding-
       roles#predefined_roles) in IAM. Example request URL:
-      `https://iam.googleapis.com/v1/roles` * [`projects.roles.list()`](https:
-      //cloud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
+      `https://iam.googleapis.com/v1/roles` * [projects.roles.list](https://cl
+      oud.google.com/iam/docs/reference/rest/v1/projects.roles/list):
       `projects/{PROJECT_ID}`. This method lists all project-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
-      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [`organiza
-      tions.roles.list()`](https://cloud.google.com/iam/docs/reference/rest/v1
-      /organizations.roles/list): `organizations/{ORGANIZATION_ID}`. This
-      method lists all organization-level [custom
+      `https://iam.googleapis.com/v1/projects/{PROJECT_ID}/roles` * [organizat
+      ions.roles.list](https://cloud.google.com/iam/docs/reference/rest/v1/org
+      anizations.roles/list): `organizations/{ORGANIZATION_ID}`. This method
+      lists all organization-level [custom
       roles](https://cloud.google.com/iam/docs/understanding-custom-roles).
       Example request URL:
       `https://iam.googleapis.com/v1/organizations/{ORGANIZATION_ID}/roles`
@@ -3810,11 +3900,25 @@ class LintResult(_messages.Message):
   validationUnitName = _messages.StringField(6)
 
 
+class ListAttestationRulesResponse(_messages.Message):
+  r"""Response message for ListAttestationRules.
+
+  Fields:
+    attestationRules: A list of AttestationRules.
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+  """
+
+  attestationRules = _messages.MessageField('AttestationRule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOauthClientCredentialsResponse(_messages.Message):
   r"""Response message for ListOauthClientCredentials.
 
   Fields:
-    oauthClientCredentials: A list of oauth client credentials.
+    oauthClientCredentials: A list of OauthClientCredentials.
   """
 
   oauthClientCredentials = _messages.MessageField('OauthClientCredential', 1, repeated=True)
@@ -3827,7 +3931,7 @@ class ListOauthClientsResponse(_messages.Message):
     nextPageToken: Optional. A token, which can be sent as `page_token` to
       retrieve the next page. If this field is omitted, there are no
       subsequent pages.
-    oauthClients: A list of oauth clients.
+    oauthClients: A list of OauthClients.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -4015,76 +4119,81 @@ class ListWorkloadSourcesResponse(_messages.Message):
 
 
 class OauthClient(_messages.Message):
-  r"""Represents an oauth client. Used to access Google Cloud resources on
-  behave of a user by using OAuth2 Protocol to obtain an access token from
+  r"""Represents an OauthClient. Used to access Google Cloud resources on
+  behave of a user by using OAuth 2.0 Protocol to obtain an access token from
   Google Cloud Platform.
 
   Enums:
     AllowedGrantTypesValueListEntryValuesEnum:
-    ClientTypeValueValuesEnum: Immutable. The type of oauth client. either
-      public or private.
-    StateValueValuesEnum: Output only. The state of the oauth client.
+    ClientTypeValueValuesEnum: Immutable. The type of OauthClient. Either
+      public or private. For private clients, the client secret can be managed
+      using the dedicated OauthClientCredential resource.
+    StateValueValuesEnum: Output only. The state of the OauthClient.
 
   Fields:
-    allowedGrantTypes: Required. The list of OAuth grant type is allowed for
-      the oauth client.
+    allowedGrantTypes: Required. The list of OAuth grant types is allowed for
+      the OauthClient.
     allowedRedirectUris: Required. The list of redirect uris that is allowed
       to redirect back when authorization process is completed.
-    allowedScopes: Required. The list of scopes that the oauth client is
+    allowedScopes: Required. The list of scopes that the OauthClient is
       allowed to request during OAuth flows. The following scopes are
       supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
       edit, configure, and delete your Google Cloud data and see the email
       address for your Google Account. * `openid`: Associate you with your
       personal info on Google Cloud. * `email`: See your Google Cloud Account
       email address.
-    clientId: Output only. The system-generated oauth client id.
-    clientType: Immutable. The type of oauth client. either public or private.
-    description: Optional. A user-specified description of the oauth client.
+    clientId: Output only. The system-generated OauthClient id.
+    clientType: Immutable. The type of OauthClient. Either public or private.
+      For private clients, the client secret can be managed using the
+      dedicated OauthClientCredential resource.
+    description: Optional. A user-specified description of the OauthClient.
       Cannot exceed 256 characters.
-    disabled: Optional. Whether the oauth client is disabled. You cannot use a
-      disabled oauth client for login.
-    displayName: Optional. A user-specified display name of the oauth client.
+    disabled: Optional. Whether the OauthClient is disabled. You cannot use a
+      disabled OAuth client.
+    displayName: Optional. A user-specified display name of the OauthClient.
       Cannot exceed 32 characters.
-    expireTime: Output only. Time after which the oauth client will be
+    expireTime: Output only. Time after which the OauthClient will be
       permanently purged and cannot be recovered.
-    name: Immutable. The resource name of the oauth client. Format:`projects/{
-      project}/locations/{location}/oauthClients/{oauth_client}`.
-    state: Output only. The state of the oauth client.
+    name: Immutable. The resource name of the OauthClient. Format:`projects/{p
+      roject}/locations/{location}/oauthClients/{oauth_client}`.
+    state: Output only. The state of the OauthClient.
   """
 
   class AllowedGrantTypesValueListEntryValuesEnum(_messages.Enum):
     r"""AllowedGrantTypesValueListEntryValuesEnum enum type.
 
     Values:
-      GRANT_TYPE_UNSPECIFIED: should not be used
-      AUTHORIZATION_CODE_GRANT: authorization code grant
-      REFRESH_TOKEN_GRANT: refresh token grant
+      GRANT_TYPE_UNSPECIFIED: Should not be used.
+      AUTHORIZATION_CODE_GRANT: Authorization code grant.
+      REFRESH_TOKEN_GRANT: Refresh token grant.
     """
     GRANT_TYPE_UNSPECIFIED = 0
     AUTHORIZATION_CODE_GRANT = 1
     REFRESH_TOKEN_GRANT = 2
 
   class ClientTypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The type of oauth client. either public or private.
+    r"""Immutable. The type of OauthClient. Either public or private. For
+    private clients, the client secret can be managed using the dedicated
+    OauthClientCredential resource.
 
     Values:
-      CLIENT_TYPE_UNSPECIFIED: should not be used
-      PUBLIC_CLIENT: public client has no secret
-      CONFIDENTIAL_CLIENT: private client
+      CLIENT_TYPE_UNSPECIFIED: Should not be used.
+      PUBLIC_CLIENT: Public client has no secret.
+      CONFIDENTIAL_CLIENT: Private client.
     """
     CLIENT_TYPE_UNSPECIFIED = 0
     PUBLIC_CLIENT = 1
     CONFIDENTIAL_CLIENT = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the oauth client.
+    r"""Output only. The state of the OauthClient.
 
     Values:
       STATE_UNSPECIFIED: Default value. This value is unused.
-      ACTIVE: The oauth client is active.
-      DELETED: The oauth client is soft-deleted. Soft-deleted oauth client is
+      ACTIVE: The OauthClient is active.
+      DELETED: The OauthClient is soft-deleted. Soft-deleted OauthClient is
         permanently deleted after approximately 30 days unless restored via
-        UndeleteOauthClient.
+        `UndeleteOauthClient`.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -4104,24 +4213,29 @@ class OauthClient(_messages.Message):
 
 
 class OauthClientCredential(_messages.Message):
-  r"""Represents an oauth client credential. Used to authenticate an oauth
-  client while accessing Google Cloud resources on behalf of a user by using
-  OAuth2 Protocol.
+  r"""Represents an OauthClientCredential. Used to authenticate an OauthClient
+  while accessing Google Cloud resources on behalf of a user by using OAuth
+  2.0 Protocol.
 
   Fields:
-    clientSecret: Output only. The system-generated oauth client secret.
-    createTime: Output only. The timestamp when the oauth client credential
-      was created
-    disabled: Optional. Whether the oauth client credential is disabled. You
-      cannot use a disabled oauth client credential for OAuth.
-    displayName: Optional. A user-specified display name of the oauth client
-      credential Cannot exceed 32 characters.
-    name: Immutable. The resource name of the oauth client credential. Format:
-      `projects/{project}/locations/{location}/oauthClients/{oauth_client}/cre
-      dentials/{credential}`
-    updateTime: Output only. The timestamp for the last update of the oauth
-      client credential. If no updates have been made, the creation time will
-      serve as the designated value.
+    clientSecret: Output only. The system-generated OAuth client secret. The
+      client secret must be stored securely. If the client secret is leaked,
+      you must delete and re-create the client credential. To learn more, see
+      [OAuth client and credential security risks and
+      mitigations](https://cloud.google.com/iam/docs/workforce-oauth-
+      app#security)
+    createTime: Output only. The timestamp when the OauthClientCredential was
+      created.
+    disabled: Optional. Whether the OauthClientCredential is disabled. You
+      cannot use a disabled OauthClientCredential.
+    displayName: Optional. A user-specified display name of the
+      OauthClientCredential. Cannot exceed 32 characters.
+    name: Immutable. The resource name of the OauthClientCredential. Format: `
+      projects/{project}/locations/{location}/oauthClients/{oauth_client}/cred
+      entials/{credential}`
+    updateTime: Output only. The timestamp for the last update of the
+      OauthClientCredential. If no updates have been made, the creation time
+      will serve as the designated value.
   """
 
   clientSecret = _messages.StringField(1)
@@ -4622,6 +4736,16 @@ class ReconciliationOperationMetadata(_messages.Message):
 
   deleteResource = _messages.BooleanField(1)
   exclusiveAction = _messages.EnumField('ExclusiveActionValueValuesEnum', 2)
+
+
+class RemoveAttestationRuleRequest(_messages.Message):
+  r"""Request message for RemoveAttestationRule.
+
+  Fields:
+    attestationRule: Required. The attestation rule to be removed.
+  """
+
+  attestationRule = _messages.MessageField('AttestationRule', 1)
 
 
 class Role(_messages.Message):

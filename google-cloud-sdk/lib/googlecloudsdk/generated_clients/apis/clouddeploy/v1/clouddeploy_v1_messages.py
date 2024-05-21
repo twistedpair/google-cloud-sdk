@@ -3092,7 +3092,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class ExecutionConfig(_messages.Message):
   r"""Configuration of the environment to use when calling Skaffold.
 
@@ -3221,10 +3220,14 @@ class GkeCluster(_messages.Message):
       the public IP address otherwise. Only specify this option when `cluster`
       is a [private GKE cluster](https://cloud.google.com/kubernetes-
       engine/docs/concepts/private-cluster-concept).
+    proxyUrl: Optional. If set, used to configure a
+      [proxy](https://kubernetes.io/docs/concepts/configuration/organize-
+      cluster-access-kubeconfig/#proxy) to the Kubernetes server.
   """
 
   cluster = _messages.StringField(1)
   internalIp = _messages.BooleanField(2)
+  proxyUrl = _messages.StringField(3)
 
 
 class IgnoreJobRequest(_messages.Message):
@@ -5076,9 +5079,12 @@ class Rollback(_messages.Message):
   Fields:
     destinationPhase: Optional. The starting phase ID for the `Rollout`. If
       unspecified, the `Rollout` will start in the stable phase.
+    disableRollbackIfRolloutPending: Optional. If pending rollout exists on
+      the target, the rollback operation will be aborted.
   """
 
   destinationPhase = _messages.StringField(1)
+  disableRollbackIfRolloutPending = _messages.BooleanField(2)
 
 
 class RollbackAttempt(_messages.Message):
@@ -5091,6 +5097,8 @@ class RollbackAttempt(_messages.Message):
   Fields:
     destinationPhase: Output only. The phase to which the rollout will be
       rolled back to.
+    disableRollbackIfRolloutPending: Output only. If active rollout exists on
+      the target, abort this rollback.
     rolloutId: Output only. ID of the rollback `Rollout` to create.
     state: Output only. Valid state of this rollback action.
     stateDesc: Output only. Description of the state of the Rollback.
@@ -5119,9 +5127,10 @@ class RollbackAttempt(_messages.Message):
     REPAIR_STATE_ABORTED = 7
 
   destinationPhase = _messages.StringField(1)
-  rolloutId = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
-  stateDesc = _messages.StringField(4)
+  disableRollbackIfRolloutPending = _messages.BooleanField(2)
+  rolloutId = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  stateDesc = _messages.StringField(5)
 
 
 class RollbackTargetConfig(_messages.Message):

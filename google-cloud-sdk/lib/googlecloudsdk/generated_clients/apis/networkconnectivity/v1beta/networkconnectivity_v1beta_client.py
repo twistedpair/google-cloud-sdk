@@ -46,6 +46,7 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
     self.projects_locations_global_hubs_routeTables_routes = self.ProjectsLocationsGlobalHubsRouteTablesRoutesService(self)
     self.projects_locations_global_hubs_routeTables = self.ProjectsLocationsGlobalHubsRouteTablesService(self)
     self.projects_locations_global_hubs = self.ProjectsLocationsGlobalHubsService(self)
+    self.projects_locations_global_policyBasedRoutes = self.ProjectsLocationsGlobalPolicyBasedRoutesService(self)
     self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_regionalEndpoints = self.ProjectsLocationsRegionalEndpointsService(self)
@@ -144,6 +145,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists CustomHardwareInstances in a given project and location.
 
@@ -195,6 +223,60 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='googleCloudNetworkconnectivityV1betaCustomHardwareInstance',
         request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareInstances/{customHardwareInstancesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareInstances.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareInstancesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -289,6 +371,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkAttachments/{customHardwareLinkAttachmentsId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkAttachments.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists CustomHardwareLinkAttachments in a given project and location.
 
@@ -340,6 +449,60 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='googleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment',
         request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkAttachments/{customHardwareLinkAttachmentsId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkAttachments.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkAttachments/{customHardwareLinkAttachmentsId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkAttachments.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -434,6 +597,33 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists CustomHardwareLinkConnectPairs in a given project and location.
 
@@ -485,6 +675,60 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         request_field='googleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair',
         request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/{locationsId}/customHardwareLinkConnectPairs/{customHardwareLinkConnectPairsId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.customHardwareLinkConnectPairs.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsCustomHardwareLinkConnectPairsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -1091,6 +1335,205 @@ class NetworkconnectivityV1beta(base_api.BaseApiClient):
         relative_path='v1beta/{+resource}:testIamPermissions',
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalPolicyBasedRoutesService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_policyBasedRoutes resource."""
+
+    _NAME = 'projects_locations_global_policyBasedRoutes'
+
+    def __init__(self, client):
+      super(NetworkconnectivityV1beta.ProjectsLocationsGlobalPolicyBasedRoutesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new policy-based route in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['policyBasedRouteId', 'requestId'],
+        relative_path='v1beta/{+parent}/policyBasedRoutes',
+        request_field='googleCloudNetworkconnectivityV1betaPolicyBasedRoute',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single policy-based route.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}',
+        http_method='DELETE',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single policy-based route.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta/{+name}',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaPolicyBasedRoute',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:getIamPolicy',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists policy-based routes in a given project and location.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudNetworkconnectivityV1betaListPolicyBasedRoutesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes',
+        http_method='GET',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1beta/{+parent}/policyBasedRoutes',
+        request_field='',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest',
+        response_type_name='GoogleCloudNetworkconnectivityV1betaListPolicyBasedRoutesResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:setIamPolicy',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/projects/{projectsId}/locations/global/policyBasedRoutes/{policyBasedRoutesId}:testIamPermissions',
+        http_method='POST',
+        method_id='networkconnectivity.projects.locations.global.policyBasedRoutes.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1beta/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )

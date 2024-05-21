@@ -52,6 +52,7 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.resource import resource_printer
 from googlecloudsdk.core.util import edit
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import parallel
 import requests
 
@@ -662,10 +663,11 @@ def ListFiles(args):
           projectsId=project,
           locationsId=location,
           repositoriesId=repo))
-  files = ar_requests.ListFiles(client, messages, repo_path, arg_filters,
-                                page_size)
+  lfiles = ar_requests.ListFiles(
+      client, messages, repo_path, arg_filters, page_size
+  )
 
-  return files
+  return lfiles
 
 
 def AddEncryptionLogToRepositoryInfo(response, unused_args):
@@ -1043,17 +1045,10 @@ def RecommendAuthChange(
     repo,
     failures,
     pkg_dev=False,
+    output_iam_policy_dir=None,
 ):
   """Prompts the user to possibly change the repository's iam policy."""
   con = console_attr.GetConsoleAttr()
-  log.status.Print(
-      con.Emphasize(
-          "\nPotential IAM change for {} repository in project {}:\n".format(
-              repo, project
-          ),
-          bold=True,
-      )
-  )
 
   if existing_policy.bindings:
     etag = existing_policy.etag
@@ -1075,7 +1070,38 @@ def RecommendAuthChange(
     string_policy = yaml.dump(encoding.MessageToDict(policy_addition))
     etag = ""
 
+  warning_message = (
+      f"Generated bindings for {project}/{repo} may be"
+      " insufficient because you do not have access to analyze IAM for the"
+      f" following resources: {failures}"
+      "\nSee"
+      " https://cloud.google.com/policy-intelligence/docs/analyze-iam-policies#required-permissions"
+  )
+
+  if output_iam_policy_dir:
+    log.status.Print(f"\nWriting bindings for {project}/{repo}...")
+    if failures:
+      log.status.Print(f"{con.Colorize('Warning:','red')} {warning_message}")
+      commented_warning = "# " + "\n# ".join(warning_message.split("\n"))
+      string_policy = f"{commented_warning}\n\n{string_policy}"
+    outfile = os.path.join(output_iam_policy_dir, project, f"{repo}.yaml")
+    # WriteFileContents calls ExpandHomeDir internally only for the path,
+    # which causes weird errors if we don't pre-expand it
+    files.WriteFileContents(
+        files.ExpandHomeDir(outfile), string_policy, create_path=True
+    )
+    return True
+
+  log.status.Print(
+      con.Emphasize(
+          "\nPotential IAM change for {} repository in project {}:\n".format(
+              repo, project
+          ),
+          bold=True,
+      )
+  )
   log.status.Print(string_policy)
+
   message = (
       "This IAM policy will grant users the ability to perform all actions in"
       " Artifact Registry that they can currently perform in Container"
@@ -1083,13 +1109,7 @@ def RecommendAuthChange(
       " deny policies or IAM conditions."
   )
   if failures:
-    message += (
-        f"\n\n{con.Colorize('Warning:','red')} Generated bindings may be"
-        " insufficient because you do not have access to analyze IAM for the"
-        f" following resources: {failures}"
-        "\nSee"
-        " https://cloud.google.com/policy-intelligence/docs/analyze-iam-policies#required-permissions\n\n"
-    )
+    message += f"\n\n{con.Colorize('Warning:','red')} {warning_message}\n\n"
 
   if not console_io.CanPrompt():
     log.status.Print(message)
@@ -1153,6 +1173,7 @@ def RecommendAuthChange(
                 json.loads(e.content)["error"]["message"]
             )
         )
+        raise e
     elif choices[option] == "edit":
       string_policy = edit.OnlineEdit(string_policy)
       message = con.Emphasize(
@@ -1173,25 +1194,38 @@ def RecommendAuthChange(
       raise ValueError(f"Unknown choice: {choices[option]}")
 
 
-def SetupAuthForProject(project, repos, repos_with_buckets):
+def SetupAuthForProject(
+    project,
+    repos,
+    repos_with_buckets,
+    output_iam_policy_dir=None,
+    input_iam_policy_dir=None,
+):
   """Sets up auth for all repos in the given project."""
-  missing_auth = False
+  diffs_found = False
   for repo in repos:
     has_bucket = repo["repository"] in repos_with_buckets
-    diffs_found, continue_auth_check = SetupAuthForRepository(
-        project, project, repo["repository"], repo, has_bucket
+    repo_diffs, continue_auth_check = SetupAuthForRepository(
+        project,
+        project,
+        repo["repository"],
+        repo,
+        has_bucket,
+        output_iam_policy_dir=output_iam_policy_dir,
+        input_iam_policy_dir=input_iam_policy_dir,
     )
-    if diffs_found:
-      missing_auth = True
+    if repo_diffs:
+      diffs_found = True
     if not continue_auth_check:
-      return False
-  if not missing_auth:
+      return diffs_found, False
+  if not diffs_found and not input_iam_policy_dir:
     con = console_attr.GetConsoleAttr()
     log.status.Print(
         con.Colorize("OK: ", "green")
         + "All Container Registry repositories have equivalent Artifact"
         " Registry permissions for project {}".format(project)
     )
+  return diffs_found, True
 
 
 def WarnNoAuthGenerated(pkg_dev=False):
@@ -1236,7 +1270,14 @@ def CalculateMissingAuth(gcr_auth, ar_non_repo_auth, ar_repo_policy):
 
 
 def SetupAuthForRepository(
-    gcr_project, ar_project, host, repo, has_bucket, pkg_dev=False
+    gcr_project,
+    ar_project,
+    host,
+    repo,
+    has_bucket,
+    pkg_dev=False,
+    output_iam_policy_dir=None,
+    input_iam_policy_dir=None,
 ):
   """Checks permissions for a repository and prompts for changes if any is missing.
 
@@ -1251,6 +1292,8 @@ def SetupAuthForRepository(
     repo: The AR repo being copied to
     has_bucket: Whether a GCR bucket exists for this repository
     pkg_dev: If true, this is for a single pkg.dev repo (prompts are different)
+    output_iam_policy_dir: If set, output iam files to this dir
+    input_iam_policy_dir: If set, use iam files from this dir
 
   Returns:
     A tuple of (diffs_found, should_continue) where diffs_found is true if
@@ -1259,6 +1302,46 @@ def SetupAuthForRepository(
     repos.
   """
 
+  if input_iam_policy_dir:
+    try:
+      string_policy = files.ReadFileContents(
+          os.path.join(
+              files.ExpandHomeDir(input_iam_policy_dir),
+              ar_project,
+              f"{repo['repository']}.yaml",
+          )
+      )
+    except files.MissingFileError:
+      log.status.Print(
+          f"No policy change found for {ar_project}/{repo['repository']}."
+          " Skipping this repository."
+      )
+      return False, True
+    con = console_attr.GetConsoleAttr()
+    log.status.Print(
+        con.Colorize(
+            f"Applying policy to repository {ar_project}/{repo['repository']}",
+            "green",
+        )
+    )
+    new_binding = encoding.PyValueToMessage(
+        ar_requests.GetMessages().Policy, yaml.load(string_policy)
+    )
+    try:
+      ar_requests.SetIamPolicy(
+          "projects/{}/locations/{}/repositories/{}".format(
+              ar_project, repo["location"], repo["repository"]
+          ),
+          new_binding,
+      )
+      return True, True
+    except apitools_exceptions.HttpError as e:
+      log.status.Print(
+          "\nFailed to update iam policy:\n{}\n".format(
+              json.loads(e.content)["error"]["message"]
+          )
+      )
+      raise e
   gcr_auth, failures = upgrade_util.iam_map(
       host,
       gcr_project,
@@ -1297,8 +1380,21 @@ def SetupAuthForRepository(
         repo["repository"],
         failures=failures,
         pkg_dev=pkg_dev,
+        output_iam_policy_dir=output_iam_policy_dir,
     )
     return True, continue_checking_auth
+  elif failures:
+    # Nothing to do, but we still need to warn
+    con = console_attr.GetConsoleAttr()
+    warning_message = (
+        f"Unable to confirm auth bindings for {ar_project}/{repo['repository']}"
+        " are sufficient because you do not have access to analyze IAM for the"
+        f" following resources: {failures}"
+        "\nSee"
+        " https://cloud.google.com/policy-intelligence/docs/analyze-iam-policies#required-permissions"
+    )
+    log.status.Print(f"\n{con.Colorize('Warning:','red')} {warning_message}")
+    return True, True
   # No diffs found, continue checking auth
   return False, True
 
@@ -1316,9 +1412,28 @@ def MigrateToArtifactRegistry(unused_ref, args):
   copy_only = args.copy_only
   canary_reads = args.canary_reads
   skip_iam = args.skip_iam_update
-  if recent_images is not None and (recent_images < 30 or recent_images > 90):
-    log.status.Print("--recent-images must be between 30 and 90 inclusive")
+  if recent_images is not None and (recent_images < 30 or recent_images > 150):
+    log.status.Print("--recent-images must be between 30 and 150 inclusive")
     return None
+  output_iam_policy_dir = args.output_iam_policy_dir
+  input_iam_policy_dir = args.input_iam_policy_dir
+  if output_iam_policy_dir and (skip_iam or copy_only):
+    log.status.Print(
+        "--output-iam-policy-dir is only used when determining iam policy"
+    )
+  if input_iam_policy_dir and (skip_iam or copy_only):
+    log.status.Print(
+        "--input-iam-policy-dir is only used when determining iam policy"
+    )
+  if input_iam_policy_dir and output_iam_policy_dir:
+    log.status.Print(
+        "--input-iam-policy-dir and --output-iam-policy-dir should not be"
+        " called in the same invocation"
+    )
+  if input_iam_policy_dir:
+    if not os.path.isdir(files.ExpandHomeDir(input_iam_policy_dir)):
+      log.status.Print("--input-iam-policy-dir must be a directory")
+      return None
   if canary_reads is not None and (canary_reads < 1 or canary_reads > 100):
     log.status.Print("--canary-reads must be between 1 and 100 inclusive")
     return None
@@ -1378,14 +1493,38 @@ def MigrateToArtifactRegistry(unused_ref, args):
           gcr_project,
       )
       if not skip_iam:
-        SetupAuthForRepository(
+        if input_iam_policy_dir:
+          cont = console_io.PromptContinue(
+              f"\nContinuing will update {ar_project}/{ar_repo} IAM policy"
+              f" based on {input_iam_policy_dir}.",
+              default=True,
+          )
+          if not cont:
+            return None
+        diffs_found, _ = SetupAuthForRepository(
             gcr_project=gcr_project,
             ar_project=ar_project,
             host=gcr_host,
             repo={"location": location, "repository": ar_repo},
             has_bucket=has_bucket,
             pkg_dev=True,
+            input_iam_policy_dir=input_iam_policy_dir,
+            output_iam_policy_dir=output_iam_policy_dir,
         )
+        if output_iam_policy_dir:
+          if diffs_found:
+            log.status.Print(
+                "\nAll policies written. After verifying IAM policies, rerun"
+                " this tool with"
+                f" --input-iam-policy-dir={output_iam_policy_dir} to complete"
+                " migration"
+            )
+          else:
+            log.status.Print(
+                "No IAM changes are needed. Rerun this tool without"
+                " --output-iam-policy to complete migration"
+            )
+          return None
     if not WrappedCopyImagesFromGCR(
         [host],
         to_pkg_dev,
@@ -1470,7 +1609,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
 
   # Only do the initial steps for projects where we haven't started redirection
   # yet. Otherwise, we pick up where we left off.
-  if disabled_projects:
+  if disabled_projects and not input_iam_policy_dir:
     if not MaybeCreateMissingRepos(
         disabled_projects, automigrate=True, dry_run=False
     ):
@@ -1535,7 +1674,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
   # 1) A smoke test such that if something breaks, it breaks BEFORE we redirect
   # 2) Gets most of the commonly used images copied ahead of time to avoid
   # a load/quota spike at redirection time
-  if not copy_only and projects_to_redirect:
+  if not copy_only and not output_iam_policy_dir and projects_to_redirect:
     pre_copied_projects = []
     log.status.Print(
         "\nCopying initial images (additional images will be copied later)...\n"
@@ -1564,12 +1703,55 @@ def MigrateToArtifactRegistry(unused_ref, args):
     projects_to_redirect = pre_copied_projects
 
   if not skip_iam:
-    for project in projects_to_redirect:
-      continue_checking_auth = SetupAuthForProject(
-          project, existing_repos[project], repo_bucket_map[project]
+    if input_iam_policy_dir:
+      cont = console_io.PromptContinue(
+          "\nContinuing will update IAM policies for repositories in the"
+          " following projects based on the files in"
+          f" {input_iam_policy_dir}:\n{projects_to_redirect}",
+          default=True,
       )
+      if not cont:
+        return None
+    diffs_found = False
+    needs_removal = []
+    for project in projects_to_redirect:
+      project_diffs, continue_checking_auth = SetupAuthForProject(
+          project,
+          existing_repos[project],
+          repo_bucket_map[project],
+          output_iam_policy_dir=output_iam_policy_dir,
+          input_iam_policy_dir=input_iam_policy_dir,
+      )
+      if project_diffs:
+        diffs_found = True
+      elif input_iam_policy_dir:
+        if not os.path.isdir(
+            os.path.join(files.ExpandHomeDir(input_iam_policy_dir), project)
+        ):
+          log.status.Print(
+              f"Skipping {project} because no policy directory found"
+          )
+          needs_removal.append(project)
       if not continue_checking_auth:
         break
+    for project in needs_removal:
+      projects_to_redirect.remove(project)
+    if output_iam_policy_dir:
+      if diffs_found:
+        log.status.Print(
+            "\nAll policies written. After verifying IAM policies, rerun this"
+            f" tool with --input-iam-policy-dir={output_iam_policy_dir} to"
+            " complete migration"
+        )
+      else:
+        log.status.Print(
+            "No IAM changes are needed. Rerun this tool without"
+            " --output-iam-policy to complete migration"
+        )
+      return None
+    if input_iam_policy_dir and not diffs_found:
+      log.status.Print(f"No IAM policies found at {input_iam_policy_dir}")
+      return None
 
   projects_to_redirect.extend(partial_projects)
 

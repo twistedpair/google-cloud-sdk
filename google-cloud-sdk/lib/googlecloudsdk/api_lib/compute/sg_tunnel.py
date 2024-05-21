@@ -35,6 +35,9 @@ MAX_BYTES_SOCKET_READ = 32768
 RECV_TIMEOUT_SECONDS = 5
 SEND_TIMEOUT_SECONDS = 5
 
+RESOURCE_KEY_HEADER = 'X-Resource-Key'
+PROXY_AUTH_HEADER = 'Proxy-Authorization'
+
 
 class SGConnectionError(exceptions.Error):
   pass
@@ -83,16 +86,23 @@ class SecurityGatewayTunnel(object):
     proxy_host, proxy_port = sg_utils.GetProxyHostPort(
         self._target.url_override)
 
-    conn = http.client.HTTPSConnection(
-        proxy_host, proxy_port, context=ssl_ctx)
+    conn = http.client.HTTPSConnection(proxy_host, proxy_port, context=ssl_ctx)
     dst_addr = '{}:{}'.format(self._target.host, self._target.port)
     headers = {}
     if callable(self._get_access_token_callback):
-      headers['Proxy-Authorization'] = 'Bearer {}'.format(
+      headers[PROXY_AUTH_HEADER] = 'Bearer {}'.format(
           self._get_access_token_callback())
-    headers['X-Resource-Key'] = sg_utils.GenerateSecurityGatewayResourcePath(
-        self._target.project, self._target.region,
-        self._target.security_gateway)
+    if self._target.use_dest_group:
+      headers[RESOURCE_KEY_HEADER] = sg_utils.GenerateDestGroupResourcePath(
+          self._target.project,
+          self._target.region,
+          self._target.security_gateway)
+    else:
+      headers[RESOURCE_KEY_HEADER] = (
+          sg_utils.GenerateSecurityGatewayResourcePath(
+              self._target.project,
+              self._target.region,
+              self._target.security_gateway))
     log.debug('Sending headers: %s', headers)
 
     conn.request('CONNECT', dst_addr, headers=headers)

@@ -1246,6 +1246,8 @@ class Cluster(_messages.Message):
       time, then a default database version will be used.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
+    SubscriptionTypeValueValuesEnum: Optional. Subscription type of the
+      cluster.
 
   Messages:
     AnnotationsValue: Annotations to allow client tools to store small amount
@@ -1326,6 +1328,7 @@ class Cluster(_messages.Message):
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
+    subscriptionType: Optional. Subscription type of the cluster.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
       deleted.
@@ -1399,6 +1402,19 @@ class Cluster(_messages.Message):
     BOOTSTRAPPING = 7
     MAINTENANCE = 8
     PROMOTING = 9
+
+  class SubscriptionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Subscription type of the cluster.
+
+    Values:
+      SUBSCRIPTION_TYPE_UNSPECIFIED: This is an unknown Subscription type (By
+        default, Subscription Type is STANDARD)
+      STANDARD: Standard subscription.
+      TRIAL: Trial subscription.
+    """
+    SUBSCRIPTION_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    TRIAL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -1480,8 +1496,9 @@ class Cluster(_messages.Message):
   secondaryConfig = _messages.MessageField('SecondaryConfig', 28)
   sslConfig = _messages.MessageField('SslConfig', 29)
   state = _messages.EnumField('StateValueValuesEnum', 30)
-  uid = _messages.StringField(31)
-  updateTime = _messages.StringField(32)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 31)
+  uid = _messages.StringField(32)
+  updateTime = _messages.StringField(33)
 
 
 class ConnectionInfo(_messages.Message):
@@ -3471,6 +3488,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         transaction logs settings
       SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
         without indexes
+      SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES: Detects events where a
+        Cloud SQL superuser (postgres for PostgreSQL servers or root for MySQL
+        users) writes to non-system tables.
+      SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS: Detects events where a
+        database user or role has been granted all privileges to a database,
+        or to all tables, procedures, or functions in a schema.
+      SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket outside of
+        the organization.
+      SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket that is
+        owned by the organization and is publicly accessible.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3539,6 +3568,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
     SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
     SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -4035,6 +4068,18 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         transaction logs settings
       SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES: Performance impact of high joins
         without indexes
+      SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES: Detects events where a
+        Cloud SQL superuser (postgres for PostgreSQL servers or root for MySQL
+        users) writes to non-system tables.
+      SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS: Detects events where a
+        database user or role has been granted all privileges to a database,
+        or to all tables, procedures, or functions in a schema.
+      SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket outside of
+        the organization.
+      SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET: Detects if
+        database instance data exported to a Cloud Storage bucket that is
+        owned by the organization and is publicly accessible.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -4103,6 +4148,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
     SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
     SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):

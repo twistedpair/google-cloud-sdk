@@ -400,6 +400,21 @@ class Consumer(_messages.Message):
   subnetwork = _messages.StringField(3)
 
 
+class CustomRegionMetadata(_messages.Message):
+  r"""Metadata about a custom region. This is only populated if the region is
+  a custom region. For single/multi regions, it will be empty.
+
+  Fields:
+    optionalReadOnlyRegions: The read-only regions for this custom region.
+    requiredReadWriteRegions: The read-write regions for this custom region.
+    witnessRegion: The Spanner witness region for this custom region.
+  """
+
+  optionalReadOnlyRegions = _messages.StringField(1, repeated=True)
+  requiredReadWriteRegions = _messages.StringField(2, repeated=True)
+  witnessRegion = _messages.StringField(3)
+
+
 class DataCatalogConfig(_messages.Message):
   r"""Specifies how metastore metadata should be integrated with the Data
   Catalog service.
@@ -1102,6 +1117,8 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
+    customRegionMetadata: Possible configurations supported if the current
+      region is a custom region.
     multiRegionMetadata: The multi-region metadata if the current region is a
       multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
@@ -1110,8 +1127,9 @@ class LocationMetadata(_messages.Message):
       is_default.
   """
 
-  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 1)
-  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 2, repeated=True)
+  customRegionMetadata = _messages.MessageField('CustomRegionMetadata', 1, repeated=True)
+  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 2)
+  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 3, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1729,6 +1747,86 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   serviceId = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy.Valid values are 0, 1, and 3. Requests
+      specifying an invalid value will be rejected.Requests for policies with
+      any conditional role bindings must specify version 3. Policies with no
+      conditional role bindings may specify any valid value or leave the field
+      unset.The policy in the response might use the policy version that you
+      specified, or it might use a lower policy version. For example, if you
+      specify version 3, but the policy has no conditional role bindings, the
+      response uses version 1.To learn which resources support conditions in
+      their IAM policies, see the IAM documentation
+      (https://cloud.google.com/iam/help/conditions/resource-policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See Resource names (https://cloud.google.com/apis/design/resource_names)
+      for the appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
 class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesDeleteRequest object.
 
@@ -2063,7 +2161,7 @@ class MoveTableToDatabaseResponse(_messages.Message):
 class MultiRegionMetadata(_messages.Message):
   r"""The metadata for the multi-region that includes the constituent regions.
   The metadata is only populated if the region is multi-region. For single
-  region, it will be empty.
+  region or custom dual region, it will be empty.
 
   Fields:
     constituentRegions: The regions constituting the multi-region.
@@ -2881,3 +2979,7 @@ encoding.AddCustomJsonFieldMapping(
     MetastoreProjectsLocationsServicesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 encoding.AddCustomJsonFieldMapping(
     MetastoreProjectsLocationsServicesBackupsGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

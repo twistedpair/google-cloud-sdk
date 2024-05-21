@@ -3638,6 +3638,23 @@ class GoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   fileHash = _messages.MessageField('GoogleDevtoolsCloudbuildV1Hash', 1, repeated=True)
 
 
+class GoogleDevtoolsCloudbuildV1GCSLocation(_messages.Message):
+  r"""Represents a storage location in Cloud Storage
+
+  Fields:
+    bucket: Cloud Storage bucket. See
+      https://cloud.google.com/storage/docs/naming#requirements
+    generation: Cloud Storage generation for the object. If the generation is
+      omitted, the latest generation will be used.
+    object: Cloud Storage object. See
+      https://cloud.google.com/storage/docs/naming#objectnames
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
 class GoogleDevtoolsCloudbuildV1GitConfig(_messages.Message):
   r"""GitConfig is a configuration for git operations.
 
@@ -3706,9 +3723,12 @@ class GoogleDevtoolsCloudbuildV1HttpConfig(_messages.Message):
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
       proxy URL should be in format protocol://@]proxyhost[:port].
+    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
+      use with the HTTP proxy.
   """
 
   proxySecretVersionName = _messages.StringField(1)
+  proxySslCaInfo = _messages.MessageField('GoogleDevtoolsCloudbuildV1GCSLocation', 2)
 
 
 class GoogleDevtoolsCloudbuildV1InlineSecret(_messages.Message):

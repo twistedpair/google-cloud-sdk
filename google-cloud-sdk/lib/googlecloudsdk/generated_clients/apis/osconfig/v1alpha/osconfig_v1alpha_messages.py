@@ -2226,11 +2226,15 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsCreateRequest(_messages.Messag
       a letter. * Must be unique within the project.
     parent: Required. The parent resource name in the form:
       projects/{project}/locations/{location}
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
   """
 
   oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 1)
   osPolicyAssignmentId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class OsconfigProjectsLocationsOsPolicyAssignmentsDeleteRequest(_messages.Message):
@@ -2238,9 +2242,13 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsDeleteRequest(_messages.Messag
 
   Fields:
     name: Required. The name of the OS policy assignment to be deleted
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest(_messages.Message):
@@ -2318,18 +2326,26 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest(_messages.Message
   r"""A OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest object.
 
   Fields:
+    allowMissing: Optional. If set to true, and the OS policy assignment is
+      not found, a new OS policy assignment will be created. In this
+      situation, `update_mask` is ignored.
     name: Resource name. Format: `projects/{project_number}/locations/{locatio
       n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
       when you create an OS policy assignment.
     oSPolicyAssignment: A OSPolicyAssignment resource to be passed as the
       request body.
+    requestId: Optional. A unique identifier for this request. Restricted to
+      36 ASCII characters. A random UUID is recommended. This request is only
+      idempotent if a `request_id` is provided.
     updateMask: Optional. Field mask that controls which fields of the
       assignment should be updated.
   """
 
-  name = _messages.StringField(1, required=True)
-  oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 2)
-  updateMask = _messages.StringField(3)
+  allowMissing = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 3)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

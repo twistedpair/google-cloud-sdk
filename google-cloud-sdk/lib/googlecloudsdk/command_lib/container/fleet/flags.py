@@ -123,7 +123,7 @@ class FleetFlags:
   ):
     security_posture_config_group.add_argument(
         '--security-posture',
-        choices=['disabled', 'standard'],
+        choices=['disabled', 'standard', 'enterprise'],
         default=None,
         help=textwrap.dedent("""\
           To apply standard security posture to clusters in the fleet,
@@ -315,6 +315,7 @@ class FleetFlagParser:
     mapping = {
         'disabled': enum_type.DISABLED,
         'standard': enum_type.BASIC,
+        'enterprise': enum_type.ENTERPRISE,
     }
     return mapping[self.args.security_posture]
 

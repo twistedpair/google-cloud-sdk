@@ -7668,24 +7668,25 @@ class UserManagedKeysConfig(_messages.Message):
   for signing certs and token that are used for communication within cluster.
 
   Fields:
-    byoAggregationCaKey: Resource address to aggregation CA's root key managed
-      in KMS.
-    byoClusterCaKey: Resource address to cluster CA's root key managed in KMS.
-    byoEtcdApiServerCaKey: Resource address to etcd<->apiserver CA's root key
-      managed in KMS.
-    byoEtcdPeerCaKey: Resource address to etcd peer CA's root key managed in
-      KMS.
+    byoAggregationCa: Resource address to aggregation CA managed in
+      Certificate Authority Service.
+    byoClusterCa: Resource address to cluster CA managed in Certificate
+      Authority Service.
+    byoEtcdApiServerCa: Resource address to etcd<->apiserver CA managed in
+      Certificate Authority Service.
+    byoEtcdPeerCa: Resource address to etcd peer CA managed in Certificate
+      Authority Service.
     byoServiceAccountKey: Resource address to service account key managed in
       KMS.
-    cmekControlPlaneDisksCaKey: Resource address to control plane CA's root
-      key managed in KMS.
+    cmekControlPlaneDisksCaKey: Resource address to control plane CA managed
+      in Certificate Authority Service.
     cmekEtcdBackupsKey: Resource address to etcd backups key managed in KMS.
   """
 
-  byoAggregationCaKey = _messages.StringField(1)
-  byoClusterCaKey = _messages.StringField(2)
-  byoEtcdApiServerCaKey = _messages.StringField(3)
-  byoEtcdPeerCaKey = _messages.StringField(4)
+  byoAggregationCa = _messages.StringField(1)
+  byoClusterCa = _messages.StringField(2)
+  byoEtcdApiServerCa = _messages.StringField(3)
+  byoEtcdPeerCa = _messages.StringField(4)
   byoServiceAccountKey = _messages.StringField(5)
   cmekControlPlaneDisksCaKey = _messages.StringField(6)
   cmekEtcdBackupsKey = _messages.StringField(7)

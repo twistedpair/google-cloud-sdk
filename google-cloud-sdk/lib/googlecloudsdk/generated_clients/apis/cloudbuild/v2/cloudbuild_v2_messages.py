@@ -216,7 +216,7 @@ class BitbucketDataCenterConfig(_messages.Message):
   Fields:
     authorizerCredential: Required. A http access token with the `REPO_ADMIN`
       scope access.
-    hostUri: Required. The URI of the Bitbucket Data Center instance or
+    hostUri: Optional. The URI of the Bitbucket Data Center instance or
       cluster this connection is for.
     readAuthorizerCredential: Required. A http access token with the
       `REPO_READ` access.
@@ -1100,18 +1100,20 @@ class Connection(_messages.Message):
   Center, Bitbucket Cloud or GitLab.
 
   Messages:
-    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+    AnnotationsValue: Optional. Allows clients to store small amounts of
+      arbitrary data.
 
   Fields:
-    annotations: Allows clients to store small amounts of arbitrary data.
+    annotations: Optional. Allows clients to store small amounts of arbitrary
+      data.
     bitbucketCloudConfig: Configuration for connections to Bitbucket Cloud.
     bitbucketDataCenterConfig: Configuration for connections to Bitbucket Data
       Center.
     createTime: Output only. Server assigned timestamp for when the connection
       was created.
-    disabled: If disabled is set to true, functionality is disabled for this
-      connection. Repository based API methods and webhooks processing for
-      repositories in this connection will be disabled.
+    disabled: Optional. If disabled is set to true, functionality is disabled
+      for this connection. Repository based API methods and webhooks
+      processing for repositories in this connection will be disabled.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1131,7 +1133,7 @@ class Connection(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Allows clients to store small amounts of arbitrary data.
+    r"""Optional. Allows clients to store small amounts of arbitrary data.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1440,11 +1442,11 @@ class GitHubConfig(_messages.Message):
   r"""Configuration for connections to github.com.
 
   Fields:
-    appInstallationId: GitHub App installation id.
-    authorizerCredential: OAuth credential of the account that authorized the
-      Cloud Build GitHub App. It is recommended to use a robot account instead
-      of a human user account. The OAuth token must be tied to the Cloud Build
-      GitHub App.
+    appInstallationId: Optional. GitHub App installation id.
+    authorizerCredential: Optional. OAuth credential of the account that
+      authorized the Cloud Build GitHub App. It is recommended to use a robot
+      account instead of a human user account. The OAuth token must be tied to
+      the Cloud Build GitHub App.
   """
 
   appInstallationId = _messages.IntegerField(1)
@@ -1518,33 +1520,34 @@ class GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig(_messages.Message):
 
   Fields:
     apiKey: Required. API Key used for authentication of webhook events.
-    appId: Id of the GitHub App created from the manifest.
-    appInstallationId: ID of the installation of the GitHub App.
-    appSlug: The URL-friendly name of the GitHub App.
-    authorizerCredential: OAuth credential of the account that authorized the
-      Cloud Build GitHub App. It is recommended to use a robot account instead
-      of a human user account The OAuth token must be tied to the Cloud Build
-      GitHub App.
+    appId: Optional. Id of the GitHub App created from the manifest.
+    appInstallationId: Optional. ID of the installation of the GitHub App.
+    appSlug: Optional. The URL-friendly name of the GitHub App.
+    authorizerCredential: Optional. OAuth credential of the account that
+      authorized the Cloud Build GitHub App. It is recommended to use a robot
+      account instead of a human user account The OAuth token must be tied to
+      the Cloud Build GitHub App.
     hostUri: Required. The URI of the GitHub Enterprise host this connection
       is for.
-    oauthClientIdSecretVersion: SecretManager resource containing the OAuth
-      client_id of the GitHub App, formatted as
+    oauthClientIdSecretVersion: Optional. SecretManager resource containing
+      the OAuth client_id of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*`.
-    oauthSecretSecretVersion: SecretManager resource containing the OAuth
-      secret of the GitHub App, formatted as
+    oauthSecretSecretVersion: Optional. SecretManager resource containing the
+      OAuth secret of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*`.
-    privateKeySecretVersion: SecretManager resource containing the private key
-      of the GitHub App, formatted as `projects/*/secrets/*/versions/*`.
+    privateKeySecretVersion: Optional. SecretManager resource containing the
+      private key of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
     serverVersion: Output only. GitHub Enterprise version installed at the
       host_uri.
-    serviceDirectoryConfig: Configuration for using Service Directory to
-      privately connect to a GitHub Enterprise server. This should only be set
-      if the GitHub Enterprise server is hosted on-premises and not reachable
-      by public internet. If this field is left empty, calls to the GitHub
-      Enterprise server will be made over the public internet.
-    sslCa: SSL certificate to use for requests to GitHub Enterprise.
-    webhookSecretSecretVersion: SecretManager resource containing the webhook
-      secret of the GitHub App, formatted as
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitHub Enterprise server. This
+      should only be set if the GitHub Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitHub Enterprise server will be made over the public internet.
+    sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
+    webhookSecretSecretVersion: Optional. SecretManager resource containing
+      the webhook secret of the GitHub App, formatted as
       `projects/*/secrets/*/versions/*`.
   """
 
@@ -1570,18 +1573,18 @@ class GoogleDevtoolsCloudbuildV2GitLabConfig(_messages.Message):
   Fields:
     authorizerCredential: Required. A GitLab personal access token with the
       `api` scope access.
-    hostUri: The URI of the GitLab Enterprise host this connection is for. If
-      not specified, the default value is https://gitlab.com.
+    hostUri: Optional. The URI of the GitLab Enterprise host this connection
+      is for. If not specified, the default value is https://gitlab.com.
     readAuthorizerCredential: Required. A GitLab personal access token with
       the minimum `read_api` scope access.
     serverVersion: Output only. Version of the GitLab Enterprise server
       running on the `host_uri`.
-    serviceDirectoryConfig: Configuration for using Service Directory to
-      privately connect to a GitLab Enterprise server. This should only be set
-      if the GitLab Enterprise server is hosted on-premises and not reachable
-      by public internet. If this field is left empty, calls to the GitLab
-      Enterprise server will be made over the public internet.
-    sslCa: SSL certificate to use for requests to GitLab Enterprise.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitLab Enterprise server. This
+      should only be set if the GitLab Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitLab Enterprise server will be made over the public internet.
+    sslCa: Optional. SSL certificate to use for requests to GitLab Enterprise.
     webhookSecretSecretVersion: Required. Immutable. SecretManager resource
       containing the webhook secret of a GitLab Enterprise project, formatted
       as `projects/*/secrets/*/versions/*`.
@@ -1963,13 +1966,31 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class NetworkConfig(_messages.Message):
+  r"""Defines the network configuration for the WorkerPoolSecondGen.
+
+  Fields:
+    privateServiceConnect: Connect to peered network through Private Service
+      Connect.
+    publicIpAddressDisabled: Required. Immutable. Disable public IP on the
+      primary network interface. If true, workers are created without any
+      public address, which prevents network egress to public IPs unless a
+      network proxy is configured. If false, workers are created with a public
+      address which allows for public Internet egress. The public address only
+      applies to traffic through the primary network interface.
+  """
+
+  privateServiceConnect = _messages.MessageField('PrivateServiceConnect', 1)
+  publicIpAddressDisabled = _messages.BooleanField(2)
+
+
 class OAuthCredential(_messages.Message):
   r"""Represents an OAuth token of the account that authorized the Connection,
   and associated metadata.
 
   Fields:
-    oauthTokenSecretVersion: A SecretManager resource containing the OAuth
-      token that authorizes the Cloud Build connection. Format:
+    oauthTokenSecretVersion: Optional. A SecretManager resource containing the
+      OAuth token that authorizes the Cloud Build connection. Format:
       `projects/*/secrets/*/versions/*`.
     username: Output only. The username associated to this token.
   """
@@ -2576,6 +2597,31 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class PrivateServiceConnect(_messages.Message):
+  r"""Defines the Private Service Connect network configuration for the
+  WorkerPoolSecondGen.
+
+  Fields:
+    networkAttachment: Required. Immutable. The network attachment that the
+      worker is peered to. Must be in the format `projects/{project}/regions/{
+      region}/networkAttachments/{networkAttachment}`. The region of network
+      attachment must be the same as the worker pool. See [Network
+      Attachments](https://cloud.google.com/vpc/docs/about-network-
+      attachments)
+    routeAllTraffic: Immutable. Route all traffic through PSC interface.
+      Enable this if you want full control of traffic in the private pool.
+      Configure Cloud NAT for the subnet of network attachment if you need to
+      access public Internet. If true, all traffic will go through the non-
+      primary network interface, the boolean `public_ip_address_disabled` in
+      Network Config has no effect. If false, Only route private IPs,
+      including 10.0.0.0/8, 172.16.0.0/12, and 192.168.0.0/16 through PSC
+      interface.
+  """
+
+  networkAttachment = _messages.StringField(1)
+  routeAllTraffic = _messages.BooleanField(2)
+
+
 class Probe(_messages.Message):
   r"""Probe describes a health check to be performed against a container to
   determine whether it is alive or ready to receive traffic.
@@ -2834,10 +2880,12 @@ class Repository(_messages.Message):
   r"""A repository associated to a parent connection.
 
   Messages:
-    AnnotationsValue: Allows clients to store small amounts of arbitrary data.
+    AnnotationsValue: Optional. Allows clients to store small amounts of
+      arbitrary data.
 
   Fields:
-    annotations: Allows clients to store small amounts of arbitrary data.
+    annotations: Optional. Allows clients to store small amounts of arbitrary
+      data.
     createTime: Output only. Server assigned timestamp for when the connection
       was created.
     etag: This checksum is computed by the server based on the value of other
@@ -2854,7 +2902,7 @@ class Repository(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Allows clients to store small amounts of arbitrary data.
+    r"""Optional. Allows clients to store small amounts of arbitrary data.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -3955,6 +4003,7 @@ class WorkerPoolSecondGen(_messages.Message):
     name: Output only. Identifier. The resource name of the
       `WorkerPoolSecondGen`, with format `projects/{project}/locations/{locati
       on}/workerPoolSecondGen/{worker_pool_second_gen}`.
+    network: Optional. Network configuration for the `WorkerPoolSecondGen`.
     readyWorkers: Optional. Configuration for ready workers in the
       WorkerPoolSecondGen.
     reconciling: Output only. If true, this WorkerPoolSecondGen is being
@@ -4019,12 +4068,13 @@ class WorkerPoolSecondGen(_messages.Message):
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
-  readyWorkers = _messages.MessageField('ReadyWorkers', 7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  worker = _messages.MessageField('WorkerConfig', 12)
+  network = _messages.MessageField('NetworkConfig', 7)
+  readyWorkers = _messages.MessageField('ReadyWorkers', 8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
+  worker = _messages.MessageField('WorkerConfig', 13)
 
 
 class Workflow(_messages.Message):
@@ -4046,10 +4096,12 @@ class Workflow(_messages.Message):
       `projects/{project}/locations/{location}/workflows/{workflow}`
     options: Workflow runs can be modified through several Workflow options.
     params: List of parameters.
+    pipelineRef: PipelineRef refer to a specific instance of a Pipeline.
     pipelineSpec: Fields from both the Workflow and the PipelineSpec will be
       used to form the full PipelineRun.
     pipelineSpecYaml: PipelineSpec in yaml format.
-    ref: PipelineRef refer to a specific instance of a Pipeline.
+    ref: PipelineRef refer to a specific instance of a Pipeline. Deprecated;
+      please use pipeline_ref instead.
     resources: Resources referenceable within a workflow.
     secrets: Pairs a secret environment variable with a SecretVersion in
       Secret Manager.
@@ -4121,16 +4173,17 @@ class Workflow(_messages.Message):
   name = _messages.StringField(5)
   options = _messages.MessageField('WorkflowOptions', 6)
   params = _messages.MessageField('ParamSpec', 7, repeated=True)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 8)
-  pipelineSpecYaml = _messages.StringField(9)
-  ref = _messages.MessageField('PipelineRef', 10)
-  resources = _messages.MessageField('ResourcesValue', 11)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 12, repeated=True)
-  serviceAccount = _messages.StringField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workflowTriggers = _messages.MessageField('WorkflowTrigger', 16, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceBinding', 17, repeated=True)
+  pipelineRef = _messages.MessageField('PipelineRef', 8)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 9)
+  pipelineSpecYaml = _messages.StringField(10)
+  ref = _messages.MessageField('PipelineRef', 11)
+  resources = _messages.MessageField('ResourcesValue', 12)
+  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 13, repeated=True)
+  serviceAccount = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  workflowTriggers = _messages.MessageField('WorkflowTrigger', 17, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceBinding', 18, repeated=True)
 
 
 class WorkflowOptions(_messages.Message):
