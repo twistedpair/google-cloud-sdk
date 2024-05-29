@@ -33,6 +33,7 @@ INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
 SERVICE_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
 SERVICE_MAX_SCALE_ANNOTATION = 'run.googleapis.com/maxScale'
 SERVICE_MAX_SURGE_ANNOTATION = 'run.googleapis.com/max-surge'
+SERVICE_SCALING_MODE_ANNOTATION = 'run.googleapis.com/scalingMode'
 OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 
 

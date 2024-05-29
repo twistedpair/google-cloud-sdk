@@ -1,0 +1,33 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: gkebackup v1 ResourceSelector export schema
+description: Schema of Backup for GKE fine-grained restore ResourceSelector.
+type: object
+additionalProperties: false
+properties:
+  groupKind:
+    description: |-
+      Selects resources using their Kubernetes GroupKinds. If specified, only
+      resources of provided GroupKind will be selected.
+    $ref: GroupKind.yaml
+  labels:
+    description: |-
+      Selects resources using Kubernetes labels. If specified, a resource will be
+      selected if and only if the resource has all of the provided labels and all
+      the label values match.
+    $ref: Label.yaml
+  name:
+    description: |-
+      Selects resources using their resource names. If specified, only resources
+      with the provided name will be selected.
+    type: string
+  namespace:
+    description: |-
+      Selects resources using their namespaces. This only applies to namespace
+      scoped resources and cannot be used for selecting cluster scoped
+      resources. If specified, only resources in the provided namespace will be
+      selected. If not specified, the filter will apply to both cluster scoped
+      and namespace scoped resources (e.g. name or label). The
+      Namespace resource itself will be restored if and only if any resources
+      within the namespace are restored.
+    type: string

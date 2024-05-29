@@ -100,11 +100,15 @@ def PromptForAuthCode(message, authorize_url, client_config=None):
 
 @contextlib.contextmanager
 def HandleOauth2FlowErrors():
+  """Context manager for handling errors in the OAuth 2.0 flow."""
   try:
     yield
   except requests_exceptions.ProxyError as e:
     RaiseProxyError(e)
-  except rfc6749_errors.AccessDeniedError as e:
+  except (
+      rfc6749_errors.AccessDeniedError,
+      rfc6749_errors.InvalidGrantError,
+  ) as e:
     six.raise_from(AuthRequestRejectedError(e), e)
   except ValueError as e:
     raise six.raise_from(AuthRequestFailedError(e), e)

@@ -48,10 +48,10 @@ def generate_login_token_from_gcloud_auth(scopes):
   cred = _downscope_credential(cred, scopes)
 
   c_store.Refresh(cred)
-  if c_creds.IsOauth2ClientCredentials(cred):
-    token = cred.access_token
-  else:
+  if c_creds.IsGoogleAuthCredentials(cred):
     token = cred.token
+  else:
+    token = cred.access_token
   if not token:
     raise auth_exceptions.InvalidCredentialsError(
         'No access token could be obtained from the current credentials.')

@@ -27,6 +27,8 @@ class ActiveDirectory(_messages.Message):
     LabelsValue: Labels for the active directory.
 
   Fields:
+    administrators: Optional. Users to be added to the Built-in
+      Admininstrators group.
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
     backupOperators: Optional. Users to be added to the Built-in Backup
@@ -106,27 +108,28 @@ class ActiveDirectory(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  aesEncryption = _messages.BooleanField(1)
-  backupOperators = _messages.StringField(2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  dns = _messages.StringField(5)
-  domain = _messages.StringField(6)
-  encryptDcConnections = _messages.BooleanField(7)
-  kdcHostname = _messages.StringField(8)
-  kdcIp = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapSigning = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  netBiosPrefix = _messages.StringField(13)
-  nfsUsersWithLdap = _messages.BooleanField(14)
-  organizationalUnit = _messages.StringField(15)
-  password = _messages.StringField(16)
-  securityOperators = _messages.StringField(17, repeated=True)
-  site = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateDetails = _messages.StringField(20)
-  username = _messages.StringField(21)
+  administrators = _messages.StringField(1, repeated=True)
+  aesEncryption = _messages.BooleanField(2)
+  backupOperators = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  dns = _messages.StringField(6)
+  domain = _messages.StringField(7)
+  encryptDcConnections = _messages.BooleanField(8)
+  kdcHostname = _messages.StringField(9)
+  kdcIp = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  ldapSigning = _messages.BooleanField(12)
+  name = _messages.StringField(13)
+  netBiosPrefix = _messages.StringField(14)
+  nfsUsersWithLdap = _messages.BooleanField(15)
+  organizationalUnit = _messages.StringField(16)
+  password = _messages.StringField(17)
+  securityOperators = _messages.StringField(18, repeated=True)
+  site = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateDetails = _messages.StringField(21)
+  username = _messages.StringField(22)
 
 
 class Backup(_messages.Message):
@@ -241,6 +244,8 @@ class BackupConfig(_messages.Message):
   r"""BackupConfig contains backup related config on a volume.
 
   Fields:
+    backupChainBytes: Output only. Total size of all backups in a chain in
+      bytes = baseline backup size + sum(incremental backup size).
     backupPolicies: Optional. When specified, schedule backups will be created
       based on the policy configuration.
     backupVault: Optional. Name of backup vault. Format:
@@ -251,9 +256,10 @@ class BackupConfig(_messages.Message):
       policy attached.
   """
 
-  backupPolicies = _messages.StringField(1, repeated=True)
-  backupVault = _messages.StringField(2)
-  scheduledBackupEnabled = _messages.BooleanField(3)
+  backupChainBytes = _messages.IntegerField(1)
+  backupPolicies = _messages.StringField(2, repeated=True)
+  backupVault = _messages.StringField(3)
+  scheduledBackupEnabled = _messages.BooleanField(4)
 
 
 class BackupPolicy(_messages.Message):
@@ -823,6 +829,36 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LocationMetadata(_messages.Message):
+  r"""Metadata for a given google.cloud.location.Location.
+
+  Enums:
+    SupportedServiceLevelsValueListEntryValuesEnum:
+
+  Fields:
+    supportedServiceLevels: Output only. Supported service levels in a
+      location.
+  """
+
+  class SupportedServiceLevelsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedServiceLevelsValueListEntryValuesEnum enum type.
+
+    Values:
+      SERVICE_LEVEL_UNSPECIFIED: Unspecified service level.
+      PREMIUM: Premium service level.
+      EXTREME: Extreme service level.
+      STANDARD: Standard service level.
+      FLEX: Flex service level.
+    """
+    SERVICE_LEVEL_UNSPECIFIED = 0
+    PREMIUM = 1
+    EXTREME = 2
+    STANDARD = 3
+    FLEX = 4
+
+  supportedServiceLevels = _messages.EnumField('SupportedServiceLevelsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):

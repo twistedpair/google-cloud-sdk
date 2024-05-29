@@ -1343,6 +1343,70 @@ class JsonClient(cloud_api.CloudApi):
     )
 
   @error_util.catch_http_error_raise_gcs_api_error()
+  def create_folder(self, bucket_name, folder_name, is_recursive=False):
+    """See CloudApi class for function doc strings."""
+    folder = self.messages.Folder(bucket=bucket_name, name=folder_name)
+    insert_folder_request_message = self.messages.StorageFoldersInsertRequest(
+        bucket=bucket_name, folder=folder, recursive=is_recursive
+    )
+    response = self.client.folders.Insert(insert_folder_request_message)
+    return metadata_util.get_folder_resource_from_metadata(response)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def delete_folder(self, bucket_name, folder_name):
+    """See CloudApi class for function doc strings."""
+    delete_folder_request = self.messages.StorageFoldersDeleteRequest(
+        bucket=bucket_name, folder=folder_name
+    )
+    self.client.folders.Delete(delete_folder_request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_folder(self, bucket_name, folder_name):
+    """See CloudApi class for function doc strings."""
+    response = self.client.folders.Get(
+        self.messages.StorageFoldersGetRequest(
+            bucket=bucket_name, folder=folder_name
+        )
+    )
+    return metadata_util.get_folder_resource_from_metadata(response)
+
+  def list_folders(self, bucket_name, delimiter=None, prefix=None):
+    """See CloudApi class for function doc strings."""
+    try:
+      for folder in list_pager.YieldFromList(
+          self.client.folders,
+          self.messages.StorageFoldersListRequest(
+              bucket=bucket_name,
+              delimiter=delimiter,
+              prefix=prefix,
+          ),
+          batch_size=1000,
+          batch_size_attribute='pageSize',
+          field='items',
+      ):
+        yield metadata_util.get_folder_resource_from_metadata(folder)
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(
+              e,
+              error_util.ERROR_TRANSLATION,
+              status_code_getter=error_util.get_status_code,
+          )
+      )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def rename_folder(
+      self, bucket_name, source_folder_name, destination_folder_name
+  ):
+    """See CloudApi class for function doc strings."""
+    rename_folder_request = self.messages.StorageFoldersRenameRequest(
+        bucket=bucket_name,
+        sourceFolder=source_folder_name,
+        destinationFolder=destination_folder_name,
+    )
+    return self.client.folders.Rename(rename_folder_request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
   def get_service_agent(self, project_id=None, project_number=None):
     """See CloudApi class for doc strings."""
     if project_id:

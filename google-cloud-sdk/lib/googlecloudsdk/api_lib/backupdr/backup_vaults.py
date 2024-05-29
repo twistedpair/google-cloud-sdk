@@ -56,10 +56,13 @@ class BackupVaultsClient(util.BackupDrClientBase):
     )
     return self.service.Create(request)
 
-  def Delete(self, resource, force_delete):
+  def Delete(self, resource, force_delete, allow_missing):
     request_id = command_util.GenerateRequestId()
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDeleteRequest(
-        name=resource.RelativeName(), force=force_delete, requestId=request_id
+        name=resource.RelativeName(),
+        force=force_delete,
+        allowMissing=allow_missing,
+        requestId=request_id,
     )
 
     return self.service.Delete(request)

@@ -31,6 +31,7 @@ from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import six
@@ -38,20 +39,36 @@ import six
 
 CONTEXT_AWARE_ACCESS_DENIED_ERROR = 'access_denied'
 CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
+# TODO: b/339747060 - Revert back to the old message when b/309559824 is fixed.
+# CONTEXT_AWARE_ACCESS_HELP_MSG = (
+#     'Access was blocked due to an organization policy, please contact your '
+#     'admin to gain access.'
 CONTEXT_AWARE_ACCESS_HELP_MSG = (
-    'Access was blocked due to an organization policy, please contact your '
-    'admin to gain access.'
+    'Access was blocked due to an organization policy. If you are using gcloud'
+    ' in an SSH session and your organization requires gcloud from a company'
+    ' registered device, please first RDP into your remote machine and log into'
+    ' Chrome.'
+)
+CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
+    'Access was blocked due to an organization policy. If you are using gcloud'
+    ' in an SSH session and your organization requires gcloud from a company'
+    ' registered device, please first RDP into your remote machine and log into'
+    ' Chrome. If you are not able to RDP, please apply for policy exemption via'
+    ' this link. go/gcloud-cba-exception'
 )
 
 
 def IsContextAwareAccessDeniedError(exc):
   exc_text = six.text_type(exc)
-  return (CONTEXT_AWARE_ACCESS_DENIED_ERROR in exc_text and
-          CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION in exc_text)
+  return (
+      CONTEXT_AWARE_ACCESS_DENIED_ERROR in exc_text
+      and CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION in exc_text
+  )
 
 
 DEFAULT_AUTO_DISCOVERY_FILE_PATH = os.path.join(
-    files.GetHomeDir(), '.secureConnect', 'context_aware_metadata.json')
+    files.GetHomeDir(), '.secureConnect', 'context_aware_metadata.json'
+)
 
 
 def _AutoDiscoveryFilePath():
@@ -63,16 +80,33 @@ def _AutoDiscoveryFilePath():
   return DEFAULT_AUTO_DISCOVERY_FILE_PATH
 
 
+class ContextAwareAccessError:
+  """Get ContextAwareAccessError based on the users organization."""
+
+  @staticmethod
+  def Get():
+    if (
+        encoding.GetEncodedValue(
+            os.environ, 'CLOUDSDK_INTERNAL_USER_FAST_UPDATE'
+        )
+        == 'true'
+    ):
+      return CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER
+    return CONTEXT_AWARE_ACCESS_HELP_MSG
+
+
 class ConfigException(exceptions.Error):
 
   def __init__(self):
     super(ConfigException, self).__init__(
         'Use of client certificate requires endpoint verification agent. '
-        'Run `gcloud topic client-certificate` for installation guide.')
+        'Run `gcloud topic client-certificate` for installation guide.'
+    )
 
 
 class CertProvisionException(exceptions.Error):
   """Represents errors when provisioning a client certificate."""
+
   pass
 
 
@@ -90,14 +124,12 @@ def SSLCredentials(config_path):
     Tuple[bytes, bytes]: client certificate and private key bytes in PEM format.
   """
   try:
-    (
-        has_cert,
-        cert_bytes,
-        key_bytes,
-        _
-    ) = _mtls_helper.get_client_ssl_credentials(
-        generate_encrypted_key=False,
-        context_aware_metadata_path=config_path)
+    (has_cert, cert_bytes, key_bytes, _) = (
+        _mtls_helper.get_client_ssl_credentials(
+            generate_encrypted_key=False,
+            context_aware_metadata_path=config_path,
+        )
+    )
     if has_cert:
       return cert_bytes, key_bytes
   except google_auth_exceptions.ClientCertError as caught_exc:
@@ -123,17 +155,13 @@ def EncryptedSSLCredentials(config_path):
     Tuple[str, bytes]: cert and key file path and passphrase bytes.
   """
   try:
-    (
-        has_cert,
-        cert_bytes,
-        key_bytes,
-        passphrase_bytes
-    ) = _mtls_helper.get_client_ssl_credentials(
-        generate_encrypted_key=True,
-        context_aware_metadata_path=config_path)
+    (has_cert, cert_bytes, key_bytes, passphrase_bytes) = (
+        _mtls_helper.get_client_ssl_credentials(
+            generate_encrypted_key=True, context_aware_metadata_path=config_path
+        )
+    )
     if has_cert:
-      cert_path = os.path.join(
-          config.Paths().global_config_dir, 'caa_cert.pem')
+      cert_path = os.path.join(config.Paths().global_config_dir, 'caa_cert.pem')
       with files.BinaryFileWriter(cert_path) as f:
         f.write(cert_bytes)
         f.write(key_bytes)
@@ -305,8 +333,9 @@ class _ConfigImpl(object):
 
     # Encrypted cert stored in a file
     encrypted_cert_path, password = EncryptedSSLCredentials(config_path)
-    return _OnDiskCertConfigImpl(config_path, cert_bytes, key_bytes,
-                                 encrypted_cert_path, password)
+    return _OnDiskCertConfigImpl(
+        config_path, cert_bytes, key_bytes, encrypted_cert_path, password
+    )
 
   def __init__(self, config_type):
     self.config_type = config_type
@@ -316,8 +345,9 @@ class _EnterpriseCertConfigImpl(_ConfigImpl):
   """Represents the configurations associated with context aware access through a enterprise certificate on TPM or OS key store."""
 
   def __init__(self, certificate_config_file_path):
-    super(_EnterpriseCertConfigImpl,
-          self).__init__(ConfigType.ENTERPRISE_CERTIFICATE)
+    super(_EnterpriseCertConfigImpl, self).__init__(
+        ConfigType.ENTERPRISE_CERTIFICATE
+    )
     self.certificate_config_file_path = certificate_config_file_path
 
 
@@ -330,8 +360,14 @@ class _OnDiskCertConfigImpl(_ConfigImpl):
   Only one instance of Config can be created for the program.
   """
 
-  def __init__(self, config_path, client_cert_bytes, client_key_bytes,
-               encrypted_client_cert_path, encrypted_client_cert_password):
+  def __init__(
+      self,
+      config_path,
+      client_cert_bytes,
+      client_key_bytes,
+      encrypted_client_cert_path,
+      encrypted_client_cert_password,
+  ):
     super(_OnDiskCertConfigImpl, self).__init__(ConfigType.ON_DISK_CERTIFICATE)
     self.config_path = config_path
     self.client_cert_bytes = client_cert_bytes
@@ -342,12 +378,14 @@ class _OnDiskCertConfigImpl(_ConfigImpl):
 
   def CleanUp(self):
     """Cleanup any files or resource provisioned during config init."""
-    if (self.encrypted_client_cert_path is not None and
-        os.path.exists(self.encrypted_client_cert_path)):
+    if self.encrypted_client_cert_path is not None and os.path.exists(
+        self.encrypted_client_cert_path
+    ):
       try:
         os.remove(self.encrypted_client_cert_path)
-        log.debug('unprovisioned client cert - %s',
-                  self.encrypted_client_cert_path)
+        log.debug(
+            'unprovisioned client cert - %s', self.encrypted_client_cert_path
+        )
       except files.Error as e:
         log.error('failed to remove client certificate - %s', e)
 

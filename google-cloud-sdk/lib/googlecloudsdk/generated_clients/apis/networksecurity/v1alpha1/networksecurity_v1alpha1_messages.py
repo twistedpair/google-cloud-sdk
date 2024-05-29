@@ -657,12 +657,14 @@ class FirewallEndpointAssociation(_messages.Message):
       ACTIVE: Active and ready for traffic.
       DELETING: Being deleted.
       INACTIVE: Down or in an error state.
+      ORPHAN: The GCP project that housed the association has been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
+    ORPHAN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1837,11 +1839,41 @@ class MirroringDeploymentGroup(_messages.Message):
 class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
   r"""An endpoint group connected to this deployment group.
 
+  Messages:
+    AssociationsValue: Output only. Associations for this endpoint group.
+
   Fields:
+    associations: Output only. Associations for this endpoint group.
     name: Output only. A connected mirroring endpoint group.
   """
 
-  name = _messages.StringField(1)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AssociationsValue(_messages.Message):
+    r"""Output only. Associations for this endpoint group.
+
+    Messages:
+      AdditionalProperty: An additional property for a AssociationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AssociationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AssociationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A boolean attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.BooleanField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  associations = _messages.MessageField('AssociationsValue', 1)
+  name = _messages.StringField(2)
 
 
 class MirroringEndpointGroup(_messages.Message):
@@ -5870,14 +5902,18 @@ class SACRealmSACRealmSymantecOptions(_messages.Message):
   r"""Fields specific to realms using SYMANTEC_CLOUD_SWG.
 
   Fields:
-    apiKey: Optional. API Key used to call Symantec APIs on the user's behalf.
-      Required if using SYMANTEC_CLOUD_SWG.
+    apiKey: Optional. --
     availableSymantecSites: Output only. Symantec site IDs that the user can
       choose to connect to.
+    secretId: Optional. API Key used to call Symantec APIs on the user's
+      behalf. Required if using SYMANTEC_CLOUD_SWG. ID of the Secret
+      containing the Symantec API Key which will be used to call the Symantec
+      API on the customer's behalf. Required if using SYMANTEC_CLOUD_SWG.
   """
 
   apiKey = _messages.StringField(1)
   availableSymantecSites = _messages.StringField(2, repeated=True)
+  secretId = _messages.StringField(3)
 
 
 class SSEGateway(_messages.Message):

@@ -969,7 +969,7 @@ class CloudbuildProjectsLocationsWorkerPoolSecondGenPatchRequest(_messages.Messa
     name: Output only. Identifier. The resource name of the
       `WorkerPoolSecondGen`, with format `projects/{project}/locations/{locati
       on}/workerPoolSecondGen/{worker_pool_second_gen}`.
-    updateMask: Required. A mask specifying which fields in
+    updateMask: Optional. A mask specifying which fields in
       `worker_pool_second_gen` to update.
     validateOnly: Optional. If set, validate the request and preview the
       response, but do not actually post it.

@@ -461,7 +461,7 @@ def AddBigQueryConfigFlags(
   )
 
 
-def AddCloudStorageConfigFlags(parser, is_update):
+def AddCloudStorageConfigFlags(parser, is_update, enable_use_topic_schema):
   """Adds Cloud Storage config flags to parser."""
   current_group = parser
   cloud_storage_config_group_help = """Cloud Storage Config Options. The Cloud
@@ -569,6 +569,20 @@ def AddCloudStorageConfigFlags(parser, is_update):
           ' --cloud-storage-output-format=avro.'
       ),
   )
+  if enable_use_topic_schema:
+    AddBooleanFlag(
+        parser=cloud_storage_config_group,
+        flag_name='cloud-storage-use-topic-schema',
+        action='store_true',
+        default=None,
+        hidden=True,
+        help_text=(
+            "Whether or not to use the schema for the subscription's topic (if"
+            ' it exists) when writing messages to Cloud Storage. This has an'
+            ' effect only for subscriptions with'
+            ' --cloud-storage-output-format=avro.'
+        ),
+    )
 
 
 def AddPubsubExportConfigFlags(parser, is_update):
@@ -635,6 +649,7 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
+    enable_cloud_storage_use_topic_schema=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -643,6 +658,8 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: whether or not to enable Pubsub Export config flags
       support.
+    enable_cloud_storage_use_topic_schema: whether or not to enable Cloud
+      Storage use topic schema field flag support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -652,7 +669,9 @@ def AddSubscriptionSettingsFlags(
 
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
-  AddCloudStorageConfigFlags(mutex_group, is_update)
+  AddCloudStorageConfigFlags(
+      mutex_group, is_update, enable_cloud_storage_use_topic_schema
+  )
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)

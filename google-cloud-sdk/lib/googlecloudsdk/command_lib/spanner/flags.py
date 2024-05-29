@@ -805,3 +805,23 @@ def CheckExclusiveLROFlagsUnderInstance(args):
         '--database or --backup or --instance-partition',
         'Must specify only --database or --backup or --instance-partition.',
     )
+
+
+def GetSpannerMigrationProjectFlag():
+  return base.Argument(
+      '--project',
+      help=(
+          'The project in which the migration job and its resources will be'
+          ' created.'
+      ),
+  )
+
+
+def GetSpannerMigrationDataflowTemplateFlag():
+  return base.Argument(
+      '--dataflow-template',
+      help=(
+          'The google cloud storage path of the minimal downtime migration'
+          ' template to use to run the migration job.'
+      ),
+  )

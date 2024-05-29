@@ -1262,11 +1262,7 @@ class TunnelDestGroup(_messages.Message):
 
 
 class ValidateIapAttributeExpressionResponse(_messages.Message):
-  r"""API requires a return message, but currently all response strings will
-  fit in the status and public message. In the future, this response can hold
-  AST validation info.
-  """
-
+  r"""IAP Expression Linter endpoint returns empty response body."""
 
 
 class WorkforceIdentitySettings(_messages.Message):

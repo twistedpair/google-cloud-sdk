@@ -470,7 +470,7 @@ class Build(_messages.Message):
       build runtime. Must be of the format
       `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. ACCOUNT can be email
       address or uniqueId of the service account.
-    source: The location of the source files to build.
+    source: Optional. The location of the source files to build.
     sourceProvenance: Output only. A permanent fixed identifier for source.
     startTime: Output only. Time at which execution of the build was started.
     status: Output only. Status of the build.
@@ -2656,11 +2656,12 @@ class ConnectedRepository(_messages.Message):
   resource.
 
   Fields:
-    dir: Directory, relative to the source root, in which to run the build.
+    dir: Optional. Directory, relative to the source root, in which to run the
+      build.
     repository: Required. Name of the Google Cloud Build repository, formatted
       as `projects/*/locations/*/connections/*/repositories/*`.
-    revision: The revision to fetch from the Git repository such as a branch,
-      a tag, a commit SHA, or any Git ref.
+    revision: Required. The revision to fetch from the Git repository such as
+      a branch, a tag, a commit SHA, or any Git ref.
   """
 
   dir = _messages.StringField(1)
@@ -3374,18 +3375,18 @@ class GitSource(_messages.Message):
   r"""Location of the source in any accessible Git repository.
 
   Fields:
-    dir: Directory, relative to the source root, in which to run the build.
-      This must be a relative path. If a step's `dir` is specified and is an
-      absolute path, this value is ignored for that step's execution.
-    revision: The revision to fetch from the Git repository such as a branch,
-      a tag, a commit SHA, or any Git ref. Cloud Build uses `git fetch` to
-      fetch the revision from the Git repository; therefore make sure that the
-      string you provide for `revision` is parsable by the command. For
-      information on string values accepted by `git fetch`, see https://git-
-      scm.com/docs/gitrevisions#_specifying_revisions. For information on `git
-      fetch`, see https://git-scm.com/docs/git-fetch.
-    url: Location of the Git repo to build. This will be used as a `git
-      remote`, see https://git-scm.com/docs/git-remote.
+    dir: Optional. Directory, relative to the source root, in which to run the
+      build. This must be a relative path. If a step's `dir` is specified and
+      is an absolute path, this value is ignored for that step's execution.
+    revision: Optional. The revision to fetch from the Git repository such as
+      a branch, a tag, a commit SHA, or any Git ref. Cloud Build uses `git
+      fetch` to fetch the revision from the Git repository; therefore make
+      sure that the string you provide for `revision` is parsable by the
+      command. For information on string values accepted by `git fetch`, see
+      https://git-scm.com/docs/gitrevisions#_specifying_revisions. For
+      information on `git fetch`, see https://git-scm.com/docs/git-fetch.
+    url: Required. Location of the Git repo to build. This will be used as a
+      `git remote`, see https://git-scm.com/docs/git-remote.
   """
 
   dir = _messages.StringField(1)
@@ -4417,24 +4418,24 @@ class RepoSource(_messages.Message):
   r"""Location of the source in a Google Cloud Source Repository.
 
   Messages:
-    SubstitutionsValue: Substitutions to use in a triggered build. Should only
-      be used with RunBuildTrigger
+    SubstitutionsValue: Optional. Substitutions to use in a triggered build.
+      Should only be used with RunBuildTrigger
 
   Fields:
     branchName: Regex matching branches to build. The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
     commitSha: Explicit commit SHA to build.
-    dir: Directory, relative to the source root, in which to run the build.
-      This must be a relative path. If a step's `dir` is specified and is an
-      absolute path, this value is ignored for that step's execution.
-    invertRegex: Only trigger a build if the revision regex does NOT match the
-      revision regex.
-    projectId: ID of the project that owns the Cloud Source Repository. If
-      omitted, the project ID requesting the build is assumed.
-    repoName: Name of the Cloud Source Repository.
-    substitutions: Substitutions to use in a triggered build. Should only be
-      used with RunBuildTrigger
+    dir: Optional. Directory, relative to the source root, in which to run the
+      build. This must be a relative path. If a step's `dir` is specified and
+      is an absolute path, this value is ignored for that step's execution.
+    invertRegex: Optional. Only trigger a build if the revision regex does NOT
+      match the revision regex.
+    projectId: Optional. ID of the project that owns the Cloud Source
+      Repository. If omitted, the project ID requesting the build is assumed.
+    repoName: Required. Name of the Cloud Source Repository.
+    substitutions: Optional. Substitutions to use in a triggered build. Should
+      only be used with RunBuildTrigger
     tagName: Regex matching tags to build. The syntax of the regular
       expressions accepted is the syntax accepted by RE2 and described at
       https://github.com/google/re2/wiki/Syntax
@@ -4442,8 +4443,8 @@ class RepoSource(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
-    r"""Substitutions to use in a triggered build. Should only be used with
-    RunBuildTrigger
+    r"""Optional. Substitutions to use in a triggered build. Should only be
+    used with RunBuildTrigger
 
     Messages:
       AdditionalProperty: An additional property for a SubstitutionsValue
@@ -4922,11 +4923,11 @@ class StorageSource(_messages.Message):
     bucket: Cloud Storage bucket containing the source (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
-    generation: Cloud Storage generation for the object. If the generation is
-      omitted, the latest generation will be used.
-    object: Cloud Storage object containing the source. This object must be a
-      zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
-      build.
+    generation: Optional. Cloud Storage generation for the object. If the
+      generation is omitted, the latest generation will be used.
+    object: Required. Cloud Storage object containing the source. This object
+      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
+      source to build.
     sourceFetcher: Optional. Option to specify the tool to fetch the source
       file for the build.
   """
@@ -4958,13 +4959,13 @@ class StorageSourceManifest(_messages.Message):
   builders/tree/master/gcs-fetcher).
 
   Fields:
-    bucket: Cloud Storage bucket containing the source manifest (see [Bucket
-      Name Requirements](https://cloud.google.com/storage/docs/bucket-
+    bucket: Required. Cloud Storage bucket containing the source manifest (see
+      [Bucket Name Requirements](https://cloud.google.com/storage/docs/bucket-
       naming#requirements)).
     generation: Cloud Storage generation for the object. If the generation is
       omitted, the latest generation will be used.
-    object: Cloud Storage object containing the source manifest. This object
-      must be a JSON file.
+    object: Required. Cloud Storage object containing the source manifest.
+      This object must be a JSON file.
   """
 
   bucket = _messages.StringField(1)

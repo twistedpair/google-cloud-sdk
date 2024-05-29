@@ -97,7 +97,6 @@ class OpsAgentsPolicy(object):
         sort_keys=True,
     )
 
-  # TODO: b/338214818 - Remove after printing StrEnums is fixed
   def ToPyValue(self):
 
     policy_map = {

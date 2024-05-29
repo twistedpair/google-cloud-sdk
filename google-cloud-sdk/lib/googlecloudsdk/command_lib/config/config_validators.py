@@ -219,12 +219,21 @@ def WarnIfSettingProjectWithNoAccess(scope, project):
     try:
       with base.WithLegacyQuota():
         projects_api.Get(project_ref, disable_api_enablement_check=True)
-    except (apitools_exceptions.HttpError,
-            c_store.NoCredentialsForAccountException,
-            api_lib_util_exceptions.HttpException):
-      log.warning(
-          'You do not appear to have access to project [{}] or'
-          ' it does not exist.'.format(project))
+    except (
+        apitools_exceptions.HttpError,
+        c_store.NoCredentialsForAccountException,
+        api_lib_util_exceptions.HttpException,
+    ) as e:
+      warning_msg = (
+          'You do not appear to have access to project [{}] or it does not'
+          ' exist.'.format(project)
+      )
+      if isinstance(e, apitools_exceptions.HttpError):
+        wrapped_error = api_lib_util_exceptions.HttpException(
+            e, error_format='{message}{details?\n{?}}'
+        )
+        warning_msg = wrapped_error.message
+      log.warning(warning_msg)
       return True
   return False
 

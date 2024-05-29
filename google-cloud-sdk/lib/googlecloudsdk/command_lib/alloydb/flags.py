@@ -1238,6 +1238,27 @@ def AddDatabaseVersion(parser, alloydb_messages):
   )
 
 
+def AddSubscriptionType(parser, alloydb_messages):
+  """Adds SubscriptionType flag.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+  """
+  parser.add_argument(
+      '--subscription-type',
+      required=False,
+      hidden=True,
+      type=alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum,
+      choices=[
+          # Don't allow UNSPECIFIED
+          alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum.STANDARD,
+          alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum.TRIAL,
+      ],
+      help='Subscription type of the cluster.'
+  )
+
+
 def AddAssignInboundPublicIp(parser, update=False):
   """Adds Assign Inbound Public IP flag.
 

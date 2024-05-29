@@ -291,6 +291,14 @@ class CopyTaskIterator:
         raise errors.InvalidUrlError(
             'Source URL matches destination URL: {}'.format(source_url))
 
+  def _raise_error_if_expanded_source_matches_expanded_destination(
+      self, expanded_source_url, expanded_destination_url
+  ):
+    if expanded_source_url == expanded_destination_url:
+      raise errors.InvalidUrlError(
+          'Destination URL {} already exists.'.format(expanded_destination_url)
+      )
+
   def _raise_if_destination_is_file_url_and_not_a_directory_or_pipe(self):
     if (isinstance(self._raw_destination.storage_url, storage_url.FileUrl) and
         not (_destination_is_container(self._raw_destination) or
@@ -385,10 +393,16 @@ class CopyTaskIterator:
         self._print_skip_and_maybe_send_to_manifest(message, source)
         continue
 
-      destination_resource = self._get_copy_destination(self._raw_destination,
-                                                        source)
+      destination_resource = self._get_copy_destination(
+          self._raw_destination, source
+      )
       source_url = source.resource.storage_url
       destination_url = destination_resource.storage_url
+
+      self._raise_error_if_expanded_source_matches_expanded_destination(
+          source_url, destination_url
+      )
+
       posix_util.run_if_setting_posix(
           posix_to_set=None,
           user_request_args=self._user_request_args,

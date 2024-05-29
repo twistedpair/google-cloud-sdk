@@ -2991,7 +2991,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    recommendationSignalData: More feed data would be added in subsequent CLs
+    observabilityMetricData: More feed data would be added in subsequent CLs
+    recommendationSignalData: A StorageDatabasecenterPartnerapiV1mainDatabaseR
+      esourceRecommendationSignalData attribute.
     resourceHealthSignalData: A
       StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData
       attribute.
@@ -3019,10 +3021,11 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
 
   feedTimestamp = _messages.StringField(1)
   feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
-  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 3)
-  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 4)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 5)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 6)
+  observabilityMetricData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainObservabilityMetricData', 3)
+  recommendationSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData', 4)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 5)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 6)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 7)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
@@ -3504,6 +3507,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
     location: The resource location. REQUIRED
+    machineConfiguration: Machine configuration for this resource.
     primaryResourceId: Identifier for this resource's immediate parent/primary
       resource if the current resource is a replica or derived form of another
       Database resource. Else it would be NULL. REQUIRED if the immediate
@@ -3627,13 +3631,14 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 9)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
   location = _messages.StringField(11)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 12)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 13)
-  resourceContainer = _messages.StringField(14)
-  resourceName = _messages.StringField(15)
-  updationTime = _messages.StringField(16)
-  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 17)
-  userLabels = _messages.MessageField('UserLabelsValue', 18)
+  machineConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainMachineConfiguration', 12)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 13)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 14)
+  resourceContainer = _messages.StringField(15)
+  resourceName = _messages.StringField(16)
+  updationTime = _messages.StringField(17)
+  userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 18)
+  userLabels = _messages.MessageField('UserLabelsValue', 19)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -4023,6 +4028,53 @@ class StorageDatabasecenterPartnerapiV1mainEntitlement(_messages.Message):
 
   entitlementState = _messages.EnumField('EntitlementStateValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Message):
+  r"""MachineConfiguration describes the configuration of a machine specific
+  to Database Resource.
+
+  Fields:
+    cpuCount: The number of CPUs.
+    memorySizeInBytes: Memory size in bytes.
+  """
+
+  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  memorySizeInBytes = _messages.IntegerField(2)
+
+
+class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Message):
+  r"""A StorageDatabasecenterPartnerapiV1mainObservabilityMetricData object.
+
+  Enums:
+    MetricTypeValueValuesEnum: Required. Type of metric like CPU, Memory, etc.
+
+  Fields:
+    metricTimestamp: Required. The timestamp of the metric value.
+    metricType: Required. Type of metric like CPU, Memory, etc.
+    resourceName: Required. Database resource name associated with the signal.
+      Resource name to follow CAIS resource_name format as noted here
+      go/condor-common-datamodel
+    value: Required. Value of the metric type.
+  """
+
+  class MetricTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of metric like CPU, Memory, etc.
+
+    Values:
+      METRIC_TYPE_UNSPECIFIED: <no description>
+      INSTANCE_PEAK_CPU_UTILISATION: Peak CPU utilization for a DB instance as
+        a fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
+        cases) List will keep increasing, e.g. PEAK_MEMORY_UTILISATION,
+        NUMBER_OF_CONNECTIONS, SUCCESS_RATIO_FOR_QUERIES, etc.
+    """
+    METRIC_TYPE_UNSPECIFIED = 0
+    INSTANCE_PEAK_CPU_UTILISATION = 1
+
+  metricTimestamp = _messages.StringField(1)
+  metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)
+  resourceName = _messages.StringField(3)
+  value = _messages.FloatField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):

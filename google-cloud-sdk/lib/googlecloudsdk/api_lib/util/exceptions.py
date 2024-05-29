@@ -303,6 +303,7 @@ class HttpErrorPayload(FormattableErrorPayload):
     self.resource_name = ''
     self.resource_version = ''
     self.url = ''
+    self._cred_info = None
     if not isinstance(http_error, six.string_types):
       self._ExtractResponseAndJsonContent(http_error)
       self._ExtractUrlResourceAndInstanceNames(http_error)
@@ -332,6 +333,33 @@ class HttpErrorPayload(FormattableErrorPayload):
       self.error_info = _JsonSortedDict(self.content['error'])
       if not self.status_code:  # Could have been set above.
         self.status_code = int(self.error_info.get('code', 0))
+
+      if self.status_code in [401, 403, 404] and self.error_info.get(
+          'message', ''
+      ):
+        from googlecloudsdk.core.credentials import store as c_store  # pylint: disable=g-import-not-at-top
+
+        # Append the credential info to the error message.
+        self._cred_info = c_store.CredentialInfo.GetCredentialInfo()
+        if self._cred_info:
+          cred_info_message = self._cred_info.GetInfoString()
+          existing_message = self.content['error']['message']
+          # Some surface actually appends an ending dot at the end of the
+          # message, so we need to make sure not adding an ending dot if the
+          # existing message doesn't have one. (Note that cred_info_message
+          # string we created ends with a dot.)
+          if existing_message[-1] != '.':
+            # add dot after existing_message and remove the ending dot from
+            # cred_info_message.
+            self.content['error']['message'] = (
+                existing_message + '. ' + cred_info_message[:-1]
+            )
+          else:
+            self.content['error']['message'] = (
+                existing_message + ' ' + cred_info_message
+            )
+          self.error_info['message'] = self.content['error']['message']
+
       if not self.status_description:  # Could have been set above.
         self.status_description = self.error_info.get('status', '')
       self.status_message = self.error_info.get('message', '')
@@ -398,10 +426,16 @@ class HttpErrorPayload(FormattableErrorPayload):
     """Makes description for error by checking which fields are filled in."""
     if self.status_code and self.resource_item and self.instance_name:
       if self.status_code == 403:
-        return ('User [{0}] does not have permission to access {1} [{2}] (or '
-                'it may not exist)').format(
-                    properties.VALUES.core.account.Get(),
-                    self.resource_item, self.instance_name)
+        if self._cred_info:
+          account = (
+              self._cred_info.impersonated_account or self._cred_info.account
+          )
+        else:
+          account = properties.VALUES.core.account.Get()
+        return (
+            'User [{0}] does not have permission to access {1} [{2}] (or '
+            'it may not exist)'
+        ).format(account, self.resource_item, self.instance_name)
       if self.status_code == 404:
         return '{0} [{1}] not found'.format(
             self.resource_item.capitalize(), self.instance_name)

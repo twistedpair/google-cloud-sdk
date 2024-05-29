@@ -39,7 +39,7 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
-from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import log
@@ -716,13 +716,23 @@ def AddBootDiskArgs(parser, enable_kms=False):
   )
 
   if enable_kms:
+    kms_flags = ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']
+    flag_overrides = dict(
+        [(flag, '--boot-disk-' + flag) for flag in kms_flags])
+    name = '--boot-disk-kms-key'
     kms_resource_args.AddKmsKeyResourceArg(
-        parser, 'disk', boot_disk_prefix=True)
+        parser, 'disk', flag_overrides=flag_overrides, name=name)
 
 
 def AddInstanceKmsArgs(parser):
+  kms_flags = ['kms-key', 'kms-keyring', 'kms-location', 'kms-project']
+  flag_overrides = dict([
+      (flag, '--instance-' + flag) for flag in kms_flags
+  ])
+  name = '--instance-kms-key'
+
   kms_resource_args.AddKmsKeyResourceArg(
-      parser, 'instance', instance_prefix=True)
+      parser, 'instance', flag_overrides=flag_overrides, name=name)
 
 
 def AddCreateDiskArgs(

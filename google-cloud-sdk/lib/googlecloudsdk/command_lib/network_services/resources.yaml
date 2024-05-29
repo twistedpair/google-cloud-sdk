@@ -163,3 +163,15 @@ serviceLbPolicy:
     parameter_name: serviceLbPoliciesId
     attribute_name: service_lb_policy
     help: Id of the service LB Policy.
+
+multicastDomain:
+  name: multicast domain
+  collection: networkservices.projects.locations.multicastDomains
+  request_id_field: multicastDomainId
+  attributes:
+  - *project
+  - *location
+  - &multicastDomain
+    parameter_name: multicastDomainsId
+    attribute_name: multicast_domain
+    help: Id of the multicast domain.

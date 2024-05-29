@@ -862,3 +862,19 @@ def get_managed_folder_resource_from_metadata(metadata):
       metageneration=metadata.metageneration,
       update_time=metadata.updateTime,
   )
+
+
+def get_folder_resource_from_metadata(metadata):
+  """Returns a FolderResource from Apitools metadata."""
+  url = storage_url.CloudUrl(
+      scheme=storage_url.ProviderPrefix.GCS,
+      bucket_name=metadata.bucket,
+      object_name=metadata.name,
+  )
+  return resource_reference.FolderResource(
+      url,
+      create_time=metadata.createTime,
+      metadata=metadata,
+      metageneration=metadata.metageneration,
+      update_time=metadata.updateTime,
+  )

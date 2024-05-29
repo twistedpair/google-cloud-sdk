@@ -158,6 +158,18 @@ def GetApiVersion(args):
     raise core_exceptions.UnsupportedReleaseTrackError(release_track)
 
 
+def GetApiVersionV2(args):
+  """Return v2 api version for the corresponding release track."""
+  release_track = args.calliope_command.ReleaseTrack()
+
+  if release_track == base.ReleaseTrack.ALPHA:
+    return 'v2alpha'
+  elif release_track == base.ReleaseTrack.GA:
+    return 'v2'
+  else:
+    raise core_exceptions.UnsupportedReleaseTrackError(release_track)
+
+
 def GetOperationDescribeCommandFormat(args):
   """Returns api version for the corresponding release track."""
   release_track = args.calliope_command.ReleaseTrack()
@@ -300,6 +312,71 @@ def ParseOSConfigAssignmentFile(ref, args, req):
   update_fields.sort()
   if 'update' in args.command_path:
     req.updateMask = ','.join(update_fields)
+  return req
+
+
+def ModifyOrchestratorPolicySetSelectors(args, req, messages):
+  """Sets selectors inside policy orchestrator.
+
+  Args:
+    args: args to the command
+    req: request
+    messages: messages for selected v2 API version
+
+  Returns:
+    modified request
+  """
+  if not args.include_projects:
+    return req
+  # TODO(b/315289440): add validations for selectors.
+  included_projects = []
+  for project_id in args.include_projects.split(','):
+    included_projects.append('projects/' + project_id)
+
+  selector = messages.GoogleCloudOsconfigV2alphaOrchestrationScopeSelector()
+  selector.resourceHierarchySelector = (
+      messages.GoogleCloudOsconfigV2alphaOrchestrationScopeResourceHierarchySelector()
+  )
+  selector.resourceHierarchySelector.includedProjects = included_projects
+
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope = (
+      messages.GoogleCloudOsconfigV2alphaOrchestrationScope()
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestrationScope.selectors = [
+      selector
+  ]
+  return req
+
+
+def ModifyOrchestrorPolicyRequest(ref, args, req):
+  """Returns modified request with parsed orchestartor's policy assignment."""
+
+  # Settings PolicyOrchestrator payload.
+  api_version = GetApiVersionV2(args)
+  messages = GetApiMessage(api_version)
+  (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
+      args.policy_file, messages.OSPolicyAssignment
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator = (
+      messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.osPolicyAssignmentPayload = (
+      policy_assignment_config
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = 'UPSERT'
+  req = ModifyOrchestratorPolicySetSelectors(args, req, messages)
+
+  # Setting request-level fields.
+  req.policyOrchestratorId = ref.Name()
+  # req.parent contains full resource path, we have to shorten it.
+  req.parent = '/'.join(req.parent.split('/')[:-2])
+  return req
+
+
+def ModifyOrchestrorPolicyListRequest(unused_ref, unused_args, req):
+  """Extends request with global location part."""
+
+  req.parent += '/locations/global'
   return req
 
 

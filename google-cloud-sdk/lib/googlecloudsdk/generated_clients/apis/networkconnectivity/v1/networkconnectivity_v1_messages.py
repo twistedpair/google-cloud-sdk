@@ -242,6 +242,11 @@ class ConsumerPscConfig(_messages.Message):
     StateValueValuesEnum: Output only. Overall state of PSC Connections
       management for this consumer psc config.
 
+  Messages:
+    ServiceAttachmentIpAddressMapValue: Output only. A map to store mapping
+      between customer vip and target service attachment. Only service
+      attachment with producer specified ip addresses are stored here.
+
   Fields:
     disableGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
@@ -253,6 +258,9 @@ class ConsumerPscConfig(_messages.Message):
       instance.
     project: The consumer project where PSC connections are allowed to be
       created in.
+    serviceAttachmentIpAddressMap: Output only. A map to store mapping between
+      customer vip and target service attachment. Only service attachment with
+      producer specified ip addresses are stored here.
     state: Output only. Overall state of PSC Connections management for this
       consumer psc config.
   """
@@ -277,11 +285,41 @@ class ConsumerPscConfig(_messages.Message):
     CONNECTION_POLICY_MISSING = 2
     POLICY_LIMIT_REACHED = 3
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ServiceAttachmentIpAddressMapValue(_messages.Message):
+    r"""Output only. A map to store mapping between customer vip and target
+    service attachment. Only service attachment with producer specified ip
+    addresses are stored here.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ServiceAttachmentIpAddressMapValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ServiceAttachmentIpAddressMapValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ServiceAttachmentIpAddressMapValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   disableGlobalAccess = _messages.BooleanField(1)
   network = _messages.StringField(2)
   producerInstanceId = _messages.StringField(3)
   project = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  serviceAttachmentIpAddressMap = _messages.MessageField('ServiceAttachmentIpAddressMapValue', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -440,6 +478,7 @@ class Filter(_messages.Message):
   Enums:
     ProtocolVersionValueValuesEnum: Required. Internet protocol versions this
       policy-based route applies to. For this version, only IPV4 is supported.
+      IPV6 is supported in preview.
 
   Fields:
     destRange: Optional. The destination IP range of outgoing packets that
@@ -448,7 +487,8 @@ class Filter(_messages.Message):
     ipProtocol: Optional. The IP protocol that this policy-based route applies
       to. Valid values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
     protocolVersion: Required. Internet protocol versions this policy-based
-      route applies to. For this version, only IPV4 is supported.
+      route applies to. For this version, only IPV4 is supported. IPV6 is
+      supported in preview.
     srcRange: Optional. The source IP range of outgoing packets that this
       policy-based route applies to. Default is "0.0.0.0/0" if protocol
       version is IPv4.
@@ -456,7 +496,8 @@ class Filter(_messages.Message):
 
   class ProtocolVersionValueValuesEnum(_messages.Enum):
     r"""Required. Internet protocol versions this policy-based route applies
-    to. For this version, only IPV4 is supported.
+    to. For this version, only IPV4 is supported. IPV6 is supported in
+    preview.
 
     Values:
       PROTOCOL_VERSION_UNSPECIFIED: Default value.
@@ -2087,15 +2128,15 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_
       create.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   parent = _messages.StringField(1, required=True)
@@ -2113,15 +2154,15 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_
     name: Required. Name of the policy-based route resource to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      knows to ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -3458,7 +3499,7 @@ class PolicyBasedRoute(_messages.Message):
   r"""Policy-based routes route L4 network traffic based on not just
   destination IP address, but also source IP address, protocol, and more. If a
   policy-based route conflicts with other types of routes, the policy-based
-  route always take precedence.
+  route always takes precedence.
 
   Enums:
     NextHopOtherRoutesValueValuesEnum: Optional. Other routes that will be
@@ -3496,7 +3537,7 @@ class PolicyBasedRoute(_messages.Message):
     selfLink: Output only. Server-defined fully-qualified URL for this
       resource.
     updateTime: Output only. Time when the policy-based route was updated.
-    virtualMachine: Optional. VM instances to which this policy-based route
+    virtualMachine: Optional. VM instances that this policy-based route
       applies to.
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
@@ -3510,8 +3551,8 @@ class PolicyBasedRoute(_messages.Message):
       OTHER_ROUTES_UNSPECIFIED: Default value.
       DEFAULT_ROUTING: Use the routes from the default routing tables (system-
         generated routes, custom routes, peering route) to determine the next
-        hop. This will effectively exclude matching packets being applied on
-        other PBRs with a lower priority.
+        hop. This effectively excludes matching packets being applied on other
+        PBRs with a lower priority.
     """
     OTHER_ROUTES_UNSPECIFIED = 0
     DEFAULT_ROUTING = 1
@@ -4758,12 +4799,12 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class VirtualMachine(_messages.Message):
-  r"""VM instances to which this policy-based route applies to.
+  r"""VM instances that this policy-based route applies to.
 
   Fields:
-    tags: Optional. A list of VM instance tags the this policy-based route
-      applies to. VM instances that have ANY of tags specified here will
-      install this PBR.
+    tags: Optional. A list of VM instance tags that this policy-based route
+      applies to. VM instances that have ANY of tags specified here installs
+      this PBR.
   """
 
   tags = _messages.StringField(1, repeated=True)
@@ -4801,8 +4842,8 @@ class Warnings(_messages.Message):
     Values:
       WARNING_UNSPECIFIED: Default value.
       RESOURCE_NOT_ACTIVE: The policy-based route is not active and
-        functioning. Common causes are the dependent network was deleted or
-        the resource project was turned off.
+        functioning. Common causes are that the dependent network was deleted
+        or the resource project was turned off.
       RESOURCE_BEING_MODIFIED: The policy-based route is being modified (e.g.
         created/deleted) at this time.
     """

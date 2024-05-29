@@ -14,7 +14,7 @@ package = 'transferappliance'
 
 
 class Appliance(_messages.Message):
-  r"""Message describing a physical Appliance. NextID : 107
+  r"""Message describing a physical Appliance. NextID : 111
 
   Enums:
     ModelValueValuesEnum: The hardware form factor of the appliance.
@@ -135,7 +135,7 @@ class Appliance(_messages.Message):
     updateTime: Output only. Update time.
     verificationState: Output only. Indicates whether appliance has been
       verified by Google.
-    verificationStateReason: A string attribute.
+    verificationStateReason: Output only. Reason for the verification state.
   """
 
   class ModelValueValuesEnum(_messages.Enum):

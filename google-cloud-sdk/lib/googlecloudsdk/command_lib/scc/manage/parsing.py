@@ -338,3 +338,16 @@ def CreateUpdateMaskFromArgsForService(args):
         'Error parsing Update Mask. Either a module configuration or an'
         ' enablement state (or both) must be provided to update the service.'
     )
+
+
+def GetModuleListFromArgs(args) -> {str}:
+  """Returns a list of module names from args."""
+
+  if not args.filter_modules:
+    return []
+
+  modules = args.filter_modules.strip('[]')
+  modules_list = modules.split(',')
+  modules_set = {module.strip() for module in modules_list}
+
+  return modules_set

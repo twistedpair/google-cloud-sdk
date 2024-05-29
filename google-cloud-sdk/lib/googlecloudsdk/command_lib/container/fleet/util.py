@@ -472,3 +472,18 @@ def IamProjectLevelScopeRoleFromRbacArgs(role):
   raise exceptions.Error(
       'Role is required to be admin, edit, or view.'
   )
+
+
+def ResourceIdFromPath(path):
+  """Returns resource ID from resource path.
+
+  Args:
+    path: resource path, e.g., "projects/p/locations/global/scopes/my-scope"
+
+  Returns:
+    resource ID, e.g., "my-scope"
+
+  Raises ValueError if resource ID could not be found
+  """
+  idx = path.rindex('/')
+  return path[idx + 1:]

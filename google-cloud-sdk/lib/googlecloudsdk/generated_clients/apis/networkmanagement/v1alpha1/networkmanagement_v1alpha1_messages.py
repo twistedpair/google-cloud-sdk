@@ -881,7 +881,11 @@ class DeliverInfo(_messages.Message):
 
   Fields:
     ipAddress: IP address of the target (if applicable).
+    pscGoogleApiTarget: PSC Google API target the packet is delivered to (if
+      applicable).
     resourceUri: URI of the resource that the packet is delivered to.
+    storageBucket: Name of the Cloud Storage Bucket the packet is delivered to
+      (if applicable).
     target: Target type where the packet is delivered to.
   """
 
@@ -898,7 +902,7 @@ class DeliverInfo(_messages.Message):
       PSC_PUBLISHED_SERVICE: Target is a published service that uses [Private
         Service Connect](https://cloud.google.com/vpc/docs/configure-private-
         service-connect-services).
-      PSC_GOOGLE_API: Target is all Google APIs that use [Private Service
+      PSC_GOOGLE_API: Target is Google APIs that use [Private Service
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
       PSC_VPC_SC: Target is a VPC-SC that uses [Private Service
@@ -913,6 +917,8 @@ class DeliverInfo(_messages.Message):
         for return traces.
       CLOUD_RUN_REVISION: Target is a Cloud Run revision. Used only for return
         traces.
+      GOOGLE_MANAGED_SERVICE: Target is a Google-managed service. Used only
+        for return traces.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -929,10 +935,13 @@ class DeliverInfo(_messages.Message):
     CLOUD_FUNCTION = 12
     APP_ENGINE_VERSION = 13
     CLOUD_RUN_REVISION = 14
+    GOOGLE_MANAGED_SERVICE = 15
 
   ipAddress = _messages.StringField(1)
-  resourceUri = _messages.StringField(2)
-  target = _messages.EnumField('TargetValueValuesEnum', 3)
+  pscGoogleApiTarget = _messages.StringField(2)
+  resourceUri = _messages.StringField(3)
+  storageBucket = _messages.StringField(4)
+  target = _messages.EnumField('TargetValueValuesEnum', 5)
 
 
 class Deployment(_messages.Message):
@@ -1125,6 +1134,9 @@ class DropInfo(_messages.Message):
         requires a proxy-only subnet and the subnet is not found.
       CLOUD_NAT_NO_ADDRESSES: Packet sent to Cloud Nat without active NAT IPs.
       ROUTING_LOOP: Packet is stuck in a routing loop.
+      DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE: Packet is dropped due to an
+        unspecified reason inside a Google-managed service. Used only for
+        return traces.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -1188,6 +1200,7 @@ class DropInfo(_messages.Message):
     LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 59
     CLOUD_NAT_NO_ADDRESSES = 60
     ROUTING_LOOP = 61
+    DROPPED_INSIDE_GOOGLE_MANAGED_SERVICE = 62
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1543,24 +1556,37 @@ class ForwardingRuleInfo(_messages.Message):
   rule.
 
   Fields:
-    displayName: Name of a Compute Engine forwarding rule.
+    displayName: Name of the forwarding rule.
+    loadBalancerName: Name of the load balancer the forwarding rule belongs
+      to. Empty for forwarding rules not related to load balancers (like PSC
+      forwarding rules).
     matchedPortRange: Port range defined in the forwarding rule that matches
-      the test.
+      the packet.
     matchedProtocol: Protocol defined in the forwarding rule that matches the
-      test.
-    networkUri: Network URI. Only valid for Internal Load Balancer.
+      packet.
+    networkUri: Network URI.
+    pscGoogleApiTarget: PSC Google API target this forwarding rule targets (if
+      applicable).
+    pscServiceAttachmentUri: URI of the PSC service attachment this forwarding
+      rule targets (if applicable).
+    region: Region of the forwarding rule. Set only for regional forwarding
+      rules.
     target: Target type of the forwarding rule.
-    uri: URI of a Compute Engine forwarding rule.
+    uri: URI of the forwarding rule.
     vip: VIP of the forwarding rule.
   """
 
   displayName = _messages.StringField(1)
-  matchedPortRange = _messages.StringField(2)
-  matchedProtocol = _messages.StringField(3)
-  networkUri = _messages.StringField(4)
-  target = _messages.StringField(5)
-  uri = _messages.StringField(6)
-  vip = _messages.StringField(7)
+  loadBalancerName = _messages.StringField(2)
+  matchedPortRange = _messages.StringField(3)
+  matchedProtocol = _messages.StringField(4)
+  networkUri = _messages.StringField(5)
+  pscGoogleApiTarget = _messages.StringField(6)
+  pscServiceAttachmentUri = _messages.StringField(7)
+  region = _messages.StringField(8)
+  target = _messages.StringField(9)
+  uri = _messages.StringField(10)
+  vip = _messages.StringField(11)
 
 
 class GKEMasterInfo(_messages.Message):
@@ -2969,6 +2995,17 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class ServerlessNegInfo(_messages.Message):
+  r"""For display only. Metadata associated with the serverless network
+  endpoint group backend.
+
+  Fields:
+    negUri: URI of the serverless network endpoint group.
+  """
+
+  negUri = _messages.StringField(1)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3291,6 +3328,8 @@ class Step(_messages.Message):
       validating.
     proxyConnection: Display information of a ProxyConnection.
     route: Display information of a Compute Engine route.
+    serverlessNeg: Display information of a Serverless network endpoint group
+      backend. Used only for return traces.
     state: Each step is in one of the pre-defined states.
     storageBucket: Display information of a Storage Bucket. Used only for
       return traces.
@@ -3336,6 +3375,9 @@ class Step(_messages.Message):
       START_FROM_PSC_PUBLISHED_SERVICE: Initial state: packet originating from
         a published service that uses Private Service Connect. Used only for
         return traces.
+      START_FROM_SERVERLESS_NEG: Initial state: packet originating from a
+        serverless network endpoint group backend. Used only for return
+        traces. The serverless_neg information is populated.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -3381,25 +3423,26 @@ class Step(_messages.Message):
     START_FROM_CLOUD_RUN_REVISION = 9
     START_FROM_STORAGE_BUCKET = 10
     START_FROM_PSC_PUBLISHED_SERVICE = 11
-    APPLY_INGRESS_FIREWALL_RULE = 12
-    APPLY_EGRESS_FIREWALL_RULE = 13
-    APPLY_ROUTE = 14
-    APPLY_FORWARDING_RULE = 15
-    ANALYZE_LOAD_BALANCER_BACKEND = 16
-    SPOOFING_APPROVED = 17
-    ARRIVE_AT_INSTANCE = 18
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 19
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 20
-    ARRIVE_AT_VPN_GATEWAY = 21
-    ARRIVE_AT_VPN_TUNNEL = 22
-    ARRIVE_AT_VPC_CONNECTOR = 23
-    NAT = 24
-    PROXY_CONNECTION = 25
-    DELIVER = 26
-    DROP = 27
-    FORWARD = 28
-    ABORT = 29
-    VIEWER_PERMISSION_MISSING = 30
+    START_FROM_SERVERLESS_NEG = 12
+    APPLY_INGRESS_FIREWALL_RULE = 13
+    APPLY_EGRESS_FIREWALL_RULE = 14
+    APPLY_ROUTE = 15
+    APPLY_FORWARDING_RULE = 16
+    ANALYZE_LOAD_BALANCER_BACKEND = 17
+    SPOOFING_APPROVED = 18
+    ARRIVE_AT_INSTANCE = 19
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 20
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 21
+    ARRIVE_AT_VPN_GATEWAY = 22
+    ARRIVE_AT_VPN_TUNNEL = 23
+    ARRIVE_AT_VPC_CONNECTOR = 24
+    NAT = 25
+    PROXY_CONNECTION = 26
+    DELIVER = 27
+    DROP = 28
+    FORWARD = 29
+    ABORT = 30
+    VIEWER_PERMISSION_MISSING = 31
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3424,11 +3467,12 @@ class Step(_messages.Message):
   projectId = _messages.StringField(21)
   proxyConnection = _messages.MessageField('ProxyConnectionInfo', 22)
   route = _messages.MessageField('RouteInfo', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  storageBucket = _messages.MessageField('StorageBucketInfo', 25)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 26)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 27)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 28)
+  serverlessNeg = _messages.MessageField('ServerlessNegInfo', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 26)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 27)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 28)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 29)
 
 
 class StorageBucketInfo(_messages.Message):

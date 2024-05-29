@@ -58,7 +58,8 @@ class ContextAwareAccessDeniedError(Error, google_auth_exceptions.RefreshError):
 
   def __init__(self):
     super(ContextAwareAccessDeniedError, self).__init__(
-        context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
+        context_aware.ContextAwareAccessError.Get()
+    )
 
 
 class TokenRevokeError(Error, google_auth_exceptions.GoogleAuthError):

@@ -1,0 +1,53 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: gkebackup v1 RestoreOrder export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  groupKindDependencies:
+    description: |-
+      Contains a list of group kind dependency pairs provided by the customer,
+      that is used by Backup for GKE to generate a group kind restore order.
+    type: array
+    items:
+      type: object
+      required:
+      - requiring
+      - satisfying
+      additionalProperties: false
+      properties:
+        requiring:
+          description: |-
+            The requiring group kind requires that the satisfying group kind be restored
+            first.
+          type: object
+          additionalProperties: false
+          properties:
+            resourceGroup:
+              description: |-
+                API group of a Kubernetes resource, e.g. "apiextensions.k8s.io",
+                "storage.k8s.io", etc. Note: use empty string for core API group
+              type: string
+            resourceKind:
+              description: |-
+                Kind of a Kubernetes resource, must be in singular form. E.g.
+                "CustomResourceDefinition", "StorageClass", etc.
+              type: string
+        satisfying:
+          description: |-
+            The satisfying group kind must be restored first in order to satisfy the
+            dependency.
+          type: object
+          additionalProperties: false
+          properties:
+            resourceGroup:
+              description: |-
+                API group string of a Kubernetes resource, e.g. "apiextensions.k8s.io",
+                "storage.k8s.io", etc. Note: use empty string for core API group
+              type: string
+            resourceKind:
+              description: |-
+                Kind of a Kubernetes resource, must be in singular form. E.g.
+                "CustomResourceDefinition", "StorageClass", etc.
+              type: string

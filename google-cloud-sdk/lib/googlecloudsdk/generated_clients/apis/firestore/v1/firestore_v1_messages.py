@@ -1841,8 +1841,8 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     createTime: Output only. The timestamp at which this database was created.
       Databases created before 2016 do not populate create_time.
     deleteProtectionState: State of delete protection for the database.
-    deleteTime: Output only. The timestamp at which this database was soft
-      deleted. Only set if the database has been soft deleted.
+    deleteTime: Output only. The timestamp at which this database was deleted.
+      Only set if the database has been deleted.
     earliestVersionTime: Output only. The earliest timestamp at which older
       versions of the data can be read from the database. See
       [version_retention_period] above; this field is populated with `now -
@@ -2064,7 +2064,7 @@ class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
 
   Fields:
     collectionIds: Which collection ids to export. Unspecified means all
-      collections.
+      collections. Each collection id in this list must be unique.
     namespaceIds: An empty list represents all namespaces. This is the
       preferred usage for databases that don't use namespaces. An empty string
       element represents the default namespace. This should be used if the
@@ -2263,7 +2263,8 @@ class GoogleFirestoreAdminV1ImportDocumentsRequest(_messages.Message):
 
   Fields:
     collectionIds: Which collection ids to import. Unspecified means all
-      collections included in the import.
+      collections included in the import. Each collection id in this list must
+      be unique.
     inputUriPrefix: Location of the exported files. This must match the
       output_uri_prefix of an ExportDocumentsResponse from an export that has
       completed successfully. See:

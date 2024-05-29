@@ -23,13 +23,15 @@ from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
-LOCATION_RESOURCE_PARAMETER_ATTRIBUTE = concepts.ResourceParameterAttributeConfig(
-    name='location',
-    fallthroughs=[
-        deps.PropertyFallthrough(
-            properties.VALUES.gkebackup.Property('location')),
-    ],
-    help_text='Google Cloud location.')
+LOCATION_RESOURCE_PARAMETER_ATTRIBUTE = (
+    concepts.ResourceParameterAttributeConfig(
+        name='location',
+        fallthroughs=[
+            deps.PropertyFallthrough(
+                properties.VALUES.gkebackup.Property('location')),
+        ],
+        help_text='Google Cloud location.')
+)
 
 
 def AddBackupArg(parser):

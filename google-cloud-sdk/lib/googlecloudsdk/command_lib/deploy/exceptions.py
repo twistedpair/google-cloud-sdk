@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.core import exceptions
 
 HTTP_ERROR_FORMAT = 'Status code: {status_code}. {status_message}.'
@@ -56,7 +57,8 @@ class AbandonedReleaseError(exceptions.Error):
 
   def __init__(self, error_msg, release_name):
     error_template = '{} Release {} is abandoned.'.format(
-        error_msg, release_name)
+        error_msg, release_name
+    )
     super(AbandonedReleaseError, self).__init__(error_template)
 
 
@@ -65,18 +67,22 @@ class NoStagesError(exceptions.Error):
 
   def __init__(self, release_name):
     super(NoStagesError, self).__init__(
-        'No pipeline stages in the release {}.'.format(release_name))
+        'No pipeline stages in the release {}.'.format(release_name)
+    )
 
 
 class InvalidReleaseNameError(exceptions.Error):
   """Error when a release has extra $ signs after expanding template terms."""
 
   def __init__(self, release_name, error_indices):
-    error_msg = ("Invalid character '$'"
-                 " for release name '{}' at indices:"
-                 ' {}. Did you mean to use $DATE or $TIME?')
-    super(InvalidReleaseNameError,
-          self).__init__(error_msg.format(release_name, error_indices))
+    error_msg = (
+        "Invalid character '$'"
+        " for release name '{}' at indices:"
+        ' {}. Did you mean to use $DATE or $TIME?'
+    )
+    super(InvalidReleaseNameError, self).__init__(
+        error_msg.format(release_name, error_indices)
+    )
 
 
 class CloudDeployConfigError(exceptions.Error):
@@ -87,8 +93,9 @@ class ListRolloutsError(exceptions.Error):
   """Error when it failed to list the rollouts that belongs to a release."""
 
   def __init__(self, release_name):
-    super(ListRolloutsError,
-          self).__init__('Failed to list rollouts for {}.'.format(release_name))
+    super(ListRolloutsError, self).__init__(
+        'Failed to list rollouts for {}.'.format(release_name)
+    )
 
 
 class RedeployRolloutError(exceptions.Error):
@@ -100,8 +107,9 @@ class RedeployRolloutError(exceptions.Error):
 
   def __init__(self, target_name, rollout_name, rollout_state):
     error_msg = (
-        'Unable to redeploy target {}. Rollout {} is in state {} that can\'t '
-        'be redeployed'.format(target_name, rollout_name, rollout_state))
+        "Unable to redeploy target {}. Rollout {} is in state {} that can't "
+        'be redeployed'.format(target_name, rollout_name, rollout_state)
+    )
     super(RedeployRolloutError, self).__init__(error_msg)
 
 
@@ -130,7 +138,8 @@ class RolloutNotInProgressError(exceptions.Error):
 
   def __init__(self, rollout_name):
     super(RolloutNotInProgressError, self).__init__(
-        'Rollout {} is not IN_PROGRESS.'.format(rollout_name))
+        'Rollout {} is not IN_PROGRESS.'.format(rollout_name)
+    )
 
 
 class RolloutCannotAdvanceError(exceptions.Error):
@@ -148,7 +157,8 @@ class PipelineSuspendedError(exceptions.Error):
 
   def __init__(self, pipeline_name, failed_activity_msg):
     error_msg = '{} DeliveryPipeline {} is suspended.'.format(
-        failed_activity_msg, pipeline_name)
+        failed_activity_msg, pipeline_name
+    )
     super(PipelineSuspendedError, self).__init__(error_msg)
 
 
@@ -168,4 +178,13 @@ class AutomationWaitFormatError(exceptions.Error):
   def __init__(self):
     super(AutomationWaitFormatError, self).__init__(
         'Wait must be numbers with the last character m, e.g. 5m.'
+    )
+
+
+class MissingCoupledArgumentsException(c_exceptions.ToolException):
+  """An exception for when only one of several arguments that need to be passed together is passed."""
+
+  def __init__(self, parameter_names):
+    super(MissingCoupledArgumentsException, self).__init__(
+        f'All of these flags {parameter_names} must be supplied together'
     )

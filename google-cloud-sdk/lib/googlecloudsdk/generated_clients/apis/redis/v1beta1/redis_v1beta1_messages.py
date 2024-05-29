@@ -529,7 +529,9 @@ class DatabaseResourceFeed(_messages.Message):
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    recommendationSignalData: More feed data would be added in subsequent CLs
+    observabilityMetricData: More feed data would be added in subsequent CLs
+    recommendationSignalData: A DatabaseResourceRecommendationSignalData
+      attribute.
     resourceHealthSignalData: A DatabaseResourceHealthSignalData attribute.
     resourceId: Primary key associated with the Resource. resource_id is
       available in individual feed level as well.
@@ -554,10 +556,11 @@ class DatabaseResourceFeed(_messages.Message):
 
   feedTimestamp = _messages.StringField(1)
   feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
-  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 3)
-  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 4)
-  resourceId = _messages.MessageField('DatabaseResourceId', 5)
-  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 6)
+  observabilityMetricData = _messages.MessageField('ObservabilityMetricData', 3)
+  recommendationSignalData = _messages.MessageField('DatabaseResourceRecommendationSignalData', 4)
+  resourceHealthSignalData = _messages.MessageField('DatabaseResourceHealthSignalData', 5)
+  resourceId = _messages.MessageField('DatabaseResourceId', 6)
+  resourceMetadata = _messages.MessageField('DatabaseResourceMetadata', 7)
 
 
 class DatabaseResourceHealthSignalData(_messages.Message):
@@ -1039,6 +1042,7 @@ class DatabaseResourceMetadata(_messages.Message):
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
     location: The resource location. REQUIRED
+    machineConfiguration: Machine configuration for this resource.
     primaryResourceId: Identifier for this resource's immediate parent/primary
       resource if the current resource is a replica or derived form of another
       Database resource. Else it would be NULL. REQUIRED if the immediate
@@ -1162,13 +1166,14 @@ class DatabaseResourceMetadata(_messages.Message):
   id = _messages.MessageField('DatabaseResourceId', 9)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
   location = _messages.StringField(11)
-  primaryResourceId = _messages.MessageField('DatabaseResourceId', 12)
-  product = _messages.MessageField('Product', 13)
-  resourceContainer = _messages.StringField(14)
-  resourceName = _messages.StringField(15)
-  updationTime = _messages.StringField(16)
-  userLabelSet = _messages.MessageField('UserLabels', 17)
-  userLabels = _messages.MessageField('UserLabelsValue', 18)
+  machineConfiguration = _messages.MessageField('MachineConfiguration', 12)
+  primaryResourceId = _messages.MessageField('DatabaseResourceId', 13)
+  product = _messages.MessageField('Product', 14)
+  resourceContainer = _messages.StringField(15)
+  resourceName = _messages.StringField(16)
+  updationTime = _messages.StringField(17)
+  userLabelSet = _messages.MessageField('UserLabels', 18)
+  userLabels = _messages.MessageField('UserLabelsValue', 19)
 
 
 class DatabaseResourceRecommendationSignalData(_messages.Message):
@@ -2274,6 +2279,19 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MachineConfiguration(_messages.Message):
+  r"""MachineConfiguration describes the configuration of a machine specific
+  to Database Resource.
+
+  Fields:
+    cpuCount: The number of CPUs.
+    memorySizeInBytes: Memory size in bytes.
+  """
+
+  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  memorySizeInBytes = _messages.IntegerField(2)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""Maintenance policy for an instance.
 
@@ -2357,6 +2375,40 @@ class NodeInfo(_messages.Message):
 
   id = _messages.StringField(1)
   zone = _messages.StringField(2)
+
+
+class ObservabilityMetricData(_messages.Message):
+  r"""A ObservabilityMetricData object.
+
+  Enums:
+    MetricTypeValueValuesEnum: Required. Type of metric like CPU, Memory, etc.
+
+  Fields:
+    metricTimestamp: Required. The timestamp of the metric value.
+    metricType: Required. Type of metric like CPU, Memory, etc.
+    resourceName: Required. Database resource name associated with the signal.
+      Resource name to follow CAIS resource_name format as noted here
+      go/condor-common-datamodel
+    value: Required. Value of the metric type.
+  """
+
+  class MetricTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of metric like CPU, Memory, etc.
+
+    Values:
+      METRIC_TYPE_UNSPECIFIED: <no description>
+      INSTANCE_PEAK_CPU_UTILISATION: Peak CPU utilization for a DB instance as
+        a fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
+        cases) List will keep increasing, e.g. PEAK_MEMORY_UTILISATION,
+        NUMBER_OF_CONNECTIONS, SUCCESS_RATIO_FOR_QUERIES, etc.
+    """
+    METRIC_TYPE_UNSPECIFIED = 0
+    INSTANCE_PEAK_CPU_UTILISATION = 1
+
+  metricTimestamp = _messages.StringField(1)
+  metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)
+  resourceName = _messages.StringField(3)
+  value = _messages.FloatField(4)
 
 
 class Operation(_messages.Message):

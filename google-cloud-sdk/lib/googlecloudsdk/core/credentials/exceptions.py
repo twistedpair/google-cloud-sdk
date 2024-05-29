@@ -40,17 +40,50 @@ class InvalidCredentialsException(Error):
 class AuthenticationException(Error):
   """Exceptions that tell the users to re-login."""
 
-  def __init__(self, message, for_adc=False, should_relogin=True):
+  def __init__(
+      self,
+      message,
+      for_adc=False,
+      should_relogin=True,
+      is_service_account=False,
+  ):
     if should_relogin:
-      login_command = ADC_LOGIN_COMMAND if for_adc else AUTH_LOGIN_COMMAND
-      message = textwrap.dedent("""\
+      if for_adc:
+        message = textwrap.dedent(
+            """\
         {message}
         Please run:
 
           $ {login_command}
 
         to obtain new credentials.""".format(
-            message=message, login_command=login_command))
+                message=message, login_command=ADC_LOGIN_COMMAND
+            )
+        )
+      elif is_service_account:
+        message = textwrap.dedent("""\
+        {message}
+        Please run:
+
+          $ gcloud auth activate-service-account --key-file=SERVICE_ACCOUNT_FILE_PATH
+
+        Or:
+
+          $ gcloud auth login --cred-file=SERVICE_ACCOUNT_FILE_PATH
+
+        to obtain new credentials.""".format(message=message))
+      else:
+        message = textwrap.dedent(
+            """\
+          {message}
+          Please run:
+
+            $ {login_command}
+
+          to obtain new credentials.""".format(
+                message=message, login_command=AUTH_LOGIN_COMMAND
+            )
+        )
     if not for_adc:
       switch_account_msg = textwrap.dedent("""\
       If you have already logged in with a different account, run:
@@ -78,11 +111,31 @@ class NoActiveAccountException(AuthenticationException):
 class TokenRefreshError(AuthenticationException):
   """An exception raised when the auth tokens fail to refresh."""
 
-  def __init__(self, error, for_adc=False, should_relogin=True):
-    message = ('There was a problem refreshing your current auth tokens: {0}'
-               .format(error))
+  def __init__(
+      self,
+      error,
+      for_adc=False,
+      should_relogin=True,
+      account=None,
+      is_service_account=False,
+  ):
+    if account:
+      message = (
+          'There was a problem refreshing auth tokens for account {0}: {1}'
+          .format(account, error)
+      )
+    else:
+      message = (
+          'There was a problem refreshing your current auth tokens: {0}'.format(
+              error
+          )
+      )
     super(TokenRefreshError, self).__init__(
-        message, for_adc=for_adc, should_relogin=should_relogin)
+        message,
+        for_adc=for_adc,
+        should_relogin=should_relogin,
+        is_service_account=is_service_account,
+    )
 
 
 class TokenRefreshDeniedByCAAError(TokenRefreshError):
@@ -93,7 +146,7 @@ class TokenRefreshDeniedByCAAError(TokenRefreshError):
     from googlecloudsdk.core import context_aware
     # pylint: enable=g-import-not-at-top
     compiled_msg = '{}\n\n{}'.format(
-        error, context_aware.CONTEXT_AWARE_ACCESS_HELP_MSG)
+        error, context_aware.ContextAwareAccessError.Get())
 
     super(TokenRefreshDeniedByCAAError, self).__init__(
         compiled_msg, for_adc=for_adc, should_relogin=False)

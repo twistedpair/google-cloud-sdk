@@ -582,6 +582,7 @@ class CloudSqlSettings(_messages.Message):
       POSTGRES_13: PostgreSQL 13.
       POSTGRES_14: PostgreSQL 14.
       POSTGRES_15: PostgreSQL 15.
+      POSTGRES_16: PostgreSQL 16.
     """
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
@@ -605,6 +606,7 @@ class CloudSqlSettings(_messages.Message):
     POSTGRES_13 = 19
     POSTGRES_14 = 20
     POSTGRES_15 = 21
+    POSTGRES_16 = 22
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. The edition of the given Cloud SQL instance.

@@ -76,6 +76,7 @@ REPAIR_ROLLOUT_RULE_FIELD = 'repairRolloutRule'
 RESTRICT_ROLLOUT_FIELD = 'restrictRollouts'
 DESTINATION_TARGET_ID_FIELD = 'destinationTargetId'
 SOURCE_PHASES_FIELD = 'sourcePhases'
+PHASES_FIELD = 'phases'
 DESTINATION_PHASE_FIELD = 'destinationPhase'
 TARGET_FIELD = 'target'
 METADATA_FIELDS = [ANNOTATIONS_FIELD, LABELS_FIELD]
@@ -90,7 +91,7 @@ JOBS_FIELD = 'jobs'
 RETRY_FIELD = 'retry'
 ATTEMPTS_FIELD = 'attempts'
 ROLLBACK_FIELD = 'rollback'
-REPAIR_MODE_FIELD = 'repairModes'
+REPAIR_PHASES_FIELD = 'repairPhases'
 BACKOFF_MODE_FIELD = 'backoffMode'
 BACKOFF_CHOICES = ['BACKOFF_MODE_LINEAR', 'BACKOFF_MODE_EXPONENTIAL']
 BACKOFF_CHOICES_SHORT = ['LINEAR', 'EXPONENTIAL']
@@ -784,10 +785,10 @@ def SetAutomationRules(messages, automation, automation_ref, rules):
       )
       automation_rule.repairRolloutRule = messages.RepairRolloutRule(
           id=message.get(ID_FIELD) or message.get(NAME_FIELD),
-          sourcePhases=message.get(SOURCE_PHASES_FIELD) or [],
+          phases=message.get(PHASES_FIELD) or [],
           jobs=message.get(JOBS_FIELD) or [],
-          repairModes=_ParseRepairMode(
-              messages, message.get(REPAIR_MODE_FIELD) or []
+          repairPhases=_ParseRepairPhases(
+              messages, message.get(REPAIR_PHASES_FIELD) or []
           ),
       )
     automation.rules.append(automation_rule)
@@ -847,13 +848,13 @@ def ExportAutomationRules(manifest, rules):
       resource[REPAIR_ROLLOUT_FIELD] = repair
       message = getattr(rule, REPAIR_ROLLOUT_RULE_FIELD)
       repair[NAME_FIELD] = getattr(message, ID_FIELD)
-      if getattr(message, SOURCE_PHASES_FIELD):
-        repair[SOURCE_PHASES_FIELD] = getattr(message, SOURCE_PHASES_FIELD)
+      if getattr(message, PHASES_FIELD):
+        repair[PHASES_FIELD] = getattr(message, PHASES_FIELD)
       if getattr(message, JOBS_FIELD):
         repair[JOBS_FIELD] = getattr(message, JOBS_FIELD)
-      if getattr(message, REPAIR_MODE_FIELD):
-        repair[REPAIR_MODE_FIELD] = _ExportRepairMode(
-            getattr(message, REPAIR_MODE_FIELD)
+      if getattr(message, REPAIR_PHASES_FIELD):
+        repair[REPAIR_PHASES_FIELD] = _ExportRepairPhases(
+            getattr(message, REPAIR_PHASES_FIELD)
         )
 
     manifest[RULES_FIELD].append(resource)
@@ -884,26 +885,26 @@ def _EnsureIsType(value, t, msg):
     raise exceptions.CloudDeployConfigError(msg)
 
 
-def _ParseRepairMode(messages, modes):
+def _ParseRepairPhases(messages, phases):
   """Parses RepairMode of the Automation resource."""
   modes_pb = []
-  for m in modes:
-    mode = messages.RepairMode()
-    if RETRY_FIELD in m:
-      mode.retry = messages.Retry()
-      retry = m.get(RETRY_FIELD)
+  for p in phases:
+    phase = messages.RepairPhaseConfig()
+    if RETRY_FIELD in p:
+      phase.retry = messages.Retry()
+      retry = p.get(RETRY_FIELD)
       if retry:
-        mode.retry.attempts = retry.get(ATTEMPTS_FIELD)
-        mode.retry.wait = _WaitMinToSec(retry.get(WAIT_FIELD))
-        mode.retry.backoffMode = _ParseBackoffMode(
+        phase.retry.attempts = retry.get(ATTEMPTS_FIELD)
+        phase.retry.wait = _WaitMinToSec(retry.get(WAIT_FIELD))
+        phase.retry.backoffMode = _ParseBackoffMode(
             messages, retry.get(BACKOFF_MODE_FIELD)
         )
-    if ROLLBACK_FIELD in m:
-      mode.rollback = messages.Rollback()
-      rollback = m.get(ROLLBACK_FIELD)
+    if ROLLBACK_FIELD in p:
+      phase.rollback = messages.Rollback()
+      rollback = p.get(ROLLBACK_FIELD)
       if rollback:
-        mode.rollback.destinationPhase = rollback.get(DESTINATION_PHASE_FIELD)
-    modes_pb.append(mode)
+        phase.rollback.destinationPhase = rollback.get(DESTINATION_PHASE_FIELD)
+    modes_pb.append(phase)
 
   return modes_pb
 
@@ -921,15 +922,15 @@ def _ParseBackoffMode(messages, backoff):
   )
 
 
-def _ExportRepairMode(repair_modes):
+def _ExportRepairPhases(repair_phases):
   """Exports RepairMode of the Automation resource."""
-  modes = []
-  for m in repair_modes:
-    mode = {}
-    if getattr(m, RETRY_FIELD):
+  phases = []
+  for p in repair_phases:
+    phase = {}
+    if getattr(p, RETRY_FIELD):
       retry = {}
-      mode[RETRY_FIELD] = retry
-      message = getattr(m, RETRY_FIELD)
+      phase[RETRY_FIELD] = retry
+      message = getattr(p, RETRY_FIELD)
       if getattr(message, WAIT_FIELD):
         retry[WAIT_FIELD] = _WaitSecToMin(getattr(message, WAIT_FIELD))
       if getattr(message, ATTEMPTS_FIELD):
@@ -938,17 +939,17 @@ def _ExportRepairMode(repair_modes):
         retry[BACKOFF_MODE_FIELD] = getattr(
             message, BACKOFF_MODE_FIELD
         ).name.split('_')[2]
-    if getattr(m, ROLLBACK_FIELD):
-      message = getattr(m, ROLLBACK_FIELD)
+    if getattr(p, ROLLBACK_FIELD):
+      message = getattr(p, ROLLBACK_FIELD)
       rollback = {}
-      mode[ROLLBACK_FIELD] = rollback
+      phase[ROLLBACK_FIELD] = rollback
       if getattr(message, DESTINATION_PHASE_FIELD):
         rollback[DESTINATION_PHASE_FIELD] = getattr(
             message, DESTINATION_PHASE_FIELD
         )
-    modes.append(mode)
+    phases.append(phase)
 
-  return modes
+  return phases
 
 
 def _AddTargetAttribute(messages, resource_selector, message):

@@ -1,0 +1,45 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: gkebackup v1 volume data restore policy overrides export schema
+description: Specifying the volume data restore policy overrides yaml definition.
+type: object
+additionalProperties: false
+properties:
+  volumeDataRestorePolicyOverrides:
+    description: |-
+      Immutable. Overrides the volume data restore policies selected in the
+      Restore Config for override-scoped resources.
+    type: array
+    items:
+      type: object
+      required:
+      - policy
+      additionalProperties: false
+      properties:
+        policy:
+          description: |-
+            The VolumeDataRestorePolicy to apply when restoring volumes in scope.
+          type: string
+          enum:
+          - NO_VOLUME_DATA_RESTORATION
+          - RESTORE_VOLUME_DATA_FROM_BACKUP
+          - REUSE_VOLUME_HANDLE_FROM_BACKUP
+          - VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED
+        selectedPvcs:
+          description: A list of PVCs to apply the policy override to.
+          type: object
+          additionalProperties: false
+          properties:
+            namespacedNames:
+              description: A list of namespaced Kubernetes resources.
+              type: array
+              items:
+                type: object
+                additionalProperties: false
+                properties:
+                  name:
+                    description: The name of the Kubernetes resource.
+                    type: string
+                  namespace:
+                    description: The Namespace of the Kubernetes resource.
+                    type: string

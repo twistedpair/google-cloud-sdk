@@ -1166,8 +1166,9 @@ class ManagementSettings(_messages.Message):
       field on the `Registration`. After the problem is resolved, the
       `renewal_method` is automatically updated to `preferred_renewal_method`
       in a few hours.
-    TransferLockStateValueValuesEnum: Controls whether the domain can be
-      transferred to another registrar.
+    TransferLockStateValueValuesEnum: This is the desired transfer lock state
+      for this `Registration`. A transfer lock controls whether the domain can
+      be transferred to another registrar.
 
   Fields:
     preferredRenewalMethod: Optional. The desired renewal method for this
@@ -1191,8 +1192,9 @@ class ManagementSettings(_messages.Message):
       field on the `Registration`. After the problem is resolved, the
       `renewal_method` is automatically updated to `preferred_renewal_method`
       in a few hours.
-    transferLockState: Controls whether the domain can be transferred to
-      another registrar.
+    transferLockState: This is the desired transfer lock state for this
+      `Registration`. A transfer lock controls whether the domain can be
+      transferred to another registrar.
   """
 
   class PreferredRenewalMethodValueValuesEnum(_messages.Enum):
@@ -1249,7 +1251,9 @@ class ManagementSettings(_messages.Message):
     RENEWAL_DISABLED = 3
 
   class TransferLockStateValueValuesEnum(_messages.Enum):
-    r"""Controls whether the domain can be transferred to another registrar.
+    r"""This is the desired transfer lock state for this `Registration`. A
+    transfer lock controls whether the domain can be transferred to another
+    registrar.
 
     Values:
       TRANSFER_LOCK_STATE_UNSPECIFIED: The state is unspecified.

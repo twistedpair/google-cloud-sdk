@@ -2027,6 +2027,9 @@ class Feature(_messages.Message):
   Fields:
     createTime: Output only. When the Feature resource was created.
     deleteTime: Output only. When the Feature resource was deleted.
+    etag: Optional. This checksum is computed by the server based on the value
+      of other fields, and may be sent on update and delete requests to ensure
+      the client has an up-to-date value before proceeding.
     fleetDefaultMemberConfig: Optional. Feature configuration applicable to
       all memberships of the fleet.
     labels: Labels for this Feature.
@@ -2230,17 +2233,18 @@ class Feature(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 5)
-  membershipStates = _messages.MessageField('MembershipStatesValue', 6)
-  name = _messages.StringField(7)
-  resourceState = _messages.MessageField('FeatureResourceState', 8)
-  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 9)
-  scopeStates = _messages.MessageField('ScopeStatesValue', 10)
-  spec = _messages.MessageField('CommonFeatureSpec', 11)
-  state = _messages.MessageField('CommonFeatureState', 12)
-  updateTime = _messages.StringField(13)
+  etag = _messages.StringField(3)
+  fleetDefaultMemberConfig = _messages.MessageField('CommonFleetDefaultMemberConfigSpec', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  membershipSpecs = _messages.MessageField('MembershipSpecsValue', 6)
+  membershipStates = _messages.MessageField('MembershipStatesValue', 7)
+  name = _messages.StringField(8)
+  resourceState = _messages.MessageField('FeatureResourceState', 9)
+  scopeSpecs = _messages.MessageField('ScopeSpecsValue', 10)
+  scopeStates = _messages.MessageField('ScopeStatesValue', 11)
+  spec = _messages.MessageField('CommonFeatureSpec', 12)
+  state = _messages.MessageField('CommonFeatureState', 13)
+  updateTime = _messages.StringField(14)
 
 
 class FeatureResourceState(_messages.Message):
@@ -4668,10 +4672,13 @@ class ListMembershipBindingsResponse(_messages.Message):
     nextPageToken: A token to request the next page of resources from the
       `ListMembershipBindings` method. The value of an empty string means that
       there are no more resources to return.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
   """
 
   membershipBindings = _messages.MessageField('MembershipBinding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMembershipRBACRoleBindingsResponse(_messages.Message):
@@ -4682,10 +4689,13 @@ class ListMembershipRBACRoleBindingsResponse(_messages.Message):
       `ListMembershipRBACRoleBindings` method. The value of an empty string
       means that there are no more resources to return.
     rbacrolebindings: The list of Membership RBACRoleBindings.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
   """
 
   nextPageToken = _messages.StringField(1)
   rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListMembershipsResponse(_messages.Message):

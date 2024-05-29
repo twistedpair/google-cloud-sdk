@@ -1549,6 +1549,10 @@ class FhirStore(_messages.Message):
       history APIs, but cannot be updated. If set to true, no historical
       versions are kept. The server sends errors for attempts to read the
       historical versions.
+    enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
+      accept history bundles, and directly insert and overwrite historical
+      resource versions into the FHIR store. If set to false, using history
+      bundles fails with an error.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -1642,12 +1646,13 @@ class FhirStore(_messages.Message):
 
   disableReferentialIntegrity = _messages.BooleanField(1)
   disableResourceVersioning = _messages.BooleanField(2)
-  enableUpdateCreate = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  notificationConfig = _messages.MessageField('NotificationConfig', 6)
-  streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
-  version = _messages.EnumField('VersionValueValuesEnum', 8)
+  enableHistoryModifications = _messages.BooleanField(3)
+  enableUpdateCreate = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  notificationConfig = _messages.MessageField('NotificationConfig', 7)
+  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 9)
 
 
 class FhirStoreMetric(_messages.Message):

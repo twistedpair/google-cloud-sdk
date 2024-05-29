@@ -5,6 +5,146 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 478.0.0 (2024-05-29)
+
+### Google Cloud CLI
+
+* Improved error message for authentication errors.
+* Improved error message for service account impersonation refresh errors.
+* Fixed issue where some commands with a `--uri` flag would produce no output.
+
+### App Engine
+
+* Enable fetch_instance_after_connect_error for compute start-iap-tunnel in GA.
+* Allow IAP tunneling for instances with external IP when explicitly enabled via flag.
+
+### App Engine Flexible Environment
+
+* Enable fetch_instance_after_connect_error for compute start-iap-tunnel in GA.
+* Allow IAP tunneling for instances with external IP when explicitly enabled via flag.
+
+### Artifact Registry
+
+*  Added `gcloud artifacts files describe` command.
+
+### Backup For GKE
+
+* Added `--volume-data-restore-policy-bindings` flag to
+`gcloud container backup-restore restore-plans create` and
+`gcloud container backup-restore restore-plans update` to enhance
+volume restore flexibility.
+* Added `--volume-data-restore-policy-overrides-file` flag to
+`gcloud container backup-restore restores create` to enhance
+volume restore flexibility.
+* Added `--permissive-mode` flag to
+`gcloud container backup-restore backup-plans create` and
+`gcloud container backup-restore backup-plans update` to enable bypassing
+the new backup-time restorability enforcement.
+* Added `--filter-file` flag to `gcloud container backup-restore restores create`
+  to support Backup for GKE fine-grained restore.
+* Added `--restore-order-file` flag to `gcloud <alpha|beta> container backup-restore restore-plans create`
+  and `gcloud <alpha|beta> container backup-restore restore-plans update` to
+  support custom ordering while performing restore as part of Backup for GKE.
+* Added the following enum values for the flag `--namespaced-resource-restore-mode`
+to `gcloud <alpha|beta> container backup-restore restore-plans create` and
+`gcloud <alpha|beta> container backup-restore restore-plans update` to expand
+namespaced resource restore mode options:
+    * `merge-skip-on-conflict`
+    * `merge-replace-volume-on-conflict`
+    * `merge-replace-on-conflict`
+* Deprecated `--substitution-rules-file` flag.
+Use `--transformation-rules-file` instead.
+
+### BigQuery
+
+* Added support for `map_target_type` with external parquet tables.
+* Added support for `column_name_character_map` to map special characters in
+  column names during load jobs.
+* Added a printout of unreachable locations when datasets and jobs are listed
+  and a region is down.
+
+### Cloud Dataplex
+
+* Promoted `gcloud dataplex aspect-types` command group to GA.
+* Promoted `gcloud dataplex entry-groups` command group to GA.
+* Promoted `gcloud dataplex entry-types` command group to GA.
+
+### Cloud Deploy
+
+* Fixed issue where skaffold files generated from `deploy releases create` flags did not include all profiles in the release's Delivery Pipeline.
+
+### Cloud Firestore
+
+* Promoted Cloud Firestore Backups and Restore `gcloud` CLI changes to beta.
+  * Promoted `gcloud firestore backups list` command to beta.
+  * Promoted `gcloud firestore backups describe` command to beta.
+  * Promoted `gcloud firestore backups delete` command to beta.
+  * Promoted `gcloud firestore backups schedules create` command to beta.
+  * Promoted `gcloud firestore backups schedules update` command to beta.
+  * Promoted `gcloud firestore backups schedules describe` command to beta.
+  * Promoted `gcloud firestore backups schedules delete` command to beta.
+  * Promoted `gcloud firestore backups schedules list` command to beta.
+  * Promoted `gcloud firestore databases restore` command to beta.
+* Promoted Cloud Firestore Backups and Restore `gcloud` CLI changes to GA.
+  * Promoted `gcloud firestore backups list` command to GA.
+  * Promoted `gcloud firestore backups describe` command to GA.
+  * Promoted `gcloud firestore backups delete` command to GA.
+  * Promoted `gcloud firestore backups schedules create` command to GA.
+  * Promoted `gcloud firestore backups schedules update` command to GA.
+  * Promoted `gcloud firestore backups schedules describe` command to GA.
+  * Promoted `gcloud firestore backups schedules delete` command to GA.
+  * Promoted `gcloud firestore backups schedules list` command to GA.
+  * Promoted `gcloud firestore databases restore` command to GA.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.19.7
+  * Fixes unexpected responses from nested queries in Datastore Mode.
+  * Add Auth Context support for Firestore triggers (2nd gen) in Firestore Emulator
+
+### Cloud Functions
+
+*   Added validation to `--runtime-update-policy` argument.
+
+### Cloud SQL
+
+* Added PostgreSQL 16 to database versions.
+
+### Cloud Workstations
+
+* Adding `--env` flag to `gcloud workstations create`.
+
+### Compute Engine
+
+* Added `IPV6_ONLY` option to `--stack-type` flag of `gcloud compute vpn-gateways create` command to create an IPv6-only VPN gateway.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.118.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Database Migration
+
+* Updated `gcloud database-migrate connection-profiles update` to update Database Migration Service connection profile for SQL Server to Cloud SQL-SQL Server migrations.
+* Updated `gcloud database-migrate migration-jobs update` to update Database Migration Service migration job for SQL Server to Cloud SQL-SQL Server migrations.
+
+### Dataproc Metastore
+
+*   Added `--deletion-protection` flags to `gcloud metastore services create` GA
+    release track to allow creating a Dataproc Metastore instance
+    with delete protection.
+*   Added `--deletion-protection` and `--no-deletion-protection` flags to
+    `gcloud metastore services update` GA release track to allow updating
+    a Dataproc Metastore instance with delete protection.
+
+### Security Command Center
+
+*   Added `--filter-modules` flag in `gcloud scc manage services describe ...` api to filter response by modules.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 477.0.0 (2024-05-21)
 
 ### Anthos

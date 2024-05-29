@@ -46,6 +46,7 @@ encryption-key:
 auto-rebalance:
   api_field: cluster.rebalanceConfig.mode
   arg_name: auto-rebalance
+  default: true
   action: store_true
   help_text: |
     Whether the automatic rebalancing is enabled. If automatic rebalancing

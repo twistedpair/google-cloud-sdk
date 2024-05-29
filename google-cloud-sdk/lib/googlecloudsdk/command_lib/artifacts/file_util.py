@@ -24,7 +24,7 @@ from googlecloudsdk.core import resources
 
 
 def EscapeFileName(ref):
-  """Escapes slashes and pluses from request names."""
+  """Escapes slashes, pluses and hats from request names."""
   return resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.files",
       projectsId=ref.projectsId,
@@ -33,6 +33,21 @@ def EscapeFileName(ref):
       filesId=
       ref.filesId.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
   )
+
+
+def EscapeFileNameHook(ref, unused_args, req):
+  """Escapes slashes, pluses and hats from request names."""
+  file = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.files",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      filesId=ref.filesId.replace("/", "%2F")
+      .replace("+", "%2B")
+      .replace("^", "%5E"),
+  )
+  req.name = file.RelativeName()
+  return req
 
 
 def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):

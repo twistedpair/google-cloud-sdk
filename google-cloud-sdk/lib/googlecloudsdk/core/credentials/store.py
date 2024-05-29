@@ -31,7 +31,7 @@ import time
 from typing import Optional
 
 import dateutil
-
+from googlecloudsdk.api_lib.auth import external_account as auth_external_account
 from googlecloudsdk.api_lib.auth import util as auth_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
@@ -44,7 +44,6 @@ from googlecloudsdk.core.credentials import gce as c_gce
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
-
 from oauth2client import client
 from oauth2client import crypt
 from oauth2client import service_account
@@ -658,6 +657,135 @@ def ParseImpersonationAccounts(service_account_ids):
   return service_account_ids[-1], (service_account_ids[:-1] or None)
 
 
+class CredentialInfo(object):
+  """Credential information."""
+
+  def __init__(
+      self,
+      auth_disabled=False,
+      access_token_env_var_set=False,
+      access_token_file_set=False,
+      credential_file_override_set=False,
+      account=None,
+      file_path=None,
+      impersonated_account=None,
+      impersonated_delegates=None,
+  ):
+    self.auth_disabled = auth_disabled
+    self.access_token_env_var_set = access_token_env_var_set
+    self.access_token_file_set = access_token_file_set
+    self.credential_file_override_set = credential_file_override_set
+    self.account = account
+    self.file_path = file_path
+    self.impersonated_account = impersonated_account
+    self.impersonated_account_delegates = impersonated_delegates
+
+  def GetInfoString(self):
+    """Get the credential information string.
+
+    Returns:
+      str: the cred info string.
+    """
+    if self.auth_disabled:
+      return (
+          'This command is unauthenticated because the'
+          ' [auth/disable_credentials] property is True.'
+      )
+
+    if self.access_token_env_var_set:
+      info_string = (
+          'This command is authenticated with an access token from the'
+          ' CLOUDSDK_AUTH_ACCESS_TOKEN environment variable.'
+      )
+    elif self.access_token_file_set:
+      info_string = (
+          'This command is authenticated with an access token from {} specified'
+          ' by the [auth/access_token_file] property.'.format(self.file_path)
+      )
+    elif self.credential_file_override_set:
+      info_string = (
+          'This command is authenticated as {} using the credentials in {},'
+          ' specified by the [auth/credential_file_override] property.'.format(
+              self.account, self.file_path
+          )
+      )
+    else:
+      info_string = (
+          'This command is authenticated as {} which is the active account'
+          ' specified by the [core/account] property.'.format(self.account)
+      )
+
+    if self.impersonated_account:
+      info_string = (
+          info_string
+          + ' Impersonation is used to impersonate {}'.format(
+              self.impersonated_account
+          )
+      )
+      if self.impersonated_account_delegates:
+        info_string = info_string + ' via delegate chain: {}'.format(
+            ', '.join(self.impersonated_account_delegates)
+        )
+      info_string = info_string + '.'
+
+    return info_string
+
+  @staticmethod
+  def GetCredentialInfo():
+    """Get the credential information.
+
+    Returns:
+      CredentialInfo: the cred info.
+    """
+    if properties.VALUES.auth.disable_credentials.GetBool():
+      return CredentialInfo(auth_disabled=True)
+
+    cred_info = CredentialInfo()
+
+    # Figure out the credential impersonation.
+    impersonation = properties.VALUES.auth.impersonate_service_account.Get()
+    if impersonation:
+      (
+          cred_info.impersonated_account,
+          cred_info.impersonated_account_delegates,
+      ) = ParseImpersonationAccounts(impersonation)
+
+    # Case 1: access token env var is set
+    if encoding.GetEncodedValue(os.environ, ACCESS_TOKEN_ENV_VAR_NAME):
+      cred_info.access_token_env_var_set = True
+      return cred_info
+
+    # Case 2: access token file path is set
+    access_token_file = properties.VALUES.auth.access_token_file.Get()
+    if access_token_file:
+      cred_info.access_token_file_set = True
+      cred_info.file_path = access_token_file
+      return cred_info
+
+    # Case 3: credential file override is set.
+    cred_file_override = properties.VALUES.auth.credential_file_override.Get()
+    if cred_file_override:
+      cred_info.credential_file_override_set = True
+      cred_info.file_path = cred_file_override
+
+      # To figure out the account, load the cred from the cred file.
+      creds = _LoadFromFileOverride(cred_file_override, None, True)
+
+      # Service account can be obtained from service_account_email property.
+      # External account can be call GetExternalAccountId method.
+      account = getattr(creds, 'service_account_email', None)
+      if not account:
+        account = auth_external_account.GetExternalAccountId(creds)
+      cred_info.account = account
+
+      return cred_info
+
+    # Case 4: load from gcloud store or MDS, the account is the active account.
+    cred_info.account = properties.VALUES.core.account.Get()
+
+    return cred_info
+
+
 def Load(account=None,
          scopes=None,
          prevent_refresh=False,
@@ -1053,7 +1181,9 @@ def _Refresh(credentials,
 
 
 @contextlib.contextmanager
-def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
+def HandleGoogleAuthCredentialsRefreshError(
+    for_adc=False, account=None, is_service_account=False
+):
   """Handles exceptions during refreshing google auth credentials."""
   # Import only when necessary to decrease the startup time. Move it to
   # global once google-auth is ready to replace oauth2client.
@@ -1072,7 +1202,12 @@ def HandleGoogleAuthCredentialsRefreshError(for_adc=False):
   except google_auth_exceptions.RefreshError as e:
     if context_aware.IsContextAwareAccessDeniedError(e):
       raise creds_exceptions.TokenRefreshDeniedByCAAError(e)
-    raise creds_exceptions.TokenRefreshError(six.text_type(e), for_adc=for_adc)
+    raise creds_exceptions.TokenRefreshError(
+        six.text_type(e),
+        for_adc=for_adc,
+        account=account,
+        is_service_account=is_service_account,
+    )
 
 
 def _ShouldRefreshGoogleAuthIdToken(credentials):
@@ -1149,11 +1284,19 @@ def _RefreshGoogleAuth(credentials,
       gcloud, or if the provided credentials is not google auth impersonation
       credentials.
   """
+  account = None
+  is_service_account = False
+  if c_creds.IsServiceAccountCredentials(credentials):
+    account = credentials.service_account_email
+    is_service_account = True
+
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core import requests
   # pylint: enable=g-import-not-at-top
   request_client = requests.GoogleAuthRequest()
-  with HandleGoogleAuthCredentialsRefreshError():
+  with HandleGoogleAuthCredentialsRefreshError(
+      account=account, is_service_account=is_service_account
+  ):
     # If this cred is a service account cred, we may need to enable self signed
     # jwt if applicable. Depending on how this cred is created:
     # 1) if it's created using Load method (via cred store or file override),

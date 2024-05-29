@@ -749,6 +749,17 @@ class FleetPackage(_messages.Message):
   variantSelector = _messages.MessageField('VariantSelector', 11)
 
 
+class FleetPackageError(_messages.Message):
+  r"""A Fleet Package created error representing a problem rolling out
+  configurations.
+
+  Fields:
+    errorMessage: Optional. A description of the error.
+  """
+
+  errorMessage = _messages.StringField(1)
+
+
 class FleetPackageInfo(_messages.Message):
   r"""FleetPackageInfo represents the status of resource bundle rollout across
   the target clusters.
@@ -761,6 +772,8 @@ class FleetPackageInfo(_messages.Message):
     activeRollout: Optional. The active rollout, if any. Format is `projects/{
       project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{ro
       llout}`.
+    errors: Optional. Output only. A list of errors resulting from problematic
+      configs.
     lastCompletedRollout: Optional. The last completed rollout, if any. Format
       is `projects/{project}/locations/{location}/fleetPackages/{fleet_package
       }/rollouts/{rollout}`.
@@ -774,14 +787,17 @@ class FleetPackageInfo(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state.
       ACTIVE: FleetPackage is active.
       SUSPENDED: FleetPackage is suspended.
+      FAILED: FleetPackage has failed to reconcile.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUSPENDED = 2
+    FAILED = 3
 
   activeRollout = _messages.StringField(1)
-  lastCompletedRollout = _messages.StringField(2)
-  state = _messages.EnumField('StateValueValuesEnum', 3)
+  errors = _messages.MessageField('FleetPackageError', 2, repeated=True)
+  lastCompletedRollout = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class LabelSelector(_messages.Message):

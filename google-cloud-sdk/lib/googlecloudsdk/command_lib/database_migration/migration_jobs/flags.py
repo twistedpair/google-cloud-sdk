@@ -163,7 +163,7 @@ def AddDumpTypeFlag(parser):
   parser.add_argument('--dump-type', help=help_text, choices=choices)
 
 
-def AddSqlServerHomogeneousMigrationConfigFlag(parser):
+def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
   """Adds SQL Server homogeneous migration flag group to the given parser."""
   sqlserver_homogeneous_migration_config = parser.add_group(
       (
@@ -171,12 +171,26 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser):
           ' SQL Server to CloudSQL SQL Server migrations.'
       ),
   )
-  AddSqlServerBackupFilePattern(sqlserver_homogeneous_migration_config)
-  AddSqlServerDatabasesFlag(sqlserver_homogeneous_migration_config)
-  AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
+  if is_update:
+    AddSqlServerBackupFilePattern(
+        sqlserver_homogeneous_migration_config, default_value=None
+    )
+    AddSqlServerDatabasesFlag(
+        sqlserver_homogeneous_migration_config, required=False
+    )
+    AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
+  else:
+    AddSqlServerBackupFilePattern(
+        sqlserver_homogeneous_migration_config,
+        default_value='.*(\\.|_)(<epoch>\\d*)\\.(trn|bak|trn\\.final)',
+    )
+    AddSqlServerDatabasesFlag(
+        sqlserver_homogeneous_migration_config, required=True
+    )
+    AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
 
 
-def AddSqlServerBackupFilePattern(parser):
+def AddSqlServerBackupFilePattern(parser, default_value=None):
   """Adds a --sqlserver-backup-file-pattern flag to the given parser."""
   help_text = (
       'Pattern that describes the default backup naming strategy. The specified'
@@ -185,28 +199,30 @@ def AddSqlServerBackupFilePattern(parser):
       ' timestamp\nExample: For backup files TestDB.1691448240.bak,'
       ' TestDB.1691448254.trn, TestDB.1691448284.trn.final use pattern:'
       ' .*\\.(<epoch>\\d*)\\.(trn|bak|trn\\.final) or'
-      ' .*\\.(<timestamp>\\d*)\\.(trn|bak|trn\\.final)'
+      ' .*\\.(<timestamp>\\d*)\\.(trn|bak|trn\\.final)\nThis flag is used only'
+      ' for SQL Server to Cloud SQL migrations.'
   )
   parser.add_argument(
       '--sqlserver-backup-file-pattern',
       help=help_text,
-      default='.*(\\.|_)(<epoch>\\d*)\\.(trn|bak|trn\\.final)',
+      default=default_value,
   )
 
 
-def AddSqlServerDatabasesFlag(parser):
+def AddSqlServerDatabasesFlag(parser, required=True):
   """Adds a --sqlserver-databases flag to the given parser."""
   help_text = """\
     A list of databases to be migrated to the destination Cloud SQL instance.
     Provide databases as a comma separated list. This list should contain all
-    encrypted and non-encrypted database names.
+    encrypted and non-encrypted database names. This flag is used only for
+    SQL Server to Cloud SQL migrations.
     """
   parser.add_argument(
       '--sqlserver-databases',
       metavar='databaseName',
       type=arg_parsers.ArgList(min_length=1),
       help=help_text,
-      required=True,
+      required=required,
   )
 
 
@@ -232,7 +248,7 @@ def AddSqlServerEncryptedDatabasesFlag(parser):
             }
         }]
 
-      This flag accepts "-" for stdin.
+      This flag accepts "-" for stdin. This flag is used only for SQL Server to Cloud SQL migrations.
     """
   parser.add_argument(
       '--sqlserver-encrypted-databases',

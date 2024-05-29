@@ -1,0 +1,23 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: gkebackup v1 Filter export schema
+description: Schema of Backup for GKE fine-grained restore Filter.
+type: object
+additionalProperties: false
+properties:
+  exclusionFilters:
+    description: |-
+      Excludes resources from restoration. If specified, a resource will not be
+      restored if it matches any ResourceSelector of the exclusion_filters.
+    type: array
+    items:
+      $ref: ResourceSelector.yaml
+  inclusionFilters:
+    description: |-
+      Selects resources for restoration. If specified, only resources which
+      match inclusion_filters will be selected for restoration. A resource
+      will be selected if it matches any ResourceSelector of the
+      inclusion_filters.
+    type: array
+    items:
+      $ref: ResourceSelector.yaml

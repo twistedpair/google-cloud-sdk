@@ -156,6 +156,24 @@ def AddStackTypeArg(parser):
   )
 
 
+def AddIgmpQueryArg(parser):
+  parser.add_argument(
+      '--igmp-query',
+      choices={
+          'IGMP_QUERY_V2': 'IGMP Query V2 on the network interface is enabled.',
+          'IGMP_QUERY_DISABLED': (
+              'IGMP Query on the network interface is disabled.'
+          ),
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help=(
+          'Determines if the'
+          ' Compute Engine instance can receive and respond to IGMP query'
+          ' packets on the specified network interface.'
+      ),
+  )
+
+
 def AddNetworkTierArg(parser):
   parser.add_argument(
       '--network-tier',

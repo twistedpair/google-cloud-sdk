@@ -2104,7 +2104,8 @@ class InstanceConfig(_messages.Message):
     leaderOptions: Allowed values of the "default_leader" schema option for
       databases in instances that use this instance configuration.
     name: A unique identifier for the instance configuration. Values are of
-      the form `projects//instanceConfigs/a-z*`.
+      the form `projects//instanceConfigs/a-z*`. User instance config must
+      start with `custom-`.
     optionalReplicas: Output only. The available optional replicas to choose
       from for user managed configurations. Populated for Google managed
       configurations.
@@ -2113,7 +2114,10 @@ class InstanceConfig(_messages.Message):
       updated. If false, there are no ongoing operations for the instance
       config.
     replicas: The geographic placement of nodes in this instance configuration
-      and their replication properties.
+      and their replication properties. To create user managed configurations,
+      input `replicas` must include all replicas in `replicas` of the
+      `base_config` and include one or more replicas in the
+      `optional_replicas` of the `base_config`.
     state: Output only. The current instance config state. Applicable only for
       USER_MANAGED configs.
     storageLimitPerProcessingUnit: Output only. The storage limit in bytes per
@@ -4330,12 +4334,12 @@ class Session(_messages.Message):
       `([a-z]([-a-z0-9]*[a-z0-9])?)?`. * No more than 64 labels can be
       associated with a given session. See https://goo.gl/xmQnxf for more
       information on and examples of labels.
-    multiplexed: Optional. If true, specifies a multiplexed session. A
-      multiplexed session may be used for multiple, concurrent read-only
-      operations but can not be used for read-write transactions, partitioned
-      reads, or partitioned queries. Multiplexed sessions can be created via
-      CreateSession but not via BatchCreateSessions. Multiplexed sessions may
-      not be deleted nor listed.
+    multiplexed: Optional. If true, specifies a multiplexed session. Use a
+      multiplexed session for multiple, concurrent read-only operations. Don't
+      use them for read-write transactions, partitioned reads, or partitioned
+      queries. Use CreateSession to create multiplexed sessions. Don't use
+      BatchCreateSessions to create a multiplexed session. You can't delete or
+      list multiplexed sessions.
     name: Output only. The name of the session. This is always system-
       assigned.
   """
@@ -4619,7 +4623,8 @@ class SpannerProjectsInstanceConfigsPatchRequest(_messages.Message):
 
   Fields:
     name: A unique identifier for the instance configuration. Values are of
-      the form `projects//instanceConfigs/a-z*`.
+      the form `projects//instanceConfigs/a-z*`. User instance config must
+      start with `custom-`.
     updateInstanceConfigRequest: A UpdateInstanceConfigRequest resource to be
       passed as the request body.
   """

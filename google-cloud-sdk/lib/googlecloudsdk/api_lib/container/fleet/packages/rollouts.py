@@ -70,7 +70,8 @@ class RolloutsClient(object):
       Generator of matching devices.
     """
     list_request = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsListRequest(
-        parent=f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}'
+        parent=f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}',
+        orderBy='create_time desc',
     )
     return list_pager.YieldFromList(
         self._service,

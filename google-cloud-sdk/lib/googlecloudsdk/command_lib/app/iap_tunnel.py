@@ -31,7 +31,8 @@ def AddSshTunnelArgs(parser):
 
       To learn more, see the
       [IAP for TCP forwarding documentation](https://cloud.google.com/iap/docs/tcp-forwarding-overview).
-      """)
+      """,
+  )
 
 
 def CreateSshTunnelArgs(args, api_client, track, project, version, instance):
@@ -53,21 +54,32 @@ def CreateSshTunnelArgs(args, api_client, track, project, version, instance):
   if not hasattr(args, 'tunnel_through_iap'):
     return None
 
-  # If instance has an external ip, then abort.
-  instance_ip_mode_enum = api_client.messages.Network.InstanceIpModeValueValuesEnum
-  if version.network.instanceIpMode is not instance_ip_mode_enum.INTERNAL:
-    return None
+  instance_ip_mode_enum = (
+      api_client.messages.Network.InstanceIpModeValueValuesEnum
+  )
 
+  # If IAP tunnelling is specified, then use it.
   if args.IsSpecified('tunnel_through_iap'):
     # If IAP tunneling is explicitly disabled, then abort.
     if not args.tunnel_through_iap:
-      log.status.Print('IAP tunnel is disabled; ssh/scp operations that require'
-                       ' IAP tunneling will fail.')
+      log.status.Print(
+          'IAP tunnel is disabled; ssh/scp operations that require'
+          ' IAP tunneling will fail.'
+      )
       return None
+    else:
+      # allow IAP tunneling for instances with external ip.
+      log.status.Print(
+          'IAP tunnel is enabled; ssh/scp operations that require'
+          ' IAP tunneling will succeed.'
+      )
   else:
-    # Default to using IAP tunneling for instances without an external ip.
-    log.status.Print('External IP address was not found; defaulting to using '
-                     'IAP tunneling.')
+    # defaults to using IAP tunneling for only instances without an external ip.
+    if version.network.instanceIpMode is not instance_ip_mode_enum.INTERNAL:
+      log.status.Print(
+          'External IP address was found while IAP tunneling not specified;'
+      )
+      return None
 
   res = iap_tunnel.SshTunnelArgs()
 

@@ -398,6 +398,36 @@ class MigrationJobsClient(object):
         migration_job.staticIpConnectivity = None
         return
 
+  def _UpdateSqlserverHomogeneousMigrationJobConfig(self, args, migration_job):
+    """Update the sqlserver homogeneous migration job config for the migration job."""
+
+    if migration_job.sqlserverHomogeneousMigrationJobConfig is None:
+      raise Error(
+          'Cannot update sqlserver homogeneous migration job config when it was'
+          ' not set during creation of the migration job.'
+      )
+
+    sqlserver_homogeneous_migration_job_config_obj = (
+        migration_job.sqlserverHomogeneousMigrationJobConfig
+    )
+
+    if args.IsKnownAndSpecified('sqlserver_backup_file_pattern'):
+      sqlserver_homogeneous_migration_job_config_obj.backupFilePattern = (
+          args.sqlserver_backup_file_pattern
+      )
+    if args.IsKnownAndSpecified('sqlserver_databases'):
+      sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
+          self._GetSqlServerDatabaseBackups(
+              args.sqlserver_databases, args.sqlserver_encrypted_databases
+          )
+      )
+    elif args.IsKnownAndSpecified('sqlserver_encrypted_databases'):
+      raise exceptions.InvalidArgumentException(
+          '--sqlserver-encrypted-databases',
+          '--sqlserver-encrypted-databases can only be specified when'
+          ' --sqlserver-databases is specified.',
+      )
+
   def _GetUpdateMask(self, args):
     """Returns update mask for specified fields."""
     update_fields = [resource_property.ConvertToCamelCase(field)
@@ -419,6 +449,17 @@ class MigrationJobsClient(object):
         'filter'
     ):
       update_fields.append('conversionWorkspace.commitId')
+
+    if args.IsKnownAndSpecified('sqlserver_backup_file_pattern'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.backupFilePattern'
+      )
+    if args.IsKnownAndSpecified(
+        'sqlserver_databases'
+    ) or args.IsKnownAndSpecified('sqlserver_encrypted_databases'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.databaseBackups'
+      )
     return  update_fields
 
   def _GetUpdatedMigrationJob(
@@ -448,6 +489,12 @@ class MigrationJobsClient(object):
       migration_job.filter = server_filter
     self._UpdateConnectivity(migration_job, args)
     self._UpdateLabels(args, migration_job, update_fields)
+    if (
+        args.IsKnownAndSpecified('sqlserver_backup_file_pattern')
+        or args.IsKnownAndSpecified('sqlserver_databases')
+        or args.IsKnownAndSpecified('sqlserver_encrypted_databases')
+    ):
+      self._UpdateSqlserverHomogeneousMigrationJobConfig(args, migration_job)
     return migration_job, update_fields
 
   def _GetExistingMigrationJob(self, name):

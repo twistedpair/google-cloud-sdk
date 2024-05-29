@@ -28,11 +28,12 @@ class BackupPlansClient(util.BackupDrClientBase):
     super(BackupPlansClient, self).__init__()
     self.service = self.client.projects_locations_backupPlans
 
-  def Create(self, resource, resource_type, backup_rules):
+  def Create(self, resource, backup_vault, resource_type, backup_rules):
     parent = resource.Parent().RelativeName()
     backup_plan_id = resource.Name()
     backup_plan = self.messages.BackupPlan(
         resourceType=resource_type,
+        backupVault=backup_vault,
     )
     for backup_rule in backup_rules:
       standard_schedule = self.messages.StandardSchedule()
@@ -66,7 +67,6 @@ class BackupPlansClient(util.BackupDrClientBase):
         ]
       backup_rule_message = self.messages.BackupRule(
           ruleId=backup_rule['rule-id'],
-          backupVault=backup_rule['backup-vault'],
           backupRetentionDays=backup_rule['retention-days'],
           standardSchedule=standard_schedule,
       )

@@ -20,8 +20,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+import json
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import http_wrapper
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
@@ -182,12 +184,51 @@ class ImpersonationAccessTokenProvider(object):
     self.PerformIamEndpointsOverride()
     try:
       cred.refresh(request_client)
-    except google_auth_exceptions.RefreshError:
-      raise ImpersonatedCredGoogleAuthRefreshError(
-          'Failed to impersonate [{service_acc}]. Make sure the '
-          'account that\'s trying to impersonate it has access to the service '
-          'account itself and the "roles/iam.serviceAccountTokenCreator" '
-          'role.'.format(service_acc=target_principal))
+    except google_auth_exceptions.RefreshError as e:
+      original_message = (
+          "Failed to impersonate [{service_acc}]. Make sure the account that's"
+          ' trying to impersonate it has access to the service account itself'
+          ' and the "roles/iam.serviceAccountTokenCreator" role.'.format(
+              service_acc=target_principal
+          )
+      )
+      http_error = None
+
+      # Try to convert RefreshError into a HttpError.
+      try:
+        # RefreshError has the content:
+        # (
+        #   "Unable to acquire impersonated credentials",
+        #   "'error': {'code': xxx, 'message': "xxx", 'details': [...]}"
+        # )
+        # The refresh error's args[1] is the 2nd part (the json with 'error').
+        # It is a AIP-193 format error message. In the code below we refer to
+        # the json part with 'error' as the "AIP-193 error message".
+        content = json.loads(e.args[1])
+
+        # Prepend the original gcloud message to the AIP-193 error message.
+        content['error']['message'] = (
+            original_message + ' ' + content['error']['message']
+        )
+
+        # Create HttpError with the modified AIP-193 error message.
+        http_response = http_wrapper.Response(
+            info={'status': content['error']['code']},
+            content=json.dumps(content),
+            request_url=None,
+        )
+        http_error = apitools_exceptions.HttpError.FromResponse(http_response)
+      except Exception:  # pylint: disable=broad-exception-caught
+        pass
+
+      if http_error:
+        raise exceptions.HttpException(
+            http_error, error_format='{message} {details?\n{?}}'
+        )
+
+      # Fall back to RefreshError if we have trouble creating a HttpError.
+      raise ImpersonatedCredGoogleAuthRefreshError(original_message)
+
     return cred
 
   def GetElevationIdTokenGoogleAuth(self, google_auth_impersonation_credentials,

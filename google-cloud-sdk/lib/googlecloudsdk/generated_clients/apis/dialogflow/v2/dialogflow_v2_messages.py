@@ -12623,7 +12623,7 @@ class GoogleCloudDialogflowV2HumanAgentHandoffConfig(_messages.Message):
   not general available, please contact Google to get access.
 
   Fields:
-    livePersonConfig: Uses LivePerson (https://www.liveperson.com).
+    livePersonConfig: Uses [LivePerson](https://www.liveperson.com).
     salesforceLiveAgentConfig: Uses Salesforce Live Agent.
   """
 
@@ -12632,7 +12632,7 @@ class GoogleCloudDialogflowV2HumanAgentHandoffConfig(_messages.Message):
 
 
 class GoogleCloudDialogflowV2HumanAgentHandoffConfigLivePersonConfig(_messages.Message):
-  r"""Configuration specific to LivePerson (https://www.liveperson.com).
+  r"""Configuration specific to [LivePerson](https://www.liveperson.com).
 
   Fields:
     accountNumber: Required. Account number of the LivePerson account to

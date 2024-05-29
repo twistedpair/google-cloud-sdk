@@ -159,19 +159,20 @@ class FleetPackagesClient(object):
     )
     return self._service.Get(describe_req)
 
-  def Update(self, fleet_package, name):
+  def Update(self, fleet_package, name, update_mask=None):
     """Create FleetPackage for Package Rollouts API.
 
     Args:
       fleet_package: A parsed FleetPackage resource
       name: Fully qualified name of the FleetPackage.
+      update_mask: Field mask for the update.
 
     Returns:
       Updated FleetPackage resource.
     """
     update_request = (
         self.messages.ConfigdeliveryProjectsLocationsFleetPackagesPatchRequest(
-            fleetPackage=fleet_package, name=name, updateMask=None
+            fleetPackage=fleet_package, name=name, updateMask=update_mask
         )
     )
     return waiter.WaitFor(

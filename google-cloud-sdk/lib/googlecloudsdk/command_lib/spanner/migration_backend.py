@@ -54,6 +54,7 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
                        target_profile=None,
                        dry_run=False,
                        log_level=None,
+                       project=None,
                        **kwargs):
     """"Parse args for the schema command."""
     del kwargs
@@ -72,7 +73,8 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.append('--dry-run')
     if log_level:
       exec_args.extend(['--log-level', log_level])
-
+    if project:
+      exec_args.extend(['--project', project])
     return exec_args
 
   def _ParseDataArgs(self,
@@ -86,6 +88,8 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
                      write_limit=None,
                      dry_run=False,
                      log_level=None,
+                     project=None,
+                     dataflow_template=None,
                      **kwargs):
     """"Parse args for the data command."""
     del kwargs
@@ -110,6 +114,10 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.append('--dry-run')
     if log_level:
       exec_args.extend(['--log-level', log_level])
+    if project:
+      exec_args.extend(['--project', project])
+    if dataflow_template:
+      exec_args.extend(['--dataflow-template', dataflow_template])
     return exec_args
 
   def _ParseSchemaAndDataArgs(self,
@@ -122,6 +130,8 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
                               write_limit=None,
                               dry_run=False,
                               log_level=None,
+                              project=None,
+                              dataflow_template=None,
                               **kwargs):
     """"Parse args for the schema-and-data command."""
     del kwargs
@@ -144,9 +154,18 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.append('--dry-run')
     if log_level:
       exec_args.extend(['--log-level', log_level])
+    if project:
+      exec_args.extend(['--project', project])
+    if dataflow_template:
+      exec_args.extend(['--dataflow-template', dataflow_template])
     return exec_args
 
-  def _ParseWebArgs(self, open_flag=False, port=None, **kwargs):
+  def _ParseWebArgs(self,
+                    open_flag=False,
+                    port=None,
+                    log_level=None,
+                    dataflow_template=None,
+                    **kwargs):
     """Parse args for the web command."""
     del kwargs
     exec_args = ['web']
@@ -154,6 +173,10 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.append('--open')
     if port:
       exec_args.extend(['--port', port])
+    if log_level:
+      exec_args.extend(['--log-level', log_level])
+    if dataflow_template:
+      exec_args.extend(['--dataflow-template', dataflow_template])
     return exec_args
 
   def ParseCleanupArgs(self,

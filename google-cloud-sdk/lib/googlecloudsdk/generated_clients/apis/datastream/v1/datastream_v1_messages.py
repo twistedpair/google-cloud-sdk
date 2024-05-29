@@ -2087,6 +2087,10 @@ class SpecificStartPosition(_messages.Message):
   oracleScnPosition = _messages.MessageField('OracleScnPosition', 2)
 
 
+class SqlServerChangeTables(_messages.Message):
+  r"""Configuration to use Change Tables CDC read method."""
+
+
 class SqlServerColumn(_messages.Message):
   r"""SQLServer Column.
 
@@ -2167,16 +2171,20 @@ class SqlServerSourceConfig(_messages.Message):
   r"""SQLServer data source configuration
 
   Fields:
+    changeTables: CDC reader reads from change tables.
     excludeObjects: SQLServer objects to exclude from the stream.
     includeObjects: SQLServer objects to include in the stream.
     maxConcurrentBackfillTasks: Max concurrent backfill tasks.
     maxConcurrentCdcTasks: Max concurrent CDC tasks.
+    transactionLogs: CDC reader reads from transaction logs.
   """
 
-  excludeObjects = _messages.MessageField('SqlServerRdbms', 1)
-  includeObjects = _messages.MessageField('SqlServerRdbms', 2)
-  maxConcurrentBackfillTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maxConcurrentCdcTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  changeTables = _messages.MessageField('SqlServerChangeTables', 1)
+  excludeObjects = _messages.MessageField('SqlServerRdbms', 2)
+  includeObjects = _messages.MessageField('SqlServerRdbms', 3)
+  maxConcurrentBackfillTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maxConcurrentCdcTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  transactionLogs = _messages.MessageField('SqlServerTransactionLogs', 6)
 
 
 class SqlServerTable(_messages.Message):
@@ -2190,6 +2198,10 @@ class SqlServerTable(_messages.Message):
 
   columns = _messages.MessageField('SqlServerColumn', 1, repeated=True)
   table = _messages.StringField(2)
+
+
+class SqlServerTransactionLogs(_messages.Message):
+  r"""Configuration to use Transaction Logs CDC read method."""
 
 
 class StandardQueryParameters(_messages.Message):

@@ -1829,6 +1829,22 @@ class IamProjectsLocationsWorkloadIdentityPoolsListRequest(_messages.Message):
   showDeleted = _messages.BooleanField(4)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleRequest
+  object.
+
+  Fields:
+    addAttestationRuleRequest: A AddAttestationRuleRequest resource to be
+      passed as the request body.
+    resource: Required. The resource name of the managed identity to add an
+      attestation rule to.
+  """
+
+  addAttestationRuleRequest = _messages.MessageField('AddAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesCreateRequest
   object.
@@ -1886,6 +1902,32 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest(_messages.Me
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListAttestationRulesRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesListAttestationRule
+  sRequest object.
+
+  Fields:
+    filter: Optional. A query filter. Supports the following function: *
+      `container_ids()`: Returns only the AttestationRules under the specific
+      container ids. The function expects a comma-delimited list with only
+      project numbers and must use the format `projects/`. For example:
+      `container_ids(projects/, projects/,...)`.
+    pageSize: Optional. The maximum number of AttestationRules to return. If
+      unspecified, at most 50 AttestationRules are returned. The maximum value
+      is 100; values above 100 are truncated to 100.
+    pageToken: Optional. A page token, received from a previous
+      `ListWorkloadIdentityPoolProviderKeys` call. Provide this to retrieve
+      the subsequent page.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to list attestation rules of.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  resource = _messages.StringField(4, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesListRequest(_messages.Message):
@@ -2240,6 +2282,21 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRu
+  leRequest object.
+
+  Fields:
+    removeAttestationRuleRequest: A RemoveAttestationRuleRequest resource to
+      be passed as the request body.
+    resource: Required. The resource name of the managed identity to remove an
+      attestation rule from.
+  """
+
+  removeAttestationRuleRequest = _messages.MessageField('RemoveAttestationRuleRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest(_messages.Message):

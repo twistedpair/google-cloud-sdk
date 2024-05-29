@@ -1214,15 +1214,32 @@ class MaintenanceEvent(_messages.Message):
   uuid = _messages.StringField(10)
 
 
+class MaintenanceExclusionWindow(_messages.Message):
+  r"""Represents a maintenance exclusion window.
+
+  Fields:
+    id: Optional. A unique (per cluster) id for the window.
+    window: Optional. The time window.
+  """
+
+  id = _messages.StringField(1)
+  window = _messages.MessageField('TimeWindow', 2)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""Maintenance policy configuration.
 
   Fields:
+    maintenanceExclusions: Optional. Exclusions to automatic maintenance. Non-
+      emergency maintenance should not occur in these windows. Each exclusion
+      has a unique name and may be active or expired. The max number of
+      maintenance exclusions allowed at a given time is 3.
     window: Specifies the maintenance window in which maintenance may be
       performed.
   """
 
-  window = _messages.MessageField('MaintenanceWindow', 1)
+  maintenanceExclusions = _messages.MessageField('MaintenanceExclusionWindow', 1, repeated=True)
+  window = _messages.MessageField('MaintenanceWindow', 2)
 
 
 class MaintenanceWindow(_messages.Message):

@@ -64,6 +64,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_deploymentResourcePools = self.ProjectsLocationsDeploymentResourcePoolsService(self)
     self.projects_locations_edgeDevices_operations = self.ProjectsLocationsEdgeDevicesOperationsService(self)
     self.projects_locations_edgeDevices = self.ProjectsLocationsEdgeDevicesService(self)
+    self.projects_locations_endpoints_chat = self.ProjectsLocationsEndpointsChatService(self)
     self.projects_locations_endpoints_operations = self.ProjectsLocationsEndpointsOperationsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_evaluationTasks_operations = self.ProjectsLocationsEvaluationTasksOperationsService(self)
@@ -2986,6 +2987,43 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsEdgeDevicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ProjectsLocationsEndpointsChatService(base_api.BaseApiService):
+    """Service class for the projects_locations_endpoints_chat resource."""
+
+    _NAME = 'projects_locations_endpoints_chat'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsEndpointsChatService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Completions(self, request, global_params=None):
+      r"""Exposes an OpenAI-compatible endpoint for chat completions.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsChatCompletionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('Completions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Completions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/chat/completions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.chat.completions',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}/chat/completions',
+        request_field='googleApiHttpBody',
+        request_type_name='AiplatformProjectsLocationsEndpointsChatCompletionsRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEndpointsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_endpoints_operations resource."""

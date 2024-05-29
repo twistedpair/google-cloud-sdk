@@ -211,6 +211,7 @@ def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
     cluster.maintenanceUpdatePolicy.denyMaintenancePeriods = (
         _ConstructDenyPeriods(alloydb_messages, args)
     )
+  cluster.subscriptionType = args.subscription_type
   return cluster
 
 
@@ -456,6 +457,11 @@ def _ConstructClusterAndMaskForPatchRequestBeta(alloydb_messages, args):
         _ConstructDenyPeriods(alloydb_messages, args, update=True)
     )
     update_masks.append('maintenance_update_policy.deny_maintenance_periods')
+
+  if args.subscription_type is not None:
+    cluster.subscriptionType = args.subscription_type
+    update_masks.append('subscription_type')
+
   return cluster, update_masks
 
 

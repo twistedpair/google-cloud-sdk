@@ -167,15 +167,15 @@ class Session(proto.Message):
         creator_role (str):
             The database role which created this session.
         multiplexed (bool):
-            Optional. If true, specifies a multiplexed session. A
-            multiplexed session may be used for multiple, concurrent
-            read-only operations but can not be used for read-write
-            transactions, partitioned reads, or partitioned queries.
-            Multiplexed sessions can be created via
-            [CreateSession][google.spanner.v1.Spanner.CreateSession] but
-            not via
-            [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions].
-            Multiplexed sessions may not be deleted nor listed.
+            Optional. If true, specifies a multiplexed session. Use a
+            multiplexed session for multiple, concurrent read-only
+            operations. Don't use them for read-write transactions,
+            partitioned reads, or partitioned queries. Use
+            [CreateSession][google.spanner.v1.Spanner.CreateSession] to
+            create multiplexed sessions. Don't use
+            [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions]
+            to create a multiplexed session. You can't delete or list
+            multiplexed sessions.
     """
 
     name: str = proto.Field(

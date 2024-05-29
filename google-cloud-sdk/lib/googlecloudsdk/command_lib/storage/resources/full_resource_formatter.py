@@ -100,6 +100,19 @@ ManagedFolderDisplayTitlesAndDefaults = collections.namedtuple(
     ),
 )
 
+# Determines the order in which the fields should be displayed for
+# a FolderResource.
+FolderDisplayTitlesAndDefaults = collections.namedtuple(
+    'FolderDisplayTitlesAndDefaults',
+    (
+        'name',
+        'bucket',
+        'create_time',
+        'metageneration',
+        'update_time',
+    ),
+)
+
 
 # Determines the order in which the fields should be displayed for
 # an ObjectResource.

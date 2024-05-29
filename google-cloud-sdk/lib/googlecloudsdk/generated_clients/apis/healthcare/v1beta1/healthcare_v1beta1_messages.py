@@ -2495,12 +2495,6 @@ class ExportResourcesHistoryRequest(_messages.Message):
       time must be specified to the second and include a time zone.
     _type: String of comma-delimited FHIR resource types. If provided, only
       resources of the specified resource type(s) are exported.
-    bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
-      Service Agent requires two IAM roles on the BigQuery location:
-      `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type. Unlike when setting
-      `BigQueryDestination` for `StreamConfig`, `ExportResources` does not
-      create BigQuery views.
     gcsDestination: The Cloud Storage output destination. The Healthcare
       Service Agent account requires the `roles/storage.objectAdmin` role on
       the Cloud Storage location. The exported outputs are organized by FHIR
@@ -2520,9 +2514,8 @@ class ExportResourcesHistoryRequest(_messages.Message):
 
   _since = _messages.StringField(1)
   _type = _messages.StringField(2)
-  bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 3)
-  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 4)
-  maxResourceVersions = _messages.IntegerField(5)
+  gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirGcsDestination', 3)
+  maxResourceVersions = _messages.IntegerField(4)
 
 
 class ExportResourcesRequest(_messages.Message):

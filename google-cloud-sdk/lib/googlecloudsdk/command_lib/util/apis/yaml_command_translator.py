@@ -371,7 +371,9 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       ref = self.arg_generator.GetResponseResourceRef(id_value, args, method)
       return ref.SelfLink()
 
-    if hasattr(args, 'uri'):
+    # Explicit bool comparison to distinguish between the standard --uri flag
+    # vs. a potential custom --uri=URI flag that takes a value.
+    if getattr(args, 'uri', None) is True:  # pylint: disable=g-bool-id-comparison
       args.GetDisplayInfo().AddUriFunc(URIFunc)
 
   def _Exclude(self, parser):

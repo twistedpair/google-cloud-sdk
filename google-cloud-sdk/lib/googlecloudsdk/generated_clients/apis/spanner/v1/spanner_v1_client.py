@@ -517,7 +517,7 @@ class SpannerV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the supported instance configurations for a given project.
+      r"""Lists the supported instance configurations for a given project. Returns both Google managed configs and user managed configs.
 
       Args:
         request: (SpannerProjectsInstanceConfigsListRequest) input message

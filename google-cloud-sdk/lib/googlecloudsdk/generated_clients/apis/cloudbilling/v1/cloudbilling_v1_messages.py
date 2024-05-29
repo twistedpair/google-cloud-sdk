@@ -555,7 +555,7 @@ class CloudbillingServicesSkusListRequest(_messages.Message):
       a `next_page_token` value returned from a previous `ListSkus` call. If
       unspecified, the first page of results is returned.
     parent: Required. The name of the service. Example:
-      "services/DA34-426B-A397"
+      "services/6F81-5844-456A"
     startTime: Optional inclusive start time of the time range for which the
       pricing versions will be returned. Timestamps in the future are not
       allowed. The time range has to be within a single calendar month in
@@ -922,8 +922,8 @@ class Service(_messages.Message):
       "businessEntities/GCP", "businessEntities/Maps"
     displayName: A human readable display name for this service.
     name: The resource name for the service. Example:
-      "services/DA34-426B-A397"
-    serviceId: The identifier for the service. Example: "DA34-426B-A397"
+      "services/6F81-5844-456A"
+    serviceId: The identifier for the service. Example: "6F81-5844-456A"
   """
 
   businessEntityName = _messages.StringField(1)
@@ -950,7 +950,7 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class Sku(_messages.Message):
-  r"""Encapsulates a single SKU in Google Cloud Platform
+  r"""Encapsulates a single SKU in Google Cloud
 
   Fields:
     category: The category hierarchy of this SKU, purely for organizational
@@ -959,7 +959,7 @@ class Sku(_messages.Message):
       of 256 characters.
     geoTaxonomy: The geographic taxonomy for this sku.
     name: The resource name for the SKU. Example:
-      "services/DA34-426B-A397/skus/AA95-CD31-42FE"
+      "services/6F81-5844-456A/skus/D041-B8A1-6E0B"
     pricingInfo: A timeline of pricing info for this SKU in chronological
       order.
     serviceProviderName: Identifies the service provider. This is 'Google' for
@@ -967,7 +967,7 @@ class Sku(_messages.Message):
     serviceRegions: List of service regions this SKU is offered at. Example:
       "asia-east1" Service regions can be found at
       https://cloud.google.com/about/locations/
-    skuId: The identifier for the SKU. Example: "AA95-CD31-42FE"
+    skuId: The identifier for the SKU. Example: "D041-B8A1-6E0B"
   """
 
   category = _messages.MessageField('Category', 1)

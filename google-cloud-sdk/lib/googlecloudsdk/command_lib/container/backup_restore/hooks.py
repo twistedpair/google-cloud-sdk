@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Optional
+
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.backup_restore import util as api_util
 from googlecloudsdk.calliope import exceptions
@@ -298,7 +300,7 @@ def PreprocessUpdateRestorePlan(ref, args, request):
 
   if (
       args.IsSpecified('substitution_rules_file')
-      and len(request.restorePlan.restoreConfig.transformationRules) > 0
+      and bool(request.restorePlan.restoreConfig.transformationRules)
   ):
     console_io.PromptContinue(
         """
@@ -316,7 +318,7 @@ def PreprocessUpdateRestorePlan(ref, args, request):
 
   if (
       args.IsSpecified('transformation_rules_file')
-      and len(request.restorePlan.restoreConfig.substitutionRules) > 0
+      and bool(request.restorePlan.restoreConfig.substitutionRules)
   ):
     console_io.PromptContinue(
         """
@@ -385,6 +387,22 @@ def ReadTransformationRuleFile(file_arg):
   return temp_restore_config.transformationRules
 
 
+def ReadRestoreOrderFile(file_arg):
+  """Reads content of the restore order file specified in file_arg."""
+  if not file_arg:
+    return None
+  data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
+  ms = api_util.GetMessagesModule()
+  temp_restore_order = export_util.Import(
+      message_type=ms.RestoreOrder,
+      stream=data,
+      schema_path=export_util.GetSchemaPath(
+          'gkebackup', 'v1', 'RestoreOrder'
+      ),
+  )
+  return temp_restore_order
+
+
 def ReadExclusionWindowsFile(file_arg):
   """Reads content of the exclusion window file specified in file_arg."""
   if not file_arg:
@@ -399,3 +417,41 @@ def ReadExclusionWindowsFile(file_arg):
       ),
   )
   return temp_rpo_config.exclusionWindows
+
+
+def ReadVolumeDataRestorePolicyOverridesFile(
+    file_arg: Optional[str]
+) -> Optional[api_util.VolumeDataRestorePolicyOverrides]:
+  """Reads the volume data restore policy overrides file."""
+  if not file_arg:
+    return None
+  data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
+  ms = api_util.GetMessagesModule()
+  return export_util.Import(
+      message_type=ms.Restore,
+      stream=data,
+      schema_path=export_util.GetSchemaPath(
+          'gkebackup', 'v1', 'VolumeDataRestorePolicyOverrides'
+      ),
+  ).volumeDataRestorePolicyOverrides
+
+
+def ReadRestoreFilterFile(file_arg):
+  """Reads content of the restore filter file specified in file_arg."""
+  if not file_arg:
+    return None
+  data = console_io.ReadFromFileOrStdin(file_arg, binary=False)
+  try:
+    restore_filter = export_util.Import(
+        message_type=api_util.GetMessagesModule().Filter,
+        stream=data,
+        schema_path=export_util.GetSchemaPath(
+            'gkebackup', 'v1', 'Filter'
+        ),
+    )
+  except Exception as e:
+    raise exceptions.InvalidArgumentException(
+        '--filter-file',
+        '{0}'.format(e))
+
+  return restore_filter

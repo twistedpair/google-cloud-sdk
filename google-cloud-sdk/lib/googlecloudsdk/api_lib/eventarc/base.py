@@ -70,8 +70,9 @@ class EventarcClientBase(object):
       desc_cmd = 'gcloud eventarc {}s describe {} --location={}'.format(
           self._resource_label, resource_name, location_name)
       error_message = (
-          'Failed to poll status of the operation due to {status_message}, but '
-          'the operation may have succeeded. Please fix the permission issue, '
-          'then either check the %s by running `%s`, or rerun the original '
-          'command.') % (self._resource_label, desc_cmd)
+          'Failed to poll status of the operation, but the operation may have '
+          'succeeded. {status_message} After fixing the permission issue, '
+          'either check the %s by running `%s`, or rerun the original '
+          'command.'
+      ) % (self._resource_label, desc_cmd)
       raise exceptions.HttpException(e, error_format=error_message)

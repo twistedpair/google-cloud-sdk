@@ -938,6 +938,95 @@ class CloudApi(object):
         'set_managed_folder_iam_policy must be overridden.'
     )
 
+  def create_folder(self, bucket_name, folder_name, is_recursive=False):
+    """Creates a folder.
+
+    Args:
+      bucket_name (str): The bucket to create the folder in.
+      folder_name (str): The name of the folder to create.
+      is_recursive (bool): Whether to create all folders in a given path if they
+        do not exist.
+
+    Returns:
+      A resource_reference.FolderResource for the new folder.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('create_folder must be overridden.')
+
+  def delete_folder(self, bucket_name, folder_name):
+    """Deletes a folder.
+
+    Args:
+      bucket_name (str): The bucket containing the folder to delete.
+      folder_name (str): The name of the folder to delete.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('delete_folder must be overridden.')
+
+  def get_folder(self, bucket_name, folder_name):
+    """Gets metadata for a folder.
+
+    Args:
+      bucket_name (str): The bucket containing the folder to get.
+      folder_name (str): The name of the folder to get.
+
+    Returns:
+      A resource_reference.FolderResource.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('get_folder must be overridden.')
+
+  def list_folders(self, bucket_name, prefix=None):
+    """Lists folders in a bucket.
+
+    Args:
+      bucket_name (str): The bucket to list folders in.
+      prefix (str|None): Only folders beginning with `prefix` are listed if
+        specified.
+
+    Yields:
+      resource_reference.FolderResources
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('list_folders must be overridden.')
+
+  def rename_folder(
+      self, bucket_name, source_folder_name, destination_folder_name
+  ):
+    """Renames a folder to a specified destination folder name in a bucket.
+
+    Args:
+      bucket_name (str): The bucket to list folders in.
+      source_folder_name (str): Name of the folder which needs to be renamed.
+      destination_folder_name (str): Name of the folder to which the source
+        folder needs to be renamed.
+
+    Returns:
+      GoogleLongrunningOperation Apitools object for renaming folders.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('rename_folder must be overridden.')
+
   def get_service_agent(self, project_id=None, project_number=None):
     """Returns the email address (str) used to identify the service agent.
 

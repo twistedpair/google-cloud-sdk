@@ -511,6 +511,14 @@ class BackupPlan(_messages.Message):
   Fields:
     backupRules: Required. The backup rules for this `BackupPlan`. There must
       be at least one `BackupRule` message.
+    backupVault: Optional. Resource name of backup vault which will be used as
+      storage location for backups. Format:
+      projects/{project}/locations/{location}/backupVaults/{backupvault}
+    backupVaultServiceAccount: Output only. The Google Cloud Platform Service
+      Account to be used by the BackupVault for taking backups. Specify the
+      email address of the Backup Vault Service Account. (precedent: https://s
+      ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
+      service.proto;l=1014-1019)
     createTime: Output only. When the `BackupPlan` was created.
     description: Optional. The description of the `BackupPlan` resource. The
       description allows for additional details about `BackupPlan` and its use
@@ -573,14 +581,16 @@ class BackupPlan(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   backupRules = _messages.MessageField('BackupRule', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  resourceType = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  backupVault = _messages.StringField(2)
+  backupVaultServiceAccount = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  resourceType = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class BackupPlanAssociation(_messages.Message):
@@ -596,6 +606,10 @@ class BackupPlanAssociation(_messages.Message):
       applied on workload. Format:
       projects/{project}/locations/{location}/backupPlans/{backupPlanId}
     createTime: Output only. The time when the instance was created.
+    dataSource: Output only. Output Only. Resource name of data source which
+      will be used as storage location for backups taken. Format : projects/{p
+      roject}/locations/{location}/backupVaults/{backupvault}/dataSources/{dat
+      asource}
     name: Output only. The resource name of BackupPlanAssociation in below
       format Format : projects/{project}/locations/{location}/backupPlanAssoci
       ations/{backupPlanAssociationId}
@@ -626,12 +640,13 @@ class BackupPlanAssociation(_messages.Message):
 
   backupPlan = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  resource = _messages.StringField(4)
-  resourceType = _messages.StringField(5)
-  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 6, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  dataSource = _messages.StringField(3)
+  name = _messages.StringField(4)
+  resource = _messages.StringField(5)
+  resourceType = _messages.StringField(6)
+  rulesConfigInfo = _messages.MessageField('RuleConfigInfo', 7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class BackupRule(_messages.Message):
@@ -1815,8 +1830,7 @@ class ComputeInstanceTargetEnvironment(_messages.Message):
   environment to be used during restore.
 
   Fields:
-    project: Required. Name of the restore target project in the format
-      `projects/{project_id}.
+    project: Required. Target project for the Compute Engine instance.
     zone: Required. The zone of the Compute Engine instance.
   """
 
@@ -3312,12 +3326,11 @@ class StandardSchedule(_messages.Message):
       `recurrence_type` is `YEARLY`. A validation error will occur if other
       values are supplied.
     recurrenceType: Required. Specifies the `RecurrenceType` for the schedule.
-    timeZone: Optional. The time zone to be used when interpreting the
+    timeZone: Required. The time zone to be used when interpreting the
       schedule. The value of this field must be a time zone name from the IANA
       tz database. See
       https://en.wikipedia.org/wiki/List_of_tz_database_time_zones for the
-      list of valid timezone names. The default value is UTC. For e.g.,
-      Europe/Paris.
+      list of valid timezone names. For e.g., Europe/Paris.
     weekDayOfMonth: Optional. Specifies a week day of the month like, FIRST
       SUNDAY or LAST MONDAY, on which jobs will run. This will be specified by
       two fields in `WeekDayOfMonth`, one for the day, e.g. `MONDAY`, and one

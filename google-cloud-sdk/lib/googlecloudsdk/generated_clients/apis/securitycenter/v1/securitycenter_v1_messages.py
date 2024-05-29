@@ -2547,8 +2547,8 @@ class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
-  r"""A resource value config (RVC) is a mapping configuration of user's
-  resources to resource values. Used in Attack path simulations.
+  r"""A resource value configuration (RVC) is a mapping configuration of
+  user's resources to resource values. Used in Attack path simulations.
 
   Enums:
     CloudProviderValueValuesEnum: Cloud provider this configuration applies to
@@ -2557,40 +2557,41 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
 
   Messages:
     ResourceLabelsSelectorValue: List of resource labels to search for,
-      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
-      "env": "prod"} will match resources with labels "key": "value" AND
-      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
-      managing-labels
+      evaluated with AND. For example, "resource_labels_selector": {"key":
+      "value", "env": "prod"} will match resources with labels "key": "value"
+      AND "env": "prod" https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels
 
   Fields:
     cloudProvider: Cloud provider this configuration applies to
-    createTime: Output only. Timestamp this resource value config was created.
-    description: Description of the resource value config.
-    name: Name for the resource value config
+    createTime: Output only. Timestamp this resource value configuration was
+      created.
+    description: Description of the resource value configuration.
+    name: Name for the resource value configuration
     resourceLabelsSelector: List of resource labels to search for, evaluated
-      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
-      "prod"} will match resources with labels "key": "value" AND "env":
-      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
-      labels
+      with AND. For example, "resource_labels_selector": {"key": "value",
+      "env": "prod"} will match resources with labels "key": "value" AND
+      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels
     resourceType: Apply resource_value only to resources that match
-      resource_type. resource_type will be checked with "AND" of other
-      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
-      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
-      resources.
+      resource_type. resource_type will be checked with AND of other
+      resources. For example, "storage.googleapis.com/Bucket" with
+      resource_value "HIGH" will apply "HIGH" value only to
+      "storage.googleapis.com/Bucket" resources.
     resourceValue: Required. Resource value level this expression represents
-    scope: Project or folder to scope this config to. For example,
-      "project/456" would apply this config only to resources in "project/456"
-      scope will be checked with "AND" of other resources.
+    scope: Project or folder to scope this configuration to. For example,
+      "project/456" would apply this configuration only to resources in
+      "project/456" scope will be checked with AND of other resources.
     sensitiveDataProtectionMapping: A mapping of the sensitivity on Sensitive
       Data Protection finding to resource values. This mapping can only be
       used in combination with a resource_type that is related to BigQuery,
       e.g. "bigquery.googleapis.com/Dataset".
     tagValues: Required. Tag values combined with AND to check against. Values
-      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
+      in the form "tagValues/123" Example: [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
       manager/docs/tags/tags-creating-and-managing
-    updateTime: Output only. Timestamp this resource value config was last
-      updated.
+    updateTime: Output only. Timestamp this resource value configuration was
+      last updated.
   """
 
   class CloudProviderValueValuesEnum(_messages.Enum):
@@ -2625,9 +2626,9 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsSelectorValue(_messages.Message):
-    r"""List of resource labels to search for, evaluated with AND. E.g.
-    "resource_labels_selector": {"key": "value", "env": "prod"} will match
-    resources with labels "key": "value" AND "env": "prod"
+    r"""List of resource labels to search for, evaluated with AND. For
+    example, "resource_labels_selector": {"key": "value", "env": "prod"} will
+    match resources with labels "key": "value" AND "env": "prod"
     https://cloud.google.com/resource-manager/docs/creating-managing-labels
 
     Messages:
@@ -5585,8 +5586,8 @@ class GoogleCloudSecuritycenterV2ResourcePathNode(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
-  r"""A resource value config (RVC) is a mapping configuration of user's
-  resources to resource values. Used in Attack path simulations.
+  r"""A resource value configuration (RVC) is a mapping configuration of
+  user's resources to resource values. Used in Attack path simulations.
 
   Enums:
     CloudProviderValueValuesEnum: Cloud provider this configuration applies to
@@ -5595,41 +5596,42 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
 
   Messages:
     ResourceLabelsSelectorValue: List of resource labels to search for,
-      evaluated with AND. E.g. "resource_labels_selector": {"key": "value",
-      "env": "prod"} will match resources with labels "key": "value" AND
-      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
-      managing-labels
+      evaluated with AND. For example, "resource_labels_selector": {"key":
+      "value", "env": "prod"} will match resources with labels "key": "value"
+      AND "env": "prod" https://cloud.google.com/resource-
+      manager/docs/creating-managing-labels
 
   Fields:
     cloudProvider: Cloud provider this configuration applies to
-    createTime: Output only. Timestamp this resource value config was created.
-    description: Description of the resource value config.
-    name: Name for the resource value config
+    createTime: Output only. Timestamp this resource value configuration was
+      created.
+    description: Description of the resource value configuration.
+    name: Name for the resource value configuration
     resourceLabelsSelector: List of resource labels to search for, evaluated
-      with AND. E.g. "resource_labels_selector": {"key": "value", "env":
-      "prod"} will match resources with labels "key": "value" AND "env":
-      "prod" https://cloud.google.com/resource-manager/docs/creating-managing-
-      labels
+      with AND. For example, "resource_labels_selector": {"key": "value",
+      "env": "prod"} will match resources with labels "key": "value" AND
+      "env": "prod" https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels
     resourceType: Apply resource_value only to resources that match
-      resource_type. resource_type will be checked with "AND" of other
-      resources. E.g. "storage.googleapis.com/Bucket" with resource_value
-      "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
-      resources.
+      resource_type. resource_type will be checked with AND of other
+      resources. For example, "storage.googleapis.com/Bucket" with
+      resource_value "HIGH" will apply "HIGH" value only to
+      "storage.googleapis.com/Bucket" resources.
     resourceValue: Resource value level this expression represents Only
       required when there is no SDP mapping in the request
-    scope: Project or folder to scope this config to. For example,
-      "project/456" would apply this config only to resources in "project/456"
-      scope will be checked with "AND" of other resources.
+    scope: Project or folder to scope this configuration to. For example,
+      "project/456" would apply this configuration only to resources in
+      "project/456" scope will be checked with AND of other resources.
     sensitiveDataProtectionMapping: A mapping of the sensitivity on Sensitive
       Data Protection finding to resource values. This mapping can only be
       used in combination with a resource_type that is related to BigQuery,
       e.g. "bigquery.googleapis.com/Dataset".
     tagValues: Required. Tag values combined with AND to check against. Values
-      in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
+      in the form "tagValues/123" Example: [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
       manager/docs/tags/tags-creating-and-managing
-    updateTime: Output only. Timestamp this resource value config was last
-      updated.
+    updateTime: Output only. Timestamp this resource value configuration was
+      last updated.
   """
 
   class CloudProviderValueValuesEnum(_messages.Enum):
@@ -5665,9 +5667,9 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceLabelsSelectorValue(_messages.Message):
-    r"""List of resource labels to search for, evaluated with AND. E.g.
-    "resource_labels_selector": {"key": "value", "env": "prod"} will match
-    resources with labels "key": "value" AND "env": "prod"
+    r"""List of resource labels to search for, evaluated with AND. For
+    example, "resource_labels_selector": {"key": "value", "env": "prod"} will
+    match resources with labels "key": "value" AND "env": "prod"
     https://cloud.google.com/resource-manager/docs/creating-managing-labels
 
     Messages:
@@ -8400,6 +8402,27 @@ class SecuritycenterFoldersFindingsBulkMuteRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritycenterFoldersLocationsMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersLocationsMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterFoldersLocationsMuteConfigsDeleteRequest(_messages.Message):
   r"""A SecuritycenterFoldersLocationsMuteConfigsDeleteRequest object.
 
@@ -8430,6 +8453,28 @@ class SecuritycenterFoldersLocationsMuteConfigsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersLocationsMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersLocationsMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterFoldersLocationsMuteConfigsPatchRequest(_messages.Message):
@@ -9520,6 +9565,27 @@ class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterOrganizationsLocationsMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest object.
 
@@ -9550,6 +9616,28 @@ class SecuritycenterOrganizationsLocationsMuteConfigsGetRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterOrganizationsLocationsMuteConfigsPatchRequest(_messages.Message):
@@ -9871,7 +9959,7 @@ class SecuritycenterOrganizationsResourceValueConfigsPatchRequest(_messages.Mess
     googleCloudSecuritycenterV1ResourceValueConfig: A
       GoogleCloudSecuritycenterV1ResourceValueConfig resource to be passed as
       the request body.
-    name: Name for the resource value config
+    name: Name for the resource value configuration
     updateMask: The list of fields to be updated. If empty all mutable fields
       will be updated.
   """
@@ -11036,6 +11124,27 @@ class SecuritycenterProjectsFindingsBulkMuteRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritycenterProjectsLocationsMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsLocationsMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of only lowercase letters, numbers,
+      and hyphens, must start with a letter, must end with either a letter or
+      a number, and must be 63 characters or less.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class SecuritycenterProjectsLocationsMuteConfigsDeleteRequest(_messages.Message):
   r"""A SecuritycenterProjectsLocationsMuteConfigsDeleteRequest object.
 
@@ -11066,6 +11175,28 @@ class SecuritycenterProjectsLocationsMuteConfigsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsLocationsMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsLocationsMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterProjectsLocationsMuteConfigsPatchRequest(_messages.Message):

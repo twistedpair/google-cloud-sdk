@@ -256,3 +256,14 @@ def CreateServiceEnablementStateFlag(
       Valid options are ENABLED, DISABLED, OR INHERITED. The INHERITED
       state is only valid when setting the enablement state at the project or folder level.""",
   )
+
+
+def CreateModuleList() -> base.Argument:
+  """An optional argument representing a comma separated list of module names."""
+  return base.Argument(
+      '--filter-modules',
+      help="""If provided, only prints module information for modules specified
+      in the list. Provided as a comma separated list of module names in
+      SCREAMING_SNAKE_CASE format (e.g. WEB_UI_ENABLED, API_KEY_NOT_ROTATED).
+      A single module name is also valid.""",
+  )

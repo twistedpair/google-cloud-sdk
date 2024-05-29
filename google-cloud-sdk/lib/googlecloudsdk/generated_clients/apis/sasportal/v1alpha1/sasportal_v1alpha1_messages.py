@@ -473,8 +473,9 @@ class SasPortalInstallationParams(_messages.Message):
       value between -90 and +90 inclusive; a negative value means the antenna
       is tilted up (above horizontal). This parameter is optional for Category
       A devices and conditional for Category B devices.
-    antennaGain: Peak antenna gain in dBi. This parameter is an integer with a
-      value between -127 and +128 (dBi) inclusive.
+    antennaGain: Peak antenna gain in dBi. This parameter is a double with a
+      value between -127 and +128 (dBi) inclusive. Part of Release 2 to
+      support floating-point value
     antennaModel: If an external antenna is used, the antenna model is
       optionally provided in this field. The string has a maximum length of
       128 octets.
@@ -524,7 +525,7 @@ class SasPortalInstallationParams(_messages.Message):
   antennaAzimuth = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   antennaBeamwidth = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   antennaDowntilt = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  antennaGain = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  antennaGain = _messages.FloatField(4)
   antennaModel = _messages.StringField(5)
   cpeCbsdIndication = _messages.BooleanField(6)
   eirpCapability = _messages.IntegerField(7, variant=_messages.Variant.INT32)

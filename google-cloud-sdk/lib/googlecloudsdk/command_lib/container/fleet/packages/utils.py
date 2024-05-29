@@ -209,12 +209,62 @@ def TransformTrimMessage(resource):
     Message limited to 40 characters
   """
   truncated_message_length = 40
-  if not resource.get('info') or not resource.get('info').get('message'):
+  messages = _GetMessagesFromResource(resource)
+  if not messages:
     return ''
-  message = resource.get('info').get('message')
-  if len(message) > truncated_message_length:
-    return message[:truncated_message_length] + '...'
-  return message
+  if len(messages) >= 1 and len(messages[0]) > truncated_message_length:
+    return messages[0][:truncated_message_length] + '...'
+  return messages[0]
+
+
+def _GetMessagesFromResource(resource):
+  """Gathers messages from different levels of a Rollout resource.
+
+  Args:
+    resource: A RolloutInfo resource, from `... rollouts describe ...`
+
+  Returns:
+    A list of messages from the Rollout resource.
+  """
+  messages = []
+  try:
+    messages.append(resource['info']['message'])
+  except KeyError:
+    pass
+  try:
+    messages.extend(
+        resource['info']['rolloutStrategyInfo']['rollingStrategyInfo'][
+            'clusters'
+        ]['messages']
+    )
+  except KeyError:
+    pass
+  try:
+    messages.extend(
+        resource['info']['rolloutStrategyInfo']['rollingStrategyInfo'][
+            'clusters'
+        ]['current']['messages']
+    )
+  except KeyError:
+    pass
+  try:
+    messages.extend(
+        resource['info']['rolloutStrategyInfo']['allAtOnceStrategyInfo'][
+            'clusters'
+        ]['messages']
+    )
+  except KeyError:
+    pass
+  try:
+    messages.extend(
+        resource['info']['rolloutStrategyInfo']['allAtOnceStrategyInfo'][
+            'clusters'
+        ]['current']['messages']
+    )
+  except KeyError:
+    pass
+
+  return messages
 
 
 def TransformAllMessages(resource):
@@ -227,54 +277,9 @@ def TransformAllMessages(resource):
     All messages on a Rollout, including sync-level, cluster-level, and
     rollout-level messages.
   """
-  messages = []
-  if 'message' in resource.get('info'):
-    messages.append(resource.get('info').get('message'))
-  if (
-      'rolloutStrategyInfo.rollingStrategyInfo.clusters.messages'
-      in resource.get('info')
-  ):
-    messages.extend(
-        resource.get('info')
-        .get('rolloutStrategyInfo')
-        .get('rollingStrategyInfo')
-        .get('clusters')
-        .get('messages')
-    )
-  if (
-      'rolloutStrategyInfo.rollingStrategyInfo.clusters.current.messages'
-      in resource.get('info')
-  ):
-    messages.extend(
-        resource.get('info')
-        .get('rolloutStrategyInfo')
-        .get('rollingStrategyInfo')
-        .get('clusters')
-        .get('current')
-        .get('messages')
-    )
-  if (
-      'rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.messages'
-      in resource.get('info')
-  ):
-    messages.extend(
-        resource.get('info')
-        .get('rolloutStrategyInfo')
-        .get('allAtOnceStrategyInfo')
-        .get('clusters')
-        .get('messages')
-    )
-  if (
-      'rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.messages'
-      in resource.get('info')
-  ):
-    messages.extend(
-        resource.get('info')
-        .get('rolloutStrategyInfo')
-        .get('allAtOnceStrategyInfo')
-        .get('clusters')
-        .get('current')
-        .get('messages')
-    )
-
+  messages = _GetMessagesFromResource(resource)
+  if not messages:
+    return ''
+  elif len(messages) == 1:
+    return messages[0]
   return messages

@@ -385,6 +385,33 @@ class ComposerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def CheckUpgrade(self, request, global_params=None):
+      r"""Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CheckUpgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckUpgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}:checkUpgrade',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.checkUpgrade',
+        ordered_params=['environment'],
+        path_params=['environment'],
+        query_params=[],
+        relative_path='v1/{+environment}:checkUpgrade',
+        request_field='checkUpgradeRequest',
+        request_type_name='ComposerProjectsLocationsEnvironmentsCheckUpgradeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create a new environment.
 

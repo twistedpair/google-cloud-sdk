@@ -39,7 +39,7 @@ def AddSourceDetailsFlag(parser):
 
 def AddSourceUpdateFlag(parser):
   """Adds the source connection profile parameters to the given parser during update command."""
-  source_cp_params_group = parser.add_group(hidden=True)
+  source_cp_params_group = parser.add_group()
   AddGcsBucket(source_cp_params_group)
   AddGcsPrefix(source_cp_params_group)
 
@@ -51,7 +51,8 @@ def AddGcsBucket(parser):
       required=True,
       help=(
           'Cloud Storage bucket for the source SQL Server connection profile'
-          ' where the backups are stored.'
+          ' where the backups are stored. This flag is used only for SQL Server'
+          ' to Cloud SQL migrations.'
       ),
   )
 
@@ -62,7 +63,8 @@ def AddGcsPrefix(parser):
       '--gcs-prefix',
       help=(
           'Cloud Storage prefix path within the bucket for the source SQL'
-          ' Server connection profile where the backups are stored.'
+          ' Server connection profile where the backups are stored. This flag'
+          ' is used only for SQL Server to Cloud SQL migrations.'
       ),
   )
 

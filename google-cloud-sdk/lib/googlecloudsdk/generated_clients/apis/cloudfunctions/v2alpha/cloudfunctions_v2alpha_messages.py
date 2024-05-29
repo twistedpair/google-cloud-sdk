@@ -2513,11 +2513,15 @@ class StorageSource(_messages.Message):
       generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing the source. This object
       must be a gzipped archive file (`.tar.gz`) containing source to build.
+    sourceUploadUrl: When the specified storage bucket is a 1st gen function
+      uploard url bucket, this field should be set as the generated upload url
+      for 1st gen deployment.
   """
 
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+  sourceUploadUrl = _messages.StringField(4)
 
 
 class TestIamPermissionsRequest(_messages.Message):

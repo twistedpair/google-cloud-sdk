@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://sourcerepo.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/source-repositories/docs/apis'
+DOCS_URL = 'https://cloud.google.com/source-repositories/docs'
 
 
 class Collections(enum.Enum):

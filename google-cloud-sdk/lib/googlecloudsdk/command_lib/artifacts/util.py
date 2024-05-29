@@ -753,18 +753,6 @@ def EscapeVersionNameHook(ref, unused_args, req):
   return req
 
 
-def EscapeFileNameHook(ref, unused_args, req):
-  """Escapes slashes from request names."""
-  file = resources.REGISTRY.Create(
-      "artifactregistry.projects.locations.repositories.files",
-      projectsId=ref.projectsId,
-      locationsId=ref.locationsId,
-      repositoriesId=ref.repositoriesId,
-      filesId=ref.filesId.replace("/", "%2F"),
-  )
-  req.name = file.RelativeName()
-  return req
-
 gcr_base = getattr(properties.VALUES.artifacts, "gcr_host").Get()
 host_seperator = "-" if "-" in gcr_base else "."
 
@@ -1412,6 +1400,12 @@ def MigrateToArtifactRegistry(unused_ref, args):
   copy_only = args.copy_only
   canary_reads = args.canary_reads
   skip_iam = args.skip_iam_update
+  ar_location = args.pkg_dev_location
+  if ar_location and not to_pkg_dev:
+    log.status.Print(
+        "--pkg-dev-location is only used when migrating to pkg.dev repos"
+    )
+    return None
   if recent_images is not None and (recent_images < 30 or recent_images > 150):
     log.status.Print("--recent-images must be between 30 and 150 inclusive")
     return None
@@ -1480,6 +1474,8 @@ def MigrateToArtifactRegistry(unused_ref, args):
       )
       return None
     location = _ALLOWED_GCR_REPO_LOCATION[gcr_host]
+    if ar_location:
+      location = ar_location
     host = "{}{}-docker.pkg.dev".format(
         properties.VALUES.artifacts.registry_endpoint_prefix.Get(), location
     )

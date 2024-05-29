@@ -81,12 +81,14 @@ def raise_error_if_not_gcs_bucket(command_list, url):
   raise_error_if_not_bucket(command_list, url)
 
 
-def raise_error_if_not_gcs_managed_folder(command_list, url):
+def raise_error_if_not_gcs_folder_type(
+    command_list, url, folder_type='managed folder'
+):
   raise_error_if_not_gcs(command_list, url, example='gs://bucket/folder/')
   if not (isinstance(url, storage_url.CloudUrl) and url.is_object()):
     _raise_error_for_wrong_resource_type(
         command_list,
-        'Google Cloud Storage managed folder',
+        'Google Cloud Storage {}'.format(folder_type),
         'gs://bucket/folder/',
         url,
     )

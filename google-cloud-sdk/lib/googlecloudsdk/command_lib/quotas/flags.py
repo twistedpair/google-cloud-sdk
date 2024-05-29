@@ -19,8 +19,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.resource_manager import completers
 
 
-def AddConsumerFlags(parser, help_string):
-  """Parse consumer flag in the command.
+def AddResourceFlags(parser, help_string):
+  """Adds project, folder, or organization flags to the parser.
 
   Args:
     parser: An argparse parser that you can use to add arguments that go on the
@@ -58,7 +58,7 @@ def QuotaId(
     return base.Argument('--quota-id', type=str, required=True, help=text)
 
 
-def PreferrenceId(
+def PreferenceId(
     positional=True,
     text='ID of the Quota Preference object, must be unique under its parent.',
 ):
@@ -102,8 +102,8 @@ def AllowsQuotaDecreaseBelowUsage():
       '--allow-quota-decrease-below-usage',
       action='store_true',
       help=(
-          'If specified, allows consumers to reduce their effective limit below'
-          ' their quota usage. Default is false.'
+          'If specified, allows you to reduce your effective limit below your'
+          ' quota usage. Default is false.'
       ),
   )
 
@@ -113,8 +113,8 @@ def AllowHighPercentageQuotaDecrease():
       '--allow-high-percentage-quota-decrease',
       action='store_true',
       help=(
-          'If specified, allows consumers to reduce their effective limit by'
-          ' more than 10 percent. Default is false.'
+          'If specified, allows you to reduce your effective limit by more than'
+          ' 10 percent. Default is false.'
       ),
   )
 

@@ -313,7 +313,9 @@ class Displayer(object):
   def _AddUriReplaceTap(self):
     """Taps a resource Uri replacer into self.resources if needed."""
 
-    if not self._GetFlag('uri'):
+    # Explicit bool comparison to distinguish between the standard --uri flag
+    # vs. a potential custom --uri=URI flag that takes a value.
+    if self._GetFlag('uri') is not True:  # pylint: disable=g-bool-id-comparison
       return
 
     tap = display_taps.UriReplacer(self._transform_uri)
@@ -376,7 +378,9 @@ class Displayer(object):
 
     if not fmt:
       # No explicit format.
-      if self._GetFlag('uri'):
+      # Explicit bool comparison to distinguish between the standard --uri flag
+      # vs. a potential custom --uri=URI flag that takes a value.
+      if self._GetFlag('uri') is True:  # pylint: disable=g-bool-id-comparison
         return 'value(.)'
       # Use the default format.
       self._default_format_used = True

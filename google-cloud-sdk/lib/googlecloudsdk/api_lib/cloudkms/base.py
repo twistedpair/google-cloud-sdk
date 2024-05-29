@@ -23,24 +23,14 @@ from googlecloudsdk.core import resources
 
 DEFAULT_API_NAME = 'cloudkms'
 DEFAULT_API_VERSION = 'v1'
-# TODO(b/302806760): drop conditional v1alpha1 logic.
-ALPHA_API_VERSION = 'v1alpha1'
 
 
 def GetClientInstance():
   return apis.GetClientInstance(DEFAULT_API_NAME, DEFAULT_API_VERSION)
 
 
-def GetClientAlphaInstance():
-  return apis.GetClientInstance(DEFAULT_API_NAME, ALPHA_API_VERSION)
-
-
 def GetMessagesModule():
   return apis.GetMessagesModule(DEFAULT_API_NAME, DEFAULT_API_VERSION)
-
-
-def GetMessagesAlphaModule():
-  return apis.GetMessagesModule(DEFAULT_API_NAME, ALPHA_API_VERSION)
 
 
 def MakeGetUriFunc(collection):

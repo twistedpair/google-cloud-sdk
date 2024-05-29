@@ -1735,7 +1735,9 @@ class CollectAwsAssetSetting(_messages.Message):
       used. Most AWS services and APIs are region specific. If region(s) is
       not specified, the data collection process can be very time consuming as
       all regions must be queried for all metadata.
-    scanSensitiveDataSetting: Optional. Scan sensitive data setting.
+    scanSensitiveDataSetting: A ScanSensitiveDataSetting attribute.
+    sensitiveDataProtectionDiscoverySetting: Optional. Sensitive Data
+      Protection discovery setting.
     stsEndpointUri: Optional. AWS security token service endpoint. If a user
       disables the default global endpoint, user must provide regional
       endpoint to call for authentication.
@@ -1774,7 +1776,8 @@ class CollectAwsAssetSetting(_messages.Message):
   qpsLimit = _messages.MessageField('QpsLimitValue', 6)
   regionCodes = _messages.StringField(7, repeated=True)
   scanSensitiveDataSetting = _messages.MessageField('ScanSensitiveDataSetting', 8)
-  stsEndpointUri = _messages.StringField(9)
+  sensitiveDataProtectionDiscoverySetting = _messages.MessageField('SensitiveDataProtectionDiscoverySetting', 9)
+  stsEndpointUri = _messages.StringField(10)
 
 
 class CollectAzureAssetSetting(_messages.Message):
@@ -6217,18 +6220,11 @@ class SavedQuery(_messages.Message):
 
 
 class ScanSensitiveDataSetting(_messages.Message):
-  r"""Scan sensitive data setting.
+  r"""A ScanSensitiveDataSetting object.
 
   Fields:
-    roleNameToScanSensitiveData: Optional. AWS scanning sensitive data role
-      name. This is role used to scan sensitive data under AWS accounts and
-      this role is only required and used when scanning_sensitive_data_enabled
-      is set to true.
-    scanSensitiveDataEnabled: Optional. Whether we enable scanning sensitive
-      data or not. Setting this to true means that this connection is enabled
-      for SDP (Sensitive Data Protection) to scan sensitive data in customers'
-      AWS accounts, which requires extra scan sensitive data related
-      permissions otherwise scanning sensitive data will fail.
+    roleNameToScanSensitiveData: A string attribute.
+    scanSensitiveDataEnabled: A boolean attribute.
   """
 
   roleNameToScanSensitiveData = _messages.StringField(1)
@@ -6273,12 +6269,31 @@ class SensitiveDataProtectionDiscoveryAzureSetting(_messages.Message):
   Fields:
     isEnabled: Optional. Whether we enable scanning sensitive data or not.
       Setting this to true means that this connection is enabled for SDP
-      (Sensitive Data Protection) to scan sensitive data in customers' AWS
-      accounts, which requires extra scan sensitive data related permissions
-      otherwise scanning sensitive data will fail.
+      (Sensitive Data Protection) to scan sensitive data in customers' Azure
+      environments, which requires extra scan sensitive data related
+      permissions otherwise scanning sensitive data will fail.
   """
 
   isEnabled = _messages.BooleanField(1)
+
+
+class SensitiveDataProtectionDiscoverySetting(_messages.Message):
+  r"""Sensitive Data Protection discovery setting.
+
+  Fields:
+    isEnabled: Optional. Whether we enable Sensitive Data Protection discovery
+      or not. Setting this to true means that this connection is enabled for
+      SDP (Sensitive Data Protection) to scan sensitive data in customers' AWS
+      accounts, which requires extra scan sensitive data related permissions
+      otherwise scanning sensitive data will fail.
+    roleName: Optional. Sensitive Data Protection role name for profiling AWS
+      data. This role is used to profile data in AWS resources. This role is
+      only required and used when
+      sensitive_data_protection_discovery_setting.is_enabled is set to true.
+  """
+
+  isEnabled = _messages.BooleanField(1)
+  roleName = _messages.StringField(2)
 
 
 class SoftwarePackage(_messages.Message):

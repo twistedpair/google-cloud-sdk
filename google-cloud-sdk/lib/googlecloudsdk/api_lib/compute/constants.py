@@ -189,7 +189,6 @@ BASE_PUBLIC_IMAGE_PROJECTS = [
 ]
 PUBLIC_IMAGE_PROJECTS = BASE_PUBLIC_IMAGE_PROJECTS + [
     'centos-cloud',
-    'fedora-cloud',
     'fedora-coreos-cloud',
     'opensuse-cloud',
     'rhel-cloud',

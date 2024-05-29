@@ -3907,7 +3907,10 @@ class JobConfiguration(_messages.Message):
       run. Behavior of non-query jobs is undefined.
     extract: [Pick one] Configures an extract job.
     jobTimeoutMs: Optional. Job timeout in milliseconds. If this time limit is
-      exceeded, BigQuery might attempt to stop the job.
+      exceeded, BigQuery will attempt to stop a longer job, but may not always
+      succeed in canceling it before the job completes. For example, a job
+      that takes more than 60 seconds to complete has a better chance of being
+      stopped than a job that takes 10 seconds to complete.
     jobType: Output only. The type of the job. Can be QUERY, LOAD, EXTRACT,
       COPY or UNKNOWN.
     labels: The labels associated with this job. You can use these to organize
@@ -7815,6 +7818,9 @@ class Table(_messages.Message):
       few seconds to a few minutes.
     numBytes: Output only. The size of this table in logical bytes, excluding
       any data in the streaming buffer.
+    numCurrentPhysicalBytes: Output only. Number of physical bytes used by
+      current live data storage. This data is not kept in real time, and might
+      be delayed by a few seconds to a few minutes.
     numLongTermBytes: Output only. The number of logical bytes in the table
       that are considered "long-term storage".
     numLongTermLogicalBytes: Output only. Number of logical bytes that are
@@ -7995,31 +8001,32 @@ class Table(_messages.Message):
   numActiveLogicalBytes = _messages.IntegerField(23)
   numActivePhysicalBytes = _messages.IntegerField(24)
   numBytes = _messages.IntegerField(25)
-  numLongTermBytes = _messages.IntegerField(26)
-  numLongTermLogicalBytes = _messages.IntegerField(27)
-  numLongTermPhysicalBytes = _messages.IntegerField(28)
-  numPartitions = _messages.IntegerField(29)
-  numPhysicalBytes = _messages.IntegerField(30)
-  numRows = _messages.IntegerField(31, variant=_messages.Variant.UINT64)
-  numTimeTravelPhysicalBytes = _messages.IntegerField(32)
-  numTotalLogicalBytes = _messages.IntegerField(33)
-  numTotalPhysicalBytes = _messages.IntegerField(34)
-  partitionDefinition = _messages.MessageField('PartitioningDefinition', 35)
-  rangePartitioning = _messages.MessageField('RangePartitioning', 36)
-  replicas = _messages.MessageField('TableReference', 37, repeated=True)
-  requirePartitionFilter = _messages.BooleanField(38, default=False)
-  resourceTags = _messages.MessageField('ResourceTagsValue', 39)
-  restrictions = _messages.MessageField('RestrictionConfig', 40)
-  schema = _messages.MessageField('TableSchema', 41)
-  selfLink = _messages.StringField(42)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 43)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 44)
-  tableConstraints = _messages.MessageField('TableConstraints', 45)
-  tableReference = _messages.MessageField('TableReference', 46)
-  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 47)
-  timePartitioning = _messages.MessageField('TimePartitioning', 48)
-  type = _messages.StringField(49)
-  view = _messages.MessageField('ViewDefinition', 50)
+  numCurrentPhysicalBytes = _messages.IntegerField(26)
+  numLongTermBytes = _messages.IntegerField(27)
+  numLongTermLogicalBytes = _messages.IntegerField(28)
+  numLongTermPhysicalBytes = _messages.IntegerField(29)
+  numPartitions = _messages.IntegerField(30)
+  numPhysicalBytes = _messages.IntegerField(31)
+  numRows = _messages.IntegerField(32, variant=_messages.Variant.UINT64)
+  numTimeTravelPhysicalBytes = _messages.IntegerField(33)
+  numTotalLogicalBytes = _messages.IntegerField(34)
+  numTotalPhysicalBytes = _messages.IntegerField(35)
+  partitionDefinition = _messages.MessageField('PartitioningDefinition', 36)
+  rangePartitioning = _messages.MessageField('RangePartitioning', 37)
+  replicas = _messages.MessageField('TableReference', 38, repeated=True)
+  requirePartitionFilter = _messages.BooleanField(39, default=False)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 40)
+  restrictions = _messages.MessageField('RestrictionConfig', 41)
+  schema = _messages.MessageField('TableSchema', 42)
+  selfLink = _messages.StringField(43)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 44)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 45)
+  tableConstraints = _messages.MessageField('TableConstraints', 46)
+  tableReference = _messages.MessageField('TableReference', 47)
+  tableReplicationInfo = _messages.MessageField('TableReplicationInfo', 48)
+  timePartitioning = _messages.MessageField('TimePartitioning', 49)
+  type = _messages.StringField(50)
+  view = _messages.MessageField('ViewDefinition', 51)
 
 
 class TableCell(_messages.Message):

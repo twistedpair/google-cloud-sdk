@@ -106,6 +106,14 @@ _CONTAINER_NAME_TYPE = arg_parsers.RegexpValidator(
     ' less than 64 characters.',
 )
 
+_SCALING_MODES = {
+    'automatic': (
+        'The number of instances is scaled automatically based on the usage'
+        ' metrics.'
+    ),
+    'manual': 'The number of instances is fixed to a provided config value.',
+}
+
 
 def _StripKeys(d):
   return {k.strip(): v for k, v in d.items()}
@@ -1410,6 +1418,16 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
   )
 
 
+def AddScalingModeFlag(parser):
+  """Add scaling mode flag."""
+  parser.add_argument(
+      '--scaling-mode',
+      choices=_SCALING_MODES,
+      help='The scaling mode to use for this resource.',
+      hidden=True,
+  )
+
+
 def CommandFlag():
   """Create a flag for specifying container's startup command."""
   return base.Argument(
@@ -2131,6 +2149,13 @@ def _GetServiceScalingChanges(args):
               str(max_surge_value.surge_percent),
           )
       )
+  if 'scaling_mode' in args and args.scaling_mode is not None:
+    result.append(
+        config_changes.SetAnnotationChange(
+            service.SERVICE_SCALING_MODE_ANNOTATION,
+            args.scaling_mode,
+        )
+    )
   return result
 
 
@@ -2185,6 +2210,13 @@ def _GetWorkerScalingChanges(args):
               str(max_surge_value.surge_percent),
           )
       )
+  if 'scaling_mode' in args and args.scaling_mode is not None:
+    result.append(
+        config_changes.SetAnnotationChange(
+            service.SERVICE_SCALING_MODE_ANNOTATION,
+            args.scaling_mode,
+        )
+    )
   return result
 
 

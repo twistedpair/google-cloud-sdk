@@ -289,6 +289,9 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
       a payment transaction.
     name: Output only. Identifier. The resource name for the Assessment in the
       format `projects/{project}/assessments/{assessment}`.
+    phoneFraudAssessment: Output only. Assessment returned when a site key, a
+      token, and a phone number as `user_id` are provided. Account defender
+      and SMS toll fraud protection need to be enabled.
     privatePasswordLeakVerification: Optional. The private password leak
       verification field contains the parameters that are used to to check for
       leaks privately without sharing user credentials.
@@ -304,9 +307,10 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 5)
   fraudSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignals', 6)
   name = _messages.StringField(7)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 8)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 9)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 10)
+  phoneFraudAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment', 8)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 9)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 10)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 11)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -856,6 +860,17 @@ class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
   skipBillingCheck = _messages.BooleanField(1)
 
 
+class GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment(_messages.Message):
+  r"""Assessment for Phone Fraud
+
+  Fields:
+    smsTollFraudVerdict: Output only. Assessment of this phone event for risk
+      of sms toll fraud.
+  """
+
+  smsTollFraudVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SmsTollFraudVerdict', 1)
+
+
 class GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification(_messages.Message):
   r"""Private password leak verification info.
 
@@ -1122,6 +1137,32 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRespon
 
   nextPageToken = _messages.StringField(1)
   relatedAccountGroupMemberships = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership', 2, repeated=True)
+
+
+class GoogleCloudRecaptchaenterpriseV1SmsTollFraudVerdict(_messages.Message):
+  r"""Information about sms toll fraud
+
+  Enums:
+    ReasonsValueListEntryValuesEnum:
+
+  Fields:
+    reasons: Output only. Reasons contributing to the SMS toll fraud verdict.
+    risk: Output only. Probability of an sms event being fraudulent. Values
+      are from 0.0 (lowest) to 1.0 (highest).
+  """
+
+  class ReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""ReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      SMS_TOLL_FRAUD_REASON_UNSPECIFIED: Default unspecified reason
+      INVALID_PHONE_NUMBER: The provided phone number was invalid
+    """
+    SMS_TOLL_FRAUD_REASON_UNSPECIFIED = 0
+    INVALID_PHONE_NUMBER = 1
+
+  reasons = _messages.EnumField('ReasonsValueListEntryValuesEnum', 1, repeated=True)
+  risk = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):

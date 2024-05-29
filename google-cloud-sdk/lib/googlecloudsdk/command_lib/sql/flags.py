@@ -525,6 +525,7 @@ def AddDatabaseVersion(
       'POSTGRES_13',
       'POSTGRES_14',
       'POSTGRES_15',
+      'POSTGRES_16',
       'SQLSERVER_2017_EXPRESS',
       'SQLSERVER_2017_WEB',
       'SQLSERVER_2017_STANDARD',

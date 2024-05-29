@@ -201,6 +201,8 @@ def _GenerateUpdateMask(args):
       '--maintenance-window-hour': 'maintenance_window',
       '--data-catalog-sync': 'metadataIntegration.dataCatalogConfig.enabled',
       '--no-data-catalog-sync': 'metadataIntegration.dataCatalogConfig.enabled',
+      '--deletion-protection': 'deletion_protection',
+      '--no-deletion-protection': 'deletion_protection',
       '--endpoint-protocol': 'hive_metastore_config.endpoint_protocol',
       '--add-auxiliary-versions': 'hive_metastore_config.auxiliary_versions',
       '--update-auxiliary-versions-from-file': (

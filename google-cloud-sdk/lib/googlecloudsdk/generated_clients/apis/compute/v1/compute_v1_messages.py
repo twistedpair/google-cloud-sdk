@@ -44284,7 +44284,10 @@ class InstanceProperties(_messages.Message):
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
-      these properties.
+      these properties. This field only accept machine types name. e.g.
+      n2-standard-4 and does not accept machine type full or partial url. e.g.
+      projects/my-l7ilb-project/zones/us-central1-a/machineTypes/n2-standard-4
+      will throw INTERNAL_ERROR.
     metadata: The metadata key/value pairs to assign to instances that are
       created from these properties. These pairs can consist of custom
       metadata or predefined keys. See Project and instance metadata for more
@@ -53247,12 +53250,14 @@ class NetworkInterface(_messages.Message):
 
     Values:
       GVNIC: GVNIC
+      IDPF: IDPF
       UNSPECIFIED_NIC_TYPE: No type specified.
       VIRTIO_NET: VIRTIO
     """
     GVNIC = 0
-    UNSPECIFIED_NIC_TYPE = 1
-    VIRTIO_NET = 2
+    IDPF = 1
+    UNSPECIFIED_NIC_TYPE = 2
+    VIRTIO_NET = 3
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this network interface. To assign only IPv4

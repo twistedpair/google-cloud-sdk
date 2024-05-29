@@ -15,6 +15,16 @@ project_global:
   attributes:
   - *project
 
+folder:
+  name: folder
+  collection: osconfig.folders
+  attributes:
+  - &folder
+    parameter_name: foldersId
+    attribute_name: folder
+    help: |
+      Folder of the {resource}.
+
 location:
   name: location
   collection: osconfig.projects.locations
@@ -24,6 +34,17 @@ location:
     parameter_name: locationsId
     attribute_name: location
     property: compute/zone
+    help: |
+      Location of the {resource}.
+
+folder_location:
+  name: folder_location
+  collection: osconfig.folders.locations
+  attributes:
+  - *folder
+  - &folder_location
+    parameter_name: locationsId
+    attribute_name: location
     help: |
       Location of the {resource}.
 
@@ -138,3 +159,26 @@ os_policy_assignment_report:
   - *location
   - *instance
   - *instance_os_policy_assignment
+
+policy_orchestrator:
+  name: Policy Orchestrator
+  collection: osconfig.folders.locations.global.policyOrchestrators
+  attributes:
+  - *folder
+  - &policy_orchestrator
+    parameter_name: policyOrchestratorsId
+    attribute_name: policy_orchestrator
+    help: |
+      Policy orchestrator.
+
+folder_operation:
+  name: Folder-level operation
+  collection: osconfig.folders.locations.operations
+  attributes:
+  - *folder
+  - *folder_location
+  - &folder_operations
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      Folder-level operation.

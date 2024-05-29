@@ -129,6 +129,7 @@ class SubscriptionsClient(object):
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
       cloud_storage_output_format=None,
+      cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
@@ -181,6 +182,8 @@ class SubscriptionsClient(object):
         before a new Cloud Storage file is created.
       cloud_storage_output_format (str): The output format for data written to
         Cloud Storage.
+      cloud_storage_use_topic_schema (bool): Whether or not to use the topic
+        schema when writing to Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
@@ -223,6 +226,7 @@ class SubscriptionsClient(object):
             cloud_storage_max_bytes,
             cloud_storage_max_duration,
             cloud_storage_output_format,
+            cloud_storage_use_topic_schema,
             cloud_storage_write_metadata,
         ),
         pubsubExportConfig=self._PubsubExportConfig(
@@ -447,6 +451,7 @@ class SubscriptionsClient(object):
       max_bytes,
       max_duration,
       output_format,
+      use_topic_schema,
       write_metadata,
   ):
     """Builds CloudStorageConfig message from argument values.
@@ -462,6 +467,8 @@ class SubscriptionsClient(object):
       max_duration (str): The maximum duration that can elapse before a new
         Cloud Storage file is created.
       output_format (str): The output format for data written to Cloud Storage.
+      use_topic_schema (bool): Whether or not to use the topic schema when
+        writing to Cloud Storage.
       write_metadata (bool): Whether or not to write the subscription name and
         other metadata in the output.
 
@@ -479,9 +486,13 @@ class SubscriptionsClient(object):
       )
       if output_format == 'text':
         cloud_storage_config.textConfig = self.messages.TextConfig()
+        # TODO(b/318394291) Propagate error should avro fields be populated.
       elif output_format == 'avro':
         cloud_storage_config.avroConfig = self.messages.AvroConfig(
-            writeMetadata=write_metadata if write_metadata else False
+            writeMetadata=write_metadata if write_metadata else False,
+            # TODO(b/318394291) set use_topic_schema else False when promoting
+            # to GA.
+            useTopicSchema=use_topic_schema if use_topic_schema else None,
         )
       return cloud_storage_config
     return None
@@ -558,6 +569,7 @@ class SubscriptionsClient(object):
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
       cloud_storage_output_format=None,
+      cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
       clear_cloud_storage_config=False,
       clear_push_no_wrapper_config=False,
@@ -614,6 +626,8 @@ class SubscriptionsClient(object):
         before a new Cloud Storage file is created.
       cloud_storage_output_format (str): The output format for data written to
         Cloud Storage.
+      cloud_storage_use_topic_schema (bool): Whether or not to use the topic
+        schema when writing to Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
       clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
@@ -642,6 +656,7 @@ class SubscriptionsClient(object):
           cloud_storage_max_bytes,
           cloud_storage_max_duration,
           cloud_storage_output_format,
+          cloud_storage_use_topic_schema,
           cloud_storage_write_metadata,
       )
 

@@ -1245,7 +1245,7 @@ class ExtensionChainExtension(_messages.Message):
       endServices/{backendService}`.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
-      for the `LbTrafficExtension` resource. It's not relevant for the
+      for the `LbTrafficExtension` resource. It must not be set for the
       `LbRouteExtension` resource.
     timeout: Optional. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-1000 milliseconds. Required
@@ -2885,6 +2885,13 @@ class LbRouteExtension(_messages.Message):
       `LbRouteExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
+    MetadataValue: Optional. The metadata provided here will be included as
+      part of the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      will be available under the namespace `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -2908,6 +2915,13 @@ class LbRouteExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here will be included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The metadata
+      will be available under the namespace `com.google.lb_route_extension.`.
+      The following variables are supported in the metadata Struct:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
       following format: `projects/{project}/locations/{location}/lbRouteExtens
       ions/{lb_route_extension}`.
@@ -2959,14 +2973,45 @@ class LbRouteExtension(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here will be included as part of the
+    `metadata_context` (of type `google.protobuf.Struct`) in the
+    `ProcessingRequest` message sent to the extension server. The metadata
+    will be available under the namespace `com.google.lb_route_extension.`.
+    The following variables are supported in the metadata Struct:
+    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+    qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
   forwardingRules = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  metadata = _messages.MessageField('MetadataValue', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class LbTrafficExtension(_messages.Message):
@@ -2987,6 +3032,12 @@ class LbTrafficExtension(_messages.Message):
       `LbTrafficExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
+    MetadataValue: Optional. The metadata provided here will be included in
+      the `ProcessingRequest.metadata_context.filter_metadata` map field. The
+      metadata will be available under the key
+      `com.google.lb_traffic_extension.`. The following variables are
+      supported in the metadata: `{forwarding_rule_id}` - substituted with the
+      forwarding rule's fully qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3010,6 +3061,12 @@ class LbTrafficExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    metadata: Optional. The metadata provided here will be included in the
+      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+      metadata will be available under the key
+      `com.google.lb_traffic_extension.`. The following variables are
+      supported in the metadata: `{forwarding_rule_id}` - substituted with the
+      forwarding rule's fully qualified resource name.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3061,14 +3118,44 @@ class LbTrafficExtension(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. The metadata provided here will be included in the
+    `ProcessingRequest.metadata_context.filter_metadata` map field. The
+    metadata will be available under the key
+    `com.google.lb_traffic_extension.`. The following variables are supported
+    in the metadata: `{forwarding_rule_id}` - substituted with the forwarding
+    rule's fully qualified resource name.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
   forwardingRules = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
   loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  metadata = _messages.MessageField('MetadataValue', 7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ListEdgeCacheKeysetsResponse(_messages.Message):

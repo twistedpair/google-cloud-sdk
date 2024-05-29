@@ -44,3 +44,17 @@ service_instance:
     parameter_name: serviceInstancesId
     attribute_name: instance
     help: The id of the Dataproc GDC instance.
+
+spark_application:
+  name: spark_application
+  collection: dataprocgdc.projects.locations.serviceInstances.sparkApplications
+  disable_auto_completers: false
+  request_id_field: sparkApplicationsId
+  attributes:
+  - *project
+  - *location
+  - *instance
+  - &sparkApplication
+    parameter_name: sparkApplicationsId
+    attribute_name: spark_application
+    help: The id of the Dataproc GDC spark Application.

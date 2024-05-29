@@ -51,6 +51,8 @@ class BackupDrClientBase(object):
 
   def GetOperationRef(self, operation):
     """Converts an Operation to a Resource that can be used with `waiter.WaitFor`."""
+    if operation.name is None:
+      return 'None'
     return resources.REGISTRY.ParseRelativeName(
         operation.name, collection='backupdr.projects.locations.operations'
     )

@@ -25,6 +25,10 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  changeTables:
+    description: CDC reader reads from change tables.
+    type: sqlserverchangetables
+    $ref: SqlServerChangeTables.yaml
   excludeObjects:
     description: SQLServer objects to exclude from the stream.
     $ref: SqlServerRdbms.yaml
@@ -37,3 +41,7 @@ properties:
   maxConcurrentCdcTasks:
     description: Max concurrent CDC tasks.
     type: integer
+  transactionLogs:
+    description: CDC reader reads from transaction logs.
+    type: sqlservertransactionlogs
+    $ref: SqlServerTransactionLogs.yaml

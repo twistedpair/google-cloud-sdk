@@ -266,18 +266,39 @@ def AddForceDeleteFlag(parser):
 def AddBackupPlanResourceArg(parser, help_text):
   """Adds an argument for backup plan to parser."""
   name = 'backup_plan'
-  backup_plan_spec = concepts.ResourceSpec(
-      'backupdr.projects.locations.backupPlans',
-      resource_name='Backup Plan',
-      locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False,
-  )
   concept_parsers.ConceptParser.ForResource(
       name,
-      backup_plan_spec,
+      GetBackupPlanResourceSpec(),
       help_text,
       required=True,
+  ).AddToParser(parser)
+
+
+def AddBackupPlanResourceArgWithBackupVault(parser, help_text):
+  """Adds an argument for backup plan & backup vault to parser."""
+  concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'BACKUP_PLAN',
+              GetBackupPlanResourceSpec(),
+              help_text,
+              required=True,
+          ),
+          presentation_specs.ResourcePresentationSpec(
+              '--backup-vault',
+              GetBackupVaultResourceSpec(),
+              """The backup vault where the backups gets stored using this
+              backup plan.
+              """,
+              flag_name_overrides={
+                  'location': '',
+              },
+              required=True,
+          ),
+      ],
+      command_level_fallthroughs={
+          '--backup-vault.location': ['BACKUP_PLAN.location'],
+      },
   ).AddToParser(parser)
 
 
@@ -337,6 +358,19 @@ def AddEffectiveTime(parser):
   )
 
 
+def AddAllowMissing(parser, resource):
+  """Adds the --allow-missing flag to the given parser for delete operation to return success and perform no action when there is no matching resource."""
+  help_text = (
+      'Allow idempotent deletion of {resource}. The request will still succeed'
+      ' in case the {resource} does not exist.'
+  )
+  parser.add_argument(
+      '--allow-missing',
+      action='store_true',
+      help=help_text.format(resource=resource),
+  )
+
+
 def AddUnlockEnforcedRetention(parser):
   """Adds the --unlock-enforced-retention flag to the given parser."""
   help_text = (
@@ -380,12 +414,6 @@ def AddBackupRule(parser, required=True):
       ' hyphens',
   )
 
-  backup_vault_validator = arg_parsers.RegexpValidator(
-      r'projects\/((?:[^:]+:)?[a-z0-9\\-]+)\/locations\/([a-zA-Z0-9-]+)\/backupVaults\/(.*)$',
-      """Invalid backup vault format. Expected format:
-      `projects/<project>/locations/<location>/backupVaults/<backup-vault-id>`""",
-  )
-
   month_options = {
       'JAN': 'JANUARY',
       'FEB': 'FEBRUARY',
@@ -427,7 +455,6 @@ def AddBackupRule(parser, required=True):
       type=arg_parsers.ArgDict(
           spec={
               'rule-id': rule_id_validator,
-              'backup-vault': backup_vault_validator,
               'retention-days': int,
               'recurrence': recurrence_validator,
               'backup-window-start': arg_parsers.BoundedInt(0, 23),
@@ -444,7 +471,6 @@ def AddBackupRule(parser, required=True):
           },
           required_keys=[
               'rule-id',
-              'backup-vault',
               'recurrence',
               'retention-days',
               'backup-window-start',
@@ -458,7 +484,6 @@ def AddBackupRule(parser, required=True):
 
           Parameters for the backup rule include::
           - rule-id
-          - backup-vault
           - retention-days
           - recurrence
           - backup-window-start

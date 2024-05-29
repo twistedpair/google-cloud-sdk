@@ -622,6 +622,8 @@ class StepEntryMetadata(_messages.Message):
     ProgressTypeValueValuesEnum: Progress type of this step entry.
 
   Fields:
+    expectedIteration: Expected iteration represents the expected number of
+      iterations in the step's progress.
     progressNumber: Progress number represents the current state of the
       current progress. eg: A step entry represents the 4th iteration in a
       progress of PROGRESS_TYPE_FOR.
@@ -651,9 +653,10 @@ class StepEntryMetadata(_messages.Message):
     PROGRESS_TYPE_PARALLEL_FOR = 4
     PROGRESS_TYPE_PARALLEL_BRANCH = 5
 
-  progressNumber = _messages.IntegerField(1)
-  progressType = _messages.EnumField('ProgressTypeValueValuesEnum', 2)
-  threadId = _messages.StringField(3)
+  expectedIteration = _messages.IntegerField(1)
+  progressNumber = _messages.IntegerField(2)
+  progressType = _messages.EnumField('ProgressTypeValueValuesEnum', 3)
+  threadId = _messages.StringField(4)
 
 
 class TriggerPubsubExecutionRequest(_messages.Message):
