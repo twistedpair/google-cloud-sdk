@@ -66,25 +66,28 @@ class ActiveDirectoriesClient(object):
             self.client.projects_locations_operations), operation_ref,
         'Waiting for [{0}] to finish'.format(operation_ref.Name()))
 
-  def ParseActiveDirectoryConfig(self,
-                                 name=None,
-                                 domain=None,
-                                 site=None,
-                                 dns=None,
-                                 net_bios_prefix=None,
-                                 organizational_unit=None,
-                                 aes_encryption=None,
-                                 username=None,
-                                 password=None,
-                                 backup_operators=None,
-                                 security_operators=None,
-                                 kdc_hostname=None,
-                                 kdc_ip=None,
-                                 nfs_users_with_ldap=None,
-                                 ldap_signing=None,
-                                 encrypt_dc_connections=None,
-                                 description=None,
-                                 labels=None):
+  def ParseActiveDirectoryConfig(
+      self,
+      name=None,
+      domain=None,
+      site=None,
+      dns=None,
+      net_bios_prefix=None,
+      organizational_unit=None,
+      aes_encryption=None,
+      username=None,
+      password=None,
+      backup_operators=None,
+      security_operators=None,
+      administrators=None,
+      kdc_hostname=None,
+      kdc_ip=None,
+      nfs_users_with_ldap=None,
+      ldap_signing=None,
+      encrypt_dc_connections=None,
+      description=None,
+      labels=None,
+  ):
     """Parses the command line arguments for Create Active Directory into a config.
 
     Args:
@@ -95,20 +98,21 @@ class ActiveDirectoriesClient(object):
       net_bios_prefix: the NetBIOS prefix name of the server
       organizational_unit: The organizational unit within the AD the user
         belongs to
-      aes_encryption: Bool, if enabled, AES encryption will be enabled for
-        SMB communication
+      aes_encryption: Bool, if enabled, AES encryption will be enabled for SMB
+        communication
       username: Username of the AD domain admin
       password: Password of the AD domain admin
       backup_operators: The backup operators AD group users list
       security_operators: Security operators AD domain users list
+      administrators: Built-in administrators AD group users list
       kdc_hostname: Name of the AD machine
       kdc_ip: KDC Server IP address for the AD machine
       nfs_users_with_ldap: Bool, if enabled, will allow access to local users
         and LDAP users. Disable, if only needed for LDAP users
-      ldap_signing: Bool that specifies whether or not LDAP traffic needs to
-        be signed
-      encrypt_dc_connections: Bool, if enabled, traffic between SMB server
-        and DC will be encrypted
+      ldap_signing: Bool that specifies whether or not LDAP traffic needs to be
+        signed
+      encrypt_dc_connections: Bool, if enabled, traffic between SMB server and
+        DC will be encrypted
       description: the description of the Active Directory
       labels: the labels for the Active Directory
 
@@ -131,6 +135,9 @@ class ActiveDirectoriesClient(object):
     )
     active_directory.securityOperators = (
         security_operators if security_operators else []
+    )
+    active_directory.administrators = (
+        administrators if administrators else []
     )
     active_directory.nfsUsersWithLdap = nfs_users_with_ldap
     active_directory.kdcHostname = kdc_hostname
@@ -217,6 +224,7 @@ class ActiveDirectoriesClient(object):
                                         password=None,
                                         backup_operators=None,
                                         security_operators=None,
+                                        administrators=None,
                                         kdc_hostname=None,
                                         kdc_ip=None,
                                         nfs_users_with_ldap=None,
@@ -237,6 +245,7 @@ class ActiveDirectoriesClient(object):
         password=password,
         backup_operators=backup_operators,
         security_operators=security_operators,
+        administrators=administrators,
         kdc_hostname=kdc_hostname,
         kdc_ip=kdc_ip,
         nfs_users_with_ldap=nfs_users_with_ldap,
@@ -295,6 +304,7 @@ class ActiveDirectoriesAdapter(object):
       password=None,
       backup_operators=None,
       security_operators=None,
+      administrators=None,
       kdc_hostname=None,
       kdc_ip=None,
       nfs_users_with_ldap=None,
@@ -324,6 +334,8 @@ class ActiveDirectoriesAdapter(object):
       activedirectory_config.backupOperators = backup_operators
     if security_operators is not None:
       activedirectory_config.securityOperators = security_operators
+    if administrators is not None:
+      activedirectory_config.administrators = administrators
     if kdc_hostname is not None:
       activedirectory_config.kdcHostname = kdc_hostname
     if kdc_ip is not None:

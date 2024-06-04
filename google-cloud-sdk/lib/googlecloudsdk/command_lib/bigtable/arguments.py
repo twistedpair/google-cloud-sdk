@@ -27,11 +27,21 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util import completers
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core.util import text
+
+
+# Valid cluster node scaling factor inputs
+def GetValidNodeScalingFactors():
+  return [
+      arg_utils.EnumNameToChoice(x)
+      for x in util.GetAdminMessages().Cluster.NodeScalingFactorValueValuesEnum.names()
+      if 'UNSPECIFIED' not in x
+  ]
 
 
 class ClusterCompleter(completers.ListCommandCompleter):
@@ -102,6 +112,7 @@ def ProcessInstanceTypeAndNodes(args):
   return num_nodes
 
 
+@base.ReleaseTracks(base.ReleaseTrack.GA, base.ReleaseTrack.BETA)
 class ArgAdder(object):
   """A class for adding Bigtable command-line arguments."""
 
@@ -168,6 +179,17 @@ class ArgAdder(object):
         help_str='Storage class for the cluster.',
     )
     storage_argument.AddToParser(self.parser)
+    return self
+
+  def AddClusterNodeScalingFactor(self):
+    node_scaling_factor_argument = base.ChoiceArgument(
+        '--node-scaling-factor',
+        help_str='Node scaling factor for the cluster.',
+        choices=GetValidNodeScalingFactors(),
+        default='node-scaling-factor-1x',
+        hidden=True,  # TODO(b/340864145): Unhide
+    )
+    node_scaling_factor_argument.AddToParser(self.parser)
     return self
 
   def AddClusterZone(self, in_instance=False):
@@ -944,3 +966,67 @@ def AddCopyBackupResourceArgs(parser):
       '--destination.instance': ['--source.instance'],
   }
   concept_parsers.ConceptParser(arg_specs, fallthroughs).AddToParser(parser)
+
+
+@base.ReleaseTracks(base.ReleaseTrack.ALPHA)
+class ArgAdderAlpha(ArgAdder):
+  """A class for adding Bigtable command-line arguments."""
+
+  def AddClusterNodeScalingFactor(self):
+    node_scaling_factor_argument = base.ChoiceArgument(
+        '--node-scaling-factor',
+        help_str='Node scaling factor for the cluster.',
+        choices=GetValidNodeScalingFactors(),
+        default='node-scaling-factor-1x',
+        hidden=True,  # TODO(b/340864145): Unhide
+    )
+    node_scaling_factor_argument.AddToParser(self.parser)
+    return self
+
+  def AddClusterConfig(self):
+    """Add the cluster-config argument as repeated kv dicts."""
+    self.parser.add_argument(
+        '--cluster-config',
+        action='append',
+        type=arg_parsers.ArgDict(
+            required_keys=['id', 'zone'],
+            max_length=9,
+        ),
+        metavar=(
+            'id=ID,zone=ZONE,nodes=NODES,'
+            'kms-key=KMS_KEY,'
+            'autoscaling-min-nodes=AUTOSCALING_MIN_NODES,'
+            'autoscaling-max-nodes=AUTOSCALING_MAX_NODES,'
+            'autoscaling-cpu-target=AUTOSCALING_CPU_TARGET,'
+            'autoscaling-storage-target=AUTOSCALING_STORAGE_TARGET'
+        ),
+        help=textwrap.dedent("""\
+        *Repeatable*. Specify cluster config as a key-value dictionary.
+
+        This is the recommended argument for specifying cluster configurations.
+
+        Keys can be:
+
+          *id*: Required. The ID of the cluster.
+
+          *zone*: Required. ID of the zone where the cluster is located. Supported zones are listed at https://cloud.google.com/bigtable/docs/locations.
+
+          *nodes*: The number of nodes in the cluster. Default=1.
+
+          *kms-key*: The Cloud KMS (Key Management Service) cryptokey that will be used to protect the cluster.
+
+          *autoscaling-min-nodes*: The minimum number of nodes for autoscaling.
+
+          *autoscaling-max-nodes*: The maximum number of nodes for autoscaling.
+
+          *autoscaling-cpu-target*: The target CPU utilization percentage for autoscaling. Accepted values are from 10 to 80.
+
+          *autoscaling-storage-target*: The target storage utilization gibibytes per node for autoscaling. Accepted values are from 2560 to 5120 for SSD clusters and 8192 to 16384 for HDD clusters.
+
+        If this argument is specified, the deprecated arguments for configuring a single cluster will be ignored, including *--cluster*, *--cluster-zone*, *--cluster-num-nodes*.
+
+        See *EXAMPLES* section.
+        """),
+    )
+
+    return self

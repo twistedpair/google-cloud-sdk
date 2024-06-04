@@ -8266,6 +8266,9 @@ class RouteRule(_messages.Message):
       performs advanced routing actions like URL rewrites, header
       transformations, and so forth prior to forwarding the request to the
       selected origin.
+    routeMethods: Optional. Allow overriding the set of methods that are
+      allowed for this route. When not set, Media CDN only allows safe methods
+      (GET, HEAD, and OPTIONS).
     urlRedirect: Optional. The URL redirect configuration for requests that
       match this route. Only one of origin or `url_redirect` can be set.
   """
@@ -8276,7 +8279,19 @@ class RouteRule(_messages.Message):
   origin = _messages.StringField(4)
   priority = _messages.IntegerField(5)
   routeAction = _messages.MessageField('RouteAction', 6)
-  urlRedirect = _messages.MessageField('UrlRedirect', 7)
+  routeMethods = _messages.MessageField('RouteRuleRouteMethods', 7)
+  urlRedirect = _messages.MessageField('UrlRedirect', 8)
+
+
+class RouteRuleRouteMethods(_messages.Message):
+  r"""Allow overriding the set of methods that are allowed for a route.
+
+  Fields:
+    allowedMethods: Required. The non-empty set of HTTP methods we allow for
+      this route.
+  """
+
+  allowedMethods = _messages.StringField(1, repeated=True)
 
 
 class Routing(_messages.Message):

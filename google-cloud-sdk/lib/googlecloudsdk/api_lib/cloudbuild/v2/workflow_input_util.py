@@ -63,12 +63,12 @@ def _WorkflowTransform(workflow):
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
 
-  pipeline = workflow.pop("pipeline")
-  if "spec" in pipeline:
-    workflow["pipelineSpecYaml"] = yaml.dump(pipeline["spec"], round_trip=True)
-  elif "ref" in pipeline:
-    input_util.RefTransform(pipeline["ref"])
-    workflow["ref"] = pipeline["ref"]
+  if "pipelineSpec" in workflow:
+    workflow["pipelineSpecYaml"] = yaml.dump(
+        workflow.pop("pipelineSpec"), round_trip=True
+    )
+  elif "pipelineRef" in workflow:
+    input_util.RefTransform(workflow["pipelineRef"])
   else:
     raise cloudbuild_exceptions.InvalidYamlError(
         "PipelineSpec or PipelineRef is required.")

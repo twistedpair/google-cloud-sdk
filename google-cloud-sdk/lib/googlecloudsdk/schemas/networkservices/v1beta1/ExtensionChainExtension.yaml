@@ -50,10 +50,11 @@ properties:
       List of the Envoy attributes to forward to the extension server. The
       attributes provided here will be included as part of the
       `ProcessingRequest.attributes` field (of type `map`), where the keys are
-      the attribute names. Refer to the [documentation](/service-
-      extensions/docs/cel-matcher-language-reference#attributes) for the names
-      of attributes that can be forwarded. If omitted, no attributes will be
-      sent. Each element is a string indicating the attribute name.
+      the attribute names. Refer to the
+      [documentation](https://cloud.google.com/service-extensions/docs/cel-
+      matcher-language-reference#attributes) for the names of attributes that
+      can be forwarded. If omitted, no attributes will be sent. Each element is
+      a string indicating the attribute name.
     type: array
     hidden: true
     items:
@@ -82,7 +83,7 @@ properties:
       [backend
       service](https://cloud.google.com/compute/docs/reference/rest/v
       1/backendServices) in the format:
-      `https://www.googleapis.com/compute/v1 /projects/{project}/regions
+      `https://www.googleapis.com/compute/v1/projects/{project}/regions
       /{region}/backendServices/{backendService}` or `https://www.google
       apis.com/compute/v1/projects/{project}/global/back
       endServices/{backendService}`.

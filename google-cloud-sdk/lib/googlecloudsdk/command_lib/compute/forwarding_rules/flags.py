@@ -226,11 +226,14 @@ IP_COLLECTION_ARG = compute_flags.ResourceArgument(
     regional_collection='compute.publicDelegatedPrefixes',
     short_help='Resource reference to a PublicDelegatedPrefix.',
     detailed_help="""
-        Resource reference to a PublicDelegatedPrefix. The PDP must
-        be a sub-PDP in EXTERNAL_IPV6_FORWARDING_RULE_CREATION mode.
+        Resource reference to a public delegated prefix. The PublicDelegatedPrefix (PDP) must
+        be a sub-prefix in EXTERNAL_IPV6_FORWARDING_RULE_CREATION mode.
         """,
-    region_explanation=('If not specified, the region is set to the'
-                        ' region of the forwarding rule.'))
+    region_explanation=(
+        'If not specified, the region is set to the'
+        ' region of the forwarding rule.'
+    ),
+)
 
 
 def TargetGrpcProxyArg():
@@ -456,11 +459,12 @@ def AddUpdateTargetArgs(parser,
         action='store')
 
 
-def AddCreateArgs(parser,
-                  include_psc_google_apis=False,
-                  include_target_service_attachment=False,
-                  include_regional_tcp_proxy=False,
-                  include_ip_collection=False):
+def AddCreateArgs(
+    parser,
+    include_psc_google_apis=False,
+    include_target_service_attachment=False,
+    include_regional_tcp_proxy=False,
+):
   """Adds common flags for creating forwarding rules."""
   AddUpdateTargetArgs(parser, include_psc_google_apis,
                       include_target_service_attachment,
@@ -468,9 +472,7 @@ def AddCreateArgs(parser,
 
   NetworkArg().AddArgument(parser)
   SUBNET_ARG.AddArgument(parser)
-
-  if include_ip_collection:
-    IP_COLLECTION_ARG.AddArgument(parser)
+  IP_COLLECTION_ARG.AddArgument(parser)
 
   AddLoadBalancingScheme(
       parser,
@@ -838,6 +840,54 @@ def AddServiceDirectoryRegistration(parser):
       an endpoint. The Service Directory service must be in the same project and
       region as the forwarding rule you are creating.
       """)
+
+
+def AddExternalMigration(parser):
+  """Add flags related to Gfe2 to Gfe3 canary migration."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--external-managed-backend-bucket-migration-state',
+      choices=['PREPARE', 'TEST_BY_PERCENTAGE', 'TEST_ALL_TRAFFIC'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default=None,
+      help="""\
+      Specifies the canary migration state. Possible values are PREPARE,
+      TEST_BY_PERCENTAGE, and TEST_ALL_TRAFFIC.
+
+      To begin the migration from EXTERNAL to EXTERNAL_MANAGED, the state must
+      be changed to PREPARE. The state must be changed to TEST_ALL_TRAFFIC
+      before the loadBalancingScheme can be changed to EXTERNAL_MANAGED.
+      Optionally, the TEST_BY_PERCENTAGE state can be used to migrate traffic to
+      backend buckets attached to this forwarding rule by percentage using
+      externalManagedBackendBucketMigrationTestingPercentage.
+    """,
+  )
+  group.add_argument(
+      '--clear-external-managed-backend-bucket-migration-state',
+      required=False,
+      action='store_true',
+      default=None,
+      help='Clears current state of external managed migration.',
+  )
+  parser.add_argument(
+      '--external-managed-backend-bucket-migration-testing-percentage',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=100.0),
+      help="""\
+      Determines the fraction of requests that should be processed by
+      the Global external Application Load Balancer.
+
+      The value of this field must be in the range [0, 100].
+    """,
+  )
+  parser.add_argument(
+      '--load-balancing-scheme',
+      choices=['EXTERNAL', 'EXTERNAL_MANAGED'],
+      help="""\
+      Only for the Global external ALB migration.
+
+      The value of this field must be EXTERNAL or EXTERNAL_MANAGED.
+    """,
+  )
 
 
 class PortRangesWithAll(object):

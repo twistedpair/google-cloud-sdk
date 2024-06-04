@@ -35,14 +35,12 @@ _UPDATE_FILE_DESC = (
 
 _CREATE_FILE_DESC_ALPHA = (
     'File that contains the configuration for the worker pool to be '
-    'created.\n\nPrivate pool options:\n\n %s\n\n'
-    % (_PWP_CONFIG_LINK)
+    'created.\n\nPrivate pool options:\n\n %s\n\n' % (_PWP_CONFIG_LINK)
 )
 _UPDATE_FILE_DESC_ALPHA = (
     'File that contains updates to the configuration for worker pool to be '
     'created.\n\n'
-    'Private pool options:\n\n %s\n\n'
-    % (_PWP_CONFIG_LINK)
+    'Private pool options:\n\n %s\n\n' % (_PWP_CONFIG_LINK)
 )
 
 DEFAULT_FLAG_VALUES = {
@@ -96,9 +94,14 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
         help=(_UPDATE_FILE_DESC_ALPHA if update else _CREATE_FILE_DESC_ALPHA),
     )
   flags = file_or_flags.add_argument_group(
-      'Command-line flags to configure the private pool:')
+      'Command-line flags to configure the private pool:'
+  )
+  network_flags = flags.add_mutually_exclusive_group()
+  service_network_flags = network_flags.add_argument_group(
+      'Network configuration for Service Networking:'
+  )
   if not update:
-    flags.add_argument(
+    service_network_flags.add_argument(
         '--peered-network',
         help="""\
 Existing network to which workers are peered. The network is specified in
@@ -108,9 +111,7 @@ projects/{network_project}/global/networks/{network_name}.
 If not specified, the workers are not peered to any network.
 """,
     )
-
-  if not update:
-    flags.add_argument(
+    service_network_flags.add_argument(
         '--peered-network-ip-range',
         help="""\
 An IP range for your peered network. Specify the IP range using Classless
@@ -125,6 +126,41 @@ IP for the range. If no IP range is specified, Cloud Build uses `/24` as the
 default network IP range.
 """,
     )
+    if release_track == base.ReleaseTrack.ALPHA:
+      private_service_connect_flags = network_flags.add_argument_group(
+          'Network configuration for Private Service Connect interface:'
+      )
+      private_service_connect_flags.add_argument(
+          '--network-attachment',
+          help="""\
+  The network attachment that the worker network interface is peered to. The
+  network attachment is specified in resource URL format
+  projects/{project}/regions/{region}/networkAttachments/{name}.
+  The region of network attachment must be the same as the worker pool.
+  See https://cloud.google.com/vpc/docs/about-network-attachments for details.
+  """,
+      )
+      private_service_connect_flags.add_argument(
+          '--route-all-traffic',
+          action='store_true',
+          help="""\
+  Route all traffic through PSC interface. Enable this if you want full control
+  of traffic in the private pool. Configure Cloud NAT for the subnet of network
+  attachment if you need to access public Internet.
+
+  If unset, Only route private IPs, e.g. 10.0.0.0/8, 172.16.0.0/12,
+  and 192.168.0.0/16 through PSC interface.
+  """,
+      )
+      private_service_connect_flags.add_argument(
+          '--disable-public-ip-address',
+          action='store_true',
+          help="""\
+  If set, workers in the worker pool are created without an external IP address.
+
+  If the worker pool is within a VPC Service Control perimeter, use this flag.
+  """,
+      )
 
   worker_flags = flags.add_argument_group(
       'Configuration to be used for creating workers in the worker pool:'
@@ -168,7 +204,7 @@ If not given, Cloud Build will use a standard disk size.
     )
 
   if update:
-    egress_flags = flags.add_mutually_exclusive_group()
+    egress_flags = service_network_flags.add_mutually_exclusive_group()
     egress_flags.add_argument(
         '--no-public-egress',
         action='store_true',
@@ -187,7 +223,7 @@ If set, workers in the worker pool are created with an external IP address.
 """,
     )
   else:
-    flags.add_argument(
+    service_network_flags.add_argument(
         '--no-public-egress',
         action='store_true',
         help="""\

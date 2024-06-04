@@ -74,9 +74,9 @@ class Versions(Logger):
   def ScheduledDestroy(self, scheduled_destroy_time, version_ref):
     self.Print(
         self._SCHEDULED_DESTROY_MESSAGE.format(
-            version_ref.Name(),
-            version_ref.Parent().Name(),
-            scheduled_destroy_time,
+            version=version_ref.Name(),
+            secret=version_ref.Parent().Name(),
+            time=scheduled_destroy_time,
         )
     )
 

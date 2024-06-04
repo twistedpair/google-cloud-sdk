@@ -18,99 +18,6 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
-class GoogleCloudLocationListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
-
-  Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
-  """
-
-  locations = _messages.MessageField('GoogleCloudLocationLocation', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents a Google Cloud location.
-
-  Messages:
-    LabelsValue: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    MetadataValue: Service-specific metadata. For example the available
-      capacity at the given location.
-
-  Fields:
-    displayName: The friendly name for this location, typically a nearby city
-      name. For example, "Tokyo".
-    labels: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The canonical id for this location. For example: `"us-east1"`.
-    metadata: Service-specific metadata. For example the available capacity at
-      the given location.
-    name: Resource name for the location, which may vary between
-      implementations. For example: `"projects/example-project/locations/us-
-      east1"`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Cross-service attributes for the location. For example
-    {"cloud.googleapis.com/region": "us-east1"}
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata. For example the available capacity at the
-    given location.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  displayName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  locationId = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-
-
 class GoogleIamAdminV1AuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -441,6 +348,32 @@ class GoogleIamV3alphaListTranslationsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class GoogleIamV3alphaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class GoogleIamV3alphaPolicy(_messages.Message):
   r"""One of the policies supported by IAM V3
 
@@ -473,21 +406,22 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
       resource condition. It depends on the type of target, the policy it is
       attached to, and/or the expression itself. When set, the `expression`
       field in the `Expr` must include from 1 to 10 subexpressions, joined by
-      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators.
-      Allowed operations for principal.type: - `principal.type == ` -
-      `principal.type != ` - `principal.type in []` Allowed operations for
+      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
+      and cannot contain more than 250 characters. Allowed operations for
       principal.subject: - `principal.subject == ` - `principal.subject != ` -
       `principal.subject in []` - `principal.subject.startsWith()` -
-      `principal.subject.endsWith()` Supported principal types are Workspace,
-      Workforce Pool, Workload Pool and Service Account. Allowed string must
-      be one of: - iam.googleapis.com/WorkspaceIdentity -
+      `principal.subject.endsWith()` Allowed operations for principal.type: -
+      `principal.type == ` - `principal.type != ` - `principal.type in []`
+      Supported principal types are Workspace, Workforce Pool, Workload Pool
+      and Service Account. Allowed string must be one of: -
+      iam.googleapis.com/WorkspaceIdentity -
       iam.googleapis.com/WorkforcePoolIdentity -
       iam.googleapis.com/WorkloadPoolIdentity -
-      iam.googleapis.com/ServiceAccount When the bound policy is a Principal
-      Access Boundary policy, each subexpression must be of the form
-      `principal.type == ` or `principal.subject == ''`. An example expression
-      is: "principal.type == 'iam.googleapis.com/ServiceAccount'" or
-      "principal.subject == 'bob@acme.com'".
+      iam.googleapis.com/ServiceAccount When the bound policy is a principal
+      access boundary policy, the only supported attributes in any
+      subexpression are `principal.type` and `principal.subject`. An example
+      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
+      or "principal.subject == 'bob@acme.com'".
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
@@ -526,9 +460,12 @@ class GoogleIamV3alphaPolicyBinding(_messages.Message):
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
       PRINCIPAL_ACCESS_BOUNDARY: Principal access boundary policy kind
+      ACCESS: Access policy kind. Keep behind visibility label until Access
+        Policy launch.
     """
     POLICY_KIND_UNSPECIFIED = 0
     PRINCIPAL_ACCESS_BOUNDARY = 1
+    ACCESS = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -602,18 +539,20 @@ class GoogleIamV3alphaPolicyPorter(_messages.Message):
   security policies.
 
   Messages:
-    LabelsValue: Optional. Labels as key value pairs
+    LabelsValue: Optional. Resource labels as key value pairs, used for List
+      API filtering.
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
     description: Optional. Description about translation.
     displayName: Required. An arbitrary user-provided name for policy porter.
-      The display name should adhere to the following format. * Must be 6 to
+      The display name should adhere to the following format: * Must be 6 to
       63 characters in length. * Can only contain lowercase letters, numbers,
       and hyphens. * Must start with a letter.
-    labels: Optional. Labels as key value pairs
+    labels: Optional. Resource labels as key value pairs, used for List API
+      filtering.
     name: Identifier. Name of resource. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
     policyConfig: Optional. Represents config for PolicyPorter such as
       policies, mappings, etc. required by PolicyPorter.
     updateTime: Output only. [Output only] Update time stamp
@@ -621,7 +560,8 @@ class GoogleIamV3alphaPolicyPorter(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Labels as key value pairs
+    r"""Optional. Resource labels as key value pairs, used for List API
+    filtering.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -658,19 +598,19 @@ class GoogleIamV3alphaPolicyPorterConfig(_messages.Message):
 
   Enums:
     SourceCloudValueValuesEnum: Optional. Type of source cloud from which
-      poilcies are being translated.
+      policies are being translated.
 
   Fields:
     awsMappings: Optional. Mappings required for translating policies from AWS
       source cloud.
     inlinePolicyJson: Inline representation of policy json that is being
       translated.
-    sourceCloud: Optional. Type of source cloud from which poilcies are being
+    sourceCloud: Optional. Type of source cloud from which policies are being
       translated.
   """
 
   class SourceCloudValueValuesEnum(_messages.Enum):
-    r"""Optional. Type of source cloud from which poilcies are being
+    r"""Optional. Type of source cloud from which policies are being
     translated.
 
     Values:
@@ -692,13 +632,13 @@ class GoogleIamV3alphaPolicyPorterConfigAwsMappings(_messages.Message):
     PrincipalMappingValue: Optional. User provided principal mapping for keys
       in `principal_keys` field. Keys format: [AWS JSON policy elements: Princ
       ipal](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policie
-      s_elements_principal.html) Values format: See [Members field in bindings
-      ](https://cloud.google.com/iam/docs/reference/rest/v1/Policy#binding)
+      s_elements_principal.html). Values format: See [Members field in binding
+      s](https://cloud.google.com/iam/docs/reference/rest/v1/Policy#binding).
     ResourceMappingValue: Optional. User provided resource mapping for keys in
       `resource_keys` field. Keys format: [IAM JSON policy elements: Resource]
       (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_ele
-      ments_resource.html) Values format: See [Resource
-      names](https://cloud.google.com/apis/design/resource_names)
+      ments_resource.html). Values format: See [Resource
+      names](https://cloud.google.com/apis/design/resource_names).
 
   Fields:
     principalKeys: Output only. Principal keys identified in the policy json
@@ -707,16 +647,16 @@ class GoogleIamV3alphaPolicyPorterConfigAwsMappings(_messages.Message):
     principalMapping: Optional. User provided principal mapping for keys in
       `principal_keys` field. Keys format: [AWS JSON policy elements: Principa
       l](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_e
-      lements_principal.html) Values format: See [Members field in bindings](h
-      ttps://cloud.google.com/iam/docs/reference/rest/v1/Policy#binding)
+      lements_principal.html). Values format: See [Members field in bindings](
+      https://cloud.google.com/iam/docs/reference/rest/v1/Policy#binding).
     resourceKeys: Output only. Resource keys identified in the policy json for
       which mappings are required for translation. Mappings need to be
       provided in `resource_mapping` field.
     resourceMapping: Optional. User provided resource mapping for keys in
       `resource_keys` field. Keys format: [IAM JSON policy elements: Resource]
       (https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_policies_ele
-      ments_resource.html) Values format: See [Resource
-      names](https://cloud.google.com/apis/design/resource_names)
+      ments_resource.html). Values format: See [Resource
+      names](https://cloud.google.com/apis/design/resource_names).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -724,8 +664,8 @@ class GoogleIamV3alphaPolicyPorterConfigAwsMappings(_messages.Message):
     r"""Optional. User provided principal mapping for keys in `principal_keys`
     field. Keys format: [AWS JSON policy elements: Principal](https://docs.aws
     .amazon.com/IAM/latest/UserGuide/reference_policies_elements_principal.htm
-    l) Values format: See [Members field in bindings](https://cloud.google.com
-    /iam/docs/reference/rest/v1/Policy#binding)
+    l). Values format: See [Members field in bindings](https://cloud.google.co
+    m/iam/docs/reference/rest/v1/Policy#binding).
 
     Messages:
       AdditionalProperty: An additional property for a PrincipalMappingValue
@@ -754,8 +694,8 @@ class GoogleIamV3alphaPolicyPorterConfigAwsMappings(_messages.Message):
     r"""Optional. User provided resource mapping for keys in `resource_keys`
     field. Keys format: [IAM JSON policy elements: Resource](https://docs.aws.
     amazon.com/IAM/latest/UserGuide/reference_policies_elements_resource.html)
-    Values format: See [Resource
-    names](https://cloud.google.com/apis/design/resource_names)
+    . Values format: See [Resource
+    names](https://cloud.google.com/apis/design/resource_names).
 
     Messages:
       AdditionalProperty: An additional property for a ResourceMappingValue
@@ -870,7 +810,8 @@ class GoogleIamV3alphaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
       services are included in the enforcement (e.g. "latest", "1", ...). If
       empty, the PAB policy version will be set to the current latest version,
       and this version won't get updated when new versions are released.
-    rules: Required. A list of principal access boundary policy rules.
+    rules: Required. A list of principal access boundary policy rules. The
+      number of rules in a policy is limited to 500.
   """
 
   enforcementVersion = _messages.StringField(1)
@@ -891,7 +832,8 @@ class GoogleIamV3alphaPrincipalAccessBoundaryPolicyRule(_messages.Message):
     effect: Required. The access relationship of principals to the resources
       in this rule.
     resources: Required. A list of Cloud Resource Manager resources. The
-      resource and all the descendants are included. The following resource
+      resource and all the descendants are included. The number of resources
+      in a policy is limited to 500 across all rules. The following resource
       names are supported: * Organization, such as
       "//cloudresourcemanager.googleapis.com/organizations/123". * Folder,
       such as "//cloudresourcemanager.googleapis.com/folders/123". * Project,
@@ -991,7 +933,7 @@ class GoogleIamV3alphaSourcePolicy(_messages.Message):
     displayName: Required. The display name of the source policy.
     name: Identifier. Name of resource. Format: projects/{project}/locations/{
       location}/policyPorters/{policy_porter}/translations/{translation}/sourc
-      ePolicies/{source_policy}
+      ePolicies/{source_policy}.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1131,7 +1073,7 @@ class GoogleIamV3alphaTranslatedPolicy(_messages.Message):
     displayName: Required. The display name of the translated policy.
     name: Identifier. Name of resource. Format: projects/{project}/locations/{
       location}/policyPorters/{policy_porter}/translations/{translation}/trans
-      latedPolicies/{translated_policy}
+      latedPolicies/{translated_policy}.
     policy: Output only. System generated policy.
     skipExport: Optional. If this flag is set to true, this policy will be
       skipped from exporting the policy.
@@ -1192,7 +1134,7 @@ class GoogleIamV3alphaTranslation(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     displayName: Required. The display name of translation.
     name: Identifier. Name of resource. Format: projects/{project}/locations/{
-      location}/policyPorters/{policy_porter}/translations/{translation}
+      location}/policyPorters/{policy_porter}/translations/{translation}.
     policyConfig: Output only. Represents config for PolicyPorter such as
       policies, mappings, etc. required by PolicyPorter.
     state: Output only. State of the translation.
@@ -1497,36 +1439,6 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class IamFoldersLocationsGetRequest(_messages.Message):
-  r"""A IamFoldersLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamFoldersLocationsListLocationsRequest(_messages.Message):
-  r"""A IamFoldersLocationsListLocationsRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class IamFoldersLocationsOperationsGetRequest(_messages.Message):
   r"""A IamFoldersLocationsOperationsGetRequest object.
 
@@ -1807,36 +1719,6 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   target = _messages.StringField(4)
-
-
-class IamOrganizationsLocationsGetRequest(_messages.Message):
-  r"""A IamOrganizationsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamOrganizationsLocationsListLocationsRequest(_messages.Message):
-  r"""A IamOrganizationsLocationsListLocationsRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class IamOrganizationsLocationsOperationsGetRequest(_messages.Message):
@@ -2254,36 +2136,6 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindin
   pageToken = _messages.StringField(3)
 
 
-class IamProjectsLocationsGetRequest(_messages.Message):
-  r"""A IamProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsLocationsListRequest(_messages.Message):
-  r"""A IamProjectsLocationsListRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class IamProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsOperationsGetRequest object.
 
@@ -2573,7 +2425,7 @@ class IamProjectsLocationsPolicyPortersCreateRequest(_messages.Message):
     googleIamV3alphaPolicyPorter: A GoogleIamV3alphaPolicyPorter resource to
       be passed as the request body.
     parent: Required. Value for parent. Format:
-      projects/{project}/locations/{location}
+      projects/{project}/locations/{location}.
     policyPorterId: Required. Id of the requesting object If auto-generating
       Id server-side, remove this field and policy_porter_id from the
       method_signature of Create RPC
@@ -2604,7 +2456,7 @@ class IamProjectsLocationsPolicyPortersDeleteRequest(_messages.Message):
       will also be deleted. (Otherwise, the request will only work if the
       PolicyPorter has no Translations.)
     name: Required. Name of the resource. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2628,7 +2480,7 @@ class IamProjectsLocationsPolicyPortersGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the resource. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2645,7 +2497,7 @@ class IamProjectsLocationsPolicyPortersListRequest(_messages.Message):
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListPolicyPortersRequest. Format:
-      projects/{project}/locations/{location}
+      projects/{project}/locations/{location}.
   """
 
   filter = _messages.StringField(1)
@@ -2662,7 +2514,7 @@ class IamProjectsLocationsPolicyPortersPatchRequest(_messages.Message):
     googleIamV3alphaPolicyPorter: A GoogleIamV3alphaPolicyPorter resource to
       be passed as the request body.
     name: Identifier. Name of resource. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2694,7 +2546,7 @@ class IamProjectsLocationsPolicyPortersTranslationsCreateRequest(_messages.Messa
     googleIamV3alphaTranslation: A GoogleIamV3alphaTranslation resource to be
       passed as the request body.
     parent: Required. Value for parent. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2726,7 +2578,7 @@ class IamProjectsLocationsPolicyPortersTranslationsDeleteRequest(_messages.Messa
       only work if the Translation has no SourcePolicies and
       TranslatedPolicies.)
     name: Required. Name of the resource Format: projects/{project}/locations/
-      {location}/policyPorters/{policy_porter}/translations/{translation}
+      {location}/policyPorters/{policy_porter}/translations/{translation}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2750,7 +2602,7 @@ class IamProjectsLocationsPolicyPortersTranslationsGetRequest(_messages.Message)
 
   Fields:
     name: Required. Name of the resource. Format: projects/{project}/locations
-      /{location}/policyPorters/{policy_porter}/translations/{translation}
+      /{location}/policyPorters/{policy_porter}/translations/{translation}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2767,7 +2619,7 @@ class IamProjectsLocationsPolicyPortersTranslationsListRequest(_messages.Message
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListTranslationsRequest. Format:
-      projects/{project}/locations/{location}/policyPorters/{policy_porter}
+      projects/{project}/locations/{location}/policyPorters/{policy_porter}.
   """
 
   filter = _messages.StringField(1)
@@ -2784,7 +2636,7 @@ class IamProjectsLocationsPolicyPortersTranslationsSourcePoliciesGetRequest(_mes
   Fields:
     name: Required. Name of the resource. Format: projects/{project}/locations
       /{location}/policyPorters/{policy_porter}/translations/{translation}/sou
-      rcePolicies/{source_policy}
+      rcePolicies/{source_policy}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2803,7 +2655,7 @@ class IamProjectsLocationsPolicyPortersTranslationsSourcePoliciesListRequest(_me
       should return.
     parent: Required. Parent value for ListSourcePoliciesRequest. Format: proj
       ects/{project}/locations/{location}/policyPorters/{policy_porter}/transl
-      ations/{translation}
+      ations/{translation}.
   """
 
   filter = _messages.StringField(1)
@@ -2824,7 +2676,7 @@ class IamProjectsLocationsPolicyPortersTranslationsTranslatedPoliciesExportReque
       the request body.
     parent: Required. Parent value for ExportTranslatedPoliciesRequest.
       Format: projects/{project}/locations/{location}/policyPorters/{policy_po
-      rter}/translations/{translation}
+      rter}/translations/{translation}.
   """
 
   googleIamV3alphaExportTranslatedPoliciesRequest = _messages.MessageField('GoogleIamV3alphaExportTranslatedPoliciesRequest', 1)
@@ -2839,7 +2691,7 @@ class IamProjectsLocationsPolicyPortersTranslationsTranslatedPoliciesGetRequest(
   Fields:
     name: Required. Name of the resource. Format: projects/{project}/locations
       /{location}/policyPorters/{policy_porter}/translations/{translation}/tra
-      nslatedPolicies/{translated_policy}
+      nslatedPolicies/{translated_policy}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2859,7 +2711,7 @@ class IamProjectsLocationsPolicyPortersTranslationsTranslatedPoliciesListRequest
       should return.
     parent: Required. Parent value for ListTranslatedPoliciesRequest. Format:
       projects/{project}/locations/{location}/policyPorters/{policy_porter}/tr
-      anslations/{translation}
+      anslations/{translation}.
   """
 
   filter = _messages.StringField(1)
@@ -2879,7 +2731,7 @@ class IamProjectsLocationsPolicyPortersTranslationsTranslatedPoliciesPatchReques
       resource to be passed as the request body.
     name: Identifier. Name of resource. Format: projects/{project}/locations/{
       location}/policyPorters/{policy_porter}/translations/{translation}/trans
-      latedPolicies/{translated_policy}
+      latedPolicies/{translated_policy}.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2920,10 +2772,22 @@ class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
     targetQuery: Required. The target for which to list the policies and
       bindings for. Binding conditions will not be evaluated and all bindings
       that are bound to the target will be returned. All targets from the
-      CreatePolicyBinding request are supported, as well as principals that
-      are part of the principalSet. e.g.
-      principalSet://iam.googleapis.com/projects/1234/*
+      PolicyBinding are supported, as well as principals that are part of the
+      principalSet. e.g.
+      "//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID"
+      "//cloudresourcemanager.googleapis.com/folders/FOLDER_ID"
+      "//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER"
+      "//cloudresourcemanager.googleapis.com/projects/PROJECT_ID" "//iam.googl
+      eapis.com/projects/PROJECT_NUMBER/locations/LOCATION/workloadIdentityPoo
+      ls/WORKLOAD_POOL_ID"
+      "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID"
+      "//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID"
       principal:alice@acme.com
+      principal://iam.googleapis.com/locations/global/workforcePools/pool-
+      id/subject/alice principal://iam.googleapis.com/projects/123/locations/g
+      lobal/workloadIdentityPools/pool-id/subject/alice serviceAccount:my-
+      sa@my-project.iam.gserviceaccount.com user:user@google.com
+      user@google.com
   """
 
   filter = _messages.StringField(1)

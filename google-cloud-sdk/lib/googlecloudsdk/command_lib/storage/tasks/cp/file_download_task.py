@@ -62,7 +62,6 @@ def _should_perform_sliced_download(source_resource, destination_resource):
       properties.VALUES.storage.sliced_object_download_threshold.Get())
   component_size = scaled_integer.ParseInteger(
       properties.VALUES.storage.sliced_object_download_component_size.Get())
-  # TODO(b/183017513): Only perform sliced downloads with parallelism.
   api_capabilities = api_factory.get_capabilities(
       source_resource.storage_url.scheme)
   return (source_resource.size and threshold != 0 and

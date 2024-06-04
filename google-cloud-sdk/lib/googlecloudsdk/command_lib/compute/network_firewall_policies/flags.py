@@ -550,3 +550,47 @@ def AddTlsInspect(parser):
           'is applied. Default: no TLS inspection.'
       ),
   )
+
+
+def AddSrcNetworkScope(parser, required=False):
+  """Adds source network scope to this rule."""
+  parser.add_argument(
+      '--src-network-scope',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet,'
+          ' non-internet traffic or traffic coming from the network specified'
+          ' by --src-network. It applies to ingress rules. Valid values are'
+          ' INTERNET, NON_INTERNET and VPC_NETWORKS. Use empty string to clear'
+          ' the field.'
+      ),
+  )
+
+
+def AddSrcNetworks(parser):
+  """Adds source network urls list to this rule."""
+  parser.add_argument(
+      '--src-networks',
+      type=arg_parsers.ArgList(),
+      metavar='SRC_NETWORKS',
+      required=False,
+      help=(
+          'The source VPC networks to  match for this rule.  It can only be'
+          ' specified when --src-network-scope is VPC_NETWORKS. It applies to '
+          ' ingress rules .It accepts full or partial URLs.'
+      ),
+  )
+
+
+def AddDestNetworkScope(parser, required=False):
+  """Adds destination network scope to this rule."""
+  parser.add_argument(
+      '--dest-network-scope',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet or'
+          ' non-internet traffic. It applies to destination traffic for egress'
+          ' rules. Valid values are INTERNET and NON_INTERNET. Use empty string'
+          ' to clear the field.'
+      ),
+  )

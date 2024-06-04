@@ -126,6 +126,16 @@ def AddActiveDirectorySecurityOperatorsArg(parser):
   )
 
 
+def AddActiveDirectoryAdministratorsArg(parser):
+  """Adds a --administrators arg to the given parser."""
+  parser.add_argument(
+      '--administrators',
+      type=arg_parsers.ArgList(element_type=str),
+      metavar='ADMINISTRATOR',
+      help="""Members of the Active Directory built-in Administrators group."""
+  )
+
+
 def AddActivevDirectoryKdcHostnameArg(parser):
   """Adds a --kdc-hostname arg to the given parser."""
   parser.add_argument(
@@ -197,6 +207,7 @@ def AddActiveDirectoryCreateArgs(parser):
   AddActiveDirectoryPasswordArg(parser)
   AddActiveDirectoryBackupOperatorsArg(parser)
   AddActiveDirectorySecurityOperatorsArg(parser)
+  AddActiveDirectoryAdministratorsArg(parser)
   AddActivevDirectoryKdcHostnameArg(parser)
   AddActiveDirectoryKdcIpArg(parser)
   AddActiveDirectoryNfsUsersWithLdapArg(parser)
@@ -232,6 +243,7 @@ def AddActiveDirectoryUpdateArgs(parser):
   AddActiveDirectoryPasswordArg(parser)
   AddActiveDirectoryBackupOperatorsArg(parser)
   AddActiveDirectorySecurityOperatorsArg(parser)
+  AddActiveDirectoryAdministratorsArg(parser)
   AddActivevDirectoryKdcHostnameArg(parser)
   AddActiveDirectoryKdcIpArg(parser)
   AddActiveDirectoryNfsUsersWithLdapArg(parser)

@@ -30,28 +30,17 @@ class PolicyError(Error):
 
 
 class PolicyMalformedError(PolicyError):
-  """Raised when the specified Ops Agents policy is malformed."""
+  """Raised when the specified policy is not a Cloud Ops Agents Policy."""
 
-  def __init__(self, policy_id, detail):
+  def __init__(self, policy_id):
     message = (
-        'Encountered a malformed policy: [{detail}].\nThe Ops Agents policy'
-        ' [{policy_id}] may have been modified directly by the OS Config guest'
-        ' policy API / gcloud commands. If so, please delete and re-create with'
+        'Encountered a malformed Cloud Ops Agents Policy.\n The Cloud Ops'
+        ' Agents policy [{policy_id}] may have been modified directly by the OS'
+        ' Config API / gcloud commands. If so, please delete and re-create with'
         ' the Ops Agents policy gcloud commands. If not, this may be an'
-        ' internal error.'.format(policy_id=policy_id, detail=detail)
+        ' internal error.'.format(policy_id=policy_id)
     )
     super(PolicyMalformedError, self).__init__(message)
-
-
-class PolicyInternalError(PolicyError):
-  """Raised when the specified Ops Agents policy is malformed."""
-
-  def __init__(self, policy_id, detail):
-    message = (
-        'Encountered an internal error when processing the Ops Agents policy'
-        ' [{policy_id}]. Please try again later.'.format(policy_id=policy_id)
-    )
-    super(PolicyInternalError, self).__init__(message)
 
 
 class PolicyNotFoundError(PolicyError):
@@ -59,8 +48,7 @@ class PolicyNotFoundError(PolicyError):
 
   def __init__(self, policy_id):
     message = (
-        'Ops Agents policy [{policy_id}] not found, or not an Ops Agents'
-        ' policy'.format(policy_id=policy_id)
+        'Ops Agents policy [{policy_id}] not found'.format(policy_id=policy_id)
     )
     super(PolicyNotFoundError, self).__init__(message)
 

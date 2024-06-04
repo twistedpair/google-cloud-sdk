@@ -334,6 +334,33 @@ class DomainsV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def InitiatePushTransfer(self, request, global_params=None):
+      r"""Initiates the `Push Transfer` process to transfer the domain to another registrar. The process might complete instantly or might require confirmation or additional work. Check the emails sent to the email address of the registrant. The process is aborted after a timeout if it's not completed. This method is only supported for domains that have the `REQUIRE_PUSH_TRANSFER` property in the list of `domain_properties`. The domain must also be unlocked before it can be transferred to a different registrar. For more information, see [Transfer a registered domain to another registrar](https://cloud.google.com/domains/docs/transfer-domain-to-another-registrar).
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('InitiatePushTransfer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InitiatePushTransfer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:initiatePushTransfer',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.initiatePushTransfer',
+        ordered_params=['registration'],
+        path_params=['registration'],
+        query_params=[],
+        relative_path='v1beta1/{+registration}:initiatePushTransfer',
+        request_field='initiatePushTransferRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the `Registration` resources in a project.
 
@@ -415,8 +442,35 @@ class DomainsV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RenewDomain(self, request, global_params=None):
+      r"""Renews a recently expired domain. This method can only be called on domains that expired in the previous 30 days. After the renewal, the new expiration time of the domain is one year after the old expiration time and you are charged a `yearly_price` for the renewal.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsRenewDomainRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RenewDomain')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RenewDomain.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:renewDomain',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.renewDomain',
+        ordered_params=['registration'],
+        path_params=['registration'],
+        query_params=[],
+        relative_path='v1beta1/{+registration}:renewDomain',
+        request_field='renewDomainRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsRenewDomainRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def ResetAuthorizationCode(self, request, global_params=None):
-      r"""Resets the authorization code of the `Registration` to a new random string. You can call this method only after 60 days have elapsed since the initial domain registration.
+      r"""Resets the authorization code of the `Registration` to a new random string. You can call this method only after 60 days have elapsed since the initial domain registration. Domains that have the `REQUIRE_PUSH_TRANSFER` property in the list of `domain_properties` don't support authorization codes and must use the `InitiatePushTransfer` method to initiate the process to transfer the domain to a different registrar.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest) input message
@@ -443,7 +497,7 @@ class DomainsV1beta1(base_api.BaseApiClient):
     )
 
     def RetrieveAuthorizationCode(self, request, global_params=None):
-      r"""Gets the authorization code of the `Registration` for the purpose of transferring the domain to another registrar. You can call this method only after 60 days have elapsed since the initial domain registration.
+      r"""Gets the authorization code of the `Registration` for the purpose of transferring the domain to another registrar. You can call this method only after 60 days have elapsed since the initial domain registration. Domains that have the `REQUIRE_PUSH_TRANSFER` property in the list of `domain_properties` don't support authorization codes and must use the `InitiatePushTransfer` method to initiate the process to transfer the domain to a different registrar.
 
       Args:
         request: (DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest) input message

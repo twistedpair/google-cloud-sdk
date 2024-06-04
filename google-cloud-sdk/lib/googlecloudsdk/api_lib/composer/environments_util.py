@@ -1011,7 +1011,7 @@ def FetchDatabaseProperties(environment_ref,
 
 def CheckUpgrade(environment_ref,
                  image_version,
-                 release_track=base.ReleaseTrack.BETA):
+                 release_track=base.ReleaseTrack.GA):
   """Calls the Composer Environments.CheckUpgrade method.
 
   Args:

@@ -314,10 +314,10 @@ def _GetDockerVersions(docker_img,
         ver.name, collection=_VERSION_COLLECTION_NAME).Name()
     img = {
         "package": docker_img.GetDockerString(),
-        "tags": ", ".join([t.name.split("/")[-1] for t in ver.relatedTags]),
+        "tags": [t.name.split("/")[-1] for t in ver.relatedTags],
         "version": v,
         "createTime": ver.createTime,
-        "updateTime": ver.updateTime
+        "updateTime": ver.updateTime,
     }
     if ver.metadata is not None:
       img["metadata"] = {
@@ -652,7 +652,7 @@ def DockerImageToLegacy(img, include_tags: bool) -> map:
       # Historically tags were not queried from backend by default. Now tags
       # are always included, but to prevent breaking change only include if
       # requested.
-      "tags": ", ".join(img.tags) if include_tags else "",
+      "tags": img.tags if include_tags else "",
   }
 
 

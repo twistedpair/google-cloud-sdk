@@ -585,6 +585,22 @@ class DomainsProjectsLocationsRegistrationsImportRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest
+  object.
+
+  Fields:
+    initiatePushTransferRequest: A InitiatePushTransferRequest resource to be
+      passed as the request body.
+    registration: Required. The name of the `Registration` for which the push
+      transfer is initiated, in the format
+      `projects/*/locations/*/registrations/*`.
+  """
+
+  initiatePushTransferRequest = _messages.MessageField('InitiatePushTransferRequest', 1)
+  registration = _messages.StringField(2, required=True)
+
+
 class DomainsProjectsLocationsRegistrationsListRequest(_messages.Message):
   r"""A DomainsProjectsLocationsRegistrationsListRequest object.
 
@@ -643,6 +659,20 @@ class DomainsProjectsLocationsRegistrationsRegisterRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   registerDomainRequest = _messages.MessageField('RegisterDomainRequest', 2)
+
+
+class DomainsProjectsLocationsRegistrationsRenewDomainRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsRenewDomainRequest object.
+
+  Fields:
+    registration: Required. The name of the `Registration` whish is being
+      renewed, in the format `projects/*/locations/*/registrations/*`.
+    renewDomainRequest: A RenewDomainRequest resource to be passed as the
+      request body.
+  """
+
+  registration = _messages.StringField(1, required=True)
+  renewDomainRequest = _messages.MessageField('RenewDomainRequest', 2)
 
 
 class DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest(_messages.Message):
@@ -1021,6 +1051,17 @@ class ImportDomainRequest(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
 
 
+class InitiatePushTransferRequest(_messages.Message):
+  r"""Request for the `InitiatePushTransfer` method.
+
+  Fields:
+    tag: Required. The Tag of the new registrar. Can be found at [List of
+      registrars](https://nominet.uk/registrar-list/).
+  """
+
+  tag = _messages.StringField(1)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -1145,6 +1186,8 @@ class ManagementSettings(_messages.Message):
   r"""Defines renewal, billing, and transfer settings for a `Registration`.
 
   Enums:
+    EffectiveTransferLockStateValueValuesEnum: Output only. The actual
+      transfer lock state for this `Registration`.
     PreferredRenewalMethodValueValuesEnum: Optional. The desired renewal
       method for this `Registration`. The actual `renewal_method` is
       automatically updated to reflect this choice. If unset or equal to
@@ -1168,9 +1211,17 @@ class ManagementSettings(_messages.Message):
       in a few hours.
     TransferLockStateValueValuesEnum: This is the desired transfer lock state
       for this `Registration`. A transfer lock controls whether the domain can
-      be transferred to another registrar.
+      be transferred to another registrar. The transfer lock state of the
+      domain is returned in the `effective_transfer_lock_state` property. The
+      transfer lock state values might be different for the following reasons:
+      * `transfer_lock_state` was updated only a short time ago. * Domains
+      with the `TRANSFER_LOCK_UNSUPPORTED_BY_REGISTRY` state are in the list
+      of `domain_properties`. These domains are always in the `UNLOCKED`
+      state.
 
   Fields:
+    effectiveTransferLockState: Output only. The actual transfer lock state
+      for this `Registration`.
     preferredRenewalMethod: Optional. The desired renewal method for this
       `Registration`. The actual `renewal_method` is automatically updated to
       reflect this choice. If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`,
@@ -1194,8 +1245,28 @@ class ManagementSettings(_messages.Message):
       in a few hours.
     transferLockState: This is the desired transfer lock state for this
       `Registration`. A transfer lock controls whether the domain can be
-      transferred to another registrar.
+      transferred to another registrar. The transfer lock state of the domain
+      is returned in the `effective_transfer_lock_state` property. The
+      transfer lock state values might be different for the following reasons:
+      * `transfer_lock_state` was updated only a short time ago. * Domains
+      with the `TRANSFER_LOCK_UNSUPPORTED_BY_REGISTRY` state are in the list
+      of `domain_properties`. These domains are always in the `UNLOCKED`
+      state.
   """
+
+  class EffectiveTransferLockStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The actual transfer lock state for this `Registration`.
+
+    Values:
+      TRANSFER_LOCK_STATE_UNSPECIFIED: The state is unspecified.
+      UNLOCKED: The domain is unlocked and can be transferred to another
+        registrar.
+      LOCKED: The domain is locked and cannot be transferred to another
+        registrar.
+    """
+    TRANSFER_LOCK_STATE_UNSPECIFIED = 0
+    UNLOCKED = 1
+    LOCKED = 2
 
   class PreferredRenewalMethodValueValuesEnum(_messages.Enum):
     r"""Optional. The desired renewal method for this `Registration`. The
@@ -1253,7 +1324,12 @@ class ManagementSettings(_messages.Message):
   class TransferLockStateValueValuesEnum(_messages.Enum):
     r"""This is the desired transfer lock state for this `Registration`. A
     transfer lock controls whether the domain can be transferred to another
-    registrar.
+    registrar. The transfer lock state of the domain is returned in the
+    `effective_transfer_lock_state` property. The transfer lock state values
+    might be different for the following reasons: * `transfer_lock_state` was
+    updated only a short time ago. * Domains with the
+    `TRANSFER_LOCK_UNSUPPORTED_BY_REGISTRY` state are in the list of
+    `domain_properties`. These domains are always in the `UNLOCKED` state.
 
     Values:
       TRANSFER_LOCK_STATE_UNSPECIFIED: The state is unspecified.
@@ -1266,9 +1342,10 @@ class ManagementSettings(_messages.Message):
     UNLOCKED = 1
     LOCKED = 2
 
-  preferredRenewalMethod = _messages.EnumField('PreferredRenewalMethodValueValuesEnum', 1)
-  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 2)
-  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 3)
+  effectiveTransferLockState = _messages.EnumField('EffectiveTransferLockStateValueValuesEnum', 1)
+  preferredRenewalMethod = _messages.EnumField('PreferredRenewalMethodValueValuesEnum', 2)
+  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 3)
+  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 4)
 
 
 class Money(_messages.Message):
@@ -1760,6 +1837,7 @@ class Registration(_messages.Message):
   any domain names you want to use with Cloud Domains.
 
   Enums:
+    DomainPropertiesValueListEntryValuesEnum:
     IssuesValueListEntryValuesEnum:
     ProviderValueValuesEnum: Output only. Current domain management provider.
     RegisterFailureReasonValueValuesEnum: Output only. The reason the domain
@@ -1787,6 +1865,7 @@ class Registration(_messages.Message):
       method. To update these settings, use the `ConfigureDnsSettings` method.
     domainName: Required. Immutable. The domain name. Unicode domain names
       must be expressed in Punycode format.
+    domainProperties: Output only. Special properties of the domain.
     expireTime: Output only. The expiration timestamp of the `Registration`.
     issues: Output only. The set of issues with the `Registration` that
       require attention.
@@ -1816,6 +1895,29 @@ class Registration(_messages.Message):
       deprecations). The reason the domain transfer failed. Only set for
       domains in TRANSFER_FAILED state.
   """
+
+  class DomainPropertiesValueListEntryValuesEnum(_messages.Enum):
+    r"""DomainPropertiesValueListEntryValuesEnum enum type.
+
+    Values:
+      DOMAIN_PROPERTY_UNSPECIFIED: The property is undefined.
+      TRANSFER_LOCK_UNSUPPORTED_BY_REGISTRY: The domain does not support
+        transfer locks due to restrictions of the registry. Such domains are
+        effectively always unlocked and any change made to
+        `management_settings.transfer_lock_state` is ignored.
+      REQUIRE_PUSH_TRANSFER: The domain uses an alternative `Push Transfer`
+        process to transfer the domain to another registrar. There are two
+        important consequences: * Cloud Domains does not supply the
+        authorization codes. * To initiate the process to transfer the domain
+        to another registrar, you must provide a tag of the registrar you want
+        to transfer to. You can do this by using the `InitiatePushTransfer`
+        method. For more information, see [Transfer a registered domain to
+        another registrar](https://cloud.google.com/domains/docs/transfer-
+        domain-to-another-registrar).
+    """
+    DOMAIN_PROPERTY_UNSPECIFIED = 0
+    TRANSFER_LOCK_UNSUPPORTED_BY_REGISTRY = 1
+    REQUIRE_PUSH_TRANSFER = 2
 
   class IssuesValueListEntryValuesEnum(_messages.Enum):
     r"""IssuesValueListEntryValuesEnum enum type.
@@ -2004,17 +2106,36 @@ class Registration(_messages.Message):
   createTime = _messages.StringField(2)
   dnsSettings = _messages.MessageField('DnsSettings', 3)
   domainName = _messages.StringField(4)
-  expireTime = _messages.StringField(5)
-  issues = _messages.EnumField('IssuesValueListEntryValuesEnum', 6, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 7)
-  managementSettings = _messages.MessageField('ManagementSettings', 8)
-  name = _messages.StringField(9)
-  pendingContactSettings = _messages.MessageField('ContactSettings', 10)
-  provider = _messages.EnumField('ProviderValueValuesEnum', 11)
-  registerFailureReason = _messages.EnumField('RegisterFailureReasonValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 14, repeated=True)
-  transferFailureReason = _messages.EnumField('TransferFailureReasonValueValuesEnum', 15)
+  domainProperties = _messages.EnumField('DomainPropertiesValueListEntryValuesEnum', 5, repeated=True)
+  expireTime = _messages.StringField(6)
+  issues = _messages.EnumField('IssuesValueListEntryValuesEnum', 7, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 8)
+  managementSettings = _messages.MessageField('ManagementSettings', 9)
+  name = _messages.StringField(10)
+  pendingContactSettings = _messages.MessageField('ContactSettings', 11)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 12)
+  registerFailureReason = _messages.EnumField('RegisterFailureReasonValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 15, repeated=True)
+  transferFailureReason = _messages.EnumField('TransferFailureReasonValueValuesEnum', 16)
+
+
+class RenewDomainRequest(_messages.Message):
+  r"""Request for the `RenewDomain` method.
+
+  Fields:
+    validateOnly: Optional. When true, only validation is performed, without
+      actually renewing the domain. For more information, see [Request validat
+      ion](https://cloud.google.com/apis/design/design_patterns#request_valida
+      tion)
+    yearlyPrice: Required. Acknowledgement of the price to renew the domain
+      for one year. To get the price, see [Cloud Domains
+      pricing](https://cloud.google.com/domains/pricing). If not provided, the
+      expected price is returned in the error message.
+  """
+
+  validateOnly = _messages.BooleanField(1)
+  yearlyPrice = _messages.MessageField('Money', 2)
 
 
 class ResetAuthorizationCodeRequest(_messages.Message):

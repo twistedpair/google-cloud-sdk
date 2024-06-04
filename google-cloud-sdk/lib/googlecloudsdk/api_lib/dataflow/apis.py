@@ -647,6 +647,13 @@ class Templates:
           env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE'])
       commands.append('pip install --no-cache-dir -U -r {}'.format(
           env['FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE']))
+      commands.append(
+          '(pip check || (e=$?; echo "Building a container with incompatible'
+          ' dependencies is prevented by default. If you are sure you want to'
+          ' proceed, you need to create your own container image. See:'
+          ' https://cloud.google.com/dataflow/docs/guides/templates/configuring-flex-templates";'
+          ' exit $e))'
+      )
     if 'FLEX_TEMPLATE_PYTHON_SETUP_FILE' in env:
       env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'] = '/template/{}'.format(
           env['FLEX_TEMPLATE_PYTHON_SETUP_FILE'])

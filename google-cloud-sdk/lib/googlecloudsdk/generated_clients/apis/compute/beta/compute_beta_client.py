@@ -10583,7 +10583,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
+      r"""Patches the specified network with the data included in the request. Only routingConfig can be modified.
 
       Args:
         request: (ComputeNetworksPatchRequest) input message

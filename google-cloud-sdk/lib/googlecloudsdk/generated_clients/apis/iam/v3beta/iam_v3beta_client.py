@@ -55,7 +55,6 @@ class IamV3beta(base_api.BaseApiClient):
     self.projects_locations_policyBindings = self.ProjectsLocationsPolicyBindingsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-    self.searchApplicablePolicies = self.SearchApplicablePoliciesService(self)
 
   class FoldersLocationsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_operations resource."""
@@ -420,60 +419,6 @@ class IamV3beta(base_api.BaseApiClient):
       super(IamV3beta.FoldersLocationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Get(self, request, global_params=None):
-      r"""Gets information about a location.
-
-      Args:
-        request: (IamFoldersLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationLocation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/folders/{foldersId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='iam.folders.locations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v3beta/{+name}',
-        request_field='',
-        request_type_name='IamFoldersLocationsGetRequest',
-        response_type_name='GoogleCloudLocationLocation',
-        supports_download=False,
-    )
-
-    def ListLocations(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
-
-      Args:
-        request: (IamFoldersLocationsListLocationsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListLocations')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListLocations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/folders/{foldersId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='iam.folders.locations.listLocations',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v3beta/{+name}',
-        request_field='',
-        request_type_name='IamFoldersLocationsListLocationsRequest',
-        response_type_name='GoogleCloudLocationListLocationsResponse',
-        supports_download=False,
-    )
 
   class FoldersService(base_api.BaseApiService):
     """Service class for the folders resource."""
@@ -1021,60 +966,6 @@ class IamV3beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Get(self, request, global_params=None):
-      r"""Gets information about a location.
-
-      Args:
-        request: (IamOrganizationsLocationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationLocation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/organizations/{organizationsId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='iam.organizations.locations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v3beta/{+name}',
-        request_field='',
-        request_type_name='IamOrganizationsLocationsGetRequest',
-        response_type_name='GoogleCloudLocationLocation',
-        supports_download=False,
-    )
-
-    def ListLocations(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
-
-      Args:
-        request: (IamOrganizationsLocationsListLocationsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('ListLocations')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ListLocations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/organizations/{organizationsId}/locations/{locationsId}',
-        http_method='GET',
-        method_id='iam.organizations.locations.listLocations',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v3beta/{+name}',
-        request_field='',
-        request_type_name='IamOrganizationsLocationsListLocationsRequest',
-        response_type_name='GoogleCloudLocationListLocationsResponse',
-        supports_download=False,
-    )
-
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""
 
@@ -1449,33 +1340,6 @@ class IamV3beta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def List(self, request, global_params=None):
-      r"""Lists information about the supported locations for this service.
-
-      Args:
-        request: (IamProjectsLocationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationListLocationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/projects/{projectsId}/locations',
-        http_method='GET',
-        method_id='iam.projects.locations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v3beta/{+name}/locations',
-        request_field='',
-        request_type_name='IamProjectsLocationsListRequest',
-        response_type_name='GoogleCloudLocationListLocationsResponse',
-        supports_download=False,
-    )
-
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -1485,66 +1349,3 @@ class IamV3beta(base_api.BaseApiClient):
       super(IamV3beta.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetLocations(self, request, global_params=None):
-      r"""Gets information about a location.
-
-      Args:
-        request: (IamProjectsGetLocationsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudLocationLocation) The response message.
-      """
-      config = self.GetMethodConfig('GetLocations')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetLocations.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v3beta/projects/{projectsId}/locations',
-        http_method='GET',
-        method_id='iam.projects.getLocations',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v3beta/{+name}/locations',
-        request_field='',
-        request_type_name='IamProjectsGetLocationsRequest',
-        response_type_name='GoogleCloudLocationLocation',
-        supports_download=False,
-    )
-
-  class SearchApplicablePoliciesService(base_api.BaseApiService):
-    """Service class for the searchApplicablePolicies resource."""
-
-    _NAME = 'searchApplicablePolicies'
-
-    def __init__(self, client):
-      super(IamV3beta.SearchApplicablePoliciesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Search(self, request, global_params=None):
-      r"""Returns policies (along with the bindings that bind them) that apply to the specified target_query. This means the policies that are bound to the target or any of its ancestors. target_query can be a principal, a principalSet or in the future a resource.
-
-      Args:
-        request: (IamSearchApplicablePoliciesSearchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV3betaSearchApplicablePoliciesResponse) The response message.
-      """
-      config = self.GetMethodConfig('Search')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Search.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='iam.searchApplicablePolicies.search',
-        ordered_params=[],
-        path_params=[],
-        query_params=['filter', 'pageSize', 'pageToken', 'targetQuery'],
-        relative_path='v3beta/searchApplicablePolicies:search',
-        request_field='',
-        request_type_name='IamSearchApplicablePoliciesSearchRequest',
-        response_type_name='GoogleIamV3betaSearchApplicablePoliciesResponse',
-        supports_download=False,
-    )

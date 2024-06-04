@@ -57,8 +57,8 @@ properties:
     description: |-
       Set of labels associated with the `LbTrafficExtension` resource.
       The format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google
-      Cloud resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     $ref: LabelsValue.yaml
   loadBalancingScheme:
     description: |-
@@ -73,6 +73,15 @@ properties:
     - EXTERNAL_MANAGED
     - INTERNAL_MANAGED
     - LOAD_BALANCING_SCHEME_UNSPECIFIED
+  metadata:
+    description: |-
+      The metadata provided here will be included in the
+      `ProcessingRequest.metadata_context.filter_metadata` map field.
+      The metadata will be available under the key
+      `com.google.lb_traffic_extension.`. The following variables are
+      supported in the metadata: `{forwarding_rule_id}` - substituted
+      with the forwarding rule's fully qualified resource name.
+    type: object
   name:
     description: |-
       Identifier. Name of the `LbTrafficExtension` resource in the

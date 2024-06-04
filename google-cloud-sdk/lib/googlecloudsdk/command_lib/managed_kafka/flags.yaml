@@ -31,9 +31,9 @@ labels:
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   help_text: |
     List of label KEY=VALUE pairs to add.
-    Keys must start with a lowercase character and contain only hyphens (-),
-    underscores (_), lowercase characters, and numbers. Values must contain only
-    hyphens (-), underscores (_), lowercase characters, and numbers.
+    Keys must start with a lowercase character and contain only hyphens (`-`),
+    underscores (```_```), lowercase characters, and numbers. Values must contain only
+    hyphens (`-`), underscores (```_```), lowercase characters, and numbers.
 
 encryption-key:
   api_field: cluster.gcpConfig.kmsKey

@@ -630,6 +630,9 @@ apis:
     v1alpha1:
       discovery_doc: dataprocgdc_v1alpha1.json
       default: true
+      resources:
+        projects.locations.clusters:
+          path: projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}
   datastore:
     v1beta1:
       discovery_doc: datastore_v1beta1.json
@@ -753,8 +756,6 @@ apis:
     v1:
       discovery_doc: eventarc_v1.json
       default: true
-    v1beta1:
-      discovery_doc: eventarc_v1beta1.json
   eventarcpublishing:
     v1:
       discovery_doc: eventarcpublishing_v1.json

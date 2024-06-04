@@ -1828,13 +1828,12 @@ class AttachedDisk(_messages.Message):
     shieldedInstanceInitialState: [Output Only] shielded vm initial state
       stored on disk
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. When creating a new instance, one of
+      Disk resource. When creating a new instance boot disk, one of
       initializeParams.sourceImage or initializeParams.sourceSnapshot or
-      disks.source is required except for local SSD. If desired, you can also
-      attach existing non-root persistent disks using this property. This
-      field is only applicable for persistent disks. Note that for
-      InstanceTemplate, specify the disk name for zonal disk, and the URL for
-      regional disk.
+      disks.source is required. If desired, you can also attach existing non-
+      root persistent disks using this property. This field is only applicable
+      for persistent disks. Note that for InstanceTemplate, specify the disk
+      name for zonal disk, and the URL for regional disk.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
       specified, the default is PERSISTENT.
   """
@@ -2003,11 +2002,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       snapshot creations. Specified using the full or partial URL. For
       instance template, specify only the resource policy name.
     sourceImage: The source image to create this disk. When creating a new
-      instance, one of initializeParams.sourceImage or
-      initializeParams.sourceSnapshot or disks.source is required except for
-      local SSD. To create a disk with one of the public operating system
-      images, specify the image by its family name. For example, specify
-      family/debian-9 to use the latest Debian 9 image: projects/debian-
+      instance boot disk, one of initializeParams.sourceImage or
+      initializeParams.sourceSnapshot or disks.source is required. To create a
+      disk with one of the public operating system images, specify the image
+      by its family name. For example, specify family/debian-9 to use the
+      latest Debian 9 image: projects/debian-
       cloud/global/images/family/debian-9 Alternatively, use a specific
       version of a public operating system image: projects/debian-
       cloud/global/images/debian-9-stretch-vYYYYMMDD To create a disk with a
@@ -2024,11 +2023,11 @@ class AttachedDiskInitializeParams(_messages.Message):
       for instances in a managed instance group if the source images are
       encrypted with your own keys.
     sourceSnapshot: The source snapshot to create this disk. When creating a
-      new instance, one of initializeParams.sourceSnapshot or
-      initializeParams.sourceImage or disks.source is required except for
-      local SSD. To create a disk with a snapshot that you created, specify
-      the snapshot name in the following format: global/snapshots/my-backup If
-      the source snapshot is deleted later, this field will not be set.
+      new instance boot disk, one of initializeParams.sourceSnapshot or
+      initializeParams.sourceImage or disks.source is required. To create a
+      disk with a snapshot that you created, specify the snapshot name in the
+      following format: global/snapshots/my-backup If the source snapshot is
+      deleted later, this field will not be set.
     sourceSnapshotEncryptionKey: The customer-supplied encryption key of the
       source snapshot.
     storagePool: The storage pool in which the new disk is created. You can
@@ -33008,6 +33007,13 @@ class Disk(_messages.Message):
   information, read Regional resources.
 
   Enums:
+    AccessModeValueValuesEnum: The access mode of the disk. -
+      READ_WRITE_SINGLE: The default AccessMode, means the disk can be
+      attached to single instance in RW mode. - READ_WRITE_MANY: The
+      AccessMode means the disk can be attached to multiple instances in RW
+      mode. - READ_ONLY_MANY: The AccessMode means the disk can be attached to
+      multiple instances in RO mode. The AccessMode is only valid for
+      Hyperdisk disk types.
     ArchitectureValueValuesEnum: The architecture of the disk. Valid values
       are ARM64 or X86_64.
     StatusValueValuesEnum: [Output Only] The status of disk creation. -
@@ -33022,6 +33028,12 @@ class Disk(_messages.Message):
       the setLabels method.
 
   Fields:
+    accessMode: The access mode of the disk. - READ_WRITE_SINGLE: The default
+      AccessMode, means the disk can be attached to single instance in RW
+      mode. - READ_WRITE_MANY: The AccessMode means the disk can be attached
+      to multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means
+      the disk can be attached to multiple instances in RO mode. The
+      AccessMode is only valid for Hyperdisk disk types.
     architecture: The architecture of the disk. Valid values are ARM64 or
       X86_64.
     asyncPrimaryDisk: Disk asynchronously replicated into this disk.
@@ -33215,6 +33227,26 @@ class Disk(_messages.Message):
       as a field in the request body.
   """
 
+  class AccessModeValueValuesEnum(_messages.Enum):
+    r"""The access mode of the disk. - READ_WRITE_SINGLE: The default
+    AccessMode, means the disk can be attached to single instance in RW mode.
+    - READ_WRITE_MANY: The AccessMode means the disk can be attached to
+    multiple instances in RW mode. - READ_ONLY_MANY: The AccessMode means the
+    disk can be attached to multiple instances in RO mode. The AccessMode is
+    only valid for Hyperdisk disk types.
+
+    Values:
+      READ_ONLY_MANY: The AccessMode means the disk can be attached to
+        multiple instances in RO mode.
+      READ_WRITE_MANY: The AccessMode means the disk can be attached to
+        multiple instances in RW mode.
+      READ_WRITE_SINGLE: The default AccessMode, means the disk can be
+        attached to single instance in RW mode.
+    """
+    READ_ONLY_MANY = 0
+    READ_WRITE_MANY = 1
+    READ_WRITE_SINGLE = 2
+
   class ArchitectureValueValuesEnum(_messages.Enum):
     r"""The architecture of the disk. Valid values are ARM64 or X86_64.
 
@@ -33302,55 +33334,56 @@ class Disk(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 1)
-  asyncPrimaryDisk = _messages.MessageField('DiskAsyncReplication', 2)
-  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 3)
-  creationTimestamp = _messages.StringField(4)
-  description = _messages.StringField(5)
-  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  enableConfidentialCompute = _messages.BooleanField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#disk')
-  labelFingerprint = _messages.BytesField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  lastAttachTimestamp = _messages.StringField(13)
-  lastDetachTimestamp = _messages.StringField(14)
-  licenseCodes = _messages.IntegerField(15, repeated=True)
-  licenses = _messages.StringField(16, repeated=True)
-  locationHint = _messages.StringField(17)
-  name = _messages.StringField(18)
-  options = _messages.StringField(19)
-  params = _messages.MessageField('DiskParams', 20)
-  physicalBlockSizeBytes = _messages.IntegerField(21)
-  provisionedIops = _messages.IntegerField(22)
-  provisionedThroughput = _messages.IntegerField(23)
-  region = _messages.StringField(24)
-  replicaZones = _messages.StringField(25, repeated=True)
-  resourcePolicies = _messages.StringField(26, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 27)
-  satisfiesPzi = _messages.BooleanField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  selfLink = _messages.StringField(30)
-  sizeGb = _messages.IntegerField(31)
-  sourceConsistencyGroupPolicy = _messages.StringField(32)
-  sourceConsistencyGroupPolicyId = _messages.StringField(33)
-  sourceDisk = _messages.StringField(34)
-  sourceDiskId = _messages.StringField(35)
-  sourceImage = _messages.StringField(36)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
-  sourceImageId = _messages.StringField(38)
-  sourceInstantSnapshot = _messages.StringField(39)
-  sourceInstantSnapshotId = _messages.StringField(40)
-  sourceSnapshot = _messages.StringField(41)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 42)
-  sourceSnapshotId = _messages.StringField(43)
-  sourceStorageObject = _messages.StringField(44)
-  status = _messages.EnumField('StatusValueValuesEnum', 45)
-  storagePool = _messages.StringField(46)
-  type = _messages.StringField(47)
-  users = _messages.StringField(48, repeated=True)
-  zone = _messages.StringField(49)
+  accessMode = _messages.EnumField('AccessModeValueValuesEnum', 1)
+  architecture = _messages.EnumField('ArchitectureValueValuesEnum', 2)
+  asyncPrimaryDisk = _messages.MessageField('DiskAsyncReplication', 3)
+  asyncSecondaryDisks = _messages.MessageField('AsyncSecondaryDisksValue', 4)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  enableConfidentialCompute = _messages.BooleanField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#disk')
+  labelFingerprint = _messages.BytesField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastAttachTimestamp = _messages.StringField(14)
+  lastDetachTimestamp = _messages.StringField(15)
+  licenseCodes = _messages.IntegerField(16, repeated=True)
+  licenses = _messages.StringField(17, repeated=True)
+  locationHint = _messages.StringField(18)
+  name = _messages.StringField(19)
+  options = _messages.StringField(20)
+  params = _messages.MessageField('DiskParams', 21)
+  physicalBlockSizeBytes = _messages.IntegerField(22)
+  provisionedIops = _messages.IntegerField(23)
+  provisionedThroughput = _messages.IntegerField(24)
+  region = _messages.StringField(25)
+  replicaZones = _messages.StringField(26, repeated=True)
+  resourcePolicies = _messages.StringField(27, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 28)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  selfLink = _messages.StringField(31)
+  sizeGb = _messages.IntegerField(32)
+  sourceConsistencyGroupPolicy = _messages.StringField(33)
+  sourceConsistencyGroupPolicyId = _messages.StringField(34)
+  sourceDisk = _messages.StringField(35)
+  sourceDiskId = _messages.StringField(36)
+  sourceImage = _messages.StringField(37)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
+  sourceImageId = _messages.StringField(39)
+  sourceInstantSnapshot = _messages.StringField(40)
+  sourceInstantSnapshotId = _messages.StringField(41)
+  sourceSnapshot = _messages.StringField(42)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 43)
+  sourceSnapshotId = _messages.StringField(44)
+  sourceStorageObject = _messages.StringField(45)
+  status = _messages.EnumField('StatusValueValuesEnum', 46)
+  storagePool = _messages.StringField(47)
+  type = _messages.StringField(48)
+  users = _messages.StringField(49, repeated=True)
+  zone = _messages.StringField(50)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -41530,6 +41563,8 @@ class InstanceGroupManager(_messages.Message):
       to this Instance Group Manager.
     region: [Output Only] The URL of the region where the managed instance
       group resides (for regional resources).
+    satisfiesPzi: [Output Only] Reserved for future use.
+    satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] The URL for this managed instance group. The
       server defines this URL.
     statefulPolicy: Stateful configuration for this Instanced Group Manager
@@ -41586,14 +41621,16 @@ class InstanceGroupManager(_messages.Message):
   name = _messages.StringField(15)
   namedPorts = _messages.MessageField('NamedPort', 16, repeated=True)
   region = _messages.StringField(17)
-  selfLink = _messages.StringField(18)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 19)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 20)
-  targetPools = _messages.StringField(21, repeated=True)
-  targetSize = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 23)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 24, repeated=True)
-  zone = _messages.StringField(25)
+  satisfiesPzi = _messages.BooleanField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  selfLink = _messages.StringField(20)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 21)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 22)
+  targetPools = _messages.StringField(23, repeated=True)
+  targetSize = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 25)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 26, repeated=True)
+  zone = _messages.StringField(27)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -74519,6 +74556,23 @@ class TargetHttpsProxy(_messages.Message):
       balancer uses QUIC when possible. - When quic-override is set to
       DISABLE, the load balancer doesn't use QUIC. - If the quic-override flag
       is not specified, NONE is implied.
+    TlsEarlyDataValueValuesEnum:  Specifies whether TLS 1.3 0-RTT Data ("Early
+      Data") should be accepted for this service. Early Data allows a TLS
+      resumption handshake to include the initial application payload (a HTTP
+      request) alongside the handshake, reducing the effective round trips to
+      "zero". This applies to TLS 1.3 connections over TCP (HTTP/2) as well as
+      over UDP (QUIC/h3). This can improve application performance, especially
+      on networks where interruptions may be common, such as on mobile.
+      Requests with Early Data will have the "Early-Data" HTTP header set on
+      the request, with a value of "1", to allow the backend to determine
+      whether Early Data was included. Note: TLS Early Data may allow requests
+      to be replayed, as the data is sent to the backend before the handshake
+      has fully completed. Applications that allow idempotent HTTP methods to
+      make non-idempotent changes, such as a GET request updating a database,
+      should not accept Early Data on those requests, and reject requests with
+      the "Early-Data: 1" HTTP header by returning a HTTP 425 (Too Early)
+      status code, in order to remain RFC compliant. The default value is
+      DISABLED.
 
   Fields:
     authorizationPolicy: Optional. A URL referring to a
@@ -74601,6 +74655,23 @@ class TargetHttpsProxy(_messages.Message):
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has
       no SSL policy configured.
+    tlsEarlyData:  Specifies whether TLS 1.3 0-RTT Data ("Early Data") should
+      be accepted for this service. Early Data allows a TLS resumption
+      handshake to include the initial application payload (a HTTP request)
+      alongside the handshake, reducing the effective round trips to "zero".
+      This applies to TLS 1.3 connections over TCP (HTTP/2) as well as over
+      UDP (QUIC/h3). This can improve application performance, especially on
+      networks where interruptions may be common, such as on mobile. Requests
+      with Early Data will have the "Early-Data" HTTP header set on the
+      request, with a value of "1", to allow the backend to determine whether
+      Early Data was included. Note: TLS Early Data may allow requests to be
+      replayed, as the data is sent to the backend before the handshake has
+      fully completed. Applications that allow idempotent HTTP methods to make
+      non-idempotent changes, such as a GET request updating a database,
+      should not accept Early Data on those requests, and reject requests with
+      the "Early-Data: 1" HTTP header by returning a HTTP 425 (Too Early)
+      status code, in order to remain RFC compliant. The default value is
+      DISABLED.
     urlMap: A fully-qualified or valid partial URL to the UrlMap resource that
       defines the mapping from URL to the BackendService. For example, the
       following are all valid URLs for specifying a URL map: -
@@ -74628,6 +74699,43 @@ class TargetHttpsProxy(_messages.Message):
     ENABLE = 1
     NONE = 2
 
+  class TlsEarlyDataValueValuesEnum(_messages.Enum):
+    r""" Specifies whether TLS 1.3 0-RTT Data ("Early Data") should be
+    accepted for this service. Early Data allows a TLS resumption handshake to
+    include the initial application payload (a HTTP request) alongside the
+    handshake, reducing the effective round trips to "zero". This applies to
+    TLS 1.3 connections over TCP (HTTP/2) as well as over UDP (QUIC/h3). This
+    can improve application performance, especially on networks where
+    interruptions may be common, such as on mobile. Requests with Early Data
+    will have the "Early-Data" HTTP header set on the request, with a value of
+    "1", to allow the backend to determine whether Early Data was included.
+    Note: TLS Early Data may allow requests to be replayed, as the data is
+    sent to the backend before the handshake has fully completed. Applications
+    that allow idempotent HTTP methods to make non-idempotent changes, such as
+    a GET request updating a database, should not accept Early Data on those
+    requests, and reject requests with the "Early-Data: 1" HTTP header by
+    returning a HTTP 425 (Too Early) status code, in order to remain RFC
+    compliant. The default value is DISABLED.
+
+    Values:
+      DISABLED: TLS 1.3 Early Data is not advertised, and any (invalid)
+        attempts to send Early Data will be rejected by closing the
+        connection.
+      PERMISSIVE: This enables TLS 1.3 0-RTT, and only allows Early Data to be
+        included on requests with safe HTTP methods (GET, HEAD, OPTIONS,
+        TRACE). This mode does not enforce any other limitations for requests
+        with Early Data. The application owner should validate that Early Data
+        is acceptable for a given request path.
+      STRICT: This enables TLS 1.3 0-RTT, and only allows Early Data to be
+        included on requests with safe HTTP methods (GET, HEAD, OPTIONS,
+        TRACE) without query parameters. Requests that send Early Data with
+        non-idempotent HTTP methods or with query parameters will be rejected
+        with a HTTP 425.
+    """
+    DISABLED = 0
+    PERMISSIVE = 1
+    STRICT = 2
+
   authorizationPolicy = _messages.StringField(1)
   certificateMap = _messages.StringField(2)
   creationTimestamp = _messages.StringField(3)
@@ -74644,7 +74752,8 @@ class TargetHttpsProxy(_messages.Message):
   serverTlsPolicy = _messages.StringField(14)
   sslCertificates = _messages.StringField(15, repeated=True)
   sslPolicy = _messages.StringField(16)
-  urlMap = _messages.StringField(17)
+  tlsEarlyData = _messages.EnumField('TlsEarlyDataValueValuesEnum', 17)
+  urlMap = _messages.StringField(18)
 
 
 class TargetHttpsProxyAggregatedList(_messages.Message):
@@ -81082,7 +81191,7 @@ class XpnResourceId(_messages.Message):
 
 class Zone(_messages.Message):
   r"""Represents a Zone resource. A zone is a deployment area. These
-  deployment areas are subsets of a region. For example the zone us-east1-a is
+  deployment areas are subsets of a region. For example the zone us-east1-b is
   located in the us-east1 region. For more information, read Regions and
   Zones.
 

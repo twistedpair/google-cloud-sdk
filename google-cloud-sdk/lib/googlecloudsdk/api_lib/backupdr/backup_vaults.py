@@ -32,7 +32,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
   def Create(
       self,
       resource,
-      enforced_retention,
+      backup_min_enforced_retention,
       description,
       labels,
       effective_time,
@@ -41,7 +41,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
     parent = resource.Parent().RelativeName()
     backup_vault_id = resource.Name()
     backup_vault = self.messages.BackupVault(
-        enforcedRetentionDuration=enforced_retention,
+        backupMinimumEnforcedRetentionDuration=backup_min_enforced_retention,
         description=description,
         labels=labels,
         effectiveTime=effective_time,
@@ -67,14 +67,18 @@ class BackupVaultsClient(util.BackupDrClientBase):
 
     return self.service.Delete(request)
 
-  def ParseUpdate(self, description, effective_time, enforced_retention):
+  def ParseUpdate(
+      self, description, effective_time, backup_min_enforced_retention
+  ):
     updated_bv = self.messages.BackupVault()
     if description is not None:
       updated_bv.description = description
     if effective_time is not None:
       updated_bv.effectiveTime = effective_time
-    if enforced_retention != "Nones":
-      updated_bv.enforcedRetentionDuration = enforced_retention
+    if backup_min_enforced_retention != "Nones":
+      updated_bv.backupMinimumEnforcedRetentionDuration = (
+          backup_min_enforced_retention
+      )
     return updated_bv
 
   def Update(self, resource, backup_vault, update_mask):

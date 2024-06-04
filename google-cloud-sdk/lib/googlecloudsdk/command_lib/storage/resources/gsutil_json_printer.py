@@ -87,7 +87,10 @@ class GsutilJsonPrinter(resource_printer_base.ResourcePrinter):
       return
 
     self._empty = False
-    output = json.dumps(element, sort_keys=True)
+    if 'indent' in self.attributes:
+      output = json.dumps(element, indent=self.attributes['indent'])
+    else:
+      output = json.dumps(element, sort_keys=True)
     if delimit:
       self._out.write(self._delimiter + output)
       self._delimiter = ','

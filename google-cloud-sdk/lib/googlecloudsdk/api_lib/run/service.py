@@ -15,8 +15,11 @@
 """Wraps a Serverless Service message, making fields more convenient."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import unicode_literals
+
+import json
 
 from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.api_lib.run import revision
@@ -43,6 +46,7 @@ class Service(k8s_object.KubernetesObject):
   Setting properties on a Service (where possible) writes through to the
   nested Kubernetes-style fields.
   """
+
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Service'
 
@@ -57,7 +61,8 @@ class Service(k8s_object.KubernetesObject):
   def template_annotations(self):
     self.AssertFullObject()
     return k8s_object.AnnotationsFromMetadata(
-        self._messages, self.template.metadata)
+        self._messages, self.template.metadata
+    )
 
   @property
   def revision_labels(self):
@@ -86,8 +91,9 @@ class Service(k8s_object.KubernetesObject):
   def _ShouldIncludeInLatestPercent(self, target):
     """Returns True if the target's percent is part of the latest percent."""
     is_latest_by_name = (
-        self.status.latestReadyRevisionName and
-        target.revisionName == self.status.latestReadyRevisionName)
+        self.status.latestReadyRevisionName
+        and target.revisionName == self.status.latestReadyRevisionName
+    )
     return target.latestRevision or is_latest_by_name
 
   @property
@@ -96,7 +102,8 @@ class Service(k8s_object.KubernetesObject):
     return sum(
         target.percent or 0
         for target in self.status.traffic
-        if self._ShouldIncludeInLatestPercent(target))
+        if self._ShouldIncludeInLatestPercent(target)
+    )
 
   @property
   def latest_url(self):
@@ -107,7 +114,24 @@ class Service(k8s_object.KubernetesObject):
     return None
 
   @property
+  def urls(self) -> list[str]:
+    """List of the Service's URLs.
+
+    Returns:
+      A list of the URLs present in the Service's run.googleapis.com/urls
+      annotation. If this annotation is missing an empty list is returned
+      instead.
+    """
+    ann = self.annotations.get('run.googleapis.com/urls')
+    if not ann:
+      return []
+    return json.loads(ann)
+
+  @property
   def domain(self):
+    urls = self.urls
+    if urls:
+      return urls[0]
     if self._m.status.url:
       return self._m.status.url
     try:
@@ -128,15 +152,17 @@ class Service(k8s_object.KubernetesObject):
       return None
 
   def ReadySymbolAndColor(self):
-    if (self.ready is False and  # pylint: disable=g-bool-id-comparison
-        self.latest_ready_revision and
-        self.latest_created_revision != self.latest_ready_revision):
+    if (
+        self.ready is False  # pylint: disable=g-bool-id-comparison
+        and self.latest_ready_revision
+        and self.latest_created_revision != self.latest_ready_revision
+    ):
       return '!', 'yellow'
     return super(Service, self).ReadySymbolAndColor()
 
   @property
   def last_modifier(self):
-    return self.annotations.get(u'serving.knative.dev/lastModifier')
+    return self.annotations.get('serving.knative.dev/lastModifier')
 
   @property
   def spec_traffic(self):
@@ -147,11 +173,12 @@ class Service(k8s_object.KubernetesObject):
   def status_traffic(self):
     self.AssertFullObject()
     return traffic.TrafficTargets(
-        self._messages, [] if self.status is None else self.status.traffic)
+        self._messages, [] if self.status is None else self.status.traffic
+    )
 
   @property
   def vpc_connector(self):
-    return self.annotations.get(u'run.googleapis.com/vpc-access-connector')
+    return self.annotations.get('run.googleapis.com/vpc-access-connector')
 
   @property
   def image(self):
@@ -175,4 +202,4 @@ class Service(k8s_object.KubernetesObject):
 
   @description.setter
   def description(self, value):
-    self.annotations[u'run.googleapis.com/description'] = value
+    self.annotations['run.googleapis.com/description'] = value

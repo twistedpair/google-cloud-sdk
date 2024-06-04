@@ -39,9 +39,9 @@ class WorkflowPrinter(custom_printer_base.CustomPrinterBase):
       yaml_str = workflow["pipelineSpec"].pop("generatedYaml")
       del workflow["pipelineSpec"]
       workflow = self._updateWorkflowSpec(workflow, yaml_str)
-    elif "ref" in workflow:
-      ref = workflow.pop("ref")
-      workflow["ref"] = pipeline_output_util.TransformRef(ref)
+    elif "pipelineRef" in workflow:
+      ref = workflow.pop("pipelineRef")
+      workflow["pipelineRef"] = pipeline_output_util.TransformRef(ref)
 
     params = workflow.get("params", {})
     if params:
@@ -51,7 +51,7 @@ class WorkflowPrinter(custom_printer_base.CustomPrinterBase):
 
   def _updateWorkflowSpec(self, workflow, yaml_str):
     data = yaml.load(yaml_str, round_trip=True)
-    workflow["pipeline"] = {"spec": data}
+    workflow["pipelineSpec"] = data
     return workflow
 
   def Transform(self, record):

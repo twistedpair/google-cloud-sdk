@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
@@ -282,6 +283,57 @@ def AddIpAddressSelectionPolicy(parser):
          regardless of traffic from the client to the proxy. Only IPv6
          health checks are used to check the health of the backends.
       """,
+  )
+
+
+def AddExternalMigration(parser: parser_arguments.ArgumentInterceptor):
+  """Add flags related to Gfe2 to Gfe3 canary migration.
+
+  Args:
+    parser: The argparse parser to add the flags to.
+  """
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--external-managed-migration-state',
+      choices=['PREPARE', 'TEST_BY_PERCENTAGE', 'TEST_ALL_TRAFFIC'],
+      type=lambda x: x.replace('-', '_').upper(),
+      default=None,
+      help="""\
+      Specifies the canary migration state. Possible values are PREPARE,
+      TEST_BY_PERCENTAGE, and TEST_ALL_TRAFFIC.
+
+      To begin the migration from EXTERNAL to EXTERNAL_MANAGED, the state must
+      be changed to PREPARE. The state must be changed to TEST_ALL_TRAFFIC
+      before the loadBalancingScheme can be changed to EXTERNAL_MANAGED.
+      Optionally, the TEST_BY_PERCENTAGE state can be used to migrate traffic
+      by percentage using externalManagedMigrationTestingPercentage.
+    """,
+  )
+  group.add_argument(
+      '--clear-external-managed-migration-state',
+      required=False,
+      action='store_true',
+      default=None,
+      help='Clears current state of external managed migration.',
+  )
+  parser.add_argument(
+      '--external-managed-migration-testing-percentage',
+      type=arg_parsers.BoundedFloat(lower_bound=0.0, upper_bound=100.0),
+      help="""\
+      Determines the fraction of requests that should be processed by
+      the Global external Application Load Balancer.
+
+      The value of this field must be in the range [0, 100].
+    """,
+  )
+  parser.add_argument(
+      '--load-balancing-scheme',
+      choices=['EXTERNAL', 'EXTERNAL_MANAGED'],
+      help="""\
+      Only for the Global external ALB migration.
+
+      The value of this field must be EXTERNAL or EXTERNAL_MANAGED.
+    """,
   )
 
 

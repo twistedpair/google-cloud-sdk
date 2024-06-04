@@ -26,7 +26,7 @@ folder_or_organization_or_project:
     - &folder
       parameter_name: foldersId
       attribute_name: folder
-      help: folders TBD
+      help: The folder id of the {resource} resource.
     disable_auto_completers: true
   - name: organization
     plural_name: organizations
@@ -35,7 +35,7 @@ folder_or_organization_or_project:
     - &organization
       parameter_name: organizationsId
       attribute_name: organization
-      help: organizations TBD
+      help: The organization id of the {resource} resource.
     disable_auto_completers: true
   - name: project
     plural_name: projects
@@ -44,7 +44,7 @@ folder_or_organization_or_project:
     - &project
       parameter_name: projectsId
       attribute_name: project
-      help: projects TBD
+      help: The project id of the {resource} resource.
       property: core/project
     disable_auto_completers: true
 organization:
@@ -66,7 +66,7 @@ folder_or_organization_or_project_location:
     - &location
       parameter_name: locationsId
       attribute_name: location
-      help: locations TBD
+      help: The location id of the {resource} resource.
     disable_auto_completers: true
   - name: location
     plural_name: locations
@@ -90,6 +90,37 @@ organization_location:
   - *organization
   - *location
   disable_auto_completers: true
+folder_or_organization_or_project_location_v3_policy:
+  name: v3Policy
+  plural_name: policies
+  resources:
+  - name: policy
+    plural_name: policies
+    collection: iam.folders.locations.policies
+    attributes:
+    - *folder
+    - *location
+    - &policy
+      parameter_name: policiesId
+      attribute_name: policy
+      help: The policy id of the {resource} resource.
+    disable_auto_completers: true
+  - name: policy
+    plural_name: policies
+    collection: iam.organizations.locations.policies
+    attributes:
+    - *organization
+    - *location
+    - *policy
+    disable_auto_completers: true
+  - name: policy
+    plural_name: policies
+    collection: iam.projects.locations.policies
+    attributes:
+    - *project
+    - *location
+    - *policy
+    disable_auto_completers: true
 folder_or_organization_or_project_location_policy_binding:
   name: policyBinding
   plural_name: policyBindings
@@ -103,7 +134,7 @@ folder_or_organization_or_project_location_policy_binding:
     - &policyBinding
       parameter_name: policyBindingsId
       attribute_name: policy_binding
-      help: policyBindings TBD
+      help: The policyBinding id of the {resource} resource.
     disable_auto_completers: true
   - name: policyBinding
     plural_name: policyBindings
@@ -131,5 +162,5 @@ organization_location_principal_access_boundary_policy:
   - &principalAccessBoundaryPolicy
     parameter_name: principalAccessBoundaryPoliciesId
     attribute_name: principal_access_boundary_policy
-    help: principalAccessBoundaryPolicies TBD
+    help: The principalAccessBoundaryPolicy id of the {resource} resource.
   disable_auto_completers: false

@@ -89,6 +89,7 @@ class IndexEndpointsClient(object):
               description=args.description,
               network=args.network,
               labels=labels,
+              encryptionSpec=encryption_spec,
           ),
       )
     else:
@@ -146,6 +147,7 @@ class IndexEndpointsClient(object):
               description=args.description,
               network=args.network,
               labels=labels,
+              encryptionSpec=encryption_spec,
           ),
       )
     else:

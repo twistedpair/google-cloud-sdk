@@ -433,7 +433,7 @@ class HttpErrorPayload(FormattableErrorPayload):
         else:
           account = properties.VALUES.core.account.Get()
         return (
-            'User [{0}] does not have permission to access {1} [{2}] (or '
+            '[{0}] does not have permission to access {1} [{2}] (or '
             'it may not exist)'
         ).format(account, self.resource_item, self.instance_name)
       if self.status_code == 404:

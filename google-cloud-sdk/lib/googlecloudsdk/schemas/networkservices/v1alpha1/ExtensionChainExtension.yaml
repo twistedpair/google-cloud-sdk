@@ -78,7 +78,7 @@ properties:
     description: |-
       A set of events during request or response processing for which this
       extension is called. This field is required for the
-      `LbTrafficExtension` resource. It's not relevant for the
+      `LbTrafficExtension` resource. It must not be set for the
       `LbRouteExtension` resource.
     type: array
     items:

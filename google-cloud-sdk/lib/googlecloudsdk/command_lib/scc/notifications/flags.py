@@ -78,6 +78,88 @@ PUBSUB_TOPIC_REQUIRED_FLAG = base.Argument(
     """,
 )
 
+CREATE_NOTIFICATION_CONFIG_LOCATION_FLAG = base.Argument(
+    '--location',
+    help="""
+      If data residency is enabled, specify the Security Command Center location
+      in which to create the notification. The resulting `notificationConfig`
+      resource is stored only in this location. Only findings that are issued
+      in this location are sent to Pub/Sub.
+
+      If data residency is not enabled, specifying the `--location` flag creates
+      the notification by using Security Command Center API v2, and the only
+      valid value for the flag is `global`.
+      """,
+    default='global',
+)
+
+DELETE_NOTIFICATION_CONFIG_LOCATION_FLAG = base.Argument(
+    '--location',
+    help="""
+      Required if either data residency is enabled or the `notificationConfig`
+      was created by using the API v2.
+
+      If data residency is enabled, specify the Security Command Center location
+      in which the notification is stored.
+
+      If data residency is not enabled, include `/locations/```LOCATION'' in the
+      full name or specify the `--location flag` only if the
+      `notificationConfig` was created by using the Security Command Center API
+      v2, in which case, the only valid location is `global`.
+      """,
+    default='global',
+)
+
+DESCRIBE_NOTIFICATION_CONFIG_LOCATION_FLAG = base.Argument(
+    '--location',
+    help="""
+      Required if either data residency is enabled or the `notificationConfig`
+      resources were created by using the API v2.
+
+      If data residency is enabled, specify the Security Command Center location
+      in which the notifications are stored.
+
+      If data residency is not enabled, include `/locations/```LOCATION'' only
+      if the `notificationConfig` resource was created by using the Security
+      Command Center API v2, in which case, the only valid location is `global`.
+      """,
+    default='global',
+)
+
+LIST_NOTIFICATION_CONFIG_LOCATION_FLAG = base.Argument(
+    '--location',
+    help="""
+      Required if either data residency is enabled or the `notificationConfig`
+      resources were created by using the API v2.
+
+      If data residency is enabled, specify the Security Command Center location
+      in which the notifications are stored.
+
+      If data residency is not enabled, including `/locations/```LOCATION'' in
+      the name or the `--location` flag in the command lists only the
+      `notificationConfig` resources that were created by using the Security
+      Command Center API v2 and the only valid location is `global`.
+      """,
+    default='global',
+)
+
+UPDATE_NOTIFICATION_CONFIG_LOCATION_FLAG = base.Argument(
+    '--location',
+    help="""
+      Required if either data residency is enabled or the `notificationConfig`
+      was created by using the API v2.
+
+      If data residency is enabled, specify the Security Command Center location
+      in which the notification is stored.
+
+      If data residency is not enabled, include `/locations/```LOCATION'' in the
+      full name or specify the `--location` flag only if the
+      `notificationConfig` resource was created by using the Security Command
+      Center API v2, in which case, the only valid location is `global`.
+      """,
+    default='global',
+)
+
 
 def AddNotificationConfigPositionalArgument(parser):
   """Add Notification Config as a positional argument."""

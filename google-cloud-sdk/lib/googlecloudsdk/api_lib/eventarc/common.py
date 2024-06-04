@@ -25,14 +25,13 @@ import six.moves.urllib.parse
 
 API_NAME = 'eventarc'
 API_VERSION_1 = 'v1'
-API_VERSION_1_BETA1 = 'v1beta1'
 
 
 def GetApiVersion(release_track):
   if release_track == base.ReleaseTrack.GA:
     return API_VERSION_1
   else:
-    return API_VERSION_1_BETA1
+    return None
 
 
 def GetApiServiceName(api_version):

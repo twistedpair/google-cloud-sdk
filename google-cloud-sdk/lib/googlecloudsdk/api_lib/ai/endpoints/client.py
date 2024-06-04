@@ -41,18 +41,19 @@ def _ParseModel(model_id, location_id):
       model_id,
       params={
           'locationsId': location_id,
-          'projectsId': properties.VALUES.core.project.GetOrFail
+          'projectsId': properties.VALUES.core.project.GetOrFail,
       },
-      collection='aiplatform.projects.locations.models')
+      collection='aiplatform.projects.locations.models',
+  )
 
 
 def _ConvertPyListToMessageList(message_type, values):
   return [encoding.PyValueToMessage(message_type, v) for v in values]
 
 
-def _GetModelDeploymentResourceType(model_ref,
-                                    client,
-                                    shared_resources_ref=None):
+def _GetModelDeploymentResourceType(
+    model_ref, client, shared_resources_ref=None
+):
   """Gets the deployment resource type of a model.
 
   Args:
@@ -71,19 +72,24 @@ def _GetModelDeploymentResourceType(model_ref,
   try:
     model_msg = model_client.ModelsClient(client=client).Get(model_ref)
   except apitools_exceptions.HttpError:
-    raise errors.ArgumentError(
-        ('There is an error while getting the model information. '
-         'Please make sure the model %r exists.' % model_ref.RelativeName()))
+    raise errors.ArgumentError((
+        'There is an error while getting the model information. '
+        'Please make sure the model %r exists.'
+        % model_ref.RelativeName()
+    ))
   model_resource = encoding.MessageToPyValue(model_msg)
 
   #  The resource values returned in the list could be multiple.
   supported_deployment_resources_types = model_resource[
-      'supportedDeploymentResourcesTypes']
+      'supportedDeploymentResourcesTypes'
+  ]
   if shared_resources_ref is not None:
     if 'SHARED_RESOURCES' not in supported_deployment_resources_types:
       raise errors.ArgumentError(
           'Shared resources not supported for model {}.'.format(
-              model_ref.RelativeName()))
+              model_ref.RelativeName()
+          )
+      )
     else:
       return 'SHARED_RESOURCES'
   try:
@@ -98,8 +104,18 @@ def _GetModelDeploymentResourceType(model_ref,
 def _DoHttpPost(url, headers, body):
   """Makes an http POST request."""
   response = requests.GetSession().request(
-      'POST', url, data=body, headers=headers)
+      'POST', url, data=body, headers=headers
+  )
   return response.status_code, response.headers, response.content
+
+
+def _DoStreamHttpPost(url, headers, body):
+  """Makes an http POST request."""
+  with requests.GetSession().request(
+      'POST', url, data=body, headers=headers, stream=True
+  ) as resp:
+    for line in resp.iter_lines():
+      yield line
 
 
 class EndpointsClient(object):
@@ -108,19 +124,22 @@ class EndpointsClient(object):
   def __init__(self, client=None, messages=None, version=None):
     self.client = client or apis.GetClientInstance(
         constants.AI_PLATFORM_API_NAME,
-        constants.AI_PLATFORM_API_VERSION[version])
+        constants.AI_PLATFORM_API_VERSION[version],
+    )
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Create(self,
-             location_ref,
-             display_name,
-             labels,
-             description=None,
-             network=None,
-             endpoint_id=None,
-             encryption_kms_key_name=None,
-             request_response_logging_table=None,
-             request_response_logging_rate=None):
+  def Create(
+      self,
+      location_ref,
+      display_name,
+      labels,
+      description=None,
+      network=None,
+      endpoint_id=None,
+      encryption_kms_key_name=None,
+      request_response_logging_table=None,
+      request_response_logging_rate=None,
+  ):
     """Creates a new endpoint using v1 API.
 
     Args:
@@ -143,39 +162,47 @@ class EndpointsClient(object):
     encryption_spec = None
     if encryption_kms_key_name:
       encryption_spec = self.messages.GoogleCloudAiplatformV1EncryptionSpec(
-          kmsKeyName=encryption_kms_key_name)
+          kmsKeyName=encryption_kms_key_name
+      )
 
     endpoint = api_util.GetMessage('Endpoint', constants.GA_VERSION)(
         displayName=display_name,
         description=description,
         labels=labels,
         network=network,
-        encryptionSpec=encryption_spec)
+        encryptionSpec=encryption_spec,
+    )
     if request_response_logging_table is not None:
       endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
-          'PredictRequestResponseLoggingConfig', constants.GA_VERSION)(
-              enabled=True,
-              samplingRate=request_response_logging_rate
-              if request_response_logging_rate else 0.0,
-              bigqueryDestination=api_util.GetMessage(
-                  'BigQueryDestination', constants.GA_VERSION)(
-                      outputUri=request_response_logging_table))
+          'PredictRequestResponseLoggingConfig', constants.GA_VERSION
+      )(
+          enabled=True,
+          samplingRate=request_response_logging_rate
+          if request_response_logging_rate
+          else 0.0,
+          bigqueryDestination=api_util.GetMessage(
+              'BigQueryDestination', constants.GA_VERSION
+          )(outputUri=request_response_logging_table),
+      )
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
         endpointId=endpoint_id,
-        googleCloudAiplatformV1Endpoint=endpoint)
+        googleCloudAiplatformV1Endpoint=endpoint,
+    )
     return self.client.projects_locations_endpoints.Create(req)
 
-  def CreateBeta(self,
-                 location_ref,
-                 display_name,
-                 labels,
-                 description=None,
-                 network=None,
-                 endpoint_id=None,
-                 encryption_kms_key_name=None,
-                 request_response_logging_table=None,
-                 request_response_logging_rate=None):
+  def CreateBeta(
+      self,
+      location_ref,
+      display_name,
+      labels,
+      description=None,
+      network=None,
+      endpoint_id=None,
+      encryption_kms_key_name=None,
+      request_response_logging_table=None,
+      request_response_logging_rate=None,
+  ):
     """Creates a new endpoint using v1beta1 API.
 
     Args:
@@ -197,62 +224,76 @@ class EndpointsClient(object):
     """
     encryption_spec = None
     if encryption_kms_key_name:
-      encryption_spec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
-          kmsKeyName=encryption_kms_key_name)
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+              kmsKeyName=encryption_kms_key_name
+          )
+      )
 
     endpoint = api_util.GetMessage('Endpoint', constants.BETA_VERSION)(
         displayName=display_name,
         description=description,
         labels=labels,
         network=network,
-        encryptionSpec=encryption_spec)
+        encryptionSpec=encryption_spec,
+    )
     if request_response_logging_table is not None:
       endpoint.predictRequestResponseLoggingConfig = api_util.GetMessage(
-          'PredictRequestResponseLoggingConfig', constants.BETA_VERSION)(
-              enabled=True,
-              samplingRate=request_response_logging_rate
-              if request_response_logging_rate else 0.0,
-              bigqueryDestination=api_util.GetMessage(
-                  'BigQueryDestination', constants.BETA_VERSION)(
-                      outputUri=request_response_logging_table))
+          'PredictRequestResponseLoggingConfig', constants.BETA_VERSION
+      )(
+          enabled=True,
+          samplingRate=request_response_logging_rate
+          if request_response_logging_rate
+          else 0.0,
+          bigqueryDestination=api_util.GetMessage(
+              'BigQueryDestination', constants.BETA_VERSION
+          )(outputUri=request_response_logging_table),
+      )
     req = self.messages.AiplatformProjectsLocationsEndpointsCreateRequest(
         parent=location_ref.RelativeName(),
         endpointId=endpoint_id,
-        googleCloudAiplatformV1beta1Endpoint=endpoint)
+        googleCloudAiplatformV1beta1Endpoint=endpoint,
+    )
     return self.client.projects_locations_endpoints.Create(req)
 
   def Delete(self, endpoint_ref):
     """Deletes an existing endpoint."""
     req = self.messages.AiplatformProjectsLocationsEndpointsDeleteRequest(
-        name=endpoint_ref.RelativeName())
+        name=endpoint_ref.RelativeName()
+    )
     return self.client.projects_locations_endpoints.Delete(req)
 
   def Get(self, endpoint_ref):
     """Gets details about an endpoint."""
     req = self.messages.AiplatformProjectsLocationsEndpointsGetRequest(
-        name=endpoint_ref.RelativeName())
+        name=endpoint_ref.RelativeName()
+    )
     return self.client.projects_locations_endpoints.Get(req)
 
   def List(self, location_ref):
     """Lists endpoints in the project."""
     req = self.messages.AiplatformProjectsLocationsEndpointsListRequest(
-        parent=location_ref.RelativeName())
+        parent=location_ref.RelativeName()
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_endpoints,
         req,
         field='endpoints',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
-  def Patch(self,
-            endpoint_ref,
-            labels_update,
-            display_name=None,
-            description=None,
-            traffic_split=None,
-            clear_traffic_split=False,
-            request_response_logging_table=None,
-            request_response_logging_rate=None,
-            disable_request_response_logging=False):
+  def Patch(
+      self,
+      endpoint_ref,
+      labels_update,
+      display_name=None,
+      description=None,
+      traffic_split=None,
+      clear_traffic_split=False,
+      request_response_logging_table=None,
+      request_response_logging_rate=None,
+      disable_request_response_logging=False,
+  ):
     """Updates an endpoint using v1 API.
 
     Args:
@@ -293,9 +334,12 @@ class EndpointsClient(object):
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             endpoint.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
+                key=key, value=value
+            )
+        )
       endpoint.trafficSplit = endpoint.TrafficSplitValue(
-          additionalProperties=additional_properties)
+          additionalProperties=additional_properties
+      )
       update_mask.append('traffic_split')
 
     if clear_traffic_split:
@@ -306,28 +350,42 @@ class EndpointsClient(object):
       endpoint.description = description
       update_mask.append('description')
 
-    if request_response_logging_table is not None or request_response_logging_rate is not None:
+    if (
+        request_response_logging_table is not None
+        or request_response_logging_rate is not None
+    ):
       request_response_logging_config = self.Get(
-          endpoint_ref).predictRequestResponseLoggingConfig
+          endpoint_ref
+      ).predictRequestResponseLoggingConfig
       if not request_response_logging_config:
         request_response_logging_config = api_util.GetMessage(
-            'PredictRequestResponseLoggingConfig', constants.GA_VERSION)()
+            'PredictRequestResponseLoggingConfig', constants.GA_VERSION
+        )()
       request_response_logging_config.enabled = True
       if request_response_logging_table is not None:
-        request_response_logging_config.bigqueryDestination = api_util.GetMessage(
-            'BigQueryDestination', constants.GA_VERSION)(
-                outputUri=request_response_logging_table)
+        request_response_logging_config.bigqueryDestination = (
+            api_util.GetMessage('BigQueryDestination', constants.GA_VERSION)(
+                outputUri=request_response_logging_table
+            )
+        )
       if request_response_logging_rate is not None:
-        request_response_logging_config.samplingRate = request_response_logging_rate
-      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+        request_response_logging_config.samplingRate = (
+            request_response_logging_rate
+        )
+      endpoint.predictRequestResponseLoggingConfig = (
+          request_response_logging_config
+      )
       update_mask.append('predict_request_response_logging_config')
 
     if disable_request_response_logging:
       request_response_logging_config = self.Get(
-          endpoint_ref).predictRequestResponseLoggingConfig
+          endpoint_ref
+      ).predictRequestResponseLoggingConfig
       if request_response_logging_config:
         request_response_logging_config.enabled = False
-      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      endpoint.predictRequestResponseLoggingConfig = (
+          request_response_logging_config
+      )
       update_mask.append('predict_request_response_logging_config')
 
     if not update_mask:
@@ -336,19 +394,22 @@ class EndpointsClient(object):
     req = self.messages.AiplatformProjectsLocationsEndpointsPatchRequest(
         name=endpoint_ref.RelativeName(),
         googleCloudAiplatformV1Endpoint=endpoint,
-        updateMask=','.join(update_mask))
+        updateMask=','.join(update_mask),
+    )
     return self.client.projects_locations_endpoints.Patch(req)
 
-  def PatchBeta(self,
-                endpoint_ref,
-                labels_update,
-                display_name=None,
-                description=None,
-                traffic_split=None,
-                clear_traffic_split=False,
-                request_response_logging_table=None,
-                request_response_logging_rate=None,
-                disable_request_response_logging=False):
+  def PatchBeta(
+      self,
+      endpoint_ref,
+      labels_update,
+      display_name=None,
+      description=None,
+      traffic_split=None,
+      clear_traffic_split=False,
+      request_response_logging_table=None,
+      request_response_logging_rate=None,
+      disable_request_response_logging=False,
+  ):
     """Updates an endpoint using v1beta1 API.
 
     Args:
@@ -389,9 +450,12 @@ class EndpointsClient(object):
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             endpoint.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
+                key=key, value=value
+            )
+        )
       endpoint.trafficSplit = endpoint.TrafficSplitValue(
-          additionalProperties=additional_properties)
+          additionalProperties=additional_properties
+      )
       update_mask.append('traffic_split')
 
     if clear_traffic_split:
@@ -402,28 +466,42 @@ class EndpointsClient(object):
       endpoint.description = description
       update_mask.append('description')
 
-    if request_response_logging_table is not None or request_response_logging_rate is not None:
+    if (
+        request_response_logging_table is not None
+        or request_response_logging_rate is not None
+    ):
       request_response_logging_config = self.Get(
-          endpoint_ref).predictRequestResponseLoggingConfig
+          endpoint_ref
+      ).predictRequestResponseLoggingConfig
       if not request_response_logging_config:
         request_response_logging_config = api_util.GetMessage(
-            'PredictRequestResponseLoggingConfig', constants.BETA_VERSION)()
+            'PredictRequestResponseLoggingConfig', constants.BETA_VERSION
+        )()
       request_response_logging_config.enabled = True
       if request_response_logging_table is not None:
-        request_response_logging_config.bigqueryDestination = api_util.GetMessage(
-            'BigQueryDestination', constants.BETA_VERSION)(
-                outputUri=request_response_logging_table)
+        request_response_logging_config.bigqueryDestination = (
+            api_util.GetMessage('BigQueryDestination', constants.BETA_VERSION)(
+                outputUri=request_response_logging_table
+            )
+        )
       if request_response_logging_rate is not None:
-        request_response_logging_config.samplingRate = request_response_logging_rate
-      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+        request_response_logging_config.samplingRate = (
+            request_response_logging_rate
+        )
+      endpoint.predictRequestResponseLoggingConfig = (
+          request_response_logging_config
+      )
       update_mask.append('predict_request_response_logging_config')
 
     if disable_request_response_logging:
       request_response_logging_config = self.Get(
-          endpoint_ref).predictRequestResponseLoggingConfig
+          endpoint_ref
+      ).predictRequestResponseLoggingConfig
       if request_response_logging_config:
         request_response_logging_config.enabled = False
-      endpoint.predictRequestResponseLoggingConfig = request_response_logging_config
+      endpoint.predictRequestResponseLoggingConfig = (
+          request_response_logging_config
+      )
       update_mask.append('predict_request_response_logging_config')
 
     if not update_mask:
@@ -432,102 +510,136 @@ class EndpointsClient(object):
     req = self.messages.AiplatformProjectsLocationsEndpointsPatchRequest(
         name=endpoint_ref.RelativeName(),
         googleCloudAiplatformV1beta1Endpoint=endpoint,
-        updateMask=','.join(update_mask))
+        updateMask=','.join(update_mask),
+    )
     return self.client.projects_locations_endpoints.Patch(req)
 
   def Predict(self, endpoint_ref, instances_json):
     """Sends online prediction request to an endpoint using v1 API."""
     predict_request = self.messages.GoogleCloudAiplatformV1PredictRequest(
-        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
-                                              instances_json['instances']))
+        instances=_ConvertPyListToMessageList(
+            extra_types.JsonValue, instances_json['instances']
+        )
+    )
     if 'parameters' in instances_json:
       predict_request.parameters = encoding.PyValueToMessage(
-          extra_types.JsonValue, instances_json['parameters'])
+          extra_types.JsonValue, instances_json['parameters']
+      )
 
     req = self.messages.AiplatformProjectsLocationsEndpointsPredictRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1PredictRequest=predict_request)
+        googleCloudAiplatformV1PredictRequest=predict_request,
+    )
     return self.client.projects_locations_endpoints.Predict(req)
 
   def PredictBeta(self, endpoint_ref, instances_json):
     """Sends online prediction request to an endpoint using v1beta1 API."""
     predict_request = self.messages.GoogleCloudAiplatformV1beta1PredictRequest(
-        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
-                                              instances_json['instances']))
+        instances=_ConvertPyListToMessageList(
+            extra_types.JsonValue, instances_json['instances']
+        )
+    )
     if 'parameters' in instances_json:
       predict_request.parameters = encoding.PyValueToMessage(
-          extra_types.JsonValue, instances_json['parameters'])
+          extra_types.JsonValue, instances_json['parameters']
+      )
 
     req = self.messages.AiplatformProjectsLocationsEndpointsPredictRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1beta1PredictRequest=predict_request)
+        googleCloudAiplatformV1beta1PredictRequest=predict_request,
+    )
     return self.client.projects_locations_endpoints.Predict(req)
 
   def RawPredict(self, endpoint_ref, headers, request):
     """Sends online raw prediction request to an endpoint."""
-    url = '{}{}/{}:rawPredict'.format(self.client.url,
-                                      getattr(self.client, '_VERSION'),
-                                      endpoint_ref.RelativeName())
+    url = '{}{}/{}:rawPredict'.format(
+        self.client.url,
+        getattr(self.client, '_VERSION'),
+        endpoint_ref.RelativeName(),
+    )
 
     status, response_headers, response = _DoHttpPost(url, headers, request)
     if status != http_client.OK:
-      raise core_exceptions.Error('HTTP request failed. Response:\n' +
-                                  response.decode())
+      raise core_exceptions.Error(
+          'HTTP request failed. Response:\n' + response.decode()
+      )
 
     return response_headers, response
+
+  def StreamRawPredict(self, endpoint_ref, headers, request):
+    """Sends online raw prediction request to an endpoint."""
+    url = '{}{}/{}:streamRawPredict'.format(
+        self.client.url,
+        getattr(self.client, '_VERSION'),
+        endpoint_ref.RelativeName(),
+    )
+
+    for resp in _DoStreamHttpPost(url, headers, request):
+      yield resp
 
   def Explain(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""
     explain_request = self.messages.GoogleCloudAiplatformV1ExplainRequest(
-        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
-                                              instances_json['instances']))
+        instances=_ConvertPyListToMessageList(
+            extra_types.JsonValue, instances_json['instances']
+        )
+    )
     if 'parameters' in instances_json:
       explain_request.parameters = encoding.PyValueToMessage(
-          extra_types.JsonValue, instances_json['parameters'])
+          extra_types.JsonValue, instances_json['parameters']
+      )
     if args.deployed_model_id is not None:
       explain_request.deployedModelId = args.deployed_model_id
 
     req = self.messages.AiplatformProjectsLocationsEndpointsExplainRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1ExplainRequest=explain_request)
+        googleCloudAiplatformV1ExplainRequest=explain_request,
+    )
     return self.client.projects_locations_endpoints.Explain(req)
 
   def ExplainBeta(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""
     explain_request = self.messages.GoogleCloudAiplatformV1beta1ExplainRequest(
-        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
-                                              instances_json['instances']))
+        instances=_ConvertPyListToMessageList(
+            extra_types.JsonValue, instances_json['instances']
+        )
+    )
     if 'parameters' in instances_json:
       explain_request.parameters = encoding.PyValueToMessage(
-          extra_types.JsonValue, instances_json['parameters'])
+          extra_types.JsonValue, instances_json['parameters']
+      )
     if 'explanation_spec_override' in instances_json:
       explain_request.explanationSpecOverride = encoding.PyValueToMessage(
           self.messages.GoogleCloudAiplatformV1beta1ExplanationSpecOverride,
-          instances_json['explanation_spec_override'])
+          instances_json['explanation_spec_override'],
+      )
     if args.deployed_model_id is not None:
       explain_request.deployedModelId = args.deployed_model_id
 
     req = self.messages.AiplatformProjectsLocationsEndpointsExplainRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1beta1ExplainRequest=explain_request)
+        googleCloudAiplatformV1beta1ExplainRequest=explain_request,
+    )
     return self.client.projects_locations_endpoints.Explain(req)
 
-  def DeployModel(self,
-                  endpoint_ref,
-                  model,
-                  region,
-                  display_name,
-                  machine_type=None,
-                  tpu_topology=None,
-                  accelerator_dict=None,
-                  min_replica_count=None,
-                  max_replica_count=None,
-                  autoscaling_metric_specs=None,
-                  enable_access_logging=False,
-                  disable_container_logging=False,
-                  service_account=None,
-                  traffic_split=None,
-                  deployed_model_id=None):
+  def DeployModel(
+      self,
+      endpoint_ref,
+      model,
+      region,
+      display_name,
+      machine_type=None,
+      tpu_topology=None,
+      accelerator_dict=None,
+      min_replica_count=None,
+      max_replica_count=None,
+      autoscaling_metric_specs=None,
+      enable_access_logging=False,
+      disable_container_logging=False,
+      service_account=None,
+      traffic_split=None,
+      deployed_model_id=None,
+  ):
     """Deploys a model to an existing endpoint using v1 API.
 
     Args:
@@ -567,14 +679,16 @@ class EndpointsClient(object):
         machine_spec.machineType = machine_type
       if tpu_topology is not None:
         machine_spec.tpuTopology = tpu_topology
-      accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
-                                               constants.GA_VERSION)
+      accelerator = flags.ParseAcceleratorFlag(
+          accelerator_dict, constants.GA_VERSION
+      )
       if accelerator is not None:
         machine_spec.acceleratorType = accelerator.acceleratorType
         machine_spec.acceleratorCount = accelerator.acceleratorCount
 
       dedicated = self.messages.GoogleCloudAiplatformV1DedicatedResources(
-          machineSpec=machine_spec)
+          machineSpec=machine_spec
+      )
       # min-replica-count is required and must be >= 1 if models use dedicated
       # resources. Default to 1 if not specified.
       dedicated.minReplicaCount = min_replica_count or 1
@@ -587,13 +701,16 @@ class EndpointsClient(object):
           autoscaling_metric_specs_list.append(
               self.messages.GoogleCloudAiplatformV1AutoscalingMetricSpec(
                   metricName=constants.OP_AUTOSCALING_METRIC_NAME_MAPPER[name],
-                  target=target))
+                  target=target,
+              )
+          )
         dedicated.autoscalingMetricSpecs = autoscaling_metric_specs_list
 
       deployed_model = self.messages.GoogleCloudAiplatformV1DeployedModel(
           dedicatedResources=dedicated,
           displayName=display_name,
-          model=model_ref.RelativeName())
+          model=model_ref.RelativeName(),
+      )
     else:
       # automatic resources
       automatic = self.messages.GoogleCloudAiplatformV1AutomaticResources()
@@ -605,7 +722,8 @@ class EndpointsClient(object):
       deployed_model = self.messages.GoogleCloudAiplatformV1DeployedModel(
           automaticResources=automatic,
           displayName=display_name,
-          model=model_ref.RelativeName())
+          model=model_ref.RelativeName(),
+      )
 
     deployed_model.enableAccessLogging = enable_access_logging
     deployed_model.disableContainerLogging = disable_container_logging
@@ -616,40 +734,49 @@ class EndpointsClient(object):
     if deployed_model_id is not None:
       deployed_model.id = deployed_model_id
 
-    deployed_model_req = self.messages.GoogleCloudAiplatformV1DeployModelRequest(
-        deployedModel=deployed_model)
+    deployed_model_req = (
+        self.messages.GoogleCloudAiplatformV1DeployModelRequest(
+            deployedModel=deployed_model
+        )
+    )
 
     if traffic_split is not None:
       additional_properties = []
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             deployed_model_req.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
+                key=key, value=value
+            )
+        )
       deployed_model_req.trafficSplit = deployed_model_req.TrafficSplitValue(
-          additionalProperties=additional_properties)
+          additionalProperties=additional_properties
+      )
 
     req = self.messages.AiplatformProjectsLocationsEndpointsDeployModelRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1DeployModelRequest=deployed_model_req)
+        googleCloudAiplatformV1DeployModelRequest=deployed_model_req,
+    )
     return self.client.projects_locations_endpoints.DeployModel(req)
 
-  def DeployModelBeta(self,
-                      endpoint_ref,
-                      model,
-                      region,
-                      display_name,
-                      machine_type=None,
-                      tpu_topology=None,
-                      accelerator_dict=None,
-                      min_replica_count=None,
-                      max_replica_count=None,
-                      autoscaling_metric_specs=None,
-                      enable_access_logging=False,
-                      enable_container_logging=False,
-                      service_account=None,
-                      traffic_split=None,
-                      deployed_model_id=None,
-                      shared_resources_ref=None):
+  def DeployModelBeta(
+      self,
+      endpoint_ref,
+      model,
+      region,
+      display_name,
+      machine_type=None,
+      tpu_topology=None,
+      accelerator_dict=None,
+      min_replica_count=None,
+      max_replica_count=None,
+      autoscaling_metric_specs=None,
+      enable_access_logging=False,
+      enable_container_logging=False,
+      service_account=None,
+      traffic_split=None,
+      deployed_model_id=None,
+      shared_resources_ref=None,
+  ):
     """Deploys a model to an existing endpoint using v1beta1 API.
 
     Args:
@@ -682,8 +809,9 @@ class EndpointsClient(object):
     """
     model_ref = _ParseModel(model, region)
 
-    resource_type = _GetModelDeploymentResourceType(model_ref, self.client,
-                                                    shared_resources_ref)
+    resource_type = _GetModelDeploymentResourceType(
+        model_ref, self.client, shared_resources_ref
+    )
     deployed_model = None
     if resource_type == 'DEDICATED_RESOURCES':
       # dedicated resources
@@ -692,14 +820,16 @@ class EndpointsClient(object):
         machine_spec.machineType = machine_type
       if tpu_topology is not None:
         machine_spec.tpuTopology = tpu_topology
-      accelerator = flags.ParseAcceleratorFlag(accelerator_dict,
-                                               constants.BETA_VERSION)
+      accelerator = flags.ParseAcceleratorFlag(
+          accelerator_dict, constants.BETA_VERSION
+      )
       if accelerator is not None:
         machine_spec.acceleratorType = accelerator.acceleratorType
         machine_spec.acceleratorCount = accelerator.acceleratorCount
 
       dedicated = self.messages.GoogleCloudAiplatformV1beta1DedicatedResources(
-          machineSpec=machine_spec)
+          machineSpec=machine_spec
+      )
       # min-replica-count is required and must be >= 1 if models use dedicated
       # resources. Default to 1 if not specified.
       dedicated.minReplicaCount = min_replica_count or 1
@@ -712,13 +842,16 @@ class EndpointsClient(object):
           autoscaling_metric_specs_list.append(
               self.messages.GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(
                   metricName=constants.OP_AUTOSCALING_METRIC_NAME_MAPPER[name],
-                  target=target))
+                  target=target,
+              )
+          )
         dedicated.autoscalingMetricSpecs = autoscaling_metric_specs_list
 
       deployed_model = self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
           dedicatedResources=dedicated,
           displayName=display_name,
-          model=model_ref.RelativeName())
+          model=model_ref.RelativeName(),
+      )
     elif resource_type == 'AUTOMATIC_RESOURCES':
       # automatic resources
       automatic = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
@@ -730,13 +863,15 @@ class EndpointsClient(object):
       deployed_model = self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
           automaticResources=automatic,
           displayName=display_name,
-          model=model_ref.RelativeName())
+          model=model_ref.RelativeName(),
+      )
     # if resource type is SHARED_RESOURCES
     else:
       deployed_model = self.messages.GoogleCloudAiplatformV1beta1DeployedModel(
           displayName=display_name,
           model=model_ref.RelativeName(),
-          sharedResources=shared_resources_ref.RelativeName())
+          sharedResources=shared_resources_ref.RelativeName(),
+      )
 
     deployed_model.enableAccessLogging = enable_access_logging
     deployed_model.enableContainerLogging = enable_container_logging
@@ -747,21 +882,28 @@ class EndpointsClient(object):
     if deployed_model_id is not None:
       deployed_model.id = deployed_model_id
 
-    deployed_model_req = self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(
-        deployedModel=deployed_model)
+    deployed_model_req = (
+        self.messages.GoogleCloudAiplatformV1beta1DeployModelRequest(
+            deployedModel=deployed_model
+        )
+    )
 
     if traffic_split is not None:
       additional_properties = []
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             deployed_model_req.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
+                key=key, value=value
+            )
+        )
       deployed_model_req.trafficSplit = deployed_model_req.TrafficSplitValue(
-          additionalProperties=additional_properties)
+          additionalProperties=additional_properties
+      )
 
     req = self.messages.AiplatformProjectsLocationsEndpointsDeployModelRequest(
         endpoint=endpoint_ref.RelativeName(),
-        googleCloudAiplatformV1beta1DeployModelRequest=deployed_model_req)
+        googleCloudAiplatformV1beta1DeployModelRequest=deployed_model_req,
+    )
     return self.client.projects_locations_endpoints.DeployModel(req)
 
   def UndeployModel(self, endpoint_ref, deployed_model_id, traffic_split=None):
@@ -776,31 +918,37 @@ class EndpointsClient(object):
     Returns:
       A long-running operation for UndeployModel.
     """
-    undeployed_model_req = \
+    undeployed_model_req = (
         self.messages.GoogleCloudAiplatformV1UndeployModelRequest(
-            deployedModelId=deployed_model_id)
+            deployedModelId=deployed_model_id
+        )
+    )
 
     if traffic_split is not None:
       additional_properties = []
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             undeployed_model_req.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
-      undeployed_model_req.trafficSplit = \
+                key=key, value=value
+            )
+        )
+      undeployed_model_req.trafficSplit = (
           undeployed_model_req.TrafficSplitValue(
-              additionalProperties=additional_properties)
+              additionalProperties=additional_properties
+          )
+      )
 
-    req = \
+    req = (
         self.messages.AiplatformProjectsLocationsEndpointsUndeployModelRequest(
             endpoint=endpoint_ref.RelativeName(),
-            googleCloudAiplatformV1UndeployModelRequest= \
-            undeployed_model_req)
+            googleCloudAiplatformV1UndeployModelRequest=undeployed_model_req,
+        )
+    )
     return self.client.projects_locations_endpoints.UndeployModel(req)
 
-  def UndeployModelBeta(self,
-                        endpoint_ref,
-                        deployed_model_id,
-                        traffic_split=None):
+  def UndeployModelBeta(
+      self, endpoint_ref, deployed_model_id, traffic_split=None
+  ):
     """Undeploys a model from an endpoint using v1beta1 API.
 
     Args:
@@ -812,23 +960,28 @@ class EndpointsClient(object):
     Returns:
       A long-running operation for UndeployModel.
     """
-    undeployed_model_req = \
+    undeployed_model_req = (
         self.messages.GoogleCloudAiplatformV1beta1UndeployModelRequest(
-            deployedModelId=deployed_model_id)
+            deployedModelId=deployed_model_id
+        )
+    )
 
     if traffic_split is not None:
       additional_properties = []
       for key, value in sorted(traffic_split.items()):
         additional_properties.append(
             undeployed_model_req.TrafficSplitValue().AdditionalProperty(
-                key=key, value=value))
-      undeployed_model_req.trafficSplit = \
+                key=key, value=value
+            )
+        )
+      undeployed_model_req.trafficSplit = (
           undeployed_model_req.TrafficSplitValue(
-              additionalProperties=additional_properties)
+              additionalProperties=additional_properties
+          )
+      )
 
-    req = \
-        self.messages.AiplatformProjectsLocationsEndpointsUndeployModelRequest(
-            endpoint=endpoint_ref.RelativeName(),
-            googleCloudAiplatformV1beta1UndeployModelRequest= \
-            undeployed_model_req)
+    req = self.messages.AiplatformProjectsLocationsEndpointsUndeployModelRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1UndeployModelRequest=undeployed_model_req,
+    )
     return self.client.projects_locations_endpoints.UndeployModel(req)

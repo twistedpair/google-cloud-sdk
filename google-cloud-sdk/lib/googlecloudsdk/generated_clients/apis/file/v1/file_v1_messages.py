@@ -398,6 +398,20 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FileProjectsLocationsInstancesPromoteReplicaRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesPromoteReplicaRequest object.
+
+  Fields:
+    name: Required. The resource name of the instance, in the format
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
+    promoteReplicaRequest: A PromoteReplicaRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  promoteReplicaRequest = _messages.MessageField('PromoteReplicaRequest', 2)
+
+
 class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesRestoreRequest object.
 
@@ -1222,6 +1236,7 @@ class Instance(_messages.Message):
       SUSPENDING: The instance is in the process of becoming suspended.
       RESUMING: The instance is in the process of becoming active.
       REVERTING: The instance is reverting to a snapshot.
+      PROMOTING: The replica instance is being promoted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1234,6 +1249,7 @@ class Instance(_messages.Message):
     SUSPENDING = 8
     RESUMING = 9
     REVERTING = 10
+    PROMOTING = 11
 
   class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonsValueListEntryValuesEnum enum type.
@@ -1839,6 +1855,12 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class PromoteReplicaRequest(_messages.Message):
+  r"""PromoteReplicaRequest promotes a Filestore standby instance (replica).
+  """
+
 
 
 class ReplicaConfig(_messages.Message):

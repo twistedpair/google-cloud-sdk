@@ -94,9 +94,11 @@ def TransformRouteFields(service_record):
       service_record.is_managed,
       (_INGRESS_UNSPECIFIED
        if no_status else service_record.status.latestReadyRevisionName))
-  return _TransformTrafficPairs(traffic_pairs,
-                                '' if no_status else service_record.status.url,
-                                _GetIngress(service_record))
+  return _TransformTrafficPairs(
+      traffic_pairs,
+      '' if no_status else service_record.domain,
+      _GetIngress(service_record),
+  )
 
 
 class TrafficPrinter(cp.CustomPrinterBase):

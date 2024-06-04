@@ -37,6 +37,6 @@ properties:
     description: |-
       [Optional] Service Directory region to register this global forwarding
       rule under. Default to "us-central1". Only used for PSC for Google APIs.
-      All PSC for Google APIs Forwarding Rules on the same network should use
+      All PSC for Google APIs forwarding rules on the same network should use
       the same Service Directory region.
     type: string

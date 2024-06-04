@@ -881,6 +881,16 @@ class PySparkApplicationConfig(_messages.Message):
   pythonFileUris = _messages.StringField(6, repeated=True)
 
 
+class QueryList(_messages.Message):
+  r"""Represents a list of queries.
+
+  Fields:
+    queries: Required. The queries to run.
+  """
+
+  queries = _messages.StringField(1, repeated=True)
+
+
 class ServiceInstance(_messages.Message):
   r"""Message describing ServiceInstance object TODO(user) add appropriate
   visibility tags to the fields of this proto.
@@ -1456,6 +1466,7 @@ class SparkSqlApplicationConfig(_messages.Message):
     jarFileUris: Optional. HCFS URIs of jar files to be added to the Spark
       CLASSPATH.
     queryFileUri: The HCFS URI of the script that contains SQL queries.
+    queryList: A list of queries.
     scriptVariables: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET `name="value";`).
   """
@@ -1488,7 +1499,8 @@ class SparkSqlApplicationConfig(_messages.Message):
 
   jarFileUris = _messages.StringField(1, repeated=True)
   queryFileUri = _messages.StringField(2)
-  scriptVariables = _messages.MessageField('ScriptVariablesValue', 3)
+  queryList = _messages.MessageField('QueryList', 3)
+  scriptVariables = _messages.MessageField('ScriptVariablesValue', 4)
 
 
 class StandardQueryParameters(_messages.Message):

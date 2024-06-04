@@ -56,8 +56,8 @@ properties:
     description: |-
       Set of labels associated with the `LbRouteExtension` resource. The
       format must comply with [the requirements for
-      labels](/compute/docs/labeling-resources#requirements) for Google
-      Cloud resources.
+      labels](https://cloud.google.com/compute/docs/labeling-
+      resources#requirements) for Google Cloud resources.
     $ref: LabelsValue.yaml
   loadBalancingScheme:
     description: |-
@@ -72,6 +72,17 @@ properties:
     - EXTERNAL_MANAGED
     - INTERNAL_MANAGED
     - LOAD_BALANCING_SCHEME_UNSPECIFIED
+  metadata:
+    description: |-
+      The metadata provided here will be included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
+      `ProcessingRequest` message sent to the extension server. The
+      metadata will be available under the namespace
+      `com.google.lb_route_extension.`. The following variables are
+      supported in the metadata Struct: `{forwarding_rule_id}` -
+      substituted with the forwarding rule's fully qualified resource
+      name.
+    type: object
   name:
     description: |-
       Identifier. Name of the `LbRouteExtension` resource in the

@@ -56,6 +56,7 @@ def AddDatabaseVersionFlag(parser, support_minor_version):
       'POSTGRES_13',
       'POSTGRES_14',
       'POSTGRES_15',
+      'POSTGRES_16',
   ]
   if not support_minor_version:
     choices = [
@@ -69,6 +70,7 @@ def AddDatabaseVersionFlag(parser, support_minor_version):
         'POSTGRES_13',
         'POSTGRES_14',
         'POSTGRES_15',
+        'POSTGRES_16',
     ]
 
   parser.add_argument(

@@ -5,6 +5,70 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 479.0.0 (2024-06-04)
+
+### Breaking Changes
+
+*   **(Cloud Dataflow)** `gcloud dataflow flex-template build` for Dataflow Flex Templates in Python
+  with `--env FLEX_TEMPLATE_PYTHON_REQUIREMENTS_FILE=/path/to/requirements.txt`
+  defined will run `pip check` after `pip install` while building the container
+  image. This will break the build process if newly installed packages override
+  pre-installed packages with a version that is known to be incompatible with
+  other pre-installed packages. See <https://cloud.google.com/dataflow/docs/guides/templates/configuring-flex-templates>
+  for alternative methods to build a container image without `pip check`.
+
+
+### Artifact Registry
+
+*  Updated `gcloud artifacts docker images` command to include tags as list
+instead of string to enable use of `--filter=tags=<SearchTerm>`.
+
+### Cloud Composer
+
+* Added `gcloud composer environments check-upgrade` command. It checks that an environment upgrade does not fail because of PyPI module conflicts.
+* Added `gcloud composer environments list-upgrades` command. It lists all possible target versions that an existing environment can be upgraded to.
+
+### Cloud Dataproc
+
+*   Updated `gcloud dataproc session-templates export` to filter out additional
+    output only fields.
+
+### Cloud NetApp
+
+* Added `--administrators` flag to `gcloud netapp active-directories create` and `gcloud netapp active-directories update`.
+
+### Cloud SQL
+
+*   Added `--preferred-secondary-zone` flag to `gcloud sql instances clone` command.
+
+### Compute Engine
+
+* Updated import and export schemas for `gcloud compute forwarding-rules`.
+* Promoted `--ip-collection` flag of `gcloud compute forwarding-rules create` to GA.
+* Promoted `--ip-collection-region` flag of `gcloud compute forwarding-rules create` to GA.
+
+### Compute OS Config
+
+* Added `--allow-missing` flag to
+  `gcloud compute os-config os-policy-assignments update` to allow for creation
+  of a new OS policy assignment resource if it does not exist.
+
+### Database Migration
+
+* Updated `gcloud database-migration connection-profiles create cloudsql` to support POSTGRES_16 version option for Cloud SQL connection profiles.
+
+### Distributed Cloud Edge
+
+* Added add/remove exclusion window flags for `gcloud edge-cloud container clusters update` to allow users to add/remove exclusion windows where automatic upgrades will be blocked within.
+
+### Service Extensions
+
+* Added the metadata field to the DEP extensions.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 478.0.0 (2024-05-29)
 
 ### Google Cloud CLI

@@ -14,32 +14,34 @@
 # limitations under the License.
 """Converter related function for Ops Agents Policy."""
 
-from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_exceptions as exceptions
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_policy as agents_policy
 from googlecloudsdk.api_lib.compute.instances.ops_agents import cloud_ops_agents_util as util
 from googlecloudsdk.generated_clients.apis.osconfig.v1 import osconfig_v1_messages as osconfig
 
 
-def ConvertOsPolicyAssignmentToCloudOpsAgentPolicy(
+def ConvertOsPolicyAssignmentToCloudOpsAgentsPolicy(
     os_policy_assignment: osconfig.OSPolicyAssignment,
 ) -> agents_policy.OpsAgentsPolicy:
-  """Converts OS Config guest policy to Ops Agent policy."""
+  """Converts OS Config guest policy to Ops Agents policy.
 
-  instance_filter = os_policy_assignment.instanceFilter
-  policy_id = os_policy_assignment.name.rsplit('/', 1)[-1]
-  if len(os_policy_assignment.osPolicies) > 1:
-    raise exceptions.PolicyMalformedError(
-        policy_id, 'Multiple OS Policies found'
-    )
+  A policy must have passed IsCloudOpsAgentsPolicy before this conversion.
 
+  Args:
+    os_policy_assignment: OS Config guest policy.
+
+  Returns:
+    Ops Agents policy.
+  """
+
+  assert len(os_policy_assignment.osPolicies) == 1
   description = os_policy_assignment.osPolicies[0].description
   agents_rule = util.GetAgentsRuleFromDescription(description)
-  if agents_rule is None:
-    raise exceptions.PolicyMalformedError(
-        policy_id, 'Parsing description failed: %s' % description
-    )
+  assert agents_rule is not None
 
   return agents_policy.OpsAgentsPolicy(
+      policy_id=os_policy_assignment.name,
       agents_rule=agents_rule,
-      instance_filter=instance_filter,
+      instance_filter=os_policy_assignment.instanceFilter,
+      update_time=os_policy_assignment.revisionCreateTime,
+      rollout_state=os_policy_assignment.rolloutState,
   )

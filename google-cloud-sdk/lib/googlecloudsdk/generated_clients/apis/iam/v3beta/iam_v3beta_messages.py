@@ -18,99 +18,6 @@ from apitools.base.py import extra_types
 package = 'iam'
 
 
-class GoogleCloudLocationListLocationsResponse(_messages.Message):
-  r"""The response message for Locations.ListLocations.
-
-  Fields:
-    locations: A list of locations that matches the specified filter in the
-      request.
-    nextPageToken: The standard List next-page token.
-  """
-
-  locations = _messages.MessageField('GoogleCloudLocationLocation', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class GoogleCloudLocationLocation(_messages.Message):
-  r"""A resource that represents a Google Cloud location.
-
-  Messages:
-    LabelsValue: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    MetadataValue: Service-specific metadata. For example the available
-      capacity at the given location.
-
-  Fields:
-    displayName: The friendly name for this location, typically a nearby city
-      name. For example, "Tokyo".
-    labels: Cross-service attributes for the location. For example
-      {"cloud.googleapis.com/region": "us-east1"}
-    locationId: The canonical id for this location. For example: `"us-east1"`.
-    metadata: Service-specific metadata. For example the available capacity at
-      the given location.
-    name: Resource name for the location, which may vary between
-      implementations. For example: `"projects/example-project/locations/us-
-      east1"`
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Cross-service attributes for the location. For example
-    {"cloud.googleapis.com/region": "us-east1"}
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Service-specific metadata. For example the available capacity at the
-    given location.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  displayName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  locationId = _messages.StringField(3)
-  metadata = _messages.MessageField('MetadataValue', 4)
-  name = _messages.StringField(5)
-
-
 class GoogleIamAdminV1AuditData(_messages.Message):
   r"""Audit log information specific to Cloud IAM admin APIs. This message is
   serialized as an `Any` type in the `ServiceData` message of an `AuditLog`
@@ -266,14 +173,30 @@ class GoogleIamV3betaListPrincipalAccessBoundaryPoliciesResponse(_messages.Messa
   principalAccessBoundaryPolicies = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicy', 2, repeated=True)
 
 
-class GoogleIamV3betaPolicy(_messages.Message):
-  r"""One of the policies supported by IAM V3
+class GoogleIamV3betaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
 
   Fields:
-    principalAccessBoundaryPolicy: The principal access boundary kind policy
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+    verb: Output only. Name of the verb executed by the operation.
   """
 
-  principalAccessBoundaryPolicy = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicy', 1)
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class GoogleIamV3betaPolicyBinding(_messages.Message):
@@ -298,21 +221,22 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       resource condition. It depends on the type of target, the policy it is
       attached to, and/or the expression itself. When set, the `expression`
       field in the `Expr` must include from 1 to 10 subexpressions, joined by
-      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators.
-      Allowed operations for principal.type: - `principal.type == ` -
-      `principal.type != ` - `principal.type in []` Allowed operations for
+      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
+      and cannot contain more than 250 characters. Allowed operations for
       principal.subject: - `principal.subject == ` - `principal.subject != ` -
       `principal.subject in []` - `principal.subject.startsWith()` -
-      `principal.subject.endsWith()` Supported principal types are Workspace,
-      Workforce Pool, Workload Pool and Service Account. Allowed string must
-      be one of: - iam.googleapis.com/WorkspaceIdentity -
+      `principal.subject.endsWith()` Allowed operations for principal.type: -
+      `principal.type == ` - `principal.type != ` - `principal.type in []`
+      Supported principal types are Workspace, Workforce Pool, Workload Pool
+      and Service Account. Allowed string must be one of: -
+      iam.googleapis.com/WorkspaceIdentity -
       iam.googleapis.com/WorkforcePoolIdentity -
       iam.googleapis.com/WorkloadPoolIdentity -
-      iam.googleapis.com/ServiceAccount When the bound policy is a Principal
-      Access Boundary policy, each subexpression must be of the form
-      `principal.type == ` or `principal.subject == ''`. An example expression
-      is: "principal.type == 'iam.googleapis.com/ServiceAccount'" or
-      "principal.subject == 'bob@acme.com'".
+      iam.googleapis.com/ServiceAccount When the bound policy is a principal
+      access boundary policy, the only supported attributes in any
+      subexpression are `principal.type` and `principal.subject`. An example
+      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
+      or "principal.subject == 'bob@acme.com'".
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
@@ -420,10 +344,6 @@ class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
   principalSet = _messages.StringField(1)
 
 
-class GoogleIamV3betaPolicyInaccessible(_messages.Message):
-  r"""A marker to indicate that the policy is inaccessible"""
-
-
 class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
   r"""An IAM principal access boundary policy resource.
 
@@ -497,7 +417,8 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
       services are included in the enforcement (e.g. "latest", "1", ...). If
       empty, the PAB policy version will be set to the current latest version,
       and this version won't get updated when new versions are released.
-    rules: Required. A list of principal access boundary policy rules.
+    rules: Required. A list of principal access boundary policy rules. The
+      number of rules in a policy is limited to 500.
   """
 
   enforcementVersion = _messages.StringField(1)
@@ -518,7 +439,8 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):
     effect: Required. The access relationship of principals to the resources
       in this rule.
     resources: Required. A list of Cloud Resource Manager resources. The
-      resource and all the descendants are included. The following resource
+      resource and all the descendants are included. The number of resources
+      in a policy is limited to 500 across all rules. The following resource
       names are supported: * Organization, such as
       "//cloudresourcemanager.googleapis.com/organizations/123". * Folder,
       such as "//cloudresourcemanager.googleapis.com/folders/123". * Project,
@@ -540,42 +462,6 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):
   description = _messages.StringField(1)
   effect = _messages.EnumField('EffectValueValuesEnum', 2)
   resources = _messages.StringField(3, repeated=True)
-
-
-class GoogleIamV3betaSearchApplicablePoliciesResponse(_messages.Message):
-  r"""Response message for SearchApplicablePolicies
-
-  Fields:
-    bindingsAndPolicies: A list of Bindings and the policies associated with
-      those bindings The bindings will be ordered by enforcement point
-      starting from the lowest at the target level and up the CRM hierarchy.
-      No order is guaranteed for bindings for a given enforcement point.
-    nextPageToken: The page token to use in a follow up
-      SearchApplicablePolicies request
-    responseComplete: Does the response contain the full list of all bindings
-      and policies applicable or were some excluded due to lack of permissions
-  """
-
-  bindingsAndPolicies = _messages.MessageField('GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  responseComplete = _messages.BooleanField(3)
-
-
-class GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy(_messages.Message):
-  r"""A pair of a binding and a policy referenced by that binding (if
-  accessible)
-
-  Fields:
-    binding: A binding between a target and a policy
-    policy: The policy associated with the above binding. Omitted if the
-      policy cannot be retrieved due to lack of permissions
-    policyInaccessible: Will be set if there was a permission error getting
-      the policy (even though the binding was accessible).
-  """
-
-  binding = _messages.MessageField('GoogleIamV3betaPolicyBinding', 1)
-  policy = _messages.MessageField('GoogleIamV3betaPolicy', 2)
-  policyInaccessible = _messages.MessageField('GoogleIamV3betaPolicyInaccessible', 3)
 
 
 class GoogleIamV3betaSearchPrincipalAccessBoundaryPolicyBindingsResponse(_messages.Message):
@@ -878,36 +764,6 @@ class GoogleTypeExpr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class IamFoldersLocationsGetRequest(_messages.Message):
-  r"""A IamFoldersLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamFoldersLocationsListLocationsRequest(_messages.Message):
-  r"""A IamFoldersLocationsListLocationsRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class IamFoldersLocationsOperationsGetRequest(_messages.Message):
   r"""A IamFoldersLocationsOperationsGetRequest object.
 
@@ -1188,36 +1044,6 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   target = _messages.StringField(4)
-
-
-class IamOrganizationsLocationsGetRequest(_messages.Message):
-  r"""A IamOrganizationsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamOrganizationsLocationsListLocationsRequest(_messages.Message):
-  r"""A IamOrganizationsLocationsListLocationsRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
 
 
 class IamOrganizationsLocationsOperationsGetRequest(_messages.Message):
@@ -1635,36 +1461,6 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesSearchPolicyBindin
   pageToken = _messages.StringField(3)
 
 
-class IamProjectsGetLocationsRequest(_messages.Message):
-  r"""A IamProjectsGetLocationsRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class IamProjectsLocationsListRequest(_messages.Message):
-  r"""A IamProjectsLocationsListRequest object.
-
-  Fields:
-    filter: A filter to narrow down results to a preferred subset. The
-      filtering language accepts strings like `"displayName=tokyo"`, and is
-      documented in more detail in [AIP-160](https://google.aip.dev/160).
-    name: The resource that owns the locations collection, if applicable.
-    pageSize: The maximum number of results to return. If not set, the service
-      selects a default.
-    pageToken: A page token received from the `next_page_token` field in the
-      response. Send that page token to receive the subsequent page.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class IamProjectsLocationsOperationsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsOperationsGetRequest object.
 
@@ -1945,34 +1741,6 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   target = _messages.StringField(4)
-
-
-class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
-  r"""A IamSearchApplicablePoliciesSearchRequest object.
-
-  Fields:
-    filter: Optional. Filtering currently only supports the kind of policies
-      to return, and must be in the format "kind:[policyKind1] OR
-      kind:[policyKind2]". New policy kinds may be added in the future without
-      notice. Example value: "kind:principalAccessBoundaryPolicies"
-    pageSize: Optional. The limit of number of items (binding+policy pairs) to
-      return. The default and maximum is 100 and values above 100 are
-      truncated to 100.
-    pageToken: Optional. A page token, received from a previous
-      `SearchApplicablePolicies` call.
-    targetQuery: Required. The target for which to list the policies and
-      bindings for. Binding conditions will not be evaluated and all bindings
-      that are bound to the target will be returned. All targets from the
-      CreatePolicyBinding request are supported, as well as principals that
-      are part of the principalSet. e.g.
-      principalSet://iam.googleapis.com/projects/1234/*
-      principal:alice@acme.com
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  targetQuery = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

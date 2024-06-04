@@ -31,6 +31,6 @@ properties:
     description: |-
       A Common Expression Language (CEL) expression that is used to match
       requests for which the extension chain is executed. For more information,
-      see [CEL matcher language reference](/service-extensions/docs/cel-matcher-
-      language-reference).
+      see [CEL matcher language reference](https://cloud.google.com/service-
+      extensions/docs/cel-matcher-language-reference).
     type: string

@@ -33,15 +33,24 @@ _StrEnum = (
 
 @dataclasses.dataclass(repr=False)
 class OpsAgentsPolicy(object):
-  """An Ops Agent policy encapsulates the underlying VMM Policy.
+  """An Ops Agents policy encapsulates the underlying VMM Policy.
 
   Attr:
+    policy_id: the unique identifier for the policy. This will be the value of
+      the OSPolicyAssignment's name.
     agents_rule: the agents rule to be applied to VMs.
     instance_filter:
       [InstanceFilter](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments#InstanceFilter)
       Filters to select target VMs for an assignment. Only Ops Agent supported
       [osShortName](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments#inventory)
       values are allowed.
+    rollout_state:
+      The state of the policy's rollout, as defined by the OSPolicyAssignment's
+      [rolloutState](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments#rolloutstate)
+    update_time:
+      The time of the last update to the policy object, in RFC3339 format.
+      This will be the value of the OSPolicyAssignment's
+      [revisionCreateTime](https://cloud.google.com/compute/docs/osconfig/rest/v1/projects.locations.osPolicyAssignments#resource:-ospolicyassignment)
   """
 
   @dataclasses.dataclass(repr=False)
@@ -79,15 +88,21 @@ class OpsAgentsPolicy(object):
           sort_keys=True,
       )
 
+  policy_id: str
   agents_rule: AgentsRule
   instance_filter: osconfig_v1_messages.OSPolicyAssignmentInstanceFilter
+  update_time: Optional[str] = None
+  rollout_state: Optional[str] = None
 
   def __repr__(self) -> str:
     """JSON single line format string representation for testing."""
 
     policy_map = {
+        'policyId': self.policy_id,
         'agentsRule': self.agents_rule,
         'instanceFilter': encoding.MessageToPyValue(self.instance_filter),
+        'updateTime': self.update_time,
+        'rolloutState': self.rollout_state,
     }
 
     return json.dumps(
@@ -100,18 +115,18 @@ class OpsAgentsPolicy(object):
   def ToPyValue(self):
 
     policy_map = {
+        'policyId': self.policy_id,
         # Converting enum to string.
         'agentsRule': json.loads(self.agents_rule.ToJson()),
         'instanceFilter': encoding.MessageToPyValue(self.instance_filter),
+        'updateTime': self.update_time,
+        'rolloutState': self.rollout_state,
     }
 
     return policy_map
 
 
-_OPS_AGENTS_POLICY_KEYS = frozenset(
-    resource_property.ConvertToCamelCase(f.name)
-    for f in dataclasses.fields(OpsAgentsPolicy)
-)
+_OPS_AGENTS_POLICY_KEYS = frozenset(['agentsRule', 'instanceFilter'])
 
 
 def CreateAgentsRule(
@@ -155,11 +170,13 @@ def CreateAgentsRule(
 
 
 def CreateOpsAgentsPolicy(
+    policy_id: str,
     ops_agents_policy: Mapping[str, Any],
 ) -> OpsAgentsPolicy:
   """Create Ops Agent Policy.
 
   Args:
+    policy_id: unique id for Cloud Ops Agents Policy.
     ops_agents_policy: fields (agentsRule, instanceFilter) describing ops agents
       policy from the command line.
 
@@ -177,6 +194,7 @@ def CreateOpsAgentsPolicy(
     )
 
   return OpsAgentsPolicy(
+      policy_id=policy_id,
       agents_rule=CreateAgentsRule(ops_agents_policy['agentsRule']),
       instance_filter=encoding.PyValueToMessage(
           osconfig_v1_messages.OSPolicyAssignmentInstanceFilter,
@@ -234,6 +252,7 @@ def UpdateOpsAgentsPolicy(
     updated_instance_filter = ops_agents_policy.instance_filter
 
   return OpsAgentsPolicy(
+      policy_id=ops_agents_policy.policy_id,
       instance_filter=updated_instance_filter,
       agents_rule=updated_agents_rule,
   )

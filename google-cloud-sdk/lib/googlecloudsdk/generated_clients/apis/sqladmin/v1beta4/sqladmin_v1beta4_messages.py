@@ -1568,10 +1568,14 @@ class ExportContext(_messages.Message):
 
     Messages:
       MysqlExportOptionsValue: Options for exporting from MySQL.
+      PostgresExportOptionsValue: Options for exporting from a Cloud SQL for
+        PostgreSQL instance.
 
     Fields:
       mysqlExportOptions: Options for exporting from MySQL.
       parallel: Optional. Whether or not the export should be parallel.
+      postgresExportOptions: Options for exporting from a Cloud SQL for
+        PostgreSQL instance.
       schemaOnly: Export only schemas.
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
@@ -1593,11 +1597,26 @@ class ExportContext(_messages.Message):
 
       masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
+    class PostgresExportOptionsValue(_messages.Message):
+      r"""Options for exporting from a Cloud SQL for PostgreSQL instance.
+
+      Fields:
+        clean: Optional. Use this option to include DROP SQL statements. These
+          statements are used to delete database objects before running the
+          import operation.
+        ifExists: Optional. Option to include an IF EXISTS SQL statement with
+          each DROP statement produced by clean.
+      """
+
+      clean = _messages.BooleanField(1)
+      ifExists = _messages.BooleanField(2)
+
     mysqlExportOptions = _messages.MessageField('MysqlExportOptionsValue', 1)
     parallel = _messages.BooleanField(2)
-    schemaOnly = _messages.BooleanField(3)
-    tables = _messages.StringField(4, repeated=True)
-    threads = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+    postgresExportOptions = _messages.MessageField('PostgresExportOptionsValue', 3)
+    schemaOnly = _messages.BooleanField(4)
+    tables = _messages.StringField(5, repeated=True)
+    threads = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
   bakExportOptions = _messages.MessageField('BakExportOptionsValue', 1)
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 2)
@@ -2021,13 +2040,36 @@ class ImportContext(_messages.Message):
   class SqlImportOptionsValue(_messages.Message):
     r"""Optional. Options for importing data from SQL statements.
 
+    Messages:
+      PostgresImportOptionsValue: Optional. Options for importing from a Cloud
+        SQL for PostgreSQL instance.
+
     Fields:
       parallel: Optional. Whether or not the import should be parallel.
+      postgresImportOptions: Optional. Options for importing from a Cloud SQL
+        for PostgreSQL instance.
       threads: Optional. The number of threads to use for parallel import.
     """
 
+    class PostgresImportOptionsValue(_messages.Message):
+      r"""Optional. Options for importing from a Cloud SQL for PostgreSQL
+      instance.
+
+      Fields:
+        clean: Optional. The --clean flag for the pg_restore utility. This
+          flag applies only if you enabled Cloud SQL to import files in
+          parallel.
+        ifExists: Optional. The --if-exists flag for the pg_restore utility.
+          This flag applies only if you enabled Cloud SQL to import files in
+          parallel.
+      """
+
+      clean = _messages.BooleanField(1)
+      ifExists = _messages.BooleanField(2)
+
     parallel = _messages.BooleanField(1)
-    threads = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+    postgresImportOptions = _messages.MessageField('PostgresImportOptionsValue', 2)
+    threads = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
   bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)

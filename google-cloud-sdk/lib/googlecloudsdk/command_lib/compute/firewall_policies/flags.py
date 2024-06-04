@@ -37,12 +37,13 @@ class FirewallPoliciesCompleter(compute_completers.ListCommandCompleter):
     super(FirewallPoliciesCompleter, self).__init__(
         collection='compute.firewallPolicies',
         list_command='compute org-firewall-policies list --uri',
-        **kwargs)
+        **kwargs
+    )
 
 
-def FirewallPolicyRuleListArgument(required=False,
-                                   plural=False,
-                                   operation=None):
+def FirewallPolicyRuleListArgument(
+    required=False, plural=False, operation=None
+):
   return compute_flags.ResourceArgument(
       name='FIREWALL_POLICY',
       resource_name='firewall policy',
@@ -51,7 +52,8 @@ def FirewallPolicyRuleListArgument(required=False,
       required=required,
       custom_plural='firewall policies',
       short_help='Short name of the firewall policy to {0}.'.format(operation),
-      global_collection='compute.firewallPolicies')
+      global_collection='compute.firewallPolicies',
+  )
 
 
 def FirewallPolicyArgument(required=False, plural=False, operation=None):
@@ -63,8 +65,10 @@ def FirewallPolicyArgument(required=False, plural=False, operation=None):
       required=required,
       custom_plural='firewall policies',
       short_help='Short name or ID of the firewall policy to {0}.'.format(
-          operation),
-      global_collection='compute.firewallPolicies')
+          operation
+      ),
+      global_collection='compute.firewallPolicies',
+  )
 
 
 def FirewallPolicyAssociationsArgument(required=False, plural=False):
@@ -74,7 +78,8 @@ def FirewallPolicyAssociationsArgument(required=False, plural=False):
       completer=FirewallPoliciesCompleter,
       plural=plural,
       required=required,
-      global_collection='compute.firewallPolicies')
+      global_collection='compute.firewallPolicies',
+  )
 
 
 def FirewallPolicyRuleArgument(
@@ -90,7 +95,9 @@ def FirewallPolicyRuleArgument(
       required=required,
       global_collection='compute.firewallPolicies',
       short_help='Priority of the firewall policy rule to {}.'.format(
-          operation))
+          operation
+      ),
+  )
 
 
 def AddArgFirewallPolicyCreation(parser):
@@ -98,25 +105,34 @@ def AddArgFirewallPolicyCreation(parser):
   parser.add_argument(
       '--short-name',
       required=True,
-      help=('A textual name of the firewall policy. The name must be 1-63 '
-            'characters long, and comply with RFC 1035.'))
+      help=(
+          'A textual name of the firewall policy. The name must be 1-63 '
+          'characters long, and comply with RFC 1035.'
+      ),
+  )
 
   group = parser.add_group(required=True, mutex=True)
 
   group.add_argument(
       '--organization',
-      help=('Organization in which the organization firewall policy'
-            ' is to be created.'))
+      help=(
+          'Organization in which the organization firewall policy'
+          ' is to be created.'
+      ),
+  )
 
   group.add_argument(
       '--folder',
-      help=('Folder in which the organization firewall policy is to be'
-            ' created.'))
+      help='Folder in which the organization firewall policy is to be created.',
+  )
 
   parser.add_argument(
       '--description',
-      help=('An optional, textual description for the organization security'
-            ' policy.'))
+      help=(
+          'An optional, textual description for the organization security'
+          ' policy.'
+      ),
+  )
 
 
 def AddArgsCloneRules(parser):
@@ -124,12 +140,16 @@ def AddArgsCloneRules(parser):
   parser.add_argument(
       '--source-firewall-policy',
       required=True,
-      help=('The URL of the source firewall policy to copy the rules from.'))
+      help='The URL of the source firewall policy to copy the rules from.',
+  )
 
   parser.add_argument(
       '--organization',
-      help=('Organization in which the organization firewall policy to copy the'
-            ' rules to. Must be set if firewall-policy is short name.'))
+      help=(
+          'Organization in which the organization firewall policy to copy the'
+          ' rules to. Must be set if firewall-policy is short name.'
+      ),
+  )
 
 
 def AddArgsListFirewallPolicy(parser):
@@ -138,35 +158,46 @@ def AddArgsListFirewallPolicy(parser):
 
   group.add_argument(
       '--organization',
-      help=('Organization in which firewall policies are listed'))
+      help='Organization in which firewall policies are listed',
+  )
 
   group.add_argument(
-      '--folder', help=('Folder in which firewall policies are listed'))
+      '--folder', help='Folder in which firewall policies are listed'
+  )
 
 
 def AddArgsMove(parser):
   """Adds the argument for firewall policy move."""
   parser.add_argument(
       '--organization',
-      help=('Organization in which the organization firewall policy is to be'
-            ' moved. Must be set if FIREWALL_POLICY is short name.'))
+      help=(
+          'Organization in which the organization firewall policy is to be'
+          ' moved. Must be set if FIREWALL_POLICY is short name.'
+      ),
+  )
 
   parser.add_argument(
       '--folder',
-      help=('Folder to which the organization firewall policy is to be'
-            ' moved.'))
+      help='Folder to which the organization firewall policy is to be moved.',
+  )
 
 
 def AddArgsUpdateFirewallPolicy(parser):
   """Adds the argument for firewall policy update."""
   parser.add_argument(
       '--organization',
-      help=('Organization in which the organization firewall policy is to be'
-            ' updated. Must be set if FIREWALL_POLICY is short name.'))
+      help=(
+          'Organization in which the organization firewall policy is to be'
+          ' updated. Must be set if FIREWALL_POLICY is short name.'
+      ),
+  )
   parser.add_argument(
       '--description',
-      help=('An optional, textual description for the organization security'
-            ' policy.'))
+      help=(
+          'An optional, textual description for the organization security'
+          ' policy.'
+      ),
+  )
 
 
 def AddPriority(parser, operation, is_plural=False):
@@ -176,10 +207,14 @@ def AddPriority(parser, operation, is_plural=False):
       metavar='PRIORITY',
       nargs='*' if is_plural else None,
       completer=FirewallPoliciesCompleter,
-      help=('Priority of the rule{0} to {1}. Rules are evaluated in order '
-            'from highest priority to lowest priority where 0 is the highest '
-            'priority and 2147483647 is the lowest priority.'.format(
-                's' if is_plural else '', operation)))
+      help=(
+          'Priority of the rule{0} to {1}. Rules are evaluated in order '
+          'from highest priority to lowest priority where 0 is the highest '
+          'priority and 2147483647 is the lowest priority.'.format(
+              's' if is_plural else '', operation
+          )
+      ),
+  )
 
 
 def AddAction(parser, required=True):
@@ -209,16 +244,22 @@ def AddFirewallPolicyId(parser, required=True, operation=None):
   parser.add_argument(
       '--firewall-policy',
       required=required,
-      help=('Short name of the firewall policy into which the rule should '
-            'be {}.'.format(operation)))
+      help=(
+          'Short name of the firewall policy into which the rule should '
+          'be {}.'.format(operation)
+      ),
+  )
 
 
 def AddOrganization(parser, required=True):
   parser.add_argument(
       '--organization',
       required=required,
-      help=('Organization which the organization firewall policy belongs to. '
-            'Must be set if FIREWALL_POLICY is short name.'))
+      help=(
+          'Organization which the organization firewall policy belongs to. '
+          'Must be set if FIREWALL_POLICY is short name.'
+      ),
+  )
 
 
 def AddSrcIpRanges(parser, required=False):
@@ -228,7 +269,8 @@ def AddSrcIpRanges(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='SRC_IP_RANGE',
-      help='Source IP ranges to match for this rule.')
+      help='Source IP ranges to match for this rule.',
+  )
 
 
 def AddDestIpRanges(parser, required=False):
@@ -238,7 +280,8 @@ def AddDestIpRanges(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='DEST_IP_RANGE',
-      help='Destination IP ranges to match for this rule.')
+      help='Destination IP ranges to match for this rule.',
+  )
 
 
 def AddLayer4Configs(parser, required=False):
@@ -248,8 +291,11 @@ def AddLayer4Configs(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='LAYER4_CONFIG',
-      help=('A list of destination protocols and ports to which the firewall '
-            'rule will apply.'))
+      help=(
+          'A list of destination protocols and ports to which the firewall '
+          'rule will apply.'
+      ),
+  )
 
 
 def AddDirection(parser, required=False):
@@ -259,8 +305,10 @@ def AddDirection(parser, required=False):
       required=required,
       choices=['INGRESS', 'EGRESS'],
       help=(
-          'Direction of the traffic the rule is applied. The default is to apply on incoming traffic.'
-      ))
+          'Direction of the traffic the rule is applied. The default is to'
+          ' apply on incoming traffic.'
+      ),
+  )
 
 
 def AddEnableLogging(parser, required=False):
@@ -269,8 +317,11 @@ def AddEnableLogging(parser, required=False):
       '--enable-logging',
       required=required,
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Use this flag to enable logging of connections that allowed or '
-            'denied by this rule.'))
+      help=(
+          'Use this flag to enable logging of connections that allowed or '
+          'denied by this rule.'
+      ),
+  )
 
 
 def AddDisabled(parser, required=False):
@@ -279,16 +330,23 @@ def AddDisabled(parser, required=False):
       '--disabled',
       required=required,
       action=arg_parsers.StoreTrueFalseAction,
-      help=('Use this flag to disable the rule. Disabled rules will not affect '
-            'traffic.'))
+      help=(
+          'Use this flag to disable the rule. Disabled rules will not affect '
+          'traffic.'
+      ),
+  )
 
 
 def AddNewPriority(parser, operation=None):
   """Adds the new firewall policy rule priority to the argparse."""
   parser.add_argument(
       '--new-priority',
-      help=('New priority for the rule to {}. Valid in [0, 65535]. '.format(
-          operation)))
+      help=(
+          'New priority for the rule to {}. Valid in [0, 65535]. '.format(
+              operation
+          )
+      ),
+  )
 
 
 def AddTargetResources(parser, required=False):
@@ -298,7 +356,8 @@ def AddTargetResources(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='TARGET_RESOURCES',
       required=required,
-      help=('List of URLs of target resources to which the rule is applied.'))
+      help='List of URLs of target resources to which the rule is applied.',
+  )
 
 
 def AddTargetServiceAccounts(parser, required=False):
@@ -308,7 +367,8 @@ def AddTargetServiceAccounts(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='TARGET_SERVICE_ACCOUNTS',
       required=required,
-      help=('List of target service accounts for the rule.'))
+      help='List of target service accounts for the rule.',
+  )
 
 
 def AddDescription(parser, required=False):
@@ -316,7 +376,8 @@ def AddDescription(parser, required=False):
   parser.add_argument(
       '--description',
       required=required,
-      help=('An optional, textual description for the rule.'))
+      help='An optional, textual description for the rule.',
+  )
 
 
 def AddArgsCreateAssociation(parser):
@@ -324,15 +385,19 @@ def AddArgsCreateAssociation(parser):
   parser.add_argument(
       '--firewall-policy',
       required=True,
-      help=('Security policy ID of the association.'))
+      help='Security policy ID of the association.',
+  )
   parser.add_argument(
       '--organization',
-      help=('ID of the organization in which the firewall policy is to be'
-            ' associated. Must be set if FIREWALL_POLICY is short name.'))
+      help=(
+          'ID of the organization in which the firewall policy is to be'
+          ' associated. Must be set if FIREWALL_POLICY is short name.'
+      ),
+  )
 
   parser.add_argument(
-      '--folder',
-      help=('ID of the folder with which the association is created.'))
+      '--folder', help='ID of the folder with which the association is created.'
+  )
 
   parser.add_argument(
       '--replace-association-on-target',
@@ -344,13 +409,18 @@ def AddArgsCreateAssociation(parser):
           'organization or folder resource that is already associated with a '
           'firewall policy the method will fail. If this is set, the existing '
           ' association will be deleted at the same time that the new '
-          'association is created.'))
+          'association is created.'
+      ),
+  )
 
   parser.add_argument(
       '--name',
-      help=('Name to identify this association. If unspecified, the '
-            'name will be set to "organization-{ORGANIZATION_ID}" '
-            'or "folder-{FOLDER_ID}".'))
+      help=(
+          'Name to identify this association. If unspecified, the '
+          'name will be set to "organization-{ORGANIZATION_ID}" '
+          'or "folder-{FOLDER_ID}".'
+      ),
+  )
 
 
 def AddArgsDeleteAssociation(parser):
@@ -358,12 +428,16 @@ def AddArgsDeleteAssociation(parser):
   parser.add_argument(
       '--firewall-policy',
       required=True,
-      help=('Short name or ID of the firewall policy ID of the association.'))
+      help='Short name or ID of the firewall policy ID of the association.',
+  )
 
   parser.add_argument(
       '--organization',
-      help=('ID of the organization in which the firewall policy is to be'
-            ' detached. Must be set if FIREWALL_POLICY is short name.'))
+      help=(
+          'ID of the organization in which the firewall policy is to be'
+          ' detached. Must be set if FIREWALL_POLICY is short name.'
+      ),
+  )
 
 
 def AddArgsListAssociation(parser):
@@ -372,11 +446,12 @@ def AddArgsListAssociation(parser):
 
   group.add_argument(
       '--organization',
-      help=('ID of the organization with which the association is listed.'))
+      help='ID of the organization with which the association is listed.',
+  )
 
   group.add_argument(
-      '--folder',
-      help=('ID of the folder with which the association is listed.'))
+      '--folder', help='ID of the folder with which the association is listed.'
+  )
 
 
 def AddSrcAddressGroups(parser):
@@ -386,8 +461,11 @@ def AddSrcAddressGroups(parser):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_ADDRESS_GROUPS',
       required=False,
-      help=('Source address groups to match for this rule. '
-            'Can only be specified if DIRECTION is ingress.'))
+      help=(
+          'Source address groups to match for this rule. '
+          'Can only be specified if DIRECTION is ingress.'
+      ),
+  )
 
 
 def AddDestAddressGroups(parser):
@@ -414,7 +492,8 @@ def AddSrcFqdns(parser):
       help=(
           'Source FQDNs to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
-      ))
+      ),
+  )
 
 
 def AddDestFqdns(parser):
@@ -441,7 +520,8 @@ def AddSrcRegionCodes(parser):
       help=(
           'Source Region Code to match for this rule. '
           'Can only be specified if DIRECTION is `ingress`.'
-      ))
+      ),
+  )
 
 
 def AddDestRegionCodes(parser):
@@ -521,5 +601,49 @@ def AddTlsInspect(parser):
           'Use this flag to indicate whether TLS traffic should be inspected '
           'using the TLS inspection policy when the security profile group '
           'is applied. Default: no TLS inspection.'
+      ),
+  )
+
+
+def AddSrcNetworkScope(parser, required=False):
+  """Adds source network scope to this rule."""
+  parser.add_argument(
+      '--src-network-scope',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet,'
+          ' non-internet traffic or traffic coming from the network specified'
+          ' by --src-network. It applies to ingress rules. Valid values are'
+          ' INTERNET, NON_INTERNET and VPC_NETWORKS. Use empty string to clear'
+          ' the field.'
+      ),
+  )
+
+
+def AddSrcNetworks(parser):
+  """Adds source network urls list to this rule."""
+  parser.add_argument(
+      '--src-networks',
+      type=arg_parsers.ArgList(),
+      metavar='SRC_NETWORKS',
+      required=False,
+      help=(
+          'The source VPC networks to  match for this rule.  It can only be'
+          ' specified when --src-network-scope is VPC_NETWORKS. It applies to '
+          ' ingress rules .It accepts full or partial URLs.'
+      ),
+  )
+
+
+def AddDestNetworkScope(parser, required=False):
+  """Adds destination network scope to this rule."""
+  parser.add_argument(
+      '--dest-network-scope',
+      required=required,
+      help=(
+          'Use this flag to indicate that the rule should match internet or'
+          ' non-internet traffic. It applies to destination traffic for egress'
+          ' rules. Valid values are INTERNET and NON_INTERNET. Use empty string'
+          ' to clear the field.'
       ),
   )

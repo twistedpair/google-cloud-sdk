@@ -359,10 +359,10 @@ def _SetRestrictRollout(
     arg_parsers.ArgumentTypeError: if usage is not a valid enum.
   """
   for field in restrict_rollout:
-    # The value of actions and invoker are enums, so they need special
+    # The value of actions and invokers are enums, so they need special
     # treatment. timeWindow also needs special treatment because it has an
     # enum within it.
-    if field != 'actions' and field != 'invoker' and field != 'timeWindow':
+    if field != 'actions' and field != 'invokers' and field != 'timeWindow':
       # If the field doesn't need special treatment (e.g. timeZone) set it
       # on the restrictRollout message.
       setattr(restrict_rollout_message, field, restrict_rollout.get(field))
@@ -378,13 +378,13 @@ def _SetRestrictRollout(
         )
     )
 
-  invokers = restrict_rollout.get('invoker', [])
+  invokers = restrict_rollout.get('invokers', [])
   for invoker in invokers:
-    restrict_rollout_message.invoker.append(
-        # converts a string literal in restrictRollout.invoker to an Enum.
+    restrict_rollout_message.invokers.append(
+        # converts a string literal in restrictRollout.invokers to an Enum.
         arg_utils.ChoiceToEnum(
             invoker,
-            messages.RestrictRollout.InvokerValueListEntryValuesEnum,
+            messages.RestrictRollout.InvokersValueListEntryValuesEnum,
             valid_choices=INVOKER_CHOICES,
         )
     )

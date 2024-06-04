@@ -33,9 +33,18 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import times
 
-
-UPDATE_FIELD_MASK = ('description,logging_config,notification_config,schedule,'
-                     'status,transfer_spec')
+UPDATE_FIELD_MASK = [
+    'description',
+    'logging_config',
+    'notification_config',
+    'status',
+]
+UPDATE_FIELD_MASK_WITH_TRANSFER_SPEC = ','.join(
+    UPDATE_FIELD_MASK + ['schedule', 'transfer_spec']
+)
+UPDATE_FIELD_MASK_WITH_REPLICATION_SPEC = ','.join(
+    UPDATE_FIELD_MASK + ['replication_spec']
+)
 
 COMMON_VALID_TRANSFER_SCHEMES = (
     storage_url.ProviderPrefix.POSIX,
@@ -49,23 +58,144 @@ VALID_SOURCE_TRANSFER_SCHEMES = COMMON_VALID_TRANSFER_SCHEMES + (
     storage_url.ProviderPrefix.HDFS,
 )
 VALID_DESTINATION_TRANSFER_SCHEMES = COMMON_VALID_TRANSFER_SCHEMES
+VALID_REPLICATON_SCHEMES = [storage_url.ProviderPrefix.GCS]
 
 
-def _prompt_and_add_valid_scheme(url, valid_schemes):
+def _prompt_user_and_add_valid_scheme(url, valid_schemes):
   """Has user select a valid scheme from a list and returns new URL."""
-  if not console_io.CanPrompt():
-    raise errors.InvalidUrlError('Did you mean "posix://{}"'.format(
-        url.object_name))
-  scheme_index = console_io.PromptChoice(
-      [scheme.value + '://' for scheme in valid_schemes],
-      cancel_option=True,
-      message=('Storage Transfer does not support direct file URLs: {}\n'
-               'Did you mean to use "posix://"?\n'
-               'Run this command with "--help" for more info,\n'
-               'or select a valid scheme below.').format(url))
+  # Prompt user if the provided URL lacks a scheme.
+  if url.scheme is storage_url.ProviderPrefix.FILE:
+    if not console_io.CanPrompt():
+      raise errors.InvalidUrlError(
+          'Did you mean "posix://{}"'.format(url.object_name)
+      )
+    scheme_index = console_io.PromptChoice(
+        [scheme.value + '://' for scheme in valid_schemes],
+        cancel_option=True,
+        message=(
+            'Storage Transfer does not support direct file URLs: {}\n'
+            'Did you mean to use "posix://"?\n'
+            'Run this command with "--help" for more info,\n'
+            'or select a valid scheme below.'
+        ).format(url),
+    )
 
-  new_scheme = valid_schemes[scheme_index]
-  return storage_url.switch_scheme(url, new_scheme)
+    new_scheme = valid_schemes[scheme_index]
+    return storage_url.switch_scheme(url, new_scheme)
+  return url
+
+
+def add_source_url(specs, args, messages, source_url):
+  """Adds source url to transfer or replication spec.
+
+  Args:
+    specs:
+      a submessage, must be one of [job.transferSpec, job.replicationSpec].
+    args: argparse.namespace, the parsed arguments from the command line.
+    messages: storagetransfer_v1_message instance.
+    source_url:
+      An instance of the storage_url variable specifying the source
+      location for the data transfer.
+  """
+  if source_url.scheme is storage_url.ProviderPrefix.HDFS:
+    specs.hdfsDataSource = messages.HdfsData(
+        path=source_url.object_name)
+  elif source_url.scheme is storage_url.ProviderPrefix.POSIX:
+    specs.posixDataSource = messages.PosixFilesystem(
+        rootDirectory=source_url.object_name)
+  elif source_url.scheme is storage_url.ProviderPrefix.GCS:
+    specs.gcsDataSource = messages.GcsData(
+        bucketName=source_url.bucket_name,
+        path=source_url.object_name,
+    )
+  elif source_url.scheme is storage_url.ProviderPrefix.S3:
+    if args.source_endpoint:
+      specs.awsS3CompatibleDataSource = (
+          messages.AwsS3CompatibleData(
+              bucketName=source_url.bucket_name,
+              endpoint=args.source_endpoint,
+              path=source_url.object_name,
+              region=args.source_signing_region,
+              s3Metadata=_get_s3_compatible_metadata(args, messages)))
+    else:
+      specs.awsS3DataSource = messages.AwsS3Data(
+          bucketName=source_url.bucket_name,
+          path=source_url.object_name,
+      )
+  elif isinstance(source_url, storage_url.AzureUrl):
+    specs.azureBlobStorageDataSource = (
+        messages.AzureBlobStorageData(
+            container=source_url.bucket_name,
+            path=source_url.object_name,
+            storageAccount=source_url.account,
+        ))
+
+
+def add_destination_url(specs, messages, destination_url):
+  """Adds destination url to transfer or replication spec.
+
+  Args:
+    specs:
+      a submessage, must be one of [job.transferSpec, job.replicationSpec]
+    messages: storagetransfer_v1_message instance.
+    destination_url:
+      An instance of the storage_url variable specifying the destination
+      location for the data transfer.
+  """
+  if destination_url.scheme is storage_url.ProviderPrefix.GCS:
+    specs.gcsDataSink = messages.GcsData(
+        bucketName=destination_url.bucket_name,
+        path=destination_url.object_name,
+    )
+  elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
+    specs.posixDataSink = messages.PosixFilesystem(
+        rootDirectory=destination_url.object_name)
+
+
+def validate_and_add_source_url(
+    specs, args, messages, source_url, valid_schemes
+):
+  """It validates the source url and adds it to transfer or replication spec.
+
+  If no URL scheme is provided, prompt the user to add a valid one
+  (e.g., 'gs://').
+
+  Args:
+    specs:
+      a submessage, must be one of [job.transferSpec, job.replicationSpec].
+    args: argparse.namespace, the parsed arguments from the command line.
+    messages: storagetransfer_v1_message instance.
+    source_url:
+      An instance of the storage_url variable specifying the source
+      location for the data transfer.
+    valid_schemes: the schemes supported by the specs.
+  """
+  # Prompt user if the provided URL lacks a scheme.
+  source_url = _prompt_user_and_add_valid_scheme(source_url, valid_schemes)
+  add_source_url(specs, args, messages, source_url)
+
+
+def validate_and_add_destination_url(
+    specs, messages, destination_url, valid_schemes
+):
+  """Adds destination url to transfer or replication spec.
+
+  If no URL scheme is provided, prompt the user to add a valid one
+  (e.g., 'gs://').
+  Args:
+    specs:
+      a submessage, must be one of [job.transferSpec, job.replicationSpec]
+    messages: storagetransfer_v1_message instance.
+    destination_url:
+      An instance of the storage_url variable specifying the destination
+      location for the data transfer.
+    valid_schemes: the schemes supported by the specs.
+  """
+  # Prompt user if the provided URL lacks a scheme.
+  destination_url = _prompt_user_and_add_valid_scheme(
+      destination_url, valid_schemes
+  )
+  add_destination_url(specs, messages, destination_url)
 
 
 def _create_or_modify_transfer_options(transfer_spec, args, messages):
@@ -246,42 +376,13 @@ def _create_or_modify_transfer_spec(job, args, messages):
       else:
         raise
     else:
-      if source_url.scheme is storage_url.ProviderPrefix.FILE:
-        source_url = _prompt_and_add_valid_scheme(
-            source_url, VALID_SOURCE_TRANSFER_SCHEMES
-        )
-      if source_url.scheme is storage_url.ProviderPrefix.HDFS:
-        job.transferSpec.hdfsDataSource = messages.HdfsData(
-            path=source_url.object_name)
-      if source_url.scheme is storage_url.ProviderPrefix.POSIX:
-        job.transferSpec.posixDataSource = messages.PosixFilesystem(
-            rootDirectory=source_url.object_name)
-      elif source_url.scheme is storage_url.ProviderPrefix.GCS:
-        job.transferSpec.gcsDataSource = messages.GcsData(
-            bucketName=source_url.bucket_name,
-            path=source_url.object_name,
-        )
-      elif source_url.scheme is storage_url.ProviderPrefix.S3:
-        if args.source_endpoint:
-          job.transferSpec.awsS3CompatibleDataSource = (
-              messages.AwsS3CompatibleData(
-                  bucketName=source_url.bucket_name,
-                  endpoint=args.source_endpoint,
-                  path=source_url.object_name,
-                  region=args.source_signing_region,
-                  s3Metadata=_get_s3_compatible_metadata(args, messages)))
-        else:
-          job.transferSpec.awsS3DataSource = messages.AwsS3Data(
-              bucketName=source_url.bucket_name,
-              path=source_url.object_name,
-          )
-      elif isinstance(source_url, storage_url.AzureUrl):
-        job.transferSpec.azureBlobStorageDataSource = (
-            messages.AzureBlobStorageData(
-                container=source_url.bucket_name,
-                path=source_url.object_name,
-                storageAccount=source_url.account,
-            ))
+      validate_and_add_source_url(
+          job.transferSpec,
+          args,
+          messages,
+          source_url,
+          VALID_SOURCE_TRANSFER_SCHEMES,
+      )
 
   if getattr(args, 'destination', None):
     # Clear any existing destination to make space for new one.
@@ -289,19 +390,12 @@ def _create_or_modify_transfer_spec(job, args, messages):
     job.transferSpec.gcsDataSink = None
 
     destination_url = storage_url.storage_url_from_string(args.destination)
-    if destination_url.scheme is storage_url.ProviderPrefix.FILE:
-      destination_url = _prompt_and_add_valid_scheme(
-          destination_url, VALID_DESTINATION_TRANSFER_SCHEMES
-      )
-
-    if destination_url.scheme is storage_url.ProviderPrefix.GCS:
-      job.transferSpec.gcsDataSink = messages.GcsData(
-          bucketName=destination_url.bucket_name,
-          path=destination_url.object_name,
-      )
-    elif destination_url.scheme is storage_url.ProviderPrefix.POSIX:
-      job.transferSpec.posixDataSink = messages.PosixFilesystem(
-          rootDirectory=destination_url.object_name)
+    validate_and_add_destination_url(
+        job.transferSpec,
+        messages,
+        destination_url,
+        VALID_DESTINATION_TRANSFER_SCHEMES,
+    )
 
   if getattr(args, 'destination_agent_pool', None):
     job.transferSpec.sinkAgentPoolName = name_util.add_agent_pool_prefix(
@@ -341,26 +435,32 @@ def _create_or_modify_event_stream_configuration(job, args, messages):
   return True
 
 
-def _create_or_modify_schedule(job, args, messages, is_update,
-                               has_event_stream_flag):
+def _create_or_modify_schedule(
+    job, args, messages, is_update, is_event_driven_transfer=False
+):
   """Creates or modifies transfer Schedule object based on args."""
   schedule_starts = getattr(args, 'schedule_starts', None)
   schedule_repeats_every = getattr(args, 'schedule_repeats_every', None)
   schedule_repeats_until = getattr(args, 'schedule_repeats_until', None)
   has_schedule_flag = (
-      schedule_starts or schedule_repeats_every or schedule_repeats_until)
+      schedule_starts or schedule_repeats_every or schedule_repeats_until
+  )
 
   if has_schedule_flag:
     if not is_update and args.do_not_run:
       raise ValueError('Cannot set schedule and do-not-run flag.')
-    if has_event_stream_flag:
-      raise ValueError('Cannot set schedule and event stream.')
+  if is_event_driven_transfer and (
+      has_schedule_flag or getattr(args, 'do_not_run', False)
+  ):
+    raise ValueError('Cannot set schedule on event-driven transfer.')
 
-  if (not is_update and
-      args.do_not_run) or has_event_stream_flag or (is_update and
-                                                    not has_schedule_flag):
+  if (
+      (not is_update and args.do_not_run)
+      or is_event_driven_transfer
+      or (is_update and not has_schedule_flag)
+  ):
     # (1) Cannot have schedule for non-running job.
-    # (2) Cannot have schedule and event stream.
+    # (2) Cannot have schedule on event-driven transfer.
     # (3) Nothing needs updating.
     return
   if not job.schedule:
@@ -472,7 +572,9 @@ def _enable_onprem_gcs_transfer_logs(job, args, is_update):
   """Sets enableOnpremGcsTransferLogs boolean."""
   enable_posix_transfer_logs = getattr(args, 'enable_posix_transfer_logs', None)
   # GCS transfer logs only supported for POSIX.
-  if not (job.transferSpec.posixDataSource or job.transferSpec.posixDataSink):
+  if job.replicationSpec or not (
+      job.transferSpec.posixDataSource or job.transferSpec.posixDataSink
+  ):
     job.loggingConfig.enableOnpremGcsTransferLogs = False
   # Caller has specifically enabled or disabled logs.
   elif enable_posix_transfer_logs is not None:
@@ -546,6 +648,53 @@ def generate_patch_transfer_job_message(messages, job, field_mask):
       ))
 
 
+def _create_or_modify_replication_spec(
+    job, args, messages, has_event_stream_flag=False
+):
+  """Adds/Updates the replication spec to transfer job."""
+  if has_event_stream_flag:
+    raise ValueError(
+        'Not allowed to set event stream flags on replication jobs.'
+    )
+  if not job.replicationSpec:
+    job.replicationSpec = messages.ReplicationSpec()
+
+  if getattr(args, 'source', None):
+    # Clear any existing source to make space for new one.
+    job.replicationSpec.gcsDataSource = None
+
+    source_url = storage_url.storage_url_from_string(args.source)
+    if source_url.scheme not in VALID_REPLICATON_SCHEMES:
+      raise errors.Error(
+          'Replication feature is currently available for Google Cloud Storage'
+          ' buckets only.'
+      )
+    validate_and_add_source_url(
+        job.replicationSpec,
+        args,
+        messages,
+        source_url,
+        VALID_REPLICATON_SCHEMES,
+    )
+
+  if getattr(args, 'destination', None):
+    # Clear any existing destination to make space for new one.
+    job.replicationSpec.gcsDataSink = None
+
+    destination_url = storage_url.storage_url_from_string(args.destination)
+    if destination_url.scheme not in VALID_REPLICATON_SCHEMES:
+      raise errors.Error(
+          'Replication feature is currently available for Google Cloud Storage'
+          ' buckets only.'
+      )
+    validate_and_add_destination_url(
+        job.replicationSpec, messages, destination_url, VALID_REPLICATON_SCHEMES
+    )
+
+  _create_or_modify_object_conditions(job.replicationSpec, args, messages)
+  _create_or_modify_transfer_options(job.replicationSpec, args, messages)
+
+
 def generate_transfer_job_message(args, messages, existing_job=None):
   """Generates Apitools transfer message based on command arguments."""
   if existing_job:
@@ -566,26 +715,54 @@ def generate_transfer_job_message(args, messages, existing_job=None):
     # Is job update instead of create.
     if getattr(args, 'status', None):
       status_key = args.status.upper()
-      job.status = getattr(messages.TransferJob.StatusValueValuesEnum,
-                           status_key)
+      job.status = getattr(
+          messages.TransferJob.StatusValueValuesEnum, status_key
+      )
   else:
     job.status = messages.TransferJob.StatusValueValuesEnum.ENABLED
 
-  _create_or_modify_transfer_spec(job, args, messages)
   has_event_stream_flag = _create_or_modify_event_stream_configuration(
-      job, args, messages)
+      job, args, messages
+  )
+
+  is_transfer_job = (
+      (
+          not existing_job and not getattr(args, 'replication', None)
+      )  # In case of create, replication flag shouldn't be there.
+      or job.transferSpec  # In case of update, transferSpec should exists.
+  )
+  if is_transfer_job:
+    _create_or_modify_transfer_spec(job, args, messages)
+  else:
+    _create_or_modify_replication_spec(
+        job, args, messages, has_event_stream_flag=has_event_stream_flag
+    )
+
+  is_event_driven_transfer = job.eventStream or job.replicationSpec
   _create_or_modify_schedule(
       job,
       args,
       messages,
       is_update=bool(existing_job),
-      has_event_stream_flag=has_event_stream_flag)
+      is_event_driven_transfer=is_event_driven_transfer,
+  )
   _create_or_modify_notification_config(
-      job, args, messages, is_update=bool(existing_job))
+      job, args, messages, is_update=bool(existing_job)
+  )
   _create_or_modify_logging_config(
       job, args, messages, is_update=bool(existing_job)
   )
 
   if existing_job:
-    return generate_patch_transfer_job_message(messages, job, UPDATE_FIELD_MASK)
+    update_mask = (
+        UPDATE_FIELD_MASK_WITH_TRANSFER_SPEC
+        if is_transfer_job
+        else UPDATE_FIELD_MASK_WITH_REPLICATION_SPEC
+    )
+    return generate_patch_transfer_job_message(
+        messages,
+        job,
+        update_mask
+    )
+
   return job

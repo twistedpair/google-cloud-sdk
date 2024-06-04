@@ -48,17 +48,22 @@ class CloudBuildRepository(_messages.Message):
   Fields:
     name: Required. Name of the cloud build repository. Format is
       projects/{p}/locations/{l}/connections/{c}/repositories/{r}.
+    path: Optional. path to the directory or file within the repository that
+      contains the KRM configs. If unspecified, path is assumed to the top
+      level root directory of the repo.
     serviceAccount: Required. service_account to use for running cloud build
       triggers.
     tag: Required. tag of the cloud build repository that should be read from.
-    variants: Required. variants is the configuration for how to read the
-      repository to find variants.
+    variantsPattern: Optional. variants_pattern is a glob pattern that will be
+      used to find variants in the repository. Examples: "variants/*.yaml",
+      "us-*"
   """
 
   name = _messages.StringField(1)
-  serviceAccount = _messages.StringField(2)
-  tag = _messages.StringField(3)
-  variants = _messages.MessageField('Variants', 4)
+  path = _messages.StringField(2)
+  serviceAccount = _messages.StringField(3)
+  tag = _messages.StringField(4)
+  variantsPattern = _messages.StringField(5)
 
 
 class ClusterInfo(_messages.Message):
@@ -616,17 +621,6 @@ class ConfigdeliveryProjectsLocationsResourceBundlesReleasesPatchRequest(_messag
   release = _messages.MessageField('Release', 2)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class Directories(_messages.Message):
-  r"""Directories is a set of directories to use to select variants.
-
-  Fields:
-    pattern: Required. pattern is the glob pattern to use to select
-      directories.
-  """
-
-  pattern = _messages.StringField(1)
 
 
 class Empty(_messages.Message):
@@ -1772,18 +1766,6 @@ class VariantSelector(_messages.Message):
   """
 
   variantNameTemplate = _messages.StringField(1)
-
-
-class Variants(_messages.Message):
-  r"""Variants is the configuration for how to read the repository to find
-  variants.
-
-  Fields:
-    directories: Required. directories is the set of directories to use to
-      select variants.
-  """
-
-  directories = _messages.MessageField('Directories', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -45,7 +45,7 @@ KUBERNETES_GPU_LIMITATION_MSG = (
 # TODO(b/335290129): Remove KUBERNETES_GPU_DRIVER_AUTO_INSTALL_MSG from cluster
 # and node pool create when majority of GPU node pools use auto install.
 KUBERNETES_GPU_DRIVER_AUTO_INSTALL_MSG = (
-    "Starting in GKE 1.30, if you don't specify a driver "
+    "Starting in GKE 1.30.1-gke.115600, if you don't specify a driver "
     "version, GKE installs the default GPU driver for your node's GKE version."
 )
 

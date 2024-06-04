@@ -890,6 +890,8 @@ class DiscoverConnectionProfileRequest(_messages.Message):
     oracleRdbms: Oracle RDBMS to enrich with child data objects and metadata.
     postgresqlRdbms: PostgreSQL RDBMS to enrich with child data objects and
       metadata.
+    sqlServerRdbms: SQLServer RDBMS to enrich with child data objects and
+      metadata.
   """
 
   connectionProfile = _messages.MessageField('ConnectionProfile', 1)
@@ -899,6 +901,7 @@ class DiscoverConnectionProfileRequest(_messages.Message):
   mysqlRdbms = _messages.MessageField('MysqlRdbms', 5)
   oracleRdbms = _messages.MessageField('OracleRdbms', 6)
   postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 7)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 8)
 
 
 class DiscoverConnectionProfileResponse(_messages.Message):
@@ -908,11 +911,13 @@ class DiscoverConnectionProfileResponse(_messages.Message):
     mysqlRdbms: Enriched MySQL RDBMS object.
     oracleRdbms: Enriched Oracle RDBMS object.
     postgresqlRdbms: Enriched PostgreSQL RDBMS object.
+    sqlServerRdbms: Enriched SQLServer RDBMS object.
   """
 
   mysqlRdbms = _messages.MessageField('MysqlRdbms', 1)
   oracleRdbms = _messages.MessageField('OracleRdbms', 2)
   postgresqlRdbms = _messages.MessageField('PostgresqlRdbms', 3)
+  sqlServerRdbms = _messages.MessageField('SqlServerRdbms', 4)
 
 
 class DropLargeObjects(_messages.Message):

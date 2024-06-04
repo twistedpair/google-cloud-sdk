@@ -63,8 +63,8 @@ _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
         '23.10',
     },
     'windows': {
-        '10',
         '6',
+        '10',
     },
 }
 
@@ -314,22 +314,9 @@ def _ValidateInventories(
 
 
 def IsCloudOpsAgentsPolicy(policy: osconfig.OSPolicyAssignment) -> bool:
-  """Returns whether the policy was created with the Ops Agent command.
+  """Returns if the policy was created with the Ops Agent command.
   """
-  instance_filter = policy.instanceFilter
-  if len(policy.osPolicies) > 1:
-    return False
-
-  agents_rule = util.GetAgentsRuleFromDescription(
-      policy.osPolicies[0].description
+  return (
+      len(policy.osPolicies) == 1
+      and util.GetAgentsRuleFromDescription(policy.osPolicies[0].description)
   )
-  if agents_rule is None:
-    return False
-
-  try:
-    ValidateOpsAgentsPolicy(
-        agents_policy.OpsAgentsPolicy(agents_rule, instance_filter)
-    )
-  except exceptions.PolicyValidationError:
-    return False
-  return True

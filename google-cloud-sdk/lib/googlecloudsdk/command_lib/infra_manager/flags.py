@@ -127,7 +127,7 @@ Create a deployment from the "https://github.com/examples/repository.git" repo, 
 """
 
   local_source_help = """\
-Local storage path where config files are stored. When using this option, terraform config file referecnes outside this storage path is not supported.
+Local storage path where config files are stored. When using this option, Terraform config file references outside this storage path is not supported.
       e.g. `./path/to/blueprint`
 
 Examples:

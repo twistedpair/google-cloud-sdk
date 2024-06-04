@@ -81,12 +81,11 @@ def GetOpsAgentsPolicyFromApi(
     get_response = service.Get(get_request)
   except apitools_exceptions.HttpNotFoundError:
     raise exceptions.PolicyNotFoundError(policy_id=policy_id)
-
+  if not cloud_ops_agents_policy_validator.IsCloudOpsAgentsPolicy(get_response):
+    raise exceptions.PolicyMalformedError(policy_id=policy_id)
   ops_agents_policy = (
-      to_ops_agents_policy.ConvertOsPolicyAssignmentToCloudOpsAgentPolicy(
+      to_ops_agents_policy.ConvertOsPolicyAssignmentToCloudOpsAgentsPolicy(
           get_response
       )
   )
-  cloud_ops_agents_policy_validator.ValidateOpsAgentsPolicy(ops_agents_policy)
-
   return ops_agents_policy

@@ -307,10 +307,10 @@ def AddEnforcedRetention(parser, required):
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    required: Whether or not --enforced-retention is required.
+    required: Whether or not --backup-min-enforced-retention is required.
   """
   parser.add_argument(
-      '--enforced-retention',
+      '--backup-min-enforced-retention',
       required=required,
       type=arg_parsers.Duration(
           lower_bound='1d', upper_bound='36159d', parsed_unit='s'
