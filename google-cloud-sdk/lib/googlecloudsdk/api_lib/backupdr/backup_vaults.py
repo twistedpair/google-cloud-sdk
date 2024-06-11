@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.backupdr import util
 from googlecloudsdk.command_lib.backupdr import util as command_util
 
@@ -67,6 +68,20 @@ class BackupVaultsClient(util.BackupDrClientBase):
 
     return self.service.Delete(request)
 
+  def List(self, parent_ref, page_size=100, limit=None):
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsListRequest(
+        parent=parent_ref.RelativeName()
+    )
+
+    return list_pager.YieldFromList(
+        self.service,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        limit=limit,
+        field='backupVaults',
+    )
+
   def ParseUpdate(
       self, description, effective_time, backup_min_enforced_retention
   ):
@@ -75,7 +90,7 @@ class BackupVaultsClient(util.BackupDrClientBase):
       updated_bv.description = description
     if effective_time is not None:
       updated_bv.effectiveTime = effective_time
-    if backup_min_enforced_retention != "Nones":
+    if backup_min_enforced_retention != 'Nones':
       updated_bv.backupMinimumEnforcedRetentionDuration = (
           backup_min_enforced_retention
       )
@@ -90,3 +105,10 @@ class BackupVaultsClient(util.BackupDrClientBase):
         requestId=request_id,
     )
     return self.service.Patch(request)
+
+  def Describe(self, resource):
+    request = self.messages.BackupdrProjectsLocationsBackupVaultsGetRequest(
+        name=resource.RelativeName(),
+    )
+
+    return self.service.Get(request)

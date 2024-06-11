@@ -81,6 +81,12 @@ class StreamObjectsClient:
     elif args.postgresql_schema:
       object_identifier.postgresqlIdentifier = self._messages.PostgresqlObjectIdentifier(
           schema=args.postgresql_schema, table=args.postgresql_table)
+    elif args.sqlserver_schema:
+      object_identifier.sqlServerIdentifier = (
+          self._messages.SqlServerObjectIdentifier(
+              schema=args.sqlserver_schema, table=args.sqlserver_table
+          )
+      )
 
     stream_ref = self._resource_parser.Create(
         'datastream.projects.locations.streams',

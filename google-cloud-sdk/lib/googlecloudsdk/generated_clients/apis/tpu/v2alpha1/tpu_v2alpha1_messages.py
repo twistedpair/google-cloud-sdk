@@ -764,6 +764,8 @@ class Node(_messages.Message):
       group.
     name: Output only. Immutable. The name of the TPU.
     networkConfig: Network configurations for the TPU node.
+    networkConfigs: Optional. Repeated network configurations for the TPU
+      node.
     networkEndpoints: Output only. The network endpoints where TPU workers can
       be accessed and sent work. It is recommended that runtime clients of the
       node reach out to the 0th entry in this map first.
@@ -918,15 +920,16 @@ class Node(_messages.Message):
   multisliceNode = _messages.BooleanField(15)
   name = _messages.StringField(16)
   networkConfig = _messages.MessageField('NetworkConfig', 17)
-  networkEndpoints = _messages.MessageField('NetworkEndpoint', 18, repeated=True)
-  queuedResource = _messages.StringField(19)
-  runtimeVersion = _messages.StringField(20)
-  schedulingConfig = _messages.MessageField('SchedulingConfig', 21)
-  serviceAccount = _messages.MessageField('ServiceAccount', 22)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  symptoms = _messages.MessageField('Symptom', 25, repeated=True)
-  tags = _messages.StringField(26, repeated=True)
+  networkConfigs = _messages.MessageField('NetworkConfig', 18, repeated=True)
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 19, repeated=True)
+  queuedResource = _messages.StringField(20)
+  runtimeVersion = _messages.StringField(21)
+  schedulingConfig = _messages.MessageField('SchedulingConfig', 22)
+  serviceAccount = _messages.MessageField('ServiceAccount', 23)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  symptoms = _messages.MessageField('Symptom', 26, repeated=True)
+  tags = _messages.StringField(27, repeated=True)
 
 
 class NodeSpec(_messages.Message):

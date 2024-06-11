@@ -16,8 +16,12 @@
 
 import abc
 import ctypes
+import io
 import os
 import re
+from typing import Tuple
+from googlecloudsdk.command_lib.storage.diagnose import diagnostic
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import files
 
 
@@ -42,7 +46,7 @@ class SystemInfoProvider(abc.ABC):
     pass
 
   @abc.abstractmethod
-  def get_memory_stats(self) -> (int, int):
+  def get_memory_stats(self) -> Tuple[int, int]:
     """Fetches the physical memory stats for the system in bytes.
 
     Returns:
@@ -59,7 +63,7 @@ class UnixSystemInfoProvider(SystemInfoProvider):
     """Returns the average CPU load during last 1-minute."""
     return os.getloadavg()[0]
 
-  def get_memory_stats(self) -> (int, int):
+  def get_memory_stats(self) -> Tuple[int, int]:
     """Fetches the physical memory stats for the system in bytes.
 
     Returns:
@@ -127,7 +131,7 @@ class WindowsSystemInfoProvider(SystemInfoProvider):
     """Returns the average CPU load during last 1-minute."""
     pass
 
-  def get_memory_stats(self) -> (int, int):
+  def get_memory_stats(self) -> Tuple[int, int]:
     """Fetches the physical memory stats for the system.
 
     Returns:
@@ -138,3 +142,65 @@ class WindowsSystemInfoProvider(SystemInfoProvider):
     meminfo = MemoryStatusEX()
     self.kernel32.GlobalMemoryStatusEx(ctypes.byref(meminfo))
     return (meminfo.ullTotalPhys, meminfo.ullAvailPhys)
+
+
+class OsxSystemInfoProvider(SystemInfoProvider):
+  """System info provider for OSX based systems."""
+
+  def get_cpu_load_avg(self) -> float:
+    """Returns the average CPU load during last 1-minute."""
+    return os.getloadavg()[0]
+
+  def _get_total_memory(self) -> int:
+    """Fetches the total memory in the system in bytes."""
+    out = io.StringIO()
+    err = io.StringIO()
+
+    return_code = execution_utils.Exec(
+        execution_utils.ArgsForExecutableTool('sysctl', '-n', 'hw.memsize'),
+        out_func=out.write,
+        err_func=err.write,
+        no_exit=True,
+    )
+
+    if return_code != 0:
+      raise diagnostic.DiagnosticIgnorableError(
+          'Failed to fetch memory stats. {}'.format(err.getvalue())
+      )
+
+    return int(out.getvalue())
+
+  def _get_free_memory(self) -> int:
+    """Fetches the free memory in the system in bytes."""
+    page_size = 4096
+    out = io.StringIO()
+    err = io.StringIO()
+
+    return_code = execution_utils.Exec(
+        execution_utils.ArgsForExecutableTool('vm_stat'),
+        out_func=out.write,
+        err_func=err.write,
+        no_exit=True,
+    )
+    if return_code != 0:
+      raise diagnostic.DiagnosticIgnorableError(
+          'Failed to fetch memory stats. {}'.format(err.getvalue())
+      )
+
+    # Fetch only the number of free pages
+    # https://www.unix.com/man-page/osx/1/vm_stat/.
+    memory_pages_free_regex = re.compile(r'^Pages free:\s*(\d*).')
+
+    for lines in out.getvalue().split('\n'):
+      if m := memory_pages_free_regex.match(lines):
+        return int(m.group(1)) * page_size
+    return None
+
+  def get_memory_stats(self) -> Tuple[int, int]:
+    """Fetches the physical memory stats for the system in bytes.
+
+    Returns:
+      A tuple containing total memory and free memory in the system
+      respectively.
+    """
+    return (self._get_total_memory(), self._get_free_memory())

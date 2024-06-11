@@ -179,6 +179,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS_FEATUREVIEWSYNCS = (
+      'projects.locations.featureOnlineStores.featureViews.featureViewSyncs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}/featureViewSyncs/{featureViewSyncsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATURESTORES = (
       'projects.locations.featurestores',
       '{+name}',
@@ -543,6 +555,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'trainingPipelines/{trainingPipelinesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_TUNINGJOBS = (
+      'projects.locations.tuningJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/tuningJobs/'
+              '{tuningJobsId}',
       },
       ['name'],
       True

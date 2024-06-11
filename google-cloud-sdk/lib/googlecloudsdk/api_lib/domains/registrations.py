@@ -228,6 +228,15 @@ class RegistrationsClient(object):
         name=registration_ref.RelativeName())
     return self._service.Export(req)
 
+  def Renew(self, registration_ref, yearly_price, validate_only=False):
+    req = self.messages.DomainsProjectsLocationsRegistrationsRenewDomainRequest(
+        registration=registration_ref.RelativeName(),
+        renewDomainRequest=self.messages.RenewDomainRequest(
+            yearlyPrice=yearly_price,
+            validateOnly=validate_only),
+    )
+    return self._service.RenewDomain(req)
+
   def Delete(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsDeleteRequest(
         name=registration_ref.RelativeName())
@@ -249,6 +258,14 @@ class RegistrationsClient(object):
     req = self.messages.DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest(
         registration=registration_ref.RelativeName())
     return self._service.ResetAuthorizationCode(req)
+
+  def InitiatePushTransfer(self, registration_ref, tag):
+    req = self.messages.DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest(
+        registration=registration_ref.RelativeName(),
+        initiatePushTransferRequest=self.messages.InitiatePushTransferRequest(
+            tag=tag),
+    )
+    return self._service.InitiatePushTransfer(req)
 
   def RetrieveImportableDomains(self,
                                 parent_ref,

@@ -27,12 +27,6 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 
-def LocationAttributeConfig(arg_name='location'):
-  return concepts.ResourceParameterAttributeConfig(
-      name=arg_name, help_text='The location of the {resource}.'
-  )
-
-
 def BackupVaultAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='backup-vault', help_text='The ID of the Backup Vault.'
@@ -223,6 +217,17 @@ def AddNetwork(parser, required=True):
   )
 
 
+def AddBackupVaultResourceArg(parser, help_text):
+  """Adds an argument for backup vault to parser."""
+  name = 'backup_vault'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetBackupVaultResourceSpec(),
+      help_text,
+      required=True,
+  ).AddToParser(parser)
+
+
 def GetBackupVaultResourceSpec():
   return concepts.ResourceSpec(
       'backupdr.projects.locations.backupVaults',
@@ -233,14 +238,46 @@ def GetBackupVaultResourceSpec():
   )
 
 
-def AddBackupVaultResourceArg(parser, help_text):
-  """Adds an argument for backup vault to parser."""
-  name = 'backup_vault'
+def LocationAttributeConfig(arg_name='location', default=None):
+  """Creates location attribute config."""
+  fallthroughs = []
+  if default:
+    fallthroughs.append(
+        deps.Fallthrough(
+            lambda: default,
+            'Defaults to all locations',
+        )
+    )
+
+  return concepts.ResourceParameterAttributeConfig(
+      name=arg_name,
+      fallthroughs=fallthroughs,
+      help_text='The location of the {resource}.',
+  )
+
+
+def GetLocationResourceSpec(resource_name='location', default=None):
+  return concepts.ResourceSpec(
+      'backupdr.projects.locations',
+      resource_name=resource_name,
+      locationsId=LocationAttributeConfig(default=default),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
+def AddLocationResourceArg(parser, help_text, default=None, required=True):
+  """Adds an argument for location to parser."""
+  name = '--location'
+  override = None
+  if default == 'global':
+    override = {'location': ''}
+
   concept_parsers.ConceptParser.ForResource(
       name,
-      GetBackupVaultResourceSpec(),
+      GetLocationResourceSpec(default=default),
       help_text,
-      required=True,
+      flag_name_overrides=override,
+      required=required,
   ).AddToParser(parser)
 
 
@@ -313,7 +350,7 @@ def AddEnforcedRetention(parser, required):
       '--backup-min-enforced-retention',
       required=required,
       type=arg_parsers.Duration(
-          lower_bound='1d', upper_bound='36159d', parsed_unit='s'
+          lower_bound='0', upper_bound='36159d', parsed_unit='s'
       ),
       help=(
           'Backups will be kept for this minimum period before they can be'
@@ -321,6 +358,13 @@ def AddEnforcedRetention(parser, required):
           ' period cannot be decreased or removed. '
       ),
   )
+
+
+def AddOutputFormat(parser, output_format):
+  parser.display_info.AddFormat(output_format)
+  parser.display_info.AddTransforms({
+      'backupMinimumEnforcedRetentionDuration': util.TransformEnforcedRetention,
+  })
 
 
 def AddDescription(parser):

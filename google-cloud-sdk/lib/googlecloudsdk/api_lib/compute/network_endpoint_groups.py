@@ -66,7 +66,6 @@ class NetworkEndpointGroupsClient(object):
       serverless_deployment_version=None,
       serverless_deployment_url_mask=None,
       psc_target_service=None,
-      client_port_mapping_mode=None,
   ):
     """Creates a network endpoint group."""
     is_zonal = hasattr(neg_ref, 'zone')
@@ -77,7 +76,7 @@ class NetworkEndpointGroupsClient(object):
     # the network parameter to Arcus
     is_internet_neg = self._IsInternetNeg(network_endpoint_type)
     is_port_mapping_neg = is_regional and self._IsPortMappingNeg(
-        network_endpoint_type, client_port_mapping_mode
+        network_endpoint_type
     )
     if network and (
         is_zonal or psc_target_service or is_internet_neg or is_port_mapping_neg
@@ -192,25 +191,6 @@ class NetworkEndpointGroupsClient(object):
               subnetwork=subnet_uri,
               pscTargetService=psc_target_service,
           )
-      elif client_port_mapping_mode:
-        client_port_mapping_mode_enum = (
-            self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
-        )
-        network_endpoint_group = self.messages.NetworkEndpointGroup(
-            name=neg_ref.Name(),
-            networkEndpointType=arg_utils.ChoiceToEnum(
-                network_endpoint_type, endpoint_type_enum
-            ),
-            defaultPort=default_port,
-            network=network_uri,
-            subnetwork=subnet_uri,
-            cloudRun=cloud_run,
-            appEngine=app_engine,
-            cloudFunction=cloud_function,
-            clientPortMappingMode=arg_utils.ChoiceToEnum(
-                client_port_mapping_mode, client_port_mapping_mode_enum
-            ),
-        )
       elif is_port_mapping_neg:
         network_endpoint_group = self.messages.NetworkEndpointGroup(
             name=neg_ref.Name(),
@@ -399,8 +379,6 @@ class NetworkEndpointGroupsClient(object):
         message_endpoint.port = arg_endpoint.get('port')
       if 'fqdn' in arg_endpoint:
         message_endpoint.fqdn = arg_endpoint.get('fqdn')
-      if 'client-port' in arg_endpoint:
-        message_endpoint.clientPort = arg_endpoint.get('client-port')
       if 'client-destination-port' in arg_endpoint:
         message_endpoint.clientDestinationPort = arg_endpoint.get(
             'client-destination-port'
@@ -510,7 +488,6 @@ class NetworkEndpointGroupsClient(object):
   def _IsPortMappingNeg(
       self,
       network_endpoint_type,
-      client_port_mapping_mode,
   ):
     """Checks if the NEG in the request is a Port Mapping NEG."""
     endpoint_type_enum = (
@@ -525,19 +502,3 @@ class NetworkEndpointGroupsClient(object):
         and endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORTMAP
     ):
       return True
-
-    if not client_port_mapping_mode:
-      return False
-
-    client_port_mapping_mode_enum = (
-        self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
-    )
-    client_port_mapping_mode_enum_value = arg_utils.ChoiceToEnum(
-        client_port_mapping_mode, client_port_mapping_mode_enum
-    )
-
-    return (
-        endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORT
-        and client_port_mapping_mode_enum_value
-        == client_port_mapping_mode_enum.CLIENT_PORT_PER_ENDPOINT
-    )

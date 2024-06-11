@@ -161,6 +161,13 @@ def ParsePostgresqlRdbmsFile(messages, postgresql_rdbms_file):
   )
 
 
+def ParseSqlServerRdbmsFile(messages, sqlserver_rdbms_file):
+  """Parses a sqlserver_rdbms_file into the SqlServerRdbms message."""
+  return ParseMessageAndValidateSchema(
+      sqlserver_rdbms_file, 'SqlServerRdbms', messages.SqlServerRdbms
+  )
+
+
 def CreateMessageWithCamelCaseConversion(
     message_type, parsed_yaml, schema_path=None
 ):

@@ -774,26 +774,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.certificatemanager.v1alpha1',
-                    client_classpath='certificatemanager_v1alpha1_client.CertificatemanagerV1alpha1',
-                    base_url='https://certificatemanager.googleapis.com/',
-                    messages_modulepath='certificatemanager_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha2':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.certificatemanager.v1alpha2',
-                    client_classpath='certificatemanager_v1alpha2_client.CertificatemanagerV1alpha2',
-                    base_url='https://certificatemanager.googleapis.com/',
-                    messages_modulepath='certificatemanager_v1alpha2_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
     },
     'cloudasset': {
         'v1':
@@ -1360,6 +1340,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'connectgateway': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.connectgateway.v1',
+                    client_classpath='connectgateway_v1_client.ConnectgatewayV1',
+                    base_url='https://connectgateway.googleapis.com/',
+                    messages_modulepath='connectgateway_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1367,7 +1357,17 @@ MAP = {
                     client_classpath='connectgateway_v1alpha1_client.ConnectgatewayV1alpha1',
                     base_url='https://connectgateway.googleapis.com/',
                     messages_modulepath='connectgateway_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.connectgateway.v1beta1',
+                    client_classpath='connectgateway_v1beta1_client.ConnectgatewayV1beta1',
+                    base_url='https://connectgateway.googleapis.com/',
+                    messages_modulepath='connectgateway_v1beta1_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

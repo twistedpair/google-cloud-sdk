@@ -5203,11 +5203,15 @@ class ReleaseChannel(_messages.Message):
         want to take advantage of new features.
       STABLE: Clusters subscribed to STABLE receive versions that are known to
         be stable and reliable in production.
+      EXTENDED: Clusters subscribed to EXTENDED receive extended support and
+        availability for versions which are known to be stable and reliable in
+        production.
     """
     UNSPECIFIED = 0
     RAPID = 1
     REGULAR = 2
     STABLE = 3
+    EXTENDED = 4
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
 
@@ -5239,11 +5243,15 @@ class ReleaseChannelConfig(_messages.Message):
         want to take advantage of new features.
       STABLE: Clusters subscribed to STABLE receive versions that are known to
         be stable and reliable in production.
+      EXTENDED: Clusters subscribed to EXTENDED receive extended support and
+        availability for versions which are known to be stable and reliable in
+        production.
     """
     UNSPECIFIED = 0
     RAPID = 1
     REGULAR = 2
     STABLE = 3
+    EXTENDED = 4
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
   defaultVersion = _messages.StringField(2)

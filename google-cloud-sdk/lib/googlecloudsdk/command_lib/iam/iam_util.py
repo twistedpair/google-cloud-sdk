@@ -59,7 +59,9 @@ SERVICE_ACCOUNT_KEY_FORMAT = """
         name.scope(keys):label=KEY_ID,
         validAfterTime:label=CREATED_AT,
         validBeforeTime:label=EXPIRES_AT,
-        disabled:label=DISABLED
+        disabled:label=DISABLED,
+        disable_reason:label=DISABLE_REASON,
+        extended_status:label=EXTENDED_STATUS
     )
 """
 CONDITION_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(

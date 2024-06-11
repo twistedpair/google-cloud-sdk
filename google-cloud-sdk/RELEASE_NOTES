@@ -5,6 +5,103 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 480.0.0 (2024-06-11)
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.28 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.28>.
+
+### Artifact Registry
+
+*  `gcloud artifacts docker upgrade migrate` now automatically creates repos for pkg.dev-based migration.
+ *  Added `gcloud artifacts files delete` command.
+
+### Cloud Datastream
+
+*   Added `--type` and `--sqlserver-*` flags to `gcloud datastream
+    connection-profiles create|update` and `gcloud datastream objects lookup`
+    commands to support SQL server source.
+*   Added `--type` and `--sqlserver-*` flags to `gcloud datastream
+    streams create|update` commands to support SQL server source.
+*   Added `--sqlserver-rdbms-file` flag and support for SQL Server profile to
+    `--connection-profile-object-file` to `gcloud datastream connection-profiles
+    discover` commands to support SQL server source.
+
+### Cloud Domains
+
+* Implemented the following commands for `gcloud domains registrations`
+  * `renew-domain`
+  * `initiate-push-transfer`
+
+### Cloud Functions
+
+* Added support for `--execution-id` flag when used together with `--gen2` flag for `gcloud functions logs read`.
+
+### Cloud Healthcare
+
+*   Added `beta` flag `--enable-history-modifications` to the `fhir-stores
+    create` and `fhir-stores update` commands.
+
+### Cloud IAM
+
+*   Updated `iam service-accounts keys list` to return additional
+    properties, namely:
+    * `disable_reason`: The reason the Service Account Key as been disabled (if applicable)
+    * `extended_status`: Additional metadata about the Service Account Key
+
+### Cloud Memorystore
+
+* Added `--zone-distribution-mode` and `--zone` flags to `gcloud redis clusters create` for creating single zone clusters.
+
+### Cloud Pub/Sub
+
+*   Added `--bigquery-service-account-email` and
+    `--cloud-storage-service-account-email` flags to
+    `gcloud pubsub subscriptions create` to set
+    the service account for writing messages to BigQuery and Cloud Storage,
+    respectively.
+*   Added `--bigquery-service-account-email` and
+    `--cloud-storage-service-account-email` flags to
+    `gcloud pubsub subscriptions create` to update
+    the service account for writing messages to BigQuery and Cloud Storage,
+    respectively.
+
+### Cloud Spanner
+
+* Added `--proto-descriptors-file` to `gcloud spanner databases create` command to allow creating database with proto and enum type columns.
+* Added `--proto-descriptors-file` to `gcloud spanner databases ddl update` command to allow updating database with proto and enum type columns.
+* Added `--include-proto-descriptors` to `gcloud spanner databases ddl describe`  command to allow proto descriptors for a database with proto and enum type columns.
+* Promoted `gcloud spanner databases change-quorum` command to GA.
+
+### Cloud Storage
+
+* Adds support of Cross Bucket Replication Feature in `alpha` track of `gcloud transfer` command group.
+
+### Cloud Workstations
+
+* Added `--allowed-ports` flag to `gcloud beta workstations configs create` and
+  `gcloud beta workstations configs update` commands.
+*   Added `enable-nested-virtualization` `pool-size` and `boot-disk-size` to `--boost-configs` flag in `beta workstations configs create` and `beta workstations configs update`.
+
+### Compute Engine
+
+* Added support for `version`=`24.04` and `short-name`=`ubuntu` in `--os-types` for `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promoted Tls Early Data in TargetHttpsProxy compute API to v1.
+* Added `gce_vm_ip_portmap` Network Endpoint Group for `gcloud compute network-endpoint-groups` beta support.
+* Added `--access-mode` flag to `gcloud compute disks create` and `gcloud compute disks update`.
+* Added `--tls-early-data` flag to `gcloud compute v1 target-https-proxies create/update` to Tls Early Data field in Target Https Proxy.
+
+### Secret Manager
+
+* Added `--version-destroy-ttl` flag to `gcloud secrets create` to let users enable secret version delayed destruction on a secret.
+* Added `--version-destroy-ttl` flag to `gcloud secrets update` to let users enable/update secret version delayed destruction on a secret.
+* Added `--remove-version-destroy-ttl` flag to `gcloud secrets update` to let users disable secret version delayed destruction on a secret.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 479.0.0 (2024-06-04)
 
 ### Breaking Changes

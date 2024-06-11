@@ -63,51 +63,6 @@ def ValidateKMSKeyForFunction(kms_key, function_ref):
       )
 
 
-def ValidateDockerRepositoryForFunction(docker_repository, function_ref):
-  """Checks that the Docker repository is compatible with the function.
-
-  Args:
-    docker_repository: Fully qualified Docker repository resource name.
-    function_ref: Function resource reference.
-
-  Raises:
-    InvalidArgumentException: If the specified Docker repository is not
-      compatible with the function.
-  """
-  if docker_repository is None:
-    return
-
-  function_project = function_ref.projectsId
-  function_location = function_ref.locationsId
-
-  repo_project, repo_location = None, None
-  repo_match = _DOCKER_REPOSITORY_RE.search(docker_repository)
-  if repo_match:
-    repo_project = repo_match.group('project')
-    repo_location = repo_match.group('location')
-  else:
-    repo_match_docker_format = _DOCKER_REPOSITORY_DOCKER_FORMAT_RE.search(
-        docker_repository
-    )
-    if repo_match_docker_format:
-      repo_project = repo_match_docker_format.group('project')
-      repo_location = repo_match_docker_format.group('location')
-
-  if repo_match or repo_match_docker_format:
-    if (
-        function_project != repo_project
-        and function_project.isdigit() == repo_project.isdigit()
-    ):
-      raise base_exceptions.InvalidArgumentException(
-          '--docker-repository', 'Cross-project repositories are not supported.'
-      )
-    if function_location != repo_location:
-      raise base_exceptions.InvalidArgumentException(
-          '--docker-repository',
-          'Cross-location repositories are not supported.',
-      )
-
-
 def NormalizeDockerRepositoryFormat(docker_repository):
   """Normalizes the docker repository name to the standard resource format.
 

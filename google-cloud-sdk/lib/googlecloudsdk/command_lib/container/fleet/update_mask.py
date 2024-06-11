@@ -37,6 +37,7 @@ FLEET_MESSAGE_TO_FLAGS = {
             'evaluation_mode': '--binauthz-evaluation-mode',
             'policy_bindings': '--binauthz-policy-bindings',
         },
+        'compliance_posture_config': ['--compliance', '--compliance-standards'],
     },
 }
 
@@ -50,7 +51,7 @@ def FlagToUpdateMaskPaths(
 ) -> Dict[str, str]:
   """Construct flag to update mask paths during runtime.
 
-  From top level field, combine the string up to the leave dict.
+  From top level field, combine the string up to the leaf dict.
 
   Flag fields are unique.
 
@@ -86,6 +87,9 @@ def FlagToUpdateMaskPaths(
     for curr_path, flag_or_level in level.items():
       if isinstance(flag_or_level, str):  # The value is a plain flag.
         ret[flag_or_level] = curr_path
+      elif isinstance(flag_or_level, list):
+        for flag in flag_or_level:
+          ret[flag] = curr_path
       else:  # The value is of Level type.
         for key, remain_path in Recursive(flag_or_level).items():
           ret[key] = curr_path + '.' + remain_path

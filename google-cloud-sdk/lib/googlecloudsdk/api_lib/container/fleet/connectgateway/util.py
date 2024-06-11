@@ -18,18 +18,22 @@ from typing import Union
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.generated_clients.apis.connectgateway.v1 import connectgateway_v1_messages as messages_v1
 from googlecloudsdk.generated_clients.apis.connectgateway.v1alpha1 import connectgateway_v1alpha1_messages as messages_v1alpha1
+from googlecloudsdk.generated_clients.apis.connectgateway.v1beta1 import connectgateway_v1beta1_messages as messages_v1beta1
 
 
 class TYPES:
   # pylint: disable=invalid-name: Follows the naming convention of the generated client.
   GenerateCredentialsResponse = Union[
-      messages_v1alpha1.GenerateCredentialsResponse
+      messages_v1alpha1.GenerateCredentialsResponse,
+      messages_v1beta1.GenerateCredentialsResponse,
+      messages_v1.GenerateCredentialsResponse,
   ]
 
 
 API_NAME = 'connectgateway'
-DEFAULT_TRACK = base.ReleaseTrack.ALPHA
+DEFAULT_TRACK = base.ReleaseTrack.GA
 VERSION_MAP = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',

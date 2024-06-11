@@ -977,17 +977,29 @@ def AddProtocol(parser, default='HTTP', support_unspecified_protocol=False):
       If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal Application
       Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2.
 
+      If the `load-balancing-scheme` is `INTERNAL_MANAGED` (Internal proxy
+      Network Load Balancer), the protocol must be only TCP.
+
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is not set
-      (Classic Application Load Balancer and global external proxy Network
-      Load Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, SSL, TCP.
+      (Classic Application Load Balancer and Classic proxy Network Load
+      Balancer), the protocol must be one of: HTTP, HTTPS, HTTP2, TCP, SSL.
 
       If the `load-balancing-scheme` is `EXTERNAL` and `region` is set
       (External passthrough Network Load Balancer), the protocol must be one
       of: {2}.
 
-      If the `load-balancing-scheme` is `EXTERNAL_MANAGED` (Envoy based
-      Global and regional external Application Load Balancers), the protocol
-      must be one of: HTTP, HTTPS, HTTP2.
+      If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
+      (Global external Application Load Balancer and regional external
+      Application Load Balancer), the protocol must be
+      one of: HTTP, HTTPS, HTTP2.
+
+      If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
+      (Global external proxy Network Load Balancer), the protocol
+      must be one of: TCP, SSL.
+
+      If the `load-balancing-scheme` is `EXTERNAL_MANAGED`
+      (Regional external proxy Network Load Balancer), the protocol
+      must be only TCP.
       """.format(ilb_protocols, td_protocols, netlb_protocols))
 
 

@@ -348,22 +348,35 @@ def ModifyOrchestratorPolicySetSelectors(args, req, messages):
   return req
 
 
-def ModifyOrchestrorPolicyRequest(ref, args, req):
+def ModifyOrchestrorPolicyCreateRequest(ref, args, req):
   """Returns modified request with parsed orchestartor's policy assignment."""
 
   # Settings PolicyOrchestrator payload.
   api_version = GetApiVersionV2(args)
   messages = GetApiMessage(api_version)
-  (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
-      args.policy_file, messages.OSPolicyAssignment
-  )
+
+  # For DELETE action we still have to specify empty payload.
+  policy_assignment_config = messages.OSPolicyAssignment()
+  if args.action == 'upsert':
+    (policy_assignment_config, _) = GetResourceAndUpdateFieldsFromFile(
+        args.policy_file, messages.OSPolicyAssignment
+    )
   req.googleCloudOsconfigV2alphaPolicyOrchestrator = (
       messages.GoogleCloudOsconfigV2alphaPolicyOrchestrator()
   )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.osPolicyAssignmentPayload = (
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource = (
+      messages.GoogleCloudOsconfigV2alphaOrchestratedResource()
+  )
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.osPolicyAssignmentV1Payload = (
       policy_assignment_config
   )
-  req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = 'UPSERT'
+
+  if args.policy_id:
+    req.googleCloudOsconfigV2alphaPolicyOrchestrator.orchestratedResource.id = (
+        args.policy_id
+    )
+
+  req.googleCloudOsconfigV2alphaPolicyOrchestrator.action = args.action.upper()
   req = ModifyOrchestratorPolicySetSelectors(args, req, messages)
 
   # Setting request-level fields.

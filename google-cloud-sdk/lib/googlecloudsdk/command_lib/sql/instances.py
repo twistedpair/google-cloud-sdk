@@ -213,6 +213,12 @@ def _ParseSslMode(sql_messages, ssl_mode):
   )
 
 
+def _ParseServerCaMode(sql_messages, server_ca_mode):
+  return sql_messages.IpConfiguration.ServerCaModeValueValuesEnum.lookup_by_name(
+      server_ca_mode.upper()
+  )
+
+
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
 def ShowV1DeprecationWarning(plural=False):
   message = (
@@ -266,6 +272,16 @@ def _ShowCmekPrompt():
       'it will be permanently lost.\n'
   )
   console_io.PromptContinue(cancel_on_no=True)
+
+
+def _ShowFailoverReplicaDeprecationWarning():
+  log.warning(
+      'Failover replicas will soon be deprecated and support will be '
+      'discontinued. We recommend migrating to the new '
+      'high availability configuration, based on regional persistent '
+      'disks (RePD). For more information, see '
+      'https://cloud.google.com/sql/docs/mysql/configure-legacy-ha#update-from-legacy'
+  )
 
 
 class _BaseInstances(object):
@@ -452,6 +468,13 @@ class _BaseInstances(object):
       if args.replication_lag_max_seconds_for_recreate is not None:
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
+        )
+
+      if args.IsKnownAndSpecified('server_ca_mode'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.serverCaMode = _ParseServerCaMode(
+            sql_messages, args.server_ca_mode
         )
 
     return settings
@@ -784,6 +807,7 @@ class _BaseInstances(object):
           sql_messages.Settings.ReplicationTypeValueValuesEnum.ASYNCHRONOUS
       )
       if args.replica_type == 'FAILOVER':
+        _ShowFailoverReplicaDeprecationWarning()
         instance_resource.replicaConfiguration = (
             sql_messages.ReplicaConfiguration(
                 kind='sql#demoteMasterMysqlReplicaConfiguration',
@@ -811,6 +835,7 @@ class _BaseInstances(object):
       instance_resource.settings.replicationType = replication
 
     if args.failover_replica_name:
+      _ShowFailoverReplicaDeprecationWarning()
       instance_resource.failoverReplica = (
           sql_messages.DatabaseInstance.FailoverReplicaValue(
               name=args.failover_replica_name

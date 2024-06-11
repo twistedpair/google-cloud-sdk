@@ -350,6 +350,33 @@ class GoogleCloudOsconfigV2alphaOperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class GoogleCloudOsconfigV2alphaOrchestratedResource(_messages.Message):
+  r"""Represents a resource that is being orchestrated by the policy
+  orchestrator.
+
+  Fields:
+    id: Optional. ID of the resource to be used while generating set of
+      affected resources. For UPSERT action, the value is auto-generated
+      during PolicyOrchestrator creation, when not set. When the value is set,
+      it should following next restrictions: * Must contain only lowercase
+      letters, numbers, and hyphens. * Must start with a letter. * Must be
+      between 1-63 characters. * Must end with a number or a letter. * Must be
+      unique within the project. For DELETE action, it must be specified
+      explicitly during PolicyOrchestrator creation.
+    osPolicyAssignmentV1Payload: Optional. OSPolicyAssignment resource to be
+      created, updated or deleted. Name field is ignored and replace with a
+      generated value. With this field set, orchestrator will end up making
+      actions on
+      `project/{project}/locations/{zone}/osPolicyAssignments/{resource_id}`
+      resources, where `project` and `zone` pairs come from the expanded
+      scope, and `resource_id` comes from the `resource_id` field of
+      orchestrator resource.
+  """
+
+  id = _messages.StringField(1)
+  osPolicyAssignmentV1Payload = _messages.MessageField('OSPolicyAssignment', 2)
+
+
 class GoogleCloudOsconfigV2alphaOrchestrationScope(_messages.Message):
   r"""Defines a set of selectors which drive which resources are in scope of
   policy orchestration.
@@ -418,7 +445,7 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    action: Action to be done by the orchestrator in
+    action: Required. Action to be done by the orchestrator in
       `projects/{project_id}/zones/{zone_id}` locations defined by the
       `orchestration_scope`. Allowed values: - `UPSERT` - Orchestrator will
       create or update target resources. - `DELETE` - Orchestrator will delete
@@ -436,6 +463,8 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
       ions/global/policyOrchestrators/{orchestrator_id} ## folders/{folder_id}
       /locations/global/policyOrchestrators/{orchestrator_id} organizations/{o
       rganization_id}/locations/global/policyOrchestrators/{orchestrator_id}
+    orchestratedResource: Required. Resource to be orchestrated by the policy
+      orchestrator.
     orchestrationScope: Optional. Defines scope for the orchestration, in
       context of the enclosing PolicyOrchestrator resource. Scope is expanded
       into a list of pairs, in which the rollout action will take place.
@@ -445,21 +474,6 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
       project is cross joined with a list of all available zones. - Resulting
       list of pairs is filtered according to the selectors.
     orchestrationState: Output only. State of the orchestration.
-    osPolicyAssignmentPayload: OSPolicyAssignment resource to be created or
-      updated. Name field is ignored and replace with a generated value. With
-      this field set, orchestrator will end up making actions on
-      `project/{project}/locations/{zone}/osPolicyAssignments/{resource_id}`
-      resources, where `project` and `zone` pairs come from the expanded
-      scope, and `resource_id` comes from the `resource_id` field of
-      orchestrator resource.
-    policyId: ID of the resource to be used while generating set of affected
-      resources. For UPSERT action, the value is auto-generated during
-      PolicyOrchestrator creation, when not set. When the value is set, it
-      should following next restrictions: * Must contain only lowercase
-      letters, numbers, and hyphens. * Must start with a letter. * Must be
-      between 1-63 characters. * Must end with a number or a letter. * Must be
-      unique within the project. For DELETE action, it must be specified
-      explicitly during PolicyOrchestrator creation.
     reconciling: Output only. Set to true, if the resource is currently being
       updated / deleted.
     state: State of the orchestrator. Can be updated to change orchestrator
@@ -501,13 +515,12 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestrator(_messages.Message):
   etag = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  orchestrationScope = _messages.MessageField('GoogleCloudOsconfigV2alphaOrchestrationScope', 7)
-  orchestrationState = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestratorOrchestrationState', 8)
-  osPolicyAssignmentPayload = _messages.MessageField('OSPolicyAssignment', 9)
-  policyId = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  state = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  orchestratedResource = _messages.MessageField('GoogleCloudOsconfigV2alphaOrchestratedResource', 7)
+  orchestrationScope = _messages.MessageField('GoogleCloudOsconfigV2alphaOrchestrationScope', 8)
+  orchestrationState = _messages.MessageField('GoogleCloudOsconfigV2alphaPolicyOrchestratorOrchestrationState', 9)
+  reconciling = _messages.BooleanField(10)
+  state = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Message):
@@ -541,12 +554,14 @@ class GoogleCloudOsconfigV2alphaPolicyOrchestratorIterationState(_messages.Messa
       COMPLETED: Iteration completed, with all actions being successful.
       FAILED: Iteration completed, with failures.
       CANCELED: Iteration was explicitly cancelled.
+      UNKNOWN: Impossible to determine current state of the iteration.
     """
     STATE_UNSPECIFIED = 0
     PROCESSING = 1
     COMPLETED = 2
     FAILED = 3
     CANCELED = 4
+    UNKNOWN = 5
 
   error = _messages.MessageField('Status', 1)
   failedActions = _messages.IntegerField(2)

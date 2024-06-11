@@ -3763,12 +3763,6 @@ For more information on Workload Identity, see
             https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity
   """,
       required=False,
-      type=arg_parsers.RegexpValidator(
-          # Don't document hub.id.goog in the error, but still pass it through
-          # for now.
-          r'^[a-z][-a-z0-9]{4,}[a-z0-9]\.(svc|hub)\.id\.goog$',
-          "Must be in format of '[PROJECT_ID].svc.id.goog'",
-      ),
   )
   if use_identity_provider:
     parser.add_argument(
@@ -6531,5 +6525,41 @@ def AddComplianceFlags(parser, hidden=True):
       '--compliance-standards',
       default=None,
       help=standards_help,
+      hidden=hidden,
+  )
+
+
+def AddInsecureRBACBindingFlags(parser, hidden=True):
+  """Adds --enable-insecure-binding-system-authenticated and --enable-insecure-binding-system-unauthenticated flag group to the group.
+
+  Args:
+    parser: A given parser.
+    hidden: hidden status
+  """
+  group = parser.add_group(hidden=hidden, mutex=False)
+  help_text = """\
+        Allow binding system:authenticated to cluster role binding and role binding
+
+        To disable in an existing cluster, explicitly set flag to
+        --no-enable-insecure-binding-system-authenticated
+    """
+  group.add_argument(
+      '--enable-insecure-binding-system-authenticated',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )
+  help_text = """\
+        Allow binding system:unauthenticated and system:anonymous to cluster role binding and role binding
+
+        To disable in an existing cluster, explicitly set flag to
+        --no-enable-insecure-binding-system-unauthenticated
+    """
+  group.add_argument(
+      '--enable-insecure-binding-system-unauthenticated',
+      action='store_true',
+      default=None,
+      help=help_text,
       hidden=hidden,
   )

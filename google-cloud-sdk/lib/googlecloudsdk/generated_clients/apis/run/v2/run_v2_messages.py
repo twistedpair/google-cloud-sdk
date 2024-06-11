@@ -40,6 +40,10 @@ class GoogleCloudRunV2BinaryAuthorization(_messages.Message):
 class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
   r"""Build the source using Buildpacks.
 
+  Messages:
+    EnvironmentVariablesValue: Optional. User-provided build-time environment
+      variables.
+
   Fields:
     baseImage: Optional. The base image used to opt into automatic base image
       updates.
@@ -49,15 +53,44 @@ class GoogleCloudRunV2BuildpacksBuild(_messages.Message):
       derive a build-specific temporary URL by substituting the tag with the
       build ID. The build will clean up the temporary image on a best-effort
       basis.
+    environmentVariables: Optional. User-provided build-time environment
+      variables.
     functionTarget: Optional. Name of the function target if the source is a
       function source. Required for function builds.
     runtime: The runtime name, e.g. 'go113'. Leave blank for generic builds.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentVariablesValue(_messages.Message):
+    r"""Optional. User-provided build-time environment variables.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentVariablesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        EnvironmentVariablesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentVariablesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   baseImage = _messages.StringField(1)
   cacheImageUri = _messages.StringField(2)
-  functionTarget = _messages.StringField(3)
-  runtime = _messages.StringField(4)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
+  functionTarget = _messages.StringField(4)
+  runtime = _messages.StringField(5)
 
 
 class GoogleCloudRunV2CancelExecutionRequest(_messages.Message):
@@ -1069,6 +1102,10 @@ class GoogleCloudRunV2Job(_messages.Message):
       `latest_succeeded_execution` will have the state of the last succeeded
       execution or empty for newly created Job. Additional information on the
       failure can be found in `terminal_condition` and `conditions`.
+    runExecutionToken: A unique string used as a suffix for creating a new
+      execution. The Job will become ready when the execution is successfully
+      completed. The sum of job name and token length must be fewer than 63
+      characters.
     satisfiesPzs: Output only. Reserved for future use.
     startExecutionToken: A unique string used as a suffix creating a new
       execution. The Job will become ready when the execution is successfully
@@ -1219,12 +1256,13 @@ class GoogleCloudRunV2Job(_messages.Message):
   name = _messages.StringField(17)
   observedGeneration = _messages.IntegerField(18)
   reconciling = _messages.BooleanField(19)
-  satisfiesPzs = _messages.BooleanField(20)
-  startExecutionToken = _messages.StringField(21)
-  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 22)
-  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
+  runExecutionToken = _messages.StringField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  startExecutionToken = _messages.StringField(22)
+  template = _messages.MessageField('GoogleCloudRunV2ExecutionTemplate', 23)
+  terminalCondition = _messages.MessageField('GoogleCloudRunV2Condition', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class GoogleCloudRunV2ListExecutionsResponse(_messages.Message):
@@ -2375,6 +2413,13 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
       set, the default Cloud Build service account for the project will be
       used.
     storageSource: Required. Source for the build.
+    tags: Optional. Additional tags to annotate the build.
+    workerPool: Optional. Name of the Cloud Build Custom Worker Pool that
+      should be used to build the function. The format of this field is
+      `projects/{project}/locations/{region}/workerPools/{workerPool}` where
+      {project} and {region} are the project id and region respectively where
+      the worker pool is defined and {workerPool} is the short name of the
+      worker pool.
   """
 
   buildpackBuild = _messages.MessageField('GoogleCloudRunV2BuildpacksBuild', 1)
@@ -2382,6 +2427,8 @@ class GoogleCloudRunV2SubmitBuildRequest(_messages.Message):
   imageUri = _messages.StringField(3)
   serviceAccount = _messages.StringField(4)
   storageSource = _messages.MessageField('GoogleCloudRunV2StorageSource', 5)
+  tags = _messages.StringField(6, repeated=True)
+  workerPool = _messages.StringField(7)
 
 
 class GoogleCloudRunV2SubmitBuildResponse(_messages.Message):
@@ -3250,7 +3297,7 @@ class GoogleDevtoolsCloudbuildV1BuildOptions(_messages.Message):
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      2000GB; builds that request more than the maximum are rejected with an
+      4000GB; builds that request more than the maximum are rejected with an
       error.
     dynamicSubstitutions: Option to specify whether or not to apply bash style
       string operations to the substitutions. NOTE: this is always enabled for

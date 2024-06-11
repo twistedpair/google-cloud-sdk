@@ -35,36 +35,36 @@ _VERSION_RE = re.compile(
 )
 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     'centos': {
-        '7',
-        '8',
+        ('7',),
+        ('8',),
     },
     'rhel': {
-        '7',
-        '8',
-        '9',
+        ('7',),
+        ('8',),
+        ('9',),
     },
     'rocky': {
-        '8',
-        '9',
+        ('8',),
+        ('9',),
     },
     'sles': {
-        '12',
-        '15',
+        ('12',),
+        ('15',),
     },
     'debian': {
-        '10',
-        '11',
-        '12',
+        ('10',),
+        ('11',),
+        ('12',),
     },
     'ubuntu': {
-        '18.04',
-        '20.04',
-        '22.04',
-        '23.10',
+        ('18', '04'),
+        ('20', '04'),
+        ('22', '04'),
+        ('23', '10'),
     },
     'windows': {
-        '6',
-        '10',
+        ('6',),
+        ('10',),
     },
 }
 
@@ -140,7 +140,7 @@ class AgentsOsTypeNotSupportedError(exceptions.PolicyValidationError):
             short_name,
             version,
             '; '.join(
-                '%s %s' % (k, ','.join(sorted(v)))
+                '%s %s' % (k, ','.join(sorted('.'.join(e) for e in v)))
                 for k, v in sorted(
                     _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS.items()
                 )
@@ -302,14 +302,19 @@ def _ValidateInventories(
   for inventory in instance_filter.inventories:
     if not (
         inventory.osShortName in _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS
-        and inventory.osVersion
-        in _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS[inventory.osShortName]
+        and any(
+            v == tuple(inventory.osVersion.split('.')[:len(v)])
+            for v in _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS[
+                inventory.osShortName
+            ]
+        )
     ):
       errors.append(
           AgentsOsTypeNotSupportedError(
               inventory.osShortName, inventory.osVersion
           )
       )
+
   return errors
 
 

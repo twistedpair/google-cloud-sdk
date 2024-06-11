@@ -33,3 +33,15 @@ deployment:
     attribute_name: deployment
     help: |
       The deployment name.
+
+job:
+  name: job
+  collection: managedflink.projects.locations.jobs
+  request_id_field: jobId
+  attributes:
+  - *location
+  - &job
+    parameter_name: jobsId
+    attribute_name: job
+    help: |
+      The job name.

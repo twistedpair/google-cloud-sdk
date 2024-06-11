@@ -30,7 +30,7 @@ class EnrollmentsClient(object):
       eligible_gcs_buckets,
       is_parent_folder,
   ):
-    """Generate an Audit Report.
+    """Enrolls a resource to Audit Manager.
 
     Args:
       scope: str, the scope to be enrolled.

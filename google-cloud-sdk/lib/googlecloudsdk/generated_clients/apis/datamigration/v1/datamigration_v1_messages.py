@@ -5361,6 +5361,7 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
       (?.*)\.(?\d*).trn
     databaseBackups: Required. Backup details per database in Cloud Storage.
     databaseDetails: Optional. Backup details per database in Cloud Storage.
+    useDiffBackup: Optional. Enable differential backups.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -5391,6 +5392,7 @@ class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
   backupFilePattern = _messages.StringField(1)
   databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 2, repeated=True)
   databaseDetails = _messages.MessageField('DatabaseDetailsValue', 3)
+  useDiffBackup = _messages.BooleanField(4)
 
 
 class SshScript(_messages.Message):

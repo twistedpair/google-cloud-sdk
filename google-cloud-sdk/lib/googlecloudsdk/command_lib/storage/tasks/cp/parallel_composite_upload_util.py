@@ -47,7 +47,6 @@ def is_destination_composite_upload_compatible(destination_resource,
   Returns:
     True if the bucket satisfies the storage class and retention policy
     criteria.
-
   """
   api_client = api_factory.get_api(destination_resource.storage_url.scheme)
   try:
@@ -168,25 +167,30 @@ def is_composite_upload_eligible(source_resource,
 
   if can_perform_composite_upload and composite_upload_enabled is None:
     log.warning(
-        textwrap.fill(
-            'Parallel composite upload was turned ON to get the best'
-            ' performance on uploading large objects.'
-            ' If you would like to opt-out and instead perform a normal upload,'
-            ' run:'
-            '\n`gcloud config set storage/parallel_composite_upload_enabled'
-            ' False`'
-            '\nIf you would like to disable this warning, run:'
-            '\n`gcloud config set storage/parallel_composite_upload_enabled'
-            ' True`'
-            # We say "might" here because whether parallel composite upload is
-            # used or not also depends on whether parallelism is True.
-            '\nNote that with parallel composite uploads, your object might be'
-            ' uploaded as a composite object'
-            ' (https://cloud.google.com/storage/docs/composite-objects),'
-            ' which means that any user who downloads your object will need to'
-            ' use crc32c checksums to verify data integrity.'
-            ' gcloud storage is capable of computing crc32c checksums, but'
-            ' this might pose a problem for other clients.') + '\n')
+        '\n'.join(
+            textwrap.fill(l, width=70)
+            for l in (
+                'Parallel composite upload was turned ON to get the best'
+                ' performance on uploading large objects. If you would like to'
+                ' opt-out and instead perform a normal upload, run:'
+                '\n`gcloud config set storage/parallel_composite_upload_enabled'
+                ' False`'
+                '\nIf you would like to disable this warning, run:'
+                '\n`gcloud config set storage/parallel_composite_upload_enabled'
+                ' True`'
+                # We say "might" here because whether parallel composite upload
+                # is used or not also depends on whether parallelism is True.
+                '\nNote that with parallel composite uploads, your object might'
+                ' be uploaded as a composite object'
+                ' (https://cloud.google.com/storage/docs/composite-objects),'
+                ' which means that any user who downloads your object will'
+                ' need to use crc32c checksums to verify data integrity. gcloud'
+                ' storage is capable of computing crc32c checksums, but this'
+                ' might pose a problem for other clients.'
+            ).splitlines()
+        )
+        + '\n'
+    )
   # TODO(b/245738490) Explore if setting this property can be avoided.
   properties.VALUES.storage.parallel_composite_upload_enabled.Set(
       can_perform_composite_upload)

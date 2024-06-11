@@ -37,6 +37,7 @@ class MutationOp(enum.Enum):
   REGISTER = 1
   UPDATE = 2
   TRANSFER = 3
+  RENEWAL = 4
 
 
 def AddConfigureDNSSettingsFlagsToParser(parser):
@@ -88,7 +89,7 @@ def AddTransferFlagsToParser(parser):
   """
   _AddDNSSettingsFlagsToParser(parser, mutation_op=MutationOp.TRANSFER)
   _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.TRANSFER)
-  _AddPriceFlagsToParser(parser, MutationOp.TRANSFER)
+  AddPriceFlagsToParser(parser, MutationOp.TRANSFER)
 
   help_text = """\
     A file containing the authorizaton code. In most cases, you must provide an
@@ -127,7 +128,7 @@ def AddRegisterFlagsToParser(parser):
   """
   _AddDNSSettingsFlagsToParser(parser, mutation_op=MutationOp.REGISTER)
   _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.REGISTER)
-  _AddPriceFlagsToParser(parser, MutationOp.REGISTER)
+  AddPriceFlagsToParser(parser, MutationOp.REGISTER)
 
   messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
   notice_choices = ContactNoticeEnumMapper(messages).choices.copy()
@@ -439,19 +440,21 @@ def _AddContactSettingsFlagsToParser(parser, mutation_op):
   ).AddToParser(parser)
 
 
-def _AddPriceFlagsToParser(parser, mutation_op):
-  command = ''
+def AddPriceFlagsToParser(parser, mutation_op):
+  get_price_method = ''
   if mutation_op == MutationOp.REGISTER:
-    command = 'get-register-parameters'
+    get_price_method = 'using the get-register-parameters command'
   elif mutation_op == MutationOp.TRANSFER:
-    command = 'get-transfer-parameters'
+    get_price_method = 'using the get-transfer-parameters command'
+  elif mutation_op == MutationOp.RENEWAL:
+    get_price_method = ('by calling the renew-domain command without the '
+                        '--yearly-price flag')
 
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--yearly-price',
-      help=('You must accept the yearly price of the domain, either in the '
-            'interactive flow or using this flag. The expected format is a '
-            'number followed by a currency code, e.g. "12.00 USD". You can get '
-            'the price using the {} command.'.format(command)),
+      help=('Accept the domain\'s yearly price in the interactive flow or by '
+            'using this flag. Use a number followed by a currency code, for '
+            'example, "12.00 USD". Get the price {}.'.format(get_price_method)),
   ).AddToParser(parser)
 
 
@@ -468,6 +471,14 @@ def AddValidateOnlyFlagToParser(parser, verb, noun='registration'):
 def AddAsyncFlagToParser(parser):
   """Adds async flag. It's not marked as go/gcloud-style#commonly-used-flags."""
   base.ASYNC_FLAG.AddToParser(parser)
+
+
+def AddTagFlagToParser(parser):
+  base.Argument(
+      '--tag',
+      help=('The Tag of the new registrar. Can be found at '
+            'https://nominet.uk/registrar-list/'),
+  ).AddToParser(parser)
 
 
 def AddManagementSettingsFlagsToParser(parser):

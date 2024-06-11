@@ -60,17 +60,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  ORGANIZATIONS_LOCATIONS_MIRRORINGENDPOINTGROUPS = (
-      'organizations.locations.mirroringEndpointGroups',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/locations/{locationsId}/'
-              'mirroringEndpointGroups/{mirroringEndpointGroupsId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',
@@ -239,6 +228,17 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'mirroringEndpointGroupAssociations/'
               '{mirroringEndpointGroupAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGENDPOINTGROUPS = (
+      'projects.locations.mirroringEndpointGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringEndpointGroups/{mirroringEndpointGroupsId}',
       },
       ['name'],
       True

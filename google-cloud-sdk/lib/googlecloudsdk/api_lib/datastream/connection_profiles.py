@@ -98,6 +98,15 @@ class ConnectionProfilesClient:
         password=args.postgresql_password,
         database=args.postgresql_database)
 
+  def _GetSqlServerProfile(self, args):
+    return self._messages.SqlServerProfile(
+        hostname=args.sqlserver_hostname,
+        port=args.sqlserver_port,
+        username=args.sqlserver_username,
+        password=args.sqlserver_password,
+        database=args.sqlserver_database,
+    )
+
   def _GetGCSProfile(self, args, release_track):
     # TODO(b/207467120): remove bucket_name arg check.
     if release_track == base.ReleaseTrack.BETA:
@@ -146,6 +155,17 @@ class ConnectionProfilesClient:
         password=data.get('password'),
         database=data.get('database'))
 
+  def _ParseSqlServerProfile(self, data):
+    if not data:
+      return {}
+    return self._messages.SqlServerProfile(
+        hostname=data.get('hostname'),
+        port=data.get('port'),
+        username=data.get('username'),
+        password=data.get('password'),
+        database=data.get('database'),
+    )
+
   def _ParseGCSProfile(self, data):
     if not data:
       return {}
@@ -176,6 +196,8 @@ class ConnectionProfilesClient:
     elif cp_type == 'POSTGRESQL':
       connection_profile_obj.postgresqlProfile = self._GetPostgresqlProfile(
           args)
+    elif cp_type == 'SQLSERVER':
+      connection_profile_obj.sqlServerProfile = self._GetSqlServerProfile(args)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
       connection_profile_obj.gcsProfile = self._GetGCSProfile(
           args, release_track)
@@ -234,6 +256,9 @@ class ConnectionProfilesClient:
         connection_profile_data.get('mysql_profile', {}))
     postgresql_profile = self._ParsePostgresqlProfile(
         connection_profile_data.get('postgresql_profile', {}))
+    sqlserver_profile = self._ParseSqlServerProfile(
+        connection_profile_data.get('sqlserver_profile', {})
+    )
     gcs_profile = self._ParseGCSProfile(
         connection_profile_data.get('gcs_profile', {}))
     if oracle_profile:
@@ -242,6 +267,8 @@ class ConnectionProfilesClient:
       connection_profile_msg.mysqlProfile = mysql_profile
     elif postgresql_profile:
       connection_profile_msg.postgresqlProfile = postgresql_profile
+    elif sqlserver_profile:
+      connection_profile_msg.sqlServerProfile = sqlserver_profile
     elif gcs_profile:
       connection_profile_msg.gcsProfile = gcs_profile
 
@@ -367,6 +394,24 @@ class ConnectionProfilesClient:
       connection_profile.postgresqlProfile.database = args.postgresql_database
       update_fields.append('postgresqlProfile.database')
 
+  def _UpdateSqlServerProfile(self, connection_profile, args, update_fields):
+    """Updates SqlServer connection profile."""
+    if args.IsSpecified('sqlserver_hostname'):
+      connection_profile.sqlServerProfile.hostname = args.sqlserver_hostname
+      update_fields.append('sqlServerProfile.hostname')
+    if args.IsSpecified('sqlserver_port'):
+      connection_profile.sqlServerProfile.port = args.sqlserver_port
+      update_fields.append('sqlServerProfile.port')
+    if args.IsSpecified('sqlserver_username'):
+      connection_profile.sqlServerProfile.username = args.sqlserver_username
+      update_fields.append('sqlServerProfile.username')
+    if args.IsSpecified('sqlserver_password'):
+      connection_profile.sqlServerProfile.password = args.sqlserver_password
+      update_fields.append('sqlServerProfile.password')
+    if args.IsSpecified('sqlserver_database'):
+      connection_profile.sqlServerProfile.database = args.sqlserver_database
+      update_fields.append('sqlServerProfile.database')
+
   def _GetExistingConnectionProfile(self, name):
     get_req = self._messages.DatastreamProjectsLocationsConnectionProfilesGetRequest(
         name=name
@@ -401,6 +446,8 @@ class ConnectionProfilesClient:
       self._UpdateOracleProfile(connection_profile, args, update_fields)
     elif cp_type == 'POSTGRESQL':
       self._UpdatePostgresqlProfile(connection_profile, args, update_fields)
+    elif cp_type == 'SQLSERVER':
+      self._UpdateSqlServerProfile(connection_profile, args, update_fields)
     elif cp_type == 'GOOGLE-CLOUD-STORAGE':
       self._UpdateGCSProfile(connection_profile, release_track, args,
                              update_fields)
@@ -585,6 +632,10 @@ class ConnectionProfilesClient:
     elif args.postgresql_rdbms_file:
       request.postgresqlRdbms = util.ParsePostgresqlRdbmsFile(
           self._messages, args.postgresql_rdbms_file)
+    elif args.sqlserver_rdbms_file:
+      request.sqlServerRdbms = util.ParseSqlServerRdbmsFile(
+          self._messages, args.sqlserver_rdbms_file
+      )
     discover_req_type = self._messages.DatastreamProjectsLocationsConnectionProfilesDiscoverRequest
     discover_req = discover_req_type(
         discoverConnectionProfileRequest=request, parent=parent_ref)

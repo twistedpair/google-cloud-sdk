@@ -23,12 +23,12 @@ import socket
 import threading
 import time
 
-import google.auth.compute_engine._metadata
 from googlecloudsdk.core import config
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import gce_read
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
+
 import six
 from six.moves import http_client
 from six.moves import urllib_error
@@ -70,7 +70,6 @@ class _OnGCECache(object):
   """Logic to check if we're on GCE and cache the result to file or memory.
 
   Checking if we are on GCE is done by issuing an HTTP request to a GCE server.
-  On Liunx, we also attempt to detect GCE by reading the smbios file.
   Since HTTP requests are slow, we cache this information. Because every run
   of gcloud is a separate command, the cache is stored in a file in the user's
   gcloud config dir. Because within a gcloud run we might check if we're on GCE
@@ -119,23 +118,7 @@ class _OnGCECache(object):
     return self.CheckServerRefreshAllCaches()
 
   def CheckServerRefreshAllCaches(self):
-    """Check if we are on a GCE machine.
-
-    On Linux, we check smbios first, then try querying metadata server. For
-    other environment we only query the metadata server.
-
-    Returns:
-      bool, if we are on GCE or not.
-    """
-    on_gce = False
-
-    if os.name != 'nt':
-      # try smbios check on Linux for quicker detection
-      on_gce = google.auth.compute_engine._metadata.detect_gce_residency_linux()  # pylint: disable=protected-access
-
-    if not on_gce:
-      on_gce = self._CheckServerWithRetry()
-
+    on_gce = self._CheckServerWithRetry()
     self._WriteDisk(on_gce)
     self._WriteMemory(on_gce, time.time() + _GCE_CACHE_MAX_AGE)
     return on_gce

@@ -190,6 +190,26 @@ resourceGroups:
         script: curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh; sudo bash add-google-cloud-ops-agent-repo.sh --also-install --version=$agent_version;
         interpreter: SHELL
 - inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '24.04'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: install-agent
+    exec:
+      validate:
+        script: "[ $(dpkg-query --show --showformat '${Version}' 'google-cloud-ops-agent' | cut -d~ -f 1) == '$agent_version' ] && exit 100 || exit 101;"
+        interpreter: SHELL
+      enforce:
+        script: curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh; sudo bash add-google-cloud-ops-agent-repo.sh --also-install --version=$agent_version;
+        interpreter: SHELL
+- inventoryFilters:
   - osShortName: windows
     osVersion: '10.*'
   - osShortName: windows

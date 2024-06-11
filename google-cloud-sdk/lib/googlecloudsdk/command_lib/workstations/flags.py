@@ -33,6 +33,33 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddAllowedPortsFlag(parser):
+  """Adds a --allowed-ports flag to the given parser."""
+  help_text = """\
+  A Single or Range of ports externally accessible in the workstation.
+  If not specified defaults to ports 22, 80 and ports 1024-65535.
+
+  To specify a single port, both first and last should be same.
+
+  Example:
+
+    $ {command} --allowed-ports=first=9000,last=9090
+    $ {command} --allowed-ports=first=80,last=80"""
+  parser.add_argument(
+      '--allowed-ports',
+      metavar='ALLOWED_PORTS',
+      type=arg_parsers.ArgObject(
+          spec={
+              'first': int,
+              'last': int,
+          },
+          required_keys=['first', 'last'],
+      ),
+      action=arg_parsers.FlattenAction(),
+      help=help_text,
+  )
+
+
 def LocationsAttributeConfig(
     location_fallthrough=False, global_fallthrough=False
 ):
@@ -686,8 +713,8 @@ def AddBoostConfigs(parser):
   """Adds a --boost-config flag to the given parser."""
   help_text = """\
   Boost Configuration(s) that workstations running with this configuration can
-  boost up to. This includes id (required), machine-type, accelerator-type, and
-  accelerator-count.
+  boost up to. This includes id (required), machine-type, accelerator-type,
+  accelerator-count, pool-size, boot-disk-size, and enable-nested-virtualization.
 
   Example:
 
@@ -701,6 +728,9 @@ def AddBoostConfigs(parser):
               'machine-type': str,
               'accelerator-type': str,
               'accelerator-count': int,
+              'pool-size': int,
+              'boot-disk-size': int,
+              'enable-nested-virtualization': bool,
           },
           required_keys=['id'],
       ),

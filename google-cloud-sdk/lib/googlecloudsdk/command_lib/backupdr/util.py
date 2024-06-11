@@ -18,6 +18,7 @@ import datetime
 import uuid
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core.util import iso_duration
 from googlecloudsdk.core.util import times
 
 
@@ -81,6 +82,39 @@ class OptionsMapValidator(object):
               ),
           )
       )
+
+
+def TransformEnforcedRetention(backup_vault):
+  """Transforms the backup vault enforced retention to a human readable format.
+
+  Args:
+    backup_vault: type of backup_vault can be either a Backup vault object or a
+      dict.
+
+  Returns:
+    Human readable format of backup vault enforced retention.
+  """
+
+  if isinstance(backup_vault, dict):
+    backup_min_enforced_retention = backup_vault.get(
+        'backupMinimumEnforcedRetentionDuration', {}
+    )
+  else:
+    backup_min_enforced_retention = (
+        backup_vault.backupMinimumEnforcedRetentionDuration
+    )
+
+  if not backup_min_enforced_retention:
+    return ''
+
+  seconds = times.ParseDuration(backup_min_enforced_retention).total_seconds
+  months = seconds // 2592000  # 60 * 60 * 24 * 30
+  seconds -= months * 2592000
+  days = seconds // 86400  # 60 * 60 * 24
+  seconds -= days * 86400
+  hours = seconds // 3600  # 60 * 60
+  duration = iso_duration.Duration(months=months, days=days, hours=hours)
+  return times.FormatDuration(duration, parts=-1)
 
 
 def GetOneOfValidator(name, options):

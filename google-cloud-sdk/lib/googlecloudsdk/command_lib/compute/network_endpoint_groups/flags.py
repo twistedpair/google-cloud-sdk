@@ -127,10 +127,10 @@ def _AddNetworkEndpointType(parser, support_port_mapping_neg):
     help_text += """\
 
       *gce-vm-ip-portmap*:::
-      Endpoint IP address must belong to a VM in Compute Engine
-      (either the primary IP or as part of an aliased IP range).
+      Endpoint IP address must be a primary IP of a VM's network interface in
+      Compute Engine.
       The `--default-port` must be specified or every network endpoint
-      in the network endpoint group must have a port and client-port specified.
+      in the network endpoint group must have a port specified.
   """
 
   base.ChoiceArgument(
@@ -413,26 +413,6 @@ def _AddL7pscRoutingInfo(parser):
   parser.add_argument('--psc-target-service', help=psc_target_service_help)
 
 
-def _AddPortMappingInfo(parser):
-  """Adds port mapping info arguments for network endpoint groups."""
-
-  help_text = """
-  Determines the spec of client port maping mode of this group.
-  Port Mapping is a use case in which NEG specifies routing by mapping client ports to destinations (e.g. ip and port).
-
-  *port-mapping-disabled*:::
-  Group should not be used for mapping client port to destination.
-
-  *client-port-per-endpoint*:::
-  For each endpoint there is exactly one client port.
-  """
-
-  parser.add_argument(
-      '--client-port-mapping-mode',
-      help=help_text,
-  )
-
-
 def AddCreateNegArgsToParser(
     parser,
     support_neg_type=False,
@@ -449,8 +429,6 @@ def AddCreateNegArgsToParser(
   _AddProducerPort(parser)
   _AddServerlessRoutingInfo(parser, support_serverless_deployment)
   _AddL7pscRoutingInfo(parser)
-  if support_port_mapping_neg:
-    _AddPortMappingInfo(parser)
 
 
 def _AddAddEndpoint(
@@ -713,7 +691,6 @@ def AddUpdateNegArgsToParser(
   if support_ipv6:
     endpoint_spec['ipv6'] = str
   if support_port_mapping_neg:
-    endpoint_spec['client-port'] = int
     endpoint_spec['client-destination-port'] = int
   _AddAddEndpoint(
       endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg

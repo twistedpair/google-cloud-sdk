@@ -45,6 +45,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_apps_operations = self.ProjectsLocationsAppsOperationsService(self)
     self.projects_locations_apps = self.ProjectsLocationsAppsService(self)
     self.projects_locations_batchPredictionJobs = self.ProjectsLocationsBatchPredictionJobsService(self)
+    self.projects_locations_cachedContents = self.ProjectsLocationsCachedContentsService(self)
     self.projects_locations_customJobs_operations = self.ProjectsLocationsCustomJobsOperationsService(self)
     self.projects_locations_customJobs = self.ProjectsLocationsCustomJobsService(self)
     self.projects_locations_dataLabelingJobs_operations = self.ProjectsLocationsDataLabelingJobsOperationsService(self)
@@ -662,6 +663,151 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsBatchPredictionJobsListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListBatchPredictionJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCachedContentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_cachedContents resource."""
+
+    _NAME = 'projects_locations_cachedContents'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsCachedContentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates cached content, this call will initialize the cached content in the data storage, and users need to pay for the cache data storage.
+
+      Args:
+        request: (AiplatformProjectsLocationsCachedContentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CachedContent) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/cachedContents',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.cachedContents.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/cachedContents',
+        request_field='googleCloudAiplatformV1beta1CachedContent',
+        request_type_name='AiplatformProjectsLocationsCachedContentsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CachedContent',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes cached content.
+
+      Args:
+        request: (AiplatformProjectsLocationsCachedContentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/cachedContents/{cachedContentsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.cachedContents.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsCachedContentsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets cached content configurations.
+
+      Args:
+        request: (AiplatformProjectsLocationsCachedContentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CachedContent) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/cachedContents/{cachedContentsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.cachedContents.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsCachedContentsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CachedContent',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists cached contents in a project.
+
+      Args:
+        request: (AiplatformProjectsLocationsCachedContentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListCachedContentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/cachedContents',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.cachedContents.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/cachedContents',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsCachedContentsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListCachedContentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates cached content configurations.
+
+      Args:
+        request: (AiplatformProjectsLocationsCachedContentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1CachedContent) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/cachedContents/{cachedContentsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.cachedContents.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1CachedContent',
+        request_type_name='AiplatformProjectsLocationsCachedContentsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1CachedContent',
         supports_download=False,
     )
 
@@ -11864,6 +12010,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a NotebookExecutionJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notebookExecutionJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookExecutionJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['notebookExecutionJobId'],
+        relative_path='v1beta1/{+parent}/notebookExecutionJobs',
+        request_field='googleCloudAiplatformV1beta1NotebookExecutionJob',
+        request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes a NotebookExecutionJob.
 
@@ -12141,6 +12314,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesListRequest',
         response_type_name='GoogleCloudAiplatformV1beta1ListNotebookRuntimeTemplatesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a NotebookRuntimeTemplate.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1NotebookRuntimeTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1beta1/{+name}',
+        request_field='googleCloudAiplatformV1beta1NotebookRuntimeTemplate',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1NotebookRuntimeTemplate',
         supports_download=False,
     )
 

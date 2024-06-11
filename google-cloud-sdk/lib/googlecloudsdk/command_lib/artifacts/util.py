@@ -1451,13 +1451,15 @@ def MigrateToArtifactRegistry(unused_ref, args):
     return None
 
   if to_pkg_dev:
-    s = from_gcr.split("/", 1)
+    s = from_gcr.split("/", 2)
     if len(s) != 2:
       log.status.Print("--from-gcr must be of the form {host}/{project}")
+      return None
     gcr_host, gcr_project = s
-    s = to_pkg_dev.split("/", 1)
+    s = to_pkg_dev.split("/", 2)
     if len(s) != 2:
       log.status.Print("--to-pkg-dev must be of the form {project}/{repo}")
+      return None
     ar_project, ar_repo = s
     if "gcr.io" in ar_repo:
       log.status.Print(
@@ -1480,6 +1482,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
         properties.VALUES.artifacts.registry_endpoint_prefix.Get(), location
     )
     if not copy_only:
+      CreatePkgDevIfMissing(host, location, ar_project, ar_repo)
       has_bucket = GetGCRRepos(
           {
               k: v
@@ -2089,7 +2092,6 @@ def CopyImagesFromGCR(
 # Returns if we should continue with migration
 def MaybeCreateMissingRepos(projects, automigrate, dry_run):
   """Creates missing repos if needed and requested by the user."""
-  messages = ar_requests.GetMessages()
   if len(projects) == 1:
     missing_repos = {projects[0]: GetRedirectionEnablementReport(projects[0])}
   else:
@@ -2113,41 +2115,8 @@ def MaybeCreateMissingRepos(projects, automigrate, dry_run):
     if not create_repos:
       return True
 
-    op_resources = []
     for project, repos in missing_repos.items():
-      for repo in repos:
-        repository_message = messages.Repository(
-            name="projects/{}/locations/{}/repositories/{}".format(
-                project, repo["location"], repo["repository"]
-            ),
-            description="Created by gcloud",
-            format=messages.Repository.FormatValueValuesEnum.DOCKER,
-        )
-        try:
-          op = ar_requests.CreateRepository(
-              project, repo["location"], repository_message
-          )
-          op_resources.append(
-              resources.REGISTRY.ParseRelativeName(
-                  op.name,
-                  collection="artifactregistry.projects.locations.operations",
-              )
-          )
-        except apitools_exceptions.HttpError as e:
-          log.status.Print(
-              "Failed to create repository %s: %s\n" % (repo["location"]),
-              json.loads(e.content)["error"]["message"],
-          )
-
-    client = ar_requests.GetClient()
-    for resource in op_resources:
-      waiter.WaitFor(
-          waiter.CloudOperationPollerNoResources(
-              client.projects_locations_operations
-          ),
-          resource,
-          message="Waiting for repo creation to complete...",
-      )
+      CreateRepositories(project, repos)
   else:
     con = console_attr.GetConsoleAttr()
     log.status.Print(
@@ -2157,6 +2126,71 @@ def MaybeCreateMissingRepos(projects, automigrate, dry_run):
         "repostories.\n"
     )
   return True
+
+
+def CreatePkgDevIfMissing(host, location, project, repo):
+  """Create a pkg.dev repository if it doesn't exist.
+
+  Args:
+    host: AR hostname (string)
+    location: repo location (string)
+    project: project id of the repo (string)
+    repo: repo_id to be created (string)
+  """
+  try:
+    ar_requests.GetRepository(
+        f"projects/{project}/locations/{location}/repositories/{repo}"
+    )
+  except apitools_exceptions.HttpNotFoundError:
+    con = console_attr.GetConsoleAttr()
+    console_io.PromptContinue(
+        con.Colorize(
+            f"\nNo repository found at {host}/{project}/{repo}", "yellow"
+        ),
+        "Create missing repository?",
+        default=True,
+        cancel_on_no=True,
+    )
+    CreateRepositories(project, [{"location": location, "repository": repo}])
+
+
+def CreateRepositories(project, repos):
+  """Creates repositories in Artifact Registry."""
+  messages = ar_requests.GetMessages()
+  op_resources = []
+  for repo in repos:
+    repository_message = messages.Repository(
+        name="projects/{}/locations/{}/repositories/{}".format(
+            project, repo["location"], repo["repository"]
+        ),
+        description="Created by gcloud",
+        format=messages.Repository.FormatValueValuesEnum.DOCKER,
+    )
+    try:
+      op = ar_requests.CreateRepository(
+          project, repo["location"], repository_message
+      )
+      op_resources.append(
+          resources.REGISTRY.ParseRelativeName(
+              op.name,
+              collection="artifactregistry.projects.locations.operations",
+          )
+      )
+    except apitools_exceptions.HttpError as e:
+      log.status.Print(
+          "Failed to create repository %s: %s\n" % (repo["location"]),
+          json.loads(e.content)["error"]["message"],
+      )
+
+  client = ar_requests.GetClient()
+  for resource in op_resources:
+    waiter.WaitFor(
+        waiter.CloudOperationPollerNoResources(
+            client.projects_locations_operations
+        ),
+        resource,
+        message="Waiting for repo creation to complete...",
+    )
 
 
 def EnableUpgradeRedirection(unused_ref, args):

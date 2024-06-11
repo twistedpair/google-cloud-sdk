@@ -736,6 +736,8 @@ class CreateClusterOptions(object):
       storage_pools=None,
       enable_ray_cluster_logging=None,
       enable_ray_cluster_monitoring=None,
+      enable_insecure_binding_system_authenticated=None,
+      enable_insecure_binding_system_unauthenticated=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -969,6 +971,12 @@ class CreateClusterOptions(object):
     self.enable_ray_cluster_monitoring = (
         enable_ray_cluster_monitoring
     )
+    self.enable_insecure_binding_system_authenticated = (
+        enable_insecure_binding_system_authenticated
+    )
+    self.enable_insecure_binding_system_unauthenticated = (
+        enable_insecure_binding_system_unauthenticated
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1120,6 +1128,8 @@ class UpdateClusterOptions(object):
       autoprovisioning_enable_insecure_kubelet_readonly_port=None,
       enable_ray_cluster_logging=None,
       enable_ray_cluster_monitoring=None,
+      enable_insecure_binding_system_authenticated=None,
+      enable_insecure_binding_system_unauthenticated=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1283,6 +1293,12 @@ class UpdateClusterOptions(object):
     )
     self.enable_ray_cluster_monitoring = (
         enable_ray_cluster_monitoring
+    )
+    self.enable_insecure_binding_system_authenticated = (
+        enable_insecure_binding_system_authenticated
+    )
+    self.enable_insecure_binding_system_unauthenticated = (
+        enable_insecure_binding_system_unauthenticated
     )
 
 
@@ -1732,7 +1748,7 @@ class APIAdapter(object):
             project=cluster_ref.projectId))
     try:
       clusters = self.ListClusters(cluster_ref.projectId).clusters
-    except apitools_exceptions.HttpForbiddenError as error:
+    except apitools_exceptions.HttpForbiddenError:
       # Raise the default 404 Not Found error.
       # 403 Forbidden error shouldn't be raised for this unrequested list.
       raise not_found_error
@@ -1798,33 +1814,47 @@ class APIAdapter(object):
     Raises:
       Error: if the operation times out or finishes with an error.
     """
-    detail_message = None
-    with progress_tracker.ProgressTracker(
-        message, autotick=True, detail_message_callback=lambda: detail_message):
-      start_time = time.time()
-      while timeout_s > (time.time() - start_time):
-        try:
-          operation = self.GetOperation(operation_ref)
-          if self.IsOperationFinished(operation):
-            # Success!
-            log.info('Operation %s succeeded after %.3f seconds', operation,
-                     (time.time() - start_time))
-            break
-          detail_message = operation.detail
-        except apitools_exceptions.HttpError as error:
-          log.debug('GetOperation failed: %s', error)
-          if error.status_code == six.moves.http_client.FORBIDDEN:
-            raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
+    def _MustGetOperation():
+      """Gets the operation or throws an exception."""
+      try:
+        return self.GetOperation(operation_ref)
+      except apitools_exceptions.HttpError as error:
+        log.debug('GetOperation failed: %s', error)
+        if error.status_code == six.moves.http_client.FORBIDDEN:
+          raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+
+    def _WaitForOperation():
+      """Retries getting the operation until it finishes, times out or fails."""
+      detail_message = None
+      with progress_tracker.ProgressTracker(
+          message, autotick=True, detail_message_callback=lambda: detail_message
+      ):
+        start_time = time.time()
+        op = _MustGetOperation()  # Try and get the operation.
+        while timeout_s > (time.time() - start_time):
+          if self.IsOperationFinished(op):
+            # Report completion time and return
+            duration = time.time() - start_time
+            log.info(f'Operation {op} finished after {duration:.3} seconds')
+            return op
+          detail_message = op.detail
           # Keep trying until we timeout in case error is transient.
-        time.sleep(poll_period_s)
-    if not self.IsOperationFinished(operation):
-      log.err.Print('Timed out waiting for operation {0}'.format(operation))
+          time.sleep(poll_period_s)
+          op = _MustGetOperation()  # Re-try getting the operation
+
+        log.err.Print(f'Timed out waiting for operation {op}')
+        raise util.Error(
+            f'Operation [{op}] is still running, check its status via '
+            + f"'gcloud container operations describe {op.name}'"
+        )
+
+    operation = _WaitForOperation()
+    if operation.statusMessage:
       raise util.Error(
-          'Operation [{0}] is still running, check its status via \'gcloud container operations describe {1}\''
-          .format(operation, operation.name))
-    if self.GetOperationError(operation):
-      raise util.Error('Operation [{0}] finished with error: {1}'.format(
-          operation, self.GetOperationError(operation)))
+          f'Operation [{operation}] finished with error: '
+          + f'{operation.statusMessage}'
+      )
 
     return operation
 
@@ -2517,6 +2547,20 @@ class APIAdapter(object):
         cluster.networkConfig = self.messages.NetworkConfig()
       cluster.networkConfig.enableFqdnNetworkPolicy = (
           options.enable_fqdn_network_policy)
+
+    if options.enable_insecure_binding_system_authenticated is not None:
+      if cluster.rbacBindingConfig is None:
+        cluster.rbacBindingConfig = self.messages.RBACBindingConfig()
+      cluster.rbacBindingConfig.enableInsecureBindingSystemAuthenticated = (
+          options.enable_insecure_binding_system_authenticated
+      )
+
+    if options.enable_insecure_binding_system_unauthenticated is not None:
+      if cluster.rbacBindingConfig is None:
+        cluster.rbacBindingConfig = self.messages.RBACBindingConfig()
+      cluster.rbacBindingConfig.enableInsecureBindingSystemUnauthenticated = (
+          options.enable_insecure_binding_system_unauthenticated
+      )
 
     return cluster
 
@@ -3240,9 +3284,14 @@ class APIAdapter(object):
   def UpdateUpgradeSettingsForNAP(self, options, max_surge, max_unavailable):
     """Updates upgrade setting for autoprovisioned node pool."""
 
-    if options.enable_autoprovisioning_surge_upgrade and options.enable_autoprovisioning_blue_green_upgrade:
+    if (
+        options.enable_autoprovisioning_surge_upgrade
+        and options.enable_autoprovisioning_blue_green_upgrade
+    ):
       raise util.Error(
-          'UpgradeSettings must contain only one of: --enable-autoprovisioning-surge-upgrade, --enable-autoprovisioning-blue-green-upgrade'
+          'UpgradeSettings must contain only one of:'
+          ' --enable-autoprovisioning-surge-upgrade,'
+          ' --enable-autoprovisioning-blue-green-upgrade'
       )
 
     upgrade_settings = self.messages.UpgradeSettings()
@@ -3997,6 +4046,19 @@ class APIAdapter(object):
     if options.enable_fqdn_network_policy is not None:
       update = self.messages.ClusterUpdate(
           desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
+
+    if (options.enable_insecure_binding_system_authenticated is not None or
+        options.enable_insecure_binding_system_unauthenticated is not None):
+      confg = self.messages.RBACBindingConfig()
+      if options.enable_insecure_binding_system_authenticated is not None:
+        confg.enableInsecureBindingSystemAuthenticated = (
+            options.enable_insecure_binding_system_authenticated
+        )
+      if options.enable_insecure_binding_system_unauthenticated is not None:
+        confg.enableInsecureBindingSystemUnauthenticated = (
+            options.enable_insecure_binding_system_unauthenticated
+        )
+      update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
 
     return update
 
@@ -5060,9 +5122,6 @@ class APIAdapter(object):
     else:
       return gke_constants.DEFAULT_DEGRADED_WARNING
 
-  def GetOperationError(self, operation):
-    return operation.statusMessage
-
   def ListOperations(self, project, location=None):
     if not location:
       location = '-'
@@ -5248,7 +5307,7 @@ class APIAdapter(object):
     for k in remove_labels:
       try:
         clus_labels.pop(k)
-      except KeyError as error:
+      except KeyError:
         # if at least one label not found on cluster, raise error
         raise util.Error(
             NO_SUCH_LABEL_ERROR_MSG.format(cluster=clus.name, name=k))
@@ -5655,6 +5714,34 @@ class APIAdapter(object):
         rayOperatorConfig=ray_operator_config
     )
     update = self.messages.ClusterUpdate(desiredAddonsConfig=addons_config)
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyRBACBindingConfig(
+      self, cluster_ref,
+      enable_insecure_binding_system_authenticated,
+      enable_insecure_binding_system_unauthenticated
+      ):
+    """Modify the RBACBindingConfig message."""
+    rbac_binding_config = self.messages.RBACBindingConfig()
+    if enable_insecure_binding_system_authenticated is not None:
+      rbac_binding_config.enableInsecureBindingSystemAuthenticated = (
+          enable_insecure_binding_system_authenticated
+      )
+    if enable_insecure_binding_system_unauthenticated is not None:
+      rbac_binding_config.enableInsecureBindingSystemUnauthenticated = (
+          enable_insecure_binding_system_unauthenticated
+      )
+    update = self.messages.ClusterUpdate(
+        desiredRbacBindingConfig=rbac_binding_config
+        )
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
             name=ProjectLocationCluster(
@@ -6870,7 +6957,7 @@ def _AddLinuxNodeConfigToNodeConfig(node_config, options, messages):
 
 
 def _AddWindowsNodeConfigToNodeConfig(node_config, options, messages):
-  """ "Adds WindowsNodeConfig to NodeConfig."""
+  """Adds WindowsNodeConfig to NodeConfig."""
 
   if options.windows_os_version is not None:
     if node_config.windowsNodeConfig is None:
@@ -7049,7 +7136,10 @@ def _GetTpuConfigForClusterUpdate(options, messages):
 
 def _GetMasterForClusterCreate(options, messages):
   """Gets the Master from create options."""
-  if options.master_logs is not None or options.enable_master_metrics is not None:
+  if (
+      options.master_logs is not None
+      or options.enable_master_metrics is not None
+  ):
     config = messages.MasterSignalsConfig()
 
     if options.master_logs is not None:

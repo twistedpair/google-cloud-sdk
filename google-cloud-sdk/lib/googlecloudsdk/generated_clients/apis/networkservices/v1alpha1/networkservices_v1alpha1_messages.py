@@ -3944,6 +3944,8 @@ class MulticastConsumerAssociation(_messages.Message):
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
       consumer association was created.
+    description: Optional. An optional text description of the multicast
+      consumer association.
     domainActivation: Reference to the domain activation in the same zone as
       the consumer association. [Deprecated] Use multicast_domain_activation
       instead.
@@ -3987,12 +3989,13 @@ class MulticastConsumerAssociation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  domainActivation = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  multicastDomainActivation = _messages.StringField(4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(2)
+  domainActivation = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  multicastDomainActivation = _messages.StringField(5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastDomain(_messages.Message):
@@ -4064,6 +4067,8 @@ class MulticastDomainActivation(_messages.Message):
     adminNetwork: Output only. [Output only] The URL of the admin network.
     createTime: Output only. [Output only] The timestamp when the multicast
       domain activation was created.
+    description: Optional. An optional text description of the multicast
+      domain activation.
     domain: Reference to the domain that is being activated. [Deprecated] Use
       multicast_domain instead.
     labels: Labels as key-value pairs
@@ -4102,11 +4107,12 @@ class MulticastDomainActivation(_messages.Message):
 
   adminNetwork = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  domain = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  multicastDomain = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(3)
+  domain = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  multicastDomain = _messages.StringField(6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastGroup(_messages.Message):
@@ -4118,6 +4124,8 @@ class MulticastGroup(_messages.Message):
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
       group was created.
+    description: Optional. An optional text description of the multicast
+      group.
     domainActivation: Reference to the domain activation in the same zone as
       the group. [Deprecated] Use multicast_domain_activation instead.
     groupDefinition: Optional. Reference to the global group definition for
@@ -4163,14 +4171,15 @@ class MulticastGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  domainActivation = _messages.StringField(2)
-  groupDefinition = _messages.StringField(3)
-  ipCidrRange = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  multicastDomainActivation = _messages.StringField(6)
-  multicastGroupDefinition = _messages.StringField(7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  description = _messages.StringField(2)
+  domainActivation = _messages.StringField(3)
+  groupDefinition = _messages.StringField(4)
+  ipCidrRange = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  multicastDomainActivation = _messages.StringField(7)
+  multicastGroupDefinition = _messages.StringField(8)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class MulticastGroupConsumerActivation(_messages.Message):
@@ -4182,6 +4191,8 @@ class MulticastGroupConsumerActivation(_messages.Message):
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
       group consumer activation was created.
+    description: Optional. An optional text description of the multicast group
+      consumer activation.
     labels: Optional. Labels as key-value pairs
     multicastConsumerAssociation: Required. The resource name of the multicast
       consumer association that is in the same zone as this multicast group
@@ -4223,11 +4234,12 @@ class MulticastGroupConsumerActivation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  multicastConsumerAssociation = _messages.StringField(3)
-  multicastGroup = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastConsumerAssociation = _messages.StringField(4)
+  multicastGroup = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastGroupDefinition(_messages.Message):
@@ -4239,6 +4251,8 @@ class MulticastGroupDefinition(_messages.Message):
   Fields:
     createTime: Output only. [Output only] The timestamp when the multicast
       group definition was created.
+    description: Optional. An optional text description of the multicast group
+      definition.
     ipCidrRange: Output only. [Output only] The multicast group IP address
       range.
     labels: Labels as key-value pairs.
@@ -4280,12 +4294,13 @@ class MulticastGroupDefinition(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  ipCidrRange = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  multicastDomain = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reservedInternalRange = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  description = _messages.StringField(2)
+  ipCidrRange = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  multicastDomain = _messages.StringField(5)
+  name = _messages.StringField(6)
+  reservedInternalRange = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -8267,8 +8282,8 @@ class RouteRule(_messages.Message):
       transformations, and so forth prior to forwarding the request to the
       selected origin.
     routeMethods: Optional. Allow overriding the set of methods that are
-      allowed for this route. When not set, Media CDN only allows safe methods
-      (GET, HEAD, and OPTIONS).
+      allowed for this route. When not set, Media CDN only allows `GET`,
+      `HEAD`, and `OPTIONS`.
     urlRedirect: Optional. The URL redirect configuration for requests that
       match this route. Only one of origin or `url_redirect` can be set.
   """
@@ -8287,8 +8302,8 @@ class RouteRuleRouteMethods(_messages.Message):
   r"""Allow overriding the set of methods that are allowed for a route.
 
   Fields:
-    allowedMethods: Required. The non-empty set of HTTP methods we allow for
-      this route.
+    allowedMethods: Required. The non-empty set of HTTP methods that are
+      allowed for this route.
   """
 
   allowedMethods = _messages.StringField(1, repeated=True)

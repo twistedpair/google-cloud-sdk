@@ -21,13 +21,20 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.core.exceptions import Error
 
-
-_THROUGHPUT_PROVISIONING_SUPPORTED_DISK_TYPES = (
+_SUPPORTED_DISK_TYPES_IOPS = frozenset([
+    'pd-extreme',
+    'cs-extreme',
+    'hyperdisk-extreme',
+    'hyperdisk-balanced',
+    'hyperdisk-balanced-high-availability',
+])
+_SUPPORTED_DISK_TYPES_THROUGHPUT = frozenset([
     'cs-throughput',
     'hyperdisk-throughput',
     'hyperdisk-balanced',
     'hyperdisk-ml',
-)
+    'hyperdisk-balanced-high-availability',
+])
 
 
 class UnknownDiskResourceError(Error):
@@ -214,13 +221,8 @@ def IsProvisioningTypeIops(disk_type):
   Returns:
     Whether the disk_type supports IOPS provisioning.
   """
-
-  return (disk_type.endswith('/pd-extreme') or
-          disk_type.endswith('/cs-extreme') or
-          disk_type.endswith('/hyperdisk-extreme') or
-          disk_type.endswith('/hyperdisk-balanced') or
-          disk_type in ['pd-extreme', 'cs-extreme', 'hyperdisk-extreme',
-                        'hyperdisk-balanced'])
+  disk_type_name = disk_type.split('/')[-1]
+  return disk_type_name in _SUPPORTED_DISK_TYPES_IOPS
 
 
 def IsProvisioningTypeThroughput(disk_type):
@@ -233,11 +235,5 @@ def IsProvisioningTypeThroughput(disk_type):
     Boolean, true if the disk_type supports throughput provisioning, false
     otherwise.
   """
-
-  return (
-      disk_type.endswith('/cs-throughput')
-      or disk_type.endswith('/hyperdisk-throughput')
-      or disk_type.endswith('/hyperdisk-balanced')
-      or disk_type.endswith('/hyperdisk-ml')
-      or disk_type in _THROUGHPUT_PROVISIONING_SUPPORTED_DISK_TYPES
-  )
+  disk_type_name = disk_type.split('/')[-1]
+  return disk_type_name in _SUPPORTED_DISK_TYPES_THROUGHPUT

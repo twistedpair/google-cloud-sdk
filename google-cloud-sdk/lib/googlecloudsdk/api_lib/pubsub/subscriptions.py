@@ -122,6 +122,7 @@ class SubscriptionsClient(object):
       use_table_schema=None,
       write_metadata=None,
       drop_unknown_fields=None,
+      bigquery_service_account_email=None,
       cloud_storage_bucket=None,
       cloud_storage_file_prefix=None,
       cloud_storage_file_suffix=None,
@@ -131,6 +132,7 @@ class SubscriptionsClient(object):
       cloud_storage_output_format=None,
       cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
+      cloud_storage_service_account_email=None,
       pubsub_export_topic=None,
       pubsub_export_topic_region=None,
   ):
@@ -171,6 +173,8 @@ class SubscriptionsClient(object):
         writing to BigQuery
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
         the topic schema when writing to BigQuery
+      bigquery_service_account_email (str): The service account to use when
+        writing to BigQuery
       cloud_storage_bucket (str): The name for the Cloud Storage bucket.
       cloud_storage_file_prefix (str): The prefix for Cloud Storage filename.
       cloud_storage_file_suffix (str): The suffix for Cloud Storage filename.
@@ -186,6 +190,8 @@ class SubscriptionsClient(object):
         schema when writing to Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
+      cloud_storage_service_account_email (str): The service account to use when
+        writing to Cloud Storage
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
       pubsub_export_topic_region (str): The Cloud region to which to publish
         messages.
@@ -217,6 +223,7 @@ class SubscriptionsClient(object):
             use_table_schema,
             write_metadata,
             drop_unknown_fields,
+            bigquery_service_account_email,
         ),
         cloudStorageConfig=self._CloudStorageConfig(
             cloud_storage_bucket,
@@ -228,6 +235,7 @@ class SubscriptionsClient(object):
             cloud_storage_output_format,
             cloud_storage_use_topic_schema,
             cloud_storage_write_metadata,
+            cloud_storage_service_account_email,
         ),
         pubsubExportConfig=self._PubsubExportConfig(
             pubsub_export_topic, pubsub_export_topic_region
@@ -418,6 +426,7 @@ class SubscriptionsClient(object):
       use_table_schema,
       write_metadata,
       drop_unknown_fields,
+      service_account_email,
   ):
     """Builds BigQueryConfig message from argument values.
 
@@ -428,6 +437,7 @@ class SubscriptionsClient(object):
       write_metadata (bool): Whether or not to write metadata fields
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
         the topic schema
+      service_account_email(str): The service account to use
 
     Returns:
       BigQueryConfig message or None
@@ -439,6 +449,7 @@ class SubscriptionsClient(object):
           useTableSchema=use_table_schema,
           writeMetadata=write_metadata,
           dropUnknownFields=drop_unknown_fields,
+          serviceAccountEmail=service_account_email,
       )
     return None
 
@@ -453,6 +464,7 @@ class SubscriptionsClient(object):
       output_format,
       use_topic_schema,
       write_metadata,
+      service_account_email,
   ):
     """Builds CloudStorageConfig message from argument values.
 
@@ -471,6 +483,7 @@ class SubscriptionsClient(object):
         writing to Cloud Storage.
       write_metadata (bool): Whether or not to write the subscription name and
         other metadata in the output.
+      service_account_email(str): The service account to use
 
     Returns:
       CloudStorageConfig message or None
@@ -483,6 +496,7 @@ class SubscriptionsClient(object):
           filenameDatetimeFormat=file_datetime_format,
           maxBytes=max_bytes,
           maxDuration=max_duration,
+          serviceAccountEmail=service_account_email,
       )
       if output_format == 'text':
         cloud_storage_config.textConfig = self.messages.TextConfig()
@@ -561,6 +575,7 @@ class SubscriptionsClient(object):
       use_table_schema=None,
       write_metadata=None,
       drop_unknown_fields=None,
+      bigquery_service_account_email=None,
       clear_bigquery_config=False,
       cloud_storage_bucket=None,
       cloud_storage_file_prefix=None,
@@ -571,6 +586,7 @@ class SubscriptionsClient(object):
       cloud_storage_output_format=None,
       cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
+      cloud_storage_service_account_email=None,
       clear_cloud_storage_config=False,
       clear_push_no_wrapper_config=False,
       pubsub_export_topic=None,
@@ -613,6 +629,8 @@ class SubscriptionsClient(object):
         writing to BigQuery
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
         the topic schema when writing to BigQuery
+      bigquery_service_account_email (str): The service account to use when
+        writing to BigQuery
       clear_bigquery_config (bool): If set, clear the BigQuery config from the
         subscription
       cloud_storage_bucket (bool): The name for the Cloud Storage bucket.
@@ -630,6 +648,8 @@ class SubscriptionsClient(object):
         schema when writing to Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
+      cloud_storage_service_account_email (str): The service account to use when
+        writing to Cloud Storage
       clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
         from the subscription.
       clear_push_no_wrapper_config(bool): If set, clear
@@ -658,6 +678,7 @@ class SubscriptionsClient(object):
           cloud_storage_output_format,
           cloud_storage_use_topic_schema,
           cloud_storage_write_metadata,
+          cloud_storage_service_account_email,
       )
 
     if clear_dead_letter_policy:
@@ -681,6 +702,7 @@ class SubscriptionsClient(object):
           use_table_schema,
           write_metadata,
           drop_unknown_fields,
+          bigquery_service_account_email,
       )
 
     if clear_pubsub_export_config:

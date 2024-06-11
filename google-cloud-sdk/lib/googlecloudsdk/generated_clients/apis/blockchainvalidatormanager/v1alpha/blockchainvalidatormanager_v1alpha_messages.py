@@ -13,15 +13,27 @@ from apitools.base.py import extra_types
 package = 'blockchainvalidatormanager'
 
 
+class BlockchainNode(_messages.Message):
+  r"""Configuration for creating a new blockchain node to deploy the
+  blockchain validator(s) to.
+
+  Fields:
+    ethereumDetails: Additional configuration specific to Ethereum blockchain
+      nodes.
+  """
+
+  ethereumDetails = _messages.MessageField('EthereumNodeDetails', 1)
+
+
 class BlockchainValidatorConfig(_messages.Message):
   r"""Represents the configuration of a blockchain validator, as it would be
   configured on a validator client.
 
   Enums:
-    BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
-      validator.
-    KeySourceValueValuesEnum: Immutable. The source of the voting key for the
-      blockchain validator.
+    BlockchainTypeValueValuesEnum: Required. Immutable. The blockchain type of
+      the validator.
+    KeySourceValueValuesEnum: Required. Immutable. The source of the voting
+      key for the blockchain validator.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -33,14 +45,14 @@ class BlockchainValidatorConfig(_messages.Message):
       Manager, or it will be offline (no attestations or blocks will be
       produced). If this node is offline or deleted, the validator will be
       offline.
-    blockchainType: Immutable. The blockchain type of the validator.
+    blockchainType: Required. Immutable. The blockchain type of the validator.
     createTime: Output only. [Output only] Create time stamp
     ethereumProtocolDetails: Optional. Ethereum-specific configuration for a
       blockchain validator.
     existingSeedPhraseReference: Optional. An existing seed phrase, read from
       Secret Manager.
-    keySource: Immutable. The source of the voting key for the blockchain
-      validator.
+    keySource: Required. Immutable. The source of the voting key for the
+      blockchain validator.
     labels: Optional. Labels as key value pairs
     name: Identifier. The name of the validator. It must have the format `"pro
       jects/{project}/locations/{location}/blockchainValidatorConfigs/{validat
@@ -68,7 +80,7 @@ class BlockchainValidatorConfig(_messages.Message):
   """
 
   class BlockchainTypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The blockchain type of the validator.
+    r"""Required. Immutable. The blockchain type of the validator.
 
     Values:
       BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
@@ -79,7 +91,8 @@ class BlockchainValidatorConfig(_messages.Message):
     ETHEREUM = 1
 
   class KeySourceValueValuesEnum(_messages.Enum):
-    r"""Immutable. The source of the voting key for the blockchain validator.
+    r"""Required. Immutable. The source of the voting key for the blockchain
+    validator.
 
     Values:
       KEY_SOURCE_UNSPECIFIED: Voting key source has not been specified, but
@@ -139,25 +152,25 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   configurations can be generated.
 
   Enums:
-    BlockchainNodeSourceValueValuesEnum: Immutable. The source of the
-      blockchain node for the validator configurations to be deployed to.
-    BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
-      validator.
-    KeySourceValueValuesEnum: Immutable. The source of the voting key for the
-      blockchain validator.
+    BlockchainNodeSourceValueValuesEnum: Required. Immutable. The source of
+      the blockchain node for the validator configurations to be deployed to.
+    BlockchainTypeValueValuesEnum: Required. Immutable. The blockchain type of
+      the validator.
+    KeySourceValueValuesEnum: Required. Immutable. The source of the voting
+      key for the blockchain validator.
 
   Fields:
-    blockchainNodeSource: Immutable. The source of the blockchain node for the
-      validator configurations to be deployed to.
-    blockchainType: Immutable. The blockchain type of the validator.
+    blockchainNodeSource: Required. Immutable. The source of the blockchain
+      node for the validator configurations to be deployed to.
+    blockchainType: Required. Immutable. The blockchain type of the validator.
     ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
       validator.
     existingBlockchainNodeSource: Configuration for deploying blockchain
       validators to an existing blockchain node.
     existingSeedPhraseReference: Optional. An existing seed phrase, read from
       Secret Manager.
-    keySource: Immutable. The source of the voting key for the blockchain
-      validator.
+    keySource: Required. Immutable. The source of the voting key for the
+      blockchain validator.
     newBlockchainNodeSource: Configuration for creating a new blockchain node
       to deploy the blockchain validator(s) to.
     remoteWeb3Signer: Optional. Connection details of a remote Web3Signer
@@ -172,8 +185,8 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   """
 
   class BlockchainNodeSourceValueValuesEnum(_messages.Enum):
-    r"""Immutable. The source of the blockchain node for the validator
-    configurations to be deployed to.
+    r"""Required. Immutable. The source of the blockchain node for the
+    validator configurations to be deployed to.
 
     Values:
       BLOCKCHAIN_NODE_SOURCE_UNSPECIFIED: Blockchain node source has not been
@@ -188,7 +201,7 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
     EXISTING_BLOCKCHAIN_NODE = 2
 
   class BlockchainTypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The blockchain type of the validator.
+    r"""Required. Immutable. The blockchain type of the validator.
 
     Values:
       BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
@@ -199,7 +212,8 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
     ETHEREUM = 1
 
   class KeySourceValueValuesEnum(_messages.Enum):
-    r"""Immutable. The source of the voting key for the blockchain validator.
+    r"""Required. Immutable. The source of the voting key for the blockchain
+    validator.
 
     Values:
       KEY_SOURCE_UNSPECIFIED: Voting key source has not been specified, but
@@ -221,7 +235,7 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   existingBlockchainNodeSource = _messages.MessageField('ExistingBlockchainNodeSource', 4)
   existingSeedPhraseReference = _messages.MessageField('ExistingSeedPhraseReferenceTemplate', 5)
   keySource = _messages.EnumField('KeySourceValueValuesEnum', 6)
-  newBlockchainNodeSource = _messages.MessageField('NewBlockchainNodeSource', 7)
+  newBlockchainNodeSource = _messages.MessageField('BlockchainNode', 7)
   remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 8)
   seedPhraseReference = _messages.MessageField('SeedPhraseReferenceTemplate', 9)
   validationWorkEnabled = _messages.BooleanField(10)
@@ -568,22 +582,22 @@ class EthereumNodeDetails(_messages.Message):
   r"""Ethereum-specific blockchain node details.
 
   Enums:
-    ConsensusClientValueValuesEnum: Required. The consensus client.
-    ExecutionClientValueValuesEnum: Required. The execution client
-    NetworkValueValuesEnum: Immutable. The Ethereum environment being
-      accessed.
+    ConsensusClientValueValuesEnum: Required. Immutable. The consensus client.
+    ExecutionClientValueValuesEnum: Required. Immutable. The execution client
+    NetworkValueValuesEnum: Required. Immutable. The Ethereum environment
+      being accessed.
 
   Fields:
-    consensusClient: Required. The consensus client.
-    executionClient: Required. The execution client
+    consensusClient: Required. Immutable. The consensus client.
+    executionClient: Required. Immutable. The execution client
     mevRelayUrls: Optional. URLs for MEV-relay services to use for block
       building. When set, a Google Cloud managed MEV-boost service is
       configured on the beacon client.
-    network: Immutable. The Ethereum environment being accessed.
+    network: Required. Immutable. The Ethereum environment being accessed.
   """
 
   class ConsensusClientValueValuesEnum(_messages.Enum):
-    r"""Required. The consensus client.
+    r"""Required. Immutable. The consensus client.
 
     Values:
       CONSENSUS_CLIENT_UNSPECIFIED: Consensus client has not been specified,
@@ -596,7 +610,7 @@ class EthereumNodeDetails(_messages.Message):
     LIGHTHOUSE = 1
 
   class ExecutionClientValueValuesEnum(_messages.Enum):
-    r"""Required. The execution client
+    r"""Required. Immutable. The execution client
 
     Values:
       EXECUTION_CLIENT_UNSPECIFIED: Execution client has not been specified,
@@ -608,7 +622,7 @@ class EthereumNodeDetails(_messages.Message):
     GETH = 1
 
   class NetworkValueValuesEnum(_messages.Enum):
-    r"""Immutable. The Ethereum environment being accessed.
+    r"""Required. Immutable. The Ethereum environment being accessed.
 
     Values:
       NETWORK_UNSPECIFIED: The network has not been specified, but should be.
@@ -813,18 +827,6 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
-
-
-class NewBlockchainNodeSource(_messages.Message):
-  r"""Configuration for creating a new blockchain node to deploy the
-  blockchain validator(s) to.
-
-  Fields:
-    ethereumNodeDetails: Additional configuration specific to Ethereum
-      blockchain nodes.
-  """
-
-  ethereumNodeDetails = _messages.MessageField('EthereumNodeDetails', 1)
 
 
 class Operation(_messages.Message):

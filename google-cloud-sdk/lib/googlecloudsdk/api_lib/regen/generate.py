@@ -57,10 +57,9 @@ class WrongDiscoveryDocError(Exception):
   """Unexpected discovery doc."""
 
 
-def GenerateApitoolsApi(base_dir, root_dir, api_name, api_version, api_config):
+def GenerateApitoolsApi(
+    discovery_doc, output_dir, root_package, api_name, api_version, api_config):
   """Invokes apitools generator for given api."""
-  discovery_doc = api_config['discovery_doc']
-
   args = [gen_client.__file__]
 
   unelidable_request_methods = api_config.get('unelidable_request_methods')
@@ -71,22 +70,20 @@ def GenerateApitoolsApi(base_dir, root_dir, api_name, api_version, api_config):
   args.extend([
       '--init-file=empty',
       '--nogenerate_cli',
-      '--infile={0}'.format(os.path.join(base_dir, root_dir, discovery_doc)),
-      '--outdir={0}'.format(os.path.join(base_dir, root_dir, api_name,
-                                         api_version)),
+      '--infile={0}'.format(discovery_doc),
+      '--outdir={0}'.format(os.path.join(output_dir, api_name, api_version)),
       '--overwrite',
       '--apitools_version=CloudSDK',
       '--user_agent=google-cloud-sdk',
       '--root_package',
-      '{0}.{1}.{2}'.format(
-          root_dir.replace('/', '.'), api_name, api_version),
+      '{0}.{1}.{2}'.format(root_package, api_name, api_version),
       'client',
   ])
   logging.debug('Apitools gen %s', args)
   gen_client.main(args)
 
-  package_dir = base_dir
-  for subdir in [root_dir, api_name, api_version]:
+  package_dir, dir_name = os.path.split(output_dir)
+  for subdir in [dir_name, api_name, api_version]:
     package_dir = os.path.join(package_dir, subdir)
     init_file = os.path.join(package_dir, '__init__.py')
     if not os.path.isfile(init_file):
@@ -144,11 +141,12 @@ def _MakeGapicClientDef(root_package, api_name, api_version):
       class_path=class_path)
 
 
-def _MakeApiMap(root_package, api_config):
-  """Converts a map of api_config into ApiDef.
+def _MakeApiMap(package_map, api_config):
+  """Combines package_map and api_config maps into ApiDef map.
 
   Args:
-    root_package: str, root path of where generate api will reside.
+    package_map: {api_name->api_version->root_package},
+                 package where each generated api resides.
     api_config: {api_name->api_version->{discovery,default,version,...}},
                 description of each api.
   Returns:
@@ -164,6 +162,7 @@ def _MakeApiMap(root_package, api_config):
     api_versions_map = apis_map.setdefault(api_name, {})
     has_default = False
     for api_version, api_config in six.iteritems(api_version_config):
+      root_package = package_map[api_name][api_version]
       if api_config.get('discovery_doc'):
         apitools_client = _MakeApitoolsClientDef(
             root_package, api_name, api_version
@@ -198,12 +197,13 @@ def _MakeApiMap(root_package, api_config):
   return apis_map
 
 
-def GenerateApiMap(base_dir, root_dir, api_config):
-  """Create an apis_map.py file in the given root_dir with for given api_config.
+def GenerateApiMap(output_file, package_map, api_config):
+  """Create an apis_map.py file for the given packages and api_config.
 
   Args:
-      base_dir: str, Path of directory for the project.
-      root_dir: str, Path of the map file location within the project.
+      output_file: Path of the output apis map file.
+      package_map: {api_name->api_version->root_package}, packages where the
+        generated APIs reside.
       api_config: regeneration config for all apis.
   """
 
@@ -213,12 +213,11 @@ def GenerateApiMap(base_dir, root_dir, api_config):
   tpl = template.Template(
       filename=os.path.join(os.path.dirname(__file__), 'template.tpl')
   )
-  api_map_file = os.path.join(base_dir, root_dir, 'apis_map.py')
-  logging.debug('Generating api map at %s', api_map_file)
+  logging.debug('Generating api map at %s', output_file)
 
-  api_map = _MakeApiMap(root_dir.replace('/', '.'), api_config)
+  api_map = _MakeApiMap(package_map, api_config)
   logging.debug('Creating following api map %s', api_map)
-  with files.FileWriter(api_map_file) as apis_map_file:
+  with files.FileWriter(output_file) as apis_map_file:
     ctx = runtime.Context(
         apis_map_file, api_def_source=api_def_source, apis_map=api_map
     )
@@ -226,28 +225,26 @@ def GenerateApiMap(base_dir, root_dir, api_config):
 
 
 def GenerateApitoolsResourceModule(
-    base_dir,
-    root_dir,
+    discovery_doc,
+    output_dir,
     api_name,
     api_version,
-    discovery_doc_path,
     custom_resources,
 ):
   """Create resource.py file for given api and its discovery doc.
 
   Args:
-      base_dir: str, Path of directory for the project.
-      root_dir: str, Path of the resource file location within the project.
+      discovery_doc: str, Path to the discovery doc.
+      output_dir: str, Path to the base output directory (module will be
+        generated underneath here in api_name/api_version subdir).
       api_name: str, name of the api.
       api_version: str, the version for the api.
-      discovery_doc_path: str, file path to discovery doc.
       custom_resources: dict, dictionary of custom resource collections.
   Raises:
     WrongDiscoveryDocError: if discovery doc api name/version does not match.
   """
 
-  discovery_doc = resource_generator.DiscoveryDoc.FromJson(
-      os.path.join(base_dir, root_dir, discovery_doc_path))
+  discovery_doc = resource_generator.DiscoveryDoc.FromJson(discovery_doc)
   if discovery_doc.api_version != api_version:
     logging.warning(
         'Discovery api version %s does not match %s, '
@@ -289,7 +286,7 @@ def GenerateApitoolsResourceModule(
           collection_name, collection_path, enable_uri_parsing, api_version)
       resource_collections.append(collection_info)
 
-  api_dir = os.path.join(base_dir, root_dir, api_name, api_version)
+  api_dir = os.path.join(output_dir, api_name, api_version)
   if not os.path.exists(api_dir):
     os.makedirs(api_dir)
   resource_file_name = os.path.join(api_dir, 'resources.py')

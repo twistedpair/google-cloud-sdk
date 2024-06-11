@@ -10,7 +10,6 @@ file:
 
 policy-file:
   arg_name: policy-file
-  required: true
   help_text: |-
     Absolute path to the OS policy assignment file on your local client. File must be in either JSON
     or YAML format. This file defines the OS policies that you want to apply to your VMs, the target

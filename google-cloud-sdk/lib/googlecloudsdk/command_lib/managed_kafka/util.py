@@ -37,8 +37,10 @@ def AddUpdateMaskForSubnets(_, args, request):
   if not args.subnets:
     return request
 
-  request.cluster = {"gcpConfig": {}}
-  request.updateMask = "gcpConfig.accessConfig.networkConfigs"
+  subnet_update_mask = "gcpConfig.accessConfig.networkConfigs"
+  request.updateMask = subnet_update_mask if not request.updateMask else (
+      request.updateMask + "," + subnet_update_mask
+  )
   return MapSubnetsToNetworkConfig(_, args, request)
 
 

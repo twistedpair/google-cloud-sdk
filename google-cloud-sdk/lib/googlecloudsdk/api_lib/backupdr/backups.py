@@ -37,6 +37,11 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "ServiceAccount",
         "Scopes",
         "NoScopes",
+        "CreateDisks",
+        "Description",
+        "Metadata",
+        "Labels",
+        "Tags",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -92,6 +97,7 @@ class BackupsClient(util.BackupDrClientBase):
         )
     )
 
+    # Network Interface
     if "NetworkInterfaces" in restore_config:
       network_interfaces_message = ComputeUtil.ParserNetworkInterface(
           self.messages, restore_config["NetworkInterfaces"]
@@ -101,6 +107,7 @@ class BackupsClient(util.BackupDrClientBase):
             network_interfaces_message
         )
 
+    # Service Account & Scopes
     service_accounts_message = ComputeUtil.ParserServiceAccount(
         self.messages,
         restore_config.get("ServiceAccount", None),
@@ -112,6 +119,46 @@ class BackupsClient(util.BackupDrClientBase):
       restore_request.computeInstanceRestoreProperties.serviceAccounts = (
           service_accounts_message
       )
+
+    # Create Disks
+    if "CreateDisks" in restore_config:
+      disks_message = ComputeUtil.ParserDisks(
+          self.messages, restore_config["CreateDisks"]
+      )
+      if disks_message:
+        restore_request.computeInstanceRestoreProperties.disks.extend(
+            disks_message
+        )
+
+    # Description
+    if "Description" in restore_config:
+      restore_request.computeInstanceRestoreProperties.description = (
+          restore_config["Description"]
+      )
+
+    # Metadata
+    if "Metadata" in restore_config:
+      metadata_message = ComputeUtil.ParseMetadata(
+          self.messages, restore_config["Metadata"]
+      )
+      if metadata_message:
+        restore_request.computeInstanceRestoreProperties.metadata = (
+            metadata_message
+        )
+
+    # Labels
+    if "Labels" in restore_config:
+      labels_message = ComputeUtil.ParseLabels(
+          self.messages, restore_config["Labels"]
+      )
+      if labels_message:
+        restore_request.computeInstanceRestoreProperties.labels = labels_message
+
+    # Tags
+    if "Tags" in restore_config:
+      tags_message = self.messages.Tags(items=restore_config["Tags"])
+      if tags_message:
+        restore_request.computeInstanceRestoreProperties.tags = tags_message
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(
         name=resource.RelativeName(), restoreBackupRequest=restore_request

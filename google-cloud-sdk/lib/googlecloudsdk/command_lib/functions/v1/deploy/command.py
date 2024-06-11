@@ -245,10 +245,6 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
     )
     function.dockerRepository = new_docker_repository
     if function.dockerRepository != old_docker_repository:
-      if function.dockerRepository:
-        cmek_util.ValidateDockerRepositoryForFunction(
-            function.dockerRepository, function_ref
-        )
       updated_fields.append('dockerRepository')
   if function.kmsKeyName and not function.dockerRepository:
     raise calliope_exceptions.RequiredArgumentException(

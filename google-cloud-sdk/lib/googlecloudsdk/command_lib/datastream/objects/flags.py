@@ -52,3 +52,18 @@ def AddPostgresqlObjectIdentifier(parser):
       '--postgresql-table',
       help="""PostgreSQL table for the object.""",
       required=True)
+
+
+def AddSqlServerObjectIdentifier(parser):
+  """Adds a --sqlserver-schema & --sqlserver-table flags to the given parser."""
+  sqlserver_object_parser = parser.add_group()
+  sqlserver_object_parser.add_argument(
+      '--sqlserver-schema',
+      help="""SQL Server schema for the object.""",
+      required=True,
+  )
+  sqlserver_object_parser.add_argument(
+      '--sqlserver-table',
+      help="""SQL Server table for the object.""",
+      required=True,
+  )

@@ -32,29 +32,47 @@ _PINNED_LEGACY_VERSION_RE = re.compile(r'^5\.5\.2-\d+$')
 _PINNED_VERSION_RE = re.compile(r'^\d+\.\d+\.\d+$')
 _SUPPORTED_OS_SHORT_NAMES_AND_VERSIONS = {
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.CENTOS: [
-        '7', '8',
+        '7',
+        '8',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.DEBIAN: [
-        '9', '10', '11', '12',
+        '9',
+        '10',
+        '11',
+        '12',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.RHEL: [
-        '7', '8', '9',
+        '7',
+        '8',
+        '9',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.ROCKY: [
-        '8', '9',
+        '8',
+        '9',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES: [
-        '12', '15',
+        '12',
+        '15',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.SLES_SAP: [
-        '12', '15',
+        '12',
+        '15',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.UBUNTU: [
-        '16.04', '18.04', '19.10', '20.04', '21.04', '21.10', '22.04', '23.04',
+        '16.04',
+        '18.04',
+        '19.10',
+        '20.04',
+        '21.04',
+        '21.10',
+        '22.04',
+        '23.04',
         '23.10',
+        '24.04',
     ],
     agent_policy.OpsAgentPolicy.Assignment.OsType.OsShortName.WINDOWS: [
-        '10', '6',
+        '10',
+        '6',
     ],
 }
 

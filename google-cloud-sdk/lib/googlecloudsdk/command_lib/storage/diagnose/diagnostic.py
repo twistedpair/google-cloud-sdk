@@ -20,15 +20,21 @@ with the storage system.
 
 import abc
 import contextlib
+import io
+import os
 import random
 import string
 import tempfile
 import time
-from typing import Dict, List
+from typing import Dict, List, Tuple
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
+
+_THREAD_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_THREAD_COUNT'
+_PROCESS_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_PROCESS_COUNT'
 
 
 class DiagnosticIgnorableError(errors.Error):
@@ -115,6 +121,11 @@ class Diagnostic(abc.ABC):
 
     try:
       self.temp_dir = file_utils.TemporaryDirectory()
+      log.status.Print(
+          'Creating {} test files in {}'.format(
+              object_count, self.temp_dir.path
+          )
+      )
       for i in range(object_count):
         with tempfile.NamedTemporaryFile(
             dir=self.temp_dir.path,
@@ -135,6 +146,80 @@ class Diagnostic(abc.ABC):
     except (OSError, EnvironmentError) as e:
       log.warning('Failed to create test files: {}'.format(e))
     return False
+
+  def _set_env_variable(self, variable_name: str, variable_value: any):
+    """Sets the environment variable to the given value.
+
+    Args:
+      variable_name: Name of the environment variable.
+      variable_value: Value of the environment variable.
+    """
+    os.environ[variable_name] = str(variable_value)
+
+  def _run_gcloud(self, args: List[str], in_str=None) -> Tuple[str, str]:
+    """Runs a gcloud command.
+
+    Args:
+      args: The arguments to pass to the gcloud command.
+      in_str: The input to pass to the gcloud command.
+
+    Returns:
+      A tuple containing the stdout and stderr of the command.
+    """
+    command = execution_utils.ArgsForGcloud()
+    command.extend(args)
+    out = io.StringIO()
+    err = io.StringIO()
+
+    returncode = execution_utils.Exec(
+        command,
+        no_exit=True,
+        out_func=out.write,
+        err_func=err.write,
+        in_str=in_str,
+    )
+
+    if returncode != 0 and not err.getvalue():
+      err.write('gcloud exited with return code {}'.format(returncode))
+    return (
+        out.getvalue() if returncode == 0 else None,
+        err.getvalue() if returncode != 0 else None,
+    )
+
+  def _run_cp(self, source_url: str, destination_url: str, in_str=None):
+    """Runs the gcloud cp command.
+
+    Args:
+      source_url: Source url for the cp command.
+      destination_url: Destination url for the cp command.
+      in_str: The input to pass to the gcloud cp command.
+
+    Raises:
+      DiagnosticIgnorableError: If the cp command fails.
+    """
+    args = [
+        'storage',
+        'cp',
+        source_url,
+        destination_url,
+        '--verbosity=debug',
+        '--log-http',
+    ]
+    output, err = self._run_gcloud(args, in_str=in_str)
+    del output  # unused
+    if err:
+      raise DiagnosticIgnorableError(
+          'Failed to copy objects from source {} to {} : {}'.format(
+              source_url, destination_url, err
+          )
+      )
+
+  def _set_parallelism_env_vars(self):
+    """Sets the process and thread count environment variables."""
+    if self._process_count is not None:
+      self._set_env_variable(_PROCESS_COUNT_ENV_VAR, self._process_count)
+    if self._thread_count is not None:
+      self._set_env_variable(_THREAD_COUNT_ENV_VAR, self._thread_count)
 
   def _generate_random_string(self, length: int) -> str:
     """Generates a random string of the given length.

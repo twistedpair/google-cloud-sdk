@@ -271,10 +271,6 @@ apis:
     v1:
       discovery_doc: certificatemanager_v1.json
       default: true
-    v1alpha1:
-      discovery_doc: certificatemanager_v1alpha1.json
-    v1alpha2:
-      discovery_doc: certificatemanager_v1alpha2.json
   cloudasset:
     v1:
       default: true
@@ -506,6 +502,10 @@ apis:
   connectgateway:
     v1alpha1:
       discovery_doc: connectgateway_v1alpha1.json
+    v1beta1:
+      discovery_doc: connectgateway_v1beta1.json
+    v1:
+      discovery_doc: connectgateway_v1.json
       default: true
   container:
     v1:
@@ -1848,6 +1848,7 @@ canonical_surfaces:
     command: container fleet packages
   connectgateway:
     name: connectgateway
+    # This API endpoint is automatically overridden based on the 'gkehub' override.
     hidden: true
   container:
     name: container

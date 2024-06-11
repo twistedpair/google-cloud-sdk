@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.container.fleet.memberships import errors as mem
 from googlecloudsdk.command_lib.container.fleet.memberships import util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
 
 KUBECONTEXT_FORMAT = 'connectgateway_{project}_{location}_{membership}'
@@ -263,3 +264,39 @@ def CheckGatewayApiEnablement(project_id, service_name):
       # Since we are not actually calling the API, there is nothing to retry,
       # so this signal to retry can be ignored
       pass
+
+
+def RecordClientSideFallback(e: Exception):
+  """Records that server-side Kubeconfig generation failed and the command fell back to client-side generation.
+
+  Logs to the debug log and reports a metric for analysis.
+
+  Args:
+    e: The caught error.
+  """
+  log.debug(
+      f'Server-side generation failed, fell back to client-side generation: {e}'
+  )
+  command_name = properties.VALUES.metrics.command_name.Get()
+  metrics.CustomTimedEvent('getCredentials_ClientSideFallback')
+  metrics.CustomKeyValue(
+      command_name, 'getCredentials_ClientSideFallback_Error', str(e)
+  )
+
+
+def RecordServerSideFailure(e: Exception):
+  """Records that server-side Kubeconfig generation failed.
+
+  Logs to the debug log and reports a metric for analysis.
+
+  Args:
+    e: The caught error.
+  """
+  log.debug(
+      f'Server-side generation failed: {e}'
+  )
+  command_name = properties.VALUES.metrics.command_name.Get()
+  metrics.CustomTimedEvent('getCredentials_ServerSideFailure')
+  metrics.CustomKeyValue(
+      command_name, 'getCredentials_ServerSideFailure_Error', str(e)
+  )

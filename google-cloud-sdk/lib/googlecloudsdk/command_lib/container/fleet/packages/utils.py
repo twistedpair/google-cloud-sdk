@@ -17,7 +17,6 @@
 import glob
 import os
 
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import yaml
 
 _DEFAULT_API_VERSION = 'v1alpha'
@@ -131,25 +130,10 @@ def _VariantNameFromDir(path):
   return variant_name
 
 
-def _SplitResourceBundleNameFromFleetPackage(fleet_package):
-  resource_bundle_name = (
-      fleet_package.resourceBundleSelector.resourceBundle.name
-  )
-  return resource_bundle_name.split('/')
-
-
 def _ExpandPathForUserAndVars(path):
   user_expanded_path = os.path.expanduser(path)
   vars_expanded_path = os.path.expandvars(user_expanded_path)
   return vars_expanded_path
-
-
-def _GetClientInstance(no_http=False):
-  return apis.GetClientInstance('configdelivery', ApiVersion(), no_http=no_http)
-
-
-def _GetMessagesModule():
-  return _GetClientInstance().MESSAGES_MODULE
 
 
 def GlobPatternFromSourceAndVariantsPattern(source, variants_pattern=None):
@@ -183,18 +167,6 @@ def ValidateSource(source):
     raise ValueError(
         f'Source must be a directory or file, got {expanded_source}.'
     )
-
-
-def ProjectFromFleetPackage(fleet_package):
-  """Project segment parsed from Fleet Package file input."""
-  split_bundle = _SplitResourceBundleNameFromFleetPackage(fleet_package)
-  return split_bundle[_RESOURCE_BUNDLE_PROJECT_SEGMENT]
-
-
-def LocationFromFleetPackage(fleet_package):
-  """Location segment parsed from Fleet Package file input."""
-  split_bundle = _SplitResourceBundleNameFromFleetPackage(fleet_package)
-  return split_bundle[_RESOURCE_BUNDLE_LOCATION_SEGMENT]
 
 
 def VariantsFromGlobPattern(glob_pattern):
@@ -285,44 +257,39 @@ def _GetMessagesFromResource(resource):
   info_message = resource.get('info', {}).get('message', '')
   if info_message:
     messages.append(info_message)
-  cluster_messages = (
+  cluster_infos = (
       resource.get('info', {})
       .get('rolloutStrategyInfo', {})
       .get('rollingStrategyInfo', {})
-      .get('clusters', {})
-      .get('messages', [])
+      .get('clusters', [])
   )
-  if cluster_messages:
-    messages.extend(cluster_messages)
-  current_messages = (
-      resource.get('info', {})
-      .get('rolloutStrategyInfo', {})
-      .get('rollingStrategyInfo', {})
-      .get('clusters', {})
-      .get('current', {})
-      .get('messages', [])
-  )
-  if current_messages:
-    messages.extend(current_messages)
-  cluster_messages = (
+  if cluster_infos:
+    if isinstance(cluster_infos, dict):
+      for cluster_info in cluster_infos.values():
+        if 'messages' in cluster_info:
+          messages.extend(cluster_info['messages'])
+        if 'current' in cluster_info and 'messages' in cluster_info['current']:
+          messages.extend(cluster_info['current']['messages'])
+  cluster_infos = (
       resource.get('info', {})
       .get('rolloutStrategyInfo', {})
       .get('allAtOnceStrategyInfo', {})
-      .get('clusters', {})
-      .get('messages', [])
+      .get('clusters', [])
   )
-  if cluster_messages:
-    messages.extend(cluster_messages)
-  current_messages = (
-      resource.get('info', {})
-      .get('rolloutStrategyInfo', {})
-      .get('allAtOnceStrategyInfo', {})
-      .get('clusters', {})
-      .get('current', {})
-      .get('messages', [])
-  )
-  if current_messages:
-    messages.extend(current_messages)
+  if cluster_infos:
+    if isinstance(cluster_infos, dict):
+      for cluster_info in cluster_infos.values():
+        if 'messages' in cluster_info:
+          messages.extend(cluster_info['messages'])
+        if 'current' in cluster_info and 'messages' in cluster_info['current']:
+          messages.extend(cluster_info['current']['messages'])
+    elif isinstance(cluster_infos, list):
+      for cluster_info in cluster_infos:
+        if 'messages' in cluster_info:
+          messages.extend(cluster_info['messages'])
+        curr_messages = cluster_info.get('current', {}).get('messages', [])
+        if curr_messages:
+          messages.extend(curr_messages)
   info_errors = resource.get('info', {}).get('errors', [])
   if info_errors:
     for error in info_errors:
@@ -368,3 +335,18 @@ def TransformListFleetPackageErrors(resource):
   elif len(messages) == 1:
     return messages[0]
   return messages
+
+
+def UpsertFleetPackageName(fleet_package, fully_qualified_name):
+  """Upserts the correct fleet package name into fleet package resource.
+
+  Args:
+    fleet_package: A user-inputted FleetPackage which may or may not have a name
+    fully_qualified_name: The fully qualified name of the FleetPackage resource.
+
+  Returns:
+    A FleetPackage that definitely has the correct fully qualified name.
+  """
+  if not fleet_package.name:
+    fleet_package.name = fully_qualified_name
+  return fleet_package

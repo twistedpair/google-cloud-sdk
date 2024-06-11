@@ -72,6 +72,7 @@ _ORACLE_EXCLUDED_OBJECTS_HELP_TEXT = """\
     }
   ```
 """
+
 _POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
   Path to a YAML (or JSON) file containing the PostgreSQL data sources to avoid backfilling.
 
@@ -86,6 +87,33 @@ _POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
               {
                 "table": "SAMPLE_TABLE",
                 "postgresqlColumns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+
+_SQLSERVER_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the SQL Server data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+        "schemas": [
+          {
+            "schema": "SAMPLE",
+            "tables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "columns": [
                   {
                     "column": "COL",
                   }
@@ -161,4 +189,8 @@ def AddBackfillStrategyGroup(parser, required=True):
   backfill_all_excluded_objects.add_argument(
       '--postgresql-excluded-objects',
       help=_POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT,
+  )
+  backfill_all_excluded_objects.add_argument(
+      '--sqlserver-excluded-objects',
+      help=_SQLSERVER_EXCLUDED_OBJECTS_HELP_TEXT,
   )

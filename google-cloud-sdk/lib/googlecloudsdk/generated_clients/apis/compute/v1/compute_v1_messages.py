@@ -1520,11 +1520,17 @@ class AdvancedMachineFeatures(_messages.Message):
   GuestOsFeatures of an Image (e.g., whether or not the OS in the Image
   supports nested virtualization being enabled or disabled).
 
+  Enums:
+    PerformanceMonitoringUnitValueValuesEnum: Type of Performance Monitoring
+      Unit requested on instance.
+
   Fields:
     enableNestedVirtualization: Whether to enable nested virtualization or not
       (default is false).
     enableUefiNetworking: Whether to enable UEFI networking for instance
       creation.
+    performanceMonitoringUnit: Type of Performance Monitoring Unit requested
+      on instance.
     threadsPerCore: The number of threads per physical core. To disable
       simultaneous multithreading (SMT) set this to 1. If unset, the maximum
       number of threads supported per core by the underlying processor is
@@ -1536,10 +1542,25 @@ class AdvancedMachineFeatures(_messages.Message):
       platform's SMT width.
   """
 
+  class PerformanceMonitoringUnitValueValuesEnum(_messages.Enum):
+    r"""Type of Performance Monitoring Unit requested on instance.
+
+    Values:
+      ARCHITECTURAL: Architecturally defined non-LLC events.
+      ENHANCED: Most documented core/L2 and LLC events.
+      PERFORMANCE_MONITORING_UNIT_UNSPECIFIED: <no description>
+      STANDARD: Most documented core/L2 events.
+    """
+    ARCHITECTURAL = 0
+    ENHANCED = 1
+    PERFORMANCE_MONITORING_UNIT_UNSPECIFIED = 2
+    STANDARD = 3
+
   enableNestedVirtualization = _messages.BooleanField(1)
   enableUefiNetworking = _messages.BooleanField(2)
-  threadsPerCore = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  visibleCoreCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  performanceMonitoringUnit = _messages.EnumField('PerformanceMonitoringUnitValueValuesEnum', 3)
+  threadsPerCore = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  visibleCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class AliasIpRange(_messages.Message):
@@ -32772,12 +32793,32 @@ class Condition(_messages.Message):
 class ConfidentialInstanceConfig(_messages.Message):
   r"""A set of Confidential Instance options.
 
+  Enums:
+    ConfidentialInstanceTypeValueValuesEnum: Defines the type of technology
+      used by the confidential instance.
+
   Fields:
+    confidentialInstanceType: Defines the type of technology used by the
+      confidential instance.
     enableConfidentialCompute: Defines whether the instance should have
       confidential compute enabled.
   """
 
-  enableConfidentialCompute = _messages.BooleanField(1)
+  class ConfidentialInstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of technology used by the confidential instance.
+
+    Values:
+      CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED: No type specified. Do not use
+        this value.
+      SEV: AMD Secure Encrypted Virtualization.
+      SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
+    """
+    CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
+    SEV = 1
+    SEV_SNP = 2
+
+  confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
+  enableConfidentialCompute = _messages.BooleanField(2)
 
 
 class ConnectionDraining(_messages.Message):
@@ -65941,6 +65982,9 @@ class Scheduling(_messages.Message):
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
+    maxRunDuration: Specifies the max run duration for the given instance. If
+      specified, the instance termination action will be performed at the end
+      of the run duration.
     minNodeCpus: The minimum number of virtual CPUs this instance will consume
       when running on a sole-tenant node.
     nodeAffinities: A set of node affinity and anti-affinity configurations.
@@ -65950,11 +65994,15 @@ class Scheduling(_messages.Message):
       standard instances, the default behavior is MIGRATE. For preemptible
       instances, the default and only possible behavior is TERMINATE. For more
       information, see Set VM host maintenance policy.
+    onInstanceStopAction: A SchedulingOnInstanceStopAction attribute.
     preemptible: Defines whether the instance is preemptible. This can only be
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
     provisioningModel: Specifies the provisioning model of the instance.
+    terminationTime: Specifies the timestamp, when the instance will be
+      terminated, in RFC3339 text format. If specified, the instance
+      termination action will be performed at the termination time.
   """
 
   class InstanceTerminationActionValueValuesEnum(_messages.Enum):
@@ -66003,11 +66051,14 @@ class Scheduling(_messages.Message):
   instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 2)
   localSsdRecoveryTimeout = _messages.MessageField('Duration', 3)
   locationHint = _messages.StringField(4)
-  minNodeCpus = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 6, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 7)
-  preemptible = _messages.BooleanField(8)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 9)
+  maxRunDuration = _messages.MessageField('Duration', 5)
+  minNodeCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 7, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 8)
+  onInstanceStopAction = _messages.MessageField('SchedulingOnInstanceStopAction', 9)
+  preemptible = _messages.BooleanField(10)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 11)
+  terminationTime = _messages.StringField(12)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -66041,6 +66092,19 @@ class SchedulingNodeAffinity(_messages.Message):
   key = _messages.StringField(1)
   operator = _messages.EnumField('OperatorValueValuesEnum', 2)
   values = _messages.StringField(3, repeated=True)
+
+
+class SchedulingOnInstanceStopAction(_messages.Message):
+  r"""Defines the behaviour for instances with the instance_termination_action
+  STOP.
+
+  Fields:
+    discardLocalSsd: If true, the contents of any attached Local SSD disks
+      will be discarded else, the Local SSD data will be preserved when the
+      instance is stopped at the end of the run duration/termination time.
+  """
+
+  discardLocalSsd = _messages.BooleanField(1)
 
 
 class Screenshot(_messages.Message):
@@ -80990,8 +81054,10 @@ class WeightedBackendService(_messages.Message):
       routeAction) . The selection of a backend service is determined only for
       new traffic. Once a user's request has been directed to a backend
       service, subsequent requests are sent to the same backend service as
-      determined by the backend service's session affinity policy. The value
-      must be from 0 to 1000.
+      determined by the backend service's session affinity policy. Don't
+      configure session affinity if you're using weighted traffic splitting.
+      If you do, the weighted traffic splitting configuration takes
+      precedence. The value must be from 0 to 1000.
   """
 
   backendService = _messages.StringField(1)

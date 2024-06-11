@@ -29,6 +29,7 @@ from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.container.fleet import errors
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
@@ -108,6 +109,7 @@ class FleetFlags:
     )
     self._AddSecurityPostureConfig(default_cluster_config_group)
     self._AddBinaryAuthorizationConfig(default_cluster_config_group)
+    self._AddCompliancePostureConfig(default_cluster_config_group)
 
   def _AddSecurityPostureConfig(
       self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
@@ -203,6 +205,45 @@ class FleetFlags:
         ),
     )
 
+  def _AddCompliancePostureConfig(
+      self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
+  ):
+    """Add compliance (posture) configuration."""
+    compliance_posture_config_group = default_cluster_config_group.add_group(
+        help='Compliance configuration.',
+        hidden=True,
+    )
+    compliance_posture_config_group.add_argument(
+        '--compliance',
+        choices=['enabled', 'disabled'],
+        default=None,
+        metavar='compliance=MODE',
+        help=textwrap.dedent("""\
+          To enable compliance for clusters in the fleet,
+
+            $ {command} --compliance=enabled
+
+          To disable compliance for clusters in the fleet,
+
+            $ {command} --compliance=disabled
+
+            """),
+    )
+    compliance_posture_config_group.add_argument(
+        '--compliance-standards',
+        type=arg_parsers.ArgList(),
+        default=None,
+        metavar='compliance-standards=STANDARDS',
+        help=textwrap.dedent("""\
+          To configure compliance standards for clusters in the fleet supply a
+          comma-delimited list:
+
+            $ {command} --compliance-standards=standard-1,standard-2
+
+          If this flag is supplied, it cannot be empty.
+          """),
+    )
+
   def _OperationResourceSpec(self):
     return concepts.ResourceSpec(
         'gkehub.projects.locations.operations',
@@ -272,13 +313,7 @@ class FleetFlagParser:
     fleet = self.messages.Fleet()
     fleet.name = util.FleetResourceName(self.Project())
     fleet.displayName = self._DisplayName()
-    if self.release_track == base.ReleaseTrack.ALPHA:
-      if existing_fleet is not None:
-        fleet.defaultClusterConfig = self._DefaultClusterConfig(
-            existing_fleet.defaultClusterConfig
-        )
-      else:
-        fleet.defaultClusterConfig = self._DefaultClusterConfig()
+    fleet.defaultClusterConfig = self._DefaultClusterConfig(existing_fleet)
     return fleet
 
   def _DisplayName(self) -> str:
@@ -400,17 +435,71 @@ class FleetFlagParser:
       )
     return []
 
+  def _CompliancePostureConfig(
+      self, existing_cfg: messages.Message = None
+  ) -> fleet_messages.CompliancePostureConfig:
+    """Construct compliance (posture) config from args."""
+    cfg = (
+        existing_cfg
+        if existing_cfg is not None
+        else self.messages.CompliancePostureConfig()
+    )
+
+    if self.args.compliance is not None:
+      if self.args.compliance == 'enabled':
+        cfg.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+        )
+      elif self.args.compliance == 'disabled':
+        cfg.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      else:
+        raise errors.InvalidComplianceMode(self.args.compliance)
+
+    if self.args.compliance_standards is not None:
+      cfg.complianceStandards = [
+          self.messages.ComplianceStandard(standard=s)
+          for s in self.args.compliance_standards
+      ]
+
+    return self.TrimEmpty(cfg)
+
   def _DefaultClusterConfig(
-      self, existing_default_cluster_config=None
+      self,
+      existing_fleet_cfg=None,
   ) -> fleet_messages.DefaultClusterConfig:
+    """Construct default cluster config from args.
+
+    Args:
+      existing_fleet_cfg: proto message of any currently existing configuration.
+
+    Returns:
+      Proto message for the default cluster configuration.
+    """
+    existing_default_cluster_config = (
+        existing_fleet_cfg.defaultClusterConfig
+        if existing_fleet_cfg is not None
+        else None
+    )
     ret = self.messages.DefaultClusterConfig()
-    ret.securityPostureConfig = self._SecurityPostureConfig()
+    # TODO(b/343764482) Fleet is GA and this check should be removed.
+    if self.release_track == base.ReleaseTrack.ALPHA:
+      ret.securityPostureConfig = self._SecurityPostureConfig()
+      if existing_default_cluster_config is not None:
+        ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig(
+            existing_default_cluster_config.binaryAuthorizationConfig
+        )
+      else:
+        ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
+
     if existing_default_cluster_config is not None:
-      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig(
-          existing_default_cluster_config.binaryAuthorizationConfig
+      ret.compliancePostureConfig = self._CompliancePostureConfig(
+          existing_default_cluster_config.compliancePostureConfig
       )
     else:
-      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
+      ret.compliancePostureConfig = self._CompliancePostureConfig()
+
     return self.TrimEmpty(ret)
 
   def OperationRef(self) -> resources.Resource:

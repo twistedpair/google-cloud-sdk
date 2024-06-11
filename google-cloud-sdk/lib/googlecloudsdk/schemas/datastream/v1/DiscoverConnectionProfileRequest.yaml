@@ -50,3 +50,6 @@ properties:
     description: |-
       PostgreSQL RDBMS to enrich with child data objects and metadata.
     $ref: PostgresqlRdbms.yaml
+  sqlServerRdbms:
+    description: SQLServer RDBMS to enrich with child data objects and metadata.
+    $ref: SqlServerRdbms.yaml

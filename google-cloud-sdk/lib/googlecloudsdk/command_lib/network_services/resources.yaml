@@ -175,3 +175,63 @@ multicastDomain:
     parameter_name: multicastDomainsId
     attribute_name: multicast_domain
     help: Id of the multicast domain.
+
+multicastGroupDefinition:
+  name: multicast group definition
+  collection: networkservices.projects.locations.multicastGroupDefinitions
+  request_id_field: multicastGroupDefinitionId
+  attributes:
+  - *project
+  - *location
+  - &multicastGroupDefinition
+    parameter_name: multicastGroupDefinitionsId
+    attribute_name: multicast_group_definition
+    help: Id of the multicast group definition.
+
+multicastDomainActivation:
+  name: multicast domain activation
+  collection: networkservices.projects.locations.multicastDomainActivations
+  request_id_field: multicastDomainActivationId
+  attributes:
+  - *project
+  - *location
+  - &multicastDomainActivation
+    parameter_name: multicastDomainActivationsId
+    attribute_name: multicast_domain_activation
+    help: Id of the multicast domain activation.
+
+multicastGroup:
+  name: multicast group
+  collection: networkservices.projects.locations.multicastGroups
+  request_id_field: multicastGroupId
+  attributes:
+  - *project
+  - *location
+  - &multicastGroup
+    parameter_name: multicastGroupsId
+    attribute_name: multicast_group
+    help: Id of the multicast group.
+
+multicastConsumerAssociation:
+  name: multicast consumer association
+  collection: networkservices.projects.locations.multicastConsumerAssociations
+  request_id_field: multicastConsumerAssociationId
+  attributes:
+  - *project
+  - *location
+  - &multicastConsumerAssociation
+    parameter_name: multicastConsumerAssociationsId
+    attribute_name: multicast_consumer_association
+    help: Id of the multicast consumer association.
+
+multicastGroupConsumerActivation:
+  name: multicast group consumer activation
+  collection: networkservices.projects.locations.multicastGroupConsumerActivations
+  request_id_field: multicastGroupConsumerActivationId
+  attributes:
+  - *project
+  - *location
+  - &multicastGroupConsumerActivation
+    parameter_name: multicastGroupConsumerActivationsId
+    attribute_name: multicast_group_consumer_activation
+    help: Id of the multicast group consumer activation.

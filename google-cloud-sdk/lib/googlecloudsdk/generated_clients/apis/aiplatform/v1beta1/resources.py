@@ -88,6 +88,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CACHEDCONTENTS = (
+      'projects.locations.cachedContents',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/cachedContents/'
+              '{cachedContentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_CUSTOMJOBS = (
       'projects.locations.customJobs',
       '{+name}',

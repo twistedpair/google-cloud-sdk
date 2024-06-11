@@ -34,3 +34,6 @@ properties:
   postgresqlRdbms:
     description: Enriched PostgreSQL RDBMS object.
     $ref: PostgresqlRdbms.yaml
+  sqlServerRdbms:
+    description: Enriched SQLServer RDBMS object.
+    $ref: SqlServerRdbms.yaml

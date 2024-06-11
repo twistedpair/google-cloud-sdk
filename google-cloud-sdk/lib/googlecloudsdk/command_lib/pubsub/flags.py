@@ -459,6 +459,15 @@ def AddBigQueryConfigFlags(
           ' BigQuery table schema.'
       ),
   )
+  bigquery_config_group.add_argument(
+      '--bigquery-service-account-email',
+      default=None,
+      help=(
+          'The service account email to use when writing to BigQuery. If'
+          ' unspecified, uses the Pub/Sub service agent'
+          ' (https://cloud.google.com/iam/docs/service-account-types#service-agents).'
+      ),
+  )
 
 
 def AddCloudStorageConfigFlags(parser, is_update, enable_use_topic_schema):
@@ -583,6 +592,15 @@ def AddCloudStorageConfigFlags(parser, is_update, enable_use_topic_schema):
             ' --cloud-storage-output-format=avro.'
         ),
     )
+  cloud_storage_config_group.add_argument(
+      '--cloud-storage-service-account-email',
+      default=None,
+      help=(
+          'The service account email to use when writing to Cloud Storage. If'
+          ' unspecified, uses the Pub/Sub service agent'
+          ' (https://cloud.google.com/iam/docs/service-account-types#service-agents).'
+      ),
+  )
 
 
 def AddPubsubExportConfigFlags(parser, is_update):
@@ -892,13 +910,17 @@ def AddSchemaSettingsFlags(parser, is_update=False):
   )
 
 
-def AddIngestionDatasourceFlags(parser, is_update=False):
+def AddIngestionDatasourceFlags(
+    parser, is_update=False, include_ingestion_from_cloud_storage_flags=False
+):
   """Adds the flags for Datasource Ingestion.
 
   Args:
     parser: The argparse parser
     is_update: (bool) If true, add a wrapper group with
       clear-ingestion-data-source-settings as a mutually exclusive argument.
+    include_ingestion_from_cloud_storage_flags: whether to include ingestion
+      from Cloud Storage flags
   """
   current_group = parser
 
@@ -920,13 +942,14 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
     )
     current_group = clear_settings_group
 
-  ingestion_source_types_group = current_group.add_mutually_exclusive_group()
+  # TODO(b/289117408): use `current_group.add_mutually_exclusive_group` here.
+  ingestion_source_types_group = current_group.add_argument_group()
 
   aws_kinesis_group = ingestion_source_types_group.add_argument_group(
       help=(
           'The following flags are for specifying ingestion settings for an'
           ' import topic from Amazon Web Services (AWS) Kinesis Data Streams'
-      )
+      ),
   )
   aws_kinesis_group.add_argument(
       '--kinesis-ingestion-stream-arn',
@@ -963,6 +986,54 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
       ),
       required=True,
   )
+
+  if include_ingestion_from_cloud_storage_flags:
+    cloud_storage_group = ingestion_source_types_group.add_argument_group(
+        help=(
+            'The following flags are for specifying ingestion settings for an'
+            ' import topic from Cloud Storage'
+        ),
+        hidden=True,
+    )
+    cloud_storage_group.add_argument(
+        '--cloud-storage-ingestion-bucket',
+        default=None,
+        help='The Cloud Storage bucket from which to ingest data.',
+        required=True,
+    )
+    cloud_storage_group.add_argument(
+        '--cloud-storage-ingestion-input-format',
+        default=None,
+        help=(
+            "The format of the data in the Cloud Storage bucket ('text',"
+            " 'avro', 'pubsub_avro')."
+        ),
+        required=True,
+    )
+    cloud_storage_group.add_argument(
+        '--cloud-storage-ingestion-text-delimiter',
+        default=None,
+        help='Delimiter to use with text format when partioning the object.',
+        required=False,
+    )
+    cloud_storage_group.add_argument(
+        '--cloud-storage-ingestion-minimum-object-create-time',
+        default=None,
+        help=(
+            'Only Cloud Storage objects with a larger or equal creation'
+            ' timestamp will be ingested.'
+        ),
+        required=False,
+    )
+    cloud_storage_group.add_argument(
+        '--cloud-storage-ingestion-match-glob',
+        default=None,
+        help=(
+            'Glob pattern used to match Cloud Storage objects that will be'
+            ' ingested. If unset, all objects will be ingested.'
+        ),
+        required=False,
+    )
 
 
 def AddCommitSchemaFlags(parser):

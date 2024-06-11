@@ -35,6 +35,21 @@ class AddAddressGroupItemsRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class AddDNSPeeringZoneRequest(_messages.Message):
+  r"""Request used by the AddDnsPeeringZone method.
+
+  Fields:
+    hostname: Required. DNS hostname to add to DNS peering zone.
+    requestId: Optional. An optional request ID to identify requests.
+    targetNetwork: Optional. An optional target VPC network override. If not
+      set, it will default to the partner network.
+  """
+
+  hostname = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  targetNetwork = _messages.StringField(3)
+
+
 class AddressGroup(_messages.Message):
   r"""AddressGroup is a resource that specifies how a collection of IP/DNS
   used in Firewall Policy.
@@ -1839,40 +1854,13 @@ class MirroringDeploymentGroup(_messages.Message):
 class MirroringDeploymentGroupConnectedEndpointGroup(_messages.Message):
   r"""An endpoint group connected to this deployment group.
 
-  Messages:
-    AssociationsValue: Output only. Associations for this endpoint group.
-
   Fields:
-    associations: Output only. Associations for this endpoint group.
+    associations: Output only. The list of Mirroring Endpoint Group
+      Associations.
     name: Output only. A connected mirroring endpoint group.
   """
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AssociationsValue(_messages.Message):
-    r"""Output only. Associations for this endpoint group.
-
-    Messages:
-      AdditionalProperty: An additional property for a AssociationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AssociationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AssociationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A boolean attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.BooleanField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  associations = _messages.MessageField('AssociationsValue', 1)
+  associations = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
 
 
@@ -1964,8 +1952,8 @@ class MirroringEndpointGroupAssociation(_messages.Message):
     locationsDetails: Output only. The list of locations that this association
       is in and its details.
     mirroringEndpointGroup: Required. Immutable. The Mirroring Endpoint Group
-      that this resource is connected to. Format is: `organizations/{organizat
-      ion}/locations/global/mirroringEndpointGroups/{mirroringEndpointGroup}`
+      that this resource is connected to. Format is: `projects/{project}/locat
+      ions/global/mirroringEndpointGroups/{mirroringEndpointGroup}`
     name: Immutable. Identifier. The name of the
       MirroringEndpointGroupAssociation.
     network: Required. Immutable. The VPC network associated. Format:
@@ -2353,127 +2341,6 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   """
 
   firewallEndpoint = _messages.MessageField('FirewallEndpoint', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworksecurityOrganizationsLocationsMirroringEndpointGroupsCreateRequest(_messages.Message):
-  r"""A
-  NetworksecurityOrganizationsLocationsMirroringEndpointGroupsCreateRequest
-  object.
-
-  Fields:
-    mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
-      the request body.
-    mirroringEndpointGroupId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and
-      mirroring_endpoint_group_id from the method_signature of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
-  mirroringEndpointGroupId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworksecurityOrganizationsLocationsMirroringEndpointGroupsDeleteRequest(_messages.Message):
-  r"""A
-  NetworksecurityOrganizationsLocationsMirroringEndpointGroupsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworksecurityOrganizationsLocationsMirroringEndpointGroupsGetRequest(_messages.Message):
-  r"""A NetworksecurityOrganizationsLocationsMirroringEndpointGroupsGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityOrganizationsLocationsMirroringEndpointGroupsListRequest(_messages.Message):
-  r"""A
-  NetworksecurityOrganizationsLocationsMirroringEndpointGroupsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListMirroringEndpointGroupsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworksecurityOrganizationsLocationsMirroringEndpointGroupsPatchRequest(_messages.Message):
-  r"""A
-  NetworksecurityOrganizationsLocationsMirroringEndpointGroupsPatchRequest
-  object.
-
-  Fields:
-    mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
-      the request body.
-    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the MirroringEndpointGroup resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -4013,7 +3880,7 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsCreateRe
   Fields:
     mirroringEndpointGroupAssociation: A MirroringEndpointGroupAssociation
       resource to be passed as the request body.
-    mirroringEndpointGroupAssociationId: Required. Id of the requesting object
+    mirroringEndpointGroupAssociationId: Optional. Id of the requesting object
       If auto-generating Id server-side, remove this field and
       mirroring_endpoint_group_association_id from the method_signature of
       Create RPC
@@ -4128,6 +3995,123 @@ class NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchReq
   updateMask = _messages.StringField(4)
 
 
+class NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointGroupsCreateRequest
+  object.
+
+  Fields:
+    mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
+      the request body.
+    mirroringEndpointGroupId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      mirroring_endpoint_group_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
+  mirroringEndpointGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListMirroringEndpointGroupsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsMirroringEndpointGroupsPatchRequest
+  object.
+
+  Fields:
+    mirroringEndpointGroup: A MirroringEndpointGroup resource to be passed as
+      the request body.
+    name: Immutable. Identifier. The name of the MirroringEndpointGroup.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MirroringEndpointGroup resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  mirroringEndpointGroup = _messages.MessageField('MirroringEndpointGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworksecurityProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsOperationsCancelRequest object.
 
@@ -4175,6 +4159,21 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsAddDNSPeeringZoneRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsAddDNSPeeringZon
+  eRequest object.
+
+  Fields:
+    addDNSPeeringZoneRequest: A AddDNSPeeringZoneRequest resource to be passed
+      as the request body.
+    name: Required. Name of the PartnerSSEEnvironment to add the DNS peering
+      zone to.
+  """
+
+  addDNSPeeringZoneRequest = _messages.MessageField('AddDNSPeeringZoneRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsCreateRequest(_messages.Message):
@@ -4260,6 +4259,21 @@ class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsListRequest(_message
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsPartnerSSEEnvironmentsRemoveDNSPeeringZoneRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsPartnerSSEEnvironmentsRemoveDNSPeering
+  ZoneRequest object.
+
+  Fields:
+    name: Required. Name of the PartnerSSEEnvironment to remove the DNS
+      peering zone from.
+    removeDNSPeeringZoneRequest: A RemoveDNSPeeringZoneRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeDNSPeeringZoneRequest = _messages.MessageField('RemoveDNSPeeringZoneRequest', 2)
 
 
 class NetworksecurityProjectsLocationsPartnerSSEGatewaysCreateRequest(_messages.Message):
@@ -5386,6 +5400,7 @@ class PartnerSSEEnvironment(_messages.Message):
   Fields:
     createTime: Output only. [Output only] Create time stamp
     deleteTime: Output only. [Output only] Delete time stamp
+    dnsPeeringZones: Optional. Configured DNS peering zones.
     labels: Optional. Labels as key value pair
     name: Identifier. Name of the Partner SSE Environment. Partner SSE
       Environment is global so the name should be unique per project. Partners
@@ -5447,15 +5462,30 @@ class PartnerSSEEnvironment(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  partnerNetwork = _messages.StringField(5)
-  sseNetwork = _messages.StringField(6)
-  sseNetworkingRanges = _messages.StringField(7, repeated=True)
-  sseProject = _messages.StringField(8)
-  sseService = _messages.EnumField('SseServiceValueValuesEnum', 9)
-  symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 10)
-  updateTime = _messages.StringField(11)
+  dnsPeeringZones = _messages.MessageField('PartnerSSEEnvironmentDNSPeeringZone', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  partnerNetwork = _messages.StringField(6)
+  sseNetwork = _messages.StringField(7)
+  sseNetworkingRanges = _messages.StringField(8, repeated=True)
+  sseProject = _messages.StringField(9)
+  sseService = _messages.EnumField('SseServiceValueValuesEnum', 10)
+  symantecOptions = _messages.MessageField('PartnerSSEEnvironmentSymantecEnvironmentOptions', 11)
+  updateTime = _messages.StringField(12)
+
+
+class PartnerSSEEnvironmentDNSPeeringZone(_messages.Message):
+  r"""Message describing a single DNS peering zone from the partner-facing
+  network to a target_network.
+
+  Fields:
+    hostname: Required. DNS hostname to add to DNS peering zone.
+    targetNetwork: Optional. Full URI of the target VPC network for the DNS
+      peering zone.
+  """
+
+  hostname = _messages.StringField(1)
+  targetNetwork = _messages.StringField(2)
 
 
 class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
@@ -5616,6 +5646,8 @@ class PartnerSSERealm(_messages.Message):
     sseNetwork: Output only. [Output only] CDEN-owned network to be peered
       with partner_network
     sseProject: Output only. [Output only] CDEN owned project owning sse_vpc
+    sseProjectNumber: Output only. [Output only] CDEN owned project owning
+      sse_vpc
     sseVpc: Output only. [Output only] CDEN owned VPC to be peered with
       partner_vpc This field is deprecated. Use sse_network instead.
     state: Output only. [Output Only] State of the realm. It can be either
@@ -5672,9 +5704,10 @@ class PartnerSSERealm(_messages.Message):
   partnerVpc = _messages.StringField(7)
   sseNetwork = _messages.StringField(8)
   sseProject = _messages.StringField(9)
-  sseVpc = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  sseProjectNumber = _messages.IntegerField(10)
+  sseVpc = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class PartnerSSERealmPartnerSSERealmPanOptions(_messages.Message):
@@ -5711,6 +5744,21 @@ class RemoveAddressGroupItemsRequest(_messages.Message):
 
   items = _messages.StringField(1, repeated=True)
   requestId = _messages.StringField(2)
+
+
+class RemoveDNSPeeringZoneRequest(_messages.Message):
+  r"""Request used by the RemoveDnsPeeringZone method.
+
+  Fields:
+    hostname: Required. DNS hostname to remove from DNS peering zone.
+    requestId: Optional. An optional request ID to identify requests.
+    targetNetwork: Optional. An optional target VPC network override. If not
+      set, it will default to the partner network.
+  """
+
+  hostname = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+  targetNetwork = _messages.StringField(3)
 
 
 class Rule(_messages.Message):

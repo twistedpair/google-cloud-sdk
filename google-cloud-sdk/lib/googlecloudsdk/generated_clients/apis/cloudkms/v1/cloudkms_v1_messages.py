@@ -1450,6 +1450,7 @@ class CloudkmsProjectsShowEffectiveAutokeyConfigRequest(_messages.Message):
 
 class CryptoKey(_messages.Message):
   r"""A CryptoKey represents a logical key that can be used for cryptographic
+
   operations. A CryptoKey is made up of zero or more versions, which represent
   the actual key material used in cryptographic operations.
 
@@ -1476,6 +1477,15 @@ class CryptoKey(_messages.Message):
       hours.
     importOnly: Immutable. Whether this key may contain imported versions
       only.
+    keyAccessJustificationsPolicy: Optional. The policy used for Key Access
+      Justifications Policy Enforcement. If this field is present and this key
+      is enrolled in Key Access Justifications Policy Enforcement, the policy
+      will be evaluated in Encrypt, Decrypt, and Sign operations, and the
+      operation will fail if rejected by the policy. The policy is defined by
+      specifying zero or more allowed justification codes.
+      https://cloud.google.com/assured-workloads/key-access-
+      justifications/docs/justification-codes By default, this field is
+      absent, and all justification codes are allowed.
     labels: Labels with user-defined metadata. For more information, see
       [Labeling Keys](https://cloud.google.com/kms/docs/labeling-keys).
     name: Output only. The resource name for this CryptoKey in the format
@@ -1556,13 +1566,16 @@ class CryptoKey(_messages.Message):
   cryptoKeyBackend = _messages.StringField(2)
   destroyScheduledDuration = _messages.StringField(3)
   importOnly = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  nextRotationTime = _messages.StringField(7)
-  primary = _messages.MessageField('CryptoKeyVersion', 8)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 9)
-  rotationPeriod = _messages.StringField(10)
-  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 11)
+  keyAccessJustificationsPolicy = _messages.MessageField(
+      'KeyAccessJustificationsPolicy', 5
+  )
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  nextRotationTime = _messages.StringField(8)
+  primary = _messages.MessageField('CryptoKeyVersion', 9)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 10)
+  rotationPeriod = _messages.StringField(11)
+  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 12)
 
 
 class CryptoKeyVersion(_messages.Message):
@@ -2685,6 +2698,83 @@ class ImportJob(_messages.Message):
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 8)
   publicKey = _messages.MessageField('WrappingPublicKey', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class KeyAccessJustificationsPolicy(_messages.Message):
+  r"""A KeyAccessJustificationsPolicy specifies zero or more allowed
+
+  AccessReason values for Encrypt, Decrypt, and Sign requests on a CryptoKey.
+
+  Enums:
+    AllowedAccessReasonsValueListEntryValuesEnum:
+
+  Fields:
+    allowedAccessReasons: The list of allowed reasons for access to a
+      CryptoKey. Zero allowed access reasons means all Encrypt, Decrypt, and
+      Sign requests for the CryptoKey associated with this policy will fail.
+  """
+
+  class AllowedAccessReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""AllowedAccessReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      REASON_UNSPECIFIED: Unspecified access reason.
+      CUSTOMER_INITIATED_SUPPORT: Customer-initiated support.
+      GOOGLE_INITIATED_SERVICE: Google-initiated access for system management
+        and troubleshooting.
+      THIRD_PARTY_DATA_REQUEST: Google-initiated access in response to a legal
+        request or legal process.
+      GOOGLE_INITIATED_REVIEW: Google-initiated access for security, fraud,
+        abuse, or compliance purposes.
+      CUSTOMER_INITIATED_ACCESS: Customer uses their account to perform any
+        access to their own data which their IAM policy authorizes.
+      GOOGLE_INITIATED_SYSTEM_OPERATION: Google systems access customer data
+        to help optimize the structure of the data or quality for future uses
+        by the customer.
+      REASON_NOT_EXPECTED: No reason is expected for this key request.
+      MODIFIED_CUSTOMER_INITIATED_ACCESS: Customer uses their account to
+        perform any access to their own data which their IAM policy
+        authorizes, and one of the following is true: * A Google administrator
+        has reset the root-access account associated with the user's
+        organization within the past 7 days. * A Google-initiated emergency
+        access operation has interacted with a resource in the same project or
+        folder as the currently accessed resource within the past 7 days.
+      MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION: Google systems access
+        customer data to help optimize the structure of the data or quality
+        for future uses by the customer, and one of the following is true: * A
+        Google administrator has reset the root-access account associated with
+        the user's organization within the past 7 days. * A Google-initiated
+        emergency access operation has interacted with a resource in the same
+        project or folder as the currently accessed resource within the past 7
+        days.
+      GOOGLE_RESPONSE_TO_PRODUCTION_ALERT: Google-initiated access to maintain
+        system reliability.
+      CUSTOMER_AUTHORIZED_WORKFLOW_SERVICING: One of the following operations
+        is being executed while simultaneously encountering an internal
+        technical issue which prevented a more precise justification code from
+        being generated: * Your account has been used to perform any access to
+        your own data which your IAM policy authorizes. * An automated Google
+        system operates on encrypted customer data which your IAM policy
+        authorizes. * Customer-initiated Google support access. * Google-
+        initiated support access to protect system reliability.
+    """
+
+    REASON_UNSPECIFIED = 0
+    CUSTOMER_INITIATED_SUPPORT = 1
+    GOOGLE_INITIATED_SERVICE = 2
+    THIRD_PARTY_DATA_REQUEST = 3
+    GOOGLE_INITIATED_REVIEW = 4
+    CUSTOMER_INITIATED_ACCESS = 5
+    GOOGLE_INITIATED_SYSTEM_OPERATION = 6
+    REASON_NOT_EXPECTED = 7
+    MODIFIED_CUSTOMER_INITIATED_ACCESS = 8
+    MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION = 9
+    GOOGLE_RESPONSE_TO_PRODUCTION_ALERT = 10
+    CUSTOMER_AUTHORIZED_WORKFLOW_SERVICING = 11
+
+  allowedAccessReasons = _messages.EnumField(
+      'AllowedAccessReasonsValueListEntryValuesEnum', 1, repeated=True
+  )
 
 
 class KeyHandle(_messages.Message):

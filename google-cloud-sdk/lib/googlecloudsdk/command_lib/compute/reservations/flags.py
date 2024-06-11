@@ -142,25 +142,34 @@ def GetAcceleratorFlag(custom_name=None):
       help=help_text)
 
 
-def GetSharedSettingFlag(custom_name=None):
+def GetSharedSettingFlag(custom_name=None, support_folder_share_setting=False):
   """Gets the --share-setting flag."""
   help_text = """\
   Specify if this reservation is shared, and if so, the type of sharing. If you
   omit this flag, this value is local (not shared) by default.
   """
+  choices = ['local', 'projects']
+  if support_folder_share_setting:
+    choices.append('folders')
   return base.Argument(
       custom_name if custom_name else '--share-setting',
-      choices=['local', 'projects', 'folders'],
+      choices=choices,
       help=help_text)
 
 
-def GetShareWithFlag(custom_name=None):
+def GetShareWithFlag(custom_name=None, support_folder_share_setting=False):
   """Gets the --share-with flag."""
   help_text = """\
-  If this reservation is shared (--share-setting is not local), provide a list
-  of all of the specific projects or folders that this reservation is shared
-  with. List must contain project IDs or project numbers or folder IDs.
-  """
+    If this reservation is shared (--share-setting is not local), provide a list
+    of all of the specific projects that this reservation is shared with. List
+    must contain project IDs or project numbers.
+    """
+  if support_folder_share_setting:
+    help_text = """\
+    If this reservation is shared (--share-setting is not local), provide a list
+    of all of the specific projects or folders that this reservation is shared
+    with. List must contain project IDs or project numbers or folder IDs.
+    """
   return base.Argument(
       custom_name if custom_name else '--share-with',
       type=arg_parsers.ArgList(min_length=1),
@@ -260,7 +269,7 @@ def GetSourceInstanceTemplateFlag(custom_name=None):
 
 def AddCreateFlags(parser,
                    support_fleet=False,
-                   support_share_setting=False,
+                   support_folder_share_setting=False,
                    support_ssd_count=False,
                    support_auto_delete=False):
   """Adds all flags needed for the create command."""
@@ -308,12 +317,19 @@ def AddCreateFlags(parser,
   specific_sku_group.AddArgument(specific_sku_properties_group)
   specific_sku_group.AddToParser(parser)
 
-  if support_share_setting:
-    share_group = base.ArgumentGroup(
-        'Manage the properties of a shared reservation.', required=False)
-    share_group.AddArgument(GetSharedSettingFlag())
-    share_group.AddArgument(GetShareWithFlag())
-    share_group.AddToParser(parser)
+  share_group = base.ArgumentGroup(
+      'Manage the properties of a shared reservation.', required=False)
+  share_group.AddArgument(
+      GetSharedSettingFlag(
+          support_folder_share_setting=support_folder_share_setting
+      )
+  )
+  share_group.AddArgument(
+      GetShareWithFlag(
+          support_folder_share_setting=support_folder_share_setting
+      )
+  )
+  share_group.AddToParser(parser)
 
   if support_auto_delete:
     auto_delete_group = base.ArgumentGroup(

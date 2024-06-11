@@ -22,6 +22,7 @@ import collections
 
 from apitools.base.py import exceptions as apitools_exceptions
 import frozendict
+from google.api_core.exceptions import ResourceExhausted
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
 from googlecloudsdk.api_lib.asset import client_util as asset
 from googlecloudsdk.api_lib.cloudresourcemanager import projects_api as crm
@@ -279,18 +280,25 @@ def analyze_iam_policy(permissions, resource, scope):
 
   Returns:
     An CloudassetAnalyzeIamPolicyResponse.
+  Raises:
+    ResourceExhausted: If the request fails due to analyzeIamPolicy quota.
   """
   client = asset.GetClient()
   service = client.v1
   messages = asset.GetMessages()
 
-  return service.AnalyzeIamPolicy(
-      messages.CloudassetAnalyzeIamPolicyRequest(
-          analysisQuery_accessSelector_permissions=permissions,
-          analysisQuery_resourceSelector_fullResourceName=resource,
-          scope=scope,
-      )
-  )
+  try:
+    return service.AnalyzeIamPolicy(
+        messages.CloudassetAnalyzeIamPolicyRequest(
+            analysisQuery_accessSelector_permissions=permissions,
+            analysisQuery_resourceSelector_fullResourceName=resource,
+            scope=scope,
+        )
+    )
+  except ResourceExhausted:
+    raise ar_exceptions.ArtifactRegistryError(
+        "Insufficient quota for AnalyzeIamPolicy"
+    )
 
 
 def resource_from_ancestor(ancestor):

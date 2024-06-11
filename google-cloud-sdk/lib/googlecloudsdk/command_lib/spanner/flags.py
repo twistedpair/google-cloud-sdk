@@ -168,7 +168,6 @@ def ProtoDescriptorsFile(help_text):
       required=False,
       completer=FilesCompleter,
       help=help_text,
-      hidden=True,
   )
 
 
@@ -190,7 +189,6 @@ def IncludeProtoDescriptors(help_text):
       action='store_true',
       help=help_text,
       default=False,
-      hidden=True,
   )
 
 
@@ -515,6 +513,27 @@ def _TransformOperationDone(resource):
   return done_cell
 
 
+def _TransformOperationEndTime(resource):
+  """Combines endTime and progressPercent into a single column."""
+  metadata = resource.get('metadata')
+  base_type = 'type.googleapis.com/google.spanner.admin.database.v1.{}'
+  op_type = metadata.get('@type')
+
+  if op_type == base_type.format(
+      'RestoreDatabaseMetadata'
+  ) or op_type == base_type.format('OptimizeRestoredDatabaseMetadata'):
+    progress = metadata.get('progress')
+    if progress is None:
+      return None
+    progress_end_time = progress.get('endTime')
+    progress_percent = progress.get('progressPercent')
+    if progress_end_time is None and progress_percent is not None:
+      return progress_percent + '%'
+    return progress_end_time
+  else:
+    return None
+
+
 def _TransformDatabaseId(resource):
   """Gets database ID depending on operation type."""
   metadata = resource.get('metadata')
@@ -606,6 +625,7 @@ def AddCommonListArgs(parser, additional_choices=None):
   parser.display_info.AddCacheUpdater(None)
   parser.display_info.AddTransforms({'done': _TransformOperationDone})
   parser.display_info.AddTransforms({'database': _TransformDatabaseId})
+  parser.display_info.AddTransforms({'endtime': _TransformOperationEndTime})
 
 
 def AddCommonDescribeArgs(parser):

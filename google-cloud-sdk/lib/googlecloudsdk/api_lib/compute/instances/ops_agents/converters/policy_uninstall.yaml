@@ -271,6 +271,32 @@ resourceGroups:
       apt:
         name: google-cloud-ops-agent
 - inventoryFilters:
+  - osShortName: ubuntu
+    osVersion: '24.04'
+  resources:
+  - id: wait-for-cloud-init
+    exec:
+      validate:
+        script: "cloud-init status --wait; exit 100;"
+        interpreter: SHELL
+      enforce:
+        script: "echo hello"
+        interpreter: SHELL
+  - id: add-repo
+    repository:
+      apt:
+        archiveType: DEB
+        uri: https://packages.cloud.google.com/apt
+        distribution: google-cloud-ops-agent-noble-$agent_version
+        components:
+        - main
+        gpgKey: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+  - id: install-pkg
+    pkg:
+      desiredState: REMOVED
+      apt:
+        name: google-cloud-ops-agent
+- inventoryFilters:
   - osShortName: windows
     osVersion: '10.*'
   - osShortName: windows

@@ -979,8 +979,8 @@ def AddRuntimeUpdatePolicy(parser, track):
         '--runtime-update-policy',
         choices=RUNTIME_UPDATE_POLICY_MAPPING.values(),
         help="""\
-        Runtime update policy for the 1st gen function being deployed.
-        The option `on-deploy` is used by default.
+        Runtime update policy for the function being deployed. The option
+        `automatic` is used by default.
       """,
     )
 

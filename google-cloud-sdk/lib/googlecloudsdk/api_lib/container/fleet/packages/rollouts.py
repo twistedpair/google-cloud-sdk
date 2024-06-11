@@ -111,14 +111,17 @@ class RolloutsClient(object):
       reason: Reason for aborting the Rollout.
 
     Returns:
-      Operation for aborting rollout.
+      None.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
     """
     fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
     abort_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsAbortRequest(
         name=fully_qualified_path,
         abortRolloutRequest=self.messages.AbortRolloutRequest(reason=reason),
     )
-    return waiter.WaitFor(
+    waiter.WaitFor(
         self.rollout_waiter,
         self._service.Abort(abort_req),
         f'Aborting Rollout {rollout}',
@@ -135,14 +138,17 @@ class RolloutsClient(object):
       reason: Reason for resuming the Rollout.
 
     Returns:
-      Operation for resuming rollout.
+      None.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
     """
     fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
     resume_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsResumeRequest(
         name=fully_qualified_path,
         resumeRolloutRequest=self.messages.ResumeRolloutRequest(reason=reason),
     )
-    return waiter.WaitFor(
+    waiter.WaitFor(
         self.rollout_waiter,
         self._service.Resume(resume_req),
         f'Resuming Rollout {rollout}',
@@ -159,7 +165,10 @@ class RolloutsClient(object):
       reason: Reason for suspending the Rollout.
 
     Returns:
-      Operation for suspending rollout.
+      None.
+
+    Raises:
+      apitools.base.py.HttpError: If the request returns an HTTP error.
     """
     fully_qualified_path = f'projects/{project}/locations/{location}/fleetPackages/{fleet_package}/rollouts/{rollout}'
     suspend_req = self.messages.ConfigdeliveryProjectsLocationsFleetPackagesRolloutsSuspendRequest(
@@ -168,7 +177,7 @@ class RolloutsClient(object):
             reason=reason
         ),
     )
-    return waiter.WaitFor(
+    waiter.WaitFor(
         self.rollout_waiter,
         self._service.Suspend(suspend_req),
         f'Suspending Rollout {rollout}',

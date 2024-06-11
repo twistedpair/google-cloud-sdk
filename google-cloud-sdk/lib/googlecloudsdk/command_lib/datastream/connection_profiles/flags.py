@@ -153,6 +153,46 @@ def AddPostgresqlProfileGroup(parser, required=True):
       help='Prompt for the password used to connect to the database.')
 
 
+def AddSqlServerProfileGroup(parser, required=True):
+  """Adds necessary sqlserver profile flags to the given parser."""
+  sqlserver_profile = parser.add_group()
+  sqlserver_profile.add_argument(
+      '--sqlserver-hostname',
+      help="""IP or hostname of the SQL Server source database.""",
+      required=required,
+  )
+  sqlserver_profile.add_argument(
+      '--sqlserver-port',
+      help="""Network port of the SQL Server source database.""",
+      required=required,
+      type=int,
+  )
+  sqlserver_profile.add_argument(
+      '--sqlserver-username',
+      help="""Username Datastream will use to connect to the database.""",
+      required=required,
+  )
+  sqlserver_profile.add_argument(
+      '--sqlserver-database',
+      help="""Database service for the SQL Server connection.""",
+      required=required,
+  )
+  password_group = sqlserver_profile.add_group(required=required, mutex=True)
+  password_group.add_argument(
+      '--sqlserver-password',
+      help="""\
+          Password for the user that Datastream will be using to
+          connect to the database.
+          This field is not returned on request, and the value is encrypted
+          when stored in Datastream.""",
+  )
+  password_group.add_argument(
+      '--sqlserver-prompt-for-password',
+      action='store_true',
+      help='Prompt for the password used to connect to the database.',
+  )
+
+
 def AddGcsProfileGroup(parser, release_track, required=True):
   """Adds necessary GCS profile flags to the given parser."""
   gcs_profile = parser.add_group()
@@ -232,6 +272,10 @@ def AddRdbmsGroup(parser):
   rdbms_parser.add_argument(
       '--postgresql-rdbms-file',
       help="""Path to a YAML (or JSON) file containing the PostgreSQL RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin."""
+  )
+  rdbms_parser.add_argument(
+      '--sqlserver-rdbms-file',
+      help="""Path to a YAML (or JSON) file containing the SQL Server RDBMS to enrich with child data objects and metadata. If you pass - as the value of the flag the file content will be read from stdin.""",
   )
 
 

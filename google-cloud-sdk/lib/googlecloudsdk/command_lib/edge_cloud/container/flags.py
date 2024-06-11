@@ -223,8 +223,7 @@ def AddExternalLbIpv6AddressPools(parser):
 
 
 def AddExternalLoadBalancerAddressPools(parser):
-  """Adds external load balancer address pools.
-  """
+  """Adds external load balancer address pools."""
 
   external_lb_config_address_pools_help_text = """
       Path to a YAML/JSON file containing external load balancer pool configuration.

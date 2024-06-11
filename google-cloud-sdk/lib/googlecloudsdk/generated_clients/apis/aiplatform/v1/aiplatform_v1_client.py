@@ -52,6 +52,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_featureGroups_features = self.ProjectsLocationsFeatureGroupsFeaturesService(self)
     self.projects_locations_featureGroups = self.ProjectsLocationsFeatureGroupsService(self)
+    self.projects_locations_featureOnlineStores_featureViews_featureViewSyncs = self.ProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsService(self)
     self.projects_locations_featureOnlineStores_featureViews = self.ProjectsLocationsFeatureOnlineStoresFeatureViewsService(self)
     self.projects_locations_featureOnlineStores = self.ProjectsLocationsFeatureOnlineStoresService(self)
     self.projects_locations_featurestores_entityTypes_features = self.ProjectsLocationsFeaturestoresEntityTypesFeaturesService(self)
@@ -88,6 +89,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_tensorboards_experiments = self.ProjectsLocationsTensorboardsExperimentsService(self)
     self.projects_locations_tensorboards = self.ProjectsLocationsTensorboardsService(self)
     self.projects_locations_trainingPipelines = self.ProjectsLocationsTrainingPipelinesService(self)
+    self.projects_locations_tuningJobs = self.ProjectsLocationsTuningJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -1308,6 +1310,60 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DirectPredict(self, request, global_params=None):
+      r"""Perform an unary online prediction request to a gRPC model server for Vertex first-party products and frameworks.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DirectPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:directPredict',
+        request_field='googleCloudAiplatformV1DirectPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1DirectPredictResponse',
+        supports_download=False,
+    )
+
+    def DirectRawPredict(self, request, global_params=None):
+      r"""Perform an unary online prediction request to a gRPC model server for custom containers.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DirectRawPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectRawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectRawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directRawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directRawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:directRawPredict',
+        request_field='googleCloudAiplatformV1DirectRawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectRawPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1DirectRawPredictResponse',
+        supports_download=False,
+    )
+
     def Explain(self, request, global_params=None):
       r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated.
 
@@ -1922,6 +1978,70 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsService(base_api.BaseApiService):
+    """Service class for the projects_locations_featureOnlineStores_featureViews_featureViewSyncs resource."""
+
+    _NAME = 'projects_locations_featureOnlineStores_featureViews_featureViewSyncs'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single FeatureViewSync.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1FeatureViewSync) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}/featureViewSyncs/{featureViewSyncsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.featureViewSyncs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1FeatureViewSync',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists FeatureViewSyncs in a given FeatureView.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListFeatureViewSyncsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}/featureViewSyncs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.featureViewSyncs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/featureViewSyncs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsFeatureViewSyncsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListFeatureViewSyncsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsFeatureOnlineStoresFeatureViewsService(base_api.BaseApiService):
     """Service class for the projects_locations_featureOnlineStores_featureViews resource."""
 
@@ -2118,6 +2238,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1SearchNearestEntitiesRequest',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSearchNearestEntitiesRequest',
         response_type_name='GoogleCloudAiplatformV1SearchNearestEntitiesResponse',
+        supports_download=False,
+    )
+
+    def Sync(self, request, global_params=None):
+      r"""Triggers on-demand sync for the FeatureView.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSyncRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1SyncFeatureViewResponse) The response message.
+      """
+      config = self.GetMethodConfig('Sync')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Sync.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}:sync',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.sync',
+        ordered_params=['featureView'],
+        path_params=['featureView'],
+        query_params=[],
+        relative_path='v1/{+featureView}:sync',
+        request_field='googleCloudAiplatformV1SyncFeatureViewRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSyncRequest',
+        response_type_name='GoogleCloudAiplatformV1SyncFeatureViewResponse',
         supports_download=False,
     )
 
@@ -5804,6 +5951,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a NotebookRuntimeTemplate.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NotebookRuntimeTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudAiplatformV1NotebookRuntimeTemplate',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1NotebookRuntimeTemplate',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
@@ -5999,6 +6173,33 @@ class AiplatformV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:start',
         request_field='googleCloudAiplatformV1StartNotebookRuntimeRequest',
         request_type_name='AiplatformProjectsLocationsNotebookRuntimesStartRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}:upgrade',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:upgrade',
+        request_field='googleCloudAiplatformV1UpgradeNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesUpgradeRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
@@ -8462,6 +8663,124 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsTrainingPipelinesListRequest',
         response_type_name='GoogleCloudAiplatformV1ListTrainingPipelinesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTuningJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_tuningJobs resource."""
+
+    _NAME = 'projects_locations_tuningJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsTuningJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a TuningJob. Starts asynchronous cancellation on the TuningJob. The server makes a best effort to cancel the job, but success is not guaranteed. Clients can use GenAiTuningService.GetTuningJob or other methods to check whether the cancellation succeeded or whether the job completed despite cancellation. On successful cancellation, the TuningJob is not deleted; instead it becomes a job with a TuningJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and TuningJob.state is set to `CANCELLED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tuningJobs/{tuningJobsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tuningJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1CancelTuningJobRequest',
+        request_type_name='AiplatformProjectsLocationsTuningJobsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a TuningJob. A created TuningJob right away will be attempted to be run.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1TuningJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tuningJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tuningJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/tuningJobs',
+        request_field='googleCloudAiplatformV1TuningJob',
+        request_type_name='AiplatformProjectsLocationsTuningJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1TuningJob',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a TuningJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1TuningJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tuningJobs/{tuningJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tuningJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTuningJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1TuningJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TuningJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsTuningJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListTuningJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tuningJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tuningJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/tuningJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTuningJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListTuningJobsResponse',
         supports_download=False,
     )
 

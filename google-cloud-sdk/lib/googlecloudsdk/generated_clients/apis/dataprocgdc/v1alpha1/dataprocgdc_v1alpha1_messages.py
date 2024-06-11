@@ -1101,6 +1101,10 @@ class SparkApplication(_messages.Message):
     applicationEnvironment: Optional. An ApplicationEnvironment from which to
       inherit configuration properties.
     createTime: Output only. The timestamp when the resource was created.
+    dependencyImages: Optional. List of container image uris for additional
+      file dependencies. Dependent files are sequentially copied from each
+      image. If a file with the same name exists in 2 images then the file
+      from later image is used.
     displayName: Optional. User-provided human-readable name to be used in
       user interfaces.
     labels: Optional. The labels to associate with this application. Labels
@@ -1257,24 +1261,25 @@ class SparkApplication(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   applicationEnvironment = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  monitoringEndpoint = _messages.StringField(6)
-  name = _messages.StringField(7)
-  namespace = _messages.StringField(8)
-  outputUri = _messages.StringField(9)
-  properties = _messages.MessageField('PropertiesValue', 10)
-  pysparkApplicationConfig = _messages.MessageField('PySparkApplicationConfig', 11)
-  reconciling = _messages.BooleanField(12)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 13)
-  sparkApplicationConfig = _messages.MessageField('SparkApplicationConfig', 14)
-  sparkRApplicationConfig = _messages.MessageField('SparkRApplicationConfig', 15)
-  sparkSqlApplicationConfig = _messages.MessageField('SparkSqlApplicationConfig', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateMessage = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
-  version = _messages.StringField(21)
+  dependencyImages = _messages.StringField(4, repeated=True)
+  displayName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  monitoringEndpoint = _messages.StringField(7)
+  name = _messages.StringField(8)
+  namespace = _messages.StringField(9)
+  outputUri = _messages.StringField(10)
+  properties = _messages.MessageField('PropertiesValue', 11)
+  pysparkApplicationConfig = _messages.MessageField('PySparkApplicationConfig', 12)
+  reconciling = _messages.BooleanField(13)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 14)
+  sparkApplicationConfig = _messages.MessageField('SparkApplicationConfig', 15)
+  sparkRApplicationConfig = _messages.MessageField('SparkRApplicationConfig', 16)
+  sparkSqlApplicationConfig = _messages.MessageField('SparkSqlApplicationConfig', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateMessage = _messages.StringField(19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  version = _messages.StringField(22)
 
 
 class SparkApplicationConfig(_messages.Message):

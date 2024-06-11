@@ -1729,6 +1729,8 @@ class ImageImport(_messages.Message):
       image, will be used by ImageImportJob.
     encryption: Immutable. The encryption details used by the image import
       process during the image adaptation for Compute Engine.
+    machineImageTargetDefaults: Immutable. Target details for importing a
+      machine image, will be used by ImageImportJob.
     name: Output only. The resource path of the ImageImport.
     recentImageImportJobs: Output only. The result of the most recent runs for
       this ImageImport. All jobs for this ImageImport can be listed via
@@ -1739,8 +1741,9 @@ class ImageImport(_messages.Message):
   createTime = _messages.StringField(2)
   diskImageTargetDefaults = _messages.MessageField('DiskImageTargetDetails', 3)
   encryption = _messages.MessageField('Encryption', 4)
-  name = _messages.StringField(5)
-  recentImageImportJobs = _messages.MessageField('ImageImportJob', 6, repeated=True)
+  machineImageTargetDefaults = _messages.MessageField('MachineImageTargetDetails', 5)
+  name = _messages.StringField(6)
+  recentImageImportJobs = _messages.MessageField('ImageImportJob', 7, repeated=True)
 
 
 class ImageImportJob(_messages.Message):
@@ -1761,6 +1764,8 @@ class ImageImportJob(_messages.Message):
     endTime: Output only. The time the image import was ended.
     errors: Output only. Provides details on the error that led to the image
       import state in case of an error.
+    machineImageTargetDetails: Output only. Target details used to import a
+      machine image.
     name: Output only. The resource path of the ImageImportJob.
     state: Output only. The state of the image import.
     steps: Output only. The image import steps list representing its progress.
@@ -1793,10 +1798,11 @@ class ImageImportJob(_messages.Message):
   diskImageTargetDetails = _messages.MessageField('DiskImageTargetDetails', 4)
   endTime = _messages.StringField(5)
   errors = _messages.MessageField('Status', 6, repeated=True)
-  name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  steps = _messages.MessageField('ImageImportStep', 9, repeated=True)
-  warnings = _messages.MessageField('MigrationWarning', 10, repeated=True)
+  machineImageTargetDetails = _messages.MessageField('MachineImageTargetDetails', 7)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  steps = _messages.MessageField('ImageImportStep', 10, repeated=True)
+  warnings = _messages.MessageField('MigrationWarning', 11, repeated=True)
 
 
 class ImageImportOsAdaptationParameters(_messages.Message):
@@ -2178,6 +2184,101 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MachineImageParametersOverrides(_messages.Message):
+  r"""Parameters overriding decisions based on the source machine image
+  configurations.
+
+  Fields:
+    machineType: Optional. The machine type to create the MachineImage with.
+      If empty, the service will choose a relevant machine type based on the
+      information from the source image. For more information about machine
+      types, please refer to https://cloud.google.com/compute/docs/machine-
+      resource.
+    machineTypeSeries: Optional. The machine type series to create the
+      MachineImage with. If empty, the service will choose a relevant machine
+      type series based on the information from the source image. For more
+      information about machine type series, please refer to
+      https://cloud.google.com/compute/docs/machine-resource.
+  """
+
+  machineType = _messages.StringField(1)
+  machineTypeSeries = _messages.StringField(2)
+
+
+class MachineImageTargetDetails(_messages.Message):
+  r"""The target details of the machine image resource that will be created by
+  the image import job.
+
+  Messages:
+    LabelsValue: Optional. The labels to apply to the instance created by the
+      machine image.
+
+  Fields:
+    additionalLicenses: Optional. Additional licenses to assign to the
+      instance created by the machine image.
+    description: Optional. An optional description of the machine image.
+    encryption: Immutable. The encryption to apply to the machine image.
+    labels: Optional. The labels to apply to the instance created by the
+      machine image.
+    machineImageName: Required. The name of the machine image to be created.
+    machineImageParametersOverrides: Optional. Parameters overriding decisions
+      based on the source machine image configurations.
+    osAdaptationParameters: Optional. Use to set the parameters relevant for
+      the OS adaptation process.
+    serviceAccount: Optional. The service account to assign to the instance
+      created by the machine image.
+    shieldedInstanceConfig: Optional. Shielded instance configuration.
+    singleRegionStorage: Optional. Set to true to set the machine image
+      storageLocations to the single region of the import job. When false, the
+      closest multi-region is selected.
+    skipOsAdaptation: Optional. Use to skip OS adaptation process.
+    tags: Optional. The tags to apply to the instance created by the machine
+      image.
+    targetProject: Required. Reference to the TargetProject resource that
+      represents the target project in which the imported machine image will
+      be created.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to apply to the instance created by the machine
+    image.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalLicenses = _messages.StringField(1, repeated=True)
+  description = _messages.StringField(2)
+  encryption = _messages.MessageField('Encryption', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  machineImageName = _messages.StringField(5)
+  machineImageParametersOverrides = _messages.MessageField('MachineImageParametersOverrides', 6)
+  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 7)
+  serviceAccount = _messages.MessageField('ServiceAccount', 8)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
+  singleRegionStorage = _messages.BooleanField(10)
+  skipOsAdaptation = _messages.MessageField('SkipOsAdaptation', 11)
+  tags = _messages.StringField(12, repeated=True)
+  targetProject = _messages.StringField(13)
 
 
 class MigratingVm(_messages.Message):
@@ -2853,8 +2954,70 @@ class SchedulingNodeAffinity(_messages.Message):
   values = _messages.StringField(3, repeated=True)
 
 
+class ServiceAccount(_messages.Message):
+  r"""Service account to assign to the instance created by the machine image.
+
+  Fields:
+    email: Required. The email address of the service account.
+    scopes: Optional. The list of scopes to be made available for this service
+      account.
+  """
+
+  email = _messages.StringField(1)
+  scopes = _messages.StringField(2, repeated=True)
+
+
+class ShieldedInstanceConfig(_messages.Message):
+  r"""Shielded instance configuration.
+
+  Enums:
+    SecureBootValueValuesEnum: Optional. Defines whether the instance created
+      by the machine image has Secure Boot enabled. This can be set to true
+      only if the image boot option is EFI.
+
+  Fields:
+    enableIntegrityMonitoring: Optional. Defines whether the instance created
+      by the machine image has integrity monitoring enabled. This can be set
+      to true only if the image boot option is EFI, and vTPM is enabled.
+    enableVtpm: Optional. Defines whether the instance created by the machine
+      image has vTPM enabled. This can be set to true only if the image boot
+      option is EFI.
+    secureBoot: Optional. Defines whether the instance created by the machine
+      image has Secure Boot enabled. This can be set to true only if the image
+      boot option is EFI.
+  """
+
+  class SecureBootValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines whether the instance created by the machine image
+    has Secure Boot enabled. This can be set to true only if the image boot
+    option is EFI.
+
+    Values:
+      SECURE_BOOT_UNSPECIFIED: No explicit value is selected. Will use the
+        configuration of the source (if exists, otherwise the default will be
+        false).
+      TRUE: Use secure boot. This can be set to true only if the image boot
+        option is EFI.
+      FALSE: Do not use secure boot.
+    """
+    SECURE_BOOT_UNSPECIFIED = 0
+    TRUE = 1
+    FALSE = 2
+
+  enableIntegrityMonitoring = _messages.BooleanField(1)
+  enableVtpm = _messages.BooleanField(2)
+  secureBoot = _messages.EnumField('SecureBootValueValuesEnum', 3)
+
+
 class ShuttingDownSourceVMStep(_messages.Message):
   r"""ShuttingDownSourceVMStep contains specific step details."""
+
+
+class SkipOsAdaptation(_messages.Message):
+  r"""Mentions that the machine image import is not using OS adaptation
+  process.
+  """
+
 
 
 class Source(_messages.Message):

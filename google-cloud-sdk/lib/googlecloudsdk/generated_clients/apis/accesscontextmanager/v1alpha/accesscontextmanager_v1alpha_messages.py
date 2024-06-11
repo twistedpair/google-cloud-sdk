@@ -1874,32 +1874,27 @@ class Policy(_messages.Message):
 
 
 class ReauthSettings(_messages.Message):
-  r"""The settings below can generate several special cases: 1. No
-  reauth_settings When none of the fields are set. 2. Reauth_settings has only
-  is_enforced = false. Any other fields in Reauth_settings will be ignored. It
-  indicates this group should use the app's session setting. 3.
-  Reauth_settings has only is_enforced = true, but no max_age_sec. It
-  indicates this group's session length is infinite. 4. Reauth_settings has
-  is_enforced = true and max_age_sec is positive number. It indicates the
-  group's session time is set as max_age_sec.
+  r"""Stores settings related to Google Cloud Session Length including session
+  duration, the type of challenge (i.e. method) they should face when their
+  session expires, and other related settings.
 
   Enums:
     ReauthMethodValueValuesEnum: Reauth method when users GCP session is up.
 
   Fields:
-    maxAgeSec: The session length. Setting this field to zero is equal to
-      disabling. Reauth. Also can set infinite session by flipping the enabled
-      bit to false below. If use_oidc_max_age is true, for OIDC apps, the
-      session length will be the minimum of this field and OIDC max_age param.
     maxInactivity: How long a user is allowed to take between actions before a
       new access token must be issued. Presently only set for Cloud Apps.
     reauthMethod: Reauth method when users GCP session is up.
+    sessionLength: The session length. Setting this field to zero is equal to
+      disabling. Reauth. Also can set infinite session by flipping the enabled
+      bit to false below. If use_oidc_max_age is true, for OIDC apps, the
+      session length will be the minimum of this field and OIDC max_age param.
     sessionLengthEnabled: Big red button to turn off GCSL. When false, all
       fields set above will be disregarded and the session length is basically
       infinite.
     useOidcMaxAge: Only useful for OIDC apps. When false, the OIDC max_age
       param, if passed in the authentication request will be ignored. When
-      true, the re-auth period will be the minimum of the max_age_sec field
+      true, the re-auth period will be the minimum of the session_length field
       and the max_age OIDC param.
   """
 
@@ -1922,9 +1917,9 @@ class ReauthSettings(_messages.Message):
     SECURITY_KEY = 2
     PASSWORD = 3
 
-  maxAgeSec = _messages.StringField(1)
-  maxInactivity = _messages.StringField(2)
-  reauthMethod = _messages.EnumField('ReauthMethodValueValuesEnum', 3)
+  maxInactivity = _messages.StringField(1)
+  reauthMethod = _messages.EnumField('ReauthMethodValueValuesEnum', 2)
+  sessionLength = _messages.StringField(3)
   sessionLengthEnabled = _messages.BooleanField(4)
   useOidcMaxAge = _messages.BooleanField(5)
 

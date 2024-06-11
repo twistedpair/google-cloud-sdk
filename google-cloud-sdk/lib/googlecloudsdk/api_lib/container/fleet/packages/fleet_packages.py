@@ -18,7 +18,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.container.fleet.packages import utils
-from googlecloudsdk.command_lib.export import util as export_util
 from googlecloudsdk.core import resources
 
 
@@ -39,10 +38,6 @@ def GetFleetPackageURI(resource):
       collection='configdelivery.projects.locations.fleetPackages',
   )
   return fleet_package.SelfLink()
-
-
-def GetSchemaPath():
-  return export_util.GetSchemaPath('configdelivery', 'v1alpha', 'FleetPackage')
 
 
 def _ParentPath(project, location):

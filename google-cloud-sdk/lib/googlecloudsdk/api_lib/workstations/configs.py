@@ -47,6 +47,9 @@ IMAGE_URL_MAP = {
 BOOST_CONFIG_MAP = {
     'id': 'id',
     'machine-type': 'machineType',
+    'pool-size': 'poolSize',
+    'boot-disk-size': 'bootDiskSizeGb',
+    'enable-nested-virtualization': 'enableNestedVirtualization',
 }
 
 
@@ -149,6 +152,14 @@ class Configs:
           else:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
+
+    if (self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allowed_ports):
+      for port_range in args.allowed_ports:
+        desired_allowed_ports = self.messages.PortRange()
+        for key, value in port_range.items():
+          setattr(desired_allowed_ports, key, value)
+        config.allowedPorts.append(desired_allowed_ports)
 
     # Persistent directory
     pd = self.messages.PersistentDirectory()
@@ -414,6 +425,14 @@ class Configs:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
       update_mask.append('host.gce_instance.boost_configs')
+
+    if (self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allowed_ports):
+      for port_range in args.allowed_ports:
+        desired_allowed_ports = self.messages.PortRange()
+        for key, value in port_range.items():
+          setattr(desired_allowed_ports, key, value)
+      update_mask.append('allowed_ports')
 
     # Container
     config.container = self.messages.Container()

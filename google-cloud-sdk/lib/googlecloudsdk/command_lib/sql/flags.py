@@ -357,15 +357,16 @@ def AddBackup(parser, hidden=False):
   )
 
 
-def AddSkipFinalBackup(parser):
+def AddEnableFinalBackup(parser):
   parser.add_argument(
-      '--skip-final-backup',
+      '--enable-final-backup',
       required=False,
       action='store_true',
       default=False,
       hidden=True,
       help=(
-          'Skips the final backup to be taken at the time of instance deletion.'
+          'Enables the final backup to be taken at the time of instance'
+          ' deletion.'
       ),
   )
 
@@ -2553,4 +2554,29 @@ def AddSwitchoverDbTimeout(parser):
           ' of all database operations. Default value is 10 minutes and can be'
           ' modified to a maximum value of 24h.'
       )
+  )
+
+
+def AddServerCaMode(parser):
+  """Adds the '--server-ca-mode' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = 'Set the server CA mode of the instance.'
+  parser.add_argument(
+      '--server-ca-mode',
+      choices={
+          'GOOGLE_MANAGED_INTERNAL_CA': (
+              'Google-managed self-signed internal CA.'
+          ),
+          'GOOGLE_MANAGED_CAS_CA': (
+              "Google-managed regional CA part of root CA hierarchy hosted on"
+              " Google Cloud's Certificate Authority Service (CAS)."
+          ),
+      },
+      required=False,
+      default=None,
+      help=help_text,
+      hidden=True,
   )

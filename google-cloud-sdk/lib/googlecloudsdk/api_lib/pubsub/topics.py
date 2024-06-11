@@ -83,6 +83,11 @@ class TopicsClient(object):
       kinesis_ingestion_consumer_arn=None,
       kinesis_ingestion_role_arn=None,
       kinesis_ingestion_service_account=None,
+      cloud_storage_ingestion_bucket=None,
+      cloud_storage_ingestion_input_format=None,
+      cloud_storage_ingestion_text_delimiter=None,
+      cloud_storage_ingestion_minimum_object_create_time=None,
+      cloud_storage_ingestion_match_glob=None,
   ):
     """Returns an IngestionDataSourceSettings message from the provided args.
     """
@@ -109,6 +114,29 @@ class TopicsClient(object):
       return self.messages.IngestionDataSourceSettings(
           awsKinesis=kinesis_source
       )
+
+    is_cloud_storage = (cloud_storage_ingestion_bucket is not None) and (
+        cloud_storage_ingestion_input_format is not None
+    )
+    if is_cloud_storage:
+      cloud_storage_source = self.messages.CloudStorage(
+          bucket=cloud_storage_ingestion_bucket,
+          minimumObjectCreateTime=cloud_storage_ingestion_minimum_object_create_time,
+          matchGlob=cloud_storage_ingestion_match_glob,
+      )
+      if cloud_storage_ingestion_input_format == 'text':
+        cloud_storage_source.textFormat = self.messages.TextFormat(
+            delimiter=cloud_storage_ingestion_text_delimiter
+        )
+      elif cloud_storage_ingestion_input_format == 'avro':
+        cloud_storage_source.avroFormat = self.messages.AvroFormat()
+      elif cloud_storage_ingestion_input_format == 'pubsub_avro':
+        cloud_storage_source.pubsubAvroFormat = self.messages.PubsubAvroFormat()
+
+      return self.messages.IngestionDataSourceSettings(
+          cloudStorage=cloud_storage_source
+      )
+
     return None
 
   def Create(
@@ -126,7 +154,12 @@ class TopicsClient(object):
       kinesis_ingestion_stream_arn=None,
       kinesis_ingestion_consumer_arn=None,
       kinesis_ingestion_role_arn=None,
-      kinesis_ingestion_service_account=None
+      kinesis_ingestion_service_account=None,
+      cloud_storage_ingestion_bucket=None,
+      cloud_storage_ingestion_input_format=None,
+      cloud_storage_ingestion_text_delimiter=None,
+      cloud_storage_ingestion_minimum_object_create_time=None,
+      cloud_storage_ingestion_match_glob=None,
   ):
     """Creates a Topic.
 
@@ -156,6 +189,18 @@ class TopicsClient(object):
         Identity authentication with Kinesis.
       kinesis_ingestion_service_account (str): The GCP service account to be
         used for Federated Identity authentication with Kinesis
+      cloud_storage_ingestion_bucket (str): The Cloud Storage bucket to ingest
+        data from.
+      cloud_storage_ingestion_input_format (str): the format of the data in the
+        Cloud Storage bucket ('text', 'avro', or 'pubsub_avro').
+      cloud_storage_ingestion_text_delimiter (optional[str]): delimiter to use
+        with text format when partioning the object.
+      cloud_storage_ingestion_minimum_object_create_time (optional[str]): only
+        Cloud Storage objects with a larger or equal creation timestamp will be
+        ingested.
+      cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
+        match Cloud Storage objects that will be ingested. If unset, all objects
+        will be ingested.
 
     Returns:
       Topic: The created topic.
@@ -194,6 +239,11 @@ class TopicsClient(object):
         kinesis_ingestion_consumer_arn=kinesis_ingestion_consumer_arn,
         kinesis_ingestion_role_arn=kinesis_ingestion_role_arn,
         kinesis_ingestion_service_account=kinesis_ingestion_service_account,
+        cloud_storage_ingestion_bucket=cloud_storage_ingestion_bucket,
+        cloud_storage_ingestion_input_format=cloud_storage_ingestion_input_format,
+        cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
+        cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
+        cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
     )
     return self._service.Create(topic)
 
@@ -426,6 +476,11 @@ class TopicsClient(object):
       kinesis_ingestion_consumer_arn=None,
       kinesis_ingestion_role_arn=None,
       kinesis_ingestion_service_account=None,
+      cloud_storage_ingestion_bucket=None,
+      cloud_storage_ingestion_input_format=None,
+      cloud_storage_ingestion_text_delimiter=None,
+      cloud_storage_ingestion_minimum_object_create_time=None,
+      cloud_storage_ingestion_match_glob=None,
   ):
     """Updates a Topic.
 
@@ -455,14 +510,26 @@ class TopicsClient(object):
         topic.
       clear_ingestion_data_source_settings (bool): If set, clear
         IngestionDataSourceSettings from the topic.
-      kinesis_ingestion_stream_arn (str): The Kinesis data stream ARN to
-        ingest data from.
+      kinesis_ingestion_stream_arn (str): The Kinesis data stream ARN to ingest
+        data from.
       kinesis_ingestion_consumer_arn (str): The Kinesis data streams consumer
         ARN to use for ingestion.
       kinesis_ingestion_role_arn (str): AWS role ARN to be used for Federated
         Identity authentication with Kinesis.
       kinesis_ingestion_service_account (str): The GCP service account to be
         used for Federated Identity authentication with Kinesis
+      cloud_storage_ingestion_bucket (str): The Cloud Storage bucket to ingest
+        data from.
+      cloud_storage_ingestion_input_format (str): the format of the data in the
+        Cloud Storage bucket ('text', 'avro', or 'pubsub_avro').
+      cloud_storage_ingestion_text_delimiter (optional[str]): delimiter to use
+        with text format when partioning the object.
+      cloud_storage_ingestion_minimum_object_create_time (optional[str]): only
+        Cloud Storage objects with a larger or equal creation timestamp will be
+        ingested.
+      cloud_storage_ingestion_match_glob (optional[str]): glob pattern used to
+        match Cloud Storage objects that will be ingested. If unset, all objects
+        will be ingested.
 
     Returns:
       Topic: The updated topic.
@@ -529,6 +596,11 @@ class TopicsClient(object):
           kinesis_ingestion_consumer_arn=kinesis_ingestion_consumer_arn,
           kinesis_ingestion_role_arn=kinesis_ingestion_role_arn,
           kinesis_ingestion_service_account=kinesis_ingestion_service_account,
+          cloud_storage_ingestion_bucket=cloud_storage_ingestion_bucket,
+          cloud_storage_ingestion_input_format=cloud_storage_ingestion_input_format,
+          cloud_storage_ingestion_text_delimiter=cloud_storage_ingestion_text_delimiter,
+          cloud_storage_ingestion_minimum_object_create_time=cloud_storage_ingestion_minimum_object_create_time,
+          cloud_storage_ingestion_match_glob=cloud_storage_ingestion_match_glob,
       )
       if new_settings is not None:
         update_settings.append(

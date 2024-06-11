@@ -58,3 +58,17 @@ spark_application:
     parameter_name: sparkApplicationsId
     attribute_name: spark_application
     help: The id of the Dataproc GDC spark Application.
+
+application_environment:
+  name: application_environment
+  collection: dataprocgdc.projects.locations.serviceInstances.applicationEnvironments
+  disable_auto_completers: false
+  request_id_field: applicationEnvironmentsId
+  attributes:
+  - *project
+  - *location
+  - *instance
+  - &applicationEnvironment
+    parameter_name: applicationEnvironmentsId
+    attribute_name: application_environment
+    help: The id of the Dataproc GDC applicatin environment.

@@ -131,14 +131,6 @@ def RolloutAttributeConfig():
   )
 
 
-def GetLocationResourceSpec():
-  return concepts.ResourceSpec(
-      'configdelivery.projects.locations',
-      resource_name='location',
-      projectsId=ProjectAttributeConfig(),
-  )
-
-
 def GetFleetPackageResourceSpec():
   return concepts.ResourceSpec(
       'configdelivery.projects.locations.fleetPackages',

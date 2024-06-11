@@ -173,6 +173,58 @@ class ComputeUtil(object):
       service_account = "default"
     if scopes is None:
       scopes = compute_constants.DEFAULT_SCOPES
-    return [client_messages.ServiceAccount(
-        email=service_account, scopes=_ConvertAliasToScopes(scopes)
-    )]
+    return [
+        client_messages.ServiceAccount(
+            email=service_account, scopes=_ConvertAliasToScopes(scopes)
+        )
+    ]
+
+  @staticmethod
+  def ParserDisks(
+      client_messages: types.ModuleType, disks: List[Dict[str, Any]]
+  ):
+    """Parses the disk data into client messages.
+
+    Args:
+      client_messages:
+      disks: A list of dictionaries containing the disk data
+
+    Returns:
+      List of parsed client messages for Disk
+    """
+    if disks is None:
+      return None
+    messages = list()
+    for disk in disks:
+      message = client_messages.AttachedDisk()
+      message.initializeParams = client_messages.InitializeParams()
+      if "device-name" in disk:
+        message.deviceName = disk["device-name"]
+      if "name" in disk:
+        message.initializeParams.diskName = disk["name"]
+      if "replica-zones" in disk:
+        message.initializeParams.replicaZones = disk["replica-zones"]
+      messages.append(message)
+    return messages
+
+  @staticmethod
+  def ParseMetadata(
+      client_messages: types.ModuleType, metadata: Dict[str, Any]
+  ):
+    return client_messages.Metadata(
+        items=[
+            client_messages.Entry(key=key, value=value)
+            for key, value in metadata.items()
+        ]
+    )
+
+  @staticmethod
+  def ParseLabels(client_messages: types.ModuleType, labels: Dict[str, Any]):
+    return client_messages.ComputeInstanceRestoreProperties.LabelsValue(
+        additionalProperties=[
+            client_messages.ComputeInstanceRestoreProperties.LabelsValue.AdditionalProperty(
+                key=key, value=value
+            )
+            for key, value in labels.items()
+        ]
+    )

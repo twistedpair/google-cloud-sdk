@@ -269,7 +269,7 @@ class RunV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Executions from a Job.
+      r"""Lists Executions from a Job. Results are sorted by creation time, descending.
 
       Args:
         request: (RunProjectsLocationsJobsExecutionsListRequest) input message
@@ -414,7 +414,7 @@ class RunV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Jobs.
+      r"""Lists Jobs. Results are sorted by creation time, descending.
 
       Args:
         request: (RunProjectsLocationsJobsListRequest) input message
@@ -758,7 +758,7 @@ class RunV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Revisions from a given Service, or from a given location.
+      r"""Lists Revisions from a given Service, or from a given location. Results are sorted by creation time, descending.
 
       Args:
         request: (RunProjectsLocationsServicesRevisionsListRequest) input message
@@ -903,7 +903,7 @@ class RunV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Services.
+      r"""Lists Services. Results are sorted by creation time, descending.
 
       Args:
         request: (RunProjectsLocationsServicesListRequest) input message

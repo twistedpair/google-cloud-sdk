@@ -39,7 +39,6 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.media = self.MediaService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
     self.projects_locations_repositories_attachments = self.ProjectsLocationsRepositoriesAttachmentsService(self)
@@ -60,46 +59,6 @@ class ArtifactregistryV1(base_api.BaseApiClient):
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
-
-  class MediaService(base_api.BaseApiService):
-    """Service class for the media resource."""
-
-    _NAME = 'media'
-
-    def __init__(self, client):
-      super(ArtifactregistryV1.MediaService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Download(self, request, global_params=None, download=None):
-      r"""Download a file.
-
-      Args:
-        request: (ArtifactregistryMediaDownloadRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-        download: (Download, default: None) If present, download
-            data from the request via this stream.
-      Returns:
-        (DownloadFileResponse) The response message.
-      """
-      config = self.GetMethodConfig('Download')
-      return self._RunMethod(
-          config, request, global_params=global_params,
-          download=download)
-
-    Download.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download',
-        http_method='GET',
-        method_id='artifactregistry.media.download',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:download',
-        request_field='',
-        request_type_name='ArtifactregistryMediaDownloadRequest',
-        response_type_name='DownloadFileResponse',
-        supports_download=True,
-    )
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
@@ -441,6 +400,36 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Download(self, request, global_params=None, download=None):
+      r"""Download a file.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesFilesDownloadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+        download: (Download, default: None) If present, download
+            data from the request via this stream.
+      Returns:
+        (DownloadFileResponse) The response message.
+      """
+      config = self.GetMethodConfig('Download')
+      return self._RunMethod(
+          config, request, global_params=global_params,
+          download=download)
+
+    Download.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download',
+        http_method='GET',
+        method_id='artifactregistry.projects.locations.repositories.files.download',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:download',
+        request_field='',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesDownloadRequest',
+        response_type_name='DownloadFileResponse',
+        supports_download=True,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a file.
 
@@ -495,6 +484,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a file.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesFilesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleDevtoolsArtifactregistryV1File) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.files.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleDevtoolsArtifactregistryV1File',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesPatchRequest',
+        response_type_name='GoogleDevtoolsArtifactregistryV1File',
+        supports_download=False,
+    )
+
     def Upload(self, request, global_params=None, upload=None):
       r"""Directly uploads a File to a repository. The returned Operation will complete once the resources are uploaded.
 
@@ -545,7 +561,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
           }
 
     def Upload(self, request, global_params=None, upload=None):
-      r"""Directly uploads a Generic artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the uploaded artifact. Uploaded artifacts that conflict with existing resources will raise an ALREADY_EXISTS error.
+      r"""Directly uploads a Generic artifact. The returned operation will complete once the resources are uploaded. Package, version, and file resources are created based on the uploaded artifact. Uploaded artifacts that conflict with existing resources will raise an `ALREADY_EXISTS` error.
 
       Args:
         request: (ArtifactregistryProjectsLocationsRepositoriesGenericArtifactsUploadRequest) input message
@@ -1132,11 +1148,38 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.packages.versions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken', 'view'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
         relative_path='v1/{+parent}/versions',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest',
         response_type_name='ListVersionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a version.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Version) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}/versions/{versionsId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.packages.versions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='version',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsPatchRequest',
+        response_type_name='Version',
         supports_download=False,
     )
 
@@ -1223,7 +1266,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.packages.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/packages',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest',
@@ -1680,7 +1723,7 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/repositories',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesListRequest',

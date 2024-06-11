@@ -19,18 +19,16 @@ import re
 
 from googlecloudsdk.command_lib.run import exceptions
 
-GCR_BUILDER_URL = 'gcr.io/gae-runtimes/buildpacks/google-gae-{builder_version}/{runtime}/builder:public-image-current'
+GCR_BUILDER_URL = 'gcr.io/serverless-runtimes/google-{builder_version}-full/builder/{runtime}:public-image-current'
 
-# Based off of http://cs/s:baseImageRegex%20f:runtime%2Fconfig
+# Based on the pattern in
+# cloud/serverless/boq/runtime/config/buildspec/images.go;l=25;rcl=632617712
 # modified to exclude ':' at the end
-RUNTIME_FROM_BASE_IMAGE_PATTERN = r'(?:gcr.io|docker.pkg.dev)\/(?:gae-runtimes|serverless-runtimes)(?:-private)?\/(?:google-\d\d[^\/]*\/)?([^\/:]+)'
+RUNTIME_FROM_BASE_IMAGE_PATTERN = r'(?:gcr.io|docker.pkg.dev)\/(?:gae-runtimes|serverless-runtimes)(?:-private|-qa)?\/(?:google-\d\d[^\/]*\/runtimes\/)?([^\/:]+)'
 
 # TODO(b/310732246) support php and ruby
 # LINT.IfChange
 BUILDER_22 = frozenset({
-    'python30',
-    'python31',
-    'python32',
     'python310',
     'python311',
     'python312',
@@ -41,6 +39,7 @@ BUILDER_22 = frozenset({
     'go119',
     'go120',
     'go121',
+    'go122',
     # 'ruby31',
     # 'ruby32',
     # 'php82',
@@ -69,7 +68,7 @@ def FunctionBuilder(base_image: str) -> str:
   return _BuildGcrUrl(runtime, runtime_version)
 
 
-# example base image url: gcr.io/gae-runtimes/go120:latest
+# example base image url: gcr.io/serverless-runtimes/go120/run:latest
 def _ExtractRuntimeVersionFromBaseImage(base_image: str) -> str:
   match = re.search(RUNTIME_FROM_BASE_IMAGE_PATTERN, base_image)
   return match.group(1) if match else None
