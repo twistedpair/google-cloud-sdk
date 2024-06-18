@@ -241,8 +241,8 @@ class ControlPlane(_messages.Message):
 
 
 class ControlPlaneEncryption(_messages.Message):
-  r"""Configuration for Customer-managed KMS key support for remote control
-  plane cluster disk encryption.
+  r"""Configuration for Customer-managed KMS key support for control plane
+  nodes.
 
   Enums:
     KmsKeyStateValueValuesEnum: Output only. Availability of the Cloud KMS
@@ -251,8 +251,8 @@ class ControlPlaneEncryption(_messages.Message):
       permissions to use the key, or if the key is disabled or deleted.
 
   Fields:
-    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
-      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+    kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
+      s/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
       protecting control plane disks. If not specified, a Google-managed key
       will be used instead.
     kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
@@ -912,8 +912,8 @@ class LocalDiskEncryption(_messages.Message):
       permissions to use the key, or if the key is disabled or deleted.
 
   Fields:
-    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
-      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+    kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
+      s/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
       protecting node local disks. If not specified, a Google-managed key will
       be used instead.
     kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
@@ -1710,9 +1710,11 @@ class SystemAddonsConfig(_messages.Message):
 
   Fields:
     ingress: Optional. Config for Ingress.
+    vmServiceConfig: Optional. Config for VM Service.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
+  vmServiceConfig = _messages.MessageField('VMServiceConfig', 2)
 
 
 class TimeWindow(_messages.Message):
@@ -1758,6 +1760,16 @@ class UpgradeClusterRequest(_messages.Message):
   requestId = _messages.StringField(1)
   schedule = _messages.EnumField('ScheduleValueValuesEnum', 2)
   targetVersion = _messages.StringField(3)
+
+
+class VMServiceConfig(_messages.Message):
+  r"""VMServiceConfig defines the configuration for GDCE VM Service.
+
+  Fields:
+    vmmEnabled: Optional. Whether VMM is enabled.
+  """
+
+  vmmEnabled = _messages.BooleanField(1)
 
 
 class Version(_messages.Message):

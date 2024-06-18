@@ -1577,12 +1577,6 @@ class ArgObject(ArgDict):
     # stringifying json at each level
     return self._Map(arg_value, self._StringifyValues)
 
-  def _LooksLikeJson(self, arg_value):
-    list_pattern = r'^\s*\[.*\]\s*$'
-    json_pattern = r'^\s*\{.*\}\s*$'
-    return ((self.repeated and re.match(list_pattern, arg_value)) or
-            (self._keyed_values and re.match(json_pattern, arg_value)))
-
   def _LoadJsonOrFile(self, arg_value):
     """Loads json string or file into a dictionary.
 
@@ -1601,7 +1595,7 @@ class ArgObject(ArgDict):
     if re.match(file_path_pattern, arg_value):
       arg_value = FileContents()(arg_value)
 
-    if self._LooksLikeJson(arg_value):
+    if self._keyed_values or self.repeated:
       json_value = yaml.load(arg_value)
     else:
       json_value = arg_value

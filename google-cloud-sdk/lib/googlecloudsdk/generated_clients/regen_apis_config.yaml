@@ -137,9 +137,9 @@ apis:
       default: true
     v2alpha:
       discovery_doc: apigee_v2alpha.json
-  apigeeregistry:
+  apihub:
     v1:
-      discovery_doc: apigeeregistry_v1.json
+      discovery_doc: apihub_v1.json
       default: true
   appconfigmanager:
     v1alpha:
@@ -387,8 +387,6 @@ apis:
     v1:
       discovery_doc: cloudkms_v1.json
       default: true
-    v1alpha1:
-      discovery_doc: cloudkms_v1alpha1.json
   cloudnumberregistry:
     v1alpha:
       discovery_doc: cloudnumberregistry_v1alpha.json
@@ -1731,9 +1729,9 @@ canonical_surfaces:
   apigee:
     name: apigee
     command: apigee
-  apigeeregistry:
-    name: apigeeregistry
-    command: apigee-registry
+  apihub:
+    name: apihub
+    command: apigeeregistry
     hidden: true
   appengine:
     name: appengine

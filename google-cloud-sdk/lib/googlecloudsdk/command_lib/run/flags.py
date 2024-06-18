@@ -4245,3 +4245,15 @@ def AddDelegateBuildsFlag(parser):
       to submit the build.
       """,
   )
+
+
+def BuildServiceAccountFlag():
+  """Adds flag to specify a service account to use for the build for source deploy builds."""
+  return base.Argument(
+      '--build-service-account',
+      hidden=True,
+      help="""\
+      Specifies the service account to use to execute the build. Applies only
+      to source deploy builds using the Build API.
+      """,
+  )

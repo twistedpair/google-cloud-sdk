@@ -2707,6 +2707,11 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest(_messages.Me
   r"""A GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest object.
 
   Fields:
+    allowPreflightFailure: Optional. If set to true, CLM will force CCFE to
+      persist the cluster resource in RMS when the creation fails during
+      standalone preflight checks. In that case the subsequent create call
+      will fail with "cluster already exists" error and hence a update cluster
+      is required to fix the cluster.
     bareMetalAdminCluster: A BareMetalAdminCluster resource to be passed as
       the request body.
     bareMetalAdminClusterId: Required. User provided identifier that is used
@@ -2718,10 +2723,11 @@ class GkeonpremProjectsLocationsBareMetalAdminClustersCreateRequest(_messages.Me
     validateOnly: Validate the request without actually doing any updates.
   """
 
-  bareMetalAdminCluster = _messages.MessageField('BareMetalAdminCluster', 1)
-  bareMetalAdminClusterId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  allowPreflightFailure = _messages.BooleanField(1)
+  bareMetalAdminCluster = _messages.MessageField('BareMetalAdminCluster', 2)
+  bareMetalAdminClusterId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsBareMetalAdminClustersEnrollRequest(_messages.Message):
@@ -3319,6 +3325,11 @@ class GkeonpremProjectsLocationsBareMetalClustersCreateRequest(_messages.Message
   r"""A GkeonpremProjectsLocationsBareMetalClustersCreateRequest object.
 
   Fields:
+    allowPreflightFailure: Optional. If set to true, CLM will force CCFE to
+      persist the cluster resource in RMS when the creation fails during
+      standalone preflight checks. In that case the subsequent create call
+      will fail with "cluster already exists" error and hence a update cluster
+      is required to fix the cluster.
     bareMetalCluster: A BareMetalCluster resource to be passed as the request
       body.
     bareMetalClusterId: Required. User provided identifier that is used as
@@ -3330,10 +3341,11 @@ class GkeonpremProjectsLocationsBareMetalClustersCreateRequest(_messages.Message
     validateOnly: Validate the request without actually doing any updates.
   """
 
-  bareMetalCluster = _messages.MessageField('BareMetalCluster', 1)
-  bareMetalClusterId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  validateOnly = _messages.BooleanField(4)
+  allowPreflightFailure = _messages.BooleanField(1)
+  bareMetalCluster = _messages.MessageField('BareMetalCluster', 2)
+  bareMetalClusterId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  validateOnly = _messages.BooleanField(5)
 
 
 class GkeonpremProjectsLocationsBareMetalClustersDeleteRequest(_messages.Message):
@@ -4023,6 +4035,11 @@ class GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest(_messages.Messa
   r"""A GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest object.
 
   Fields:
+    allowPreflightFailure: Optional. If set to true, CLM will force CCFE to
+      persist the cluster resource in RMS when the creation fails during
+      standalone preflight checks. In that case the subsequent create call
+      will fail with "cluster already exists" error and hence a update cluster
+      is required to fix the cluster.
     parent: Required. The parent of the project and location where the cluster
       is created in. Format: "projects/{project}/locations/{location}"
     validateOnly: Validate the request without actually doing any updates.
@@ -4034,10 +4051,11 @@ class GkeonpremProjectsLocationsVmwareAdminClustersCreateRequest(_messages.Messa
       /^a-z+[a-z0-9]$/
   """
 
-  parent = _messages.StringField(1, required=True)
-  validateOnly = _messages.BooleanField(2)
-  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 3)
-  vmwareAdminClusterId = _messages.StringField(4)
+  allowPreflightFailure = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+  vmwareAdminCluster = _messages.MessageField('VmwareAdminCluster', 4)
+  vmwareAdminClusterId = _messages.StringField(5)
 
 
 class GkeonpremProjectsLocationsVmwareAdminClustersEnrollRequest(_messages.Message):
@@ -4288,6 +4306,11 @@ class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):
   r"""A GkeonpremProjectsLocationsVmwareClustersCreateRequest object.
 
   Fields:
+    allowPreflightFailure: Optional. If set to true, CLM will force CCFE to
+      persist the cluster resource in RMS when the creation fails during
+      standalone preflight checks. In that case the subsequent create call
+      will fail with "cluster already exists" error and hence a update cluster
+      is required to fix the cluster.
     parent: Required. The parent of the project and location where this
       cluster is created in. Format: "projects/{project}/locations/{location}"
     validateOnly: Validate the request without actually doing any updates.
@@ -4297,10 +4320,11 @@ class GkeonpremProjectsLocationsVmwareClustersCreateRequest(_messages.Message):
       RFC-1123 (https://tools.ietf.org/html/rfc1123) format.
   """
 
-  parent = _messages.StringField(1, required=True)
-  validateOnly = _messages.BooleanField(2)
-  vmwareCluster = _messages.MessageField('VmwareCluster', 3)
-  vmwareClusterId = _messages.StringField(4)
+  allowPreflightFailure = _messages.BooleanField(1)
+  parent = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+  vmwareCluster = _messages.MessageField('VmwareCluster', 4)
+  vmwareClusterId = _messages.StringField(5)
 
 
 class GkeonpremProjectsLocationsVmwareClustersDeleteRequest(_messages.Message):

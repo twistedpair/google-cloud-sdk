@@ -1273,6 +1273,8 @@ class Workstation(_messages.Message):
     name: Identifier. Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
+    sourceWorkstation: Optional. The source workstation from which this
+      workstations persistent directories were cloned on creation.
     startTime: Output only. Time when this workstation was most recently
       successfully started, regardless of the workstation's initial state.
     state: Output only. Current state of the workstation.
@@ -1387,10 +1389,11 @@ class Workstation(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
   reconciling = _messages.BooleanField(11)
-  startTime = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  sourceWorkstation = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class WorkstationCluster(_messages.Message):

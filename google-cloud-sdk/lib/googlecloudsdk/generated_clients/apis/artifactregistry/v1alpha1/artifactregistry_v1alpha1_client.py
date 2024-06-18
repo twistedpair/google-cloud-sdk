@@ -422,7 +422,7 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
         method_id='artifactregistry.projects.locations.repositories.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+parent}/repositories',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesListRequest',

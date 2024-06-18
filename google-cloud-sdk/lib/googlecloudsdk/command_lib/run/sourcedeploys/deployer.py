@@ -23,6 +23,7 @@ from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.command_lib.run.sourcedeploys import sources
+from googlecloudsdk.command_lib.run.sourcedeploys import types
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -40,6 +41,7 @@ def CreateImage(
     resource_ref,
     delegate_builds=False,
     base_image=None,
+    service_account=None,
 ):
   """Creates an image from Source."""
   if repo_to_create:
@@ -64,6 +66,8 @@ def CreateImage(
         release_track,
         base_image,
         source,
+        resource_ref,
+        service_account,
     )
     try:
       response_dict, build_log_url = _SubmitBuild(
@@ -276,6 +280,8 @@ def _PrepareSubmitBuildRequest(
     release_track,
     base_image,
     source,
+    resource_ref,
+    service_account,
 ):
   """Upload the provided build source and prepare submit build request."""
   messages = run_util.GetMessagesModule(release_track)
@@ -284,6 +290,7 @@ def _PrepareSubmitBuildRequest(
       region=region)
   storage_source = messages.GoogleCloudRunV2StorageSource(
       bucket=source.bucket, object=source.name, generation=source.generation)
+  tags = _GetBuildTags(resource_ref)
 
   if build_pack:
     # submit a buildpacks build
@@ -298,8 +305,11 @@ def _PrepareSubmitBuildRequest(
             storageSource=storage_source,
             imageUri=build_pack[0].get('image'),
             buildpackBuild=messages.GoogleCloudRunV2BuildpacksBuild(
-                baseImage=base_image, functionTarget=function_target),
+                baseImage=base_image, functionTarget=function_target
+            ),
             dockerBuild=None,
+            tags=tags,
+            serviceAccount=service_account,
         ),
     )
 
@@ -311,8 +321,14 @@ def _PrepareSubmitBuildRequest(
           imageUri=docker_image,
           buildpackBuild=None,
           dockerBuild=messages.GoogleCloudRunV2DockerBuild(),
+          tags=tags,
+          serviceAccount=service_account,
       ),
   )
+
+
+def _GetBuildTags(resource_ref):
+  return [f'{types.GetKind(resource_ref)}_{resource_ref.Name()}']
 
 
 def _SubmitBuild(

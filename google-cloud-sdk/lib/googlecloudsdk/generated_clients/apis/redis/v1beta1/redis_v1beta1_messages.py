@@ -215,6 +215,8 @@ class Cluster(_messages.Message):
     redisConfigs: Optional. Key/Value pairs of customer overrides for mutable
       Redis Configs
     replicaCount: Optional. The number of replica nodes per shard.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     shardCount: Required. Number of shards for the Redis cluster.
     sizeGb: Output only. Redis memory size in GB for the entire cluster
       rounded up to the next integer.
@@ -331,13 +333,15 @@ class Cluster(_messages.Message):
   pscConnections = _messages.MessageField('PscConnection', 12, repeated=True)
   redisConfigs = _messages.MessageField('RedisConfigsValue', 13)
   replicaCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  shardCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  sizeGb = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateInfo = _messages.MessageField('StateInfo', 18)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 21)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  shardCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  sizeGb = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  stateInfo = _messages.MessageField('StateInfo', 20)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  zoneDistributionConfig = _messages.MessageField('ZoneDistributionConfig', 23)
 
 
 class ClusterDenyMaintenancePeriod(_messages.Message):

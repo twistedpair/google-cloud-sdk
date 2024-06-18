@@ -760,11 +760,15 @@ class ModuleSettings(_messages.Message):
         effective enablement state.
       ENABLED: State is enabled.
       DISABLED: State is disabled.
+      INGEST_ONLY: SCC is configured to ingest findings from this service but
+        not enable this service. Not a valid intended_enablement_state (that
+        is, this is a readonly state).
     """
     ENABLEMENT_STATE_UNSPECIFIED = 0
     INHERITED = 1
     ENABLED = 2
     DISABLED = 3
+    INGEST_ONLY = 4
 
   class IntendedEnablementStateValueValuesEnum(_messages.Enum):
     r"""Optional. The intended state of enablement for the module at its level
@@ -776,11 +780,15 @@ class ModuleSettings(_messages.Message):
         effective enablement state.
       ENABLED: State is enabled.
       DISABLED: State is disabled.
+      INGEST_ONLY: SCC is configured to ingest findings from this service but
+        not enable this service. Not a valid intended_enablement_state (that
+        is, this is a readonly state).
     """
     ENABLEMENT_STATE_UNSPECIFIED = 0
     INHERITED = 1
     ENABLED = 2
     DISABLED = 3
+    INGEST_ONLY = 4
 
   effectiveEnablementState = _messages.EnumField('EffectiveEnablementStateValueValuesEnum', 1)
   intendedEnablementState = _messages.EnumField('IntendedEnablementStateValueValuesEnum', 2)
@@ -965,11 +973,15 @@ class SecurityCenterService(_messages.Message):
         effective enablement state.
       ENABLED: State is enabled.
       DISABLED: State is disabled.
+      INGEST_ONLY: SCC is configured to ingest findings from this service but
+        not enable this service. Not a valid intended_enablement_state (that
+        is, this is a readonly state).
     """
     ENABLEMENT_STATE_UNSPECIFIED = 0
     INHERITED = 1
     ENABLED = 2
     DISABLED = 3
+    INGEST_ONLY = 4
 
   class IntendedEnablementStateValueValuesEnum(_messages.Enum):
     r"""Optional. The intended state of enablement for the service at its
@@ -982,11 +994,15 @@ class SecurityCenterService(_messages.Message):
         effective enablement state.
       ENABLED: State is enabled.
       DISABLED: State is disabled.
+      INGEST_ONLY: SCC is configured to ingest findings from this service but
+        not enable this service. Not a valid intended_enablement_state (that
+        is, this is a readonly state).
     """
     ENABLEMENT_STATE_UNSPECIFIED = 0
     INHERITED = 1
     ENABLED = 2
     DISABLED = 3
+    INGEST_ONLY = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ModulesValue(_messages.Message):
@@ -1410,12 +1426,12 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest
     updateMask: Required. The list of fields to be updated. Possible values: *
       "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
-      checks) will done for the request (service will not be updated). An OK
-      response indicates the request is valid while an error response
-      indicates the request is invalid. Note that a subsequent request to
-      actually update the service could still fail because 1. the state could
-      have changed (e.g. IAM permission lost) or 2. A failure occurred while
-      trying to delete the module.
+      checks) will be done for the request (service will not be updated). An
+      OK response indicates that the request is valid, while an error response
+      indicates that the request is invalid. Note that a subsequent request to
+      actually update the service could still fail for one of the following
+      reasons: - The state could have changed (e.g. IAM permission lost). - A
+      failure occurred while trying to delete the module.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1875,12 +1891,12 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchR
     updateMask: Required. The list of fields to be updated. Possible values: *
       "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
-      checks) will done for the request (service will not be updated). An OK
-      response indicates the request is valid while an error response
-      indicates the request is invalid. Note that a subsequent request to
-      actually update the service could still fail because 1. the state could
-      have changed (e.g. IAM permission lost) or 2. A failure occurred while
-      trying to delete the module.
+      checks) will be done for the request (service will not be updated). An
+      OK response indicates that the request is valid, while an error response
+      indicates that the request is invalid. Note that a subsequent request to
+      actually update the service could still fail for one of the following
+      reasons: - The state could have changed (e.g. IAM permission lost). - A
+      failure occurred while trying to delete the module.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2373,12 +2389,12 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchReques
     updateMask: Required. The list of fields to be updated. Possible values: *
       "intended_enablement_state" * "modules"
     validateOnly: Optional. When set to true, only validations (including IAM
-      checks) will done for the request (service will not be updated). An OK
-      response indicates the request is valid while an error response
-      indicates the request is invalid. Note that a subsequent request to
-      actually update the service could still fail because 1. the state could
-      have changed (e.g. IAM permission lost) or 2. A failure occurred while
-      trying to delete the module.
+      checks) will be done for the request (service will not be updated). An
+      OK response indicates that the request is valid, while an error response
+      indicates that the request is invalid. Note that a subsequent request to
+      actually update the service could still fail for one of the following
+      reasons: - The state could have changed (e.g. IAM permission lost). - A
+      failure occurred while trying to delete the module.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2637,6 +2653,8 @@ class SimulatedFinding(_messages.Message):
       SCC_ERROR: Describes an error that prevents some SCC functionality.
       POSTURE_VIOLATION: Describes a potential security risk due to a change
         in the security posture.
+      TOXIC_COMBINATION: Describes a combination of security issues that
+        represent a more severe security problem when taken together.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -2645,6 +2663,7 @@ class SimulatedFinding(_messages.Message):
     OBSERVATION = 4
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
+    TOXIC_COMBINATION = 7
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that

@@ -664,6 +664,53 @@ class BucketAccessControls(_messages.Message):
   kind = _messages.StringField(2, default='storage#bucketAccessControls')
 
 
+class BucketStorageLayout(_messages.Message):
+  r"""The storage layout configuration of a bucket.
+
+  Messages:
+    CustomPlacementConfigValue: The bucket's custom placement configuration
+      for Custom Dual Regions.
+    HierarchicalNamespaceValue: The bucket's hierarchical namespace
+      configuration.
+
+  Fields:
+    bucket: The name of the bucket.
+    customPlacementConfig: The bucket's custom placement configuration for
+      Custom Dual Regions.
+    hierarchicalNamespace: The bucket's hierarchical namespace configuration.
+    kind: The kind of item this is. For storage layout, this is always
+      storage#storageLayout.
+    location: The location of the bucket.
+    locationType: The type of the bucket location.
+  """
+
+  class CustomPlacementConfigValue(_messages.Message):
+    r"""The bucket's custom placement configuration for Custom Dual Regions.
+
+    Fields:
+      dataLocations: The list of regional locations in which data is placed.
+    """
+
+    dataLocations = _messages.StringField(1, repeated=True)
+
+  class HierarchicalNamespaceValue(_messages.Message):
+    r"""The bucket's hierarchical namespace configuration.
+
+    Fields:
+      enabled: When set to true, hierarchical namespace is enabled for this
+        bucket.
+    """
+
+    enabled = _messages.BooleanField(1)
+
+  bucket = _messages.StringField(1)
+  customPlacementConfig = _messages.MessageField('CustomPlacementConfigValue', 2)
+  hierarchicalNamespace = _messages.MessageField('HierarchicalNamespaceValue', 3)
+  kind = _messages.StringField(4, default='storage#storageLayout')
+  location = _messages.StringField(5)
+  locationType = _messages.StringField(6)
+
+
 class Buckets(_messages.Message):
   r"""A list of buckets.
 
@@ -1966,6 +2013,20 @@ class StorageBucketsGetRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(3)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 4)
   userProject = _messages.StringField(5)
+
+
+class StorageBucketsGetStorageLayoutRequest(_messages.Message):
+  r"""A StorageBucketsGetStorageLayoutRequest object.
+
+  Fields:
+    bucket: Name of a bucket.
+    prefix: An optional prefix used for permission check. It is useful when
+      the caller only has storage.objects.list permission under a specific
+      prefix.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  prefix = _messages.StringField(2)
 
 
 class StorageBucketsInsertRequest(_messages.Message):

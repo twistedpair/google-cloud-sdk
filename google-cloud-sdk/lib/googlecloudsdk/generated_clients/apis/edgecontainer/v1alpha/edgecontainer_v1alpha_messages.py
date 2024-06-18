@@ -311,8 +311,8 @@ class ControlPlane(_messages.Message):
 
 
 class ControlPlaneEncryption(_messages.Message):
-  r"""Configuration for Customer-managed KMS key support for remote control
-  plane cluster disk encryption.
+  r"""Configuration for Customer-managed KMS key support for control plane
+  nodes.
 
   Enums:
     KmsKeyStateValueValuesEnum: Output only. Availability of the Cloud KMS
@@ -321,8 +321,8 @@ class ControlPlaneEncryption(_messages.Message):
       permissions to use the key, or if the key is disabled or deleted.
 
   Fields:
-    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
-      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+    kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
+      s/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
       protecting control plane disks. If not specified, a Google-managed key
       will be used instead.
     kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
@@ -1016,8 +1016,8 @@ class LocalDiskEncryption(_messages.Message):
       permissions to use the key, or if the key is disabled or deleted.
 
   Fields:
-    kmsKey: Immutable. The Cloud KMS CryptoKey e.g. projects/{project}/locatio
-      ns/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
+    kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
+      s/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoKey} to use for
       protecting node local disks. If not specified, a Google-managed key will
       be used instead.
     kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
@@ -1837,11 +1837,13 @@ class SystemAddonsConfig(_messages.Message):
     ingress: Optional. Config for Ingress.
     sdsOperator: Optional. Config for SDS Operator.
     unmanagedKafkaConfig: Optional. Config for unmanaged Kafka.
+    vmServiceConfig: Optional. Config for VM Service.
   """
 
   ingress = _messages.MessageField('Ingress', 1)
   sdsOperator = _messages.MessageField('SdsOperator', 2)
   unmanagedKafkaConfig = _messages.MessageField('UnmanagedKafkaConfig', 3)
+  vmServiceConfig = _messages.MessageField('VMServiceConfig', 4)
 
 
 class TimeWindow(_messages.Message):
@@ -1916,6 +1918,16 @@ class UpgradeSettings(_messages.Message):
   """
 
   maxUnavailableWorkerNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class VMServiceConfig(_messages.Message):
+  r"""VMServiceConfig defines the configuration for GDCE VM Service.
+
+  Fields:
+    vmmEnabled: Optional. Whether VMM is enabled.
+  """
+
+  vmmEnabled = _messages.BooleanField(1)
 
 
 class Version(_messages.Message):

@@ -37,7 +37,7 @@ class AccessLevel(_messages.Message):
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
-    name: Required. Resource name for the `AccessLevel`. Format:
+    name: Identifier. Resource name for the `AccessLevel`. Format:
       `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
       `access_level` component must begin with a letter, followed by
       alphanumeric characters or `_`. Its maximum length is 50 characters.
@@ -62,9 +62,10 @@ class AccessPolicy(_messages.Message):
   Fields:
     etag: Output only. An opaque identifier for the current version of the
       `AccessPolicy`. This will always be a strongly validated etag, meaning
-      that two Access Polices will be identical if and only if their etags are
-      identical. Clients should not expect this to be in any specific format.
-    name: Resource name of the `AccessPolicy`. Format:
+      that two Access Policies will be identical if and only if their etags
+      are identical. Clients should not expect this to be in any specific
+      format.
+    name: Identifier. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{access_policy}`
     parent: Immutable. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy Format: `organizations/{organization_id}`
@@ -206,7 +207,7 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
 
   Fields:
     accessLevel: A AccessLevel resource to be passed as the request body.
-    name: Required. Resource name for the `AccessLevel`. Format:
+    name: Identifier. Resource name for the `AccessLevel`. Format:
       `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
       `access_level` component must begin with a letter, followed by
       alphanumeric characters or `_`. Its maximum length is 50 characters.
@@ -318,10 +319,10 @@ class AccesscontextmanagerAccessPoliciesAuthorizedOrgsDescsPatchRequest(_message
   Fields:
     authorizedOrgsDesc: A AuthorizedOrgsDesc resource to be passed as the
       request body.
-    name: Resource name for the `AuthorizedOrgsDesc`. Format: `accessPolicies/
-      {access_policy}/authorizedOrgsDescs/{authorized_orgs_desc}`. The
-      `authorized_orgs_desc` component must begin with a letter, followed by
-      alphanumeric characters or `_`. After you create an
+    name: Identifier. Resource name for the `AuthorizedOrgsDesc`. Format: `acc
+      essPolicies/{access_policy}/authorizedOrgsDescs/{authorized_orgs_desc}`.
+      The `authorized_orgs_desc` component must begin with a letter, followed
+      by alphanumeric characters or `_`. After you create an
       `AuthorizedOrgsDesc`, you cannot change its `name`.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
@@ -392,7 +393,7 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
 
   Fields:
     accessPolicy: A AccessPolicy resource to be passed as the request body.
-    name: Resource name of the `AccessPolicy`. Format:
+    name: Identifier. Resource name of the `AccessPolicy`. Format:
       `accessPolicies/{access_policy}`
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
@@ -479,7 +480,7 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   object.
 
   Fields:
-    name: Required. Resource name for the `ServicePerimeter`. Format:
+    name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
       alphanumeric characters or `_`. After you create a `ServicePerimeter`,
@@ -613,6 +614,11 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest(_message
   object.
 
   Fields:
+    filter: Optional. The literal filter pipelines to be returned. See
+      https://google.aip.dev/160 for more details. Accepts values: *
+      principal:group_key * principal:service_account OR
+      principal:service_account_project_number. If this field is empty or not
+      one of the above, the default value is "principal:group_key".
     pageSize: Optional. Maximum number of items to return. The server may
       return fewer items. If left blank, the server may return any number of
       items.
@@ -621,9 +627,10 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsListRequest(_message
     parent: Required. Example: "organizations/256"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messages.Message):
@@ -814,10 +821,10 @@ class AuthorizedOrgsDesc(_messages.Message):
       `AuthorizedOrgsDesc` resource.
     authorizationType: A granular control type for authorization levels. Valid
       value is `AUTHORIZATION_TYPE_TRUST`.
-    name: Resource name for the `AuthorizedOrgsDesc`. Format: `accessPolicies/
-      {access_policy}/authorizedOrgsDescs/{authorized_orgs_desc}`. The
-      `authorized_orgs_desc` component must begin with a letter, followed by
-      alphanumeric characters or `_`. After you create an
+    name: Identifier. Resource name for the `AuthorizedOrgsDesc`. Format: `acc
+      essPolicies/{access_policy}/authorizedOrgsDescs/{authorized_orgs_desc}`.
+      The `authorized_orgs_desc` component must begin with a letter, followed
+      by alphanumeric characters or `_`. After you create an
       `AuthorizedOrgsDesc`, you cannot change its `name`.
     orgs: The list of organization ids in this AuthorizedOrgsDesc. Format:
       `organizations/` Example: `organizations/123456`
@@ -2009,7 +2016,7 @@ class ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Required. Resource name for the `ServicePerimeter`. Format:
+    name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
       alphanumeric characters or `_`. After you create a `ServicePerimeter`,

@@ -64,7 +64,7 @@ def ApiVersion():
   return _DEFAULT_API_VERSION
 
 
-def FormatForRolloutsDescribe(rollout, args, less=True):
+def FormatForRolloutsDescribe(rollout, args, less=False):
   """Sets format for `rollouts describe` depending on rollout strategy.
 
   Args:
@@ -197,7 +197,7 @@ def VariantsFromGlobPattern(glob_pattern):
       files_list = _AllFilesUnderDir(paths[0])
       all_resources = []
       for file in files_list:
-        full_file_path = os.path.join(paths[0], file)
+        full_file_path = os.path.abspath(file)
         resources = _LoadResourcesFromFile(full_file_path)
         if resources:
           all_resources.extend(resources)
@@ -214,7 +214,7 @@ def VariantsFromGlobPattern(glob_pattern):
         files_list = _AllFilesUnderDir(path)
         all_resources = []
         for file in files_list:
-          full_file_path = os.path.join(path, file)
+          full_file_path = os.path.abspath(file)
           resources = _LoadResourcesFromFile(full_file_path)
           if resources:
             all_resources.extend(resources)
@@ -224,8 +224,8 @@ def VariantsFromGlobPattern(glob_pattern):
   return variants
 
 
-def TransformTrimMessage(resource):
-  """Trims rollout-level message if it's too long.
+def TransformTrimClusterLevelMessages(resource):
+  """Shows the first cluster-level message and truncates it if it's too long.
 
   Args:
     resource: A RolloutInfo resource
@@ -234,7 +234,7 @@ def TransformTrimMessage(resource):
     Message limited to 40 characters
   """
   truncated_message_length = 40
-  messages = _GetMessagesFromResource(resource)
+  messages = _GetClusterLevelMessagesFromResource(resource)
   if not messages:
     return ''
   if len(messages) >= 1 and len(messages[0]) > truncated_message_length:
@@ -242,54 +242,48 @@ def TransformTrimMessage(resource):
   return messages[0]
 
 
-def _GetMessagesFromResource(resource):
-  """Gathers messages from different levels of a Rollout resource.
+def TransformTrimRolloutLevelMessage(resource):
+  """Trims rollout-level message if it's too long.
 
   Args:
-    resource: A RolloutInfo resource, from `... rollouts describe ...`
+    resource: A Rollout resource
+
+  Returns:
+    String message limited to 40 characters
+  """
+  rollout_info = resource.get('info', {})
+  if rollout_info:
+    rollout_message = rollout_info.get('message', '')
+    if rollout_message:
+      if len(rollout_message) > 40:
+        return rollout_message[:40] + '...'
+      return rollout_message
+  return ''
+
+
+def _GetClusterLevelMessagesFromResource(resource):
+  """Gathers cluster-level messages from a Rollout resource.
+
+  Args:
+    resource: A Rollout resource, from `... rollouts describe ...`
 
   Returns:
     A list of messages from the Rollout resource.
   """
   messages = []
-  if resource is None:
-    return messages
-  info_message = resource.get('info', {}).get('message', '')
-  if info_message:
-    messages.append(info_message)
-  cluster_infos = (
-      resource.get('info', {})
-      .get('rolloutStrategyInfo', {})
-      .get('rollingStrategyInfo', {})
-      .get('clusters', [])
+  if not resource:
+    return []
+  rollout_strategy_info = resource.get('info', {}).get(
+      'rolloutStrategyInfo', {}
   )
-  if cluster_infos:
-    if isinstance(cluster_infos, dict):
-      for cluster_info in cluster_infos.values():
-        if 'messages' in cluster_info:
-          messages.extend(cluster_info['messages'])
-        if 'current' in cluster_info and 'messages' in cluster_info['current']:
-          messages.extend(cluster_info['current']['messages'])
-  cluster_infos = (
-      resource.get('info', {})
-      .get('rolloutStrategyInfo', {})
-      .get('allAtOnceStrategyInfo', {})
-      .get('clusters', [])
-  )
-  if cluster_infos:
-    if isinstance(cluster_infos, dict):
-      for cluster_info in cluster_infos.values():
-        if 'messages' in cluster_info:
-          messages.extend(cluster_info['messages'])
-        if 'current' in cluster_info and 'messages' in cluster_info['current']:
-          messages.extend(cluster_info['current']['messages'])
-    elif isinstance(cluster_infos, list):
-      for cluster_info in cluster_infos:
-        if 'messages' in cluster_info:
-          messages.extend(cluster_info['messages'])
-        curr_messages = cluster_info.get('current', {}).get('messages', [])
-        if curr_messages:
-          messages.extend(curr_messages)
+  for rollout_info in rollout_strategy_info.values():
+    clusters = rollout_info.get('clusters', [])
+    if 'messages' in clusters:
+      messages.extend(clusters.get('messages', []))
+    for cluster in clusters.values():
+      if 'messages' in cluster:
+        messages.extend(cluster.get('messages', []))
+
   info_errors = resource.get('info', {}).get('errors', [])
   if info_errors:
     for error in info_errors:
@@ -300,17 +294,16 @@ def _GetMessagesFromResource(resource):
   return messages
 
 
-def TransformAllMessages(resource):
-  """Gathers messages from all levels from a Rollout resource.
+def TransformAllClusterLevelMessages(resource):
+  """Returns all cluster-level messages from a Rollout resource.
 
   Args:
-    resource: A RolloutInfo resource, from `... rollouts describe ...`
+    resource: A Rollout resource, from `... rollouts describe ...`
 
   Returns:
-    All messages on a Rollout, including sync-level, cluster-level, and
-    rollout-level messages.
+    A single string or string array of cluster-level messages.
   """
-  messages = _GetMessagesFromResource(resource)
+  messages = _GetClusterLevelMessagesFromResource(resource)
   if not messages:
     return ''
   elif len(messages) == 1:

@@ -46,6 +46,7 @@ class DeleteTaskIteratorFactory:
 
     self._bucket_delete_tasks = queue.Queue()
     self._managed_folder_delete_tasks = queue.Queue()
+    self._folder_delete_tasks = queue.Queue()
     self._object_delete_tasks = queue.Queue()
     self._flat_wildcard_results_iterator = (
         self._get_flat_wildcard_results_iterator())
@@ -70,6 +71,10 @@ class DeleteTaskIteratorFactory:
       elif isinstance(resource, resource_reference.ManagedFolderResource):
         self._managed_folder_delete_tasks.put(
             delete_task.DeleteManagedFolderTask(resource_url)
+        )
+      elif isinstance(resource, resource_reference.FolderResource):
+        self._folder_delete_tasks.put(
+            delete_task.DeleteFolderTask(resource_url)
         )
       else:
         self._object_delete_tasks.put(
@@ -101,6 +106,9 @@ class DeleteTaskIteratorFactory:
 
   def managed_folder_iterator(self):
     return self._resource_iterator(self._managed_folder_delete_tasks)
+
+  def folder_iterator(self):
+    return self._resource_iterator(self._folder_delete_tasks)
 
   def object_iterator(self):
     return self._resource_iterator(self._object_delete_tasks)

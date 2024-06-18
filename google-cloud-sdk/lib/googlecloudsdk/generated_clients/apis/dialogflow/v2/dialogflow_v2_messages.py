@@ -1871,6 +1871,22 @@ class DialogflowProjectsConversationsParticipantsSuggestionsSuggestFaqAnswersReq
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest(_messages.Message):
+  r"""A DialogflowProjectsConversationsParticipantsSuggestionsSuggestKnowledge
+  AssistRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SuggestKnowledgeAssistRequest: A
+      GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest resource to be
+      passed as the request body.
+    parent: Required. The name of the participant to fetch suggestions for.
+      Format: `projects//locations//conversations//participants/`.
+  """
+
+  googleCloudDialogflowV2SuggestKnowledgeAssistRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest(_messages.Message):
   r"""A DialogflowProjectsConversationsParticipantsSuggestionsSuggestSmartRepl
   iesRequest object.
@@ -1913,6 +1929,46 @@ class DialogflowProjectsDeleteAgentRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsGeneratorsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsGeneratorsCreateRequest object.
+
+  Fields:
+    generatorId: Optional. The ID to use for the generator, which will become
+      the final component of the generator's resource name. The generator ID
+      must be compliant with the regression fomula `a-zA-Z*` with the
+      characters length in range of [3,64]. If the field is not provided, an
+      Id will be auto-generated. If the field is provided, the caller is
+      resposible for 1. the uniqueness of the ID, otherwise the request will
+      be rejected. 2. the consistency for whether to use custom ID or not
+      under a project to better ensure uniqueness.
+    googleCloudDialogflowV2Generator: A GoogleCloudDialogflowV2Generator
+      resource to be passed as the request body.
+    parent: Required. The project/location to create generator for. Format:
+      `projects//locations/`
+  """
+
+  generatorId = _messages.StringField(1)
+  googleCloudDialogflowV2Generator = _messages.MessageField('GoogleCloudDialogflowV2Generator', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsGeneratorsListRequest(_messages.Message):
+  r"""A DialogflowProjectsGeneratorsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of conversation models to return in a
+      single page. Default to 10.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The project/location to list generators for. Format:
+      `projects//locations/`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DialogflowProjectsGetAgentRequest(_messages.Message):
@@ -3864,6 +3920,22 @@ class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestFaqA
   parent = _messages.StringField(2, required=True)
 
 
+class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggest
+  KnowledgeAssistRequest object.
+
+  Fields:
+    googleCloudDialogflowV2SuggestKnowledgeAssistRequest: A
+      GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest resource to be
+      passed as the request body.
+    parent: Required. The name of the participant to fetch suggestions for.
+      Format: `projects//locations//conversations//participants/`.
+  """
+
+  googleCloudDialogflowV2SuggestKnowledgeAssistRequest = _messages.MessageField('GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestSmartRepliesRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggest
   SmartRepliesRequest object.
@@ -3905,6 +3977,84 @@ class DialogflowProjectsLocationsDeleteAgentRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsGeneratorsCreateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGeneratorsCreateRequest object.
+
+  Fields:
+    generatorId: Optional. The ID to use for the generator, which will become
+      the final component of the generator's resource name. The generator ID
+      must be compliant with the regression fomula `a-zA-Z*` with the
+      characters length in range of [3,64]. If the field is not provided, an
+      Id will be auto-generated. If the field is provided, the caller is
+      resposible for 1. the uniqueness of the ID, otherwise the request will
+      be rejected. 2. the consistency for whether to use custom ID or not
+      under a project to better ensure uniqueness.
+    googleCloudDialogflowV2Generator: A GoogleCloudDialogflowV2Generator
+      resource to be passed as the request body.
+    parent: Required. The project/location to create generator for. Format:
+      `projects//locations/`
+  """
+
+  generatorId = _messages.StringField(1)
+  googleCloudDialogflowV2Generator = _messages.MessageField('GoogleCloudDialogflowV2Generator', 2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsGeneratorsDeleteRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGeneratorsDeleteRequest object.
+
+  Fields:
+    name: Required. The generator resource name to delete. Format:
+      `projects//locations//generators/`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsGeneratorsGetRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGeneratorsGetRequest object.
+
+  Fields:
+    name: Required. The generator resource name to retrieve. Format:
+      `projects//locations/`/generators/`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsGeneratorsListRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGeneratorsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of conversation models to return in a
+      single page. Default to 10.
+    pageToken: Optional. The next_page_token value returned from a previous
+      list request.
+    parent: Required. The project/location to list generators for. Format:
+      `projects//locations/`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DialogflowProjectsLocationsGeneratorsPatchRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGeneratorsPatchRequest object.
+
+  Fields:
+    googleCloudDialogflowV2Generator: A GoogleCloudDialogflowV2Generator
+      resource to be passed as the request body.
+    name: Output only. Identifier. The resource name of the generator. Format:
+      `projects//locations//generators/`
+    updateMask: Optional. The list of fields to update.
+  """
+
+  googleCloudDialogflowV2Generator = _messages.MessageField('GoogleCloudDialogflowV2Generator', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class DialogflowProjectsLocationsGetAgentRequest(_messages.Message):
@@ -4223,6 +4373,21 @@ class DialogflowProjectsLocationsSetAgentRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class DialogflowProjectsLocationsStatelessSuggestionGenerateRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsStatelessSuggestionGenerateRequest object.
+
+  Fields:
+    googleCloudDialogflowV2GenerateStatelessSuggestionRequest: A
+      GoogleCloudDialogflowV2GenerateStatelessSuggestionRequest resource to be
+      passed as the request body.
+    parent: Required. The parent resource to charge for the Suggestion's
+      generation. Format: `projects//locations/`.
+  """
+
+  googleCloudDialogflowV2GenerateStatelessSuggestionRequest = _messages.MessageField('GoogleCloudDialogflowV2GenerateStatelessSuggestionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsSuggestionsGenerateStatelessSummaryRequest
   object.
@@ -4365,10 +4530,8 @@ class GoogleCloudDialogflowCxV3AdvancedSettingsLoggingSettings(_messages.Message
   r"""Define behaviors on logging.
 
   Fields:
-    enableInteractionLogging: If true, DF Interaction logging is currently
-      enabled.
-    enableStackdriverLogging: If true, StackDriver logging is currently
-      enabled.
+    enableInteractionLogging: Enables DF Interaction logging.
+    enableStackdriverLogging: Enables StackDriver logging.
   """
 
   enableInteractionLogging = _messages.BooleanField(1)
@@ -7137,10 +7300,8 @@ class GoogleCloudDialogflowCxV3beta1AdvancedSettingsLoggingSettings(_messages.Me
   r"""Define behaviors on logging.
 
   Fields:
-    enableInteractionLogging: If true, DF Interaction logging is currently
-      enabled.
-    enableStackdriverLogging: If true, StackDriver logging is currently
-      enabled.
+    enableInteractionLogging: Enables DF Interaction logging.
+    enableStackdriverLogging: Enables StackDriver logging.
   """
 
   enableInteractionLogging = _messages.BooleanField(1)
@@ -8652,6 +8813,7 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
       in the same session do not necessarily need to specify the same
       language.
     text: The natural language text to be processed.
+    toolCallResult: The results of a tool executed by the client.
   """
 
   audio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AudioInput', 1)
@@ -8660,6 +8822,7 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
   intent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1IntentInput', 4)
   languageCode = _messages.StringField(5)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TextInput', 6)
+  toolCallResult = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ToolCallResult', 7)
 
 
 class GoogleCloudDialogflowCxV3beta1ReloadDocumentOperationMetadata(_messages.Message):
@@ -8719,6 +8882,8 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
     telephonyTransferCall: A signal that the client should transfer the phone
       call connected to this agent to a third-party endpoint.
     text: Returns a text response.
+    toolCall: Returns the definition of a tool call that should be executed by
+      the client.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -8756,6 +8921,7 @@ class GoogleCloudDialogflowCxV3beta1ResponseMessage(_messages.Message):
   playAudio = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessagePlayAudio', 9)
   telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageTelephonyTransferCall', 10)
   text = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ResponseMessageText', 11)
+  toolCall = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ToolCall', 12)
 
 
 class GoogleCloudDialogflowCxV3beta1ResponseMessageConversationSuccess(_messages.Message):
@@ -9218,6 +9384,105 @@ class GoogleCloudDialogflowCxV3beta1TextInput(_messages.Message):
   """
 
   text = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowCxV3beta1ToolCall(_messages.Message):
+  r"""Represents a call of a specific tool's action with the specified inputs.
+
+  Messages:
+    InputParametersValue: Optional. The action's input parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    inputParameters: Optional. The action's input parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//agents//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputParametersValue(_messages.Message):
+    r"""Optional. The action's input parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  inputParameters = _messages.MessageField('InputParametersValue', 2)
+  tool = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowCxV3beta1ToolCallResult(_messages.Message):
+  r"""The result of calling a tool's action that has been executed by the
+  client.
+
+  Messages:
+    OutputParametersValue: The tool call's output parameters.
+
+  Fields:
+    action: Required. The name of the tool's action associated with this call.
+    error: The tool call's error.
+    outputParameters: The tool call's output parameters.
+    tool: Required. The tool associated with this call. Format:
+      `projects//locations//agents//tools/`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputParametersValue(_messages.Message):
+    r"""The tool call's output parameters.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputParametersValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  action = _messages.StringField(1)
+  error = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ToolCallResultError', 2)
+  outputParameters = _messages.MessageField('OutputParametersValue', 3)
+  tool = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowCxV3beta1ToolCallResultError(_messages.Message):
+  r"""An error produced by the tool call.
+
+  Fields:
+    message: Optional. The error message of the function.
+  """
+
+  message = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1TransitionRoute(_messages.Message):
@@ -9984,6 +10249,7 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
       efficient. For example, if the document is poorly written, hard to
       understand, hard to use or too long to find useful information,
       document_efficiency is DocumentEfficiency.INEFFICIENT.
+    knowledgeAssistFeedback: Optional. Feedback for knowledge assist.
     knowledgeSearchFeedback: Optional. Feedback for knowledge search.
     summarizationFeedback: Optional. Feedback for conversation summarization.
   """
@@ -10037,8 +10303,25 @@ class GoogleCloudDialogflowV2AgentAssistantFeedback(_messages.Message):
   answerRelevance = _messages.EnumField('AnswerRelevanceValueValuesEnum', 1)
   documentCorrectness = _messages.EnumField('DocumentCorrectnessValueValuesEnum', 2)
   documentEfficiency = _messages.EnumField('DocumentEfficiencyValueValuesEnum', 3)
-  knowledgeSearchFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeSearchFeedback', 4)
-  summarizationFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback', 5)
+  knowledgeAssistFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeAssistFeedback', 4)
+  knowledgeSearchFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeSearchFeedback', 5)
+  summarizationFeedback = _messages.MessageField('GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback', 6)
+
+
+class GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeAssistFeedback(_messages.Message):
+  r"""Feedback for knowledge assist.
+
+  Fields:
+    answerCopied: Whether the suggested answer was copied by the human agent.
+      If the value is set to be true, AnswerFeedback.clicked will be updated
+      to be true.
+    clickedUris: The URIs clicked by the human agent. The value is appended
+      for each UpdateAnswerRecordRequest. If the value is not empty,
+      AnswerFeedback.clicked will be updated to be true.
+  """
+
+  answerCopied = _messages.BooleanField(1)
+  clickedUris = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeSearchFeedback(_messages.Message):
@@ -10732,12 +11015,14 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigOperationMetadata(_mess
       SMART_REPLY: Run smart reply model for chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
     KNOWLEDGE_SEARCH = 4
+    KNOWLEDGE_ASSIST = 5
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -10788,12 +11073,14 @@ class GoogleCloudDialogflowV2ClearSuggestionFeatureConfigRequest(_messages.Messa
       SMART_REPLY: Run smart reply model for chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
     KNOWLEDGE_SEARCH = 4
+    KNOWLEDGE_ASSIST = 5
 
   participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 1)
   suggestionFeatureType = _messages.EnumField('SuggestionFeatureTypeValueValuesEnum', 2)
@@ -10980,6 +11267,16 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
   name = _messages.StringField(5)
   phoneNumber = _messages.MessageField('GoogleCloudDialogflowV2ConversationPhoneNumber', 6)
   startTime = _messages.StringField(7)
+
+
+class GoogleCloudDialogflowV2ConversationContext(_messages.Message):
+  r"""Context of the conversation, including transcripts.
+
+  Fields:
+    messageEntries: Optional. List of message transcripts in the conversation.
+  """
+
+  messageEntries = _messages.MessageField('GoogleCloudDialogflowV2MessageEntry', 1, repeated=True)
 
 
 class GoogleCloudDialogflowV2ConversationDataset(_messages.Message):
@@ -12046,6 +12343,56 @@ class GoogleCloudDialogflowV2FaqAnswer(_messages.Message):
   source = _messages.StringField(6)
 
 
+class GoogleCloudDialogflowV2FewShotExample(_messages.Message):
+  r"""Providing examples in the generator (i.e. building a few-shot generator)
+  helps convey the desired format of the LLM response. NEXT_ID: 10
+
+  Messages:
+    ExtraInfoValue: Optional. Key is the placeholder field name in input,
+      value is the value of the placeholder. E.g. instruction contains
+      "@price", and ingested data has <"price", "10">
+
+  Fields:
+    conversationContext: Optional. Conversation transcripts.
+    extraInfo: Optional. Key is the placeholder field name in input, value is
+      the value of the placeholder. E.g. instruction contains "@price", and
+      ingested data has <"price", "10">
+    output: Required. Example output of the model.
+    summarizationSectionList: Summarization sections.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtraInfoValue(_messages.Message):
+    r"""Optional. Key is the placeholder field name in input, value is the
+    value of the placeholder. E.g. instruction contains "@price", and ingested
+    data has <"price", "10">
+
+    Messages:
+      AdditionalProperty: An additional property for a ExtraInfoValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ExtraInfoValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtraInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  conversationContext = _messages.MessageField('GoogleCloudDialogflowV2ConversationContext', 1)
+  extraInfo = _messages.MessageField('ExtraInfoValue', 2)
+  output = _messages.MessageField('GoogleCloudDialogflowV2GeneratorSuggestion', 3)
+  summarizationSectionList = _messages.MessageField('GoogleCloudDialogflowV2SummarizationSectionList', 4)
+
+
 class GoogleCloudDialogflowV2Fulfillment(_messages.Message):
   r"""By default, your agent responds to a matched intent with a static
   response. As an alternative, you can provide a more dynamic response by
@@ -12182,6 +12529,54 @@ class GoogleCloudDialogflowV2GcsSources(_messages.Message):
   uris = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDialogflowV2GenerateStatelessSuggestionRequest(_messages.Message):
+  r"""The request message for Conversations.GenerateStatelessSuggestion.
+
+  Enums:
+    TriggerEventsValueListEntryValuesEnum:
+
+  Fields:
+    conversationContext: Optional. Context of the conversation, including
+      transcripts.
+    generator: Uncreated generator. It should be a complete generator that
+      includes all information about the generator.
+    generatorName: The resource name of the existing created generator.
+      Format: `projects//locations//generators/`
+    triggerEvents: Optional. A list of trigger events. Generator will be
+      triggered only if it's trigger event is included here.
+  """
+
+  class TriggerEventsValueListEntryValuesEnum(_messages.Enum):
+    r"""TriggerEventsValueListEntryValuesEnum enum type.
+
+    Values:
+      TRIGGER_EVENT_UNSPECIFIED: Default value for TriggerEvent.
+      END_OF_UTTERANCE: Triggers when each chat message or voice utterance
+        ends.
+      MANUAL_CALL: Triggers on the conversation manually by API calls, such as
+        Conversations.GenerateStatelessSuggestion and
+        Conversations.GenerateSuggestions.
+    """
+    TRIGGER_EVENT_UNSPECIFIED = 0
+    END_OF_UTTERANCE = 1
+    MANUAL_CALL = 2
+
+  conversationContext = _messages.MessageField('GoogleCloudDialogflowV2ConversationContext', 1)
+  generator = _messages.MessageField('GoogleCloudDialogflowV2Generator', 2)
+  generatorName = _messages.StringField(3)
+  triggerEvents = _messages.EnumField('TriggerEventsValueListEntryValuesEnum', 4, repeated=True)
+
+
+class GoogleCloudDialogflowV2GenerateStatelessSuggestionResponse(_messages.Message):
+  r"""The response message for Conversations.GenerateStatelessSuggestion.
+
+  Fields:
+    generatorSuggestion: Required. Generated suggestion for a conversation.
+  """
+
+  generatorSuggestion = _messages.MessageField('GoogleCloudDialogflowV2GeneratorSuggestion', 1)
+
+
 class GoogleCloudDialogflowV2GenerateStatelessSummaryRequest(_messages.Message):
   r"""The request message for Conversations.GenerateStatelessSummary.
 
@@ -12292,6 +12687,60 @@ class GoogleCloudDialogflowV2GenerateStatelessSummaryResponseSummary(_messages.M
   textSections = _messages.MessageField('TextSectionsValue', 3)
 
 
+class GoogleCloudDialogflowV2Generator(_messages.Message):
+  r"""LLM generator.
+
+  Enums:
+    TriggerEventValueValuesEnum: Optional. The trigger event of the generator.
+      It defines when the generator is triggered in a conversation.
+
+  Fields:
+    createTime: Output only. Creation time of this generator.
+    description: Optional. Human readable description of the generator.
+    inferenceParameter: Optional. Inference parameters for this generator.
+    name: Output only. Identifier. The resource name of the generator. Format:
+      `projects//locations//generators/`
+    summarizationContext: Input of prebuilt Summarization feature.
+    triggerEvent: Optional. The trigger event of the generator. It defines
+      when the generator is triggered in a conversation.
+    updateTime: Output only. Update time of this generator.
+  """
+
+  class TriggerEventValueValuesEnum(_messages.Enum):
+    r"""Optional. The trigger event of the generator. It defines when the
+    generator is triggered in a conversation.
+
+    Values:
+      TRIGGER_EVENT_UNSPECIFIED: Default value for TriggerEvent.
+      END_OF_UTTERANCE: Triggers when each chat message or voice utterance
+        ends.
+      MANUAL_CALL: Triggers on the conversation manually by API calls, such as
+        Conversations.GenerateStatelessSuggestion and
+        Conversations.GenerateSuggestions.
+    """
+    TRIGGER_EVENT_UNSPECIFIED = 0
+    END_OF_UTTERANCE = 1
+    MANUAL_CALL = 2
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  inferenceParameter = _messages.MessageField('GoogleCloudDialogflowV2InferenceParameter', 3)
+  name = _messages.StringField(4)
+  summarizationContext = _messages.MessageField('GoogleCloudDialogflowV2SummarizationContext', 5)
+  triggerEvent = _messages.EnumField('TriggerEventValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudDialogflowV2GeneratorSuggestion(_messages.Message):
+  r"""Suggestion generated using a Generator.
+
+  Fields:
+    summarySuggestion: Optional. Suggested summary.
+  """
+
+  summarySuggestion = _messages.MessageField('GoogleCloudDialogflowV2SummarySuggestion', 1)
+
+
 class GoogleCloudDialogflowV2HumanAgentAssistantConfig(_messages.Message):
   r"""Defines the Human Agent Assist to connect to a conversation.
 
@@ -12376,8 +12825,18 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig(_messages
   r"""Detail human agent assistant config.
 
   Fields:
+    disableHighLatencyFeaturesSyncDelivery: Optional. When
+      disable_high_latency_features_sync_delivery is true and using the
+      AnalyzeContent API, we will not deliver the responses from high latency
+      features in the API response. The
+      human_agent_assistant_config.notification_config must be configured and
+      enable_event_based_suggestion must be set to true to receive the
+      responses from high latency features in Pub/Sub. High latency
+      feature(s): KNOWLEDGE_ASSIST
     featureConfigs: Configuration of different suggestion features. One
       feature can have only one config.
+    generators: Optional. List of various generator resource names used in the
+      conversation profile.
     groupSuggestionResponses: If `group_suggestion_responses` is false, and
       there are multiple `feature_configs` in `event based suggestion` or
       StreamingAnalyzeContent, we will try to deliver suggestions to customers
@@ -12389,8 +12848,10 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionConfig(_messages
       StreamingAnalyzeContentResponse.
   """
 
-  featureConfigs = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig', 1, repeated=True)
-  groupSuggestionResponses = _messages.BooleanField(2)
+  disableHighLatencyFeaturesSyncDelivery = _messages.BooleanField(1)
+  featureConfigs = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig', 2, repeated=True)
+  generators = _messages.StringField(3, repeated=True)
+  groupSuggestionResponses = _messages.BooleanField(4)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_messages.Message):
@@ -12408,6 +12869,11 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
     enableEventBasedSuggestion: Automatically iterates all participants and
       tries to compile suggestions. Supported features: ARTICLE_SUGGESTION,
       FAQ, DIALOGFLOW_ASSIST, KNOWLEDGE_ASSIST.
+    enableQuerySuggestionOnly: Optional. Enable query suggestion only.
+      Supported features: KNOWLEDGE_ASSIST
+    enableQuerySuggestionWhenNoAnswer: Optional. Enable query suggestion even
+      if we can't find its answer. By default, queries are suggested only if
+      we find its answer. Supported features: KNOWLEDGE_ASSIST
     queryConfig: Configs of query.
     suggestionFeature: The suggestion feature.
     suggestionTriggerSettings: Settings of suggestion trigger. Currently, only
@@ -12419,9 +12885,11 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
   disableAgentQueryLogging = _messages.BooleanField(3)
   enableConversationAugmentedQuery = _messages.BooleanField(4)
   enableEventBasedSuggestion = _messages.BooleanField(5)
-  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 6)
-  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 7)
-  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 8)
+  enableQuerySuggestionOnly = _messages.BooleanField(6)
+  enableQuerySuggestionWhenNoAnswer = _messages.BooleanField(7)
+  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 8)
+  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 9)
+  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 10)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_messages.Message):
@@ -12824,6 +13292,42 @@ class GoogleCloudDialogflowV2ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2InferenceParameter(_messages.Message):
+  r"""The parameters of inference.
+
+  Fields:
+    maxOutputTokens: Optional. Maximum number of the output tokens for the
+      generator.
+    temperature: Optional. Controls the randomness of LLM predictions. Low
+      temperature = less random. High temperature = more random. If unset (or
+      0), uses a default value of 0.
+    topK: Optional. Top-k changes how the model selects tokens for output. A
+      top-k of 1 means the selected token is the most probable among all
+      tokens in the model's vocabulary (also called greedy decoding), while a
+      top-k of 3 means that the next token is selected from among the 3 most
+      probable tokens (using temperature). For each token selection step, the
+      top K tokens with the highest probabilities are sampled. Then tokens are
+      further filtered based on topP with the final token selected using
+      temperature sampling. Specify a lower value for less random responses
+      and a higher value for more random responses. Acceptable value is [1,
+      40], default to 40.
+    topP: Optional. Top-p changes how the model selects tokens for output.
+      Tokens are selected from most K (see topK parameter) probable to least
+      until the sum of their probabilities equals the top-p value. For
+      example, if tokens A, B, and C have a probability of 0.3, 0.2, and 0.1
+      and the top-p value is 0.5, then the model will select either A or B as
+      the next token (using temperature) and doesn't consider C. The default
+      top-p value is 0.95. Specify a lower value for less random responses and
+      a higher value for more random responses. Acceptable value is [0.0,
+      1.0], default to 0.95.
+  """
+
+  maxOutputTokens = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  temperature = _messages.FloatField(2)
+  topK = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  topP = _messages.FloatField(4)
 
 
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
@@ -13847,6 +14351,85 @@ class GoogleCloudDialogflowV2IntentTrainingPhrasePart(_messages.Message):
   userDefined = _messages.BooleanField(4)
 
 
+class GoogleCloudDialogflowV2KnowledgeAssistAnswer(_messages.Message):
+  r"""Represents a Knowledge Assist answer.
+
+  Fields:
+    answerRecord: The name of the answer record. Format:
+      `projects//locations//answer Records/`.
+    suggestedQuery: The query suggested based on the context. Suggestion is
+      made only if it is different from the previous suggestion.
+    suggestedQueryAnswer: The answer generated for the suggested query.
+      Whether or not an answer is generated depends on how confident we are
+      about the generated query.
+  """
+
+  answerRecord = _messages.StringField(1)
+  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerSuggestedQuery', 2)
+  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswer', 3)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswer(_messages.Message):
+  r"""Represents an answer from Knowledge. Currently supports FAQ and
+  Generative answers.
+
+  Fields:
+    answerText: The piece of text from the `source` that answers this
+      suggested query.
+    faqSource: Populated if the prediction came from FAQ.
+    generativeSource: Populated if the prediction was Generative.
+  """
+
+  answerText = _messages.StringField(1)
+  faqSource = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerFaqSource', 2)
+  generativeSource = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerGenerativeSource', 3)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerFaqSource(_messages.Message):
+  r"""Details about source of FAQ answer.
+
+  Fields:
+    question: The corresponding FAQ question.
+  """
+
+  question = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerGenerativeSource(_messages.Message):
+  r"""Details about source of Generative answer.
+
+  Fields:
+    snippets: All snippets used for this Generative Prediction, with their
+      source URI and data.
+  """
+
+  snippets = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerGenerativeSourceSnippet', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistAnswerKnowledgeAnswerGenerativeSourceSnippet(_messages.Message):
+  r"""Snippet Source for a Generative Prediction.
+
+  Fields:
+    text: Text taken from that URI.
+    title: Title of the document.
+    uri: URI the data is sourced from.
+  """
+
+  text = _messages.StringField(1)
+  title = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2KnowledgeAssistAnswerSuggestedQuery(_messages.Message):
+  r"""Represents a suggested query.
+
+  Fields:
+    queryText: Suggested query text.
+  """
+
+  queryText = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowV2KnowledgeBase(_messages.Message):
   r"""A knowledge base represents a collection of knowledge documents that you
   provide to Dialogflow. Your knowledge documents contain information that may
@@ -14045,6 +14628,19 @@ class GoogleCloudDialogflowV2ListEnvironmentsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowV2ListGeneratorsResponse(_messages.Message):
+  r"""Response of ListGenerators.
+
+  Fields:
+    generators: List of generators retrieved.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  generators = _messages.MessageField('GoogleCloudDialogflowV2Generator', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2ListIntentsResponse(_messages.Message):
   r"""The response message for Intents.ListIntents.
 
@@ -14204,6 +14800,43 @@ class GoogleCloudDialogflowV2MessageAnnotation(_messages.Message):
 
   containEntities = _messages.BooleanField(1)
   parts = _messages.MessageField('GoogleCloudDialogflowV2AnnotatedMessagePart', 2, repeated=True)
+
+
+class GoogleCloudDialogflowV2MessageEntry(_messages.Message):
+  r"""Represents a message entry of a conversation.
+
+  Enums:
+    RoleValueValuesEnum: Optional. Participant role of the message.
+
+  Fields:
+    createTime: Optional. Create time of the message entry.
+    languageCode: Optional. The language of the text. See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes.
+    role: Optional. Participant role of the message.
+    text: Optional. Transcript content of the message.
+  """
+
+  class RoleValueValuesEnum(_messages.Enum):
+    r"""Optional. Participant role of the message.
+
+    Values:
+      ROLE_UNSPECIFIED: Participant role not set.
+      HUMAN_AGENT: Participant is a human agent.
+      AUTOMATED_AGENT: Participant is an automated agent, such as a Dialogflow
+        agent.
+      END_USER: Participant is an end user that has called or chatted with
+        Dialogflow services.
+    """
+    ROLE_UNSPECIFIED = 0
+    HUMAN_AGENT = 1
+    AUTOMATED_AGENT = 2
+    END_USER = 3
+
+  createTime = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+  role = _messages.EnumField('RoleValueValuesEnum', 3)
+  text = _messages.StringField(4)
 
 
 class GoogleCloudDialogflowV2NotificationConfig(_messages.Message):
@@ -15118,12 +15751,14 @@ class GoogleCloudDialogflowV2SetSuggestionFeatureConfigOperationMetadata(_messag
       SMART_REPLY: Run smart reply model for chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
     KNOWLEDGE_SEARCH = 4
+    KNOWLEDGE_ASSIST = 5
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -15511,6 +16146,45 @@ class GoogleCloudDialogflowV2SuggestFaqAnswersResponse(_messages.Message):
   latestMessage = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2SuggestKnowledgeAssistRequest(_messages.Message):
+  r"""The request message for Participants.SuggestKnowledgeAssist.
+
+  Fields:
+    contextSize: Optional. Max number of messages prior to and including
+      latest_message to use as context when compiling the suggestion. The
+      context size is by default 100 and at most 100.
+    latestMessage: Optional. The name of the latest conversation message to
+      compile suggestions for. If empty, it will be the latest message of the
+      conversation. Format: `projects//locations//conversations//messages/`.
+    previousSuggestedQuery: Optional. The previously suggested query for the
+      given conversation. This helps identify whether the next suggestion we
+      generate is resonably different from the previous one. This is useful to
+      avoid similar suggestions within the conversation.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  latestMessage = _messages.StringField(2)
+  previousSuggestedQuery = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse(_messages.Message):
+  r"""The response message for Participants.SuggestKnowledgeAssist.
+
+  Fields:
+    contextSize: Number of messages prior to and including latest_message to
+      compile the suggestion. It may be smaller than the
+      SuggestKnowledgeAssistRequest.context_size field in the request if there
+      are fewer messages in the conversation.
+    knowledgeAssistAnswer: Output only. Knowledge Assist suggestion.
+    latestMessage: The name of the latest conversation message used to compile
+      suggestion for. Format: `projects//locations//conversations//messages/`.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  knowledgeAssistAnswer = _messages.MessageField('GoogleCloudDialogflowV2KnowledgeAssistAnswer', 2)
+  latestMessage = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2SuggestSmartRepliesRequest(_messages.Message):
   r"""The request message for Participants.SuggestSmartReplies.
 
@@ -15574,12 +16248,14 @@ class GoogleCloudDialogflowV2SuggestionFeature(_messages.Message):
       SMART_REPLY: Run smart reply model for chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
     FAQ = 2
     SMART_REPLY = 3
     KNOWLEDGE_SEARCH = 4
+    KNOWLEDGE_ASSIST = 5
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -15608,6 +16284,8 @@ class GoogleCloudDialogflowV2SuggestionResult(_messages.Message):
       ARTICLE_SUGGESTION.
     suggestFaqAnswersResponse: SuggestFaqAnswersResponse if request is for
       FAQ_ANSWER.
+    suggestKnowledgeAssistResponse: SuggestKnowledgeAssistResponse if request
+      is for KNOWLEDGE_ASSIST.
     suggestSmartRepliesResponse: SuggestSmartRepliesResponse if request is for
       SMART_REPLY.
   """
@@ -15615,7 +16293,109 @@ class GoogleCloudDialogflowV2SuggestionResult(_messages.Message):
   error = _messages.MessageField('GoogleRpcStatus', 1)
   suggestArticlesResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestArticlesResponse', 2)
   suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestFaqAnswersResponse', 3)
-  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestSmartRepliesResponse', 4)
+  suggestKnowledgeAssistResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse', 4)
+  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2SuggestSmartRepliesResponse', 5)
+
+
+class GoogleCloudDialogflowV2SummarizationContext(_messages.Message):
+  r"""Summarization context that customer can configure.
+
+  Fields:
+    fewShotExamples: Optional. List of few shot examples.
+    outputLanguageCode: Optional. The target language of the generated
+      summary. The language code for conversation will be used if this field
+      is empty. Supported 2.0 and later versions.
+    summarizationSections: Optional. List of sections. Note it contains both
+      predefined section sand customer defined sections.
+    version: Optional. Version of the feature. If not set, default to latest
+      version. Current candidates are ["1.0"].
+  """
+
+  fewShotExamples = _messages.MessageField('GoogleCloudDialogflowV2FewShotExample', 1, repeated=True)
+  outputLanguageCode = _messages.StringField(2)
+  summarizationSections = _messages.MessageField('GoogleCloudDialogflowV2SummarizationSection', 3, repeated=True)
+  version = _messages.StringField(4)
+
+
+class GoogleCloudDialogflowV2SummarizationSection(_messages.Message):
+  r"""Represents the section of summarization.
+
+  Enums:
+    TypeValueValuesEnum: Optional. Type of the summarization section.
+
+  Fields:
+    definition: Optional. Definition of the section, for example, "what the
+      customer needs help with or has question about."
+    key: Optional. Name of the section, for example, "situation".
+    type: Optional. Type of the summarization section.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of the summarization section.
+
+    Values:
+      TYPE_UNSPECIFIED: Undefined section type, does not return anything.
+      SITUATION: What the customer needs help with or has question about.
+        Section name: "situation".
+      ACTION: What the agent does to help the customer. Section name:
+        "action".
+      RESOLUTION: Result of the customer service. A single word describing the
+        result of the conversation. Section name: "resolution".
+      REASON_FOR_CANCELLATION: Reason for cancellation if the customer
+        requests for a cancellation. "N/A" otherwise. Section name:
+        "reason_for_cancellation".
+      CUSTOMER_SATISFACTION: "Unsatisfied" or "Satisfied" depending on the
+        customer's feelings at the end of the conversation. Section name:
+        "customer_satisfaction".
+      ENTITIES: Key entities extracted from the conversation, such as ticket
+        number, order number, dollar amount, etc. Section names are prefixed
+        by "entities/".
+      CUSTOMER_DEFINED: Customer defined sections.
+    """
+    TYPE_UNSPECIFIED = 0
+    SITUATION = 1
+    ACTION = 2
+    RESOLUTION = 3
+    REASON_FOR_CANCELLATION = 4
+    CUSTOMER_SATISFACTION = 5
+    ENTITIES = 6
+    CUSTOMER_DEFINED = 7
+
+  definition = _messages.StringField(1)
+  key = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class GoogleCloudDialogflowV2SummarizationSectionList(_messages.Message):
+  r"""List of summarization sections.
+
+  Fields:
+    summarizationSections: Optional. Summarization sections.
+  """
+
+  summarizationSections = _messages.MessageField('GoogleCloudDialogflowV2SummarizationSection', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2SummarySuggestion(_messages.Message):
+  r"""Suggested summary of the conversation.
+
+  Fields:
+    summarySections: Required. All the parts of generated summary.
+  """
+
+  summarySections = _messages.MessageField('GoogleCloudDialogflowV2SummarySuggestionSummarySection', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2SummarySuggestionSummarySection(_messages.Message):
+  r"""A component of the generated summary.
+
+  Fields:
+    section: Required. Name of the section.
+    summary: Required. Summary text for the section.
+  """
+
+  section = _messages.StringField(1)
+  summary = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2SynthesizeSpeechConfig(_messages.Message):
@@ -16197,6 +16977,7 @@ class GoogleCloudDialogflowV2beta1ClearSuggestionFeatureConfigOperationMetadata(
         chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -16205,6 +16986,7 @@ class GoogleCloudDialogflowV2beta1ClearSuggestionFeatureConfigOperationMetadata(
     DIALOGFLOW_ASSIST = 4
     CONVERSATION_SUMMARIZATION = 5
     KNOWLEDGE_SEARCH = 6
+    KNOWLEDGE_ASSIST = 7
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -17894,6 +18676,85 @@ class GoogleCloudDialogflowV2beta1KnowledgeAnswersAnswer(_messages.Message):
   source = _messages.StringField(5)
 
 
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswer(_messages.Message):
+  r"""Represents a Knowledge Assist answer.
+
+  Fields:
+    answerRecord: The name of the answer record. Format:
+      `projects//locations//answer Records/`.
+    suggestedQuery: The query suggested based on the context. Suggestion is
+      made only if it is different from the previous suggestion.
+    suggestedQueryAnswer: The answer generated for the suggested query.
+      Whether or not an answer is generated depends on how confident we are
+      about the generated query.
+  """
+
+  answerRecord = _messages.StringField(1)
+  suggestedQuery = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerSuggestedQuery', 2)
+  suggestedQueryAnswer = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswer', 3)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswer(_messages.Message):
+  r"""Represents an answer from Knowledge. Currently supports FAQ and
+  Generative answers.
+
+  Fields:
+    answerText: The piece of text from the `source` that answers this
+      suggested query.
+    faqSource: Populated if the prediction came from FAQ.
+    generativeSource: Populated if the prediction was Generative.
+  """
+
+  answerText = _messages.StringField(1)
+  faqSource = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerFaqSource', 2)
+  generativeSource = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerGenerativeSource', 3)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerFaqSource(_messages.Message):
+  r"""Details about source of FAQ answer.
+
+  Fields:
+    question: The corresponding FAQ question.
+  """
+
+  question = _messages.StringField(1)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerGenerativeSource(_messages.Message):
+  r"""Details about source of Generative answer.
+
+  Fields:
+    snippets: All snippets used for this Generative Prediction, with their
+      source URI and data.
+  """
+
+  snippets = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerGenerativeSourceSnippet', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerKnowledgeAnswerGenerativeSourceSnippet(_messages.Message):
+  r"""Snippet Source for a Generative Prediction.
+
+  Fields:
+    text: Text taken from that URI.
+    title: Title of the document.
+    uri: URI the data is sourced from.
+  """
+
+  text = _messages.StringField(1)
+  title = _messages.StringField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1KnowledgeAssistAnswerSuggestedQuery(_messages.Message):
+  r"""Represents a suggested query.
+
+  Fields:
+    queryText: Suggested query text.
+  """
+
+  queryText = _messages.StringField(1)
+
+
 class GoogleCloudDialogflowV2beta1KnowledgeOperationMetadata(_messages.Message):
   r"""Metadata in google::longrunning::Operation for Knowledge operations.
 
@@ -18410,6 +19271,7 @@ class GoogleCloudDialogflowV2beta1SetSuggestionFeatureConfigOperationMetadata(_m
         chat.
       KNOWLEDGE_SEARCH: Run knowledge search with text input from agent or
         text generated query.
+      KNOWLEDGE_ASSIST: Run knowledge assist with automatic query generation.
     """
     TYPE_UNSPECIFIED = 0
     ARTICLE_SUGGESTION = 1
@@ -18418,6 +19280,7 @@ class GoogleCloudDialogflowV2beta1SetSuggestionFeatureConfigOperationMetadata(_m
     DIALOGFLOW_ASSIST = 4
     CONVERSATION_SUMMARIZATION = 5
     KNOWLEDGE_SEARCH = 6
+    KNOWLEDGE_ASSIST = 7
 
   conversationProfile = _messages.StringField(1)
   createTime = _messages.StringField(2)
@@ -18499,6 +19362,24 @@ class GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse(_messages.Message):
   latestMessage = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowV2beta1SuggestKnowledgeAssistResponse(_messages.Message):
+  r"""The response message for Participants.SuggestKnowledgeAssist.
+
+  Fields:
+    contextSize: Number of messages prior to and including latest_message to
+      compile the suggestion. It may be smaller than the
+      SuggestKnowledgeAssistRequest.context_size field in the request if there
+      are fewer messages in the conversation.
+    knowledgeAssistAnswer: Output only. Knowledge Assist suggestion.
+    latestMessage: The name of the latest conversation message used to compile
+      suggestion for. Format: `projects//locations//conversations//messages/`.
+  """
+
+  contextSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  knowledgeAssistAnswer = _messages.MessageField('GoogleCloudDialogflowV2beta1KnowledgeAssistAnswer', 2)
+  latestMessage = _messages.StringField(3)
+
+
 class GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse(_messages.Message):
   r"""The response message for Participants.SuggestSmartReplies.
 
@@ -18534,6 +19415,8 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
       request is for ENTITY_EXTRACTION.
     suggestFaqAnswersResponse: SuggestFaqAnswersResponse if request is for
       FAQ_ANSWER.
+    suggestKnowledgeAssistResponse: SuggestKnowledgeAssistResponse if request
+      is for KNOWLEDGE_ASSIST.
     suggestSmartRepliesResponse: SuggestSmartRepliesResponse if request is for
       SMART_REPLY.
   """
@@ -18543,7 +19426,8 @@ class GoogleCloudDialogflowV2beta1SuggestionResult(_messages.Message):
   suggestDialogflowAssistsResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse', 3)
   suggestEntityExtractionResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestDialogflowAssistsResponse', 4)
   suggestFaqAnswersResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestFaqAnswersResponse', 5)
-  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 6)
+  suggestKnowledgeAssistResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestKnowledgeAssistResponse', 6)
+  suggestSmartRepliesResponse = _messages.MessageField('GoogleCloudDialogflowV2beta1SuggestSmartRepliesResponse', 7)
 
 
 class GoogleCloudDialogflowV2beta1WebhookRequest(_messages.Message):

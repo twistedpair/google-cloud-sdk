@@ -17,8 +17,15 @@ package = 'cloudidentity'
 class AddIdpCredentialOperationMetadata(_messages.Message):
   r"""LRO response metadata for
   InboundSamlSsoProfilesService.AddIdpCredential.
+
+  Fields:
+    state: State of this Operation Will be "awaiting-multi-party-approval"
+      when the operation is deferred due to the target customer having enabled
+      [Multi-party approval for sensitive
+      actions](https://support.google.com/a/answer/13790448).
   """
 
+  state = _messages.StringField(1)
 
 
 class AddIdpCredentialRequest(_messages.Message):
@@ -1261,8 +1268,15 @@ class CreateGroupMetadata(_messages.Message):
 class CreateInboundSamlSsoProfileOperationMetadata(_messages.Message):
   r"""LRO response metadata for
   InboundSamlSsoProfilesService.CreateInboundSamlSsoProfile.
+
+  Fields:
+    state: State of this Operation Will be "awaiting-multi-party-approval"
+      when the operation is deferred due to the target customer having enabled
+      [Multi-party approval for sensitive
+      actions](https://support.google.com/a/answer/13790448).
   """
 
+  state = _messages.StringField(1)
 
 
 class CreateInboundSsoAssignmentOperationMetadata(_messages.Message):
@@ -3604,8 +3618,15 @@ class UpdateGroupMetadata(_messages.Message):
 class UpdateInboundSamlSsoProfileOperationMetadata(_messages.Message):
   r"""LRO response metadata for
   InboundSamlSsoProfilesService.UpdateInboundSamlSsoProfile.
+
+  Fields:
+    state: State of this Operation Will be "awaiting-multi-party-approval"
+      when the operation is deferred due to the target customer having enabled
+      [Multi-party approval for sensitive
+      actions](https://support.google.com/a/answer/13790448).
   """
 
+  state = _messages.StringField(1)
 
 
 class UpdateInboundSsoAssignmentOperationMetadata(_messages.Message):

@@ -432,63 +432,6 @@ class DeveloperconnectProjectsLocationsConnectionsPatchRequest(_messages.Message
   validateOnly = _messages.BooleanField(6)
 
 
-class DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWebhookRequest(_messages.Message):
-  r"""A DeveloperconnectProjectsLocationsConnectionsProcessGitHubEnterpriseWeb
-  hookRequest object.
-
-  Fields:
-    parent: Required. Project and location where the webhook will be received.
-      Format: `projects/*/locations/*`.
-    processGitHubEnterpriseWebhookRequest: A
-      ProcessGitHubEnterpriseWebhookRequest resource to be passed as the
-      request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  processGitHubEnterpriseWebhookRequest = _messages.MessageField('ProcessGitHubEnterpriseWebhookRequest', 2)
-
-
-class DeveloperconnectProjectsLocationsConnectionsProcessGitLabEnterpriseWebhookRequest(_messages.Message):
-  r"""A DeveloperconnectProjectsLocationsConnectionsProcessGitLabEnterpriseWeb
-  hookRequest object.
-
-  Fields:
-    parent: Required. Project and location where the webhook will be received.
-      Format: `projects/*/locations/*`.
-    processGitLabEnterpriseWebhookRequest: A
-      ProcessGitLabEnterpriseWebhookRequest resource to be passed as the
-      request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  processGitLabEnterpriseWebhookRequest = _messages.MessageField('ProcessGitLabEnterpriseWebhookRequest', 2)
-
-
-class DeveloperconnectProjectsLocationsConnectionsProcessGitLabWebhookRequest(_messages.Message):
-  r"""A
-  DeveloperconnectProjectsLocationsConnectionsProcessGitLabWebhookRequest
-  object.
-
-  Fields:
-    parent: Required. Project and location where the webhook will be received.
-      Format: `projects/*/locations/*`.
-    processGitLabWebhookRequest: A ProcessGitLabWebhookRequest resource to be
-      passed as the request body.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  processGitLabWebhookRequest = _messages.MessageField('ProcessGitLabWebhookRequest', 2)
-
-
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
-
-
 class FetchGitHubInstallationsResponse(_messages.Message):
   r"""Response of fetching github installations.
 
@@ -693,67 +636,6 @@ class GitRepositoryLink(_messages.Message):
   reconciling = _messages.BooleanField(8)
   uid = _messages.StringField(9)
   updateTime = _messages.StringField(10)
-
-
-class HttpBody(_messages.Message):
-  r"""Message that represents an arbitrary HTTP body. It should only be used
-  for payload formats that can't be represented as JSON, such as raw binary or
-  an HTML page. This message can be used both in streaming and non-streaming
-  API methods in the request as well as the response. It can be used as a top-
-  level request field, which is convenient if one wants to extract parameters
-  from either the URL or HTTP template into the request fields and also want
-  access to the raw HTTP body. Example: message GetResourceRequest { // A
-  unique request id. string request_id = 1; // The raw HTTP body is bound to
-  this field. google.api.HttpBody http_body = 2; } service ResourceService {
-  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
-  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
-  Example with streaming methods: service CaldavService { rpc
-  GetCalendar(stream google.api.HttpBody) returns (stream
-  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
-  (stream google.api.HttpBody); } Use of this type only changes how the
-  request and response bodies are handled, all other features will continue to
-  work unchanged.
-
-  Messages:
-    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
-
-  Fields:
-    contentType: The HTTP Content-Type header value specifying the content
-      type of the body.
-    data: The HTTP request/response body as raw binary.
-    extensions: Application specific response metadata. Must be set in the
-      first response for streaming APIs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ExtensionsValueListEntry(_messages.Message):
-    r"""A ExtensionsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        ExtensionsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ExtensionsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  contentType = _messages.StringField(1)
-  data = _messages.BytesField(2)
-  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class Installation(_messages.Message):
@@ -1001,47 +883,6 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class ProcessGitHubEnterpriseWebhookRequest(_messages.Message):
-  r"""RPC request object accepted by the ProcessGitHubEnterpriseWebhook RPC
-  method.
-
-  Fields:
-    body: Required. HTTP request body.
-    webhookKey: Required. Arbitrary additional key to find the matching
-      repository for a webhook event if needed.
-  """
-
-  body = _messages.MessageField('HttpBody', 1)
-  webhookKey = _messages.StringField(2)
-
-
-class ProcessGitLabEnterpriseWebhookRequest(_messages.Message):
-  r"""RPC request object accepted by the ProcessGitLabEnterpriseWebhook RPC
-  method.
-
-  Fields:
-    body: Required. HTTP request body.
-    webhookKey: Required. Arbitrary additional key to find the matching
-      repository for a webhook event if needed.
-  """
-
-  body = _messages.MessageField('HttpBody', 1)
-  webhookKey = _messages.StringField(2)
-
-
-class ProcessGitLabWebhookRequest(_messages.Message):
-  r"""RPC request object accepted by the ProcessGitLabWebhook RPC method.
-
-  Fields:
-    body: Required. HTTP request body.
-    webhookKey: Required. Arbitrary additional key to find the matching
-      repository for a webhook event if needed.
-  """
-
-  body = _messages.MessageField('HttpBody', 1)
-  webhookKey = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):

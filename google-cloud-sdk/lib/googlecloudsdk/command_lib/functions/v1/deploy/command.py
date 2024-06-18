@@ -371,20 +371,16 @@ def _ApplyBuildpackStackArgsToFunction(function, args, track):
   return updated_fields
 
 
-def _ApplyBuildServiceAccountToFunction(function, args, track):
+def _ApplyBuildServiceAccountToFunction(function, args):
   """Populates the `build_service_account` field of a Cloud Function message.
 
   Args:
     function: Cloud function message to be populated.
     args: All CLI arguments.
-    track: release track.
 
   Returns:
     updated_fields: update mask containing the list of fields to be updated.
   """
-  if track is base.ReleaseTrack.GA:
-    return []
-
   updated_fields = []
   if args.IsSpecified('build_service_account'):
     function.buildServiceAccount = args.build_service_account
@@ -681,7 +677,7 @@ def Run(args, track=None):
   )
 
   updated_fields.extend(
-      _ApplyBuildServiceAccountToFunction(function, args, track)
+      _ApplyBuildServiceAccountToFunction(function, args)
   )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')

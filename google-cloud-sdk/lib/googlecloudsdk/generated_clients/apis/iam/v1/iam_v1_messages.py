@@ -839,7 +839,7 @@ class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. b) Valid to should be no more than 15 years in the future. 4) Up to
+      now. b) Valid to should be no more than 20 years in the future. 4) Up to
       3 IdP signing keys are allowed in the metadata xml. When updating the
       provider's metadata xml, at least one non-expired signing key must
       overlap with the existing metadata. This requirement is skipped if there
@@ -1837,8 +1837,8 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleReque
   Fields:
     addAttestationRuleRequest: A AddAttestationRuleRequest resource to be
       passed as the request body.
-    resource: Required. The resource name of the managed identity to add an
-      attestation rule to.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to add an attestation rule to.
   """
 
   addAttestationRuleRequest = _messages.MessageField('AddAttestationRuleRequest', 1)
@@ -1957,8 +1957,8 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAtt
   Fields:
     addAttestationRuleRequest: A AddAttestationRuleRequest resource to be
       passed as the request body.
-    resource: Required. The resource name of the managed identity to add an
-      attestation rule to.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to add an attestation rule to.
   """
 
   addAttestationRuleRequest = _messages.MessageField('AddAttestationRuleRequest', 1)
@@ -2106,8 +2106,8 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemove
   Fields:
     removeAttestationRuleRequest: A RemoveAttestationRuleRequest resource to
       be passed as the request body.
-    resource: Required. The resource name of the managed identity to remove an
-      attestation rule from.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to remove an attestation rule from.
   """
 
   removeAttestationRuleRequest = _messages.MessageField('RemoveAttestationRuleRequest', 1)
@@ -2291,8 +2291,8 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRuleRe
   Fields:
     removeAttestationRuleRequest: A RemoveAttestationRuleRequest resource to
       be passed as the request body.
-    resource: Required. The resource name of the managed identity to remove an
-      attestation rule from.
+    resource: Required. The resource name of the managed identity or namespace
+      resource to remove an attestation rule from.
   """
 
   removeAttestationRuleRequest = _messages.MessageField('RemoveAttestationRuleRequest', 1)
@@ -4177,8 +4177,8 @@ class ListWorkloadSourcesResponse(_messages.Message):
 
 class OauthClient(_messages.Message):
   r"""Represents an OauthClient. Used to access Google Cloud resources on
-  behave of a user by using OAuth 2.0 Protocol to obtain an access token from
-  Google Cloud Platform.
+  behalf of a Workforce Identity Federation user by using OAuth 2.0 Protocol
+  to obtain an access token from Google Cloud.
 
   Enums:
     AllowedGrantTypesValueListEntryValuesEnum:
@@ -4196,9 +4196,7 @@ class OauthClient(_messages.Message):
       allowed to request during OAuth flows. The following scopes are
       supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
       edit, configure, and delete your Google Cloud data and see the email
-      address for your Google Account. * `openid`: Associate you with your
-      personal info on Google Cloud. * `email`: See your Google Cloud Account
-      email address.
+      address for your Google Account.
     clientId: Output only. The system-generated OauthClient id.
     clientType: Immutable. The type of OauthClient. Either public or private.
       For private clients, the client secret can be managed using the
@@ -4464,6 +4462,17 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class OwnerService(_messages.Message):
+  r"""The Google Cloud service that owns this namespace.
+
+  Fields:
+    principalSubject: Required. The service agent principal subject, e.g.
+      "serviceAccount:service-1234@gcp-sa-gkehub.iam.gserviceaccount.com".
+  """
+
+  principalSubject = _messages.StringField(1)
 
 
 class PatchServiceAccountKeyRequest(_messages.Message):
@@ -4878,7 +4887,7 @@ class Saml(_messages.Message):
       following constraints: * Must contain an IdP Entity ID. * Must contain
       at least one non-expired signing certificate. * For each signing
       certificate, the expiration must be: * From no more than 7 days in the
-      future. * To no more than 15 years in the future. * Up to three IdP
+      future. * To no more than 20 years in the future. * Up to three IdP
       signing keys are allowed. When updating the provider's metadata XML, at
       least one non-expired signing key must overlap with the existing
       metadata. This requirement is skipped if there are no non-expired
@@ -6068,6 +6077,8 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
     expireTime: Output only. Time after which the namespace will be
       permanently purged and cannot be recovered.
     name: Output only. The resource name of the namespace.
+    ownerService: Output only. The Google Cloud service that owns this
+      namespace.
     state: Output only. The state of the namespace.
   """
 
@@ -6091,7 +6102,8 @@ class WorkloadIdentityPoolNamespace(_messages.Message):
   disabled = _messages.BooleanField(2)
   expireTime = _messages.StringField(3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
+  ownerService = _messages.MessageField('OwnerService', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
 
 
 class WorkloadIdentityPoolOperationMetadata(_messages.Message):

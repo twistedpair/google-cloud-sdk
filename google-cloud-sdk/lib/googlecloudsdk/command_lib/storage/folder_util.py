@@ -41,6 +41,20 @@ class ManagedFolderSetting(enum.Enum):
   LIST_WITHOUT_OBJECTS = 'list_without_objects'
 
 
+class FolderSetting(enum.Enum):
+  """Indicates how to deal with HNS folders."""
+
+  # Used for resource-specific commands that should not have output influenced
+  # by folders at all. Example usage: the `objects list` command.
+  DO_NOT_LIST = 'do_not_list'
+
+  # Indicates that folders should be included as prefixes.
+  LIST_AS_PREFIXES = 'list_as_prefixes'
+
+  # Yields folder resources without object/prefix resources.
+  LIST_WITHOUT_OBJECTS = 'list_without_objects'
+
+
 def _contains(potential_container_url, potential_containee_url):
   """Checks containment based on string representations."""
   potential_container_string = potential_container_url.versionless_url_string

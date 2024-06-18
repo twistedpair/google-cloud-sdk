@@ -292,3 +292,41 @@ boot_disk:
     *kms-key*::: Specifies fully qualified Cloud KMS cryptokey name
     which will be used to protect the disk. KMS cryptokey name format:
       projects/<kms-project>/locations/<kms-location>/keyRings/<kms-keyring>/cryptoKeys/<key-name>
+
+network_config:
+  api_field: queuedResource.tpu.nodeSpec.node.networkConfigs
+  arg_name: network-config
+  type:
+    arg_dict:
+      flatten: false
+      spec:
+      - api_field: network
+        arg_name: network
+        type: str
+        required: false
+      - api_field: subnetwork
+        arg_name: subnetwork
+        type: str
+        required: false
+      - api_field: enableExternalIps
+        arg_name: external-ips
+        required: false
+        type: bool
+  required: false
+  help_text: |
+      Specify a full network_config for the TPU. network or subnetwork must be specified.
+
+      This flag may be repeated to provide multiple networks. For example:
+
+      $ {command} \
+          --network-config network=example_network,internal-ips=true
+
+      The following keys are allowed:
+
+      *network*::: Specify the network to be used by this TPU.
+
+      *subnetwork*::: Specify the network to be used by this TPU. If not specified,
+      this defaults to the subnetwork by the same name as the network.
+
+      *external-ips*::: Indicate that the IP addresses for the node should be exteranl. The default will be
+      only internal IP addresses.

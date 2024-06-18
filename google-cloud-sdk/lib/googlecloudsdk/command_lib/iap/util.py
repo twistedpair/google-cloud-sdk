@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.iap import util as iap_api
-from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as calliope_exc
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.iap import exceptions as iap_exc
@@ -121,32 +120,36 @@ def AddDestGroupListRegionArgs(parser):
       default='-')
 
 
-def AddIapIamResourceArgs(parser, use_region_arg=False):
+def AddIapIamResourceArgs(parser):
   """Adds flags for an IAP IAM resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    use_region_arg: Whether or not to show and accept the region argument.
   """
   group = parser.add_group()
   group.add_argument(
       '--resource-type',
       required=True,
       choices=RESOURCE_TYPE_ENUM,
-      help='Resource type of the IAP resource.')
+      help='Resource type of the IAP resource.',
+  )
+  group.add_argument('--service', help='Service name.')
   group.add_argument(
-      '--service',
-      help='Service name.')
-  if use_region_arg:
-    group.add_argument(
-        '--region',
-        help='Region name. Should only be specified with `--resource-type=backend-services`.'
-    )
+      '--region',
+      help=(
+          'Region name. Should only be specified with'
+          ' `--resource-type=backend-services` if it is a regional scoped. Not'
+          ' applicable for global scoped backend services.'
+      ),
+  )
   group.add_argument(
       '--version',
-      help='Service version. Should only be specified with '
-           '`--resource-type=app-engine`.')
+      help=(
+          'Service version. Should only be specified with '
+          '`--resource-type=app-engine`.'
+      ),
+  )
 
 
 def AddIapResourceArgs(parser):
@@ -167,13 +170,12 @@ def AddIapResourceArgs(parser):
       help='Service name. Required with `--resource-type=backend-services`.')
 
 
-def AddIapSettingArg(parser, use_region_arg=False):
+def AddIapSettingArg(parser):
   """Adds flags for an IAP settings resource.
 
   Args:
     parser: An argparse.ArgumentParser-like object. It is mocked out in order to
       capture some information, but behaves like an ArgumentParser.
-    use_region_arg: Whether or not to show and accept the region argument.
   """
   group = parser.add_group()
   group.add_argument('--organization', help='Organization ID.')
@@ -182,19 +184,29 @@ def AddIapSettingArg(parser, use_region_arg=False):
   group.add_argument(
       '--resource-type',
       choices=SETTING_RESOURCE_TYPE_ENUM,
-      help='Resource type of the IAP resource.')
+      help='Resource type of the IAP resource.',
+  )
   group.add_argument(
       '--service',
-      help="Service name. Optional when ``resource-type'' is ``compute'' or ``app-engine''."
+      help=(
+          "Service name. Optional when ``resource-type'' is ``compute'' or"
+          " ``app-engine''."
+      ),
   )
-  if use_region_arg:
-    group.add_argument(
-        '--region',
-        help="Region name. Not applicable for ``app-engine''. Optional when ``resource-type'' is ``compute''."
-    )
+  group.add_argument(
+      '--region',
+      help=(
+          "Region name. Not applicable for ``app-engine''. Required when"
+          " ``resource-type'' is ``compute'' and ``regional scoped''. Not"
+          " applicable for ``compute'' when ``global scoped''."
+      ),
+  )
   group.add_argument(
       '--version',
-      help="Version name. Not applicable for ``compute''. Optional when ``resource-type'' is ``app-engine''."
+      help=(
+          "Version name. Not applicable for ``compute''. Optional when"
+          " ``resource-type'' is ``app-engine''."
+      ),
   )
 
 
@@ -318,7 +330,7 @@ def ParseIapIamResource(release_track, args):
       raise calliope_exc.InvalidArgumentException(
           '--service',
           '`--service` cannot be specified without `--resource-type`.')
-    if release_track == base.ReleaseTrack.ALPHA and args.region:
+    if args.region:
       raise calliope_exc.InvalidArgumentException(
           '--region',
           '`--region` cannot be specified without `--resource-type`.')
@@ -330,7 +342,7 @@ def ParseIapIamResource(release_track, args):
         release_track,
         project)
   elif args.resource_type == APP_ENGINE_RESOURCE_TYPE:
-    if release_track == base.ReleaseTrack.ALPHA and args.region:
+    if args.region:
       raise calliope_exc.InvalidArgumentException(
           '--region', '`--region` cannot be specified for '
           '`--resource-type=app-engine`.')
@@ -357,7 +369,7 @@ def ParseIapIamResource(release_track, args):
       raise calliope_exc.InvalidArgumentException(
           '--version', '`--version` cannot be specified for '
           '`--resource-type=backend-services`.')
-    if release_track == base.ReleaseTrack.ALPHA and args.region:
+    if args.region:
       if args.service:
         return iap_api.BackendService(release_track, project, args.region,
                                       args.service)
@@ -429,50 +441,64 @@ def ParseIapSettingsResource(release_track, args):
     if args.resource_type:
       raise calliope_exc.InvalidArgumentException(
           '--resource-type',
-          '`--resource-type` should not be specified at organization level')
+          '`--resource-type` should not be specified at organization level',
+      )
     if args.project:
       raise calliope_exc.InvalidArgumentException(
           '--project',
-          '`--project` should not be specified at organization level')
+          '`--project` should not be specified at organization level',
+      )
     return iap_api.IapSettingsResource(
-        release_track, 'organizations/{0}'.format(args.organization))
+        release_track, 'organizations/{0}'.format(args.organization)
+    )
   if args.folder:
     if args.resource_type:
       raise calliope_exc.InvalidArgumentException(
           '--resource-type',
-          '`--resource-type` should not be specified at folder level')
+          '`--resource-type` should not be specified at folder level',
+      )
     if args.project:
       raise calliope_exc.InvalidArgumentException(
-          '--project', '`--project` should not be specified at folder level')
-    return iap_api.IapSettingsResource(release_track,
-                                       'folders/{0}'.format(args.folder))
+          '--project', '`--project` should not be specified at folder level'
+      )
+    return iap_api.IapSettingsResource(
+        release_track, 'folders/{0}'.format(args.folder)
+    )
   if args.project:
     if not args.resource_type:
-      return iap_api.IapSettingsResource(release_track,
-                                         'projects/{0}'.format(args.project))
+      return iap_api.IapSettingsResource(
+          release_track, 'projects/{0}'.format(args.project)
+      )
     else:
       if args.resource_type == WEB_RESOURCE_TYPE:
         return iap_api.IapSettingsResource(
-            release_track, 'projects/{0}/iap_web'.format(args.project))
+            release_track, 'projects/{0}/iap_web'.format(args.project)
+        )
       elif args.resource_type == APP_ENGINE_RESOURCE_TYPE:
         if not args.service:
           return iap_api.IapSettingsResource(
-              release_track, 'projects/{0}/iap_web/appengine-{1}'.format(
-                  args.project, args.project))
+              release_track,
+              'projects/{0}/iap_web/appengine-{1}'.format(
+                  args.project, args.project
+              ),
+          )
         else:
           if args.version:
             return iap_api.IapSettingsResource(
                 release_track,
                 'projects/{0}/iap_web/appengine-{1}/services/{2}/versions/{3}'
-                .format(args.project, args.project, args.service, args.version))
+                .format(args.project, args.project, args.service, args.version),
+            )
           else:
             return iap_api.IapSettingsResource(
                 release_track,
                 'projects/{0}/iap_web/appengine-{1}/services/{2}'.format(
-                    args.project, args.project, args.service))
+                    args.project, args.project, args.service
+                ),
+            )
       elif args.resource_type == COMPUTE_RESOURCE_TYPE:
         path = ['projects', args.project, 'iap_web']
-        if release_track == base.ReleaseTrack.ALPHA and args.region:
+        if args.region:
           path.append('compute-{}'.format(args.region))
         else:
           path.append('compute')

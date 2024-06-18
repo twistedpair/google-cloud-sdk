@@ -1,0 +1,149 @@
+# Copyright 2018 Google LLC. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+machine_image_name:
+  api_field: imageImport.machineImageTargetDefaults.machineImageName
+  arg_name: machine-image-name
+  help_text: |
+    The name of the machine image that will be imported to Google Compute Engine.
+    Default is the Image Import name.
+
+target_project:
+  api_field: imageImport.machineImageTargetDefaults.targetProject
+  arg_name: target-project
+  help_text: |
+    The target project resource path to which the machine image will be imported.
+    Default is the host project.
+    To get a list of the target projects run the gcloud alpha migration vms target-projects list command.
+
+skip_os_adaptation:
+  api_field: imageImport.machineImageTargetDefaults.skipOsAdaptation
+  arg_name: skip-os-adaptation
+  type: bool
+  action: store_true
+  default: null
+  processor: googlecloudsdk.command_lib.migration.vms.hooks:GetSkipOsAdaptationTransform
+  help_text: |
+    If true, skip OS adaptation. Default false.
+
+generalize:
+  api_field: imageImport.machineImageTargetDefaults.osAdaptationParameters.generalize
+  arg_name: generalize
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    If true, generalize the imported machine image. Default false.
+    The generalization process enables co-existence of multiple VMs created from the same machine image.
+    For Windows, generalizing the machine image removes computer-specific information such as
+    installed drivers and the computer security identifier (SID).
+
+license_type:
+  api_field: imageImport.machineImageTargetDefaults.osAdaptationParameters.licenseType
+  arg_name: license-type
+  required: false
+  help_text: |
+    The license to use post migration.
+
+description:
+  api_field: imageImport.machineImageTargetDefaults.description
+  arg_name: description
+  required: false
+  help_text: |
+    A description of the machine image.
+
+single_region_storage:
+  api_field: imageImport.machineImageTargetDefaults.singleRegionStorage
+  arg_name: single-region-storage
+  type: bool
+  default: false
+  help_text: |
+    If true, the location of the imported machine image will be the region of the import job. Otherwise the closest multi-region is selected. Default is false.
+
+machine_type:
+  api_field: imageImport.machineImageTargetDefaults.machineImageParametersOverrides.machineType
+  arg_name: machine-type
+  required: false
+  help_text: |
+    The machine type to create the machine image with. If not provided, the service will choose a relevant machine type series based on the information from the source image.
+
+service_account:
+  api_field: imageImport.machineImageTargetDefaults.serviceAccount.email
+  arg_name: service-account
+  required: false
+  help_text: |
+    The email address of the service account.
+
+scopes:
+  api_field: imageImport.machineImageTargetDefaults.serviceAccount.scopes
+  arg_name: scopes
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    The list of scopes to be made available for the service account.
+
+additional_licenses:
+  api_field: imageImport.machineImageTargetDefaults.additionalLicenses
+  arg_name: additional-licenses
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    Comma-separated list of the additional licenses to assign to the machine image.
+
+labels:
+  api_field: imageImport.machineImageTargetDefaults.labels.additionalProperties
+  arg_name: labels
+  required: false
+  metavar: KEY=VALUE
+  type:
+    arg_dict:
+      flatten: true
+      spec:
+      - api_field: key
+      - api_field: value
+  help_text: |
+    A map of labels to associate with the machine image.
+
+tags:
+  api_field: imageImport.machineImageTargetDefaults.tags
+  arg_name: tags
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  required: false
+  help_text: |
+    The tags to apply to the instance created by the machine image.
+
+secure_boot:
+  api_field: imageImport.machineImageTargetDefaults.shieldedInstanceConfig.secureBoot
+  arg_name: secure-boot
+  required: false
+  help_text: |
+    Defines whether the instance created by the machine image has Secure Boot enabled. This can be set to true only if the image boot option is EFI. If not specified we will use the configuration of the source.
+
+enable_vtpm:
+  api_field: imageImport.machineImageTargetDefaults.shieldedInstanceConfig.enableVtpm
+  arg_name: enable-vtpm
+  type: bool
+  action: store_true
+  required: false
+  help_text: |
+    Defines whether the instance created by the machine image has vTPM enabled. This can be set to true only if the image boot option is EFI.
+
+enable_integrity_monitoring:
+  api_field: imageImport.machineImageTargetDefaults.shieldedInstanceConfig.enableIntegrityMonitoring
+  arg_name: enable-integrity-monitoring
+  type: bool
+  action: store_true
+  required: false
+  help_text: |
+    Defines whether the instance created by the machine image has integrity monitoring enabled. This can be set to true only if the image boot option is EFI, and vTPM is enabled.

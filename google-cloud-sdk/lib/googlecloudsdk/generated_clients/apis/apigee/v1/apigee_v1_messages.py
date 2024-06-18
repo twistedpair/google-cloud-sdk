@@ -4820,12 +4820,18 @@ class ApigeeOrganizationsSharedflowsCreateRequest(_messages.Message):
     parent: Required. The name of the parent organization under which to
       create the shared flow. Must be of the form:
       `organizations/{organization_id}`
+    space: Optional. The ID of the space to associated with this shared flow.
+      Any IAM policies applied to the space will affect access to this shared
+      flow. Note that this field is only respected when creating a new shared
+      flow. It has no effect when creating a new revision for an existing
+      shared flow.
   """
 
   action = _messages.StringField(1)
   googleApiHttpBody = _messages.MessageField('GoogleApiHttpBody', 2)
   name = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  space = _messages.StringField(5)
 
 
 class ApigeeOrganizationsSharedflowsDeleteRequest(_messages.Message):
@@ -4872,11 +4878,15 @@ class ApigeeOrganizationsSharedflowsListRequest(_messages.Message):
       response.
     parent: Required. The name of the parent organization under which to get
       shared flows. Must be of the form: `organizations/{organization_id}`
+    space: Optional. The space ID used to filter the list of shared flows
+      (optional). If unspecified, all shared flows in the organization will be
+      listed.
   """
 
   includeMetaData = _messages.BooleanField(1)
   includeRevisions = _messages.BooleanField(2)
   parent = _messages.StringField(3, required=True)
+  space = _messages.StringField(4)
 
 
 class ApigeeOrganizationsSharedflowsRevisionsDeleteRequest(_messages.Message):
@@ -5080,6 +5090,141 @@ class ApigeeOrganizationsSitesApidocsUpdateRequest(_messages.Message):
 
   googleCloudApigeeV1ApiDoc = _messages.MessageField('GoogleCloudApigeeV1ApiDoc', 1)
   name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSpacesCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1Space: A GoogleCloudApigeeV1Space resource to be passed
+      as the request body.
+    parent: Required. Name of the Google Cloud project in which to associate
+      the Apigee space. Pass the information as a query parameter using the
+      following structure in your request: `organizations/`
+    spaceId: Required. Resource ID of the space.
+  """
+
+  googleCloudApigeeV1Space = _messages.MessageField('GoogleCloudApigeeV1Space', 1)
+  parent = _messages.StringField(2, required=True)
+  spaceId = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSpacesDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesDeleteRequest object.
+
+  Fields:
+    name: Required. Apigee organization space name in the following format:
+      `organizations/{org}/spaces/{space}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSpacesGetIamPolicyRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSpacesGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesGetRequest object.
+
+  Fields:
+    name: Required. Apigee organization space name in the following format:
+      `organizations/{org}/spaces/{space}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSpacesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of spaces to return. The service
+      may return fewer than this value. If unspecified, at most 50 spaces will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. A page token, received from a previous `ListSpaces`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      parameters must match the original call.
+    parent: Required. Use the following structure in your request:
+      `organizations`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsSpacesPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1Space: A GoogleCloudApigeeV1Space resource to be passed
+      as the request body.
+    name: Required. Name of the space in the following format:
+      `organizations/{org}/spaces/{space_id}`.
+    updateMask: Required. List of fields to be updated. Fields that can be
+      updated: display_name.
+  """
+
+  googleCloudApigeeV1Space = _messages.MessageField('GoogleCloudApigeeV1Space', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSpacesSetIamPolicyRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSpacesTestIamPermissionsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSpacesTestIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsTestIamPermissionsRequest(_messages.Message):
@@ -5349,7 +5494,8 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
-    analyticsConfig: Configuration for the Analytics add-on.
+    analyticsConfig: Configuration for the Analytics add-on. Only used in
+      organizations.environments.addonsConfig.
     apiSecurityConfig: Configuration for the API Security add-on.
     connectorsPlatformConfig: Configuration for the Connectors Platform add-
       on.
@@ -9352,6 +9498,20 @@ class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
   sharedFlows = _messages.MessageField('GoogleCloudApigeeV1SharedFlow', 1, repeated=True)
 
 
+class GoogleCloudApigeeV1ListSpacesResponse(_messages.Message):
+  r"""A response to a ListSpaces request containing the list of organization
+  spaces and a page token for the next page.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    spaces: List of Apigee organization spaces.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  spaces = _messages.MessageField('GoogleCloudApigeeV1Space', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ListTraceConfigOverridesResponse(_messages.Message):
   r"""Response for ListTraceConfigOverrides.
 
@@ -12292,12 +12452,16 @@ class GoogleCloudApigeeV1SharedFlow(_messages.Message):
     metaData: Metadata describing the shared flow.
     name: The ID of the shared flow.
     revision: A list of revisions of this shared flow.
+    space: Optional. The ID of the space associtaed with this shared flow. Any
+      IAM policies applied to the space will control access to this shared
+      flow.
   """
 
   latestRevisionId = _messages.StringField(1)
   metaData = _messages.MessageField('GoogleCloudApigeeV1EntityMetadata', 2)
   name = _messages.StringField(3)
   revision = _messages.StringField(4, repeated=True)
+  space = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1SharedFlowRevision(_messages.Message):
@@ -12372,6 +12536,22 @@ class GoogleCloudApigeeV1SharedFlowRevision(_messages.Message):
   revision = _messages.StringField(12)
   sharedFlows = _messages.StringField(13, repeated=True)
   type = _messages.StringField(14)
+
+
+class GoogleCloudApigeeV1Space(_messages.Message):
+  r"""Organization space resource.
+
+  Fields:
+    createTime: Output only. Create timestamp of the space.
+    displayName: Optional. Display name of the space.
+    name: Output only. Identifier. Id of the space.
+    updateTime: Output only. Last modified timestamp of the space.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class GoogleCloudApigeeV1Stats(_messages.Message):
@@ -13586,3 +13766,5 @@ encoding.AddCustomJsonFieldMapping(
     ApigeeOrganizationsHostQueriesListRequest, 'from_', 'from')
 encoding.AddCustomJsonFieldMapping(
     ApigeeOrganizationsHostSecurityReportsListRequest, 'from_', 'from')
+encoding.AddCustomJsonFieldMapping(
+    ApigeeOrganizationsSpacesGetIamPolicyRequest, 'options_requestedPolicyVersion', 'options.requestedPolicyVersion')

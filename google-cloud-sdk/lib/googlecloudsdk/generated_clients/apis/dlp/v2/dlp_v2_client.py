@@ -526,6 +526,114 @@ class DlpV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Create a Connection to an external data source.
+
+      Args:
+        request: (DlpOrganizationsLocationsConnectionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2Connection) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/connections',
+        http_method='POST',
+        method_id='dlp.organizations.locations.connections.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/connections',
+        request_field='googlePrivacyDlpV2CreateConnectionRequest',
+        request_type_name='DlpOrganizationsLocationsConnectionsCreateRequest',
+        response_type_name='GooglePrivacyDlpV2Connection',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a Connection.
+
+      Args:
+        request: (DlpOrganizationsLocationsConnectionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='DELETE',
+        method_id='dlp.organizations.locations.connections.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsConnectionsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a Connection by name.
+
+      Args:
+        request: (DlpOrganizationsLocationsConnectionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2Connection) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='GET',
+        method_id='dlp.organizations.locations.connections.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsConnectionsGetRequest',
+        response_type_name='GooglePrivacyDlpV2Connection',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a Connection.
+
+      Args:
+        request: (DlpOrganizationsLocationsConnectionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2Connection) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/connections/{connectionsId}',
+        http_method='PATCH',
+        method_id='dlp.organizations.locations.connections.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='googlePrivacyDlpV2UpdateConnectionRequest',
+        request_type_name='DlpOrganizationsLocationsConnectionsPatchRequest',
+        response_type_name='GooglePrivacyDlpV2Connection',
+        supports_download=False,
+    )
+
     def Search(self, request, global_params=None):
       r"""Searches for Connections in a parent.
 

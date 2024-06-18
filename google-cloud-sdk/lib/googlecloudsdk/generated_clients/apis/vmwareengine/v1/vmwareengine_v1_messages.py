@@ -2261,6 +2261,8 @@ class PeeringRoute(_messages.Message):
       Routes of direction `INCOMING` are imported from the peer network. *
       Routes of direction `OUTGOING` are exported from the intranet VPC
       network of the VMware Engine network.
+    StateValueValuesEnum: Output only. State of the route in the peer VPC
+      network.
     TypeValueValuesEnum: Output only. Type of the route in the peer VPC
       network.
 
@@ -2281,6 +2283,7 @@ class PeeringRoute(_messages.Message):
       route. This field only applies to dynamic routes in the peer VPC
       network.
     priority: Output only. The priority of the peering route.
+    state: Output only. State of the route in the peer VPC network.
     type: Output only. Type of the route in the peer VPC network.
   """
 
@@ -2300,6 +2303,23 @@ class PeeringRoute(_messages.Message):
     DIRECTION_UNSPECIFIED = 0
     INCOMING = 1
     OUTGOING = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the route in the peer VPC network.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified route state. This value should never be
+        used.
+      ACCEPTED: Route accepted in incoming peered vpc
+      REJECTED_BY_CONFIG: Route rejected in incoming peered vpc
+      ACCEPTED_BY_PEER: Route accepted in outgoing peered vpc
+      REJECTED_BY_PEER_CONFIG: Route rejected in outgoing peered vpc
+    """
+    STATE_UNSPECIFIED = 0
+    ACCEPTED = 1
+    REJECTED_BY_CONFIG = 2
+    ACCEPTED_BY_PEER = 3
+    REJECTED_BY_PEER_CONFIG = 4
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Output only. Type of the route in the peer VPC network.
@@ -2323,7 +2343,8 @@ class PeeringRoute(_messages.Message):
   imported = _messages.BooleanField(3)
   nextHopRegion = _messages.StringField(4)
   priority = _messages.IntegerField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class Policy(_messages.Message):

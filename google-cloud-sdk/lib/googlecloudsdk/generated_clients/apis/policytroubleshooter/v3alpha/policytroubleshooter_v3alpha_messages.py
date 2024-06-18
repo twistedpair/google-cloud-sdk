@@ -2722,7 +2722,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterResponse(_messages.Message):
-  r"""Response to troubleshoot service perimeters NextTAG: 9
+  r"""Response to troubleshoot service perimeters NextTAG: 11
 
   Enums:
     AccessStateValueValuesEnum: The access state of the active service
@@ -2733,10 +2733,15 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
   Fields:
     accessPolicyExplanations: Explanation of access policies
     accessState: The access state of the active service perimeters.
-    callerIp: The ip address from the caller
     dryrunAccessState: The access state of the dry run service perimeters
     operation: Fully qualified name of the operation.
-    principal: The principal email address of the caller
+    principal: The principal email address of the violation principal from
+      troubleshoot token.
+    principalIp: The ip address of the violation principal from troubleshoot
+      token.
+    requestTime: The request_time from troubleshooting token. It captures when
+      the request generating the token was made. The violation time when token
+      is logged because of the VPC SC violation.
     resolvedResources: Details about the resolved resources.
     service: The service name as specified in its service configuration. For
       example, `"pubsub.googleapis.com"`. See
@@ -2775,12 +2780,13 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServiceP
 
   accessPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaAccessPolicyExplanation', 1, repeated=True)
   accessState = _messages.EnumField('AccessStateValueValuesEnum', 2)
-  callerIp = _messages.StringField(3)
-  dryrunAccessState = _messages.EnumField('DryrunAccessStateValueValuesEnum', 4)
-  operation = _messages.StringField(5)
-  principal = _messages.StringField(6)
-  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 7, repeated=True)
-  service = _messages.StringField(8)
+  dryrunAccessState = _messages.EnumField('DryrunAccessStateValueValuesEnum', 3)
+  operation = _messages.StringField(4)
+  principal = _messages.StringField(5)
+  principalIp = _messages.StringField(6)
+  requestTime = _messages.StringField(7)
+  resolvedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResolvedResource', 8, repeated=True)
+  service = _messages.StringField(9)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaVpcAccessibleServicesExplanation(_messages.Message):
@@ -3605,9 +3611,8 @@ class GoogleIamV3PolicyBinding(_messages.Message):
 
   Enums:
     PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
-      this binding: + When the policy is empty, this field must be set. + When
-      the policy is set, this field + can be left empty and will be set to the
-      policy kind, or + must set to the input policy kind
+      this binding. This field must be one of the following: - Left empty
+      (will be automatically set to the policy kind) - The input policy kind
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
@@ -3622,41 +3627,43 @@ class GoogleIamV3PolicyBinding(_messages.Message):
       resource condition. It depends on the type of target, the policy it is
       attached to, and/or the expression itself. When set, the `expression`
       field in the `Expr` must include from 1 to 10 subexpressions, joined by
-      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators.
-      Allowed operations for principal.type: - `principal.type == ` -
-      `principal.type != ` - `principal.type in []` Allowed operations for
+      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators
+      and cannot contain more than 250 characters. Allowed operations for
       principal.subject: - `principal.subject == ` - `principal.subject != ` -
       `principal.subject in []` - `principal.subject.startsWith()` -
-      `principal.subject.endsWith()` Supported principal types are Workspace,
-      Workforce Pool, Workload Pool and Service Account. Allowed string must
-      be one of: - iam.googleapis.com/WorkspaceIdentity -
+      `principal.subject.endsWith()` Allowed operations for principal.type: -
+      `principal.type == ` - `principal.type != ` - `principal.type in []`
+      Supported principal types are Workspace, Workforce Pool, Workload Pool
+      and Service Account. Allowed string must be one of: -
+      iam.googleapis.com/WorkspaceIdentity -
       iam.googleapis.com/WorkforcePoolIdentity -
       iam.googleapis.com/WorkloadPoolIdentity -
-      iam.googleapis.com/ServiceAccount When the bound policy is a Principal
-      Access Boundary policy, each subexpression must be of the form
-      `principal.type == ` or `principal.subject == ''`. An example expression
-      is: "principal.type == 'iam.googleapis.com/ServiceAccount'" or
-      "principal.subject == 'bob@acme.com'".
+      iam.googleapis.com/ServiceAccount When the bound policy is a principal
+      access boundary policy, the only supported attributes in any
+      subexpression are `principal.type` and `principal.subject`. An example
+      expression is: "principal.type == 'iam.googleapis.com/ServiceAccount'"
+      or "principal.subject == 'bob@example.com'".
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
     etag: Optional. The etag for the policy binding. If this is provided on
       update, it must match the server's etag.
-    name: Identifier. The resource name of the policy binding. The binding
-      parent is the closest CRM resource (i.e., Project, Folder or
-      Organization) to the binding target. Format: `projects/{project_id}/loca
-      tions/{location}/policyBindings/{policy_binding_id}` `projects/{project_
-      number}/locations/{location}/policyBindings/{policy_binding_id}` `folder
-      s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
-      organizations/{organization_id}/locations/{location}/policyBindings/{pol
-      icy_binding_id}`
+    name: Identifier. The name of the policy binding, in the format
+      `{binding_parent/locations/{location}/policyBindings/{policy_binding_id}
+      `. The binding parent is the closest Resource Manager resource (i.e.,
+      Project, Folder or Organization) to the binding target. Format: * `proje
+      cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
+      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
+      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
+      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
+      ` // NOLINT
     policy: Required. Immutable. The resource name of the policy to be bound.
       The binding parent and policy must belong to the same Organization (or
       Project).
-    policyKind: Immutable. The kind of the policy to attach in this binding: +
-      When the policy is empty, this field must be set. + When the policy is
-      set, this field + can be left empty and will be set to the policy kind,
-      or + must set to the input policy kind
+    policyKind: Immutable. The kind of the policy to attach in this binding.
+      This field must be one of the following: - Left empty (will be
+      automatically set to the policy kind) - The input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
     target: Required. Immutable. Target is the full resource name of the
       resource to which the policy will be bound. Immutable once set.
@@ -3667,10 +3674,9 @@ class GoogleIamV3PolicyBinding(_messages.Message):
   """
 
   class PolicyKindValueValuesEnum(_messages.Enum):
-    r"""Immutable. The kind of the policy to attach in this binding: + When
-    the policy is empty, this field must be set. + When the policy is set,
-    this field + can be left empty and will be set to the policy kind, or +
-    must set to the input policy kind
+    r"""Immutable. The kind of the policy to attach in this binding. This
+    field must be one of the following: - Left empty (will be automatically
+    set to the policy kind) - The input policy kind
 
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
@@ -3729,16 +3735,18 @@ class GoogleIamV3PolicyBindingTarget(_messages.Message):
 
   Fields:
     principalSet: Immutable. Full Resource Name used for principal access
-      boundary policy bindings Examples: Organization:
-      "//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID"
-      Folder: "//cloudresourcemanager.googleapis.com/folders/FOLDER_ID"
-      Project: "//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER"
-      "//cloudresourcemanager.googleapis.com/projects/PROJECT_ID" Workload
-      Identity Pool: "//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID" Workforce Identity:
-      "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID"
-      Workspace Identity:
-      "//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID"
+      boundary policy bindings Examples: * Organization:
+      `//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID` *
+      Folder: `//cloudresourcemanager.googleapis.com/folders/FOLDER_ID` *
+      Project: *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
+      `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
+      Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` // NOLINT * Workforce
+      Identity:
+      `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
+      * Workspace Identity:
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
   """
 
   principalSet = _messages.StringField(1)
@@ -3813,11 +3821,13 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
   r"""Principal access boundary policy details
 
   Fields:
-    enforcementVersion: Optional. The version number that indicates which GCP
-      services are included in the enforcement (e.g. "latest", "1", ...). If
-      empty, the PAB policy version will be set to the current latest version,
-      and this version won't get updated when new versions are released.
-    rules: Required. A list of principal access boundary policy rules.
+    enforcementVersion: Optional. The version number that indicates which
+      Google Cloud services are included in the enforcement (e.g. "latest",
+      "1", ...). If empty, the PAB policy version will be set to the current
+      latest version, and this version won't get updated when new versions are
+      released.
+    rules: Required. A list of principal access boundary policy rules. The
+      number of rules in a policy is limited to 500.
   """
 
   enforcementVersion = _messages.StringField(1)
@@ -3838,12 +3848,13 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
     effect: Required. The access relationship of principals to the resources
       in this rule.
     resources: Required. A list of Cloud Resource Manager resources. The
-      resource and all the descendants are included. The following resource
-      names are supported: * Organization, such as
-      "//cloudresourcemanager.googleapis.com/organizations/123". * Folder,
-      such as "//cloudresourcemanager.googleapis.com/folders/123". * Project,
-      such as "//cloudresourcemanager.googleapis.com/projects/123" or
-      "//cloudresourcemanager.googleapis.com/projects/my-project-id".
+      resource and all the descendants are included. The number of resources
+      in a policy is limited to 500 across all rules. The following resource
+      types are supported: * Organizations, such as
+      `//cloudresourcemanager.googleapis.com/organizations/123`. * Folders,
+      such as `//cloudresourcemanager.googleapis.com/folders/123`. * Projects,
+      such as `//cloudresourcemanager.googleapis.com/projects/123` or
+      `//cloudresourcemanager.googleapis.com/projects/my-project-id`.
   """
 
   class EffectValueValuesEnum(_messages.Enum):
@@ -3885,7 +3896,7 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Resource name for the `ServicePerimeter`. Format:
+    name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
       alphanumeric characters or `_`. After you create a `ServicePerimeter`,

@@ -523,6 +523,60 @@ class DomainsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RetrieveGoogleDomainsDnsRecords(self, request, global_params=None):
+      r"""Lists the DNS records from the Google Domains DNS zone for domains that use the deprecated `google_domains_dns` in the `Registration`'s `dns_settings`.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsDnsRecordsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RetrieveGoogleDomainsDnsRecordsResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveGoogleDomainsDnsRecords')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveGoogleDomainsDnsRecords.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:retrieveGoogleDomainsDnsRecords',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.retrieveGoogleDomainsDnsRecords',
+        ordered_params=['registration'],
+        path_params=['registration'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+registration}:retrieveGoogleDomainsDnsRecords',
+        request_field='',
+        request_type_name='DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsDnsRecordsRequest',
+        response_type_name='RetrieveGoogleDomainsDnsRecordsResponse',
+        supports_download=False,
+    )
+
+    def RetrieveGoogleDomainsForwardingConfig(self, request, global_params=None):
+      r"""Lists the deprecated domain and email forwarding configurations you set up in the deprecated Google Domains UI. The configuration is present only for domains with the `google_domains_redirects_data_available` set to `true` in the `Registration`'s `dns_settings`. A forwarding configuration might not work correctly if required DNS records are not present in the domain's authoritative DNS Zone.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsForwardingConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RetrieveGoogleDomainsForwardingConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveGoogleDomainsForwardingConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveGoogleDomainsForwardingConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/registrations/{registrationsId}:retrieveGoogleDomainsForwardingConfig',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.retrieveGoogleDomainsForwardingConfig',
+        ordered_params=['registration'],
+        path_params=['registration'],
+        query_params=[],
+        relative_path='v1/{+registration}:retrieveGoogleDomainsForwardingConfig',
+        request_field='',
+        request_type_name='DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsForwardingConfigRequest',
+        response_type_name='RetrieveGoogleDomainsForwardingConfigResponse',
+        supports_download=False,
+    )
+
     def RetrieveImportableDomains(self, request, global_params=None):
       r"""Deprecated: For more information, see [Cloud Domains feature deprecation](https://cloud.google.com/domains/docs/deprecations/feature-deprecations) Lists domain names from [Google Domains](https://domains.google/) that can be imported to Cloud Domains using the `ImportDomain` method. Since individual users can own domains in Google Domains, the list of domains returned depends on the individual user making the call. Domains already managed by Cloud Domains are not returned.
 

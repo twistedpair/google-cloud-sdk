@@ -1691,6 +1691,11 @@ class Subnet(_messages.Message):
   r"""Message describing Subnet object
 
   Enums:
+    BondingTypeValueValuesEnum: Optional. A bonding type in the subnet
+      creation specifies whether a VLAN being created will be present on
+      Bonded or Non-Bonded or Both port types. In addition, this flag is to be
+      used to set the specific network configuration which clusters can then
+      use for their workloads based on the bonding choice.
     StateValueValuesEnum: Output only. Current stage of the resource to the
       device by config push.
 
@@ -1698,6 +1703,11 @@ class Subnet(_messages.Message):
     LabelsValue: Labels associated with this resource.
 
   Fields:
+    bondingType: Optional. A bonding type in the subnet creation specifies
+      whether a VLAN being created will be present on Bonded or Non-Bonded or
+      Both port types. In addition, this flag is to be used to set the
+      specific network configuration which clusters can then use for their
+      workloads based on the bonding choice.
     createTime: Output only. The time when the subnet was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
@@ -1712,6 +1722,26 @@ class Subnet(_messages.Message):
     vlanId: Optional. VLAN id provided by user. If not specified we assign one
       automatically.
   """
+
+  class BondingTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. A bonding type in the subnet creation specifies whether a
+    VLAN being created will be present on Bonded or Non-Bonded or Both port
+    types. In addition, this flag is to be used to set the specific network
+    configuration which clusters can then use for their workloads based on the
+    bonding choice.
+
+    Values:
+      BONDING_TYPE_UNSPECIFIED: Unspecified Bonding type will be unspecified
+        by default and if the user chooses to not specify a bonding type at
+        time of creating the VLAN. This will be treated as mixed bonding where
+        the VLAN will have both bonded and non-bonded connectivity to
+        machines.
+      BONDED: Single homed.
+      NON_BONDED: Multi homed.
+    """
+    BONDING_TYPE_UNSPECIFIED = 0
+    BONDED = 1
+    NON_BONDED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current stage of the resource to the device by config
@@ -1756,16 +1786,17 @@ class Subnet(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  ipv4Cidr = _messages.StringField(3, repeated=True)
-  ipv6Cidr = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
-  vlanId = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  bondingType = _messages.EnumField('BondingTypeValueValuesEnum', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  ipv4Cidr = _messages.StringField(4, repeated=True)
+  ipv6Cidr = _messages.StringField(5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
+  vlanId = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
 class SubnetStatus(_messages.Message):

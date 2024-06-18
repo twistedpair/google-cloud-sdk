@@ -224,17 +224,18 @@ class Binding(_messages.Message):
 
 
 class CaOptions(_messages.Message):
-  r"""Describes values that are relevant in a CA certificate.
+  r"""Describes the X.509 basic constraints extension, per [RFC 5280 section
+  4.2.1.9](https://tools.ietf.org/html/rfc5280#section-4.2.1.9)
 
   Fields:
-    isCa: Optional. Refers to the "CA" X.509 extension, which is a boolean
-      value. When this value is missing, the extension will be omitted from
-      the CA certificate.
-    maxIssuerPathLength: Optional. Refers to the path length restriction X.509
-      extension. For a CA certificate, this value describes the depth of
-      subordinate CA certificates that are allowed. If this value is less than
-      0, the request will fail. If this value is missing, the max path length
-      will be omitted from the CA certificate.
+    isCa: Optional. Refers to the "CA" boolean field in the X.509 extension.
+      When this value is missing, the basic constraints extension will be
+      omitted from the certificate.
+    maxIssuerPathLength: Optional. Refers to the path length constraint field
+      in the X.509 extension. For a CA certificate, this value describes the
+      depth of subordinate CA certificates that are allowed. If this value is
+      less than 0, the request will fail. If this value is missing, the max
+      path length will be omitted from the certificate.
   """
 
   isCa = _messages.BooleanField(1)
@@ -3282,7 +3283,9 @@ class X509Parameters(_messages.Message):
       (OCSP) endpoint addresses that appear in the "Authority Information
       Access" extension in the certificate.
     caOptions: Optional. Describes options in this X509Parameters that are
-      relevant in a CA certificate.
+      relevant in a CA certificate. If not specified, a default basic
+      constraints extension with `is_ca=false` will be added for leaf
+      certificates.
     keyUsage: Optional. Indicates the intended use for keys that correspond to
       a certificate.
     nameConstraints: Optional. Describes the X.509 name constraints extension.

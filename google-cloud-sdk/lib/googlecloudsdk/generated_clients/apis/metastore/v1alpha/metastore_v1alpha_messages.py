@@ -552,6 +552,23 @@ class Consumer(_messages.Message):
   subnetwork = _messages.StringField(3)
 
 
+class CustomRegionConfig(_messages.Message):
+  r"""Custom configuration used to specify regions that the metastore service
+  runs in. Currently only supported in the us multi-region.
+
+  Fields:
+    readOnlyRegions: Optional. The list of read-only regions where the
+      metastore service runs in. These regions should be part (or subset) of
+      the multi-region.
+    readWriteRegions: Required. The list of read-write regions where the
+      metastore service runs in. These regions should be part (or subset) of
+      the multi-region.
+  """
+
+  readOnlyRegions = _messages.StringField(1, repeated=True)
+  readWriteRegions = _messages.StringField(2, repeated=True)
+
+
 class CustomRegionMetadata(_messages.Message):
   r"""Metadata about a custom region. This is only populated if the region is
   a custom region. For single/multi regions, it will be empty.
@@ -831,6 +848,9 @@ class Federation(_messages.Message):
       be greater than or equal to zero. A BackendMetastore with a lower number
       will be evaluated before a BackendMetastore with a higher number.
     LabelsValue: User-defined labels for the metastore federation.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     backendMetastores: A map from BackendMetastore rank to BackendMetastores
@@ -849,6 +869,9 @@ class Federation(_messages.Message):
     state: Output only. The current state of the federation.
     stateMessage: Output only. Additional information about the current state
       of the metastore federation, if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     uid: Output only. The globally unique resource identifier of the metastore
       federation.
     updateTime: Output only. The time when the metastore federation was last
@@ -935,6 +958,32 @@ class Federation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   backendMetastores = _messages.MessageField('BackendMetastoresValue', 1)
   createTime = _messages.StringField(2)
   endpointUri = _messages.StringField(3)
@@ -942,9 +991,10 @@ class Federation(_messages.Message):
   name = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   stateMessage = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  version = _messages.StringField(10)
+  tags = _messages.MessageField('TagsValue', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  version = _messages.StringField(11)
 
 
 class HiveMetastoreConfig(_messages.Message):
@@ -2660,6 +2710,19 @@ class MoveTableToDatabaseResponse(_messages.Message):
   r"""Response message for DataprocMetastore.MoveTableToDatabase."""
 
 
+class MultiRegionConfig(_messages.Message):
+  r"""The multi-region config for the Dataproc Metastore service.
+
+  Fields:
+    certificates: Output only. The list of root CA certificates that a gRPC
+      client uses to connect to a multi-regional Dataproc Metastore service.
+    customRegionConfig: A CustomRegionConfig attribute.
+  """
+
+  certificates = _messages.MessageField('RootCACertificate', 1, repeated=True)
+  customRegionConfig = _messages.MessageField('CustomRegionConfig', 2)
+
+
 class MultiRegionMetadata(_messages.Message):
   r"""The metadata for the multi-region that includes the constituent regions.
   The metadata is only populated if the region is multi-region. For single
@@ -3047,6 +3110,20 @@ class RestoreServiceRequest(_messages.Message):
   restoreType = _messages.EnumField('RestoreTypeValueValuesEnum', 4)
 
 
+class RootCACertificate(_messages.Message):
+  r"""A gRPC client must install all root CA certificates to connect to a
+  multi-regional Dataproc Metastore service and achieve failover.
+
+  Fields:
+    certificate: The root CA certificate in PEM format. The maximum length is
+      65536 bytes.
+    expirationTime: The certificate expiration time in timestamp format.
+  """
+
+  certificate = _messages.StringField(1)
+  expirationTime = _messages.StringField(2)
+
+
 class ScalingConfig(_messages.Message):
   r"""Represents the scaling configuration of a metastore service.
 
@@ -3143,6 +3220,9 @@ class Service(_messages.Message):
 
   Messages:
     LabelsValue: User-defined labels for the metastore service.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     artifactGcsUri: Output only. A Cloud Storage URI (starting with gs://)
@@ -3168,6 +3248,8 @@ class Service(_messages.Message):
       metadata should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management
       activities of the metastore service.
+    multiRegionConfig: Optional. Specifies the multi-region configuration
+      information for the Hive metastore service.
     name: Immutable. The relative resource name of the metastore service, in
       the following format:projects/{project_number}/locations/{location_id}/s
       ervices/{service_id}.
@@ -3186,6 +3268,9 @@ class Service(_messages.Message):
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     telemetryConfig: The configuration specifying telemetry settings for the
       Dataproc Metastore service. If unspecified defaults to JSON.
     tier: The tier of the service.
@@ -3293,6 +3378,32 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   artifactGcsUri = _messages.StringField(1)
   createTime = _messages.StringField(2)
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 3)
@@ -3304,19 +3415,21 @@ class Service(_messages.Message):
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 9)
   metadataIntegration = _messages.MessageField('MetadataIntegration', 10)
   metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 11)
-  name = _messages.StringField(12)
-  network = _messages.StringField(13)
-  networkConfig = _messages.MessageField('NetworkConfig', 14)
-  port = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 16)
-  scalingConfig = _messages.MessageField('ScalingConfig', 17)
-  scheduledBackup = _messages.MessageField('ScheduledBackup', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateMessage = _messages.StringField(20)
-  telemetryConfig = _messages.MessageField('TelemetryConfig', 21)
-  tier = _messages.EnumField('TierValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  multiRegionConfig = _messages.MessageField('MultiRegionConfig', 12)
+  name = _messages.StringField(13)
+  network = _messages.StringField(14)
+  networkConfig = _messages.MessageField('NetworkConfig', 15)
+  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 17)
+  scalingConfig = _messages.MessageField('ScalingConfig', 18)
+  scheduledBackup = _messages.MessageField('ScheduledBackup', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateMessage = _messages.StringField(21)
+  tags = _messages.MessageField('TagsValue', 22)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 23)
+  tier = _messages.EnumField('TierValueValuesEnum', 24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
 
 
 class SetIamPolicyRequest(_messages.Message):

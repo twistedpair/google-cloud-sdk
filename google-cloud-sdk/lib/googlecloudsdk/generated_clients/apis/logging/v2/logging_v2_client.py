@@ -1420,29 +1420,29 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def QueryLocal(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
+    def CancelQuery(self, request, global_params=None):
+      r"""Cancels a running query. If called on a handle from a multi-step query, the entire query is cancelled.
 
       Args:
-        request: (QueryDataLocalRequest) input message
+        request: (CancelQueryRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (QueryDataResponse) The response message.
+        (CancelQueryResponse) The response message.
       """
-      config = self.GetMethodConfig('QueryLocal')
+      config = self.GetMethodConfig('CancelQuery')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    QueryLocal.method_config = lambda: base_api.ApiMethodInfo(
+    CancelQuery.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',
-        method_id='logging.data.queryLocal',
+        method_id='logging.data.cancelQuery',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path='v2/data:queryLocal',
+        relative_path='v2/data:cancelQuery',
         request_field='<request>',
-        request_type_name='QueryDataLocalRequest',
-        response_type_name='QueryDataResponse',
+        request_type_name='CancelQueryRequest',
+        response_type_name='CancelQueryResponse',
         supports_download=False,
     )
 
@@ -1535,7 +1535,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def QueryData(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously and returns handles that can be used to fetch the results of each step. Raw table references are not permitted; all tables must be referenced in the form of views.
+      r"""Runs a (possibly multi-step) SQL query asynchronously in the tenant project and returns handles that can be used to fetch the results of each step. Raw table references are not permitted; all tables must be referenced in the form of views.
 
       Args:
         request: (QueryDataRequest) input message
@@ -1560,8 +1560,34 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QueryDataLocal(self, request, global_params=None):
+      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
+
+      Args:
+        request: (QueryDataLocalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryDataLocal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryDataLocal.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.queryDataLocal',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:queryDataLocal',
+        request_field='<request>',
+        request_type_name='QueryDataLocalRequest',
+        response_type_name='QueryDataResponse',
+        supports_download=False,
+    )
+
     def ReadQueryResults(self, request, global_params=None):
-      r"""Retrieves the results from a single step of a previous call to QueryData.
+      r"""Retrieves the results from a single step of a previous call to QueryData or QueryDataLocal. If retrieving results from QueryDataLocal, then the same credentials must be used that were provided in the previous call.
 
       Args:
         request: (ReadQueryResultsRequest) input message

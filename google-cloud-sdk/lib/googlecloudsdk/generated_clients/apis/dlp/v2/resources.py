@@ -78,6 +78,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_CONNECTIONS = (
+      'organizations.locations.connections',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'connections/{connectionsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_DEIDENTIFYTEMPLATES = (
       'organizations.locations.deidentifyTemplates',
       '{+name}',

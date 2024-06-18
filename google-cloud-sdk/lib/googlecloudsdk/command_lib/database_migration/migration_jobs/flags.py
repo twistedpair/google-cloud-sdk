@@ -179,6 +179,7 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
         sqlserver_homogeneous_migration_config, required=False
     )
     AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
   else:
     AddSqlServerBackupFilePattern(
         sqlserver_homogeneous_migration_config,
@@ -188,6 +189,7 @@ def AddSqlServerHomogeneousMigrationConfigFlag(parser, is_update=False):
         sqlserver_homogeneous_migration_config, required=True
     )
     AddSqlServerEncryptedDatabasesFlag(sqlserver_homogeneous_migration_config)
+    AddSqlServerUseDiffBackupFlag(sqlserver_homogeneous_migration_config)
 
 
 def AddSqlServerBackupFilePattern(parser, default_value=None):
@@ -254,4 +256,18 @@ def AddSqlServerEncryptedDatabasesFlag(parser):
       '--sqlserver-encrypted-databases',
       type=arg_parsers.YAMLFileContents(),
       help=help_text,
+  )
+
+
+def AddSqlServerUseDiffBackupFlag(parser):
+  """Adds a --sqlserver-diff-backup flag to the given parser."""
+  help_text = """\
+    Use differential backup for the migration job. This flag is used only for
+    SQL Server to Cloud SQL migrations.
+    """
+  parser.add_argument(
+      '--sqlserver-diff-backup',
+      action='store_true',
+      help=help_text,
+      hidden=True,
   )

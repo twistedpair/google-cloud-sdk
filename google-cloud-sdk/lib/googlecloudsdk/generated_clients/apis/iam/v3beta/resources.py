@@ -49,17 +49,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  FOLDERS_LOCATIONS_POLICIES = (
-      'folders.locations.policies',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/locations/{locationsId}/policies/'
-              '{policiesId}',
-      },
-      ['name'],
-      True
-  )
   FOLDERS_LOCATIONS_POLICYBINDINGS = (
       'folders.locations.policyBindings',
       '{+name}',
@@ -92,17 +81,6 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'operations/{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  ORGANIZATIONS_LOCATIONS_POLICIES = (
-      'organizations.locations.policies',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/locations/{locationsId}/'
-              'policies/{policiesId}',
       },
       ['name'],
       True
@@ -151,17 +129,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_POLICIES = (
-      'projects.locations.policies',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/policies/'
-              '{policiesId}',
       },
       ['name'],
       True

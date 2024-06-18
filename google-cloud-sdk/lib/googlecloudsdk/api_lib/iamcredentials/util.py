@@ -271,24 +271,24 @@ class ImpersonationAccessTokenProvider(object):
     property value in these endpoints.
     """
     # pylint: disable=g-import-not-at-top
-    from google.auth import impersonated_credentials as google_auth_impersonated_credentials
+    from google.auth import iam as google_auth_iam
     # pylint: enable=g-import-not-at-top
 
     effective_iam_endpoint = GetEffectiveIamEndpoint()
-    google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
-        google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
+    google_auth_iam._IAM_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_iam._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
             IAM_ENDPOINT_GDU,
             effective_iam_endpoint,
         )
     )
-    google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
-        google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
+    google_auth_iam._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_iam._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
             IAM_ENDPOINT_GDU,
             effective_iam_endpoint,
         )
     )
-    google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
-        google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
+    google_auth_iam._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
+        google_auth_iam._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
             IAM_ENDPOINT_GDU,
             effective_iam_endpoint,
         )

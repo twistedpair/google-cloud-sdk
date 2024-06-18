@@ -69,3 +69,45 @@ def remove_managed_folders(
           args.continue_on_error or task_util.should_use_parallelism()
       ),
   )
+
+
+def remove_folders(
+    source_expansion_iterator,
+    task_status_queue,
+    raise_error_for_unmatched_urls=False,
+    verbose=False,
+):
+  """Creates and executes tasks for removing folders."""
+  task_iterator_factory = (
+      delete_task_iterator_factory.DeleteTaskIteratorFactory(
+          source_expansion_iterator,
+          task_status_queue=task_status_queue,
+      )
+  )
+  delete_task_iterator = (
+      plurality_checkable_iterator.PluralityCheckableIterator(
+          folder_util.reverse_containment_order(
+              task_iterator_factory.folder_iterator(),
+              get_url_function=(lambda task: task.folder_url),
+          )
+      )
+  )
+
+  if delete_task_iterator.is_empty() and not raise_error_for_unmatched_urls:
+    return 0
+
+  if verbose:
+    log.status.Print('Removing folders:')
+
+  return task_executor.execute_tasks(
+      delete_task_iterator,
+      parallelizable=False,
+      task_status_queue=task_status_queue,
+      progress_manager_args=task_status.ProgressManagerArgs(
+          task_status.IncrementType.INTEGER,
+          manifest_path=None,
+      ),
+      # Exceptions halting execution at this stage would be unexpected when
+      # using parallelization for other stages.
+      continue_on_error=task_util.should_use_parallelism(),
+  )

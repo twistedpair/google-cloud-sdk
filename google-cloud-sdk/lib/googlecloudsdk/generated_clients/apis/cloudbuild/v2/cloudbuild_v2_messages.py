@@ -216,7 +216,7 @@ class BitbucketDataCenterConfig(_messages.Message):
   Fields:
     authorizerCredential: Required. A http access token with the `REPO_ADMIN`
       scope access.
-    hostUri: Optional. The URI of the Bitbucket Data Center instance or
+    hostUri: Required. The URI of the Bitbucket Data Center instance or
       cluster this connection is for.
     readAuthorizerCredential: Required. A http access token with the
       `REPO_READ` access.
@@ -1337,6 +1337,7 @@ class ExecutionEnvironment(_messages.Message):
 
   Fields:
     workerPool: Required. The workerpool used to run the PipelineRun.
+      Deprecated; please use workflow_options.worker_pool instead.
   """
 
   workerPool = _messages.StringField(1)
@@ -2236,12 +2237,14 @@ class PipelineRef(_messages.Message):
       GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
         resolver/
       DEVELOPER_CONNECT: Developer Connect resolver.
+      DEFAULT: Default resolver.
     """
     RESOLVER_NAME_UNSPECIFIED = 0
     BUNDLES = 1
     GCB_REPO = 2
     GIT = 3
     DEVELOPER_CONNECT = 4
+    DEFAULT = 5
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
@@ -3363,12 +3366,18 @@ class Step(_messages.Message):
   r"""Step embeds the Container type, which allows it to include fields not
   provided by Container.
 
+  Enums:
+    OnErrorValueValuesEnum: Optional. OnError defines the exiting behavior on
+      error can be set to [ continue | stopAndFail ]
+
   Fields:
     args: Arguments to the entrypoint.
     command: Entrypoint array.
     env: List of environment variables to set in the container.
     image: Docker image name.
     name: Name of the container specified as a DNS_LABEL.
+    onError: Optional. OnError defines the exiting behavior on error can be
+      set to [ continue | stopAndFail ]
     params: Optional. Optional parameters passed to the StepAction.
     ref: Optional. Optional reference to a remote StepAction.
     script: The contents of an executable file to execute.
@@ -3382,18 +3391,34 @@ class Step(_messages.Message):
     workingDir: Container's working directory.
   """
 
+  class OnErrorValueValuesEnum(_messages.Enum):
+    r"""Optional. OnError defines the exiting behavior on error can be set to
+    [ continue | stopAndFail ]
+
+    Values:
+      ON_ERROR_TYPE_UNSPECIFIED: Default enum type; should not be used.
+      STOP_AND_FAIL: StopAndFail indicates exit if the step/task exits with
+        non-zero exit code
+      CONTINUE: Continue indicates continue executing the rest of the
+        steps/tasks irrespective of the exit code
+    """
+    ON_ERROR_TYPE_UNSPECIFIED = 0
+    STOP_AND_FAIL = 1
+    CONTINUE = 2
+
   args = _messages.StringField(1, repeated=True)
   command = _messages.StringField(2, repeated=True)
   env = _messages.MessageField('EnvVar', 3, repeated=True)
   image = _messages.StringField(4)
   name = _messages.StringField(5)
-  params = _messages.MessageField('Param', 6, repeated=True)
-  ref = _messages.MessageField('StepRef', 7)
-  script = _messages.StringField(8)
-  securityContext = _messages.MessageField('SecurityContext', 9)
-  timeout = _messages.StringField(10)
-  volumeMounts = _messages.MessageField('VolumeMount', 11, repeated=True)
-  workingDir = _messages.StringField(12)
+  onError = _messages.EnumField('OnErrorValueValuesEnum', 6)
+  params = _messages.MessageField('Param', 7, repeated=True)
+  ref = _messages.MessageField('StepRef', 8)
+  script = _messages.StringField(9)
+  securityContext = _messages.MessageField('SecurityContext', 10)
+  timeout = _messages.StringField(11)
+  volumeMounts = _messages.MessageField('VolumeMount', 12, repeated=True)
+  workingDir = _messages.StringField(13)
 
 
 class StepRef(_messages.Message):
@@ -3419,12 +3444,14 @@ class StepRef(_messages.Message):
       GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
         resolver/
       DEVELOPER_CONNECT: Developer Connect resolver.
+      DEFAULT: Default resolver.
     """
     RESOLVER_NAME_UNSPECIFIED = 0
     BUNDLES = 1
     GCB_REPO = 2
     GIT = 3
     DEVELOPER_CONNECT = 4
+    DEFAULT = 5
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
@@ -3497,12 +3524,14 @@ class TaskRef(_messages.Message):
       GIT: Simple Git resolver. https://tekton.dev/docs/pipelines/git-
         resolver/
       DEVELOPER_CONNECT: Developer Connect resolver.
+      DEFAULT: Default resolver.
     """
     RESOLVER_NAME_UNSPECIFIED = 0
     BUNDLES = 1
     GCB_REPO = 2
     GIT = 3
     DEVELOPER_CONNECT = 4
+    DEFAULT = 5
 
   name = _messages.StringField(1)
   params = _messages.MessageField('Param', 2, repeated=True)
@@ -4198,6 +4227,7 @@ class WorkflowOptions(_messages.Message):
       are accepted in the map pipeline, tasks and finally with
       Timeouts.pipeline >= Timeouts.tasks + Timeouts.finally
     worker: Optional. Worker config.
+    workerPool: Optional. The workerpool used to run the Workflow.
   """
 
   executionEnvironment = _messages.MessageField('ExecutionEnvironment', 1)
@@ -4206,6 +4236,7 @@ class WorkflowOptions(_messages.Message):
   statusUpdateOptions = _messages.MessageField('WorkflowStatusUpdateOptions', 4)
   timeouts = _messages.MessageField('TimeoutFields', 5)
   worker = _messages.MessageField('Worker', 6)
+  workerPool = _messages.StringField(7)
 
 
 class WorkflowStatusUpdateOptions(_messages.Message):

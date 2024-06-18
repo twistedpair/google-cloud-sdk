@@ -46,7 +46,7 @@ class ComplianceStandard(_messages.Message):
 
 
 class Constraint(_messages.Message):
-  r"""Representation of a Constraint.
+  r"""LINT.IfChange Representation of a Constraint.
 
   Fields:
     orgPolicyConstraint: Optional. Org Policy builtin constraint.
@@ -821,7 +821,6 @@ class Posture(_messages.Message):
 
   Enums:
     CategoriesValueListEntryValuesEnum:
-    PostureTypeValueValuesEnum: Output only. The type of the posture.
     StateValueValuesEnum: Required. State of Posture resource.
 
   Messages:
@@ -849,7 +848,6 @@ class Posture(_messages.Message):
       format of
       organizations/{org_id}/locations/{location_id}/postures/{posture}.
     policySets: Required. List of Policy sets.
-    postureType: Output only. The type of the posture.
     reconciling: Output only. Whether or not this Posture is in the process of
       being updated.
     revisionId: Output only. Immutable. The revision ID of the posture. The
@@ -871,18 +869,6 @@ class Posture(_messages.Message):
     AI = 1
     AWS = 2
     GCP = 3
-
-  class PostureTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of the posture.
-
-    Values:
-      POSTURE_TYPE_UNSPECIFIED: Unspecified Category.
-      SECURITY: Security Posture.
-      DATA_SECURITY: DataSecurity Posture
-    """
-    POSTURE_TYPE_UNSPECIFIED = 0
-    SECURITY = 1
-    DATA_SECURITY = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -933,11 +919,10 @@ class Posture(_messages.Message):
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
   policySets = _messages.MessageField('PolicySet', 7, repeated=True)
-  postureType = _messages.EnumField('PostureTypeValueValuesEnum', 8)
-  reconciling = _messages.BooleanField(9)
-  revisionId = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  reconciling = _messages.BooleanField(8)
+  revisionId = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class PostureDeployment(_messages.Message):
@@ -946,7 +931,6 @@ class PostureDeployment(_messages.Message):
 
   Enums:
     CategoriesValueListEntryValuesEnum:
-    PostureTypeValueValuesEnum: Output only. The type of the posture.
     StateValueValuesEnum: Output only. State of PostureDeployment resource.
 
   Messages:
@@ -988,7 +972,6 @@ class PostureDeployment(_messages.Message):
       organizations/99/locations/global/postures/les-miserables.
     postureRevisionId: Required. Revision_id of the Posture that is to be
       deployed.
-    postureType: Output only. The type of the posture.
     reconciling: Output only. Whether or not this Posture is in the process of
       being updated.
     state: Output only. State of PostureDeployment resource.
@@ -1013,18 +996,6 @@ class PostureDeployment(_messages.Message):
     AI = 1
     AWS = 2
     GCP = 3
-
-  class PostureTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of the posture.
-
-    Values:
-      POSTURE_TYPE_UNSPECIFIED: Unspecified Category.
-      SECURITY: Security Posture.
-      DATA_SECURITY: DataSecurity Posture
-    """
-    POSTURE_TYPE_UNSPECIFIED = 0
-    SECURITY = 1
-    DATA_SECURITY = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -1085,11 +1056,10 @@ class PostureDeployment(_messages.Message):
   name = _messages.StringField(9)
   postureId = _messages.StringField(10)
   postureRevisionId = _messages.StringField(11)
-  postureType = _messages.EnumField('PostureTypeValueValuesEnum', 12)
-  reconciling = _messages.BooleanField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  targetResource = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  targetResource = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class PostureDetails(_messages.Message):

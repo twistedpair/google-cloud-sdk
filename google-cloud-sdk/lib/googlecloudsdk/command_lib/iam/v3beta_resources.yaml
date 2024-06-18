@@ -90,37 +90,6 @@ organization_location:
   - *organization
   - *location
   disable_auto_completers: true
-folder_or_organization_or_project_location_v3_policy:
-  name: v3Policy
-  plural_name: policies
-  resources:
-  - name: policy
-    plural_name: policies
-    collection: iam.folders.locations.policies
-    attributes:
-    - *folder
-    - *location
-    - &policy
-      parameter_name: policiesId
-      attribute_name: policy
-      help: The policy id of the {resource} resource.
-    disable_auto_completers: true
-  - name: policy
-    plural_name: policies
-    collection: iam.organizations.locations.policies
-    attributes:
-    - *organization
-    - *location
-    - *policy
-    disable_auto_completers: true
-  - name: policy
-    plural_name: policies
-    collection: iam.projects.locations.policies
-    attributes:
-    - *project
-    - *location
-    - *policy
-    disable_auto_completers: true
 folder_or_organization_or_project_location_policy_binding:
   name: policyBinding
   plural_name: policyBindings

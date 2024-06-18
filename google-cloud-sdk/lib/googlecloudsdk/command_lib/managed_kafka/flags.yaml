@@ -46,7 +46,6 @@ encryption-key:
 auto-rebalance:
   api_field: cluster.rebalanceConfig.mode
   arg_name: auto-rebalance
-  default: true
   action: store_true
   help_text: |
     Whether the automatic rebalancing is enabled. If automatic rebalancing
@@ -82,7 +81,9 @@ configs:
   help_text: |
     Configuration for the topic that are overridden from the cluster defaults.
     The key of the map is a Kafka topic property name, for example:
-    `cleanup.policy=compact`, `compression.type=producer`.
+    `cleanup.policy=compact`,`compression.type=producer`. If you provide a map with a key that
+    already exists, only that configuration is updated. If the map contains a key that does not
+    exist, the entry is appended to the topic configuration.
 
 # TODO(b/336117815): Provide hard examples and external docs on this flag.
 topics-file:

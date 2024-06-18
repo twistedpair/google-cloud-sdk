@@ -264,3 +264,133 @@ def AddTagsArg(parser, required=True):
       metavar='TAG',
       help=helptext,
   )
+
+
+def AddMachineTypeArg(parser, required=True):
+  """Machine type used for the restored instance."""
+  helptext = """\
+      Specifies the machine type used for the restored instance. To get a list
+      of available machine types, run 'gcloud compute machine-types list'. If
+      unspecified, the default type will be based on the source instance.
+
+      This can either be the fully qualified path or the name.
+      For example:
+      * ``--machine-type=projects/my-project/zones/us-central1-a/machineTypes/n1-standard-1''
+      * ``--machine-type=n1-standard-1''
+      """
+  parser.add_argument(
+      '--machine-type',
+      type=str,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddHostnameArg(parser, required=True):
+  """Hostname of the restore instance."""
+  helptext = """\
+      Specify the hostname of the restore instance to be created. The specified
+      hostname must be RFC1035 compliant. If hostname is not specified, the
+      default hostname is [INSTANCE_NAME].c.[TARGET_PROJECT_ID].internal when using the
+      global DNS, and [INSTANCE_NAME].[ZONE].c.[TARGET_PROJECT_ID].internal when using
+      zonal DNS.
+      """
+  parser.add_argument(
+      '--hostname',
+      type=str,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddEnableUefiNetworkingArg(parser, required=True):
+  """Enable UEFI networking for the instance creation."""
+  helptext = """\
+      If set to true, enables UEFI networking for the instance creation.
+      """
+  parser.add_argument(
+      '--enable-uefi-networking',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddThreadsPerCoreArg(parser, required=True):
+  """The number of visible threads per physical core."""
+  helptext = """
+      The number of visible threads per physical core. To disable simultaneous
+      multithreading (SMT) set this to 1. Valid values are: 1 or 2.
+
+      For more information about configuring SMT, see:
+      https://cloud.google.com/compute/docs/instances/configuring-simultaneous-multithreading.
+    """
+  parser.add_argument(
+      '--threads-per-core',
+      type=int,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddVisibleCoreCountArg(parser, required=True):
+  """The number of physical cores to expose to the instance's guest operating system."""
+  helptext = """
+      The number of physical cores to expose to the instance's guest operating
+      system. The number of virtual CPUs visible to the instance's guest
+      operating system is this number of cores multiplied by the instance's
+      count of visible threads per physical core.
+    """
+  parser.add_argument(
+      '--visible-core-count',
+      type=int,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddAcceleratorArg(parser, required=True):
+  """Attaches accelerators (e.g. GPUs) to the instances."""
+  helptext = """\
+      Attaches accelerators (e.g. GPUs) to the instances.
+
+      *type*::: The specific type (e.g. nvidia-tesla-k80 for nVidia Tesla K80)
+      of accelerator to attach to the instances. Use 'gcloud compute
+      accelerator-types list' to learn about all available accelerator types.
+
+      *count*::: Number of accelerators to attach to each
+      instance. The default value is 1.
+      """
+  parser.add_argument(
+      '--accelerator',
+      type=arg_parsers.ArgDict(
+          spec={'type': str, 'count': int}, required_keys=['type']
+      ),
+      required=required,
+      help=helptext,
+  )
+
+
+def AddMinCpuPlatform(parser, required=True):
+  """Minimum CPU platform to be used for the instance."""
+  helptext = """\
+      When specified, the VM will be scheduled on host with specified CPU
+      architecture or a newer one. To list available CPU platforms in given
+      zone, run:
+
+          $ gcloud compute zones describe ZONE --format="value(availableCpuPlatforms)"
+
+      Default setting is "AUTOMATIC".
+
+      CPU platform selection is available only in selected zones.
+
+      You can find more information on-line:
+      [](https://cloud.google.com/compute/docs/instances/specify-min-cpu-platform)
+      """
+  parser.add_argument(
+      '--min-cpu-platform',
+      type=str,
+      required=required,
+      metavar='PLATFORM',
+      help=helptext,
+  )

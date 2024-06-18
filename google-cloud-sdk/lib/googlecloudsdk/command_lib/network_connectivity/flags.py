@@ -39,8 +39,8 @@ def AddExcludeExportRangesFlag(parser, hide_exclude_export_ranges_flag):
       default=[],
       metavar='CIDR_RANGE',
       hidden=hide_exclude_export_ranges_flag,
-      help="""IP address range(s) to hide from subnets in VPC networks that are peered
-        through Network Connectivity Center peering.""")
+      help="""Subnet IP address range(s) to hide from other VPC networks that are
+        connected through Network Connectivity Center.""")
 
 
 def AddIncludeExportRangesFlag(parser, hide_include_export_ranges_flag):
@@ -53,8 +53,8 @@ def AddIncludeExportRangesFlag(parser, hide_include_export_ranges_flag):
       default=[],
       metavar='CIDR_RANGE',
       hidden=hide_include_export_ranges_flag,
-      help="""IP address range(s) to be allowed for subnets in VPC networks that are peered
-        through Network Connectivity Center peering.""",
+      help="""Subnet IP address range(s) to export to other VPC networks that are
+        connected through Network Connectivity Center.""",
   )
 
 

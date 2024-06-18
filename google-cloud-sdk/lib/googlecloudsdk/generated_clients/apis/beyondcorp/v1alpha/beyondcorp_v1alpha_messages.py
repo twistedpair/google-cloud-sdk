@@ -4588,6 +4588,7 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
   Enums:
     SkuValueValuesEnum: Required. SKU of subscription.
     StateValueValuesEnum: Output only. The current state of the subscription.
+    SubscriberTypeValueValuesEnum: Output only. Type of subscriber.
     TypeValueValuesEnum: Required. Type of subscription.
 
   Fields:
@@ -4604,6 +4605,7 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
     sku: Required. SKU of subscription.
     startTime: Output only. Start time of the subscription.
     state: Output only. The current state of the subscription.
+    subscriberType: Output only. Type of subscriber.
     type: Required. Type of subscription.
   """
 
@@ -4631,6 +4633,18 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
     INACTIVE = 2
     COMPLETED = 3
 
+  class SubscriberTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of subscriber.
+
+    Values:
+      SUBSCRIBER_TYPE_UNSPECIFIED: Default value. This value is unused.
+      ONLINE: Represents an online subscription.
+      OFFLINE: Represents an offline subscription.
+    """
+    SUBSCRIBER_TYPE_UNSPECIFIED = 0
+    ONLINE = 1
+    OFFLINE = 2
+
   class TypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of subscription.
 
@@ -4654,7 +4668,8 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
   sku = _messages.EnumField('SkuValueValuesEnum', 7)
   startTime = _messages.StringField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  subscriberType = _messages.EnumField('SubscriberTypeValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
 
 
 class GoogleCloudBeyondcorpSecuritygatewaysV1alphaListSecurityGatewaysResponse(_messages.Message):

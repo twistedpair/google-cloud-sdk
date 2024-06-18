@@ -372,9 +372,10 @@ class DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest(_message
     googleCloudDataplexV1GenerateDataQualityRulesRequest: A
       GoogleCloudDataplexV1GenerateDataQualityRulesRequest resource to be
       passed as the request body.
-    name: Required. The name should be either * the name of a datascan with at
-      least one successful completed data profiling job, or * the name of a
-      successful completed data profiling datascan job.
+    name: Required. The name must be one of the following: The name of a data
+      scan with at least one successful, completed data profiling job The name
+      of a successful, completed data profiling job (a data scan job where the
+      job type is data profiling)
   """
 
   googleCloudDataplexV1GenerateDataQualityRulesRequest = _messages.MessageField('GoogleCloudDataplexV1GenerateDataQualityRulesRequest', 1)
@@ -444,9 +445,10 @@ class DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest(_mes
     googleCloudDataplexV1GenerateDataQualityRulesRequest: A
       GoogleCloudDataplexV1GenerateDataQualityRulesRequest resource to be
       passed as the request body.
-    name: Required. The name should be either * the name of a datascan with at
-      least one successful completed data profiling job, or * the name of a
-      successful completed data profiling datascan job.
+    name: Required. The name must be one of the following: The name of a data
+      scan with at least one successful, completed data profiling job The name
+      of a successful, completed data profiling job (a data scan job where the
+      job type is data profiling)
   """
 
   googleCloudDataplexV1GenerateDataQualityRulesRequest = _messages.MessageField('GoogleCloudDataplexV1GenerateDataQualityRulesRequest', 1)
@@ -4568,7 +4570,7 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
     setExpectation: Row-level rule which evaluates whether each column value
       is contained by a specified set.
     sqlAssertion: Aggregate rule which evaluates the number of rows returned
-      for the provided statement.
+      for the provided statement. If any rows are returned, this rule fails.
     statisticRangeExpectation: Aggregate rule which evaluates whether the
       column aggregate statistic lies between a specified range.
     tableConditionExpectation: Aggregate rule which evaluates whether the
@@ -4641,9 +4643,9 @@ class GoogleCloudDataplexV1DataQualityRuleResult(_messages.Message):
   results.
 
   Fields:
-    assertionRowCount: Output only. The number of rows returned by the sql
-      statement in the SqlAssertion rule.This field is only valid for
-      SqlAssertion rules.
+    assertionRowCount: Output only. The number of rows returned by the SQL
+      statement in a SQL assertion rule.This field is only valid for SQL
+      assertion rules.
     evaluatedCount: The number of rows a rule was evaluated against.This field
       is only valid for row-level type rules.Evaluated count can be configured
       to either include all rows (default) - with null rows automatically
@@ -4693,12 +4695,15 @@ class GoogleCloudDataplexV1DataQualityRuleSetExpectation(_messages.Message):
 
 
 class GoogleCloudDataplexV1DataQualityRuleSqlAssertion(_messages.Message):
-  r"""Queries for rows returned by the provided SQL statement. If any rows are
-  are returned, this rule fails.The SQL statement needs to use BigQuery
-  standard SQL syntax, and must not contain any semicolons.${data()} can be
-  used to reference the rows being evaluated, i.e. the table after all
-  additional filters (row filters, incremental data filters, sampling) are
-  applied.Example: SELECT * FROM ${data()} WHERE price < 0
+  r"""A SQL statement that is evaluated to return rows that match an invalid
+  state. If any rows are are returned, this rule fails.The SQL statement must
+  use BigQuery standard SQL syntax, and must not contain any semicolons.You
+  can use the data reference parameter ${data()} to reference the source table
+  with all of its precondition filters applied. Examples of precondition
+  filters include row filters, incremental data filters, and sampling. For
+  more information, see Data reference parameter
+  (https://cloud.google.com/dataplex/docs/auto-data-quality-overview#data-
+  reference-parameter).Example: SELECT * FROM ${data()} WHERE price < 0
 
   Fields:
     sqlStatement: Optional. The SQL statement.
@@ -4778,8 +4783,8 @@ class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
     RuleTypeValueValuesEnum: The type of the data quality rule.
 
   Fields:
-    assertionRowCount: The number of rows returned by the sql statement in the
-      SqlAssertion rule. This field is only valid for SqlAssertion rules.
+    assertionRowCount: The number of rows returned by the SQL statement in a
+      SQL assertion rule. This field is only valid for SQL assertion rules.
     column: The column which this rule is evaluated against.
     dataSource: The data source of the data scan (e.g. BigQuery table name).
     evaluatedRowCount: The number of rows evaluated against the data quality
@@ -4826,24 +4831,17 @@ class GoogleCloudDataplexV1DataQualityScanRuleResult(_messages.Message):
 
     Values:
       RULE_TYPE_UNSPECIFIED: An unspecified rule type.
-      NON_NULL_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/
-        reference/rest/v1/DataQualityRule#nonnullexpectation.
-      RANGE_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/ref
-        erence/rest/v1/DataQualityRule#rangeexpectation.
-      REGEX_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/ref
-        erence/rest/v1/DataQualityRule#regexexpectation.
-      ROW_CONDITION_EXPECTATION: Please see https://cloud.google.com/dataplex/
-        docs/reference/rest/v1/DataQualityRule#rowconditionexpectation.
-      SET_EXPECTATION: Please see https://cloud.google.com/dataplex/docs/refer
-        ence/rest/v1/DataQualityRule#setexpectation.
-      STATISTIC_RANGE_EXPECTATION: Please see https://cloud.google.com/dataple
-        x/docs/reference/rest/v1/DataQualityRule#statisticrangeexpectation.
-      TABLE_CONDITION_EXPECTATION: Please see https://cloud.google.com/dataple
-        x/docs/reference/rest/v1/DataQualityRule#tableconditionexpectation.
-      UNIQUENESS_EXPECTATION: Please see https://cloud.google.com/dataplex/doc
-        s/reference/rest/v1/DataQualityRule#uniquenessexpectation.
-      SQL_ASSERTION: Please see https://cloud.google.com/dataplex/docs/referen
-        ce/rest/v1/DataQualityRule#sqlAssertion.
+      NON_NULL_EXPECTATION: See DataQualityRule.NonNullExpectation.
+      RANGE_EXPECTATION: See DataQualityRule.RangeExpectation.
+      REGEX_EXPECTATION: See DataQualityRule.RegexExpectation.
+      ROW_CONDITION_EXPECTATION: See DataQualityRule.RowConditionExpectation.
+      SET_EXPECTATION: See DataQualityRule.SetExpectation.
+      STATISTIC_RANGE_EXPECTATION: See
+        DataQualityRule.StatisticRangeExpectation.
+      TABLE_CONDITION_EXPECTATION: See
+        DataQualityRule.TableConditionExpectation.
+      UNIQUENESS_EXPECTATION: See DataQualityRule.UniquenessExpectation.
+      SQL_ASSERTION: See DataQualityRule.SqlAssertion.
     """
     RULE_TYPE_UNSPECIFIED = 0
     NON_NULL_EXPECTATION = 1
@@ -5415,12 +5413,15 @@ class GoogleCloudDataplexV1DataScanExecutionStatus(_messages.Message):
   r"""Status of the data scan execution.
 
   Fields:
+    latestJobCreateTime: Optional. The time when the DataScanJob execution was
+      created.
     latestJobEndTime: The time when the latest DataScanJob ended.
     latestJobStartTime: The time when the latest DataScanJob started.
   """
 
-  latestJobEndTime = _messages.StringField(1)
-  latestJobStartTime = _messages.StringField(2)
+  latestJobCreateTime = _messages.StringField(1)
+  latestJobEndTime = _messages.StringField(2)
+  latestJobStartTime = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1DataScanJob(_messages.Message):
@@ -6035,6 +6036,10 @@ class GoogleCloudDataplexV1EntrySource(_messages.Message):
       500 characters.
     labels: User-defined labels. The maximum size of keys and values is 128
       characters each.
+    location: Output only. Location of the resource in the source system.
+      Entry will be searchable by this location. By default, this should match
+      the location of the EntryGroup containing this entry. A different value
+      allows capturing source location for data external to GCP.
     platform: The platform containing the source system. The maximum size of
       the field is 64 characters.
     resource: The name of the resource in the source system. The maximum size
@@ -6074,10 +6079,11 @@ class GoogleCloudDataplexV1EntrySource(_messages.Message):
   description = _messages.StringField(3)
   displayName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  platform = _messages.StringField(6)
-  resource = _messages.StringField(7)
-  system = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  location = _messages.StringField(6)
+  platform = _messages.StringField(7)
+  resource = _messages.StringField(8)
+  system = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudDataplexV1EntrySourceAncestor(_messages.Message):
@@ -6398,14 +6404,15 @@ class GoogleCloudDataplexV1EnvironmentSessionStatus(_messages.Message):
 
 
 class GoogleCloudDataplexV1GenerateDataQualityRulesRequest(_messages.Message):
-  r"""Generate recommended DataQualityRules request."""
+  r"""Request details for generating data quality rule recommendations."""
 
 
 class GoogleCloudDataplexV1GenerateDataQualityRulesResponse(_messages.Message):
-  r"""Generate recommended DataQualityRules response.
+  r"""Response details for data quality rule recommendations.
 
   Fields:
-    rule: Generated recommended {@link DataQualityRule}s.
+    rule: The data quality rules that Dataplex generates based on the results
+      of a data profiling scan.
   """
 
   rule = _messages.MessageField('GoogleCloudDataplexV1DataQualityRule', 1, repeated=True)
@@ -7542,7 +7549,7 @@ class GoogleCloudDataplexV1SearchEntriesResult(_messages.Message):
   r"""A single result of a SearchEntries request.
 
   Fields:
-    dataplexEntry: Entry format of the result.
+    dataplexEntry: A GoogleCloudDataplexV1Entry attribute.
     linkedResource: Linked resource name.
     snippets: Snippets.
   """

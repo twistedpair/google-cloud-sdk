@@ -23,7 +23,7 @@ project:
   - &project
     parameter_name: projectsId
     attribute_name: project
-    help: projects TBD
+    help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
 project_location:
@@ -35,7 +35,7 @@ project_location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: locations TBD
+    help: The location id of the {resource} resource.
   disable_auto_completers: true
 project_location_operation:
   name: operation
@@ -47,5 +47,5 @@ project_location_operation:
   - &operation
     parameter_name: operationsId
     attribute_name: operation
-    help: operations TBD
+    help: The operation id of the {resource} resource.
   disable_auto_completers: false

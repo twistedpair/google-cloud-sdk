@@ -1011,6 +1011,33 @@ class FirestoreV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BulkDeleteDocuments(self, request, global_params=None):
+      r"""Bulk deletes a subset of documents from Google Cloud Firestore. Documents created or updated after the underlying system starts to process the request will not be deleted. The bulk delete occurs in the background and its progress can be monitored and managed via the Operation resource that is created. For more details on bulk delete behavior, refer to: https://cloud.google.com/firestore/docs/manage-data/bulk-delete.
+
+      Args:
+        request: (FirestoreProjectsDatabasesBulkDeleteDocumentsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BulkDeleteDocuments')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkDeleteDocuments.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}:bulkDeleteDocuments',
+        http_method='POST',
+        method_id='firestore.projects.databases.bulkDeleteDocuments',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:bulkDeleteDocuments',
+        request_field='googleFirestoreAdminV1BulkDeleteDocumentsRequest',
+        request_type_name='FirestoreProjectsDatabasesBulkDeleteDocumentsRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create a database.
 

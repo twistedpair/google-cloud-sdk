@@ -5,7 +5,7 @@ deployment-name:
     deployment name.
 
 parallelism:
-  api_field: deployment.spec.job.autoscalingConfig.parallelism
+  api_field: deployment.spec.job.autotuningConfig.minParallelism
   arg_name: parallelism
   help_text: |
     parallelism of the Flink job.

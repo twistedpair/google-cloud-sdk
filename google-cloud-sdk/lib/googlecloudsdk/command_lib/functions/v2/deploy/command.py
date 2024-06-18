@@ -1221,6 +1221,15 @@ def Run(
         "Function already exists in 1st gen, can't change the environment.",
     )
   runtime = args.runtime or existing_function.buildConfig.runtime
+  if runtime and runtime not in gen2_runtimes:
+    raise exceptions.InvalidArgumentException(
+        '--runtime',
+        (
+            f'{runtime} is not a supported runtime on GCF 2nd gen. '
+            'Use `gcloud functions runtimes list` to get a '
+            'list of available runtimes'
+        )
+    )
   if runtime in gen2_runtimes and gen2_runtimes[runtime]['warnings']:
     for w in gen2_runtimes[runtime]['warnings']:
       log.warning(w)

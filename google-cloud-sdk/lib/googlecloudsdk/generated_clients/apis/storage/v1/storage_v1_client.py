@@ -500,6 +500,32 @@ class StorageV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetStorageLayout(self, request, global_params=None):
+      r"""Returns the storage layout configuration for the specified bucket. Note that this operation requires storage.objects.list permission.
+
+      Args:
+        request: (StorageBucketsGetStorageLayoutRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BucketStorageLayout) The response message.
+      """
+      config = self.GetMethodConfig('GetStorageLayout')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetStorageLayout.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.buckets.getStorageLayout',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=['prefix'],
+        relative_path='b/{bucket}/storageLayout',
+        request_field='',
+        request_type_name='StorageBucketsGetStorageLayoutRequest',
+        response_type_name='BucketStorageLayout',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a new bucket.
 

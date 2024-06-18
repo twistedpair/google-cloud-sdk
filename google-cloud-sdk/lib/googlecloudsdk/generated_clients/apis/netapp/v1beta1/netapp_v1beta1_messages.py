@@ -2683,6 +2683,7 @@ class Volume(_messages.Message):
     protocols: Required. Protocols required for the volume
     psaRange: Output only. This field is not implemented. The values provided
       in this field are ignored.
+    replicaZone: Output only. Specifies the replica zone for regional volume.
     restoreParameters: Optional. Specifies the source of the volume to be
       created from.
     restrictedActions: Optional. List of actions that are restricted on this
@@ -2706,6 +2707,7 @@ class Volume(_messages.Message):
       only.
     usedGib: Output only. Used capacity in GIB of the volume. This is computed
       periodically and it does not represent the realtime usage.
+    zone: Output only. Specifies the active zone for regional volume.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -2866,21 +2868,23 @@ class Volume(_messages.Message):
   network = _messages.StringField(18)
   protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 19, repeated=True)
   psaRange = _messages.StringField(20)
-  restoreParameters = _messages.MessageField('RestoreParameters', 21)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 22, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 23)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 24)
-  shareName = _messages.StringField(25)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 26, repeated=True)
-  snapReserve = _messages.FloatField(27)
-  snapshotDirectory = _messages.BooleanField(28)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  stateDetails = _messages.StringField(31)
-  storagePool = _messages.StringField(32)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 33)
-  unixPermissions = _messages.StringField(34)
-  usedGib = _messages.IntegerField(35)
+  replicaZone = _messages.StringField(21)
+  restoreParameters = _messages.MessageField('RestoreParameters', 22)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 23, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 24)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
+  shareName = _messages.StringField(26)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 27, repeated=True)
+  snapReserve = _messages.FloatField(28)
+  snapshotDirectory = _messages.BooleanField(29)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  stateDetails = _messages.StringField(32)
+  storagePool = _messages.StringField(33)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 34)
+  unixPermissions = _messages.StringField(35)
+  usedGib = _messages.IntegerField(36)
+  zone = _messages.StringField(37)
 
 
 class WeeklySchedule(_messages.Message):

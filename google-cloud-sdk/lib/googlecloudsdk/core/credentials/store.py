@@ -1513,7 +1513,7 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
   # global once google-auth is ready to replace oauth2client.
   # pylint: disable=g-import-not-at-top
   from google.auth import exceptions as google_auth_exceptions
-  from google.oauth2 import _client as google_auth_client
+  from google.auth import iam as google_auth_iam
   from google.oauth2 import service_account as google_auth_service_account
   from googlecloudsdk.api_lib.iamcredentials import util as iam_credentials_util
   # pylint: enable=g-import-not-at-top
@@ -1525,8 +1525,8 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
       config.CLOUDSDK_CLIENT_ID,
       universe_domain=properties.VALUES.core.universe_domain.Get(),
   )
-  google_auth_client._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
-      google_auth_client._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
+  google_auth_iam._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
+      google_auth_iam._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
           iam_credentials_util.IAM_ENDPOINT_GDU,
           iam_credentials_util.GetEffectiveIamEndpoint(),
       )

@@ -529,6 +529,34 @@ class Empty(_messages.Message):
 
 
 
+class ExportApplianceUserDataResponse(_messages.Message):
+  r"""Message containing user data for an appliance.
+
+  Fields:
+    appliance: Describes the physical appliance.
+    shippingLabels: shipping_labels contains a list of shipping labels
+      generated for inbound and outbound logistics.
+    wipeCertificates: wipe_certificates contains a list of file created when
+      an appliance is wiped.
+  """
+
+  appliance = _messages.MessageField('Appliance', 1)
+  shippingLabels = _messages.MessageField('File', 2, repeated=True)
+  wipeCertificates = _messages.MessageField('File', 3, repeated=True)
+
+
+class File(_messages.Message):
+  r"""Message containing a file.
+
+  Fields:
+    data: data is the file content.
+    filename: filename is the file name.
+  """
+
+  data = _messages.BytesField(1)
+  filename = _messages.StringField(2)
+
+
 class GcsDestination(_messages.Message):
   r"""A message containing information about the Cloud Storage destination of
   a transfer.
@@ -1255,6 +1283,10 @@ class PickupInfo(_messages.Message):
   r"""Message containing pickup information for a return of an appliance.
   NextID: 8
 
+  Enums:
+    PickupShipmentTypeValueValuesEnum: Optional. PickupShipmentType is the
+      shipment type selected by the customer.
+
   Fields:
     address: Required. The address to pick up the appliance from
     contactName: Required. The name of the customer site contact.
@@ -1265,19 +1297,37 @@ class PickupInfo(_messages.Message):
     pickupDate: Optional. Preferred pick up date requested by the customer.
     pickupInstructions: Optional. Pickup instructions provided by the
       customer.
+    pickupShipmentType: Optional. PickupShipmentType is the shipment type
+      selected by the customer.
     pickupTimeslot: Optional. Preferred pick up time slot requested by the
       customer.
     shippingLabelEmail: Optional. Emails to include when sending shipping
       labels.
   """
 
+  class PickupShipmentTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. PickupShipmentType is the shipment type selected by the
+    customer.
+
+    Values:
+      PICKUP_SHIPMENT_TYPE_UNSPECIFIED: Default value. This value is unused.
+      GOOGLE_COORDINATED: Pickup is coordinated by Google.
+      CUSTOMER_COORDINATED: Pickup is coordinated by the customer. In this
+        case fields like pickup_date, pickup_timeslot, and pickup_instructions
+        are not set.
+    """
+    PICKUP_SHIPMENT_TYPE_UNSPECIFIED = 0
+    GOOGLE_COORDINATED = 1
+    CUSTOMER_COORDINATED = 2
+
   address = _messages.MessageField('PostalAddress', 1)
   contactName = _messages.StringField(2)
   phone = _messages.StringField(3)
   pickupDate = _messages.MessageField('Date', 4)
   pickupInstructions = _messages.StringField(5)
-  pickupTimeslot = _messages.StringField(6)
-  shippingLabelEmail = _messages.StringField(7, repeated=True)
+  pickupShipmentType = _messages.EnumField('PickupShipmentTypeValueValuesEnum', 6)
+  pickupTimeslot = _messages.StringField(7)
+  shippingLabelEmail = _messages.StringField(8, repeated=True)
 
 
 class PostalAddress(_messages.Message):
@@ -1952,9 +2002,15 @@ class TransferResults(_messages.Message):
   display the results of a transfer.
 
   Fields:
+    bucketProjectId: Output only. The project id represents the project id
+      where the destination bucket resides.
     bytesCopiedCount: Output only. The total number of bytes successfully
       copied to the destination.
+    bytesCopyFailedCount: Output only. The total number of bytes failed to be
+      copied to the destination bucket.
     bytesFoundCount: Output only. The total number of bytes found.
+    copyFinishDate: Output only. The date when the transfer of data is
+      finished.
     directoriesFoundCount: Output only. The number of directories found while
       listing. For example, if the root directory of the transfer is `base/`
       and there are two other directories, `a/` and `b/` under this directory,
@@ -1968,13 +2024,16 @@ class TransferResults(_messages.Message):
     objectsFoundCount: Output only. The number of objects found.
   """
 
-  bytesCopiedCount = _messages.IntegerField(1)
-  bytesFoundCount = _messages.IntegerField(2)
-  directoriesFoundCount = _messages.IntegerField(3)
-  endTime = _messages.StringField(4)
-  errorLog = _messages.StringField(5)
-  objectsCopiedCount = _messages.IntegerField(6)
-  objectsFoundCount = _messages.IntegerField(7)
+  bucketProjectId = _messages.StringField(1)
+  bytesCopiedCount = _messages.IntegerField(2)
+  bytesCopyFailedCount = _messages.IntegerField(3)
+  bytesFoundCount = _messages.IntegerField(4)
+  copyFinishDate = _messages.MessageField('Date', 5)
+  directoriesFoundCount = _messages.IntegerField(6)
+  endTime = _messages.StringField(7)
+  errorLog = _messages.StringField(8)
+  objectsCopiedCount = _messages.IntegerField(9)
+  objectsFoundCount = _messages.IntegerField(10)
 
 
 class TransferapplianceProjectsLocationsAppliancesCreateRequest(_messages.Message):
@@ -2045,6 +2104,16 @@ class TransferapplianceProjectsLocationsAppliancesDeleteRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
+
+
+class TransferapplianceProjectsLocationsAppliancesExportRequest(_messages.Message):
+  r"""A TransferapplianceProjectsLocationsAppliancesExportRequest object.
+
+  Fields:
+    name: Required. Name of the appliance resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class TransferapplianceProjectsLocationsAppliancesGetRequest(_messages.Message):

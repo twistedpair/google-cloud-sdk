@@ -268,10 +268,10 @@ class CustomerEncryptionKey(_messages.Message):
 
 
 class DomainConfig(_messages.Message):
-  r"""Configuration options for a custom domain.
+  r"""Configuration options for private workstation clusters.
 
   Fields:
-    domain: Immutable. Domain used by Workstations for HTTP ingress.
+    domain: Immutable. Whether Workstations endpoint is private.
   """
 
   domain = _messages.StringField(1)
@@ -380,7 +380,7 @@ class GceInstance(_messages.Message):
       workstation configurations that specify a machine_type in the N1 or N2
       machine series. * **GPUs**: nested virtualization may not be enabled on
       workstation configurations with accelerators. * **Operating System**:
-      Because [Container-Optimized
+      because [Container-Optimized
       OS](https://cloud.google.com/compute/docs/images/os-details#container-
       optimized_os_cos) does not support nested virtualization, when nested
       virtualization is enabled, the underlying Compute Engine VM instances
@@ -543,13 +543,19 @@ class GenerateAccessTokenRequest(_messages.Message):
       be at most 24 hours in the future. If a value is not specified, the
       token's expiration time will be set to a default value of 1 hour in the
       future.
+    port: Optional. Port for which the access token should be generated. If
+      specified, the generated access token grants access only to the
+      specified port of the workstation. If specified, values must be within
+      the range [1 - 65535]. If not specified, the generated access token
+      grants access to all ports of the workstation.
     ttl: Desired lifetime duration of the access token. This value must be at
       most 24 hours. If a value is not specified, the token's lifetime will be
       set to a default value of 1 hour.
   """
 
   expireTime = _messages.StringField(1)
-  ttl = _messages.StringField(2)
+  port = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ttl = _messages.StringField(3)
 
 
 class GenerateAccessTokenResponse(_messages.Message):
@@ -991,26 +997,13 @@ class Policy(_messages.Message):
 
 
 class PrivateClusterConfig(_messages.Message):
-  r"""Configuration options for private workstation clusters.
+  r"""A PrivateClusterConfig object.
 
   Fields:
-    allowedProjects: Optional. Additional projects that are allowed to attach
-      to the workstation cluster's service attachment. By default, the
-      workstation cluster's project and the VPC host project (if different)
-      are allowed.
-    clusterHostname: Output only. Hostname for the workstation cluster. This
-      field will be populated only when private endpoint is enabled. To access
-      workstations in the workstation cluster, create a new DNS zone mapping
-      this domain name to an internal IP address and a forwarding rule mapping
-      that address to the service attachment.
-    enablePrivateEndpoint: Immutable. Whether Workstations endpoint is
-      private.
-    serviceAttachmentUri: Output only. Service attachment URI for the
-      workstation cluster. The service attachemnt is created when private
-      endpoint is enabled. To access workstations in the workstation cluster,
-      configure access to the managed service using [Private Service
-      Connect](https://cloud.google.com/vpc/docs/configure-private-service-
-      connect-services).
+    allowedProjects: A string attribute.
+    clusterHostname: A string attribute.
+    enablePrivateEndpoint: A boolean attribute.
+    serviceAttachmentUri: A string attribute.
   """
 
   allowedProjects = _messages.StringField(1, repeated=True)

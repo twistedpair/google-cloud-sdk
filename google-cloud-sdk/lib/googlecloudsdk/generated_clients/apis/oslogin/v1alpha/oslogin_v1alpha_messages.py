@@ -205,10 +205,7 @@ class OsloginUsersProjectsLocationsSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsLocationsSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and zone for the signing request. This is
-      needed to properly ensure per-organization ISS processing and
-      potentially to provide for the possibility of zone-specific certificates
-      used in the signing process.
+    parent: The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """
@@ -221,10 +218,7 @@ class OsloginUsersProjectsZonesSignSshPublicKeyRequest(_messages.Message):
   r"""A OsloginUsersProjectsZonesSignSshPublicKeyRequest object.
 
   Fields:
-    parent: The parent project and zone for the signing request. This is
-      needed to properly ensure per-organization ISS processing and
-      potentially to provide for the possibility of zone-specific certificates
-      used in the signing process.
+    parent: The parent project and region for the signing request.
     signSshPublicKeyRequest: A SignSshPublicKeyRequest resource to be passed
       as the request body.
   """

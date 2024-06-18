@@ -32913,6 +32913,70 @@ class CorsPolicy(_messages.Message):
   maxAge = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
+class CustomErrorResponsePolicy(_messages.Message):
+  r"""Specifies the custom error response policy that must be applied when the
+  backend service or backend bucket responds with an error.
+
+  Fields:
+    errorResponseRules: Specifies rules for returning error responses. In a
+      given policy, if you specify rules for both a range of error codes as
+      well as rules for specific error codes then rules with specific error
+      codes have a higher priority. For example, assume that you configure a
+      rule for 401 (Un-authorized) code, and another for all 4 series error
+      codes (4XX). If the backend service returns a 401, then the rule for 401
+      will be applied. However if the backend service returns a 403, the rule
+      for 4xx takes effect.
+    errorService: The full or partial URL to the BackendBucket resource that
+      contains the custom error content. Examples are: - https://www.googleapi
+      s.com/compute/v1/projects/project/global/backendBuckets/myBackendBucket
+      - compute/v1/projects/project/global/backendBuckets/myBackendBucket -
+      global/backendBuckets/myBackendBucket If errorService is not specified
+      at lower levels like pathMatcher, pathRule and routeRule, an
+      errorService specified at a higher level in the UrlMap will be used. If
+      UrlMap.defaultCustomErrorResponsePolicy contains one or more
+      errorResponseRules[], it must specify errorService. If load balancer
+      cannot reach the backendBucket, a simple Not Found Error will be
+      returned, with the original response code (or overrideResponseCode if
+      configured). errorService is not supported for internal or regional
+      HTTP/HTTPS load balancers.
+  """
+
+  errorResponseRules = _messages.MessageField('CustomErrorResponsePolicyCustomErrorResponseRule', 1, repeated=True)
+  errorService = _messages.StringField(2)
+
+
+class CustomErrorResponsePolicyCustomErrorResponseRule(_messages.Message):
+  r"""Specifies the mapping between the response code that will be returned
+  along with the custom error content and the response code returned by the
+  backend service.
+
+  Fields:
+    matchResponseCodes: Valid values include: - A number between 400 and 599:
+      For example 401 or 503, in which case the load balancer applies the
+      policy if the error code exactly matches this value. - 5xx: Load
+      Balancer will apply the policy if the backend service responds with any
+      response code in the range of 500 to 599. - 4xx: Load Balancer will
+      apply the policy if the backend service responds with any response code
+      in the range of 400 to 499. Values must be unique within
+      matchResponseCodes and across all errorResponseRules of
+      CustomErrorResponsePolicy.
+    overrideResponseCode: The HTTP status code returned with the response
+      containing the custom error content. If overrideResponseCode is not
+      supplied, the same response code returned by the original backend bucket
+      or backend service is returned to the client.
+    path: The full path to a file within backendBucket . For example:
+      /errors/defaultError.html path must start with a leading slash. path
+      cannot have trailing slashes. If the file is not available in
+      backendBucket or the load balancer cannot reach the BackendBucket, a
+      simple Not Found Error is returned to the client. The value must be from
+      1 to 1024 characters
+  """
+
+  matchResponseCodes = _messages.StringField(1, repeated=True)
+  overrideResponseCode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  path = _messages.StringField(3)
+
+
 class CustomerEncryptionKey(_messages.Message):
   r"""A CustomerEncryptionKey object.
 
@@ -39806,6 +39870,32 @@ class HttpRouteRule(_messages.Message):
   corresponding routing action that load balancing proxies perform.
 
   Fields:
+    customErrorResponsePolicy: customErrorResponsePolicy specifies how the
+      Load Balancer returns error responses when BackendServiceor
+      BackendBucket responds with an error. If a policy for an error code is
+      not configured for the RouteRule, a policy for the error code configured
+      in pathMatcher.defaultCustomErrorResponsePolicy is applied. If one is
+      not specified in pathMatcher.defaultCustomErrorResponsePolicy, the
+      policy configured in UrlMap.defaultCustomErrorResponsePolicy takes
+      effect. For example, consider a UrlMap with the following configuration:
+      - UrlMap.defaultCustomErrorResponsePolicy are configured with policies
+      for 5xx and 4xx errors - A RouteRule for /coming_soon/ is configured for
+      the error code 404. If the request is for www.myotherdomain.com and a
+      404 is encountered, the policy under
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. If a 404 response
+      is encountered for the request www.example.com/current_events/, the
+      pathMatcher's policy takes effect. If however, the request for
+      www.example.com/coming_soon/ encounters a 404, the policy in
+      RouteRule.customErrorResponsePolicy takes effect. If any of the requests
+      in this example encounter a 500 error code, the policy at
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. When used in
+      conjunction with routeRules.routeAction.retryPolicy, retries take
+      precedence. Only once all retries are exhausted, the
+      customErrorResponsePolicy is applied. While attempting a retry, if load
+      balancer is successful in reaching the service, the
+      customErrorResponsePolicy is ignored and the response from the service
+      is returned to the client. customErrorResponsePolicy is supported only
+      for global external Application Load Balancers.
     description: The short description conveying the intent of this routeRule.
       The description can have a maximum length of 1024 characters.
     headerAction: Specifies changes to request and response headers that need
@@ -39857,13 +39947,14 @@ class HttpRouteRule(_messages.Message):
       a target gRPC proxy.
   """
 
-  description = _messages.StringField(1)
-  headerAction = _messages.MessageField('HttpHeaderAction', 2)
-  matchRules = _messages.MessageField('HttpRouteRuleMatch', 3, repeated=True)
-  priority = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  routeAction = _messages.MessageField('HttpRouteAction', 5)
-  service = _messages.StringField(6)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 7)
+  customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  description = _messages.StringField(2)
+  headerAction = _messages.MessageField('HttpHeaderAction', 3)
+  matchRules = _messages.MessageField('HttpRouteRuleMatch', 4, repeated=True)
+  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  routeAction = _messages.MessageField('HttpRouteAction', 6)
+  service = _messages.StringField(7)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 8)
 
 
 class HttpRouteRuleMatch(_messages.Message):
@@ -57849,6 +57940,32 @@ class PathMatcher(_messages.Message):
   service is used.
 
   Fields:
+    defaultCustomErrorResponsePolicy: defaultCustomErrorResponsePolicy
+      specifies how the Load Balancer returns error responses when
+      BackendServiceor BackendBucket responds with an error. This policy takes
+      effect at the PathMatcher level and applies only when no policy has been
+      defined for the error code at lower levels like RouteRule and PathRule
+      within this PathMatcher. If an error code does not have a policy defined
+      in defaultCustomErrorResponsePolicy, then a policy defined for the error
+      code in UrlMap.defaultCustomErrorResponsePolicy takes effect. For
+      example, consider a UrlMap with the following configuration: -
+      UrlMap.defaultCustomErrorResponsePolicy is configured with policies for
+      5xx and 4xx errors - A RouteRule for /coming_soon/ is configured for the
+      error code 404. If the request is for www.myotherdomain.com and a 404 is
+      encountered, the policy under UrlMap.defaultCustomErrorResponsePolicy
+      takes effect. If a 404 response is encountered for the request
+      www.example.com/current_events/, the pathMatcher's policy takes effect.
+      If however, the request for www.example.com/coming_soon/ encounters a
+      404, the policy in RouteRule.customErrorResponsePolicy takes effect. If
+      any of the requests in this example encounter a 500 error code, the
+      policy at UrlMap.defaultCustomErrorResponsePolicy takes effect. When
+      used in conjunction with pathMatcher.defaultRouteAction.retryPolicy,
+      retries take precedence. Only once all retries are exhausted, the
+      defaultCustomErrorResponsePolicy is applied. While attempting a retry,
+      if load balancer is successful in reaching the service, the
+      defaultCustomErrorResponsePolicy is ignored and the response from the
+      service is returned to the client. defaultCustomErrorResponsePolicy is
+      supported only for global external Application Load Balancers.
     defaultRouteAction: defaultRouteAction takes effect when none of the
       pathRules or routeRules match. The load balancer performs advanced
       routing actions, such as URL rewrites and header transformations, before
@@ -57907,14 +58024,15 @@ class PathMatcher(_messages.Message):
       pathRules or routeRules.
   """
 
-  defaultRouteAction = _messages.MessageField('HttpRouteAction', 1)
-  defaultService = _messages.StringField(2)
-  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 3)
-  description = _messages.StringField(4)
-  headerAction = _messages.MessageField('HttpHeaderAction', 5)
-  name = _messages.StringField(6)
-  pathRules = _messages.MessageField('PathRule', 7, repeated=True)
-  routeRules = _messages.MessageField('HttpRouteRule', 8, repeated=True)
+  defaultCustomErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
+  defaultService = _messages.StringField(3)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  description = _messages.StringField(5)
+  headerAction = _messages.MessageField('HttpHeaderAction', 6)
+  name = _messages.StringField(7)
+  pathRules = _messages.MessageField('PathRule', 8, repeated=True)
+  routeRules = _messages.MessageField('HttpRouteRule', 9, repeated=True)
 
 
 class PathRule(_messages.Message):
@@ -57922,6 +58040,27 @@ class PathRule(_messages.Message):
   BackendService to handle the traffic arriving at this URL.
 
   Fields:
+    customErrorResponsePolicy: customErrorResponsePolicy specifies how the
+      Load Balancer returns error responses when BackendServiceor
+      BackendBucket responds with an error. If a policy for an error code is
+      not configured for the PathRule, a policy for the error code configured
+      in pathMatcher.defaultCustomErrorResponsePolicy is applied. If one is
+      not specified in pathMatcher.defaultCustomErrorResponsePolicy, the
+      policy configured in UrlMap.defaultCustomErrorResponsePolicy takes
+      effect. For example, consider a UrlMap with the following configuration:
+      - UrlMap.defaultCustomErrorResponsePolicy are configured with policies
+      for 5xx and 4xx errors - A PathRule for /coming_soon/ is configured for
+      the error code 404. If the request is for www.myotherdomain.com and a
+      404 is encountered, the policy under
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. If a 404 response
+      is encountered for the request www.example.com/current_events/, the
+      pathMatcher's policy takes effect. If however, the request for
+      www.example.com/coming_soon/ encounters a 404, the policy in
+      PathRule.customErrorResponsePolicy takes effect. If any of the requests
+      in this example encounter a 500 error code, the policy at
+      UrlMap.defaultCustomErrorResponsePolicy takes effect.
+      customErrorResponsePolicy is supported only for global external
+      Application Load Balancers.
     paths: The list of path patterns to match. Each must start with / and the
       only place a * is allowed is at the end following a /. The string fed to
       the path matcher does not include any text after the first ? or #, and
@@ -57948,10 +58087,11 @@ class PathRule(_messages.Message):
       a target gRPC proxy.
   """
 
-  paths = _messages.StringField(1, repeated=True)
-  routeAction = _messages.MessageField('HttpRouteAction', 2)
-  service = _messages.StringField(3)
-  urlRedirect = _messages.MessageField('HttpRedirectAction', 4)
+  customErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 1)
+  paths = _messages.StringField(2, repeated=True)
+  routeAction = _messages.MessageField('HttpRouteAction', 3)
+  service = _messages.StringField(4)
+  urlRedirect = _messages.MessageField('HttpRedirectAction', 5)
 
 
 class PerInstanceConfig(_messages.Message):
@@ -63585,10 +63725,16 @@ class Route(_messages.Message):
     nextHopIlb: The URL to a forwarding rule of type
       loadBalancingScheme=INTERNAL that should handle matching packets or the
       IP address of the forwarding Rule. For example, the following are all
-      valid URLs: - 10.128.0.56 -
+      valid URLs: -
       https://www.googleapis.com/compute/v1/projects/project/regions/region
       /forwardingRules/forwardingRule -
-      regions/region/forwardingRules/forwardingRule
+      regions/region/forwardingRules/forwardingRule If an IP address is
+      provided, must specify an IPv4 address in dot-decimal notation or an
+      IPv6 address in RFC 4291 format. For example, the following are all
+      valid IP addresses: - 10.128.0.56 - 2001:db8::2d9:51:0:0 -
+      2001:db8:0:0:2d9:51:0:0 IPv6 addresses will be displayed using RFC 5952
+      compressed format (e.g. 2001:db8::2d9:51:0:0). Should never be an
+      IPv4-mapped IPv6 address.
     nextHopInstance: The URL to an instance that should handle matching
       packets. You can specify this as a full or partial URL. For example: htt
       ps://www.googleapis.com/compute/v1/projects/project/zones/zone/instances
@@ -65152,12 +65298,12 @@ class RouterNatRule(_messages.Message):
     match: CEL expression that specifies the match condition that egress
       traffic from a VM is evaluated against. If it evaluates to true, the
       corresponding `action` is enforced. The following examples are valid
-      match expressions for public NAT: "inIpRange(destination.ip,
-      '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')"
-      "destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'" The
+      match expressions for public NAT: `inIpRange(destination.ip,
+      '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')`
+      `destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'` The
       following example is a valid match expression for private NAT:
-      "nexthop.hub == '//networkconnectivity.googleapis.com/projects/my-
-      project/locations/global/hubs/hub-1'"
+      `nexthop.hub == '//networkconnectivity.googleapis.com/projects/my-
+      project/locations/global/hubs/hub-1'`
     ruleNumber: An integer uniquely identifying a rule in the list. The rule
       number must be a positive value between 0 and 65000, and must be unique
       among rules within a NAT.
@@ -65237,8 +65383,16 @@ class RouterStatus(_messages.Message):
   r"""A RouterStatus object.
 
   Fields:
-    bestRoutes: Best routes for this router's network.
-    bestRoutesForRouter: Best routes learned by this router.
+    bestRoutes: A list of the best dynamic routes for this Cloud Router's
+      Virtual Private Cloud (VPC) network in the same region as this Cloud
+      Router. Lists all of the best routes per prefix that are programmed into
+      this region's VPC data plane. When global dynamic routing mode is turned
+      on in the VPC network, this list can include cross-region dynamic routes
+      from Cloud Routers in other regions.
+    bestRoutesForRouter: A list of the best BGP routes learned by this Cloud
+      Router. It is possible that routes listed might not be programmed into
+      the data plane, if the Google Cloud control plane finds a more optimal
+      route for a prefix than a route learned by this Cloud Router.
     bgpPeerStatus: A RouterStatusBgpPeerStatus attribute.
     natStatus: A RouterStatusNatStatus attribute.
     network: URI of the network to which this router belongs.
@@ -71191,7 +71345,9 @@ class StoragePool(_messages.Message):
       cannot be a dash.
     performanceProvisioningType: Provisioning type of the performance-related
       parameters of the pool, such as throughput and IOPS.
-    poolProvisionedCapacityGb: Size, in GiB, of the storage pool.
+    poolProvisionedCapacityGb: Size, in GiB, of the storage pool. For more
+      information about the size limits, see
+      https://cloud.google.com/compute/docs/disks/storage-pools.
     poolProvisionedIops: Provisioned IOPS of the storage pool. Only relevant
       if the storage pool type is hyperdisk-balanced.
     poolProvisionedThroughput: Provisioned throughput of the storage pool.
@@ -71902,9 +72058,10 @@ class StoragePoolResourceStatus(_messages.Message):
       within the storage pool (in bytes). This will reflect the total number
       of bytes written to the disks in the pool, in contrast to the capacity
       of those disks.
-    poolUsedIops: Sum of all the disks' provisioned IOPS, minus some amount
-      that is allowed per disk that is not counted towards pool's IOPS
-      capacity.
+    poolUsedIops: [Output Only] Sum of all the disks' provisioned IOPS, minus
+      some amount that is allowed per disk that is not counted towards pool's
+      IOPS capacity. For more information, see
+      https://cloud.google.com/compute/docs/disks/storage-pools.
     poolUsedThroughput: [Output Only] Sum of all the disks' provisioned
       throughput in MB/s.
     poolUserWrittenBytes: [Output Only] Amount of data written into the pool,
@@ -78127,6 +78284,30 @@ class UrlMap(_messages.Message):
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
+    defaultCustomErrorResponsePolicy: defaultCustomErrorResponsePolicy
+      specifies how the Load Balancer returns error responses when
+      BackendServiceor BackendBucket responds with an error. This policy takes
+      effect at the load balancer level and applies only when no policy has
+      been defined for the error code at lower levels like PathMatcher,
+      RouteRule and PathRule within this UrlMap. For example, consider a
+      UrlMap with the following configuration: -
+      defaultCustomErrorResponsePolicy containing policies for responding to
+      5xx and 4xx errors - A PathMatcher configured for *.example.com has
+      defaultCustomErrorResponsePolicy for 4xx. If a request for
+      http://www.example.com/ encounters a 404, the policy in
+      pathMatcher.defaultCustomErrorResponsePolicy will be enforced. When the
+      request for http://www.example.com/ encounters a 502, the policy in
+      UrlMap.defaultCustomErrorResponsePolicy will be enforced. When a request
+      that does not match any host in *.example.com such as
+      http://www.myotherexample.com/, encounters a 404,
+      UrlMap.defaultCustomErrorResponsePolicy takes effect. When used in
+      conjunction with defaultRouteAction.retryPolicy, retries take
+      precedence. Only once all retries are exhausted, the
+      defaultCustomErrorResponsePolicy is applied. While attempting a retry,
+      if load balancer is successful in reaching the service, the
+      defaultCustomErrorResponsePolicy is ignored and the response from the
+      service is returned to the client. defaultCustomErrorResponsePolicy is
+      supported only for global external Application Load Balancers.
     defaultRouteAction: defaultRouteAction takes effect when none of the
       hostRules match. The load balancer performs advanced routing actions,
       such as URL rewrites and header transformations, before forwarding the
@@ -78194,20 +78375,21 @@ class UrlMap(_messages.Message):
   """
 
   creationTimestamp = _messages.StringField(1)
-  defaultRouteAction = _messages.MessageField('HttpRouteAction', 2)
-  defaultService = _messages.StringField(3)
-  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 4)
-  description = _messages.StringField(5)
-  fingerprint = _messages.BytesField(6)
-  headerAction = _messages.MessageField('HttpHeaderAction', 7)
-  hostRules = _messages.MessageField('HostRule', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#urlMap')
-  name = _messages.StringField(11)
-  pathMatchers = _messages.MessageField('PathMatcher', 12, repeated=True)
-  region = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  tests = _messages.MessageField('UrlMapTest', 15, repeated=True)
+  defaultCustomErrorResponsePolicy = _messages.MessageField('CustomErrorResponsePolicy', 2)
+  defaultRouteAction = _messages.MessageField('HttpRouteAction', 3)
+  defaultService = _messages.StringField(4)
+  defaultUrlRedirect = _messages.MessageField('HttpRedirectAction', 5)
+  description = _messages.StringField(6)
+  fingerprint = _messages.BytesField(7)
+  headerAction = _messages.MessageField('HttpHeaderAction', 8)
+  hostRules = _messages.MessageField('HostRule', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#urlMap')
+  name = _messages.StringField(12)
+  pathMatchers = _messages.MessageField('PathMatcher', 13, repeated=True)
+  region = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  tests = _messages.MessageField('UrlMapTest', 16, repeated=True)
 
 
 class UrlMapList(_messages.Message):

@@ -23,7 +23,7 @@ project:
   - &project
     parameter_name: projectsId
     attribute_name: project
-    help: projects TBD
+    help: The project id of the {resource} resource.
     property: core/project
   disable_auto_completers: true
 project_location:
@@ -35,7 +35,7 @@ project_location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: locations TBD
+    help: The location id of the {resource} resource.
   disable_auto_completers: true
 project_location_registry_book:
   name: registryBook
@@ -47,7 +47,7 @@ project_location_registry_book:
   - &registryBook
     parameter_name: registryBooksId
     attribute_name: registry_book
-    help: registryBooks TBD
+    help: The registryBook id of the {resource} resource.
   disable_auto_completers: false
 project_location_registry_book_registry_node:
   name: registryNode
@@ -60,7 +60,7 @@ project_location_registry_book_registry_node:
   - &registryNode
     parameter_name: registryNodesId
     attribute_name: registry_node
-    help: registryNodes TBD
+    help: The registryNode id of the {resource} resource.
   disable_auto_completers: false
 project_location_registry_book_historical_event:
   name: historicalEvent
@@ -73,7 +73,7 @@ project_location_registry_book_historical_event:
   - &historicalEvent
     parameter_name: historicalEventsId
     attribute_name: historical_event
-    help: historicalEvents TBD
+    help: The historicalEvent id of the {resource} resource.
   disable_auto_completers: false
 project_location_registry_book_node_event:
   name: nodeEvent
@@ -86,5 +86,5 @@ project_location_registry_book_node_event:
   - &nodeEvent
     parameter_name: nodeEventsId
     attribute_name: node_event
-    help: nodeEvents TBD
+    help: The nodeEvent id of the {resource} resource.
   disable_auto_completers: false

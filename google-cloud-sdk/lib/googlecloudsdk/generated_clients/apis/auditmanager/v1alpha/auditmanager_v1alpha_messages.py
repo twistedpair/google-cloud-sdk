@@ -625,6 +625,8 @@ class Control(_messages.Message):
       responsibility for implementing this control.
     googleResponsibilityImplementation: Output only. Implementation of the
       google responsibility for implementing this control.
+    id: Output only. The control identifier used to fetch the findings. This
+      is same as the control report name.
     responsibilityType: Output only. The type of responsibility for
       implementing this control. It can be google, customer or shared.
   """
@@ -680,7 +682,8 @@ class Control(_messages.Message):
   family = _messages.EnumField('FamilyValueValuesEnum', 5)
   googleResponsibilityDescription = _messages.StringField(6)
   googleResponsibilityImplementation = _messages.StringField(7)
-  responsibilityType = _messages.StringField(8)
+  id = _messages.StringField(8)
+  responsibilityType = _messages.StringField(9)
 
 
 class ControlDetails(_messages.Message):
@@ -703,13 +706,13 @@ class ControlDetails(_messages.Message):
       COMPLIANCE_STATE_UNSPECIFIED: Unspecified. Invalid state.
       COMPLIANT: Compliant.
       VIOLATION: Violation.
-      UNKNOWN: Unknown, requires manual review
+      MANUAL_REVIEW_NEEDED: MANUAL_REVIEW_NEEDED, requires manual review
       ERROR: Error while computing status.
     """
     COMPLIANCE_STATE_UNSPECIFIED = 0
     COMPLIANT = 1
     VIOLATION = 2
-    UNKNOWN = 3
+    MANUAL_REVIEW_NEEDED = 3
     ERROR = 4
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
@@ -815,13 +818,13 @@ class Finding(_messages.Message):
       COMPLIANCE_STATE_UNSPECIFIED: Unspecified. Invalid state.
       COMPLIANT: Compliant.
       VIOLATION: Violation.
-      UNKNOWN: Unknown, requires manual review
+      MANUAL_REVIEW_NEEDED: MANUAL_REVIEW_NEEDED, requires manual review
       ERROR: Error while computing status.
     """
     COMPLIANCE_STATE_UNSPECIFIED = 0
     COMPLIANT = 1
     VIOLATION = 2
-    UNKNOWN = 3
+    MANUAL_REVIEW_NEEDED = 3
     ERROR = 4
 
   complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
@@ -1275,15 +1278,16 @@ class ReportSummary(_messages.Message):
   Fields:
     compliantCount: Number of compliant checks.
     errorCount: Number of checks that could not be performed due to errors.
+    manualReviewNeededCount: Number of checks with "manual review needed"
+      status.
     totalCount: Total number of checks.
-    unknownsCount: Number of checks with unknown status.
     violationCount: Number of checks with violations.
   """
 
   compliantCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   errorCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  totalCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  unknownsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  manualReviewNeededCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  totalCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   violationCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 

@@ -911,6 +911,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NOTEBOOKEXECUTIONJOBS_OPERATIONS = (
+      'projects.locations.notebookExecutionJobs.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookExecutionJobs/{notebookExecutionJobsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NOTEBOOKRUNTIMETEMPLATES = (
       'projects.locations.notebookRuntimeTemplates',
       '{+name}',
@@ -922,6 +934,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMETEMPLATES_OPERATIONS = (
+      'projects.locations.notebookRuntimeTemplates.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimeTemplates/{notebookRuntimeTemplatesId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NOTEBOOKRUNTIMES = (
       'projects.locations.notebookRuntimes',
       '{+name}',
@@ -929,6 +953,18 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'notebookRuntimes/{notebookRuntimesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMES_OPERATIONS = (
+      'projects.locations.notebookRuntimes.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimes/{notebookRuntimesId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

@@ -59,8 +59,7 @@ class RegistrationsClient(object):
     self._service = self.client.projects_locations_registrations
 
   def PrintSQSPAck(self):
-    """Prints FYI acknowledgement about the Google Domains - Squarespace deal.
-    """
+    """Prints FYI acknowledgement about the Google Domains - Squarespace deal."""
     ack_message = (
         'Domain name registration services are provided by Squarespace '
         '(https://domains.squarespace.com),\n'
@@ -69,22 +68,22 @@ class RegistrationsClient(object):
         'and Squarespace Domain Registration Agreement '
         '(https://www.squarespace.com/domain-registration-agreement),\n'
         'which Google resells pursuant to an agreement with Squarespace.\n'
-        'Initially, Google will manage your domain(s) on Squarespace\'s behalf.'
+        "Initially, Google will manage your domain(s) on Squarespace's behalf."
         ' Once your domain is transitioned to Squarespace,\n'
         'Google will share your name, contact information, and other '
         'domain-related information with Squarespace.\n'
-        'You can review Squarespace\'s Privacy Policy '
+        "You can review Squarespace's Privacy Policy "
         '(https://www.squarespace.com/privacy) for details on how they '
         'process your information.\n'
-        'Google\'s Privacy Policy (https://policies.google.com/privacy) '
+        "Google's Privacy Policy (https://policies.google.com/privacy) "
         'describes how Google handles this information as a reseller.\n'
-        'By choosing to continue, you (1) acknowledge receipt of Google\'s '
+        "By choosing to continue, you (1) acknowledge receipt of Google's "
         'Privacy Policy and direct us to share this information\n'
         'with Squarespace; and (2) agree to the Squarespace Terms of Service '
         '(https://www.squarespace.com/terms-of-service) and\n'
         'Squarespace Domain Registration Agreement '
         '(https://www.squarespace.com/domain-registration-agreement), and\n'
-        'acknowledge receipt of Squarespace\'s Privacy Policy '
+        "acknowledge receipt of Squarespace's Privacy Policy "
         '(https://www.squarespace.com/privacy).\n'
     )
 
@@ -124,15 +123,12 @@ class RegistrationsClient(object):
     domain_notices = []
     if hsts_notice_accepted:
       domain_notices = [
-          self.messages.RegisterDomainRequest
-          .DomainNoticesValueListEntryValuesEnum.HSTS_PRELOADED
+          self.messages.RegisterDomainRequest.DomainNoticesValueListEntryValuesEnum.HSTS_PRELOADED
       ]
     contact_notices = []
     if public_privacy_accepted:
       contact_notices = [
-          self.messages.RegisterDomainRequest
-          .ContactNoticesValueListEntryValuesEnum
-          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+          self.messages.RegisterDomainRequest.ContactNoticesValueListEntryValuesEnum.PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
       ]
     req = self.messages.DomainsProjectsLocationsRegistrationsRegisterRequest(
         parent=parent_ref.RelativeName(),
@@ -141,24 +137,29 @@ class RegistrationsClient(object):
                 domainName=domain,
                 dnsSettings=dns_settings,
                 contactSettings=contact_settings,
-                labels=labels),
+                labels=labels,
+            ),
             domainNotices=domain_notices,
             contactNotices=contact_notices,
             yearlyPrice=yearly_price,
-            validateOnly=validate_only))
+            validateOnly=validate_only,
+        ),
+    )
 
     return self._service.Register(req)
 
-  def Transfer(self,
-               parent_ref,
-               domain,
-               dns_settings,
-               contact_settings,
-               authorization_code,
-               yearly_price,
-               labels=None,
-               public_privacy_accepted=False,
-               validate_only=False):
+  def Transfer(
+      self,
+      parent_ref,
+      domain,
+      dns_settings,
+      contact_settings,
+      authorization_code,
+      yearly_price,
+      labels=None,
+      public_privacy_accepted=False,
+      validate_only=False,
+  ):
     """Transfers a domain and creates a new Registration.
 
     Args:
@@ -182,16 +183,15 @@ class RegistrationsClient(object):
     contact_notices = []
     if public_privacy_accepted:
       contact_notices = [
-          self.messages.TransferDomainRequest
-          .ContactNoticesValueListEntryValuesEnum
-          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+          self.messages.TransferDomainRequest.ContactNoticesValueListEntryValuesEnum.PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
       ]
 
     registration = self.messages.Registration(
         domainName=domain,
         dnsSettings=dns_settings,
         contactSettings=contact_settings,
-        labels=labels)
+        labels=labels,
+    )
 
     req = self.messages.DomainsProjectsLocationsRegistrationsTransferRequest(
         parent=parent_ref.RelativeName(),
@@ -199,9 +199,12 @@ class RegistrationsClient(object):
             registration=registration,
             contactNotices=contact_notices,
             authorizationCode=self.messages.AuthorizationCode(
-                code=authorization_code),
+                code=authorization_code
+            ),
             yearlyPrice=yearly_price,
-            validateOnly=validate_only))
+            validateOnly=validate_only,
+        ),
+    )
 
     return self._service.Transfer(req)
 
@@ -220,60 +223,67 @@ class RegistrationsClient(object):
     req = self.messages.DomainsProjectsLocationsRegistrationsImportRequest(
         parent=parent_ref.RelativeName(),
         importDomainRequest=self.messages.ImportDomainRequest(
-            domainName=domain, labels=labels))
+            domainName=domain, labels=labels
+        ),
+    )
     return self._service.Import(req)
 
   def Export(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsExportRequest(
-        name=registration_ref.RelativeName())
+        name=registration_ref.RelativeName()
+    )
     return self._service.Export(req)
 
   def Renew(self, registration_ref, yearly_price, validate_only=False):
     req = self.messages.DomainsProjectsLocationsRegistrationsRenewDomainRequest(
         registration=registration_ref.RelativeName(),
         renewDomainRequest=self.messages.RenewDomainRequest(
-            yearlyPrice=yearly_price,
-            validateOnly=validate_only),
+            yearlyPrice=yearly_price, validateOnly=validate_only
+        ),
     )
     return self._service.RenewDomain(req)
 
   def Delete(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsDeleteRequest(
-        name=registration_ref.RelativeName())
+        name=registration_ref.RelativeName()
+    )
     return self._service.Delete(req)
 
   def Get(self, registration_ref):
     get_req = self.messages.DomainsProjectsLocationsRegistrationsGetRequest(
-        name=registration_ref.RelativeName())
+        name=registration_ref.RelativeName()
+    )
     return self._service.Get(get_req)
 
   def RetrieveAuthorizationCode(self, registration_ref):
     # pylint: disable=line-too-long
     req = self.messages.DomainsProjectsLocationsRegistrationsRetrieveAuthorizationCodeRequest(
-        registration=registration_ref.RelativeName())
+        registration=registration_ref.RelativeName()
+    )
     return self._service.RetrieveAuthorizationCode(req)
 
   def ResetAuthorizationCode(self, registration_ref):
     # pylint: disable=line-too-long
     req = self.messages.DomainsProjectsLocationsRegistrationsResetAuthorizationCodeRequest(
-        registration=registration_ref.RelativeName())
+        registration=registration_ref.RelativeName()
+    )
     return self._service.ResetAuthorizationCode(req)
 
   def InitiatePushTransfer(self, registration_ref, tag):
     req = self.messages.DomainsProjectsLocationsRegistrationsInitiatePushTransferRequest(
         registration=registration_ref.RelativeName(),
         initiatePushTransferRequest=self.messages.InitiatePushTransferRequest(
-            tag=tag),
+            tag=tag
+        ),
     )
     return self._service.InitiatePushTransfer(req)
 
-  def RetrieveImportableDomains(self,
-                                parent_ref,
-                                limit=None,
-                                page_size=None,
-                                batch_size=None):
+  def RetrieveImportableDomains(
+      self, parent_ref, limit=None, page_size=None, batch_size=None
+  ):
     request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveImportableDomainsRequest(
-        location=parent_ref.RelativeName(), pageSize=page_size)
+        location=parent_ref.RelativeName(), pageSize=page_size
+    )
 
     return list_pager.YieldFromList(
         self._service,
@@ -299,14 +309,16 @@ class RegistrationsClient(object):
       A generator of the domain registrations in the project.
     """
     list_req = self.messages.DomainsProjectsLocationsRegistrationsListRequest(
-        parent=parent_ref.RelativeName(), filter=list_filter)
+        parent=parent_ref.RelativeName(), filter=list_filter
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
         batch_size=page_size,
         limit=limit,
         field='registrations',
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def Patch(self, registration_ref, labels=None):
     """Updates a Registration.
@@ -328,7 +340,8 @@ class RegistrationsClient(object):
     patch_req = self.messages.DomainsProjectsLocationsRegistrationsPatchRequest(
         registration=registration,
         name=registration_ref.RelativeName(),
-        updateMask=update_mask)
+        updateMask=update_mask,
+    )
 
     return self._service.Patch(patch_req)
 
@@ -368,8 +381,9 @@ class RegistrationsClient(object):
 
     return self._service.ConfigureManagementSettings(req)
 
-  def ConfigureDNS(self, registration_ref, dns_settings, updated,
-                   validate_only):
+  def ConfigureDNS(
+      self, registration_ref, dns_settings, updated, validate_only
+  ):
     """Calls ConfigureDNSSettings method.
 
     Args:
@@ -403,12 +417,20 @@ class RegistrationsClient(object):
         configureDnsSettingsRequest=self.messages.ConfigureDnsSettingsRequest(
             dnsSettings=dns_settings,
             updateMask=update_mask,
-            validateOnly=validate_only))
+            validateOnly=validate_only,
+        ),
+    )
 
     return self._service.ConfigureDnsSettings(req)
 
-  def ConfigureContacts(self, registration_ref, contacts, contact_privacy,
-                        public_contacts_ack, validate_only):
+  def ConfigureContacts(
+      self,
+      registration_ref,
+      contacts,
+      contact_privacy,
+      public_contacts_ack,
+      validate_only,
+  ):
     """Calls ConfigureContactSettings method.
 
     Args:
@@ -432,7 +454,8 @@ class RegistrationsClient(object):
           privacy=contact_privacy,
           registrantContact=contacts.registrantContact,
           adminContact=contacts.adminContact,
-          technicalContact=contacts.technicalContact)
+          technicalContact=contacts.technicalContact,
+      )
 
       if contacts.registrantContact:
         updated_list += ['registrant_contact']
@@ -446,20 +469,19 @@ class RegistrationsClient(object):
     notices = []
     if public_contacts_ack:
       notices = [
-          self.messages.ConfigureContactSettingsRequest
-          .ContactNoticesValueListEntryValuesEnum
-          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+          self.messages.ConfigureContactSettingsRequest.ContactNoticesValueListEntryValuesEnum.PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
       ]
 
     # pylint: disable=line-too-long
     req = self.messages.DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest(
         registration=registration_ref.RelativeName(),
-        configureContactSettingsRequest=self.messages
-        .ConfigureContactSettingsRequest(
+        configureContactSettingsRequest=self.messages.ConfigureContactSettingsRequest(
             contactSettings=contact_settings,
             updateMask=update_mask,
             contactNotices=notices,
-            validateOnly=validate_only))
+            validateOnly=validate_only,
+        ),
+    )
 
     return self._service.ConfigureContactSettings(req)
 
@@ -478,32 +500,57 @@ class RegistrationsClient(object):
       Operation: the long running operation to configure contacts registration.
     """
     contact_settings = self.messages.ContactSettings(
-        registrantContact=self.messages.Contact(email=registrant_email))
+        registrantContact=self.messages.Contact(email=registrant_email)
+    )
 
     # pylint: disable=line-too-long
     req = self.messages.DomainsProjectsLocationsRegistrationsConfigureContactSettingsRequest(
         registration=registration_ref.RelativeName(),
-        configureContactSettingsRequest=self.messages
-        .ConfigureContactSettingsRequest(
+        configureContactSettingsRequest=self.messages.ConfigureContactSettingsRequest(
             contactSettings=contact_settings,
-            updateMask='registrant_contact.email'))
+            updateMask='registrant_contact.email',
+        ),
+    )
 
     return self._service.ConfigureContactSettings(req)
 
   def RetrieveRegisterParameters(self, parent_ref, domain):
     # pylint: disable=line-too-long
     request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest(
-        location=parent_ref.RelativeName(), domainName=domain)
+        location=parent_ref.RelativeName(), domainName=domain
+    )
     return self._service.RetrieveRegisterParameters(request).registerParameters
 
   def RetrieveTransferParameters(self, parent_ref, domain):
     # pylint: disable=line-too-long
     request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest(
-        location=parent_ref.RelativeName(), domainName=domain)
+        location=parent_ref.RelativeName(), domainName=domain
+    )
     return self._service.RetrieveTransferParameters(request).transferParameters
 
   def SearchDomains(self, parent_ref, query):
     # pylint: disable=line-too-long
-    request = self.messages.DomainsProjectsLocationsRegistrationsSearchDomainsRequest(
-        location=parent_ref.RelativeName(), query=query)
+    request = (
+        self.messages.DomainsProjectsLocationsRegistrationsSearchDomainsRequest(
+            location=parent_ref.RelativeName(), query=query
+        )
+    )
     return self._service.SearchDomains(request).registerParameters
+
+  def RetrieveGoogleDomainsDnsRecords(
+      self, registration_ref, page_size, page_token
+  ):
+    # pylint: disable=line-too-long
+    request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsDnsRecordsRequest(
+        registration=registration_ref.RelativeName(),
+        pageToken=page_token,
+        pageSize=page_size,
+    )
+    return self._service.RetrieveGoogleDomainsDnsRecords(request)
+
+  def RetrieveGoogleDomainsForwardingConfig(self, registration_ref):
+    # pylint: disable=line-too-long
+    request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveGoogleDomainsForwardingConfigRequest(
+        registration=registration_ref.RelativeName(),
+    )
+    return self._service.RetrieveGoogleDomainsForwardingConfig(request)

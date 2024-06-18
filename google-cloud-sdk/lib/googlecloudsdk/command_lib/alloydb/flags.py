@@ -1218,22 +1218,26 @@ def AddRequireConnectors(parser):
   )
 
 
-def AddDatabaseVersion(parser, alloydb_messages):
+def AddDatabaseVersion(parser, alloydb_messages, release_track):
   """Adds Database Version flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
   """
+  choices = [
+      alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
+      alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
+  ]
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices.append(
+        alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16
+    )
   parser.add_argument(
       '--database-version',
       required=False,
       type=alloydb_messages.Cluster.DatabaseVersionValueValuesEnum,
-      choices=[
-          # Don't allow UNSPECIFIED, POSTGRES_13 database versions
-          alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
-          alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
-      ],
+      choices=choices,
       help='Database version of the cluster.'
   )
 
@@ -1259,47 +1263,27 @@ def AddSubscriptionType(parser, alloydb_messages):
   )
 
 
-def AddAssignInboundPublicIp(parser, update=False):
+def AddAssignInboundPublicIp(parser):
   """Adds Assign Inbound Public IP flag.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    update: If False, only allows the user to disable public IP.
   """
-  if update:
-    parser.add_argument(
-        '--assign-inbound-public-ip',
-        required=False,
-        type=str,
-        help=(
-            """Specify to enable or disable public IP on an instance.
-            ASSIGN_INBOUND_PUBLIC_IP must be one of:
-            * *NO_PUBLIC_IP*
-            ** This disables public IP on the instance. Updating an instance to
-            disable public IP will clear the list of authorized networks.
-            * *ASSIGN_IPV4*
-            ** Assign an inbound public IPv4 address for the instance.
-            public IP is enabled."""
-        ),
-    )
-  else:
-    parser.add_argument(
-        '--assign-inbound-public-ip',
-        required=False,
-        type=str,
-        choices={
-            'NO_PUBLIC_IP': (
-                'This disables public IP on the instance.'
-            )
-        },
-        help=(
-            'Specify to enable or disable public IP on an instance. On '
-            'instance creation only disabling public IP is allowed. If you '
-            'want to enable public IP, an instance must be created with '
-            'public IP disabled first, then update the instance to enable '
-            'public IP.'
-        ),
-    )
+  parser.add_argument(
+      '--assign-inbound-public-ip',
+      required=False,
+      type=str,
+      help=(
+          """Specify to enable or disable public IP on an instance.
+          ASSIGN_INBOUND_PUBLIC_IP must be one of:
+          * *NO_PUBLIC_IP*
+          ** This disables public IP on the instance. Updating an instance to
+          disable public IP will clear the list of authorized networks.
+          * *ASSIGN_IPV4*
+          ** Assign an inbound public IPv4 address for the instance.
+          Public IP is enabled."""
+      ),
+  )
 
 
 def AddAuthorizedExternalNetworks(parser):

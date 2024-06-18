@@ -1779,6 +1779,10 @@ class Finding(_messages.Message):
       formed URL.
     files: File associated with the finding.
     findingClass: The class of the finding.
+    groupMemberships: Contains details about groups of which this finding is a
+      member. A group is a collection of findings that are related in some
+      way. This field cannot be updated. Its value is ignored in all update
+      requests.
     iamBindings: Represents IAM bindings associated with the finding.
     indicator: Represents what's commonly known as an *indicator of
       compromise* (IoC) in computer forensics. This is an artifact observed on
@@ -1843,6 +1847,11 @@ class Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: The state of the finding.
+    toxicCombination: Contains details about a group of security issues that,
+      when the issues occur together, represent a greater risk than when the
+      issues occur independently. A group of such issues is referred to as a
+      toxic combination. This field cannot be updated. Its value is ignored in
+      all update requests.
     vulnerability: Represents vulnerability-specific fields like CVE and CVSS
       scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
@@ -1863,6 +1872,10 @@ class Finding(_messages.Message):
       SCC_ERROR: Describes an error that prevents some SCC functionality.
       POSTURE_VIOLATION: Describes a potential security risk due to a change
         in the security posture.
+      TOXIC_COMBINATION: Describes a group of security issues that, when the
+        issues occur together, represent a greater risk than when the issues
+        occur independently. A group of such issues is referred to as a toxic
+        combination.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -1871,6 +1884,7 @@ class Finding(_messages.Message):
     OBSERVATION = 4
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
+    TOXIC_COMBINATION = 7
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -2056,32 +2070,34 @@ class Finding(_messages.Message):
   externalUri = _messages.StringField(20)
   files = _messages.MessageField('File', 21, repeated=True)
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
-  iamBindings = _messages.MessageField('IamBinding', 23, repeated=True)
-  indicator = _messages.MessageField('Indicator', 24)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 25)
-  kubernetes = _messages.MessageField('Kubernetes', 26)
-  loadBalancers = _messages.MessageField('LoadBalancer', 27, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 28, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 29)
-  moduleName = _messages.StringField(30)
-  mute = _messages.EnumField('MuteValueValuesEnum', 31)
-  muteAnnotation = _messages.StringField(32)
-  muteInitiator = _messages.StringField(33)
-  muteUpdateTime = _messages.StringField(34)
-  name = _messages.StringField(35)
-  nextSteps = _messages.StringField(36)
-  notebook = _messages.MessageField('Notebook', 37)
-  orgPolicies = _messages.MessageField('OrgPolicy', 38, repeated=True)
-  parent = _messages.StringField(39)
-  parentDisplayName = _messages.StringField(40)
-  processes = _messages.MessageField('Process', 41, repeated=True)
-  resourceName = _messages.StringField(42)
-  securityMarks = _messages.MessageField('SecurityMarks', 43)
-  securityPosture = _messages.MessageField('SecurityPosture', 44)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 45)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 46)
-  state = _messages.EnumField('StateValueValuesEnum', 47)
-  vulnerability = _messages.MessageField('Vulnerability', 48)
+  groupMemberships = _messages.MessageField('GroupMembership', 23, repeated=True)
+  iamBindings = _messages.MessageField('IamBinding', 24, repeated=True)
+  indicator = _messages.MessageField('Indicator', 25)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 26)
+  kubernetes = _messages.MessageField('Kubernetes', 27)
+  loadBalancers = _messages.MessageField('LoadBalancer', 28, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 29, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 30)
+  moduleName = _messages.StringField(31)
+  mute = _messages.EnumField('MuteValueValuesEnum', 32)
+  muteAnnotation = _messages.StringField(33)
+  muteInitiator = _messages.StringField(34)
+  muteUpdateTime = _messages.StringField(35)
+  name = _messages.StringField(36)
+  nextSteps = _messages.StringField(37)
+  notebook = _messages.MessageField('Notebook', 38)
+  orgPolicies = _messages.MessageField('OrgPolicy', 39, repeated=True)
+  parent = _messages.StringField(40)
+  parentDisplayName = _messages.StringField(41)
+  processes = _messages.MessageField('Process', 42, repeated=True)
+  resourceName = _messages.StringField(43)
+  securityMarks = _messages.MessageField('SecurityMarks', 44)
+  securityPosture = _messages.MessageField('SecurityPosture', 45)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 46)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 47)
+  state = _messages.EnumField('StateValueValuesEnum', 48)
+  toxicCombination = _messages.MessageField('ToxicCombination', 49)
+  vulnerability = _messages.MessageField('Vulnerability', 50)
 
 
 class Folder(_messages.Message):
@@ -4298,6 +4314,10 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       formed URL.
     files: File associated with the finding.
     findingClass: The class of the finding.
+    groupMemberships: Contains details about groups of which this finding is a
+      member. A group is a collection of findings that are related in some
+      way. This field cannot be updated. Its value is ignored in all update
+      requests.
     iamBindings: Represents IAM bindings associated with the finding.
     indicator: Represents what's commonly known as an *indicator of
       compromise* (IoC) in computer forensics. This is an artifact observed on
@@ -4369,6 +4389,11 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: Output only. The state of the finding.
+    toxicCombination: Contains details about a group of security issues that,
+      when the issues occur together, represent a greater risk than when the
+      issues occur independently. A group of such issues is referred to as a
+      toxic combination. This field cannot be updated. Its value is ignored in
+      all update requests.
     vulnerability: Represents vulnerability-specific fields like CVE and CVSS
       scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
@@ -4389,6 +4414,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       SCC_ERROR: Describes an error that prevents some SCC functionality.
       POSTURE_VIOLATION: Describes a potential security risk due to a change
         in the security posture.
+      TOXIC_COMBINATION: Describes a combination of security issues that
+        represent a more severe security problem when taken together.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -4397,6 +4424,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     OBSERVATION = 4
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
+    TOXIC_COMBINATION = 7
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -4582,31 +4610,33 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   externalUri = _messages.StringField(20)
   files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 21, repeated=True)
   findingClass = _messages.EnumField('FindingClassValueValuesEnum', 22)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 23, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 24)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 25)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 26)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 27, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 28, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 29)
-  moduleName = _messages.StringField(30)
-  mute = _messages.EnumField('MuteValueValuesEnum', 31)
-  muteInitiator = _messages.StringField(32)
-  muteUpdateTime = _messages.StringField(33)
-  name = _messages.StringField(34)
-  nextSteps = _messages.StringField(35)
-  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 36)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 37, repeated=True)
-  parent = _messages.StringField(38)
-  parentDisplayName = _messages.StringField(39)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 40, repeated=True)
-  resourceName = _messages.StringField(41)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 42)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 43)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 44)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 45)
-  state = _messages.EnumField('StateValueValuesEnum', 46)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 47)
+  groupMemberships = _messages.MessageField('GoogleCloudSecuritycenterV2GroupMembership', 23, repeated=True)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 24, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 25)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 26)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 27)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 28, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 29, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 30)
+  moduleName = _messages.StringField(31)
+  mute = _messages.EnumField('MuteValueValuesEnum', 32)
+  muteInitiator = _messages.StringField(33)
+  muteUpdateTime = _messages.StringField(34)
+  name = _messages.StringField(35)
+  nextSteps = _messages.StringField(36)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 37)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 38, repeated=True)
+  parent = _messages.StringField(39)
+  parentDisplayName = _messages.StringField(40)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 41, repeated=True)
+  resourceName = _messages.StringField(42)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 43)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 44)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 45)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 46)
+  state = _messages.EnumField('StateValueValuesEnum', 47)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 48)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 49)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4631,6 +4661,32 @@ class GoogleCloudSecuritycenterV2Geolocation(_messages.Message):
   """
 
   regionCode = _messages.StringField(1)
+
+
+class GoogleCloudSecuritycenterV2GroupMembership(_messages.Message):
+  r"""Contains details about groups of which this finding is a member. A group
+  is a collection of findings that are related in some way.
+
+  Enums:
+    GroupTypeValueValuesEnum: Type of group.
+
+  Fields:
+    groupId: ID of the group.
+    groupType: Type of group.
+  """
+
+  class GroupTypeValueValuesEnum(_messages.Enum):
+    r"""Type of group.
+
+    Values:
+      GROUP_TYPE_UNSPECIFIED: Default value.
+      GROUP_TYPE_TOXIC_COMBINATION: Group represents a toxic combination.
+    """
+    GROUP_TYPE_UNSPECIFIED = 0
+    GROUP_TYPE_TOXIC_COMBINATION = 1
+
+  groupId = _messages.StringField(1)
+  groupType = _messages.EnumField('GroupTypeValueValuesEnum', 2)
 
 
 class GoogleCloudSecuritycenterV2IamBinding(_messages.Message):
@@ -6011,6 +6067,26 @@ class GoogleCloudSecuritycenterV2TicketInfo(_messages.Message):
   uri = _messages.StringField(6)
 
 
+class GoogleCloudSecuritycenterV2ToxicCombination(_messages.Message):
+  r"""Contains details about a group of security issues that, when the issues
+  occur together, represent a greater risk than when the issues occur
+  independently. A group of such issues is referred to as a toxic combination.
+
+  Fields:
+    attackExposureScore: The [Attack exposure
+      score](https://cloud.google.com/security-command-center/docs/attack-
+      exposure-learn#attack_exposure_scores) of this toxic combination. The
+      score is a measure of how much this toxic combination exposes one or
+      more high-value resources to potential attack.
+    relatedFindings: List of resource names of findings associated with this
+      toxic combination. For example,
+      organizations/123/sources/456/findings/789.
+  """
+
+  attackExposureScore = _messages.FloatField(1)
+  relatedFindings = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudSecuritycenterV2Vulnerability(_messages.Message):
   r"""Refers to common vulnerability fields e.g. cve, cvss, cwe etc.
 
@@ -6240,6 +6316,32 @@ class GroupFindingsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
   readTime = _messages.StringField(3)
   totalSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GroupMembership(_messages.Message):
+  r"""Contains details about groups of which this finding is a member. A group
+  is a collection of findings that are related in some way.
+
+  Enums:
+    GroupTypeValueValuesEnum: Type of group.
+
+  Fields:
+    groupId: ID of the group.
+    groupType: Type of group.
+  """
+
+  class GroupTypeValueValuesEnum(_messages.Enum):
+    r"""Type of group.
+
+    Values:
+      GROUP_TYPE_UNSPECIFIED: Default value.
+      GROUP_TYPE_TOXIC_COMBINATION: Group represents a toxic combination.
+    """
+    GROUP_TYPE_UNSPECIFIED = 0
+    GROUP_TYPE_TOXIC_COMBINATION = 1
+
+  groupId = _messages.StringField(1)
+  groupType = _messages.EnumField('GroupTypeValueValuesEnum', 2)
 
 
 class GroupResult(_messages.Message):
@@ -12389,6 +12491,26 @@ class TicketInfo(_messages.Message):
   status = _messages.StringField(4)
   updateTime = _messages.StringField(5)
   uri = _messages.StringField(6)
+
+
+class ToxicCombination(_messages.Message):
+  r"""Contains details about a group of security issues that, when the issues
+  occur together, represent a greater risk than when the issues occur
+  independently. A group of such issues is referred to as a toxic combination.
+
+  Fields:
+    attackExposureScore: The [Attack exposure
+      score](https://cloud.google.com/security-command-center/docs/attack-
+      exposure-learn#attack_exposure_scores) of this toxic combination. The
+      score is a measure of how much this toxic combination exposes one or
+      more high-value resources to potential attack.
+    relatedFindings: List of resource names of findings associated with this
+      toxic combination. For example,
+      organizations/123/sources/456/findings/789.
+  """
+
+  attackExposureScore = _messages.FloatField(1)
+  relatedFindings = _messages.StringField(2, repeated=True)
 
 
 class ValidateEventThreatDetectionCustomModuleRequest(_messages.Message):

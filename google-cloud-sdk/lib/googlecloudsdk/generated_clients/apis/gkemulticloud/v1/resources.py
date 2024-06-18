@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://gkemulticloud.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/anthos/clusters/docs/multi-cloud'
+DOCS_URL = 'https://cloud.google.com/kubernetes-engine/multi-cloud/docs'
 
 
 class Collections(enum.Enum):

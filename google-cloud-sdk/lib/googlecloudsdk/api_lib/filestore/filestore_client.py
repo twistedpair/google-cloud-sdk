@@ -261,7 +261,8 @@ class FilestoreClient(object):
                            zone=None,
                            nfs_export_options=None,
                            kms_key_name=None,
-                           managed_ad=None):
+                           managed_ad=None,
+                           source_instance=None):
     """Parses the command line arguments for Create into a config.
 
     Args:
@@ -275,6 +276,7 @@ class FilestoreClient(object):
       nfs_export_options: The nfs export options for the file share.
       kms_key_name: The kms key for instance encryption.
       managed_ad: The Managed Active Directory settings of the instance.
+      source_instance: The replication source of the instance.
 
     Returns:
       The configuration that will be used as the request body for creating a
@@ -292,6 +294,8 @@ class FilestoreClient(object):
     # Beta API.
     if managed_ad:
       self._adapter.ParseManagedADIntoInstance(instance, managed_ad)
+    if source_instance:
+      self._adapter.ParseSourceInstanceIntoInstance(instance, source_instance)
     instance.labels = labels
 
     if kms_key_name:
@@ -698,6 +702,23 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
         managedActiveDirectory=self.messages.ManagedActiveDirectoryConfig(
             domain=domain, computer=computer
         )
+    )
+
+  def ParseSourceInstanceIntoInstance(self, instance, source_instance):
+    """Parses source_instance into a replication config and into an instance message.
+
+    Args:
+      instance: The filestore instance struct.
+      source_instance: The source_instance cli param.
+    """
+
+    role = self.messages.Replication.RoleValueValuesEnum.lookup_by_name(
+        'STANDBY')
+    replicas = []
+    replicas.append(self.messages.ReplicaConfig(peerInstance=source_instance))
+    instance.replication = self.messages.Replication(
+        role=role,
+        replicas=replicas
     )
 
   def ParseFileShareIntoInstance(

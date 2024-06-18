@@ -204,23 +204,17 @@ If not given, Cloud Build will use a standard disk size.
     )
 
   if update:
-    egress_flags = service_network_flags.add_mutually_exclusive_group()
-    egress_flags.add_argument(
-        '--no-public-egress',
-        action='store_true',
-        help="""\
-If set, workers in the worker pool are created without an external IP address.
-
-If the worker pool is within a VPC Service Control perimeter, use this flag.
-  """,
-    )
-
-    egress_flags.add_argument(
+    service_network_flags.add_argument(
         '--public-egress',
-        action='store_true',
+        action=arg_parsers.StoreTrueFalseAction,
         help="""\
-If set, workers in the worker pool are created with an external IP address.
-""",
+        If set to true, workers in the worker pool are created with an external
+        IP address.
+
+        If set to false, workers in the worker pool are created without an
+        external IP address. If the worker pool is within a VPC Service Control
+        perimeter, use this flag.
+        """,
     )
   else:
     service_network_flags.add_argument(

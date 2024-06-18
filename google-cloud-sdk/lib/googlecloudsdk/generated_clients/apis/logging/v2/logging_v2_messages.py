@@ -456,6 +456,26 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CancelQueryRequest(_messages.Message):
+  r"""The request message for CancelQuery.
+
+  Fields:
+    queryStepHandle: Required. A query step handle returned by QueryData. All
+      steps in the query will be cancelled.
+    resourceNames: Required. Names of one or more views that were used in the
+      original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/bu
+      ckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
+      each resource such as 'logging.views.access' on log view resources.
+  """
+
+  queryStepHandle = _messages.StringField(1)
+  resourceNames = _messages.StringField(2, repeated=True)
+
+
+class CancelQueryResponse(_messages.Message):
+  r"""The response data from CancelQuery."""
+
+
 class ChartingBreakdown(_messages.Message):
   r"""Columns within the output of the previous step to use to break down the
   measures. We will generate one output measure for each value in the cross
@@ -996,9 +1016,10 @@ class HttpRequest(_messages.Message):
       with the origin server before being served from cache. This field is
       only meaningful if cache_hit is True.
     latency: The request processing latency on the server, from the time the
-      request was received until the response was sent.
-    protocol: Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2",
-      "websocket"
+      request was received until the response was sent. For WebSocket
+      connections, this field refers to the entire time duration of the
+      connection.
+    protocol: Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2"
     referer: The referer URL of the request, as defined in HTTP/1.1 Header
       Field Definitions
       (https://datatracker.ietf.org/doc/html/rfc2616#section-14.36).
@@ -3244,11 +3265,12 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksCreateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -3337,11 +3359,12 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksPatchRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -3383,11 +3406,12 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
   r"""A LoggingBillingAccountsSinksUpdateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -4271,11 +4295,12 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
   r"""A LoggingFoldersSinksCreateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -4364,11 +4389,12 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
   r"""A LoggingFoldersSinksPatchRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -4410,11 +4436,12 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
   r"""A LoggingFoldersSinksUpdateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5780,11 +5807,12 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksCreateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -5873,11 +5901,12 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksPatchRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5919,11 +5948,12 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
   r"""A LoggingOrganizationsSinksUpdateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -6833,11 +6863,12 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
   r"""A LoggingProjectsSinksCreateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -6926,11 +6957,12 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
   r"""A LoggingProjectsSinksPatchRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -6972,11 +7004,12 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   r"""A LoggingProjectsSinksUpdateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -7041,11 +7074,12 @@ class LoggingSinksCreateRequest(_messages.Message):
   r"""A LoggingSinksCreateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
@@ -7134,11 +7168,12 @@ class LoggingSinksUpdateRequest(_messages.Message):
   r"""A LoggingSinksUpdateRequest object.
 
   Fields:
-    customWriterIdentity: Optional. A service account provided by the caller
+    customWriterIdentity: Optional. The service account provided by the caller
       that will be used to write the log entries. The format must be
-      serviceAccount:some@email. This field can only be specified if you are
-      routing logs to a destination outside this sink's project. If not
-      specified, a Logging service account will automatically be generated.
+      serviceAccount:some@email. This field can only be specified when you are
+      routing logs to a log bucket that is in a different project than the
+      sink. When not specified, a Logging service account will automatically
+      be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -7902,12 +7937,28 @@ class OpsAnalyticsQuery(_messages.Message):
   subject to change before final release.
 
   Fields:
+    queryExecutionRules: Optional. The query execution rules for the query
+      request.
     sqlQueryText: Required. A logs analytics SQL query, which generally
       follows BigQuery format.This is the SQL query that appears in the Log
       Analytics UI's query editor.
   """
 
-  sqlQueryText = _messages.StringField(1)
+  queryExecutionRules = _messages.MessageField('OpsAnalyticsQueryExecutionRules', 1)
+  sqlQueryText = _messages.StringField(2)
+
+
+class OpsAnalyticsQueryExecutionRules(_messages.Message):
+  r"""Defines the query execution rules for a given Ops Analytics query.
+  LINT.IfChange
+
+  Fields:
+    useReservedSlots: Optional. If use_reserved_slots is set, the user's query
+      will run on their BigQuery reservation rather than slots managed by
+      Cloud Observability.
+  """
+
+  useReservedSlots = _messages.BooleanField(1)
 
 
 class Parameter(_messages.Message):
@@ -8040,7 +8091,7 @@ class QueryDataRequest(_messages.Message):
     labels: Optional. A set of labels to be propagated to the BigQuery job.
     query: Optional. The contents of the query. If this field is populated,
       query_steps will be ignored.
-    resourceNames: Required. Names of one or more log views to run a SQL
+    resourceNames: Required. Names of one or more views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
       resource such as 'logging.views.access' on log view resources.
@@ -8102,7 +8153,7 @@ class QueryLogEntriesRequest(_messages.Message):
 
   Fields:
     disableQueryCaching: Optional. If set to true, turns off all query caching
-      on both the Log Analytics and BigQuery sides.
+      on both the Analytics and BigQuery sides.
     pageSize: Optional. The maximum number of rows to return in the results.
       Responses are limited to 10 MB in size.By default, there is no maximum
       row count, and only the byte limit applies. When the byte limit is
@@ -8118,10 +8169,10 @@ class QueryLogEntriesRequest(_messages.Message):
       separately like the following example:SELECT count(*) FROM
       company.com:abc.us.my-bucket._AllLogs;
     queryRestriction: Optional. Restrictions being requested.
-    resourceNames: Required. Names of one or more log views to run a SQL
-      query. Currently, only a single view is supported. Multiple view
-      selection may be supported in the future.Example: projects/[PROJECT_ID]/
-      locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
+    resourceNames: Required. Names of one or more views to run a SQL query.
+      Currently, only a single view is supported. Multiple view selection may
+      be supported in the future.Example: projects/[PROJECT_ID]/locations/[LOC
+      ATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
       'logging.views.access' on the specified view resources.
     resultReference: Optional. Reference to a result from a previous query. If
       the results have expired the query will return a NOT_FOUND error.
@@ -8387,9 +8438,9 @@ class ReadQueryResultsRequest(_messages.Message):
     readMetadataOnly: Optional. If this flag is true, no rows will be returned
       regardless of the value of page_size; the rows and next_page_token
       members of the response will be empty.
-    resourceNames: Required. Names of one or more log views that were used in
-      the original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID
-      ]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
+    resourceNames: Required. Names of one or more views that were used in the
+      original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/bu
+      ckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
       each resource such as 'logging.views.access' on log view resources.
     timeout: Optional. The maximum amount of time, in milliseconds, that the
       client is willing to wait for the query to complete. If this is not set,

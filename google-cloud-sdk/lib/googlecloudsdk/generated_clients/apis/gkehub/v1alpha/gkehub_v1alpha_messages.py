@@ -8109,6 +8109,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
   feature
 
   Enums:
+    ConfigApiValueValuesEnum: Optional. Specifies the API that will be used
+      for configuring the mesh workloads.
     ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
       automatic control plane management.
     DataPlaneValueValuesEnum: Enables automatic data plane management.
@@ -8117,6 +8119,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
     ManagementValueValuesEnum: Enables automatic Service Mesh management.
 
   Fields:
+    configApi: Optional. Specifies the API that will be used for configuring
+      the mesh workloads.
     controlPlane: Deprecated: use `management` instead Enables automatic
       control plane management.
     dataPlane: Enables automatic data plane management.
@@ -8124,6 +8128,19 @@ class ServiceMeshMembershipSpec(_messages.Message):
       injection and service mesh APIs.
     management: Enables automatic Service Mesh management.
   """
+
+  class ConfigApiValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the API that will be used for configuring the mesh
+    workloads.
+
+    Values:
+      CONFIG_API_UNSPECIFIED: Unspecified
+      CONFIG_API_ISTIO: Use the Istio API for configuration.
+      CONFIG_API_GATEWAY: Use the K8s Gateway API for configuration.
+    """
+    CONFIG_API_UNSPECIFIED = 0
+    CONFIG_API_ISTIO = 1
+    CONFIG_API_GATEWAY = 2
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
     r"""Deprecated: use `management` instead Enables automatic control plane
@@ -8189,10 +8206,11 @@ class ServiceMeshMembershipSpec(_messages.Message):
     MANAGEMENT_AUTOMATIC = 1
     MANAGEMENT_MANUAL = 2
 
-  controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 1)
-  dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 2)
-  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 3)
-  management = _messages.EnumField('ManagementValueValuesEnum', 4)
+  configApi = _messages.EnumField('ConfigApiValueValuesEnum', 1)
+  controlPlane = _messages.EnumField('ControlPlaneValueValuesEnum', 2)
+  dataPlane = _messages.EnumField('DataPlaneValueValuesEnum', 3)
+  defaultChannel = _messages.EnumField('DefaultChannelValueValuesEnum', 4)
+  management = _messages.EnumField('ManagementValueValuesEnum', 5)
 
 
 class ServiceMeshMembershipState(_messages.Message):

@@ -2694,10 +2694,10 @@ class LbObservabilityExtension(_messages.Message):
       `LbObservabilityExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here will be included as
-      part of the `metadata_context` (of type `google.protobuf.Struct`) in the
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace
+      is available under the namespace
       `com.google.lb_observability_extension.`. The following variables are
       supported in the metadata Struct: `{forwarding_rule_id}` - substituted
       with the forwarding rule's fully qualified resource name.
@@ -2708,13 +2708,13 @@ class LbObservabilityExtension(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     forwardAttributes: Optional. List of the Envoy attributes to forward to
-      the extension server. The attributes provided here will be included as
-      part of the `ProcessingRequest.attributes` field (of type `map`), where
-      the keys are the attribute names. Refer to the
+      the extension server. The attributes provided here are included as part
+      of the `ProcessingRequest.attributes` field (of type `map`), where the
+      keys are the attribute names. Refer to the
       [documentation](https://cloud.google.com/service-extensions/docs/cel-
       matcher-language-reference#attributes) for the names of attributes that
-      can be forwarded. If omitted, no attributes will be sent. Each element
-      is a string indicating the attribute name.
+      can be forwarded. If omitted, no attributes are sent. Each element is a
+      string indicating the attribute name.
     forwardHeaders: Optional. List of the HTTP headers to forward to the
       extension (from the client or backend). If omitted, all headers are
       sent. Each element is a string indicating the header name.
@@ -2730,10 +2730,10 @@ class LbObservabilityExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here will be included as part of
-      the `metadata_context` (of type `google.protobuf.Struct`) in the
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace
+      is available under the namespace
       `com.google.lb_observability_extension.`. The following variables are
       supported in the metadata Struct: `{forwarding_rule_id}` - substituted
       with the forwarding rule's fully qualified resource name.
@@ -2826,13 +2826,13 @@ class LbObservabilityExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here will be included as part of the
+    r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata
-    will be available under the namespace
-    `com.google.lb_observability_extension.`. The following variables are
-    supported in the metadata Struct: `{forwarding_rule_id}` - substituted
-    with the forwarding rule's fully qualified resource name.
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.lb_observability_extension.`.
+    The following variables are supported in the metadata Struct:
+    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+    qualified resource name.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -2885,11 +2885,11 @@ class LbRouteExtension(_messages.Message):
       `LbRouteExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here will be included as
-      part of the `metadata_context` (of type `google.protobuf.Struct`) in the
+    MetadataValue: Optional. The metadata provided here is included as part of
+      the `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace `com.google.lb_route_extension.`.
-      The following variables are supported in the metadata Struct:
+      is available under the namespace `com.google.lb_route_extension.`. The
+      following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name.
 
@@ -2915,11 +2915,11 @@ class LbRouteExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here will be included as part of
-      the `metadata_context` (of type `google.protobuf.Struct`) in the
+    metadata: Optional. The metadata provided here is included as part of the
+      `metadata_context` (of type `google.protobuf.Struct`) in the
       `ProcessingRequest` message sent to the extension server. The metadata
-      will be available under the namespace `com.google.lb_route_extension.`.
-      The following variables are supported in the metadata Struct:
+      is available under the namespace `com.google.lb_route_extension.`. The
+      following variables are supported in the metadata Struct:
       `{forwarding_rule_id}` - substituted with the forwarding rule's fully
       qualified resource name.
     name: Required. Identifier. Name of the `LbRouteExtension` resource in the
@@ -2975,11 +2975,11 @@ class LbRouteExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here will be included as part of the
+    r"""Optional. The metadata provided here is included as part of the
     `metadata_context` (of type `google.protobuf.Struct`) in the
-    `ProcessingRequest` message sent to the extension server. The metadata
-    will be available under the namespace `com.google.lb_route_extension.`.
-    The following variables are supported in the metadata Struct:
+    `ProcessingRequest` message sent to the extension server. The metadata is
+    available under the namespace `com.google.lb_route_extension.`. The
+    following variables are supported in the metadata Struct:
     `{forwarding_rule_id}` - substituted with the forwarding rule's fully
     qualified resource name.
 
@@ -3032,12 +3032,12 @@ class LbTrafficExtension(_messages.Message):
       `LbTrafficExtension` resource. The format must comply with [the
       requirements for labels](https://cloud.google.com/compute/docs/labeling-
       resources#requirements) for Google Cloud resources.
-    MetadataValue: Optional. The metadata provided here will be included in
-      the `ProcessingRequest.metadata_context.filter_metadata` map field. The
-      metadata will be available under the key
-      `com.google.lb_traffic_extension.`. The following variables are
-      supported in the metadata: `{forwarding_rule_id}` - substituted with the
-      forwarding rule's fully qualified resource name.
+    MetadataValue: Optional. The metadata provided here is included in the
+      `ProcessingRequest.metadata_context.filter_metadata` map field. The
+      metadata is available under the key `com.google.lb_traffic_extension.`.
+      The following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
@@ -3061,12 +3061,12 @@ class LbTrafficExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    metadata: Optional. The metadata provided here will be included in the
+    metadata: Optional. The metadata provided here is included in the
       `ProcessingRequest.metadata_context.filter_metadata` map field. The
-      metadata will be available under the key
-      `com.google.lb_traffic_extension.`. The following variables are
-      supported in the metadata: `{forwarding_rule_id}` - substituted with the
-      forwarding rule's fully qualified resource name.
+      metadata is available under the key `com.google.lb_traffic_extension.`.
+      The following variables are supported in the metadata:
+      `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+      qualified resource name.
     name: Required. Identifier. Name of the `LbTrafficExtension` resource in
       the following format: `projects/{project}/locations/{location}/lbTraffic
       Extensions/{lb_traffic_extension}`.
@@ -3120,12 +3120,12 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Optional. The metadata provided here will be included in the
+    r"""Optional. The metadata provided here is included in the
     `ProcessingRequest.metadata_context.filter_metadata` map field. The
-    metadata will be available under the key
-    `com.google.lb_traffic_extension.`. The following variables are supported
-    in the metadata: `{forwarding_rule_id}` - substituted with the forwarding
-    rule's fully qualified resource name.
+    metadata is available under the key `com.google.lb_traffic_extension.`.
+    The following variables are supported in the metadata:
+    `{forwarding_rule_id}` - substituted with the forwarding rule's fully
+    qualified resource name.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3938,6 +3938,10 @@ class MetadataLabels(_messages.Message):
 class MulticastConsumerAssociation(_messages.Message):
   r"""Multicast consumer association resource.
 
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The resource state of the
+      multicast consumer association.
+
   Messages:
     LabelsValue: Labels as key-value pairs
 
@@ -3960,9 +3964,25 @@ class MulticastConsumerAssociation(_messages.Message):
     network: The resource name of the multicast consumer VPC network. Use
       following format:
       `projects/{project}/locations/global/networks/{network}`.
+    resourceState: Output only. The resource state of the multicast consumer
+      association.
     updateTime: Output only. [Output only] The timestamp when the Multicast
       Consumer Association was most recently updated.
   """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The resource state of the multicast consumer association.
+
+    Values:
+      CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
+        specified.
+      ACTIVE: The consumer resource state is active.
+      OBSOLETE: The associted admin resource has been deleted. The consumer
+        resource state becomes obsolete.
+    """
+    CONSUMER_RESOURCE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OBSOLETE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3995,7 +4015,8 @@ class MulticastConsumerAssociation(_messages.Message):
   multicastDomainActivation = _messages.StringField(5)
   name = _messages.StringField(6)
   network = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastDomain(_messages.Message):
@@ -4072,6 +4093,9 @@ class MulticastDomainActivation(_messages.Message):
     domain: Reference to the domain that is being activated. [Deprecated] Use
       multicast_domain instead.
     labels: Labels as key-value pairs
+    multicastConsumerAssociations: Output only. The resource names of
+      associated multicast consumer associations. Use the following format:
+      `projects/*/locations/*/multicastConsumerAssociations/*`.
     multicastDomain: Optional. The resource name of the multicast domain to
       activate. Use the following format:
       `projects/*/locations/global/multicastDomains/*`.
@@ -4110,9 +4134,10 @@ class MulticastDomainActivation(_messages.Message):
   description = _messages.StringField(3)
   domain = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  multicastDomain = _messages.StringField(6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  multicastConsumerAssociations = _messages.StringField(6, repeated=True)
+  multicastDomain = _messages.StringField(7)
+  name = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class MulticastGroup(_messages.Message):
@@ -4185,6 +4210,10 @@ class MulticastGroup(_messages.Message):
 class MulticastGroupConsumerActivation(_messages.Message):
   r"""Multicast group consumer activation resource.
 
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The resource state of the
+      multicast group consumer activation.
+
   Messages:
     LabelsValue: Optional. Labels as key-value pairs
 
@@ -4205,9 +4234,26 @@ class MulticastGroupConsumerActivation(_messages.Message):
     name: Identifier. The resource name of the multicast group consumer
       activation. Use the following format:
       `projects/*/locations/*/multicastGroupConsumerActivations/*`.
+    resourceState: Output only. The resource state of the multicast group
+      consumer activation.
     updateTime: Output only. [Output only] The timestamp when the multicast
       group consumer activation was most recently updated.
   """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The resource state of the multicast group consumer
+    activation.
+
+    Values:
+      CONSUMER_RESOURCE_STATE_UNSPECIFIED: The consumer resource state is not
+        specified.
+      ACTIVE: The consumer resource state is active.
+      OBSOLETE: The associted admin resource has been deleted. The consumer
+        resource state becomes obsolete.
+    """
+    CONSUMER_RESOURCE_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    OBSOLETE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -4239,7 +4285,8 @@ class MulticastGroupConsumerActivation(_messages.Message):
   multicastConsumerAssociation = _messages.StringField(4)
   multicastGroup = _messages.StringField(5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastGroupDefinition(_messages.Message):

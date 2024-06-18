@@ -448,9 +448,9 @@ class Workflow(_messages.Message):
 
   Fields:
     allKmsKeys: Output only. A list of all KMS crypto keys used to encrypt or
-      decrpt the data associated with the workflow.
-    allKmsKeysVersions: Output only. A list of all KMS crypto keys versions
-      used to encrypt or decrpt the data associated with the workflow.
+      decrypt the data associated with the workflow.
+    allKmsKeysVersions: Output only. A list of all KMS crypto key versions
+      used to encrypt or decrypt the data associated with the workflow.
     callLogLevel: Optional. Describes the level of platform logging to apply
       to calls and call responses during executions of this workflow. If both
       the workflow and the execution specify a logging level, the execution

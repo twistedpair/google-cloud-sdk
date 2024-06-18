@@ -421,27 +421,28 @@ class AzureInfo(_messages.Message):
   r"""Additional information for an asset fetched from Azure
 
   Fields:
-    managementGroups: The Azure Management Group
+    managementGroupResourceIds: The Azure Management Group
       (https://learn.microsoft.com/en-us/azure/governance/management-
       groups/overview) Order is from leaf management group to the root
       management group E.g.:
       /providers/Microsoft.Management/managementGroups/group-name
-    resourceGroup: The Azure Resource Group (https://learn.microsoft.com/en-
-      us/azure/azure-resource-manager/management/manage-resource-groups-
-      portal) E.g.: /subscriptions/1a11aad8-de27-1234-85e9-
-      0f675821f15c/resourceGroups/group-name
-    subscriptionId: The Azure Subscription (https://learn.microsoft.com/en-
-      us/azure/cost-management-billing/manage/) E.g.:
+    resourceGroupResourceId: The Azure Resource Group
+      (https://learn.microsoft.com/en-us/azure/azure-resource-
+      manager/management/manage-resource-groups-portal) E.g.: /subscriptions/1
+      a11aad8-de27-1234-85e9-0f675821f15c/resourceGroups/group-name
+    subscriptionResourceId: The Azure Subscription
+      (https://learn.microsoft.com/en-us/azure/cost-management-
+      billing/manage/) E.g.:
       /subscriptions/1a11aad8-de27-1234-85e9-0f675821f15c
-    tenantId: The Azure Tenant id (https://learn.microsoft.com/en-
+    tenantResourceId: The Azure Tenant id (https://learn.microsoft.com/en-
       us/azure/azure-portal/get-subscription-tenant-id) E.g.:
       /tenants/a11aaa11-aa11-1aa1-11aa-1aaa11a
   """
 
-  managementGroups = _messages.StringField(1, repeated=True)
-  resourceGroup = _messages.StringField(2)
-  subscriptionId = _messages.StringField(3)
-  tenantId = _messages.StringField(4)
+  managementGroupResourceIds = _messages.StringField(1, repeated=True)
+  resourceGroupResourceId = _messages.StringField(2)
+  subscriptionResourceId = _messages.StringField(3)
+  tenantResourceId = _messages.StringField(4)
 
 
 class BatchGetAssetsHistoryResponse(_messages.Message):
@@ -3539,7 +3540,7 @@ class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
     custom: A `CustomLevel` written in the Common Expression Language.
     description: Description of the `AccessLevel` and its use. Does not affect
       behavior.
-    name: Resource name for the `AccessLevel`. Format:
+    name: Identifier. Resource name for the `AccessLevel`. Format:
       `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
       `access_level` component must begin with a letter, followed by
       alphanumeric characters or `_`. Its maximum length is 50 characters.
@@ -3564,10 +3565,11 @@ class GoogleIdentityAccesscontextmanagerV1AccessPolicy(_messages.Message):
   Fields:
     etag: Output only. An opaque identifier for the current version of the
       `AccessPolicy`. This will always be a strongly validated etag, meaning
-      that two Access Polices will be identical if and only if their etags are
-      identical. Clients should not expect this to be in any specific format.
-    name: Output only. Resource name of the `AccessPolicy`. Format:
-      `accessPolicies/{access_policy}`
+      that two Access Policies will be identical if and only if their etags
+      are identical. Clients should not expect this to be in any specific
+      format.
+    name: Output only. Identifier. Resource name of the `AccessPolicy`.
+      Format: `accessPolicies/{access_policy}`
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
@@ -4132,7 +4134,7 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeter(_messages.Message):
   Fields:
     description: Description of the `ServicePerimeter` and its use. Does not
       affect behavior.
-    name: Resource name for the `ServicePerimeter`. Format:
+    name: Identifier. Resource name for the `ServicePerimeter`. Format:
       `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}`.
       The `service_perimeter` component must begin with a letter, followed by
       alphanumeric characters or `_`. After you create a `ServicePerimeter`,
@@ -5748,7 +5750,6 @@ class Resource(_messages.Message):
 
 class ResourceSearchResult(_messages.Message):
   r"""A result of Resource Search, containing information of a cloud resource.
-  Next ID: 34
 
   Messages:
     AdditionalAttributesValue: The additional searchable attributes of this
@@ -5766,7 +5767,7 @@ class ResourceSearchResult(_messages.Message):
       * Use a free text query to match the attributes values. Example: to
       search `additional_attributes = { dnsName: "foobar" }`, you can issue a
       query `foobar`.
-    LabelsValue: Labels associated with this resource. See [Labelling and
+    LabelsValue: User labels associated with this resource. See [Labelling and
       grouping Google Cloud
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
@@ -5866,8 +5867,8 @@ class ResourceSearchResult(_messages.Message):
       available only when the resource's Protobuf contains it. To search
       against the `kms_keys`: * Use a field query. Example: `kmsKeys:key` *
       Use a free text query. Example: `key`
-    labels: Labels associated with this resource. See [Labelling and grouping
-      Google Cloud
+    labels: User labels associated with this resource. See [Labelling and
+      grouping Google Cloud
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.
       This field is available only when the resource's Protobuf contains it.
@@ -6022,7 +6023,7 @@ class ResourceSearchResult(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels associated with this resource. See [Labelling and grouping
+    r"""User labels associated with this resource. See [Labelling and grouping
     Google Cloud
     resources](https://cloud.google.com/blog/products/gcp/labelling-and-
     grouping-your-google-cloud-platform-resources) for more information. This

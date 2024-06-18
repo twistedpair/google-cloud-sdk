@@ -83,6 +83,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.networkEndpointGroups = self.NetworkEndpointGroupsService(self)
     self.networkFirewallPolicies = self.NetworkFirewallPoliciesService(self)
     self.networkPlacements = self.NetworkPlacementsService(self)
+    self.networkProfiles = self.NetworkProfilesService(self)
     self.networks = self.NetworksService(self)
     self.nodeGroups = self.NodeGroupsService(self)
     self.nodeTemplates = self.NodeTemplatesService(self)
@@ -105,6 +106,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
+    self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
     self.regionNetworkFirewallPolicies = self.RegionNetworkFirewallPoliciesService(self)
     self.regionNotificationEndpoints = self.RegionNotificationEndpointsService(self)
@@ -11040,6 +11042,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class NetworkProfilesService(base_api.BaseApiService):
+    """Service class for the networkProfiles resource."""
+
+    _NAME = 'networkProfiles'
+
+    def __init__(self, client):
+      super(ComputeAlpha.NetworkProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified network profile.
+
+      Args:
+        request: (ComputeNetworkProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkProfiles.get',
+        ordered_params=['project', 'networkProfile'],
+        path_params=['networkProfile', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/networkProfiles/{networkProfile}',
+        request_field='',
+        request_type_name='ComputeNetworkProfilesGetRequest',
+        response_type_name='NetworkProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of network profiles available to the specified project.
+
+      Args:
+        request: (ComputeNetworkProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkProfilesListResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.networkProfiles.list',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/networkProfiles',
+        request_field='',
+        request_type_name='ComputeNetworkProfilesListRequest',
+        response_type_name='NetworkProfilesListResponse',
+        supports_download=False,
+    )
+
   class NetworksService(base_api.BaseApiService):
     """Service class for the networks resource."""
 
@@ -16483,6 +16547,120 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='testPermissionsRequest',
         request_type_name='ComputeRegionInstantSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+  class RegionMultiMigsService(base_api.BaseApiService):
+    """Service class for the regionMultiMigs resource."""
+
+    _NAME = 'regionMultiMigs'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionMultiMigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a regional multiMIG in the specified project.
+
+      Args:
+        request: (ComputeRegionMultiMigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionMultiMigs.delete',
+        ordered_params=['project', 'region', 'multiMig'],
+        path_params=['multiMig', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the specified MultiMIG resource.
+
+      Args:
+        request: (ComputeRegionMultiMigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigs.get',
+        ordered_params=['project', 'region', 'multiMig'],
+        path_params=['multiMig', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/multiMigs/{multiMig}',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigsGetRequest',
+        response_type_name='MultiMig',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a regional multiMIG in the specified project.
+
+      Args:
+        request: (ComputeRegionMultiMigsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionMultiMigs.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/multiMigs',
+        request_field='multiMig',
+        request_type_name='ComputeRegionMultiMigsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieves a list of MultiMIGs in a project and region.
+
+      Args:
+        request: (ComputeRegionMultiMigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MultiMigsList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionMultiMigs.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/multiMigs',
+        request_field='',
+        request_type_name='ComputeRegionMultiMigsListRequest',
+        response_type_name='MultiMigsList',
         supports_download=False,
     )
 
@@ -22061,7 +22239,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.
+      r"""Updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: pool_provisioned_capacity_gb, pool_provisioned_iops and pool_provisioned_throughput.
 
       Args:
         request: (ComputeStoragePoolsUpdateRequest) input message

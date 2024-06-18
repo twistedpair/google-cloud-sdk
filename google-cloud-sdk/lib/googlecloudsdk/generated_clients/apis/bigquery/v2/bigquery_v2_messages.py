@@ -2058,9 +2058,9 @@ class Dataset(_messages.Message):
       locale, case insensitive. * '': empty string. Default to case-sensitive
       behavior.
     defaultEncryptionConfiguration: The default encryption key for all tables
-      in the dataset. Once this property is set, all newly-created partitioned
-      tables in the dataset will have encryption key set to this value, unless
-      table creation request (or query) overrides the key.
+      in the dataset. After this property is set, the encryption key of all
+      newly-created tables in the dataset is set to this value unless the
+      table creation request or query explicitly overrides the key.
     defaultPartitionExpirationMs: This default partition expiration, expressed
       in milliseconds. When new time-partitioned tables are created in a
       dataset where this property is set, the table will inherit this value,
@@ -5867,20 +5867,21 @@ class PartitionedColumn(_messages.Message):
   r"""The partitioning column information.
 
   Fields:
-    field: Output only. The name of the partition column.
+    field: Required. The name of the partition column.
   """
 
   field = _messages.StringField(1)
 
 
 class PartitioningDefinition(_messages.Message):
-  r"""The partitioning information, which includes managed table and external
-  table partition information.
+  r"""The partitioning information, which includes managed table, external
+  table and metastore partitioned table partition information.
 
   Fields:
-    partitionedColumn: Output only. Details about each partitioning column.
-      BigQuery native tables only support 1 partitioning column. Other table
-      types may support 0, 1 or more partitioning columns.
+    partitionedColumn: Optional. Details about each partitioning column. This
+      field is output only for all partitioning types other than metastore
+      partitioned tables. BigQuery native tables only support 1 partitioning
+      column. Other table types may support 0, 1 or more partitioning columns.
   """
 
   partitionedColumn = _messages.MessageField('PartitionedColumn', 1, repeated=True)
@@ -6493,9 +6494,8 @@ class RangePartitioning(_messages.Message):
     RangeValue: [Experimental] Defines the ranges for range partitioning.
 
   Fields:
-    field: Required. [Experimental] The table is partitioned by this field.
-      The field must be a top-level NULLABLE/REQUIRED field. The only
-      supported type is INTEGER/INT64.
+    field: Required. The name of the column to partition the table on. It must
+      be a top-level, INT64 column whose mode is NULLABLE or REQUIRED.
     range: [Experimental] Defines the ranges for range partitioning.
   """
 
@@ -7844,9 +7844,11 @@ class Table(_messages.Message):
       bytes. This also includes storage used for time travel. This data is not
       kept in real time, and might be delayed by a few seconds to a few
       minutes.
-    partitionDefinition: Output only. The partition information for all table
+    partitionDefinition: Optional. The partition information for all table
       formats, including managed partitioned tables, hive partitioned tables,
-      and iceberg partitioned tables.
+      iceberg partitioned, and metastore partitioned tables. This field is
+      only populated for metastore partitioned tables. For other table
+      formats, this is an output only field.
     rangePartitioning: If specified, configures range partitioning for this
       table.
     replicas: Optional. Output only. Table references of all replicas
@@ -9602,6 +9604,7 @@ class UndeleteDatasetRequest(_messages.Message):
   Fields:
     deletionTime: Optional. The exact time when the dataset was deleted. If
       not specified, the most recently deleted version is undeleted.
+      Undeleting a dataset using deletion time is not supported.
   """
 
   deletionTime = _messages.StringField(1)

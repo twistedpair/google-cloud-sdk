@@ -64,7 +64,9 @@ class AutoDetectDecodingConfig(_messages.Message):
   an rfc4867.5 header. * FLAC: FLAC frames in the "native FLAC" container
   format. * MP3: MPEG audio frames with optional (ignored) ID3 metadata. *
   OGG_OPUS: Opus audio frames in an Ogg container. * WEBM_OPUS: Opus audio
-  frames in a WebM container. * M4A: M4A audio format.
+  frames in a WebM container. * MP4_AAC: AAC audio frames in an MP4 container.
+  * M4A_AAC: AAC audio frames in an M4A container. * MOV_AAC: AAC audio frames
+  in an MOV container.
   """
 
 

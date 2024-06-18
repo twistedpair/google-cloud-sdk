@@ -1263,14 +1263,14 @@ class PkixPublicKey(_messages.Message):
   Fields:
     keyId: Optional. The ID of this public key. Signatures verified by Binary
       Authorization must include the ID of the public key that can be used to
-      verify them, and that ID must match the contents of this field exactly.
-      This may be explicitly provided by the caller, but it MUST be a valid
-      RFC3986 URI. If `key_id` is left blank and this `PkixPublicKey` is not
-      used in the context of a wrapper (see next paragraph), a default key ID
-      will be computed based on the digest of the DER encoding of the public
-      key. If this `PkixPublicKey` is used in the context of a wrapper that
-      has its own notion of key ID (e.g. `AttestorPublicKey`), then this field
-      can either: * Match that value exactly. * Or be left blank, in which
+      verify them. The ID must match exactly contents of the `key_id` field
+      exactly. The ID may be explicitly provided by the caller, but it MUST be
+      a valid RFC3986 URI. If `key_id` is left blank and this `PkixPublicKey`
+      is not used in the context of a wrapper (see next paragraph), a default
+      key ID will be computed based on the digest of the DER encoding of the
+      public key. If this `PkixPublicKey` is used in the context of a wrapper
+      that has its own notion of key ID (e.g. `AttestorPublicKey`), then this
+      field can either match that value exactly, or be left blank, in which
       case it behaves exactly as though it is equal to that wrapper value.
     publicKeyPem: A PEM-encoded public key, as described in
       https://tools.ietf.org/html/rfc7468#section-13
@@ -1773,10 +1773,11 @@ class SimpleSigningAttestationCheck(_messages.Message):
       `projects/[PROJECT_ID]`. Only one attestation needs to successfully
       verify an image for this check to pass, so a single verified attestation
       found in any of `container_analysis_attestation_projects` is sufficient
-      for the check to pass. When fetching Occurrences from Container
-      Analysis, only `AttestationOccurrence` kinds are considered. In the
-      future, additional Occurrence kinds may be added to the query. Maximum
-      number of `container_analysis_attestation_projects` allowed in each
+      for the check to pass. A project ID must be used, not a project number.
+      When fetching Occurrences from Container Analysis, only
+      `AttestationOccurrence` kinds are considered. In the future, additional
+      Occurrence kinds may be added to the query. Maximum number of
+      `container_analysis_attestation_projects` allowed in each
       `SimpleSigningAttestationCheck` is 10.
   """
 
@@ -1928,9 +1929,10 @@ class UserOwnedGrafeasNote(_messages.Message):
       use an email based on a different naming pattern.
     noteReference: Required. The Grafeas resource name of a
       Attestation.Authority Note, created by the user, in the format:
-      `projects/*/notes/*`. This field may not be updated. An attestation by
-      this attestor is stored as a Grafeas Attestation.Authority Occurrence
-      that names a container image and that links to this Note. Grafeas is an
+      `projects/[PROJECT_ID]/notes/*`. This field may not be updated. A
+      project ID must be used, not a project number. An attestation by this
+      attestor is stored as a Grafeas Attestation.Authority Occurrence that
+      names a container image and that links to this Note. Grafeas is an
       external dependency.
     publicKeys: Optional. Public keys that verify attestations signed by this
       attestor. This field may be updated. If this field is non-empty, one of

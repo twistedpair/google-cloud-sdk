@@ -158,7 +158,7 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
   instance_resource.networkConfig = NetworkConfig(
       alloydb_messages,
       args.assign_inbound_public_ip,
-      None,
+      args.authorized_external_networks,
   )
 
   if args.allowed_psc_projects:

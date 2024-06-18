@@ -1450,7 +1450,6 @@ class CloudkmsProjectsShowEffectiveAutokeyConfigRequest(_messages.Message):
 
 class CryptoKey(_messages.Message):
   r"""A CryptoKey represents a logical key that can be used for cryptographic
-
   operations. A CryptoKey is made up of zero or more versions, which represent
   the actual key material used in cryptographic operations.
 
@@ -1566,9 +1565,7 @@ class CryptoKey(_messages.Message):
   cryptoKeyBackend = _messages.StringField(2)
   destroyScheduledDuration = _messages.StringField(3)
   importOnly = _messages.BooleanField(4)
-  keyAccessJustificationsPolicy = _messages.MessageField(
-      'KeyAccessJustificationsPolicy', 5
-  )
+  keyAccessJustificationsPolicy = _messages.MessageField('KeyAccessJustificationsPolicy', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   nextRotationTime = _messages.StringField(8)
@@ -2702,7 +2699,6 @@ class ImportJob(_messages.Message):
 
 class KeyAccessJustificationsPolicy(_messages.Message):
   r"""A KeyAccessJustificationsPolicy specifies zero or more allowed
-
   AccessReason values for Encrypt, Decrypt, and Sign requests on a CryptoKey.
 
   Enums:
@@ -2758,7 +2754,6 @@ class KeyAccessJustificationsPolicy(_messages.Message):
         authorizes. * Customer-initiated Google support access. * Google-
         initiated support access to protect system reliability.
     """
-
     REASON_UNSPECIFIED = 0
     CUSTOMER_INITIATED_SUPPORT = 1
     GOOGLE_INITIATED_SERVICE = 2
@@ -2772,9 +2767,7 @@ class KeyAccessJustificationsPolicy(_messages.Message):
     GOOGLE_RESPONSE_TO_PRODUCTION_ALERT = 10
     CUSTOMER_AUTHORIZED_WORKFLOW_SERVICING = 11
 
-  allowedAccessReasons = _messages.EnumField(
-      'AllowedAccessReasonsValueListEntryValuesEnum', 1, repeated=True
-  )
+  allowedAccessReasons = _messages.EnumField('AllowedAccessReasonsValueListEntryValuesEnum', 1, repeated=True)
 
 
 class KeyHandle(_messages.Message):

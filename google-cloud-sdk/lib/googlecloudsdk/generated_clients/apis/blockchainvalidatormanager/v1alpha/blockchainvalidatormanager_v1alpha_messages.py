@@ -513,37 +513,10 @@ class Empty(_messages.Message):
 class EthereumDetails(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
-  Fields:
-    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
-      gas per block. This is sent to the block builder service, however
-      whether it is followed depends on the service. This field is only read
-      if the field use_block_builder_proposals is set to true. If not
-      specified, the validator client will use a default value.
-    graffiti: Optional. Input only. Graffiti is a custom string published in
-      blocks proposed by the validator. This can only be written, as the
-      current value cannot be read back from the validator client API. See
-      https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
-      how this is used. If not set, the validator client's default is used. If
-      no blockchain node is specified, this has no effect as no validator
-      client is run.
-    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
-      rewards should be sent. This can only be set when creating the
-      validator. If no blockchain node is specified for the validator, this
-      has no effect as no validator client is run. See also
-      https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
-      more context.
-    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
-      block building services (MEV).
-  """
-
-  gasLimit = _messages.IntegerField(1)
-  graffiti = _messages.StringField(2)
-  suggestedFeeRecipient = _messages.StringField(3)
-  useBlockBuilderProposals = _messages.BooleanField(4)
-
-
-class EthereumDetailsTemplate(_messages.Message):
-  r"""Blockchain validator configuration unique to Ethereum blockchains.
+  Enums:
+    NetworkValueValuesEnum: Optional. Output only. The Ethereum network the
+      validator is deployed on. This is set on initial deployment to a
+      blockchain node and cannot be changed.
 
   Fields:
     gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
@@ -571,9 +544,94 @@ class EthereumDetailsTemplate(_messages.Message):
       block building services (MEV).
   """
 
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. The Ethereum network the validator is deployed
+    on. This is set on initial deployment to a blockchain node and cannot be
+    changed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
+        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
+        replace Goerli.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
+
   gasLimit = _messages.IntegerField(1)
   graffiti = _messages.StringField(2)
-  network = _messages.StringField(3)
+  network = _messages.EnumField('NetworkValueValuesEnum', 3)
+  suggestedFeeRecipient = _messages.StringField(4)
+  useBlockBuilderProposals = _messages.BooleanField(5)
+
+
+class EthereumDetailsTemplate(_messages.Message):
+  r"""Blockchain validator configuration unique to Ethereum blockchains.
+
+  Enums:
+    NetworkValueValuesEnum: Optional. Output only. The Ethereum network the
+      validator is deployed on. This is set on initial deployment to a
+      blockchain node and cannot be changed.
+
+  Fields:
+    gasLimit: Optional. Immutable. Optionally requested (not enforced) maximum
+      gas per block. This is sent to the block builder service, however
+      whether it is followed depends on the service. This field is only read
+      if the field use_block_builder_proposals is set to true. If not
+      specified, the validator client will use a default value.
+    graffiti: Optional. Input only. Graffiti is a custom string published in
+      blocks proposed by the validator. This can only be written, as the
+      current value cannot be read back from the validator client API. See
+      https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
+      how this is used. If not set, the validator client's default is used. If
+      no blockchain node is specified, this has no effect as no validator
+      client is run.
+    network: Optional. Output only. The Ethereum network the validator is
+      deployed on. This is set on initial deployment to a blockchain node and
+      cannot be changed.
+    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
+      rewards should be sent. This can only be set when creating the
+      validator. If no blockchain node is specified for the validator, this
+      has no effect as no validator client is run. See also
+      https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
+      more context.
+    useBlockBuilderProposals: Optional. Immutable. Enable use of the external
+      block building services (MEV).
+  """
+
+  class NetworkValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. The Ethereum network the validator is deployed
+    on. This is set on initial deployment to a blockchain node and cannot be
+    changed.
+
+    Values:
+      NETWORK_UNSPECIFIED: The network has not been specified, but should be.
+      MAINNET: The Ethereum Mainnet.
+      TESTNET_GOERLI_PRATER: Deprecated: The Ethereum Testnet based on Goerli
+        protocol. Holesky (TESTNET_HOLESKY) is the recommended testnet to
+        replace Goerli.
+      TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
+    """
+    NETWORK_UNSPECIFIED = 0
+    MAINNET = 1
+    TESTNET_GOERLI_PRATER = 2
+    TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
+
+  gasLimit = _messages.IntegerField(1)
+  graffiti = _messages.StringField(2)
+  network = _messages.EnumField('NetworkValueValuesEnum', 3)
   suggestedFeeRecipient = _messages.StringField(4)
   useBlockBuilderProposals = _messages.BooleanField(5)
 

@@ -530,7 +530,7 @@ class DataplexV1(base_api.BaseApiClient):
           }
 
     def GenerateDataQualityRules(self, request, global_params=None):
-      r"""Generates recommended DataQualityRule from a data profiling DataScan.
+      r"""Generates recommended data quality rules based on the results of a data profiling scan.Use the recommendations to build rules for a data quality scan.
 
       Args:
         request: (DataplexProjectsLocationsDataScansJobsGenerateDataQualityRulesRequest) input message
@@ -675,7 +675,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def GenerateDataQualityRules(self, request, global_params=None):
-      r"""Generates recommended DataQualityRule from a data profiling DataScan.
+      r"""Generates recommended data quality rules based on the results of a data profiling scan.Use the recommendations to build rules for a data quality scan.
 
       Args:
         request: (DataplexProjectsLocationsDataScansGenerateDataQualityRulesRequest) input message

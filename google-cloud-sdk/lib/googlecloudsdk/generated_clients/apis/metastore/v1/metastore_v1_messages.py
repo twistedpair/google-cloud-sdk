@@ -634,6 +634,9 @@ class Federation(_messages.Message):
       be greater than or equal to zero. A BackendMetastore with a lower number
       will be evaluated before a BackendMetastore with a higher number.
     LabelsValue: User-defined labels for the metastore federation.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     backendMetastores: A map from BackendMetastore rank to BackendMetastores
@@ -652,6 +655,9 @@ class Federation(_messages.Message):
     state: Output only. The current state of the federation.
     stateMessage: Output only. Additional information about the current state
       of the metastore federation, if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     uid: Output only. The globally unique resource identifier of the metastore
       federation.
     updateTime: Output only. The time when the metastore federation was last
@@ -738,6 +744,32 @@ class Federation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   backendMetastores = _messages.MessageField('BackendMetastoresValue', 1)
   createTime = _messages.StringField(2)
   endpointUri = _messages.StringField(3)
@@ -745,9 +777,10 @@ class Federation(_messages.Message):
   name = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   stateMessage = _messages.StringField(7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  version = _messages.StringField(10)
+  tags = _messages.MessageField('TagsValue', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  version = _messages.StringField(11)
 
 
 class HiveMetastoreConfig(_messages.Message):
@@ -2615,6 +2648,9 @@ class Service(_messages.Message):
 
   Messages:
     LabelsValue: User-defined labels for the metastore service.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     artifactGcsUri: Output only. A Cloud Storage URI (starting with gs://)
@@ -2658,6 +2694,9 @@ class Service(_messages.Message):
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     telemetryConfig: The configuration specifying telemetry settings for the
       Dataproc Metastore service. If unspecified defaults to JSON.
     tier: The tier of the service.
@@ -2763,6 +2802,32 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   artifactGcsUri = _messages.StringField(1)
   createTime = _messages.StringField(2)
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 3)
@@ -2783,10 +2848,11 @@ class Service(_messages.Message):
   scheduledBackup = _messages.MessageField('ScheduledBackup', 18)
   state = _messages.EnumField('StateValueValuesEnum', 19)
   stateMessage = _messages.StringField(20)
-  telemetryConfig = _messages.MessageField('TelemetryConfig', 21)
-  tier = _messages.EnumField('TierValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  tags = _messages.MessageField('TagsValue', 21)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 22)
+  tier = _messages.EnumField('TierValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class SetIamPolicyRequest(_messages.Message):

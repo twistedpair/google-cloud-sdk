@@ -868,9 +868,11 @@ class Repository(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     initialConfig: Input only. Initial configurations for the repository.
-    instance: Output only. The name of the instance in which the repository is
+    instance: Optional. The name of the instance in which the repository is
       hosted, formatted as `projects/{project_number}/locations/{location_id}/
-      instances/{instance_id}`
+      instances/{instance_id}` For data plane CreateRepository requests, this
+      field is output only. For control plane CreateRepository requests, this
+      field is used as input.
     name: Optional. A unique identifier for a repository. The name should be
       of the format: `projects/{project}/locations/{location_id}/repositories/
       {repository_id}`

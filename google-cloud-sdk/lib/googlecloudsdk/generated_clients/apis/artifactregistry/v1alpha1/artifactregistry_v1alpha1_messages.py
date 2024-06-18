@@ -162,6 +162,7 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of repositories to return. Maximum page size
       is 1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -170,9 +171,10 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
       be listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Message):

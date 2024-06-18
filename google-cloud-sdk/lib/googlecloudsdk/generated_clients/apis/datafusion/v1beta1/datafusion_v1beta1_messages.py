@@ -21,33 +21,30 @@ package = 'datafusion'
 
 
 class Accelerator(_messages.Message):
-  r"""Identifies Data Fusion accelerators for an instance.
+  r"""Identifies Cloud Data Fusion accelerators for an instance.
 
   Enums:
     AcceleratorTypeValueValuesEnum: Optional. The type of an accelator for a
-      CDF instance.
+      Cloud Data Fusion instance.
     StateValueValuesEnum: Output only. The state of the accelerator.
 
   Fields:
-    acceleratorType: Optional. The type of an accelator for a CDF instance.
+    acceleratorType: Optional. The type of an accelator for a Cloud Data
+      Fusion instance.
     state: Output only. The state of the accelerator.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. The type of an accelator for a CDF instance.
+    r"""Optional. The type of an accelator for a Cloud Data Fusion instance.
 
     Values:
       ACCELERATOR_TYPE_UNSPECIFIED: Default value, if unspecified.
-      CDC: Change Data Capture accelerator for CDF.
-      HEALTHCARE: Cloud Healthcare accelerator for CDF. This accelerator is to
-        enable Cloud Healthcare specific CDF plugins developed by Healthcare
-        team.
+      CDC: Change Data Capture accelerator for Cloud Data Fusion.
+      HEALTHCARE: Reserved for internal use.
       CCAI_INSIGHTS: Contact Center AI Insights This accelerator is used to
         enable import and export pipelines custom built to streamline CCAI
         Insights processing.
-      CLOUDSEARCH: Cloud search accelerator for CDF. This accelerator is to
-        enable Cloud search specific CDF plugins developed by Cloudsearch
-        team.
+      CLOUDSEARCH: Reserved for internal use.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     CDC = 1
@@ -240,34 +237,6 @@ class CryptoKeyConfig(_messages.Message):
   """
 
   keyReference = _messages.StringField(1)
-
-
-class DataResidencyAugmentedView(_messages.Message):
-  r"""Next tag: 7
-
-  Fields:
-    crGopoGuris: Cloud resource to Google owned production object mapping in
-      the form of GURIs. The GURIs should be available in DG KB storage/cns
-      tables. This is the preferred way of providing cloud resource mappings.
-      For further details please read go/cloud-resource-monitoring_sig
-    crGopoPrefixes: Cloud resource to Google owned production object mapping
-      in the form of prefixes. These should be available in DG KB storage/cns
-      tables. The entity type, which is the part of the string before the
-      first colon in the GURI, must be completely specified in prefix. For
-      details about GURI please read go/guri. For further details about the
-      field please read go/cloud-resource-monitoring_sig.
-    serviceData: Service-specific data. Only required for pre-determined
-      services. Generally used to bind a Cloud Resource to some a TI container
-      that uniquely specifies a customer. See milestone 2 of DRZ KR8 SIG for
-      more information.
-    tpIds: The list of project_id's of the tenant projects in the 'google.com'
-      org which serve the Cloud Resource. See go/drz-mst-sig for more details.
-  """
-
-  crGopoGuris = _messages.StringField(1, repeated=True)
-  crGopoPrefixes = _messages.StringField(2, repeated=True)
-  serviceData = _messages.MessageField('ServiceData', 3)
-  tpIds = _messages.StringField(4, repeated=True)
 
 
 class DatafusionProjectsLocationsGetRequest(_messages.Message):
@@ -610,8 +579,6 @@ class DatafusionProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -620,10 +587,9 @@ class DatafusionProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class DatafusionProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -859,8 +825,7 @@ class Instance(_messages.Message):
       private Data Fusion instance is to be created.
     options: Map of additional options used to configure the behavior of Data
       Fusion instance.
-    p4ServiceAccount: Output only. P4 service account for the customer
-      project.
+    p4ServiceAccount: Output only. Service agent for the customer project.
     patchRevision: Optional. Current patch revision of the Data Fusion.
     privateInstance: Specifies whether the Data Fusion instance should be
       private. If set to true, all Data Fusion nodes will have private IP
@@ -1461,34 +1426,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
-class PersistentDiskData(_messages.Message):
-  r"""Persistent Disk service-specific Data. Contains information that may not
-  be appropriate for the generic DRZ Augmented View. This currently includes
-  LSV Colossus Roots and GCS Buckets.
-
-  Fields:
-    cfsRoots: Path to Colossus root for an LSV. NOTE: Unlike `cr_ti_guris` and
-      `cr_ti_prefixes`, the field `cfs_roots` below does not need to be a GUri
-      or GUri prefix. It can simply be any valid CFS or CFS2 Path. The DRZ KR8
-      SIG has more details overall, but generally the `cfs_roots` provided
-      here should be scoped to an individual Persistent Disk. An example for a
-      PD Disk with a disk ID 3277719120423414466, follows: * `cr_ti_guris`
-      could be '/cfs2/pj/pd-cloud-prod' as this is a valid GUri present in the
-      DG KB and contains enough information to perform location monitoring and
-      scope ownership of the Production Object. * `cfs_roots` would be:
-      '/cfs2/pj/pd-cloud-staging/lsv000001234@/
-      lsv/projects~773365403387~zones~2700~disks~3277719120423414466 ~bank-
-      blue-careful-3526-lsv00054DB1B7254BA3/' as this allows us to enumerate
-      the files on CFS2 that belong to an individual Disk.
-    gcsBucketNames: The GCS Buckets that back this snapshot or image. This is
-      required as `cr_ti_prefixes` and `cr_ti_guris` only accept TI resources.
-      This should be the globally unique bucket name.
-  """
-
-  cfsRoots = _messages.StringField(1, repeated=True)
-  gcsBucketNames = _messages.StringField(2, repeated=True)
-
-
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -1630,19 +1567,6 @@ class RemoveIamPolicyResponse(_messages.Message):
 
 class RestartInstanceRequest(_messages.Message):
   r"""Request message for restarting a Data Fusion instance."""
-
-
-class ServiceData(_messages.Message):
-  r"""This message defines service-specific data that certain service teams
-  must provide as part of the Data Residency Augmented View for a resource.
-  Next ID: 2
-
-  Fields:
-    pd: Auxiliary data for the persistent disk pipeline provided to provide
-      the LSV Colossus Roots and GCS Buckets.
-  """
-
-  pd = _messages.MessageField('PersistentDiskData', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):

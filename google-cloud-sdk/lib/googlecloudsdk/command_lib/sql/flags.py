@@ -2580,3 +2580,20 @@ def AddServerCaMode(parser):
       help=help_text,
       hidden=True,
   )
+
+
+def AddSwitchTransactionLogsToCloudStorage(
+    parser, show_negated_in_help=False, hidden=True
+):
+  """Adds '--switch-transaction-logs-to-cloud-storage' flag to the parser."""
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--switch-transaction-logs-to-cloud-storage',
+      required=False,
+      help=(
+          'Initiate switching transaction logs of the instance to cloud'
+          ' storage.'
+      ),
+      hidden=hidden,
+      **kwargs
+  )

@@ -13,14 +13,19 @@ from apitools.base.py import extra_types
 package = 'managedflink'
 
 
-class AutoscalingConfig(_messages.Message):
-  r"""The autoscaling configuration for the Flink job.
+class AutotuningConfig(_messages.Message):
+  r"""The autotuning configuration for the Flink job.
 
   Fields:
-    parallelism: Optional. Parallelism of the Flink job.
+    enableHorizontalAutoscaling: Optional. Whether horizontal autoscaling is
+      enabled for the Flink job.
+    maxParallelism: Optional. Max parallelism of the Flink job.
+    minParallelism: Optional. Min parallelism of the Flink job.
   """
 
-  parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  enableHorizontalAutoscaling = _messages.BooleanField(1)
+  maxParallelism = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minParallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -186,7 +191,9 @@ class JobSpec(_messages.Message):
   Fields:
     artifactUris: Required. The list of URIs for the flink job artifact files
       in cloud storage.
-    autoscalingConfig: Optional. Autoscaling configuration for the job.
+    autotuningConfig: Optional. Autotuning configuration for the job.
+    displayName: Optional. Display name of the Flink job, derived from the
+      Flink job graph.
     jarUris: Optional. The list of URIs for the job jars in cloud storage.
     jobGraphUri: Required. The flink job graph uri in cloud storage.
     network: Optional. The VPC network for the Flink job.
@@ -195,11 +202,12 @@ class JobSpec(_messages.Message):
   """
 
   artifactUris = _messages.StringField(1, repeated=True)
-  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 2)
-  jarUris = _messages.StringField(3, repeated=True)
-  jobGraphUri = _messages.StringField(4)
-  network = _messages.StringField(5)
-  subnetwork = _messages.StringField(6)
+  autotuningConfig = _messages.MessageField('AutotuningConfig', 2)
+  displayName = _messages.StringField(3)
+  jarUris = _messages.StringField(4, repeated=True)
+  jobGraphUri = _messages.StringField(5)
+  network = _messages.StringField(6)
+  subnetwork = _messages.StringField(7)
 
 
 class ListDeploymentsResponse(_messages.Message):
@@ -460,7 +468,7 @@ class ManagedFlinkDeploymentStatus(_messages.Message):
       RESOURCE_LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.
       DEPLOYMENT_CREATED: Resource has been created.
       DEPLOYMENT_DEPLOYED: Resource has been deployed.
-      RDEPLOYMENT_FAILED: Resource has failed to deploy.
+      DEPLOYMENT_FAILED: Resource has failed to deploy.
       DEPLOYMENT_ROLLED_BACK: Resource has been rolled back.
       DEPLOYMENT_ROLLING_BACK: Resource is stable.
       DEPLOYMENT_STABLE: Resource is stable.
@@ -470,7 +478,7 @@ class ManagedFlinkDeploymentStatus(_messages.Message):
     RESOURCE_LIFECYCLE_STATE_UNSPECIFIED = 0
     DEPLOYMENT_CREATED = 1
     DEPLOYMENT_DEPLOYED = 2
-    RDEPLOYMENT_FAILED = 3
+    DEPLOYMENT_FAILED = 3
     DEPLOYMENT_ROLLED_BACK = 4
     DEPLOYMENT_ROLLING_BACK = 5
     DEPLOYMENT_STABLE = 6
@@ -808,17 +816,19 @@ class ManagedflinkProjectsLocationsOperationsListRequest(_messages.Message):
 
 
 class NetworkConfig(_messages.Message):
-  r"""The VPC, region that can connect to this Flink Cluster.
+  r"""The VPC, region, subnetwork that can connect to this Flink Cluster.
 
   Fields:
     region: Optional. The region of the ManagedFlink resource.
+    subnetwork: Optional. The subnetwork of the ManagedFlink resource.
     vpc: Optional. The name of the VPC Network to assocaite ManagedFlink
       resources with. Formatted as:
       projects/{project}/global/networks/{network_id}
   """
 
   region = _messages.StringField(1)
-  vpc = _messages.StringField(2)
+  subnetwork = _messages.StringField(2)
+  vpc = _messages.StringField(3)
 
 
 class Operation(_messages.Message):

@@ -157,6 +157,7 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   r"""A ArtifactregistryProjectsLocationsRepositoriesListRequest object.
 
   Fields:
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of repositories to return. Maximum page size
       is 1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -165,9 +166,10 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
       be listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPackagesDeleteRequest(_messages.Message):
@@ -197,6 +199,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
   object.
 
   Fields:
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of packages to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -205,9 +208,10 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
       listed.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsCreateRequest(_messages.Message):
@@ -257,7 +261,14 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsListRequest(_mess
       `version` An example of using a filter: *
       `version="projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/1.0"` --> Tags that
-      are applied to the version `1.0` in package `pkg1`.
+      are applied to the version `1.0` in package `pkg1`. *
+      `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/tags/a%2Fb%2F*"` --> tags with
+      an ID starting with "a/b/". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/tags/*%2Fb%2Fc"` --> tags with
+      an ID ending with "/b/c". * `name="projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1/tags/*%2Fb%2F*"` --> tags with
+      an ID containing "/b/".
     pageSize: The maximum number of tags to return. Maximum page size is
       1,000.
     pageToken: The next_page_token value returned from a previous list

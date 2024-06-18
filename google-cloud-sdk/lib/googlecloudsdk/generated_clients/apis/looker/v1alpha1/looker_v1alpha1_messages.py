@@ -421,7 +421,7 @@ class ImportInstanceRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Looker instance. LINT.IfChange
+  r"""A Looker instance.
 
   Enums:
     PlatformEditionValueValuesEnum: Platform edition.

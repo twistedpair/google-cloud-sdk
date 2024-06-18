@@ -724,6 +724,7 @@ class ServerlessOperations(object):
       generate_name=False,
       delegate_builds=False,
       base_image=None,
+      build_service_account=None,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -757,6 +758,7 @@ class ServerlessOperations(object):
       generate_name: bool. If true, create a revision name, otherwise add nonce.
       delegate_builds: bool. If true, use the Build API to submit builds.
       base_image: The build base image to opt-in automatic build image updates.
+      build_service_account: The service account to use to execute the build.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -786,6 +788,7 @@ class ServerlessOperations(object):
           service_ref,
           delegate_builds,
           base_image,
+          build_service_account,
       )
       if image_digest is None:
         return

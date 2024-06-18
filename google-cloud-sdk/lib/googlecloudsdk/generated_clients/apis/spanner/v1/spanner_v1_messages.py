@@ -104,12 +104,32 @@ class Backup(_messages.Message):
       populated. At least one of the key versions must be available for the
       backup to be restored. If a key version is revoked in the middle of a
       restore, the restore behavior is undefined.
+    exclusiveSizeBytes: Output only. For a backup in an incremental backup
+      chain, this is the storage space needed to keep the data that has
+      changed since the previous backup. For all other backups, this is always
+      the size of the backup. This value may change if backups on the same
+      chain get deleted or expired. This field can be used to calculate the
+      total storage space used by a set of backups. For example, the total
+      space used by all backups of a database can be computed by summing up
+      this field.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
       processed. Once the `expire_time` has passed, the backup is eligible to
       be automatically deleted by Cloud Spanner to free the resources used by
       the backup.
+    freeableSizeBytes: Output only. The number of bytes that will be freed by
+      deleting this backup. This value will be zero if, for example, this
+      backup is part of an incremental backup chain and younger backups in the
+      chain require that we keep its data. For backups not in an incremental
+      backup chain, this is always the size of the backup. This value may
+      change if backups on the same chain get created, deleted or expired.
+    incrementalBackupChainId: Output only. Populated only for backups in an
+      incremental backup chain. Backups share the same chain id if and only if
+      they belong to the same incremental backup chain. Use this field to
+      determine which backups are part of the same incremental backup chain.
+      The ordering of backups in the chain can be determined by ordering the
+      backup `version_time`.
     maxExpireTime: Output only. The max allowed expiration time of the backup,
       with microseconds granularity. A backup's expiration time can be
       configured in multiple APIs: CreateBackup, UpdateBackup, CopyBackup.
@@ -123,6 +143,12 @@ class Backup(_messages.Message):
       in the location(s) specified in the instance configuration of the
       instance containing the backup, identified by the prefix of the backup
       name of the form `projects//instances/`.
+    oldestVersionTime: Output only. Data deleted at a time older than this is
+      guaranteed not to be retained in order to support this backup. For a
+      backup in an incremental backup chain, this is the version time of the
+      oldest backup that exists or ever existed in the chain. For all other
+      backups, this is the version time of the backup. This field can be used
+      to understand what data is being retained by the backup system.
     referencingBackups: Output only. The names of the destination backups
       being created by copying this source backup. The backup names are of the
       form `projects//instances//backups/`. Referencing backups may exist in
@@ -176,14 +202,18 @@ class Backup(_messages.Message):
   databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 4)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 5)
   encryptionInformation = _messages.MessageField('EncryptionInfo', 6, repeated=True)
-  expireTime = _messages.StringField(7)
-  maxExpireTime = _messages.StringField(8)
-  name = _messages.StringField(9)
-  referencingBackups = _messages.StringField(10, repeated=True)
-  referencingDatabases = _messages.StringField(11, repeated=True)
-  sizeBytes = _messages.IntegerField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  versionTime = _messages.StringField(14)
+  exclusiveSizeBytes = _messages.IntegerField(7)
+  expireTime = _messages.StringField(8)
+  freeableSizeBytes = _messages.IntegerField(9)
+  incrementalBackupChainId = _messages.StringField(10)
+  maxExpireTime = _messages.StringField(11)
+  name = _messages.StringField(12)
+  oldestVersionTime = _messages.StringField(13)
+  referencingBackups = _messages.StringField(14, repeated=True)
+  referencingDatabases = _messages.StringField(15, repeated=True)
+  sizeBytes = _messages.IntegerField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  versionTime = _messages.StringField(18)
 
 
 class BackupInfo(_messages.Message):
@@ -214,6 +244,7 @@ class BackupSchedule(_messages.Message):
       to encrypt the backup. If this field is not specified, the backup will
       use the same encryption configuration as the database.
     fullBackupSpec: The schedule creates only full backups.
+    incrementalBackupSpec: The schedule creates incremental backup chains.
     name: Identifier. Output only for the CreateBackupSchedule operation.
       Required for the UpdateBackupSchedule operation. A globally unique
       identifier for the backup schedule which cannot be changed. Values are
@@ -232,10 +263,11 @@ class BackupSchedule(_messages.Message):
 
   encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 1)
   fullBackupSpec = _messages.MessageField('FullBackupSpec', 2)
-  name = _messages.StringField(3)
-  retentionDuration = _messages.StringField(4)
-  spec = _messages.MessageField('BackupScheduleSpec', 5)
-  updateTime = _messages.StringField(6)
+  incrementalBackupSpec = _messages.MessageField('IncrementalBackupSpec', 3)
+  name = _messages.StringField(4)
+  retentionDuration = _messages.StringField(5)
+  spec = _messages.MessageField('BackupScheduleSpec', 6)
+  updateTime = _messages.StringField(7)
 
 
 class BackupScheduleSpec(_messages.Message):
@@ -1013,9 +1045,9 @@ class Database(_messages.Message):
       using this value to recover data, make sure to account for the time from
       the moment when the value is queried to the moment when you initiate the
       recovery.
-    enableDropProtection: Whether drop protection is enabled for this
-      database. Defaults to false, if not set. For more details, please see
-      how to [prevent accidental database
+    enableDropProtection: Optional. Whether drop protection is enabled for
+      this database. Defaults to false, if not set. For more details, please
+      see how to [prevent accidental database
       deletion](https://cloud.google.com/spanner/docs/prevent-database-
       deletion).
     encryptionConfig: Output only. For databases that are using customer
@@ -1708,6 +1740,16 @@ class IncludeReplicas(_messages.Message):
 
   autoFailoverDisabled = _messages.BooleanField(1)
   replicaSelections = _messages.MessageField('ReplicaSelection', 2, repeated=True)
+
+
+class IncrementalBackupSpec(_messages.Message):
+  r"""The specification for incremental backup chains. An incremental backup
+  stores the delta of changes between a previous backup and the database
+  contents at a given version time. An incremental backup chain consists of a
+  full backup and zero or more successive incremental backups. The first
+  backup created for an incremental backup chain is always a full backup.
+  """
+
 
 
 class IndexAdvice(_messages.Message):
@@ -3760,6 +3802,16 @@ class ReadOnly(_messages.Message):
 class ReadRequest(_messages.Message):
   r"""The request for Read and StreamingRead.
 
+  Enums:
+    LockHintValueValuesEnum: Optional. Lock Hint for the request, it can only
+      be used with read-write transactions.
+    OrderByValueValuesEnum: Optional. Order for the returned rows. By default,
+      Spanner will return result rows in primary key order except for
+      PartitionRead requests. For applications that do not require rows to be
+      returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
+      `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
+      resulting in lower latencies in certain cases (e.g. bulk point lookups).
+
   Fields:
     columns: Required. The columns of table to be returned for each row
       matching this request.
@@ -3783,6 +3835,14 @@ class ReadRequest(_messages.Message):
     limit: If greater than zero, only the first `limit` rows are yielded. If
       `limit` is zero, the default is no limit. A limit cannot be specified if
       `partition_token` is set.
+    lockHint: Optional. Lock Hint for the request, it can only be used with
+      read-write transactions.
+    orderBy: Optional. Order for the returned rows. By default, Spanner will
+      return result rows in primary key order except for PartitionRead
+      requests. For applications that do not require rows to be returned in
+      primary key (`ORDER_BY_PRIMARY_KEY`) order, setting `ORDER_BY_NO_ORDER`
+      option allows Spanner to optimize row retrieval, resulting in lower
+      latencies in certain cases (e.g. bulk point lookups).
     partitionToken: If present, results will be restricted to the specified
       partition previously created using PartitionRead(). There must be an
       exact match for the values of fields common to this message and the
@@ -3798,17 +3858,84 @@ class ReadRequest(_messages.Message):
       temporary read-only transaction with strong concurrency.
   """
 
+  class LockHintValueValuesEnum(_messages.Enum):
+    r"""Optional. Lock Hint for the request, it can only be used with read-
+    write transactions.
+
+    Values:
+      LOCK_HINT_UNSPECIFIED: Default value. LOCK_HINT_UNSPECIFIED is
+        equivalent to LOCK_HINT_SHARED.
+      LOCK_HINT_SHARED: Acquire shared locks. By default when you perform a
+        read as part of a read-write transaction, Spanner acquires shared read
+        locks, which allows other reads to still access the data until your
+        transaction is ready to commit. When your transaction is committing
+        and writes are being applied, the transaction attempts to upgrade to
+        an exclusive lock for any data you are writing. For more information
+        about locks, see [Lock
+        modes](https://cloud.google.com/spanner/docs/introspection/lock-
+        statistics#explain-lock-modes).
+      LOCK_HINT_EXCLUSIVE: Acquire exclusive locks. Requesting exclusive locks
+        is beneficial if you observe high write contention, which means you
+        notice that multiple transactions are concurrently trying to read and
+        write to the same data, resulting in a large number of aborts. This
+        problem occurs when two transactions initially acquire shared locks
+        and then both try to upgrade to exclusive locks at the same time. In
+        this situation both transactions are waiting for the other to give up
+        their lock, resulting in a deadlocked situation. Spanner is able to
+        detect this occurring and force one of the transactions to abort.
+        However, this is a slow and expensive operation and results in lower
+        performance. In this case it makes sense to acquire exclusive locks at
+        the start of the transaction because then when multiple transactions
+        try to act on the same data, they automatically get serialized. Each
+        transaction waits its turn to acquire the lock and avoids getting into
+        deadlock situations. Because the exclusive lock hint is just a hint,
+        it should not be considered equivalent to a mutex. In other words, you
+        should not use Spanner exclusive locks as a mutual exclusion mechanism
+        for the execution of code outside of Spanner. **Note:** Request
+        exclusive locks judiciously because they block others from reading
+        that data for the entire transaction, rather than just when the writes
+        are being performed. Unless you observe high write contention, you
+        should use the default of shared read locks so you don't prematurely
+        block other clients from reading the data that you're writing to.
+    """
+    LOCK_HINT_UNSPECIFIED = 0
+    LOCK_HINT_SHARED = 1
+    LOCK_HINT_EXCLUSIVE = 2
+
+  class OrderByValueValuesEnum(_messages.Enum):
+    r"""Optional. Order for the returned rows. By default, Spanner will return
+    result rows in primary key order except for PartitionRead requests. For
+    applications that do not require rows to be returned in primary key
+    (`ORDER_BY_PRIMARY_KEY`) order, setting `ORDER_BY_NO_ORDER` option allows
+    Spanner to optimize row retrieval, resulting in lower latencies in certain
+    cases (e.g. bulk point lookups).
+
+    Values:
+      ORDER_BY_UNSPECIFIED: Default value. ORDER_BY_UNSPECIFIED is equivalent
+        to ORDER_BY_PRIMARY_KEY.
+      ORDER_BY_PRIMARY_KEY: Read rows are returned in primary key order. In
+        the event that this option is used in conjunction with the
+        `partition_token` field, the API will return an `INVALID_ARGUMENT`
+        error.
+      ORDER_BY_NO_ORDER: Read rows are returned in any order.
+    """
+    ORDER_BY_UNSPECIFIED = 0
+    ORDER_BY_PRIMARY_KEY = 1
+    ORDER_BY_NO_ORDER = 2
+
   columns = _messages.StringField(1, repeated=True)
   dataBoostEnabled = _messages.BooleanField(2)
   directedReadOptions = _messages.MessageField('DirectedReadOptions', 3)
   index = _messages.StringField(4)
   keySet = _messages.MessageField('KeySet', 5)
   limit = _messages.IntegerField(6)
-  partitionToken = _messages.BytesField(7)
-  requestOptions = _messages.MessageField('RequestOptions', 8)
-  resumeToken = _messages.BytesField(9)
-  table = _messages.StringField(10)
-  transaction = _messages.MessageField('TransactionSelector', 11)
+  lockHint = _messages.EnumField('LockHintValueValuesEnum', 7)
+  orderBy = _messages.EnumField('OrderByValueValuesEnum', 8)
+  partitionToken = _messages.BytesField(9)
+  requestOptions = _messages.MessageField('RequestOptions', 10)
+  resumeToken = _messages.BytesField(11)
+  table = _messages.StringField(12)
+  transaction = _messages.MessageField('TransactionSelector', 13)
 
 
 class ReadWrite(_messages.Message):

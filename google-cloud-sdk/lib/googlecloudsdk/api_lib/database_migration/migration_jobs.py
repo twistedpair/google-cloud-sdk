@@ -306,6 +306,10 @@ class MigrationJobsClient(object):
             backupFilePattern=args.sqlserver_backup_file_pattern
         )
     )
+    if args.IsKnownAndSpecified('sqlserver_diff_backup'):
+      sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
+          args.sqlserver_diff_backup
+      )
     if args.IsKnownAndSpecified('sqlserver_databases'):
       sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
           self._GetSqlServerDatabaseBackups(
@@ -415,6 +419,10 @@ class MigrationJobsClient(object):
       sqlserver_homogeneous_migration_job_config_obj.backupFilePattern = (
           args.sqlserver_backup_file_pattern
       )
+    if args.IsKnownAndSpecified('sqlserver_diff_backup'):
+      sqlserver_homogeneous_migration_job_config_obj.useDiffBackup = (
+          args.sqlserver_diff_backup
+      )
     if args.IsKnownAndSpecified('sqlserver_databases'):
       sqlserver_homogeneous_migration_job_config_obj.databaseBackups = (
           self._GetSqlServerDatabaseBackups(
@@ -454,6 +462,10 @@ class MigrationJobsClient(object):
       update_fields.append(
           'sqlserverHomogeneousMigrationJobConfig.backupFilePattern'
       )
+    if args.IsKnownAndSpecified('sqlserver_diff_backup'):
+      update_fields.append(
+          'sqlserverHomogeneousMigrationJobConfig.useDiffBackup'
+      )
     if args.IsKnownAndSpecified(
         'sqlserver_databases'
     ) or args.IsKnownAndSpecified('sqlserver_encrypted_databases'):
@@ -491,6 +503,7 @@ class MigrationJobsClient(object):
     self._UpdateLabels(args, migration_job, update_fields)
     if (
         args.IsKnownAndSpecified('sqlserver_backup_file_pattern')
+        or args.IsKnownAndSpecified('sqlserver_diff_backup')
         or args.IsKnownAndSpecified('sqlserver_databases')
         or args.IsKnownAndSpecified('sqlserver_encrypted_databases')
     ):

@@ -619,7 +619,6 @@ class DashboardFilter(_messages.Message):
     FilterTypeValueValuesEnum: The specified filter type
 
   Fields:
-    applyToNewWidgets: Whether to apply this filter to new widgets by default
     filterType: The specified filter type
     labelKey: Required. The key for the label
     stringValue: A variable-length string value.
@@ -647,11 +646,10 @@ class DashboardFilter(_messages.Message):
     SYSTEM_METADATA_LABEL = 4
     GROUP = 5
 
-  applyToNewWidgets = _messages.BooleanField(1)
-  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 2)
-  labelKey = _messages.StringField(3)
-  stringValue = _messages.StringField(4)
-  templateVariable = _messages.StringField(5)
+  filterType = _messages.EnumField('FilterTypeValueValuesEnum', 1)
+  labelKey = _messages.StringField(2)
+  stringValue = _messages.StringField(3)
+  templateVariable = _messages.StringField(4)
 
 
 class DataSet(_messages.Message):
@@ -2132,7 +2130,12 @@ class Scorecard(_messages.Message):
   Fields:
     blankView: Will cause the Scorecard to show only the value, with no
       indicator to its value relative to its thresholds.
+    dimensions: Optional. A dimension is a structured label, class, or
+      category for a set of measurements in your data.
     gaugeView: Will cause the scorecard to show a gauge chart.
+    measures: Optional. A measure is a measured value of a property in your
+      data. For example, rainfall in inches, number of units sold, revenue
+      gained, etc.
     sparkChartView: Will cause the scorecard to show a spark chart.
     thresholds: The thresholds used to determine the state of the scorecard
       given the time series' current value. For an actual value x, the
@@ -2155,10 +2158,12 @@ class Scorecard(_messages.Message):
   """
 
   blankView = _messages.MessageField('Empty', 1)
-  gaugeView = _messages.MessageField('GaugeView', 2)
-  sparkChartView = _messages.MessageField('SparkChartView', 3)
-  thresholds = _messages.MessageField('Threshold', 4, repeated=True)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
+  dimensions = _messages.MessageField('Dimension', 2, repeated=True)
+  gaugeView = _messages.MessageField('GaugeView', 3)
+  measures = _messages.MessageField('Measure', 4, repeated=True)
+  sparkChartView = _messages.MessageField('SparkChartView', 5)
+  thresholds = _messages.MessageField('Threshold', 6, repeated=True)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 7)
 
 
 class SectionHeader(_messages.Message):

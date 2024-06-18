@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import collections
 import re
+import sys
 from typing import Any
 
 from googlecloudsdk.calliope import arg_parsers
@@ -631,6 +632,16 @@ def AddMigDefaultActionOnVmFailure(parser):
       type=arg_utils.EnumNameToChoice,
       choices=choices,
       help=help_text,
+  )
+
+
+def AddMigSizeFlag(parser, required=False):
+  """Add --size flag to the parser."""
+  parser.add_argument(
+      '--size',
+      required=required,
+      type=arg_parsers.BoundedInt(0, sys.maxsize, unlimited=True),
+      help='Target number of running instances in managed instance group.',
   )
 
 

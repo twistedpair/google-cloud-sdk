@@ -322,8 +322,9 @@ class File(_messages.Message):
   Fields:
     content: Required. The file's textual content.
     path: Required. The file name including folder path, if applicable. The
-      path should be relative to a local workspace (e.g. schema/*.gql) and not
-      an absolute path (e.g. /some/absolute/path/config/schema/*.gql).
+      path should be relative to a local workspace (e.g.
+      dataconnect/(schema|connector)/*.gql) and not an absolute path (e.g.
+      /absolute/path/(schema|connector)/*.gql).
   """
 
   content = _messages.StringField(1)

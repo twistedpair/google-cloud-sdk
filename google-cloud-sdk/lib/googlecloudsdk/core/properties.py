@@ -881,6 +881,7 @@ class _Section(object):
     Returns:
       Property, The property corresponding to the given name.
 
+
     Raises:
       NoSuchPropertyError: If the property is not known for this section.
     """
@@ -1149,8 +1150,8 @@ class _SectionApiEndpointOverrides(_Section):
         command='gcloud container fleet policycontroller')
     self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
     self.apigee = self._Add('apigee', command='gcloud apigee')
-    self.apigeeregistry = self._Add(
-        'apigeeregistry', command='gcloud apigee-registry', hidden=True)
+    self.apihub = self._Add(
+        'apihub', command='gcloud apigeeregistry', hidden=True)
     self.appconfigmanager = self._Add(
         'appconfigmanager', command='gcloud app-config-manager', hidden=True)
     self.appengine = self._Add('appengine', command='gcloud app')
@@ -3334,47 +3335,69 @@ class _SectionStorage(_Section):
     super(_SectionStorage, self).__init__('storage')
     self.additional_headers = self._Add(
         'additional_headers',
-        help_text='Includes arbitrary headers in storage API calls.'
-        ' Accepts a comma separated list of key=value pairs, e.g.'
-        ' `header1=value1,header2=value2`.',
+        help_text=(
+            'Includes arbitrary headers in storage API calls.'
+            ' Accepts a comma separated list of key=value pairs, e.g.'
+            ' `header1=value1,header2=value2`.'
+        ),
     )
 
     self.run_by_gsutil_shim = self._AddBool(
         'run_by_gsutil_shim',
         help_text=(
-            'Indicates command was launched by gsutil-to-gcloud-storage shim.'),
-        hidden=True)
+            'Indicates command was launched by gsutil-to-gcloud-storage shim.'
+        ),
+        hidden=True,
+    )
 
     self.check_hashes = self._Add(
         'check_hashes',
         default=CheckHashes.IF_FAST_ELSE_FAIL.value,
         help_text=self._CHECK_HASHES_HELP_TEXT,
-        choices=([setting.value for setting in CheckHashes]))
+        choices=([setting.value for setting in CheckHashes]),
+    )
 
     self.check_mv_early_deletion_fee = self._AddBool(
         'check_mv_early_deletion_fee',
         default=True,
-        help_text='Block mv commands that may incur an early deletion fee'
-        ' (the source object in a mv is deleted).')
+        help_text=(
+            'Block mv commands that may incur an early deletion fee'
+            ' (the source object in a mv is deleted).'
+        ),
+    )
 
     self.convert_incompatible_windows_path_characters = self._AddBool(
         'convert_incompatible_windows_path_characters',
         default=True,
-        help_text='Allows automatic conversion of invalid path'
-        ' characters on Windows. If not enabled, Windows will raise an OSError'
-        ' if an invalid character is encountered.')
+        help_text=(
+            'Allows automatic conversion of invalid path characters on Windows.'
+            ' If not enabled, Windows will raise an OSError if an invalid'
+            ' character is encountered.'
+        ),
+    )
 
     self.copy_chunk_size = self._Add(
         'copy_chunk_size',
         default=self.DEFAULT_COPY_CHUNK_SIZE,
         validator=_HumanReadableByteAmountValidator,
-        help_text='Chunk size used for copying to in clouds or on disk.')
+        help_text='Chunk size used for copying to in clouds or on disk.',
+    )
 
     self.download_chunk_size = self._Add(
         'download_chunk_size',
         default=self.DEFAULT_DOWNLOAD_CHUNK_SIZE,
         validator=_HumanReadableByteAmountValidator,
-        help_text='Chunk size used for downloadinging to clouds.')
+        help_text='Chunk size used for downloadinging to clouds.',
+    )
+
+    self.enable_task_graph_debugging = self._AddBool(
+        'enable_task_graph_debugging',
+        default=False,
+        hidden=True,
+        help_text=(
+            'Enables task graph debugging for gcloud storage commands.'
+        ),
+    )
 
     self.upload_chunk_size = self._Add(
         'upload_chunk_size',

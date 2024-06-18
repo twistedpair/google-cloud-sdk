@@ -353,14 +353,14 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
-    'apigeeregistry': {
+    'apihub': {
         'v1':
             APIDef(
                 apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.apigeeregistry.v1',
-                    client_classpath='apigeeregistry_v1_client.ApigeeregistryV1',
-                    base_url='https://apigeeregistry.googleapis.com/',
-                    messages_modulepath='apigeeregistry_v1_messages'),
+                    class_path='googlecloudsdk.generated_clients.apis.apihub.v1',
+                    client_classpath='apihub_v1_client.ApihubV1',
+                    base_url='https://apihub.googleapis.com/',
+                    messages_modulepath='apihub_v1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
@@ -1032,16 +1032,6 @@ MAP = {
                     base_url='https://cloudkms.googleapis.com/',
                     messages_modulepath='cloudkms_v1_messages'),
                 default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.cloudkms.v1alpha1',
-                    client_classpath='cloudkms_v1alpha1_client.CloudkmsV1alpha1',
-                    base_url='https://cloudkms.googleapis.com/',
-                    messages_modulepath='cloudkms_v1alpha1_messages'),
-                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

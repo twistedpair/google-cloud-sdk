@@ -684,7 +684,7 @@ class BuildOptions(_messages.Message):
       operating system and build utilities. Also note that this is the minimum
       disk size that will be allocated for the build -- the build may run with
       a larger disk than requested. At present, the maximum disk size is
-      2000GB; builds that request more than the maximum are rejected with an
+      4000GB; builds that request more than the maximum are rejected with an
       error.
     dockerDaemon: Optional. Option to specify how (or if) a Docker daemon is
       provided for the build.
@@ -1463,7 +1463,7 @@ class CloudbuildProjectsGithubEnterpriseConfigsCreateRequest(_messages.Message):
       character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    parent: Name of the parent project. For example:
+    parent: Required. Name of the parent project. For example:
       projects/{$project_number} or projects/{$project_id}
     projectId: ID of the project.
   """
@@ -1537,9 +1537,9 @@ class CloudbuildProjectsGithubEnterpriseConfigsPatchRequest(_messages.Message):
   Fields:
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
-      seConfigs/{$config_id}"
+    name: The full resource name for the GitHubEnterpriseConfig For example: "
+      projects/{$project_id}/locations/{$location_id}/githubEnterpriseConfigs/
+      {$config_id}"
     updateMask: Update mask for the resource. If this is set, the server will
       only update the fields specified in the field mask. Otherwise, a full
       update of the mutable resource fields will be performed.
@@ -2052,7 +2052,7 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.
       character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    parent: Name of the parent project. For example:
+    parent: Required. Name of the parent project. For example:
       projects/{$project_number} or projects/{$project_id}
     projectId: ID of the project.
   """
@@ -2128,9 +2128,9 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsPatchRequest(_messages.M
   Fields:
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
-      seConfigs/{$config_id}"
+    name: The full resource name for the GitHubEnterpriseConfig For example: "
+      projects/{$project_id}/locations/{$location_id}/githubEnterpriseConfigs/
+      {$config_id}"
     updateMask: Update mask for the resource. If this is set, the server will
       only update the fields specified in the field mask. Otherwise, a full
       update of the mutable resource fields will be performed.
@@ -2493,7 +2493,8 @@ class CloudbuildProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
       value of `{worker_pool}` is provided by `worker_pool_id` in
       `CreateWorkerPool` request and the value of `{location}` is determined
       by the endpoint accessed.
-    updateMask: A mask specifying which fields in `worker_pool` to update.
+    updateMask: Optional. A mask specifying which fields in `worker_pool` to
+      update.
     validateOnly: If set, validate the request and preview the response, but
       do not actually post it.
     workerPool: A WorkerPool resource to be passed as the request body.
@@ -3066,11 +3067,11 @@ class GitHubEnterpriseConfig(_messages.Message):
       Enterprise server.
     createTime: Output only. Time when the installation was associated with
       the project.
-    displayName: Name to display for this config.
+    displayName: Optional. Name to display for this config.
     hostUrl: The URL of the github enterprise host the configuration is for.
-    name: Optional. The full resource name for the GitHubEnterpriseConfig For
-      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
-      seConfigs/{$config_id}"
+    name: The full resource name for the GitHubEnterpriseConfig For example: "
+      projects/{$project_id}/locations/{$location_id}/githubEnterpriseConfigs/
+      {$config_id}"
     peeredNetwork: Optional. The network to be used when reaching out to the
       GitHub Enterprise server. The VPC network must be enabled for private
       service connection. This should be set if the GitHub Enterprise server
@@ -3080,7 +3081,7 @@ class GitHubEnterpriseConfig(_messages.Message):
       in the format `projects/{project}/global/networks/{network}`, where
       {project} is a project number or id and {network} is the name of a VPC
       network in the project.
-    secrets: Names of secrets in Secret Manager.
+    secrets: Optional. Names of secrets in Secret Manager.
     sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
     webhookKey: The key that should be attached to webhook calls to the
       ReceiveWebhook endpoint.
@@ -3137,10 +3138,10 @@ class GitHubEventsConfig(_messages.Message):
   Fields:
     enterpriseConfig: Output only. The GitHubEnterpriseConfig enterprise
       config specified in the enterprise_config_resource_name field.
-    enterpriseConfigResourceName: Optional. The resource name of the github
-      enterprise config that should be applied to this installation. For
-      example: "projects/{$project_id}/locations/{$location_id}/githubEnterpri
-      seConfigs/{$config_id}"
+    enterpriseConfigResourceName: The resource name of the github enterprise
+      config that should be applied to this installation. For example: "projec
+      ts/{$project_id}/locations/{$location_id}/githubEnterpriseConfigs/{$conf
+      ig_id}"
     installationId: The installationID that emits the GitHub event.
     name: Name of the repository. For example: The name for
       https://github.com/googlecloudplatform/cloud-builders is "cloud-
@@ -4259,8 +4260,8 @@ class PubsubConfig(_messages.Message):
       configuration. Only populated on get requests.
     subscription: Output only. Name of the subscription. Format is
       `projects/{project}/subscriptions/{subscription}`.
-    topic: The name of the topic from which this subscription is receiving
-      messages. Format is `projects/{project}/topics/{topic}`.
+    topic: Optional. The name of the topic from which this subscription is
+      receiving messages. Format is `projects/{project}/topics/{topic}`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -5179,8 +5180,8 @@ class WorkerConfig(_messages.Message):
       pool config file](https://cloud.google.com/build/docs/private-
       pools/worker-pool-config-file-schema). Specify a value of up to 2000. If
       `0` is specified, Cloud Build will use a standard disk size.
-    machineType: Machine type of a worker, such as `e2-medium`. See [Worker
-      pool config file](https://cloud.google.com/build/docs/private-
+    machineType: Optional. Machine type of a worker, such as `e2-medium`. See
+      [Worker pool config file](https://cloud.google.com/build/docs/private-
       pools/worker-pool-config-file-schema). If left blank, Cloud Build will
       use a sensible default.
   """

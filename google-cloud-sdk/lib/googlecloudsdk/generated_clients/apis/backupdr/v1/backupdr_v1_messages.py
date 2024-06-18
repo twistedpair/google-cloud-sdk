@@ -175,16 +175,100 @@ class AllocationAffinity(_messages.Message):
 class AttachedDisk(_messages.Message):
   r"""An instance-attached disk resource.
 
+  Enums:
+    DiskInterfaceValueValuesEnum: Optional. Specifies the disk interface to
+      use for attaching this disk.
+    DiskTypeValueValuesEnum: Optional. Specifies the type of the disk.
+    ModeValueValuesEnum: Optional. The mode in which to attach this disk.
+
   Fields:
+    autoDelete: Optional. Specifies whether the disk will be auto-deleted when
+      the instance is deleted (but not when the disk is detached from the
+      instance).
+    boot: Optional. Indicates that this is a boot disk. The virtual machine
+      will use the first partition of the disk for its root filesystem.
     deviceName: Optional. This is used as an identifier for the disks. This is
       the unique name has to provided to modify disk parameters like disk_name
       and replica_zones (in case of RePDs)
+    diskEncryptionKey: Optional. Encrypts or decrypts a disk using a customer-
+      supplied encryption key.
+    diskInterface: Optional. Specifies the disk interface to use for attaching
+      this disk.
+    diskSizeGb: Optional. The size of the disk in GB.
+    diskType: Optional. Specifies the type of the disk.
+    guestOsFeature: Optional. A list of features to enable on the guest
+      operating system. Applicable only for bootable images.
+    index: Optional. A zero-based index to this disk, where 0 is reserved for
+      the boot disk.
     initializeParams: Optional. Specifies the parameters to initialize this
       disk.
+    kind: Optional. Type of the resource.
+    license: Optional. Any valid publicly visible licenses.
+    mode: Optional. The mode in which to attach this disk.
+    source: Optional. Specifies a valid partial or full URL to an existing
+      Persistent Disk resource.
   """
 
-  deviceName = _messages.StringField(1)
-  initializeParams = _messages.MessageField('InitializeParams', 2)
+  class DiskInterfaceValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the disk interface to use for attaching this disk.
+
+    Values:
+      DISK_INTERFACE_UNSPECIFIED: Default value, which is unused.
+      SCSI: SCSI Disk Interface.
+      NVME: NVME Disk Interface.
+      NVDIMM: NVDIMM Disk Interface.
+      ISCSI: ISCSI Disk Interface.
+    """
+    DISK_INTERFACE_UNSPECIFIED = 0
+    SCSI = 1
+    NVME = 2
+    NVDIMM = 3
+    ISCSI = 4
+
+  class DiskTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the type of the disk.
+
+    Values:
+      DISK_TYPE_UNSPECIFIED: Default value, which is unused.
+      SCRATCH: A scratch disk type.
+      PERSISTENT: A persistent disk type.
+    """
+    DISK_TYPE_UNSPECIFIED = 0
+    SCRATCH = 1
+    PERSISTENT = 2
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode in which to attach this disk.
+
+    Values:
+      DISK_MODE_UNSPECIFIED: Default value, which is unused.
+      READ_WRITE: Attaches this disk in read-write mode. Only one virtual
+        machine at a time can be attached to a disk in read-write mode.
+      READ_ONLY: Attaches this disk in read-only mode. Multiple virtual
+        machines can use a disk in read-only mode at a time.
+      LOCKED: The disk is locked for administrative reasons. Nobody else can
+        use the disk. This mode is used (for example) when taking a snapshot
+        of a disk to prevent mounting the disk while it is being snapshotted.
+    """
+    DISK_MODE_UNSPECIFIED = 0
+    READ_WRITE = 1
+    READ_ONLY = 2
+    LOCKED = 3
+
+  autoDelete = _messages.BooleanField(1)
+  boot = _messages.BooleanField(2)
+  deviceName = _messages.StringField(3)
+  diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 4)
+  diskInterface = _messages.EnumField('DiskInterfaceValueValuesEnum', 5)
+  diskSizeGb = _messages.IntegerField(6)
+  diskType = _messages.EnumField('DiskTypeValueValuesEnum', 7)
+  guestOsFeature = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  index = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  initializeParams = _messages.MessageField('InitializeParams', 10)
+  kind = _messages.StringField(11)
+  license = _messages.StringField(12, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 13)
+  source = _messages.StringField(14)
 
 
 class AuditConfig(_messages.Message):
@@ -511,8 +595,8 @@ class BackupPlan(_messages.Message):
   Fields:
     backupRules: Required. The backup rules for this `BackupPlan`. There must
       be at least one `BackupRule` message.
-    backupVault: Optional. Resource name of backup vault which will be used as
-      storage location for backups. Format:
+    backupVault: Optional. Required. Resource name of backup vault which will
+      be used as storage location for backups. Format:
       projects/{project}/locations/{location}/backupVaults/{backupvault}
     backupVaultServiceAccount: Output only. The Google Cloud Platform Service
       Account to be used by the BackupVault for taking backups. Specify the
@@ -656,10 +740,14 @@ class BackupRule(_messages.Message):
     backupRetentionDays: Required. Configures the duration for which backup
       data will be kept. It is defined in "days". The value should be greater
       than or equal to minimum enforced retention of the backup vault.
-    backupVault: Required. Resource name of backup vault which will be used as
+    backupVault: Optional. TODO b/341576760: Remove deprecated BV and
+      Datasource field form BP and BPA once UI removed all dependencies on
+      them Required. Resource name of backup vault which will be used as
       storage location for backups. Format:
       projects/{project}/locations/{location}/backupVaults/{backupvault}
-    backupVaultServiceAccount: Output only. The Google Cloud Platform Service
+    backupVaultServiceAccount: Output only. TODO b/341576760: Remove
+      deprecated BV and Datasource field form BP and BPA once UI removed all
+      dependencies on them Output only. The Google Cloud Platform Service
       Account to be used by the BackupVault for taking backups. Specify the
       email address of the Backup Vault Service Account. (precedent: https://s
       ource.corp.google.com/piper///depot/google3/google/container/v1/cluster_
@@ -687,10 +775,16 @@ class BackupVault(_messages.Message):
       state.
 
   Messages:
+    AnnotationsValue: Optional. User annotations. See
+      https://google.aip.dev/128#annotations Stores small amounts of arbitrary
+      data.
     LabelsValue: Optional. Resource labels to represent user provided
       metadata. No labels currently defined:
 
   Fields:
+    annotations: Optional. User annotations. See
+      https://google.aip.dev/128#annotations Stores small amounts of arbitrary
+      data.
     backupCount: Output only. The number of backups in this backup vault.
     backupMinimumEnforcedRetentionDuration: Required. The default and minimum
       enforced retention for each backup within the backup vault. The enforced
@@ -738,6 +832,32 @@ class BackupVault(_messages.Message):
     ERROR = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. User annotations. See https://google.aip.dev/128#annotations
+    Stores small amounts of arbitrary data.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Resource labels to represent user provided metadata. No
     labels currently defined:
@@ -762,21 +882,22 @@ class BackupVault(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  backupCount = _messages.IntegerField(1)
-  backupMinimumEnforcedRetentionDuration = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deletable = _messages.BooleanField(4)
-  description = _messages.StringField(5)
-  effectiveTime = _messages.StringField(6)
-  enforcedRetentionDuration = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  serviceAccount = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  totalStoredBytes = _messages.IntegerField(13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  backupCount = _messages.IntegerField(2)
+  backupMinimumEnforcedRetentionDuration = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  deletable = _messages.BooleanField(5)
+  description = _messages.StringField(6)
+  effectiveTime = _messages.StringField(7)
+  enforcedRetentionDuration = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  totalStoredBytes = _messages.IntegerField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class BackupWindow(_messages.Message):
@@ -2125,14 +2246,63 @@ class GcpBackupConfig(_messages.Message):
   backupPlanRules = _messages.StringField(4, repeated=True)
 
 
+class GuestOsFeature(_messages.Message):
+  r"""Feature type of the Guest OS.
+
+  Enums:
+    TypeValueValuesEnum: The ID of a supported feature.
+
+  Fields:
+    type: The ID of a supported feature.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The ID of a supported feature.
+
+    Values:
+      FEATURE_TYPE_UNSPECIFIED: Default value, which is unused.
+      VIRTIO_SCSI_MULTIQUEUE: VIRTIO_SCSI_MULTIQUEUE feature type.
+      WINDOWS: WINDOWS feature type.
+      MULTI_IP_SUBNET: MULTI_IP_SUBNET feature type.
+      UEFI_COMPATIBLE: UEFI_COMPATIBLE feature type.
+      SECURE_BOOT: SECURE_BOOT feature type.
+      GVNIC: GVNIC feature type.
+      SEV_CAPABLE: SEV_CAPABLE feature type.
+      BARE_METAL_LINUX_COMPATIBLE: BARE_METAL_LINUX_COMPATIBLE feature type.
+      SUSPEND_RESUME_COMPATIBLE: SUSPEND_RESUME_COMPATIBLE feature type.
+      SEV_LIVE_MIGRATABLE: SEV_LIVE_MIGRATABLE feature type.
+      SEV_SNP_CAPABLE: SEV_SNP_CAPABLE feature type.
+      TDX_CAPABLE: TDX_CAPABLE feature type.
+      IDPF: IDPF feature type.
+      SEV_LIVE_MIGRATABLE_V2: SEV_LIVE_MIGRATABLE_V2 feature type.
+    """
+    FEATURE_TYPE_UNSPECIFIED = 0
+    VIRTIO_SCSI_MULTIQUEUE = 1
+    WINDOWS = 2
+    MULTI_IP_SUBNET = 3
+    UEFI_COMPATIBLE = 4
+    SECURE_BOOT = 5
+    GVNIC = 6
+    SEV_CAPABLE = 7
+    BARE_METAL_LINUX_COMPATIBLE = 8
+    SUSPEND_RESUME_COMPATIBLE = 9
+    SEV_LIVE_MIGRATABLE = 10
+    SEV_SNP_CAPABLE = 11
+    TDX_CAPABLE = 12
+    IDPF = 13
+    SEV_LIVE_MIGRATABLE_V2 = 14
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class InitializeParams(_messages.Message):
   r"""Specifies the parameters to initialize this disk.
 
   Fields:
     diskName: Optional. Specifies the disk name. If not specified, the default
       is to use the name of the instance.
-    replicaZones: Optional. Required for each regional disk associated with
-      the instance.
+    replicaZones: Optional. URL of the zone where the disk should be created.
+      Required for each regional disk associated with the instance.
   """
 
   diskName = _messages.StringField(1)
@@ -2442,6 +2612,8 @@ class ManagementServer(_messages.Message):
       the value that should be provided in the 'aud' field of the OIDC ID
       Token (see openid specification https://openid.net/specs/openid-connect-
       core-1_0.html#IDToken).
+    satisfiesPzi: Output only. Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The ManagementServer state.
     type: Optional. The type of the ManagementServer resource.
     updateTime: Output only. The time when the instance was updated.
@@ -2523,11 +2695,13 @@ class ManagementServer(_messages.Message):
   name = _messages.StringField(7)
   networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
   oauth2ClientId = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  workforceIdentityBasedManagementUri = _messages.MessageField('WorkforceIdentityBasedManagementURI', 13)
-  workforceIdentityBasedOauth2ClientId = _messages.MessageField('WorkforceIdentityBasedOAuth2ClientID', 14)
+  satisfiesPzi = _messages.BooleanField(10)
+  satisfiesPzs = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
+  workforceIdentityBasedManagementUri = _messages.MessageField('WorkforceIdentityBasedManagementURI', 15)
+  workforceIdentityBasedOauth2ClientId = _messages.MessageField('WorkforceIdentityBasedOAuth2ClientID', 16)
 
 
 class ManagementURI(_messages.Message):
@@ -3032,10 +3206,12 @@ class RuleConfigInfo(_messages.Message):
       rule.
 
   Fields:
-    dataSource: Output only. Output Only. Resource name of data source which
-      will be used as storage location for backups taken by specified rule.
-      Format : projects/{project}/locations/{location}/backupVaults/{backupvau
-      lt}/dataSources/{datasource}
+    dataSource: Output only. TODO b/341576760: Remove deprecated BV and
+      Datasource field form BP and BPA once UI removed all dependencies on
+      them Output Only. Resource name of data source which will be used as
+      storage location for backups taken by specified rule. Format : projects/
+      {project}/locations/{location}/backupVaults/{backupvault}/dataSources/{d
+      atasource}
     lastBackupError: Output only. Output Only. google.rpc.Status object to
       store the last backup error.
     lastBackupState: Output only. The last backup state for rule.

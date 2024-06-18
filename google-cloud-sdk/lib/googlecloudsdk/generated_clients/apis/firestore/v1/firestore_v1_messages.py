@@ -984,6 +984,21 @@ class FirestoreProjectsDatabasesBackupSchedulesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class FirestoreProjectsDatabasesBulkDeleteDocumentsRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesBulkDeleteDocumentsRequest object.
+
+  Fields:
+    googleFirestoreAdminV1BulkDeleteDocumentsRequest: A
+      GoogleFirestoreAdminV1BulkDeleteDocumentsRequest resource to be passed
+      as the request body.
+    name: Required. Database to operate. Should be of the form:
+      `projects/{project_id}/databases/{database_id}`.
+  """
+
+  googleFirestoreAdminV1BulkDeleteDocumentsRequest = _messages.MessageField('GoogleFirestoreAdminV1BulkDeleteDocumentsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesCollectionGroupsFieldsGetRequest object.
 
@@ -1024,24 +1039,23 @@ class FirestoreProjectsDatabasesCollectionGroupsFieldsPatchRequest(_messages.Mes
   Fields:
     googleFirestoreAdminV1Field: A GoogleFirestoreAdminV1Field resource to be
       passed as the request body.
-    name: Required. A field name of the form `projects/{project_id}/databases/
-      {database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
-      field path may be a simple field name, e.g. `address` or a path to
-      fields within map_value , e.g. `address.city`, or a special field path.
-      The only valid special field is `*`, which represents any field. Field
-      paths may be quoted using ` (backtick). The only character that needs to
-      be escaped within a quoted field path is the backtick character itself,
-      escaped using a backslash. Special characters in field paths that must
-      be quoted include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any
-      ascii symbolic characters. Examples: (Note: Comments here are written in
-      markdown syntax, so there is an additional layer of backticks to
-      represent a code block) `\`address.city\`` represents a field named
-      `address.city`, not the map key `city` in the field `address`. `\`*\``
-      represents a field named `*`, not any field. A special `Field` contains
-      the default indexing settings for all fields. This field's resource name
-      is: `projects/{project_id}/databases/{database_id}/collectionGroups/__de
-      fault__/fields/*` Indexes defined on this `Field` will be applied to all
-      fields which do not have their own `Field` index configuration.
+    name: Required. A field name of the form: `projects/{project_id}/databases
+      /{database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
+      field path can be a simple field name, e.g. `address` or a path to
+      fields within `map_value` , e.g. `address.city`, or a special field
+      path. The only valid special field is `*`, which represents any field.
+      Field paths can be quoted using `` ` `` (backtick). The only character
+      that must be escaped within a quoted field path is the backtick
+      character itself, escaped using a backslash. Special characters in field
+      paths that must be quoted include: `*`, `.`, `` ` `` (backtick), `[`,
+      `]`, as well as any ascii symbolic characters. Examples: ``
+      `address.city` `` represents a field named `address.city`, not the map
+      key `city` in the field `address`. `` `*` `` represents a field named
+      `*`, not any field. A special `Field` contains the default indexing
+      settings for all fields. This field's resource name is: `projects/{proje
+      ct_id}/databases/{database_id}/collectionGroups/__default__/fields/*`
+      Indexes defined on this `Field` will be applied to all fields which do
+      not have their own `Field` index configuration.
     updateMask: A mask, relative to the field. If specified, only
       configuration specified by this field_mask will be updated in the field.
   """
@@ -1773,6 +1787,85 @@ class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
   weeklyRecurrence = _messages.MessageField('GoogleFirestoreAdminV1WeeklyRecurrence', 6)
 
 
+class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
+  r"""Metadata for google.longrunning.Operation results from
+  FirestoreAdmin.BulkDeleteDocuments.
+
+  Enums:
+    OperationStateValueValuesEnum: The state of the operation.
+
+  Fields:
+    collectionIds: The ids of the collection groups that are being deleted.
+    endTime: The time this operation completed. Will be unset if operation
+      still in progress.
+    namespaceIds: Which namespace ids are being deleted.
+    operationState: The state of the operation.
+    progressBytes: The progress, in bytes, of this operation.
+    progressDocuments: The progress, in documents, of this operation.
+    snapshotTime: The timestamp that corresponds to the version of the
+      database that is being read to get the list of documents to delete. This
+      time can also be used as the timestamp of PITR in case of disaster
+      recovery(subject to PITR window limit).
+    startTime: The time this operation started.
+  """
+
+  class OperationStateValueValuesEnum(_messages.Enum):
+    r"""The state of the operation.
+
+    Values:
+      OPERATION_STATE_UNSPECIFIED: Unspecified.
+      INITIALIZING: Request is being prepared for processing.
+      PROCESSING: Request is actively being processed.
+      CANCELLING: Request is in the process of being cancelled after user
+        called google.longrunning.Operations.CancelOperation on the operation.
+      FINALIZING: Request has been processed and is in its finalization stage.
+      SUCCESSFUL: Request has completed successfully.
+      FAILED: Request has finished being processed, but encountered an error.
+      CANCELLED: Request has finished being cancelled after user called
+        google.longrunning.Operations.CancelOperation.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    PROCESSING = 2
+    CANCELLING = 3
+    FINALIZING = 4
+    SUCCESSFUL = 5
+    FAILED = 6
+    CANCELLED = 7
+
+  collectionIds = _messages.StringField(1, repeated=True)
+  endTime = _messages.StringField(2)
+  namespaceIds = _messages.StringField(3, repeated=True)
+  operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
+  progressBytes = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
+  progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 6)
+  snapshotTime = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+
+
+class GoogleFirestoreAdminV1BulkDeleteDocumentsRequest(_messages.Message):
+  r"""The request for FirestoreAdmin.BulkDeleteDocuments. When both
+  collection_ids and namespace_ids are set, only documents satisfying both
+  conditions will be deleted. Requests with namespace_ids and collection_ids
+  both empty will be rejected. Please use FirestoreAdmin.DeleteDatabase
+  instead.
+
+  Fields:
+    collectionIds: Optional. IDs of the collection groups to delete.
+      Unspecified means all collection groups. Each collection group in this
+      list must be unique.
+    namespaceIds: Optional. Namespaces to delete. An empty list means all
+      namespaces. This is the recommended usage for databases that don't use
+      namespaces. An empty string element represents the default namespace.
+      This should be used if the database has data in non-default namespaces,
+      but doesn't want to delete from them. Each namespace in this list must
+      be unique.
+  """
+
+  collectionIds = _messages.StringField(1, repeated=True)
+  namespaceIds = _messages.StringField(2, repeated=True)
+
+
 class GoogleFirestoreAdminV1CmekConfig(_messages.Message):
   r"""The CMEK (Customer Managed Encryption Key) configuration for a Firestore
   database. If not present, the database is secured by the default Google
@@ -2114,24 +2207,23 @@ class GoogleFirestoreAdminV1Field(_messages.Message):
       indexing will revert to the configuration defined by the
       `ancestor_field`. To explicitly remove all indexes for this field,
       specify an index config with an empty list of indexes.
-    name: Required. A field name of the form `projects/{project_id}/databases/
-      {database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
-      field path may be a simple field name, e.g. `address` or a path to
-      fields within map_value , e.g. `address.city`, or a special field path.
-      The only valid special field is `*`, which represents any field. Field
-      paths may be quoted using ` (backtick). The only character that needs to
-      be escaped within a quoted field path is the backtick character itself,
-      escaped using a backslash. Special characters in field paths that must
-      be quoted include: `*`, `.`, ``` (backtick), `[`, `]`, as well as any
-      ascii symbolic characters. Examples: (Note: Comments here are written in
-      markdown syntax, so there is an additional layer of backticks to
-      represent a code block) `\`address.city\`` represents a field named
-      `address.city`, not the map key `city` in the field `address`. `\`*\``
-      represents a field named `*`, not any field. A special `Field` contains
-      the default indexing settings for all fields. This field's resource name
-      is: `projects/{project_id}/databases/{database_id}/collectionGroups/__de
-      fault__/fields/*` Indexes defined on this `Field` will be applied to all
-      fields which do not have their own `Field` index configuration.
+    name: Required. A field name of the form: `projects/{project_id}/databases
+      /{database_id}/collectionGroups/{collection_id}/fields/{field_path}` A
+      field path can be a simple field name, e.g. `address` or a path to
+      fields within `map_value` , e.g. `address.city`, or a special field
+      path. The only valid special field is `*`, which represents any field.
+      Field paths can be quoted using `` ` `` (backtick). The only character
+      that must be escaped within a quoted field path is the backtick
+      character itself, escaped using a backslash. Special characters in field
+      paths that must be quoted include: `*`, `.`, `` ` `` (backtick), `[`,
+      `]`, as well as any ascii symbolic characters. Examples: ``
+      `address.city` `` represents a field named `address.city`, not the map
+      key `city` in the field `address`. `` `*` `` represents a field named
+      `*`, not any field. A special `Field` contains the default indexing
+      settings for all fields. This field's resource name is: `projects/{proje
+      ct_id}/databases/{database_id}/collectionGroups/__default__/fields/*`
+      Indexes defined on this `Field` will be applied to all fields which do
+      not have their own `Field` index configuration.
     ttlConfig: The TTL configuration for this `Field`. Setting or unsetting
       this will enable or disable the TTL for documents that have this
       `Field`.
@@ -2696,11 +2788,26 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
     databaseSnapshot: Database snapshot to restore from. The source database
       must exist and have enabled PITR. The restored database will be created
       in the same location as the source database.
+    kmsKeyName: Use Customer Managed Encryption Keys (CMEK) for encryption.
+      Only keys in the same location as this database are allowed to be used
+      for encryption. For Firestore's nam5 multi-region, this corresponds to
+      Cloud KMS multi-region us. For Firestore's eur3 multi-region, this
+      corresponds to Cloud KMS multi-region europe. See
+      https://cloud.google.com/kms/docs/locations. The expected format is `pro
+      jects/{project_id}/locations/{kms_location}/keyRings/{key_ring}/cryptoKe
+      ys/{crypto_key}`.
+    useBackupEncryption: The restored database will use the same encryption
+      configuration as the backup. This is the default option when no
+      `encryption_config` is specified.
+    useGoogleDefaultEncryption: Use Google default encryption.
   """
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
   databaseSnapshot = _messages.MessageField('GoogleFirestoreAdminV1DatabaseSnapshot', 3)
+  kmsKeyName = _messages.StringField(4)
+  useBackupEncryption = _messages.MessageField('Empty', 5)
+  useGoogleDefaultEncryption = _messages.MessageField('Empty', 6)
 
 
 class GoogleFirestoreAdminV1Stats(_messages.Message):

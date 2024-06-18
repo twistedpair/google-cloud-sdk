@@ -301,6 +301,13 @@ def AddManagedActiveDirectoryConnectionArgs(parser):
   AddDisconnectManagedActiveDirectoryArg(connection_arg_group)
 
 
+def AddSourceInstanceArg(parser):
+  parser.add_argument(
+      '--source-instance',
+      required=False,
+      help='The replication source instance of the Cloud Filestore instance.')
+
+
 def AddNetworkArg(parser):
   """Adds a --network flag to the given parser.
 
@@ -556,6 +563,7 @@ def AddInstanceCreateArgs(parser, api_version):
   if api_version in [filestore_client.BETA_API_VERSION,
                      filestore_client.V1_API_VERSION]:
     AddKmsKeyArg(parser)
+    AddSourceInstanceArg(parser)
 
 
 def AddInstanceUpdateArgs(parser, api_version):

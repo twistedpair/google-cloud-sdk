@@ -266,6 +266,10 @@ COMPLIANCE_MODE_NOT_SUPPORTED = """\
 Invalid mode '{mode}' for '--compliance' (must be one of 'enabled', 'disabled').
 """
 
+COMPLIANCE_DISABLED_CONFIGURATION = """\
+Cannot specify --compliance-standards with --compliance=disabled
+"""
+
 SECURITY_POSTURE_MODE_NOT_SUPPORTED = """\
 Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard', 'enterprise').
 """
@@ -2421,6 +2425,12 @@ class APIAdapter(object):
         )
 
     if options.compliance_standards is not None:
+      # --compliance=disabled and --complaince-standards=a,b,c are mutually
+      # exclusive.
+      if options.compliance is not None and options.compliance.lower() == 'disabled':
+        raise util.Error(
+            COMPLIANCE_DISABLED_CONFIGURATION)
+
       if options.compliance is None:
         cluster.compliancePostureConfig = (
             self.messages.CompliancePostureConfig()
@@ -3892,6 +3902,10 @@ class APIAdapter(object):
               self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
           )
         elif options.compliance.lower() == 'disabled':
+          if options.compliance_standards is not None:
+            # --compliance=disabled and --compliance-standards=a,b,c is mutually
+            # exclusive.
+            raise util.Error(COMPLIANCE_DISABLED_CONFIGURATION)
           compliance_config.mode = (
               self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
           )
@@ -7052,7 +7066,7 @@ def _GetStableFleetConfig(options, messages):
     }
     if options.maintenance_interval not in maintenance_interval_types:
       raise util.Error(
-          MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.FORMAT(
+          MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.format(
               type=options.maintenance_interval))
     return messages.StableFleetConfig(
         maintenanceInterval=maintenance_interval_types[
@@ -7103,9 +7117,10 @@ def _GetReleaseChannel(options, messages):
         'rapid': messages.ReleaseChannel.ChannelValueValuesEnum.RAPID,
         'regular': messages.ReleaseChannel.ChannelValueValuesEnum.REGULAR,
         'stable': messages.ReleaseChannel.ChannelValueValuesEnum.STABLE,
+        'extended': messages.ReleaseChannel.ChannelValueValuesEnum.EXTENDED,
         'None': messages.ReleaseChannel.ChannelValueValuesEnum.UNSPECIFIED,
     }
-    return messages.ReleaseChannel(channel=channels[options.release_channel])
+    return messages.ReleaseChannel(channel=channels[options.release_channel[0]])
 
 
 def _GetNotificationConfigForClusterUpdate(options, messages):
@@ -7259,7 +7274,7 @@ def _GetHostMaintenancePolicy(options, messages):
     }
     if options.host_maintenance_interval not in maintenance_interval_types:
       raise util.Error(
-          HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.FORMAT(
+          HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED.format(
               type=options.host_maintenance_interval
           )
       )

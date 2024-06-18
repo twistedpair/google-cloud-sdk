@@ -340,6 +340,13 @@ class Collections(enum.Enum):
       ['project', 'networkPlacement'],
       True
   )
+  NETWORKPROFILES = (
+      'networkProfiles',
+      'projects/{project}/global/networkProfiles/{networkProfile}',
+      {},
+      ['project', 'networkProfile'],
+      True
+  )
   NETWORKS = (
       'networks',
       'projects/{project}/global/networks/{network}',
@@ -511,6 +518,13 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/machineTypes/{machineType}',
       {},
       ['project', 'region', 'machineType'],
+      True
+  )
+  REGIONMULTIMIGS = (
+      'regionMultiMigs',
+      'projects/{project}/regions/{region}/multiMigs/{multiMig}',
+      {},
+      ['project', 'region', 'multiMig'],
       True
   )
   REGIONNETWORKENDPOINTGROUPS = (

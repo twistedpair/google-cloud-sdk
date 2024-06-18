@@ -865,7 +865,7 @@ class GoogleCloudRecaptchaenterpriseV1PhoneFraudAssessment(_messages.Message):
 
   Fields:
     smsTollFraudVerdict: Output only. Assessment of this phone event for risk
-      of sms toll fraud.
+      of SMS toll fraud.
   """
 
   smsTollFraudVerdict = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1SmsTollFraudVerdict', 1)
@@ -1140,14 +1140,14 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsRespon
 
 
 class GoogleCloudRecaptchaenterpriseV1SmsTollFraudVerdict(_messages.Message):
-  r"""Information about sms toll fraud
+  r"""Information about SMS toll fraud.
 
   Enums:
     ReasonsValueListEntryValuesEnum:
 
   Fields:
     reasons: Output only. Reasons contributing to the SMS toll fraud verdict.
-    risk: Output only. Probability of an sms event being fraudulent. Values
+    risk: Output only. Probability of an SMS event being fraudulent. Values
       are from 0.0 (lowest) to 1.0 (highest).
   """
 

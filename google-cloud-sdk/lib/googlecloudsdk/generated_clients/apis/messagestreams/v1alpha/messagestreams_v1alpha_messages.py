@@ -102,11 +102,10 @@ class Destination(_messages.Message):
       and should be set only by users interested in authenticated push.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
-    outputDataFormat: Optional. The output format of the data. If the input
-      data format (either configured via the stream's input data format, or by
-      the format specified on the message) is of schemaless type (JSON, XML,
-      etc.) then this field is optional even if there is a transformation
-      mediation.
+    outputDataFormat: Optional. The output message format. If not set, the
+      message will be delivered in the format it was originally delivered to
+      the Stream. This field can only be set if Stream.input_data_format is
+      also set.
     serviceEndpoint: Required. The URL of a endpoint to route traffic to. If a
       DNS FQDN is provided as the endpoint, Message Streams will create a
       peering zone to the consumer VPC and forward DNS requests to the VPC
@@ -196,10 +195,12 @@ class KafkaAuthenticationConfig(_messages.Message):
   r"""Authentication configuration.
 
   Fields:
-    saslAuth: A SaslAuthConfig attribute.
+    mutualTlsAuth: Using mTLS.
+    saslAuth: Using SASL/Plain or SASL/SCRAM.
   """
 
-  saslAuth = _messages.MessageField('SaslAuthConfig', 1)
+  mutualTlsAuth = _messages.MessageField('MutualTlsAuthConfig', 1)
+  saslAuth = _messages.MessageField('SaslAuthConfig', 2)
 
 
 class KafkaSource(_messages.Message):
@@ -603,6 +604,34 @@ class MessagestreamsProjectsLocationsStreamsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class MutualTlsAuthConfig(_messages.Message):
+  r"""Mutual TLS authentication mechanism configuration.
+
+  Fields:
+    secretManagerResources: mTLS auth config loaded from Secret Manager.
+  """
+
+  secretManagerResources = _messages.MessageField('MutualTlsSecrets', 1)
+
+
+class MutualTlsSecrets(_messages.Message):
+  r"""Mutual TLS payloads from Secret Manager.
+
+  Fields:
+    clientCertificate: Required. The client certificate for mTLS may be loaded
+      from Secret Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
+    clientKey: Required. The client key for mTLS may be loaded from Secret
+      Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
+  """
+
+  clientCertificate = _messages.StringField(1)
+  clientKey = _messages.StringField(2)
+
+
 class NetworkConfig(_messages.Message):
   r"""Represents a network config to be used for destination resolution and
   connectivity.
@@ -833,9 +862,9 @@ class SaslAuthConfig(_messages.Message):
   Fields:
     mechanism: A MechanismValueValuesEnum attribute.
     passwordSecret: Required. The password for the authentication identity may
-      be loaded from Secret Manager. Supported Format: 1-
-      "projects/{project}/secrets/{secret}/versions/{version}" 2- "projects/{p
-      roject}/locations/{location}/secrets/{secret}/versions/{version}"
+      be loaded from Secret Manager. Supported Formats:
+      `projects/{project}/secrets/{secret}/versions/{version}` `projects/{proj
+      ect}/locations/{location}/secrets/{secret}/versions/{version}`
     username: Required. The SASL authentication identity (username).
   """
 
@@ -1007,22 +1036,24 @@ class Stream(_messages.Message):
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
     eventarcTransformationType: Optional.
-    generateReplies: Optional. Whether to generate messages that contain the
-      details of the final HTTP response of a message stream and is sent to
-      the message bus that the message was received from. Ignored if the
-      message did not come from a bus.
-    inputDataFormat: Optional. An input data format of messages in a stream.
-      If an input format is specified then the stream will enforce it, meaning
-      that it will fail messages that do not match the input format. If an
-      input format is not specified then the stream will try to make sense of
-      the messages based on the value of "datacontenttype" attribute in the
-      message.
+    inputDataFormat: Optional. The data format expected for the messages
+      received by the Stream. If input_data_format is set then any messages
+      not matching this format will be treated as persistent errors. If
+      input_data_format is not set, then the message data will be treated as
+      an opaque binary and no output format can be set on the stream through
+      the Stream.Destination.output_data_format field. Any Mediations on the
+      stream that involve access to the data field will fail as persistent
+      errors.
     labels: Optional. Labels as key value pairs
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
       `projects/{project}/locations/{location}/streams/{stream}` format.
+    replyBus: Optional. The resource name of the Message Bus to send replies
+      to. If this field is empty, then no replies will be generated. For
+      example,
+      `projects/{project}/locations/{location}/messageBuses/{messageBus}`.
     source: Optional. Source specifies where the stream reads data from.
     streamAction: Required. The specifications for routing messaging traffic
       and applying associated policies.
@@ -1125,11 +1156,11 @@ class Stream(_messages.Message):
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
-  generateReplies = _messages.BooleanField(6)
-  inputDataFormat = _messages.MessageField('MessageDataFormat', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  mediations = _messages.MessageField('Mediation', 9, repeated=True)
-  name = _messages.StringField(10)
+  inputDataFormat = _messages.MessageField('MessageDataFormat', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mediations = _messages.MessageField('Mediation', 8, repeated=True)
+  name = _messages.StringField(9)
+  replyBus = _messages.StringField(10)
   source = _messages.MessageField('Source', 11)
   streamAction = _messages.MessageField('StreamAction', 12)
   streamIdentityOverride = _messages.StringField(13)
@@ -1151,14 +1182,14 @@ class StreamAction(_messages.Message):
 
 
 class Transformation(_messages.Message):
-  r"""Transformation defines the way to transfer an incoming message.
+  r"""Transformation defines the way to transform an incoming message.
 
   Fields:
-    celExpression: Optional. The CEL expression to transform the incoming
-      message.
+    transformationTemplate: Optional. The template to apply to transform
+      messages.
   """
 
-  celExpression = _messages.StringField(1)
+  transformationTemplate = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

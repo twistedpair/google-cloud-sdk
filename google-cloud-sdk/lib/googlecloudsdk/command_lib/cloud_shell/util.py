@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import argparse
 import datetime
+import time
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
@@ -115,6 +116,10 @@ def PrepareEnvironment(args):
         'Pushing your public key to Cloud Shell',
         sleep_ms=500,
         max_wait_ms=None)
+    # Wait for the public key to propagate. Unfortunately there is no
+    # api we can check for this.
+    log.Print('Waiting for your public key to propagate...')
+    time.sleep(5)
 
   # If the environment isn't running, start it.
   if environment.state != messages.Environment.StateValueValuesEnum.RUNNING:

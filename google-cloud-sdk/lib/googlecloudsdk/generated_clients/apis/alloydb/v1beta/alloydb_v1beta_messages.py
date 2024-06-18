@@ -1292,6 +1292,7 @@ class Cluster(_messages.Message):
     sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
     subscriptionType: Optional. Subscription type of the cluster.
+    trialMetadata: Output only. Metadata for free trial clusters
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
       deleted.
@@ -1459,8 +1460,9 @@ class Cluster(_messages.Message):
   sslConfig = _messages.MessageField('SslConfig', 28)
   state = _messages.EnumField('StateValueValuesEnum', 29)
   subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 30)
-  uid = _messages.StringField(31)
-  updateTime = _messages.StringField(32)
+  trialMetadata = _messages.MessageField('TrialMetadata', 31)
+  uid = _messages.StringField(32)
+  updateTime = _messages.StringField(33)
 
 
 class ConnectionInfo(_messages.Message):
@@ -3335,12 +3337,27 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         violates CIS GCP Foundation 1.1.
       SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0: Represents if a resource
         violates CIS GCP Foundation 1.0.
+      SIGNAL_TYPE_VIOLATES_CIS_CONTROLS_V8_0: Represents if a resource
+        violates CIS Controls 8.0.
       SIGNAL_TYPE_VIOLATES_NIST_800_53: Represents if a resource violates NIST
         800-53.
+      SIGNAL_TYPE_VIOLATES_NIST_800_53_R5: Represents if a resource violates
+        NIST 800-53 R5.
+      SIGNAL_TYPE_VIOLATES_NIST_CYBERSECURITY_FRAMEWORK_V1_0: Represents if a
+        resource violates NIST Cybersecurity Framework 1.0.
       SIGNAL_TYPE_VIOLATES_ISO_27001: Represents if a resource violates
         ISO-27001.
+      SIGNAL_TYPE_VIOLATES_ISO_27001_V2022: Represents if a resource violates
+        ISO 27001 2022.
       SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
         PCI-DSS v3.2.1.
+      SIGNAL_TYPE_VIOLATES_PCI_DSS_V4_0: Represents if a resource violates
+        PCI-DSS v4.0.
+      SIGNAL_TYPE_VIOLATES_CLOUD_CONTROLS_MATRIX_V4: Represents if a resource
+        violates Cloud Controls Matrix v4.0.
+      SIGNAL_TYPE_VIOLATES_HIPAA: Represents if a resource violates HIPAA.
+      SIGNAL_TYPE_VIOLATES_SOC2_V2017: Represents if a resource violates SOC2
+        v2017.
       SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
         log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
         is not set to on.
@@ -3485,62 +3502,70 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 12
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 13
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 14
-    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 15
-    SIGNAL_TYPE_VIOLATES_ISO_27001 = 16
-    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 17
-    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 18
-    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 19
-    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 20
-    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 21
-    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 22
-    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 23
-    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 24
-    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 25
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 26
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 27
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 28
-    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 29
-    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 30
-    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 31
-    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 32
-    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 33
-    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 34
-    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 35
-    SIGNAL_TYPE_NO_ROOT_PASSWORD = 36
-    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 37
-    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 38
-    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 39
-    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 40
-    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 41
-    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 42
-    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 43
-    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 44
-    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 45
-    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 46
-    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 47
-    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 48
-    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 49
-    SIGNAL_TYPE_IDLE = 50
-    SIGNAL_TYPE_OVERPROVISIONED = 51
-    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 52
-    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 53
-    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 54
-    SIGNAL_TYPE_UNDERPROVISIONED = 55
-    SIGNAL_TYPE_OUT_OF_DISK = 56
-    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 57
-    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
-    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
-    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
-    SIGNAL_TYPE_QUOTA_LIMIT = 61
-    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
-    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
-    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
-    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
-    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
-    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
-    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
-    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
-    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
+    SIGNAL_TYPE_VIOLATES_CIS_CONTROLS_V8_0 = 15
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 16
+    SIGNAL_TYPE_VIOLATES_NIST_800_53_R5 = 17
+    SIGNAL_TYPE_VIOLATES_NIST_CYBERSECURITY_FRAMEWORK_V1_0 = 18
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 19
+    SIGNAL_TYPE_VIOLATES_ISO_27001_V2022 = 20
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 21
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V4_0 = 22
+    SIGNAL_TYPE_VIOLATES_CLOUD_CONTROLS_MATRIX_V4 = 23
+    SIGNAL_TYPE_VIOLATES_HIPAA = 24
+    SIGNAL_TYPE_VIOLATES_SOC2_V2017 = 25
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 26
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 27
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 28
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 29
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 30
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 31
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 32
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 33
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 34
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 35
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 36
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 37
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 38
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 39
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 40
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 41
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 42
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 43
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 44
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 45
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 46
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 47
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 48
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 49
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 50
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 51
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 52
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 53
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 54
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 55
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 56
+    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 57
+    SIGNAL_TYPE_IDLE = 58
+    SIGNAL_TYPE_OVERPROVISIONED = 59
+    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 60
+    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 61
+    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 62
+    SIGNAL_TYPE_UNDERPROVISIONED = 63
+    SIGNAL_TYPE_OUT_OF_DISK = 64
+    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 65
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 66
+    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 67
+    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 68
+    SIGNAL_TYPE_QUOTA_LIMIT = 69
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 70
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 71
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 72
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 73
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 74
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 75
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -3661,10 +3686,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     InstanceTypeValueValuesEnum: The type of the instance. Specified at
       creation time.
 
-  Messages:
-    UserLabelsValue: User-provided labels, represented as a dictionary where
-      each label is a single key value pair.
-
   Fields:
     availabilityConfiguration: Availability configuration for this instance
     backupConfiguration: Backup configuration for this instance
@@ -3699,8 +3720,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabelSet: User-provided labels associated with the resource
-    userLabels: User-provided labels, represented as a dictionary where each
-      label is a single key value pair.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -3768,31 +3787,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     SUB_RESOURCE_TYPE_READ_REPLICA = 8
     SUB_RESOURCE_TYPE_OTHER = 9
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class UserLabelsValue(_messages.Message):
-    r"""User-provided labels, represented as a dictionary where each label is
-    a single key value pair.
-
-    Messages:
-      AdditionalProperty: An additional property for a UserLabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type UserLabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a UserLabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   availabilityConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainAvailabilityConfiguration', 1)
   backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 2)
   backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 3)
@@ -3811,7 +3805,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   resourceName = _messages.StringField(16)
   updationTime = _messages.StringField(17)
   userLabelSet = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainUserLabels', 18)
-  userLabels = _messages.MessageField('UserLabelsValue', 19)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalData(_messages.Message):
@@ -3917,12 +3910,27 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
         violates CIS GCP Foundation 1.1.
       SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0: Represents if a resource
         violates CIS GCP Foundation 1.0.
+      SIGNAL_TYPE_VIOLATES_CIS_CONTROLS_V8_0: Represents if a resource
+        violates CIS Controls 8.0.
       SIGNAL_TYPE_VIOLATES_NIST_800_53: Represents if a resource violates NIST
         800-53.
+      SIGNAL_TYPE_VIOLATES_NIST_800_53_R5: Represents if a resource violates
+        NIST 800-53 R5.
+      SIGNAL_TYPE_VIOLATES_NIST_CYBERSECURITY_FRAMEWORK_V1_0: Represents if a
+        resource violates NIST Cybersecurity Framework 1.0.
       SIGNAL_TYPE_VIOLATES_ISO_27001: Represents if a resource violates
         ISO-27001.
+      SIGNAL_TYPE_VIOLATES_ISO_27001_V2022: Represents if a resource violates
+        ISO 27001 2022.
       SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
         PCI-DSS v3.2.1.
+      SIGNAL_TYPE_VIOLATES_PCI_DSS_V4_0: Represents if a resource violates
+        PCI-DSS v4.0.
+      SIGNAL_TYPE_VIOLATES_CLOUD_CONTROLS_MATRIX_V4: Represents if a resource
+        violates Cloud Controls Matrix v4.0.
+      SIGNAL_TYPE_VIOLATES_HIPAA: Represents if a resource violates HIPAA.
+      SIGNAL_TYPE_VIOLATES_SOC2_V2017: Represents if a resource violates SOC2
+        v2017.
       SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
         log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
         is not set to on.
@@ -4067,62 +4075,70 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceRecommendationSignalD
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 12
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 13
     SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 14
-    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 15
-    SIGNAL_TYPE_VIOLATES_ISO_27001 = 16
-    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 17
-    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 18
-    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 19
-    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 20
-    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 21
-    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 22
-    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 23
-    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 24
-    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 25
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 26
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 27
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 28
-    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 29
-    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 30
-    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 31
-    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 32
-    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 33
-    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 34
-    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 35
-    SIGNAL_TYPE_NO_ROOT_PASSWORD = 36
-    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 37
-    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 38
-    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 39
-    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 40
-    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 41
-    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 42
-    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 43
-    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 44
-    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 45
-    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 46
-    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 47
-    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 48
-    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 49
-    SIGNAL_TYPE_IDLE = 50
-    SIGNAL_TYPE_OVERPROVISIONED = 51
-    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 52
-    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 53
-    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 54
-    SIGNAL_TYPE_UNDERPROVISIONED = 55
-    SIGNAL_TYPE_OUT_OF_DISK = 56
-    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 57
-    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 58
-    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 59
-    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 60
-    SIGNAL_TYPE_QUOTA_LIMIT = 61
-    SIGNAL_TYPE_NO_PASSWORD_POLICY = 62
-    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 63
-    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 64
-    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 65
-    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 66
-    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 67
-    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 68
-    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 69
-    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 70
+    SIGNAL_TYPE_VIOLATES_CIS_CONTROLS_V8_0 = 15
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 16
+    SIGNAL_TYPE_VIOLATES_NIST_800_53_R5 = 17
+    SIGNAL_TYPE_VIOLATES_NIST_CYBERSECURITY_FRAMEWORK_V1_0 = 18
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 19
+    SIGNAL_TYPE_VIOLATES_ISO_27001_V2022 = 20
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 21
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V4_0 = 22
+    SIGNAL_TYPE_VIOLATES_CLOUD_CONTROLS_MATRIX_V4 = 23
+    SIGNAL_TYPE_VIOLATES_HIPAA = 24
+    SIGNAL_TYPE_VIOLATES_SOC2_V2017 = 25
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 26
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 27
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 28
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 29
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 30
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 31
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 32
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 33
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 34
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 35
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 36
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 37
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 38
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 39
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 40
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 41
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 42
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 43
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 44
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 45
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 46
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 47
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 48
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 49
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 50
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 51
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 52
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 53
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 54
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 55
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 56
+    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 57
+    SIGNAL_TYPE_IDLE = 58
+    SIGNAL_TYPE_OVERPROVISIONED = 59
+    SIGNAL_TYPE_HIGH_NUMBER_OF_OPEN_TABLES = 60
+    SIGNAL_TYPE_HIGH_NUMBER_OF_TABLES = 61
+    SIGNAL_TYPE_HIGH_TRANSACTION_ID_UTILIZATION = 62
+    SIGNAL_TYPE_UNDERPROVISIONED = 63
+    SIGNAL_TYPE_OUT_OF_DISK = 64
+    SIGNAL_TYPE_SERVER_CERTIFICATE_NEAR_EXPIRY = 65
+    SIGNAL_TYPE_DATABASE_AUDITING_DISABLED = 66
+    SIGNAL_TYPE_RESTRICT_AUTHORIZED_NETWORKS = 67
+    SIGNAL_TYPE_VIOLATE_POLICY_RESTRICT_PUBLIC_IP = 68
+    SIGNAL_TYPE_QUOTA_LIMIT = 69
+    SIGNAL_TYPE_NO_PASSWORD_POLICY = 70
+    SIGNAL_TYPE_CONNECTIONS_PERFORMANCE_IMPACT = 71
+    SIGNAL_TYPE_TMP_TABLES_PERFORMANCE_IMPACT = 72
+    SIGNAL_TYPE_TRANS_LOGS_PERFORMANCE_IMPACT = 73
+    SIGNAL_TYPE_HIGH_JOINS_WITHOUT_INDEXES = 74
+    SIGNAL_TYPE_SUPERUSER_WRITING_TO_USER_TABLES = 75
+    SIGNAL_TYPE_USER_GRANTED_ALL_PERMISSIONS = 76
+    SIGNAL_TYPE_DATA_EXPORT_TO_EXTERNAL_CLOUD_STORAGE_BUCKET = 77
+    SIGNAL_TYPE_DATA_EXPORT_TO_PUBLIC_CLOUD_STORAGE_BUCKET = 78
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalMetadataValue(_messages.Message):
@@ -4208,8 +4224,10 @@ class StorageDatabasecenterPartnerapiV1mainMachineConfiguration(_messages.Messag
   to Database Resource.
 
   Fields:
-    cpuCount: The number of CPUs.
-    memorySizeInBytes: Memory size in bytes.
+    cpuCount: The number of CPUs. TODO(b/342344482, b/342346271) add proto
+      validations again after bug fix.
+    memorySizeInBytes: Memory size in bytes. TODO(b/342344482, b/342346271)
+      add proto validations again after bug fix.
   """
 
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4220,34 +4238,64 @@ class StorageDatabasecenterPartnerapiV1mainObservabilityMetricData(_messages.Mes
   r"""A StorageDatabasecenterPartnerapiV1mainObservabilityMetricData object.
 
   Enums:
+    AggregationTypeValueValuesEnum: Required. Type of aggregation performed on
+      the metric.
     MetricTypeValueValuesEnum: Required. Type of metric like CPU, Memory, etc.
 
   Fields:
-    metricTimestamp: Required. The timestamp of the metric value.
+    aggregationType: Required. Type of aggregation performed on the metric.
     metricType: Required. Type of metric like CPU, Memory, etc.
+    observationTime: Required. The time the metric value was observed.
     resourceName: Required. Database resource name associated with the signal.
       Resource name to follow CAIS resource_name format as noted here
       go/condor-common-datamodel
     value: Required. Value of the metric type.
   """
 
+  class AggregationTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of aggregation performed on the metric.
+
+    Values:
+      AGGREGATION_TYPE_UNSPECIFIED: Unspecified aggregation type.
+      PEAK: PEAK aggregation type.
+      P99: P99 aggregation type.
+      P95: P95 aggregation type.
+      CURRENT: current aggregation type.
+    """
+    AGGREGATION_TYPE_UNSPECIFIED = 0
+    PEAK = 1
+    P99 = 2
+    P95 = 3
+    CURRENT = 4
+
   class MetricTypeValueValuesEnum(_messages.Enum):
     r"""Required. Type of metric like CPU, Memory, etc.
 
     Values:
-      METRIC_TYPE_UNSPECIFIED: <no description>
-      INSTANCE_PEAK_CPU_UTILISATION: Peak CPU utilization for a DB instance as
-        a fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
-        cases) List will keep increasing, e.g. PEAK_MEMORY_UTILISATION,
-        NUMBER_OF_CONNECTIONS, SUCCESS_RATIO_FOR_QUERIES, etc.
+      METRIC_TYPE_UNSPECIFIED: Unspecified metric type.
+      CPU_UTILIZATION: CPU utilization for a resource. The value is a fraction
+        between 0.0 and 1.0 (may momentarily exceed 1.0 in some cases).
+      MEMORY_UTILIZATION: Memory utilization for a resource. The value is a
+        fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
+        cases).
+      NETWORK_CONNECTIONS: Number of network connections for a resource.
+      STORAGE_UTILIZATION: Storage utilization for a resource. The value is a
+        fraction between 0.0 and 1.0 (may momentarily exceed 1.0 in some
+        cases).
+      STORAGE_USED_BYTES: Sotrage used by a resource.
     """
     METRIC_TYPE_UNSPECIFIED = 0
-    INSTANCE_PEAK_CPU_UTILISATION = 1
+    CPU_UTILIZATION = 1
+    MEMORY_UTILIZATION = 2
+    NETWORK_CONNECTIONS = 3
+    STORAGE_UTILIZATION = 4
+    STORAGE_USED_BYTES = 5
 
-  metricTimestamp = _messages.StringField(1)
+  aggregationType = _messages.EnumField('AggregationTypeValueValuesEnum', 1)
   metricType = _messages.EnumField('MetricTypeValueValuesEnum', 2)
-  resourceName = _messages.StringField(3)
-  value = _messages.FloatField(4)
+  observationTime = _messages.StringField(3)
+  resourceName = _messages.StringField(4)
+  value = _messages.MessageField('StorageDatabasecenterProtoCommonTypedValue', 5)
 
 
 class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):
@@ -4456,6 +4504,23 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
   version = _messages.StringField(3)
 
 
+class StorageDatabasecenterProtoCommonTypedValue(_messages.Message):
+  r"""TypedValue represents the value of a metric type. It can either be a
+  double, an int64, a string or a bool.
+
+  Fields:
+    boolValue: For boolean value
+    doubleValue: For double value
+    int64Value: For integer value
+    stringValue: For string value
+  """
+
+  boolValue = _messages.BooleanField(1)
+  doubleValue = _messages.FloatField(2)
+  int64Value = _messages.IntegerField(3)
+  stringValue = _messages.StringField(4)
+
+
 class StringRestrictions(_messages.Message):
   r"""Restrictions on STRING type values
 
@@ -4546,6 +4611,20 @@ class TimeBasedRetention(_messages.Message):
   """
 
   retentionPeriod = _messages.StringField(1)
+
+
+class TrialMetadata(_messages.Message):
+  r"""Contains information and all metadata related to TRIAL clusters.
+
+  Fields:
+    endTime: End time of the trial cluster.
+    startTime: start time of the trial cluster.
+    upgradeTime: Upgrade time of trial cluster to Standard cluster.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  upgradeTime = _messages.StringField(3)
 
 
 class UpdatePolicy(_messages.Message):

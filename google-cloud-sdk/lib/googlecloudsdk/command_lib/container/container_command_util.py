@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import text
@@ -296,6 +297,26 @@ def GetAutoRepair(args):
   return (args.image_type or '').lower() in [
       '', 'cos', 'cos_containerd', 'gci', 'ubuntu', 'ubuntu_containerd'
   ]
+
+
+def CheckReleaseChannel(args):
+  """Checks if the release_channel argument is 'extended' and prints a message.
+
+  Args:
+    args: An object (e.g., from argparse) containing command-line arguments.
+  """
+
+  release_channel = getattr(args, 'release_channel', None)
+
+  if release_channel is None:
+    return
+
+  if release_channel and release_channel[0].lower() == 'extended':
+    log.status.Print(
+        'Note: For GKE Standard edition, pay-per-use costs apply when your '
+        'cluster is enrolled in the Extended release channel and your '
+        'cluster\'s minor version enters the extended support period.'
+        )
 
 
 def ParseUpdateOptionsBase(args, locations):

@@ -319,33 +319,6 @@ class ManagedkafkaV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def AuthenticateConnection(self, request, global_params=None):
-      r"""Request made when opening a new Kafka connection. This should never be made directly by users.
-
-      Args:
-        request: (ManagedkafkaProjectsLocationsClustersAuthenticateConnectionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AuthenticateConnectionResponse) The response message.
-      """
-      config = self.GetMethodConfig('AuthenticateConnection')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AuthenticateConnection.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:authenticateConnection',
-        http_method='GET',
-        method_id='managedkafka.projects.locations.clusters.authenticateConnection',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['username'],
-        relative_path='v1/{+name}:authenticateConnection',
-        request_field='',
-        request_type_name='ManagedkafkaProjectsLocationsClustersAuthenticateConnectionRequest',
-        response_type_name='AuthenticateConnectionResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new cluster in a given project and location.
 

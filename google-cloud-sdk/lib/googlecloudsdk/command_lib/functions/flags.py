@@ -1143,15 +1143,15 @@ def _ValidateJsonOrRaiseError(data, arg_name):
     )
 
 
-def AddBuildServiceAccountFlag(parser, track):
-  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    parser.add_argument(
-        '--build-service-account',
-        help="""\
-            IAM service account whose credentials will be used for the build step.
-            Must be of the format projects/${PROJECT_ID}/serviceAccounts/${ACCOUNT_EMAIL_ADDRESS}.
+def AddBuildServiceAccountFlag(parser):
+  parser.add_argument(
+      '--build-service-account',
+      help="""\
+          IAM service account whose credentials will be used for the build step.
+          Must be of the format projects/${PROJECT_ID}/serviceAccounts/${ACCOUNT_EMAIL_ADDRESS}
+          or {ACCOUNT_EMAIL_ADDRESS}.
 
-            If not provided, the function will use the project's default
-            service account for Cloud Build.
-        """,
-    )
+          If not provided, the function will use the project's default
+          service account for Cloud Build.
+      """,
+  )

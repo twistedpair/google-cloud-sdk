@@ -1868,7 +1868,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set for each target resource container.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace. A maximum of 50 AttestationRules can be set for each target resource container.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest) input message
@@ -2030,7 +2030,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def ListAttestationRules(self, request, global_params=None):
-      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListAttestationRulesRequest) input message
@@ -2084,7 +2084,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def RemoveAttestationRule(self, request, global_params=None):
-      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest) input message
@@ -2421,7 +2421,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 50 AttestationRules can be set for each target resource container.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace. A maximum of 50 AttestationRules can be set for each target resource container.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleRequest) input message
@@ -2583,7 +2583,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def ListAttestationRules(self, request, global_params=None):
-      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesListAttestationRulesRequest) input message
@@ -2637,7 +2637,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def RemoveAttestationRule(self, request, global_params=None):
-      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRuleRequest) input message

@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
-import shutil
 import sys
 
 from apitools.base.py import transfer
@@ -29,22 +28,23 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import transports
 
 
-def Download(tmp_path, final_path, file_res_name, file_name, allow_overwrite):
+def Download(dest_path, file_res_name, file_name, allow_overwrite):
   """Downloads a file to a local path."""
   client = requests.GetClient()
   chunksize = 3 * 1024 * 1024
 
   # call expanduser so that `~` can be used to represent the home directory.
-  final_path = os.path.expanduser(final_path)
+  dest_path = os.path.expanduser(dest_path)
 
   # Only move the file to the user specified path if overwrites are allowed.
-  if os.path.exists(final_path) and not allow_overwrite:
-    log.error('File {} already exists.'.format(final_path))
+  if os.path.exists(dest_path) and not allow_overwrite:
+    log.error('File {} already exists.'.format(dest_path))
     sys.exit(1)
 
   m = requests.GetMessages()
-  request = m.ArtifactregistryMediaDownloadRequest(name=file_res_name)
-  # Allow overwriting in /tmp.
+  request = m.ArtifactregistryProjectsLocationsRepositoriesFilesDownloadRequest(
+      name=file_res_name
+  )
   with console_io.ProgressBar(
       f'Downloading {file_name}'
   ) as progress_bar:
@@ -55,19 +55,14 @@ def Download(tmp_path, final_path, file_res_name, file_name, allow_overwrite):
         progress = download.progress / download.total_size
         if progress < 1:
           progress_bar.SetProgress(progress)
-
     d = transfer.Download.FromFile(
-        tmp_path,
-        True,
+        dest_path,
+        allow_overwrite,
         chunksize=chunksize,
         progress_callback=ProgressCallback,
     )
     d.bytes_http = transports.GetApitoolsTransport(response_encoding=None)
     try:
-      client.media.Download(request, download=d)
+      client.projects_locations_repositories_files.Download(request, download=d)
     finally:
       d.stream.close()
-
-  # Move the file from tmp_path to the final_path for single file downloads.
-  if tmp_path != final_path:
-    shutil.move(tmp_path, final_path)

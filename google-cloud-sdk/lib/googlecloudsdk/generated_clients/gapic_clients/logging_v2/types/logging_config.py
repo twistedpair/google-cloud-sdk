@@ -2185,12 +2185,12 @@ class CreateSinkRequest(proto.Message):
             information, see ``writer_identity`` in
             [LogSink][google.logging.v2.LogSink].
         custom_writer_identity (str):
-            Optional. A service account provided by the caller that will
-            be used to write the log entries. The format must be
+            Optional. The service account provided by the caller that
+            will be used to write the log entries. The format must be
             ``serviceAccount:some@email``. This field can only be
-            specified if you are routing logs to a destination outside
-            this sink's project. If not specified, a Logging service
-            account will automatically be generated.
+            specified when you are routing logs to a log bucket that is
+            in a different project than the sink. When not specified, a
+            Logging service account will automatically be generated.
     """
 
     parent: str = proto.Field(
@@ -2251,12 +2251,12 @@ class UpdateSinkRequest(proto.Message):
             -  It is an error if the old value is true and the new value
                is set to false or defaulted to false.
         custom_writer_identity (str):
-            Optional. A service account provided by the caller that will
-            be used to write the log entries. The format must be
+            Optional. The service account provided by the caller that
+            will be used to write the log entries. The format must be
             ``serviceAccount:some@email``. This field can only be
-            specified if you are routing logs to a destination outside
-            this sink's project. If not specified, a Logging service
-            account will automatically be generated.
+            specified when you are routing logs to a log bucket that is
+            in a different project than the sink. When not specified, a
+            Logging service account will automatically be generated.
         update_mask (google.protobuf.field_mask_pb2.FieldMask):
             Optional. Field mask that specifies the fields in ``sink``
             that need an update. A sink field will be overwritten if,

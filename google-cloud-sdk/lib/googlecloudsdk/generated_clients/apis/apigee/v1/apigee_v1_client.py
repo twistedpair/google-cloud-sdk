@@ -130,6 +130,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_sites_apicategories = self.OrganizationsSitesApicategoriesService(self)
     self.organizations_sites_apidocs = self.OrganizationsSitesApidocsService(self)
     self.organizations_sites = self.OrganizationsSitesService(self)
+    self.organizations_spaces = self.OrganizationsSpacesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -9078,7 +9079,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.sharedflows.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['action', 'name'],
+        query_params=['action', 'name', 'space'],
         relative_path='v1/{+parent}/sharedflows',
         request_field='googleApiHttpBody',
         request_type_name='ApigeeOrganizationsSharedflowsCreateRequest',
@@ -9159,7 +9160,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.sharedflows.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['includeMetaData', 'includeRevisions'],
+        query_params=['includeMetaData', 'includeRevisions', 'space'],
         relative_path='v1/{+parent}/sharedflows',
         request_field='',
         request_type_name='ApigeeOrganizationsSharedflowsListRequest',
@@ -9520,6 +9521,232 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.OrganizationsSitesService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class OrganizationsSpacesService(base_api.BaseApiService):
+    """Service class for the organizations_spaces resource."""
+
+    _NAME = 'organizations_spaces'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSpacesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a space under an organization.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1Space) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces',
+        http_method='POST',
+        method_id='apigee.organizations.spaces.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['spaceId'],
+        relative_path='v1/{+parent}/spaces',
+        request_field='googleCloudApigeeV1Space',
+        request_type_name='ApigeeOrganizationsSpacesCreateRequest',
+        response_type_name='GoogleCloudApigeeV1Space',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an organization space.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.spaces.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSpacesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a space under an Organization.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1Space) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}',
+        http_method='GET',
+        method_id='apigee.organizations.spaces.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSpacesGetRequest',
+        response_type_name='GoogleCloudApigeeV1Space',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Callers must have apigee.spaces.getIamPolicy.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}:getIamPolicy',
+        http_method='GET',
+        method_id='apigee.organizations.spaces.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSpacesGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists spaces under an organization.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSpacesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces',
+        http_method='GET',
+        method_id='apigee.organizations.spaces.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/spaces',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSpacesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSpacesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a space.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1Space) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.spaces.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1Space',
+        request_type_name='ApigeeOrganizationsSpacesPatchRequest',
+        response_type_name='GoogleCloudApigeeV1Space',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""IAM META APIs Callers must have apigee.spaces.setIamPolicy.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}:setIamPolicy',
+        http_method='POST',
+        method_id='apigee.organizations.spaces.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='ApigeeOrganizationsSpacesSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Callers don't need any permissions.
+
+      Args:
+        request: (ApigeeOrganizationsSpacesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/spaces/{spacesId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigee.organizations.spaces.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='ApigeeOrganizationsSpacesTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
   class OrganizationsService(base_api.BaseApiService):
     """Service class for the organizations resource."""

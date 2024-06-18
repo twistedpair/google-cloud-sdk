@@ -951,6 +951,11 @@ class _BaseInstances(object):
         if instance_resource.replicationCluster is not None:
           instance_resource.replicationCluster.ClearFailoverDrReplicaName()
 
+      if args.IsKnownAndSpecified('switch_transaction_logs_to_cloud_storage'):
+        instance_resource.switchTransactionLogsToCloudStorageEnabled = (
+            args.switch_transaction_logs_to_cloud_storage
+        )
+
     return instance_resource
 
 

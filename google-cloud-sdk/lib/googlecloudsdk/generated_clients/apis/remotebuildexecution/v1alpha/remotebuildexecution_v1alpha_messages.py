@@ -977,8 +977,6 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
     isoPrepDone: The timestamp when preparation is done and bot starts
       downloading files.
     overall: The time spent completing the command, in total.
-    stderr: The time spent uploading the stderr logs.
-    stdout: The time spent uploading the stdout logs.
     upload: The time spent uploading the output files.
     uploadStartTime: The timestamp when uploading the output files begins.
   """
@@ -993,10 +991,8 @@ class GoogleDevtoolsRemotebuildbotCommandDurations(_messages.Message):
   execution = _messages.StringField(8)
   isoPrepDone = _messages.StringField(9)
   overall = _messages.StringField(10)
-  stderr = _messages.StringField(11)
-  stdout = _messages.StringField(12)
-  upload = _messages.StringField(13)
-  uploadStartTime = _messages.StringField(14)
+  upload = _messages.StringField(11)
+  uploadStartTime = _messages.StringField(12)
 
 
 class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
@@ -1059,10 +1055,14 @@ class GoogleDevtoolsRemotebuildbotCommandEvents(_messages.Message):
       MOUNT_WRITABLE: The input tree was mounted as a read-write bind mount.
         The CAS proxy will use file watchers and/or post-action scanning of
         inputs to catch modfiications to the input blobs.
+      MOUNT_READ_ONLY: The input tree was mounted as a read-only bind mount,
+        with a separate writable directories mounted where outputs are
+        expected.
     """
     MOUNT_UNSPECIFIED = 0
     MOUNT_OVERLAY = 1
     MOUNT_WRITABLE = 2
+    MOUNT_READ_ONLY = 3
 
   class OutputLocationValueValuesEnum(_messages.Enum):
     r"""Indicates whether output files and/or output directories were found

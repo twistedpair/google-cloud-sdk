@@ -75,6 +75,7 @@ def get_wildcard_iterator(
     halt_on_empty_response=True,
     ignore_symlinks=False,
     managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+    folder_setting=folder_util.FolderSetting.DO_NOT_LIST,
     next_page_token=None,
     object_state=cloud_api.ObjectState.LIVE,
     preserve_symlinks=False,
@@ -105,6 +106,8 @@ def get_wildcard_iterator(
     ignore_symlinks (bool): Skip over symlinks instead of following them.
     managed_folder_setting (folder_util.ManagedFolderSetting): Indicates how to
       deal with managed folders.
+     folder_setting (folder_util.FolderSetting): Indicates how to deal with
+       folders.
     next_page_token (str|None): Used to resume LIST calls.
     object_state (cloud_api.ObjectState): Versions of objects to query.
     preserve_symlinks (bool): Preserve symlinks instead of following them.
@@ -128,6 +131,7 @@ def get_wildcard_iterator(
         get_bucket_metadata=get_bucket_metadata,
         halt_on_empty_response=halt_on_empty_response,
         managed_folder_setting=managed_folder_setting,
+        folder_setting=folder_setting,
         next_page_token=next_page_token,
         object_state=object_state,
         raise_managed_folder_precondition_errors=raise_managed_folder_precondition_errors,
@@ -332,6 +336,7 @@ class CloudWildcardIterator(WildcardIterator):
       get_bucket_metadata=False,
       halt_on_empty_response=True,
       managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      folder_setting=folder_util.FolderSetting.DO_NOT_LIST,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
       raise_managed_folder_precondition_errors=True,
@@ -358,6 +363,8 @@ class CloudWildcardIterator(WildcardIterator):
         See CloudApi for details.
       managed_folder_setting (folder_util.ManagedFolderSetting): Indicates how
         to deal with managed folders.
+      folder_setting (folder_util.FolderSetting): Indicates how to deal with
+        folders.
       next_page_token (str|None): Used to resume LIST calls.
       object_state (cloud_api.ObjectState): Versions of objects to query.
       raise_managed_folder_precondition_errors (bool): If True, raises
@@ -375,6 +382,7 @@ class CloudWildcardIterator(WildcardIterator):
     self._get_bucket_metadata = get_bucket_metadata
     self._halt_on_empty_response = halt_on_empty_response
     self._managed_folder_setting = managed_folder_setting
+    self._folder_setting = folder_setting
     self._next_page_token = next_page_token
     self._object_state = object_state
     self._raise_managed_folder_precondition_errors = (
@@ -430,6 +438,13 @@ class CloudWildcardIterator(WildcardIterator):
                 and not isinstance(
                     resource, resource_reference.ManagedFolderResource
                 )
+            ):
+              continue
+
+            if (
+                self._folder_setting
+                is folder_util.FolderSetting.LIST_WITHOUT_OBJECTS
+                and not isinstance(resource, resource_reference.FolderResource)
             ):
               continue
 
@@ -532,11 +547,41 @@ class CloudWildcardIterator(WildcardIterator):
       if self._raise_managed_folder_precondition_errors:
         raise
 
+  def _get_folder_iterator(self, bucket_name, wildcard_parts):
+    is_recursive_expansion = wildcard_parts.delimiter is None
+    should_list_folders = self._folder_setting in (
+        folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,
+    )
+
+    if wildcard_parts.prefix:
+      modified_prefix = (
+          wildcard_parts.prefix + '/'
+          if not wildcard_parts.prefix.endswith('/')
+          else wildcard_parts.prefix
+      )
+    else:
+      modified_prefix = None
+
+    if should_list_folders and is_recursive_expansion:
+      folder_iterator = self._client.list_folders(
+          bucket_name=bucket_name,
+          prefix=modified_prefix,
+      )
+    else:
+      folder_iterator = []
+
+    for resource in folder_iterator:
+      yield resource
+
   def _get_resource_iterator(self, bucket_name, wildcard_parts):
     if (
-        self._managed_folder_setting
-        is not folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
-        # Even if we're just listing managed folders, we need to call
+        (
+            self._managed_folder_setting
+            is not folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
+            and self._folder_setting
+            is not folder_util.FolderSetting.LIST_WITHOUT_OBJECTS
+        )
+        # Even if we're just listing managed folders/folders, we need to call
         # list_objects to expand non-recursive wildcards using delimiters. For
         # example, to expand gs://bucket/*/dir/**, we will call list_objects to
         # get PrefixResources needed to expand the first wildcard. After all
@@ -549,6 +594,7 @@ class CloudWildcardIterator(WildcardIterator):
       setting_is_do_not_list = (
           self._managed_folder_setting
           is folder_util.ManagedFolderSetting.DO_NOT_LIST
+          and self._folder_setting is folder_util.FolderSetting.DO_NOT_LIST
       )
 
       # The API raises an error if we attempt to include folders as prefixes
@@ -578,9 +624,12 @@ class CloudWildcardIterator(WildcardIterator):
         bucket_name, wildcard_parts
     )
 
+    folder_iterator = self._get_folder_iterator(bucket_name, wildcard_parts)
+
     return heapq.merge(
         object_iterator,
         managed_folder_iterator,
+        folder_iterator,
         key=lambda resource: resource.storage_url.url_string,
     )
 
@@ -603,6 +652,28 @@ class CloudWildcardIterator(WildcardIterator):
     try:
       prefix_url = resource.storage_url
       return self._client.get_managed_folder(
+          prefix_url.bucket_name, prefix_url.object_name
+      )
+    except api_errors.NotFoundError:
+      return resource
+
+  def _maybe_convert_prefix_to_folder(self, resource):
+    """If resource is a prefix, attempts to convert it to a folder."""
+    if (
+        # pylint: disable=unidiomatic-typecheck
+        # We do not want this check to pass for child classes.
+        type(resource) is not resource_reference.PrefixResource
+        # pylint: enable=unidiomatic-typecheck
+        or self._folder_setting
+        not in {
+            folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,
+        }
+    ):
+      return resource
+
+    try:
+      prefix_url = resource.storage_url
+      return self._client.get_folder(
           prefix_url.bucket_name, prefix_url.object_name
       )
     except api_errors.NotFoundError:
@@ -681,7 +752,13 @@ class CloudWildcardIterator(WildcardIterator):
           ) and original_object_name.endswith(self._url.delimiter):
             continue
 
-          resource = self._maybe_convert_prefix_to_managed_folder(resource)
+          # The order is important as Folders should take precdence
+          # over Managed Folders for an HNS bucket, So if a resource is a
+          # Folder, then we need not convert it to a Managed Folder
+          resource = self._maybe_convert_prefix_to_folder(resource)
+          if not isinstance(resource, resource_reference.FolderResource):
+            resource = self._maybe_convert_prefix_to_managed_folder(resource)
+
           yield self._decrypt_resource_if_necessary(resource)
 
     if error:

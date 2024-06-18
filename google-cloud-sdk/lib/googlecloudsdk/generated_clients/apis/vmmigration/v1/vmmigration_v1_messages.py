@@ -110,9 +110,9 @@ class AwsDiskDetails(_messages.Message):
   r"""The details of an AWS instance disk.
 
   Fields:
-    diskNumber: The ordinal number of the disk.
-    sizeGb: Size in GB.
-    volumeId: AWS volume ID.
+    diskNumber: Output only. The ordinal number of the disk.
+    sizeGb: Output only. Size in GB.
+    volumeId: Output only. AWS volume ID.
   """
 
   diskNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -225,19 +225,19 @@ class AwsSourceVmDetails(_messages.Message):
   r"""Represent the source AWS VM details.
 
   Enums:
-    FirmwareValueValuesEnum: The firmware type of the source VM.
+    FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
-    committedStorageBytes: The total size of the disks being migrated in
-      bytes.
-    disks: The disks attached to the source VM.
-    firmware: The firmware type of the source VM.
+    committedStorageBytes: Output only. The total size of the disks being
+      migrated in bytes.
+    disks: Output only. The disks attached to the source VM.
+    firmware: Output only. The firmware type of the source VM.
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
 
   class FirmwareValueValuesEnum(_messages.Enum):
-    r"""The firmware type of the source VM.
+    r"""Output only. The firmware type of the source VM.
 
     Values:
       FIRMWARE_UNSPECIFIED: The firmware is unknown.
@@ -407,9 +407,9 @@ class AzureDiskDetails(_messages.Message):
   r"""The details of an Azure VM disk.
 
   Fields:
-    diskId: Azure disk ID.
-    diskNumber: The ordinal number of the disk.
-    sizeGb: Size in GB.
+    diskId: Output only. Azure disk ID.
+    diskNumber: Output only. The ordinal number of the disk.
+    sizeGb: Output only. Size in GB.
   """
 
   diskId = _messages.StringField(1)
@@ -507,19 +507,19 @@ class AzureSourceVmDetails(_messages.Message):
   r"""Represent the source Azure VM details.
 
   Enums:
-    FirmwareValueValuesEnum: The firmware type of the source VM.
+    FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
-    committedStorageBytes: The total size of the disks being migrated in
-      bytes.
-    disks: The disks attached to the source VM.
-    firmware: The firmware type of the source VM.
+    committedStorageBytes: Output only. The total size of the disks being
+      migrated in bytes.
+    disks: Output only. The disks attached to the source VM.
+    firmware: Output only. The firmware type of the source VM.
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
 
   class FirmwareValueValuesEnum(_messages.Enum):
-    r"""The firmware type of the source VM.
+    r"""Output only. The firmware type of the source VM.
 
     Values:
       FIRMWARE_UNSPECIFIED: The firmware is unknown.
@@ -2179,15 +2179,9 @@ class MachineImageParametersOverrides(_messages.Message):
       information from the source image. For more information about machine
       types, please refer to https://cloud.google.com/compute/docs/machine-
       resource.
-    machineTypeSeries: Optional. The machine type series to create the
-      MachineImage with. If empty, the service will choose a relevant machine
-      type series based on the information from the source image. For more
-      information about machine type series, please refer to
-      https://cloud.google.com/compute/docs/machine-resource.
   """
 
   machineType = _messages.StringField(1)
-  machineTypeSeries = _messages.StringField(2)
 
 
 class MachineImageTargetDetails(_messages.Message):
@@ -2480,11 +2474,11 @@ class MigrationWarning(_messages.Message):
     CodeValueValuesEnum: The warning code.
 
   Fields:
-    actionItem: Suggested action for solving the warning.
+    actionItem: Output only. Suggested action for solving the warning.
     code: The warning code.
-    helpLinks: URL(s) pointing to additional information on handling the
-      current warning.
-    warningMessage: The localized warning message.
+    helpLinks: Output only. URL(s) pointing to additional information on
+      handling the current warning.
+    warningMessage: Output only. The localized warning message.
     warningTime: The time the warning occurred.
   """
 
@@ -2509,9 +2503,10 @@ class NetworkInterface(_messages.Message):
   r"""NetworkInterface represents a NIC of a VM.
 
   Fields:
-    externalIp: The external IP to define in the NIC.
-    internalIp: The internal IP to define in the NIC. The formats accepted
-      are: `ephemeral` \ ipv4 address \ a named address resource full path.
+    externalIp: Optional. The external IP to define in the NIC.
+    internalIp: Optional. The internal IP to define in the NIC. The formats
+      accepted are: `ephemeral` \ ipv4 address \ a named address resource full
+      path.
     network: The network to connect the NIC to.
     subnetwork: The subnetwork to connect the NIC to.
   """
@@ -2820,7 +2815,8 @@ class ReplicationCycle(_messages.Message):
   Fields:
     cycleNumber: The cycle's ordinal number.
     endTime: The time the replication cycle has ended.
-    error: Provides details on the state of the cycle in case of an error.
+    error: Output only. Provides details on the state of the cycle in case of
+      an error.
     name: The identifier of the ReplicationCycle.
     progressPercent: The current progress in percentage of this cycle. Was
       replaced by 'steps' field, which breaks down the cycle progression more
@@ -3171,8 +3167,8 @@ class Tag(_messages.Message):
   r"""Tag is an AWS tag representation.
 
   Fields:
-    key: Key of tag.
-    value: Value of tag.
+    key: Required. Key of tag.
+    value: Required. Value of tag.
   """
 
   key = _messages.StringField(1)
@@ -3228,8 +3224,8 @@ class UpgradeStatus(_messages.Message):
     StateValueValuesEnum: The state of the upgradeAppliance operation.
 
   Fields:
-    error: Provides details on the state of the upgrade operation in case of
-      an error.
+    error: Output only. Provides details on the state of the upgrade operation
+      in case of an error.
     previousVersion: The version from which we upgraded.
     startTime: The time the operation was started.
     state: The state of the upgradeAppliance operation.
@@ -4654,9 +4650,9 @@ class VmwareDiskDetails(_messages.Message):
   r"""The details of a Vmware VM disk.
 
   Fields:
-    diskNumber: The ordinal number of the disk.
-    label: The disk label.
-    sizeGb: Size in GB.
+    diskNumber: Output only. The ordinal number of the disk.
+    label: Output only. The disk label.
+    sizeGb: Output only. Size in GB.
   """
 
   diskNumber = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -4688,19 +4684,19 @@ class VmwareSourceVmDetails(_messages.Message):
   r"""Represent the source Vmware VM details.
 
   Enums:
-    FirmwareValueValuesEnum: The firmware type of the source VM.
+    FirmwareValueValuesEnum: Output only. The firmware type of the source VM.
 
   Fields:
-    committedStorageBytes: The total size of the disks being migrated in
-      bytes.
-    disks: The disks attached to the source VM.
-    firmware: The firmware type of the source VM.
+    committedStorageBytes: Output only. The total size of the disks being
+      migrated in bytes.
+    disks: Output only. The disks attached to the source VM.
+    firmware: Output only. The firmware type of the source VM.
     vmCapabilitiesInfo: Output only. Information about VM capabilities needed
       for some Compute Engine features.
   """
 
   class FirmwareValueValuesEnum(_messages.Enum):
-    r"""The firmware type of the source VM.
+    r"""Output only. The firmware type of the source VM.
 
     Values:
       FIRMWARE_UNSPECIFIED: The firmware is unknown.

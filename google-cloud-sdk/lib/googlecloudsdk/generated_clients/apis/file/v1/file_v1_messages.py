@@ -24,6 +24,9 @@ class Backup(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     capacityGb: Output only. Capacity of the source file share when the backup
@@ -51,6 +54,9 @@ class Backup(_messages.Message):
     storageBytes: Output only. The size of the storage used by the backup. As
       backups share storage, this number is expected to change with backup
       creation/deletion.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
   """
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
@@ -131,6 +137,32 @@ class Backup(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   capacityGb = _messages.IntegerField(1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
@@ -145,6 +177,7 @@ class Backup(_messages.Message):
   sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 12)
   state = _messages.EnumField('StateValueValuesEnum', 13)
   storageBytes = _messages.IntegerField(14)
+  tags = _messages.MessageField('TagsValue', 15)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1191,6 +1224,9 @@ class Instance(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     createTime: Output only. The time when the instance was created.
@@ -1213,6 +1249,9 @@ class Instance(_messages.Message):
       state, if available.
     suspensionReasons: Output only. Field indicates all the reasons the
       instance is in "SUSPENDED" state.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
     tier: The service tier of the instance.
   """
 
@@ -1318,6 +1357,32 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
@@ -1332,7 +1397,8 @@ class Instance(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 12)
   statusMessage = _messages.StringField(13)
   suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 14, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 15)
+  tags = _messages.MessageField('TagsValue', 15)
+  tier = _messages.EnumField('TierValueValuesEnum', 16)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -2021,6 +2087,9 @@ class Snapshot(_messages.Message):
 
   Messages:
     LabelsValue: Resource labels to represent user provided metadata.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
 
   Fields:
     createTime: Output only. The time when the snapshot was created.
@@ -2033,6 +2102,9 @@ class Snapshot(_messages.Message):
       cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
       ts/{snapshot_id}`.
     state: Output only. The snapshot state.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this resource. For example: "123/environment": "production",
+      "123/costCenter": "marketing"
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -2073,12 +2145,39 @@ class Snapshot(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this resource. For example: "123/environment": "production",
+    "123/costCenter": "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   filesystemUsedBytes = _messages.IntegerField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+  tags = _messages.MessageField('TagsValue', 7)
 
 
 class StandardQueryParameters(_messages.Message):

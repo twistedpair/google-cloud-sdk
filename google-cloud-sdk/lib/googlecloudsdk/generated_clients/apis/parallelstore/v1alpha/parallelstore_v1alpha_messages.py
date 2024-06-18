@@ -55,12 +55,18 @@ class ExportDataRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
+    serviceAccount: Optional. User-specified Service Account (SA) credentials
+      to be used when performing the transfer. Format:
+      `projects/{project_id}/serviceAccounts/{service_account}` If
+      unspecified, the Parallelstore service agent is used: service-@gcp-sa-
+      parallelstore.iam.gserviceaccount.com)
     sourceParallelstore: Parallelstore source.
   """
 
   destinationGcsBucket = _messages.MessageField('DestinationGcsBucket', 1)
   requestId = _messages.StringField(2)
-  sourceParallelstore = _messages.MessageField('SourceParallelstore', 3)
+  serviceAccount = _messages.StringField(3)
+  sourceParallelstore = _messages.MessageField('SourceParallelstore', 4)
 
 
 class GoogleProtobufEmpty(_messages.Message):

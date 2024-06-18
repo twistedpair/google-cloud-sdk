@@ -65,6 +65,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_conversations_participants = self.ProjectsConversationsParticipantsService(self)
     self.projects_conversations_suggestions = self.ProjectsConversationsSuggestionsService(self)
     self.projects_conversations = self.ProjectsConversationsService(self)
+    self.projects_generators = self.ProjectsGeneratorsService(self)
     self.projects_knowledgeBases_documents = self.ProjectsKnowledgeBasesDocumentsService(self)
     self.projects_knowledgeBases = self.ProjectsKnowledgeBasesService(self)
     self.projects_locations_agent_entityTypes_entities = self.ProjectsLocationsAgentEntityTypesEntitiesService(self)
@@ -91,9 +92,11 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_conversations_participants = self.ProjectsLocationsConversationsParticipantsService(self)
     self.projects_locations_conversations_suggestions = self.ProjectsLocationsConversationsSuggestionsService(self)
     self.projects_locations_conversations = self.ProjectsLocationsConversationsService(self)
+    self.projects_locations_generators = self.ProjectsLocationsGeneratorsService(self)
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_statelessSuggestion = self.ProjectsLocationsStatelessSuggestionService(self)
     self.projects_locations_suggestions = self.ProjectsLocationsSuggestionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_operations = self.ProjectsOperationsService(self)
@@ -2895,6 +2898,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SuggestKnowledgeAssist(self, request, global_params=None):
+      r"""Gets knowledge assist suggestions based on historical messages.
+
+      Args:
+        request: (DialogflowProjectsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestKnowledgeAssist')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestKnowledgeAssist.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestKnowledgeAssist',
+        http_method='POST',
+        method_id='dialogflow.projects.conversations.participants.suggestions.suggestKnowledgeAssist',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestKnowledgeAssist',
+        request_field='googleCloudDialogflowV2SuggestKnowledgeAssistRequest',
+        request_type_name='DialogflowProjectsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse',
+        supports_download=False,
+    )
+
     def SuggestSmartReplies(self, request, global_params=None):
       r"""Gets smart replies for a participant based on specific historical messages.
 
@@ -3246,6 +3276,70 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsConversationsListRequest',
         response_type_name='GoogleCloudDialogflowV2ListConversationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsGeneratorsService(base_api.BaseApiService):
+    """Service class for the projects_generators resource."""
+
+    _NAME = 'projects_generators'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsGeneratorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a generator.
+
+      Args:
+        request: (DialogflowProjectsGeneratorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Generator) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/generators',
+        http_method='POST',
+        method_id='dialogflow.projects.generators.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['generatorId'],
+        relative_path='v2/{+parent}/generators',
+        request_field='googleCloudDialogflowV2Generator',
+        request_type_name='DialogflowProjectsGeneratorsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Generator',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists generators.
+
+      Args:
+        request: (DialogflowProjectsGeneratorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListGeneratorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/generators',
+        http_method='GET',
+        method_id='dialogflow.projects.generators.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/generators',
+        request_field='',
+        request_type_name='DialogflowProjectsGeneratorsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListGeneratorsResponse',
         supports_download=False,
     )
 
@@ -6179,6 +6273,33 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SuggestKnowledgeAssist(self, request, global_params=None):
+      r"""Gets knowledge assist suggestions based on historical messages.
+
+      Args:
+        request: (DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse) The response message.
+      """
+      config = self.GetMethodConfig('SuggestKnowledgeAssist')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuggestKnowledgeAssist.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/conversations/{conversationsId}/participants/{participantsId}/suggestions:suggestKnowledgeAssist',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.conversations.participants.suggestions.suggestKnowledgeAssist',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/suggestions:suggestKnowledgeAssist',
+        request_field='googleCloudDialogflowV2SuggestKnowledgeAssistRequest',
+        request_type_name='DialogflowProjectsLocationsConversationsParticipantsSuggestionsSuggestKnowledgeAssistRequest',
+        response_type_name='GoogleCloudDialogflowV2SuggestKnowledgeAssistResponse',
+        supports_download=False,
+    )
+
     def SuggestSmartReplies(self, request, global_params=None):
       r"""Gets smart replies for a participant based on specific historical messages.
 
@@ -6530,6 +6651,151 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsConversationsListRequest',
         response_type_name='GoogleCloudDialogflowV2ListConversationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGeneratorsService(base_api.BaseApiService):
+    """Service class for the projects_locations_generators resource."""
+
+    _NAME = 'projects_locations_generators'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsGeneratorsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Generator) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.generators.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['generatorId'],
+        relative_path='v2/{+parent}/generators',
+        request_field='googleCloudDialogflowV2Generator',
+        request_type_name='DialogflowProjectsLocationsGeneratorsCreateRequest',
+        response_type_name='GoogleCloudDialogflowV2Generator',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}',
+        http_method='DELETE',
+        method_id='dialogflow.projects.locations.generators.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Generator) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.generators.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsGetRequest',
+        response_type_name='GoogleCloudDialogflowV2Generator',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists generators.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2ListGeneratorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.generators.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/generators',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGeneratorsListRequest',
+        response_type_name='GoogleCloudDialogflowV2ListGeneratorsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a generator.
+
+      Args:
+        request: (DialogflowProjectsLocationsGeneratorsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2Generator) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/generators/{generatorsId}',
+        http_method='PATCH',
+        method_id='dialogflow.projects.locations.generators.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='googleCloudDialogflowV2Generator',
+        request_type_name='DialogflowProjectsLocationsGeneratorsPatchRequest',
+        response_type_name='GoogleCloudDialogflowV2Generator',
         supports_download=False,
     )
 
@@ -6992,6 +7258,43 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsStatelessSuggestionService(base_api.BaseApiService):
+    """Service class for the projects_locations_statelessSuggestion resource."""
+
+    _NAME = 'projects_locations_statelessSuggestion'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsStatelessSuggestionService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Generate(self, request, global_params=None):
+      r"""Generates and returns a suggestion for a conversation that does not have a resource created for it.
+
+      Args:
+        request: (DialogflowProjectsLocationsStatelessSuggestionGenerateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2GenerateStatelessSuggestionResponse) The response message.
+      """
+      config = self.GetMethodConfig('Generate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Generate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/statelessSuggestion:generate',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.statelessSuggestion.generate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2/{+parent}/statelessSuggestion:generate',
+        request_field='googleCloudDialogflowV2GenerateStatelessSuggestionRequest',
+        request_type_name='DialogflowProjectsLocationsStatelessSuggestionGenerateRequest',
+        response_type_name='GoogleCloudDialogflowV2GenerateStatelessSuggestionResponse',
         supports_download=False,
     )
 

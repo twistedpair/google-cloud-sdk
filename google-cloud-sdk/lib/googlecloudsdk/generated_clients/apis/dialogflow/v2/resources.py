@@ -444,6 +444,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GENERATORS = (
+      'projects.locations.generators',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/generators/'
+              '{generatorsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KNOWLEDGEBASES = (
       'projects.locations.knowledgeBases',
       '{+name}',

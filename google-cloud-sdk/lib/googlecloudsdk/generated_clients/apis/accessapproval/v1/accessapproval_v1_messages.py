@@ -32,6 +32,10 @@ class AccessApprovalServiceAccount(_messages.Message):
 class AccessApprovalSettings(_messages.Message):
   r"""Settings on a Project/Folder/Organization related to Access Approval.
 
+  Enums:
+    RequestScopeMaxWidthPreferenceValueValuesEnum: Optional. A setting to
+      indicate the maximum width of an Access Approval request.
+
   Fields:
     activeKeyVersion: The asymmetric crypto key version to use for signing
       approval requests. Empty active_key_version indicates that a Google-
@@ -83,9 +87,30 @@ class AccessApprovalSettings(_messages.Message):
     preferredRequestExpirationDays: This preference is shared with Google
       personnel, but can be overridden if said personnel deems necessary. The
       approver ultimately can set the expiration at approval time.
+    requestScopeMaxWidthPreference: Optional. A setting to indicate the
+      maximum width of an Access Approval request.
     requireCustomerVisibleJustification: Optional. A setting to require
       approval request justifications to be customer visible.
   """
+
+  class RequestScopeMaxWidthPreferenceValueValuesEnum(_messages.Enum):
+    r"""Optional. A setting to indicate the maximum width of an Access
+    Approval request.
+
+    Values:
+      REQUEST_SCOPE_MAX_WIDTH_PREFERENCE_UNSPECIFIED: Default value for proto,
+        shouldn't be used.
+      ORGANIZATION: This is the widest scope possible. It means the customer
+        has no scope restriction when it comes to Access Approval requests.
+      FOLDER: Customer allows the scope of Access Approval requests as broad
+        as the Folder level.
+      PROJECT: Customer allows the scope of Access Approval requests as broad
+        as the Project level.
+    """
+    REQUEST_SCOPE_MAX_WIDTH_PREFERENCE_UNSPECIFIED = 0
+    ORGANIZATION = 1
+    FOLDER = 2
+    PROJECT = 3
 
   activeKeyVersion = _messages.StringField(1)
   ancestorHasActiveKeyVersion = _messages.BooleanField(2)
@@ -97,7 +122,8 @@ class AccessApprovalSettings(_messages.Message):
   notificationPubsubTopic = _messages.StringField(8)
   preferNoBroadApprovalRequests = _messages.BooleanField(9)
   preferredRequestExpirationDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  requireCustomerVisibleJustification = _messages.BooleanField(11)
+  requestScopeMaxWidthPreference = _messages.EnumField('RequestScopeMaxWidthPreferenceValueValuesEnum', 11)
+  requireCustomerVisibleJustification = _messages.BooleanField(12)
 
 
 class AccessLocations(_messages.Message):

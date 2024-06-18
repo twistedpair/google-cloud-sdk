@@ -905,7 +905,8 @@ class PolicyName(_messages.Message):
       faq#where-is-iam-currently-deployed. For Local IAM: This field should be
       set to "local".
     type: Resource type. Types are defined in IAM's .service files. Valid
-      values for type might be 'gce', 'gcs', 'project', 'account' etc.
+      values for type might be 'storage_buckets', 'compute_instances',
+      'resourcemanager_customers', 'billing_accounts', etc.
   """
 
   id = _messages.StringField(1)

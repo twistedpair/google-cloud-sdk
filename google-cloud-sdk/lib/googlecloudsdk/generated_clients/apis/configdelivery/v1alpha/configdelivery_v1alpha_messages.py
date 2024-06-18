@@ -782,11 +782,13 @@ class FleetPackageInfo(_messages.Message):
       ACTIVE: FleetPackage is active.
       SUSPENDED: FleetPackage is suspended.
       FAILED: FleetPackage has failed to reconcile.
+      DELETING: FleetPackage is being deleted.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     SUSPENDED = 2
     FAILED = 3
+    DELETING = 4
 
   activeRollout = _messages.StringField(1)
   errors = _messages.MessageField('FleetPackageError', 2, repeated=True)
@@ -1456,8 +1458,6 @@ class Rollout(_messages.Message):
       {location}/fleetPackages/{fleet_package}/rollouts/a-z{0,62}
     release: Reference to the release instance being rolled out.
     rolloutStrategy: Rollout strategy for rolling out packages to clusters.
-    targetSpecs: Information about what variant to deploy to each target
-      cluster.
     updateTime: Output only. The time the rollout was most recently updated.
   """
 
@@ -1482,8 +1482,7 @@ class Rollout(_messages.Message):
   name = _messages.StringField(4)
   release = _messages.StringField(5)
   rolloutStrategy = _messages.MessageField('RolloutStrategy', 6)
-  targetSpecs = _messages.MessageField('TargetClusterSpec', 7, repeated=True)
-  updateTime = _messages.StringField(8)
+  updateTime = _messages.StringField(7)
 
 
 class RolloutInfo(_messages.Message):
@@ -1694,18 +1693,6 @@ class Target(_messages.Message):
   """
 
   fleet = _messages.MessageField('Fleet', 1)
-
-
-class TargetClusterSpec(_messages.Message):
-  r"""Message describing TargetClusterSpec object
-
-  Fields:
-    membership: Required. gkehub membership of target cluster
-    variant: variant to be synced
-  """
-
-  membership = _messages.StringField(1)
-  variant = _messages.StringField(2)
 
 
 class Variant(_messages.Message):

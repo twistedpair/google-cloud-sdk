@@ -42,6 +42,23 @@ class AcceleratorConfig(_messages.Message):
   maxTimeSharedClientsPerGpu = _messages.IntegerField(6)
 
 
+class AdditionalIPRangesConfig(_messages.Message):
+  r"""AdditionalIPRangesConfig is the configuration for individual additional
+  subnetwork attached to the cluster
+
+  Fields:
+    podIpv4RangeNames: List of secondary ranges names within this subnetwork
+      that can be used for pod IPs. Example1: gke-pod-range1 Example2: gke-
+      pod-range1,gke-pod-range2
+    subnetwork: Name of the subnetwork. This can be the full path of the
+      subnetwork or just the name. Example1: my-subnet Example2: projects/gke-
+      project/regions/us-central1/subnetworks/my-subnet
+  """
+
+  podIpv4RangeNames = _messages.StringField(1, repeated=True)
+  subnetwork = _messages.StringField(2)
+
+
 class AdditionalNodeNetworkConfig(_messages.Message):
   r"""AdditionalNodeNetworkConfig is the configuration for additional node
   networks within the NodeNetworkConfig message
@@ -53,6 +70,22 @@ class AdditionalNodeNetworkConfig(_messages.Message):
 
   network = _messages.StringField(1)
   subnetwork = _messages.StringField(2)
+
+
+class AdditionalPSCInterface(_messages.Message):
+  r"""AdditionalPSCInterface is the configuration for additional PSC
+  interfaces within the NodeNetworkConfig message
+
+  Fields:
+    maxPodsConstraint: The maximum number of pods per node which can use this
+      PSC interface.
+    networkAttachment: Name of the network attachment tied to this PSC
+      interface. Format:
+      projects/PROJECT_ID/regions/REGION/networkAttachments/NETWORK_ATTACHMENT
+  """
+
+  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 1)
+  networkAttachment = _messages.StringField(2)
 
 
 class AdditionalPodNetworkConfig(_messages.Message):
@@ -1339,6 +1372,8 @@ class ClusterUpdate(_messages.Message):
       be replaced by an equivalent new feature that gives better control over
       concurrency. It is not planned to propagate this field to GA and it will
       be eventually removed from the API.
+    desiredAdditionalIpRangesConfig: The desired config for additional
+      subnetworks attached to the cluster.
     desiredAddonsConfig: Configurations for the various addons available to
       run in the cluster.
     desiredAuthenticatorGroupsConfig: AuthenticatorGroupsConfig specifies the
@@ -1605,96 +1640,97 @@ class ClusterUpdate(_messages.Message):
 
   additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
   concurrentNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  desiredAddonsConfig = _messages.MessageField('AddonsConfig', 3)
-  desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 4)
-  desiredAutoGke = _messages.MessageField('AutoGKE', 5)
-  desiredAutopilot = _messages.MessageField('Autopilot', 6)
-  desiredAutopilotInsecureKubeletReadonlyPortEnabled = _messages.BooleanField(7)
-  desiredAutopilotWorkloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 8)
-  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 9)
-  desiredCloudNatStatus = _messages.MessageField('CloudNatStatus', 10)
-  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 11)
-  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 12)
-  desiredCompliancePostureConfig = _messages.MessageField('CompliancePostureConfig', 13)
-  desiredConcurrentOpsConfig = _messages.MessageField('ConcurrentOpsConfig', 14)
-  desiredContainerdConfig = _messages.MessageField('ContainerdConfig', 15)
-  desiredControlPlaneEndpointsConfig = _messages.MessageField('ControlPlaneEndpointsConfig', 16)
-  desiredCostManagementConfig = _messages.MessageField('CostManagementConfig', 17)
-  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 18)
-  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 19)
-  desiredDefaultEnablePrivateNodes = _messages.BooleanField(20)
-  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 21)
-  desiredDnsConfig = _messages.MessageField('DNSConfig', 22)
-  desiredEnableCiliumClusterwideNetworkPolicy = _messages.BooleanField(23)
-  desiredEnableFqdnNetworkPolicy = _messages.BooleanField(24)
-  desiredEnableGvnic = _messages.BooleanField(25)
-  desiredEnableMultiNetworking = _messages.BooleanField(26)
-  desiredEnablePrivateEndpoint = _messages.BooleanField(27)
-  desiredFleet = _messages.MessageField('Fleet', 28)
-  desiredGatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 29)
-  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 30)
-  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 31)
-  desiredHostMaintenancePolicy = _messages.MessageField('HostMaintenancePolicy', 32)
-  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 33)
-  desiredImage = _messages.StringField(34)
-  desiredImageProject = _messages.StringField(35)
-  desiredImageType = _messages.StringField(36)
-  desiredInTransitEncryptionConfig = _messages.EnumField('DesiredInTransitEncryptionConfigValueValuesEnum', 37)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 38)
-  desiredK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 39)
-  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 40)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 41)
-  desiredLocations = _messages.StringField(42, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 43)
-  desiredLoggingService = _messages.StringField(44)
-  desiredManagedConfig = _messages.MessageField('ManagedConfig', 45)
-  desiredMaster = _messages.MessageField('Master', 46)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 47)
-  desiredMasterVersion = _messages.StringField(48)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 49)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 50)
-  desiredMonitoringService = _messages.StringField(51)
-  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 52)
-  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 53)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 54)
-  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 55)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 56)
-  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 57)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 58)
-  desiredNodePoolId = _messages.StringField(59)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 60)
-  desiredNodeVersion = _messages.StringField(61)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 62)
-  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 63)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 64)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 65)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 66)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 67)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 68)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 69)
-  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 70)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 71)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 72)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 73)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 74)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 75)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 76)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 77)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 78)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 79)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 80)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 81)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 82)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 83)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 84)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 85)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 86)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 87)
-  etag = _messages.StringField(88)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 89)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 90)
-  securityProfile = _messages.MessageField('SecurityProfile', 91)
-  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 92)
+  desiredAdditionalIpRangesConfig = _messages.MessageField('DesiredAdditionalIPRangesConfig', 3)
+  desiredAddonsConfig = _messages.MessageField('AddonsConfig', 4)
+  desiredAuthenticatorGroupsConfig = _messages.MessageField('AuthenticatorGroupsConfig', 5)
+  desiredAutoGke = _messages.MessageField('AutoGKE', 6)
+  desiredAutopilot = _messages.MessageField('Autopilot', 7)
+  desiredAutopilotInsecureKubeletReadonlyPortEnabled = _messages.BooleanField(8)
+  desiredAutopilotWorkloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 9)
+  desiredBinaryAuthorization = _messages.MessageField('BinaryAuthorization', 10)
+  desiredCloudNatStatus = _messages.MessageField('CloudNatStatus', 11)
+  desiredClusterAutoscaling = _messages.MessageField('ClusterAutoscaling', 12)
+  desiredClusterTelemetry = _messages.MessageField('ClusterTelemetry', 13)
+  desiredCompliancePostureConfig = _messages.MessageField('CompliancePostureConfig', 14)
+  desiredConcurrentOpsConfig = _messages.MessageField('ConcurrentOpsConfig', 15)
+  desiredContainerdConfig = _messages.MessageField('ContainerdConfig', 16)
+  desiredControlPlaneEndpointsConfig = _messages.MessageField('ControlPlaneEndpointsConfig', 17)
+  desiredCostManagementConfig = _messages.MessageField('CostManagementConfig', 18)
+  desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 19)
+  desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 20)
+  desiredDefaultEnablePrivateNodes = _messages.BooleanField(21)
+  desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 22)
+  desiredDnsConfig = _messages.MessageField('DNSConfig', 23)
+  desiredEnableCiliumClusterwideNetworkPolicy = _messages.BooleanField(24)
+  desiredEnableFqdnNetworkPolicy = _messages.BooleanField(25)
+  desiredEnableGvnic = _messages.BooleanField(26)
+  desiredEnableMultiNetworking = _messages.BooleanField(27)
+  desiredEnablePrivateEndpoint = _messages.BooleanField(28)
+  desiredFleet = _messages.MessageField('Fleet', 29)
+  desiredGatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 30)
+  desiredGcfsConfig = _messages.MessageField('GcfsConfig', 31)
+  desiredGkeOidcConfig = _messages.MessageField('GkeOidcConfig', 32)
+  desiredHostMaintenancePolicy = _messages.MessageField('HostMaintenancePolicy', 33)
+  desiredIdentityServiceConfig = _messages.MessageField('IdentityServiceConfig', 34)
+  desiredImage = _messages.StringField(35)
+  desiredImageProject = _messages.StringField(36)
+  desiredImageType = _messages.StringField(37)
+  desiredInTransitEncryptionConfig = _messages.EnumField('DesiredInTransitEncryptionConfigValueValuesEnum', 38)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 39)
+  desiredK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 40)
+  desiredKubernetesObjectsExportConfig = _messages.MessageField('KubernetesObjectsExportConfig', 41)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 42)
+  desiredLocations = _messages.StringField(43, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 44)
+  desiredLoggingService = _messages.StringField(45)
+  desiredManagedConfig = _messages.MessageField('ManagedConfig', 46)
+  desiredMaster = _messages.MessageField('Master', 47)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 48)
+  desiredMasterVersion = _messages.StringField(49)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 50)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 51)
+  desiredMonitoringService = _messages.StringField(52)
+  desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 53)
+  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 54)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 55)
+  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 56)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 57)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 58)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 59)
+  desiredNodePoolId = _messages.StringField(60)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 61)
+  desiredNodeVersion = _messages.StringField(62)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 63)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 64)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 65)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 66)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 67)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 68)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 69)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 70)
+  desiredRbacBindingConfig = _messages.MessageField('RBACBindingConfig', 71)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 72)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 73)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 74)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 75)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 76)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 77)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 78)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 79)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 80)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 81)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 82)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 83)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 84)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 85)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 86)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 87)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 88)
+  etag = _messages.StringField(89)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 90)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 91)
+  securityProfile = _messages.MessageField('SecurityProfile', 92)
+  userManagedKeysConfig = _messages.MessageField('UserManagedKeysConfig', 93)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):
@@ -2701,6 +2737,18 @@ class DefaultSnatStatus(_messages.Message):
   disabled = _messages.BooleanField(1)
 
 
+class DesiredAdditionalIPRangesConfig(_messages.Message):
+  r"""DesiredAdditionalIPRangesConfig is a wrapper used for cluster update
+  operation and contains multiple AdditionalIPRangesConfigs.
+
+  Fields:
+    additionalIpRangesConfigs: List of additional IP ranges configs where each
+      AdditionalIPRangesConfig corresponds to one subnetwork's IP ranges
+  """
+
+  additionalIpRangesConfigs = _messages.MessageField('AdditionalIPRangesConfig', 1, repeated=True)
+
+
 class DnsCacheConfig(_messages.Message):
   r"""Configuration for NodeLocal DNSCache
 
@@ -2989,8 +3037,8 @@ class GatewayAPIConfig(_messages.Message):
     Values:
       CHANNEL_UNSPECIFIED: Default value.
       CHANNEL_DISABLED: Gateway API support is disabled
-      CHANNEL_EXPERIMENTAL: Gateway API support is enabled, experimental CRDs
-        are installed
+      CHANNEL_EXPERIMENTAL: Deprecated: use CHANNEL_STANDARD instead. Gateway
+        API support is enabled, experimental CRDs are installed
       CHANNEL_STANDARD: Gateway API support is enabled, standard CRDs are
         installed
     """
@@ -3220,6 +3268,11 @@ class IPAllocationPolicy(_messages.Message):
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
+    additionalIpRangesConfigs: Output only. [Output only] The additional IP
+      ranges that are added to the cluster. These IP ranges can be used by new
+      node pools to allocate node and pod IPs automatically. Each
+      AdditionalIPRangesConfig corresponds to a single subnetwork. Once a
+      range is removed it will not show up in IPAllocationPolicy.
     additionalPodRangesConfig: Output only. [Output only] The additional pod
       ranges that are added to the cluster. These pod ranges can be used by
       new node pools to allocate pod IPs automatically. Once the range is
@@ -3374,31 +3427,32 @@ class IPAllocationPolicy(_messages.Message):
     IPV4 = 1
     IPV4_IPV6 = 2
 
-  additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 1)
-  allowRouteOverlap = _messages.BooleanField(2)
-  clusterIpv4Cidr = _messages.StringField(3)
-  clusterIpv4CidrBlock = _messages.StringField(4)
-  clusterSecondaryRangeName = _messages.StringField(5)
-  createSubnetwork = _messages.BooleanField(6)
-  defaultPodIpv4RangeUtilization = _messages.FloatField(7)
-  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 8)
-  nodeIpv4Cidr = _messages.StringField(9)
-  nodeIpv4CidrBlock = _messages.StringField(10)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 11)
-  servicesIpv4Cidr = _messages.StringField(12)
-  servicesIpv4CidrBlock = _messages.StringField(13)
-  servicesIpv6CidrBlock = _messages.StringField(14)
-  servicesSecondaryRangeName = _messages.StringField(15)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 16)
-  subnetIpv6CidrBlock = _messages.StringField(17)
-  subnetworkName = _messages.StringField(18)
-  targetNodeIpv4Range = _messages.StringField(19)
-  targetPodIpv4Range = _messages.StringField(20)
-  targetServiceIpv4Range = _messages.StringField(21)
-  tpuIpv4CidrBlock = _messages.StringField(22)
-  tpuUseServiceNetworking = _messages.BooleanField(23)
-  useIpAliases = _messages.BooleanField(24)
-  useRoutes = _messages.BooleanField(25)
+  additionalIpRangesConfigs = _messages.MessageField('AdditionalIPRangesConfig', 1, repeated=True)
+  additionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 2)
+  allowRouteOverlap = _messages.BooleanField(3)
+  clusterIpv4Cidr = _messages.StringField(4)
+  clusterIpv4CidrBlock = _messages.StringField(5)
+  clusterSecondaryRangeName = _messages.StringField(6)
+  createSubnetwork = _messages.BooleanField(7)
+  defaultPodIpv4RangeUtilization = _messages.FloatField(8)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 9)
+  nodeIpv4Cidr = _messages.StringField(10)
+  nodeIpv4CidrBlock = _messages.StringField(11)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 12)
+  servicesIpv4Cidr = _messages.StringField(13)
+  servicesIpv4CidrBlock = _messages.StringField(14)
+  servicesIpv6CidrBlock = _messages.StringField(15)
+  servicesSecondaryRangeName = _messages.StringField(16)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 17)
+  subnetIpv6CidrBlock = _messages.StringField(18)
+  subnetworkName = _messages.StringField(19)
+  targetNodeIpv4Range = _messages.StringField(20)
+  targetPodIpv4Range = _messages.StringField(21)
+  targetServiceIpv4Range = _messages.StringField(22)
+  tpuIpv4CidrBlock = _messages.StringField(23)
+  tpuUseServiceNetworking = _messages.BooleanField(24)
+  useIpAliases = _messages.BooleanField(25)
+  useRoutes = _messages.BooleanField(26)
 
 
 class IPEndpointsConfig(_messages.Message):
@@ -4983,6 +5037,9 @@ class NodeNetworkConfig(_messages.Message):
     additionalPodNetworkConfigs: We specify the additional pod networks for
       this node pool using this list. Each pod network corresponds to an
       additional alias IP range for the node
+    additionalPscInterfaces: We specify the additional PSC interfaces for this
+      node pool using this list. Each PSC interface corresponds to a PSC
+      interface on the node
     createPodRange: Input only. Whether to create a new range for pod IPs in
       this node pool. Defaults are provided for `pod_range` and
       `pod_ipv4_cidr_block` if they are not specified. If neither
@@ -5031,15 +5088,16 @@ class NodeNetworkConfig(_messages.Message):
 
   additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 1, repeated=True)
   additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 2, repeated=True)
-  createPodRange = _messages.BooleanField(3)
-  enableEndpointsliceProxying = _messages.BooleanField(4)
-  enablePrivateNodes = _messages.BooleanField(5)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
-  podIpv4CidrBlock = _messages.StringField(8)
-  podIpv4RangeUtilization = _messages.FloatField(9)
-  podRange = _messages.StringField(10)
-  targetPodIpv4Range = _messages.StringField(11)
+  additionalPscInterfaces = _messages.MessageField('AdditionalPSCInterface', 3, repeated=True)
+  createPodRange = _messages.BooleanField(4)
+  enableEndpointsliceProxying = _messages.BooleanField(5)
+  enablePrivateNodes = _messages.BooleanField(6)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 7)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 8)
+  podIpv4CidrBlock = _messages.StringField(9)
+  podIpv4RangeUtilization = _messages.FloatField(10)
+  podRange = _messages.StringField(11)
+  targetPodIpv4Range = _messages.StringField(12)
 
 
 class NodeNetworkPolicy(_messages.Message):

@@ -211,6 +211,15 @@ class ComputeUtil(object):
   def ParseMetadata(
       client_messages: types.ModuleType, metadata: Dict[str, Any]
   ):
+    """Parses the metadata data into client messages.
+
+    Args:
+      client_messages:
+      metadata: A dictionary containing the metadata
+
+    Returns:
+      List of parsed client messages for Metadata
+    """
     return client_messages.Metadata(
         items=[
             client_messages.Entry(key=key, value=value)
@@ -220,6 +229,15 @@ class ComputeUtil(object):
 
   @staticmethod
   def ParseLabels(client_messages: types.ModuleType, labels: Dict[str, Any]):
+    """Parses the labels data into client messages.
+
+    Args:
+      client_messages:
+      labels: A dictionary containing the labels
+
+    Returns:
+      List of parsed client messages for Labels
+    """
     return client_messages.ComputeInstanceRestoreProperties.LabelsValue(
         additionalProperties=[
             client_messages.ComputeInstanceRestoreProperties.LabelsValue.AdditionalProperty(
@@ -228,3 +246,59 @@ class ComputeUtil(object):
             for key, value in labels.items()
         ]
     )
+
+  @staticmethod
+  def ParseAdvancedMachineFeatures(
+      client_messages: types.ModuleType,
+      enable_uefi_networking: bool,
+      threads_per_core: int,
+      visible_core_count: int,
+  ):
+    """Parses the advanced machine features data into client messages.
+
+    Args:
+      client_messages:
+      enable_uefi_networking:
+      threads_per_core:
+      visible_core_count:
+
+    Returns:
+      List of parsed client messages for AdvancedMachineFeatures
+    """
+    if (
+        enable_uefi_networking is None
+        and threads_per_core is None
+        and visible_core_count is None
+    ):
+      return None
+    message = client_messages.AdvancedMachineFeatures()
+    if enable_uefi_networking is not None:
+      message.enableUefiNetworking = enable_uefi_networking
+    if threads_per_core is not None:
+      message.threadsPerCore = threads_per_core
+    if visible_core_count is not None:
+      message.visibleCoreCount = visible_core_count
+    return message
+
+  @staticmethod
+  def ParseAccelerator(
+      client_messages: types.ModuleType, accelerator: Dict[str, Any]
+  ):
+    """Parses the accelerator data into client messages.
+
+    Args:
+      client_messages:
+      accelerator: A dictionaries containing the accelerator data
+
+    Returns:
+      List of parsed client messages for Accelerator
+    """
+    if accelerator is None or "type" not in accelerator:
+      return None
+
+    return [
+        client_messages.AcceleratorConfig(
+            acceleratorType=accelerator["type"],
+            acceleratorCount=accelerator.get("count", 1),
+        )
+    ]

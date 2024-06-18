@@ -5,6 +5,98 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 481.0.0 (2024-06-18)
+
+### Breaking Changes
+
+*   **(Cloud Dataflow)** Deprecated `gcloud dataflow sql` command group. The command group will be removed by 2025-01-31. See [Beam YAML](https://beam.apache.org/documentation/sdks/yaml/) and [Beam notebooks](https://cloud.google.com/dataflow/docs/guides/notebook-advanced#beam-sql) for alternatives.
+
+
+### AlloyDB
+
+* Added another option `ASSIGN_IPV4` to flag `--assign-inbound-public-ip` to
+enable public IP for an instance to `gcloud alloydb instances create` and
+`gcloud alloydb instances create-secondary`.
+* Added flag `--authorized-external-networks` to set a list of authorized
+external networks on an instance to `gcloud alloydb instances create` and
+`gcloud alloydb instances create-secondary`.
+* Added switchover command.
+
+### Artifact Registry
+
+* Fixed a bug where `gcloud artifacts files download`
+  and `gcloud artifacts generic download` would crash.
+
+### BigQuery
+
+* Added `undelete` command for datasets.
+* Updated `google-auth` to version 2.29.0.
+* Improved authentication error messaging.
+
+### Cloud Domains
+
+* Implemented the following commands for `gcloud domains registrations google-domains-dns`
+  * `get-forwarding-config`
+  * `export-dns-record-sets`
+
+### Cloud Filestore
+
+*   Added `--source-instance` flag to `gcloud filestore instances create` and
+    `gcloud beta filestore instances create` command to specify the instance
+    will be created as a Standby replica of the source-instance.
+*   Added `promote-replica` verb for filestore instances. `promote-replica`
+    promotes a standby replication instance to a regular instance.
+
+### Cloud Functions
+
+* Promoted `--build-service-account` flag for `gcloud functions deploy` to GA.
+
+### Cloud Identity-Aware Proxy
+
+* Promoted `gcloud iap` regional command to beta and GA.
+
+### Cloud Pub/Sub
+
+*   Promoted `--cloud-storage-use-topic-schema` flag of
+    `gcloud pubsub subscriptions create` to GA. Added the ability
+    to set whether to use topic schemas in Cloud Pub/Sub to Cloud Storage
+    subscriptions. For more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#use-topic-schema>.
+*   Promoted `--cloud-storage-use-topic-schema` flag of
+    `gcloud pubsub subscriptions update`. to GA. Added the ability
+    to update whether to use topic schemas in Cloud Pub/Sub to Cloud Storage
+    subscriptions. For more information, see
+    <https://cloud.google.com/pubsub/docs/create-cloudstorage-subscription#use-topic-schema>.
+
+### Cloud Spanner
+
+* Added `gcloud beta spanner instance-partitions` command group.
+* Added `--instance-partition` flag to `gcloud beta spanner operations list`, `gcloud beta spanner operations describe`, and `gcloud beta spanner operations cancel`.
+
+### Cloud Storage
+
+* Added commands for creating, listing, describing, and deleting folders in buckets with hierarchical namespace enabled:
+  * Added `gcloud alpha storage folders create` which creates folders.
+  * Added `gcloud alpha storage folders list` which lists folders in buckets.
+  * Added `gcloud alpha storage folders describe` which gets the folder's metadata.
+  * Added `gcloud alpha storage folders delete` which deletes folders.
+* Updated gsutil component to 5.30.
+
+### Compute Engine
+
+* Promoted `--confidential-compute-type` flag for the command `gcloud compute instance create` to GA.
+* Added `--size` flag to `gcloud compute instance-groups managed update` for v1.
+
+### Network Connectivity
+
+* Updated `gcloud network-connectivity internal-ranges update` to support setting and clearing labels.
+* Added support for `include-export-ranges` to support include filters for VPC
+  spokes.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 480.0.0 (2024-06-11)
 
 ### App Engine
@@ -270,6 +362,12 @@ Use `--transformation-rules-file` instead.
 ### Cloud SQL
 
 * Added PostgreSQL 16 to database versions.
+* Fixed issue where `gcloud sql instances export` and `gcloud sql instances
+  import` would display only the operation `selfLink` field instead of the whole
+  operation when run asynchronously with `--async`, regardless of the `--format`
+  flag specified.
+  * This behavior is now consistent with other `gcloud sql instances` commands.
+  * To display only the `selfLink` field, use `--format="value(selfLink)"`.
 
 ### Cloud Workstations
 
@@ -684,7 +782,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Breaking Changes
 
-*   **(Cloud Domains)** Changed the default setting of DNSSEC to disabled when using the Cloud DNS Zone in `gcloud domains registrations configure dns` command. It's unsafe to enable it be default.
+*   **(Cloud Domains)** Changed the default setting of DNSSEC to disabled when using the Cloud DNS Zone in `gcloud domains registrations configure dns` command. It's unsafe to enable it by default.
 
 
 ### Google Cloud CLI

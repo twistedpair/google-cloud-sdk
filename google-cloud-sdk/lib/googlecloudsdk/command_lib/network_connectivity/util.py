@@ -79,11 +79,21 @@ def ClearOverlaps(unused_ref, args, patch_request):
   """Handles clear_overlaps flag."""
 
   if args.IsSpecified("clear_overlaps"):
-    update_mask = patch_request.updateMask
-    if not update_mask:
-      patch_request.updateMask = "overlaps"
+    if patch_request.updateMask:
+      patch_request.updateMask += ",overlaps"
     else:
-      patch_request.updateMask = update_mask + "," + "overlaps"
+      patch_request.updateMask = "overlaps"
+  return patch_request
+
+
+def ClearLabels(unused_ref, args, patch_request):
+  """Handles clear_labels flag."""
+
+  if args.IsSpecified("clear_labels"):
+    if patch_request.updateMask:
+      patch_request.updateMask += ",labels"
+    else:
+      patch_request.updateMask = "labels"
   return patch_request
 
 

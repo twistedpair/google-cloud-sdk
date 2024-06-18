@@ -33,6 +33,14 @@ def GetDataDiskImageImportTransform(value):
   return data_disk_image_import()
 
 
+# Argument Processors
+def GetSkipOsAdaptationTransform(value):
+  """Returns empty SkipOsAdaptationTransform entry."""
+  del value
+  skip_os_adaptation = _GetMessageClass('SkipOsAdaptation')
+  return skip_os_adaptation()
+
+
 def GetEncryptionTransform(value):
   """Returns empty Encryption entry."""
   del value
@@ -45,9 +53,9 @@ def SetLocationAsGlobal():
   return 'global'
 
 
-# Modify Request Hook
-def FixCreateImageImportRequest(ref, args, req):
-  """Fixes the Create Image Import request."""
+# Modify Request Hook For Disk Image Import
+def FixCreateDiskImageImportRequest(ref, args, req):
+  """Fixes the Create Image Import request for disk image import."""
   if not (args.generalize or args.license_type):
     req.imageImport.diskImageTargetDefaults.osAdaptationParameters = None
 
@@ -67,18 +75,50 @@ def FixCreateImageImportRequest(ref, args, req):
         )
     req.imageImport.encryption.kmsKey = args.kms_key
 
+  FixTargetDetailsCommonFields(
+      ref, args, req.imageImport.diskImageTargetDefaults
+  )
+
+  return req
+
+
+# Modify Request Hook For Machine Image Import
+def FixCreateMachineImageImportRequest(ref, args, req):
+  """Fixes the Create Image Import request machine image import."""
+
+  if not args.machine_image_name:
+    req.imageImport.machineImageTargetDefaults.machineImageName = ref.Name()
+
+  if not args.generalize and not args.license_type:
+    req.imageImport.machineImageTargetDefaults.osAdaptationParameters = None
+
+  if (
+      not args.secure_boot
+      and not args.enable_vtpm
+      and not args.enable_integrity_monitoring
+  ):
+    req.imageImport.machineImageTargetDefaults.shieldedInstanceConfig = None
+
+  FixTargetDetailsCommonFields(
+      ref, args, req.imageImport.machineImageTargetDefaults
+  )
+
+  return req
+
+
+def FixTargetDetailsCommonFields(ref, args, target_details):
+  """"Fixes the target details common fields."""
+
   if not args.target_project:
     # Handle default target project being the host project.
     target = args.project or properties.VALUES.core.project.Get(required=True)
-    req.imageImport.diskImageTargetDefaults.targetProject = (
+    target_details.targetProject = (
         ref.Parent().Parent().RelativeName() +
         '/locations/global/targetProjects/' + target
     )
   elif '/' not in args.target_project:
     # Handle prepending path to target project short-name.
-    req.imageImport.diskImageTargetDefaults.targetProject = (
+    target_details.targetProject = (
         ref.Parent().Parent().RelativeName() +
         '/locations/global/targetProjects/' + args.target_project
     )
-
-  return req
