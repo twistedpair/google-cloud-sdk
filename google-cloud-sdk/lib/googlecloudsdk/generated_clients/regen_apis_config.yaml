@@ -77,6 +77,7 @@ apis:
     v1beta1:
       default: true
       discovery_doc: aiplatform_v1beta1.json
+      gcloud_gapic_library: google/cloud/aiplatform/v1beta1:aiplatform_v1beta1_py
       resources:
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
@@ -88,6 +89,7 @@ apis:
           path: projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}
     v1:
       discovery_doc: aiplatform_v1.json
+      gcloud_gapic_library: google/cloud/aiplatform/v1:aiplatform_v1_py
       resources:
         projects.locations.models.operations:
           path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}

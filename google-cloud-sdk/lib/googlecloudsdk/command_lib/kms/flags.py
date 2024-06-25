@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.cloudkms import base as cloudkms_base
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -404,6 +405,37 @@ def AddImportOnlyFlag(parser):
       help=('Restrict this key to imported versions only.'))
 
 
+def AddAllowedAccessReasonsFlag(parser):
+  parser.add_argument(
+      '--allowed-access-reasons',
+      type=arg_parsers.ArgList(
+          choices=maps.ACCESS_REASON_MAPPER.choices,
+          max_length=len(maps.ACCESS_REASON_MAPPER.choices),
+      ),
+      metavar='ALLOWED_ACCESS_REASONS',
+      help=(
+          'The list of allowed Key Access Justifications access reasons on '
+          'the key. The key must be enrolled in Key Access Justifications to '
+          'configure this field. By default, this field is absent, and all '
+          'justification codes are allowed. For more information about '
+          'justification codes, see '
+          'https://cloud.google.com/assured-workloads/key-access-justifications/docs/justification-codes.'
+      ),
+  )
+
+
+def AddRemoveKeyAccessJustificationsPolicyFlag(parser):
+  parser.add_argument(
+      '--remove-key-access-justifications-policy',
+      default=None,
+      action='store_true',
+      help=(
+          'Removes the Key Access Justifications policy on the key, making '
+          'all justification codes allowed.'
+      ),
+  )
+
+
 # Arguments
 def AddKeyRingArgument(parser, help_action):
   parser.add_argument(
@@ -619,3 +651,18 @@ def SetDestroyScheduledDuration(args, crypto_key):
   if args.destroy_scheduled_duration is not None:
     crypto_key.destroyScheduledDuration = '{0}s'.format(
         args.destroy_scheduled_duration)
+
+
+def SetKeyAccessJustificationsPolicy(args, crypto_key):
+  messages = cloudkms_base.GetMessagesModule()
+  if args.allowed_access_reasons is not None:
+    allowed_access_reasons = []
+    for access_reason in args.allowed_access_reasons:
+      reason_string = maps.ACCESS_REASON_MAPPER.GetEnumForChoice(access_reason)
+      if reason_string not in allowed_access_reasons:
+        allowed_access_reasons.append(reason_string)
+    crypto_key.keyAccessJustificationsPolicy = (
+        messages.KeyAccessJustificationsPolicy(
+            allowedAccessReasons=allowed_access_reasons
+        )
+    )

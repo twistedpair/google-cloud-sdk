@@ -127,36 +127,6 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class AuthorizationLoggingOptions(_messages.Message):
-  r"""Authorization-related information used by Cloud Audit Logging.
-
-  Enums:
-    PermissionTypeValueValuesEnum: The type of the permission that was
-      checked.
-
-  Fields:
-    permissionType: The type of the permission that was checked.
-  """
-
-  class PermissionTypeValueValuesEnum(_messages.Enum):
-    r"""The type of the permission that was checked.
-
-    Values:
-      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
-      ADMIN_READ: A read of admin (meta) data.
-      ADMIN_WRITE: A write of admin (meta) data.
-      DATA_READ: A read of standard data.
-      DATA_WRITE: A write of standard data.
-    """
-    PERMISSION_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    ADMIN_WRITE = 2
-    DATA_READ = 3
-    DATA_WRITE = 4
-
-  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
-
-
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -176,9 +146,6 @@ class AuthorizationPolicy(_messages.Message):
       values are "ALLOW" or "DENY".
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
-    internalCaller: Optional. A flag set to identify internal controllers
-      Setting this will trigger a P4SA check to validate the caller is from an
-      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
@@ -234,25 +201,10 @@ class AuthorizationPolicy(_messages.Message):
   action = _messages.EnumField('ActionValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  internalCaller = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  rules = _messages.MessageField('Rule', 7, repeated=True)
-  updateTime = _messages.StringField(8)
-
-
-class BillingView(_messages.Message):
-  r"""Message for reporting billing requests through Eventstream.
-
-  Fields:
-    reportRequests: Billing requests to be reported for
-      cloud.eventstream.v2.ResourceEvent Each request contains billing
-      operations to be reported under a service name. See go/billing-view-
-      construction for documentation on constructing billing view report
-      requests.
-  """
-
-  reportRequests = _messages.MessageField('GoogleApiServicecontrolV1ReportRequest', 1, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  rules = _messages.MessageField('Rule', 6, repeated=True)
+  updateTime = _messages.StringField(7)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -291,9 +243,6 @@ class ClientTlsPolicy(_messages.Message):
       presence of this dictates mTLS.
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. Free-text description of the resource.
-    internalCaller: Optional. A flag set to identify internal controllers
-      Setting this will trigger a P4SA check to validate the caller is from an
-      allowlisted service's P4SA even if other optional fields are unset.
     labels: Optional. Set of label tags associated with the resource.
     name: Required. Name of the ClientTlsPolicy resource. It matches the
       pattern
@@ -303,35 +252,7 @@ class ClientTlsPolicy(_messages.Message):
       empty, client does not validate the server certificate.
     sni: Optional. Server Name Indication string to present to the server
       during TLS handshake. E.g: "secure.example.com".
-    subjectAltNames: Optional. A list of alternate names to verify the server
-      identity in the certificate. If specified, the client will verify that
-      the server certificate's subject alt name matches one of the specified
-      values. If specified, this list overrides the value of subject_alt_names
-      from the BackendService.securitySettings.subjectAltNames[]. The domain
-      names can be either be exact match (e.g foo) or suffix matches (e.g foo*
-      or foo/*)
-    targets: Optional. Define a list of targets this policy should serve. A
-      target can only be a BackendService and it should be the fully qualified
-      name of the BackendService, e.g.:
-      projects/xxx/backendServices/locations/global/xxx NOTE: ClientTlsPolicy
-      and the referenced BackendServices must be present in the same project.
-      This is used only for Google Service Mesh (GSM) product.
     updateTime: Output only. The timestamp when the resource was updated.
-    workloadContextSelectors: Optional. Selects the workload where the policy
-      should be applied to its targets. A policy without a
-      WorkloadContextSelector should always be applied to its targets when
-      there is no conflict. If there are multiple WorkloadContextSelectors
-      then the policy will be applied to all targets if ANY of the
-      WorkloadContextSelectors match. Therefore these selectors can be
-      combined in an OR fashion. If there are multiple ClientTlsPolicy
-      targeted to the same BackendService, There should be only one effective
-      ClientTlsPolicy and the precdence is as following: 1) ClientTlsPolicy
-      with workload_context_selectors will take precedence first. 2) If there
-      are multiple ClientTlsPolicy with workload_context_selectors matched,
-      earliest created one will take take precedence. 3) Then ClientTlsPolicy
-      without workloadSelector will take precedence. Right now we don't allow
-      multiple ClientTlsPolicy without workloadSelector attached the same
-      backendService. NOTE: For GSM use only.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -361,15 +282,11 @@ class ClientTlsPolicy(_messages.Message):
   clientCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  internalCaller = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  serverValidationCa = _messages.MessageField('ValidationCA', 7, repeated=True)
-  sni = _messages.StringField(8)
-  subjectAltNames = _messages.StringField(9, repeated=True)
-  targets = _messages.StringField(10, repeated=True)
-  updateTime = _messages.StringField(11)
-  workloadContextSelectors = _messages.MessageField('WorkloadContextSelector', 12, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  serverValidationCa = _messages.MessageField('ValidationCA', 6, repeated=True)
+  sni = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class CloneAddressGroupItemsRequest(_messages.Message):
@@ -394,51 +311,6 @@ class CloneAddressGroupItemsRequest(_messages.Message):
   sourceAddressGroup = _messages.StringField(2)
 
 
-class CreateReferenceRequest(_messages.Message):
-  r"""The CreateReferenceRequest request.
-
-  Fields:
-    parent: Required. The parent resource name (target_resource of this
-      reference). For example: `//targetservice.googleapis.com/projects/{my-
-      project}/locations/{location}/instances/{my-instance}`.
-    reference: Required. The reference to be created.
-    referenceId: The unique id of this resource. Must be unique within a scope
-      of a target resource, but does not have to be globally unique. Reference
-      ID is part of resource name of the reference. Resource name is generated
-      in the following way: {parent}/references/{reference_id}. Reference ID
-      field is currently required but id auto generation might be added in the
-      future. It can be any arbitrary string, either GUID or any other string,
-      however CLHs can use preprocess callbacks to perform a custom
-      validation.
-    requestId: Optional. Request ID is an idempotency ID of the request. It
-      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
-      is not supported.
-  """
-
-  parent = _messages.StringField(1)
-  reference = _messages.MessageField('Reference', 2)
-  referenceId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-
-
-class DeleteReferenceRequest(_messages.Message):
-  r"""The DeleteReferenceRequest request.
-
-  Fields:
-    name: Required. Full resource name of the reference, in the following
-      format:
-      `//{targer_service}/{target_resource}/references/{reference_id}`. For
-      example: `//targetservice.googleapis.com/projects/{my-
-      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
-    requestId: Optional. Request ID is an idempotency ID of the request. It
-      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
-      is not supported.
-  """
-
-  name = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-
-
 class Destination(_messages.Message):
   r"""Specification of traffic destination attributes.
 
@@ -455,12 +327,6 @@ class Destination(_messages.Message):
       guarantee that requests arrive through a trusted client or proxy.
     methods: Optional. A list of HTTP methods to match. At least one method
       should match. Should not be set for gRPC services.
-    paths: Optional. A list of HTTP paths to match. gRPC methods must be
-      presented as fully-qualified name in the form of
-      "/packageName.serviceName/methodName". At least one path should match.
-      Each path can be an exact match, or a prefix match (example,
-      "/packageName.serviceName/*") or a suffix match (example, "*/video") or
-      a presence (any) match "*".
     ports: Required. List of destination ports to match. At least one port
       should match.
   """
@@ -468,62 +334,7 @@ class Destination(_messages.Message):
   hosts = _messages.StringField(1, repeated=True)
   httpHeaderMatch = _messages.MessageField('HttpHeaderMatch', 2)
   methods = _messages.StringField(3, repeated=True)
-  paths = _messages.StringField(4, repeated=True)
-  ports = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.UINT32)
-
-
-class DistributionExemplar(_messages.Message):
-  r"""Exemplars are example points that may be used to annotate aggregated
-  distribution values. They are metadata that gives information about a
-  particular value added to a Distribution bucket, such as a trace ID that was
-  active when a value was added. They may contain further information, such as
-  a example values and timestamps, origin, etc.
-
-  Messages:
-    AttachmentsValueListEntry: A AttachmentsValueListEntry object.
-
-  Fields:
-    attachments: Contextual information about the example value. Examples are:
-      Trace: type.googleapis.com/google.monitoring.v3.SpanContext Literal
-      string: type.googleapis.com/google.protobuf.StringValue Labels dropped
-      during aggregation:
-      type.googleapis.com/google.monitoring.v3.DroppedLabels There may be only
-      a single attachment of any given message type in a single exemplar, and
-      this is enforced by the system.
-    timestamp: The observation (sampling) time of the above value.
-    value: Value of the exemplar point. This value determines to which bucket
-      the exemplar belongs.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AttachmentsValueListEntry(_messages.Message):
-    r"""A AttachmentsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        AttachmentsValueListEntry object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AttachmentsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  attachments = _messages.MessageField('AttachmentsValueListEntry', 1, repeated=True)
-  timestamp = _messages.StringField(2)
-  value = _messages.FloatField(3)
+  ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
 
 
 class Empty(_messages.Message):
@@ -576,7 +387,6 @@ class FirewallEndpoint(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint.
-    TypeValueValuesEnum: Optional. Endpoint type.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -594,16 +404,11 @@ class FirewallEndpoint(_messages.Message):
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
-    firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
-      party firewall endpoints.
     labels: Optional. Labels as key value pairs
     name: Immutable. Identifier. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint.
-    thirdPartyEndpointSettings: Optional. Firewall endpoint settings for third
-      party firewall endpoints.
-    type: Optional. Endpoint type.
     updateTime: Output only. Update time stamp
   """
 
@@ -622,18 +427,6 @@ class FirewallEndpoint(_messages.Message):
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Endpoint type.
-
-    Values:
-      TYPE_UNSPECIFIED: Not set.
-      FIRST_PARTY: First party firewall endpoint.
-      THIRD_PARTY: Third party firewall endpoint.
-    """
-    TYPE_UNSPECIFIED = 0
-    FIRST_PARTY = 1
-    THIRD_PARTY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -664,14 +457,11 @@ class FirewallEndpoint(_messages.Message):
   billingProjectId = _messages.StringField(3)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -768,10 +558,6 @@ class FirewallEndpointAssociationReference(_messages.Message):
   network = _messages.StringField(2)
 
 
-class FirstPartyEndpointSettings(_messages.Message):
-  r"""Next ID: 1."""
-
-
 class GatewaySecurityPolicy(_messages.Message):
   r"""The GatewaySecurityPolicy resource contains a collection of
   GatewaySecurityPolicyRules and associated metadata.
@@ -851,910 +637,6 @@ class GatewaySecurityPolicyRule(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class GetReferenceRequest(_messages.Message):
-  r"""The GetReferenceRequest request.
-
-  Fields:
-    name: Required. Full resource name of the reference, in the following
-      format:
-      `//{target_service}/{target_resource}/references/{reference_id}`. For
-      example: `//targetservice.googleapis.com/projects/{my-
-      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
-  """
-
-  name = _messages.StringField(1)
-
-
-class GoogleApiServicecontrolV1AttributeValue(_messages.Message):
-  r"""The allowed types for [VALUE] in a `[KEY]:[VALUE]` attribute.
-
-  Fields:
-    boolValue: A Boolean value represented by `true` or `false`.
-    intValue: A 64-bit signed integer.
-    stringValue: A string up to 256 bytes long.
-  """
-
-  boolValue = _messages.BooleanField(1)
-  intValue = _messages.IntegerField(2)
-  stringValue = _messages.MessageField('GoogleApiServicecontrolV1TruncatableString', 3)
-
-
-class GoogleApiServicecontrolV1Attributes(_messages.Message):
-  r"""A set of attributes, each in the format `[KEY]:[VALUE]`.
-
-  Messages:
-    AttributeMapValue: The set of attributes. Each attribute's key can be up
-      to 128 bytes long. The value can be a string up to 256 bytes, a signed
-      64-bit integer, or the Boolean values `true` and `false`. For example:
-      "/instance_id": "my-instance" "/http/user_agent": ""
-      "/http/request_bytes": 300 "abc.com/myattribute": true
-
-  Fields:
-    attributeMap: The set of attributes. Each attribute's key can be up to 128
-      bytes long. The value can be a string up to 256 bytes, a signed 64-bit
-      integer, or the Boolean values `true` and `false`. For example:
-      "/instance_id": "my-instance" "/http/user_agent": ""
-      "/http/request_bytes": 300 "abc.com/myattribute": true
-    droppedAttributesCount: The number of attributes that were discarded.
-      Attributes can be discarded because their keys are too long or because
-      there are too many attributes. If this value is 0 then all attributes
-      are valid.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AttributeMapValue(_messages.Message):
-    r"""The set of attributes. Each attribute's key can be up to 128 bytes
-    long. The value can be a string up to 256 bytes, a signed 64-bit integer,
-    or the Boolean values `true` and `false`. For example: "/instance_id":
-    "my-instance" "/http/user_agent": "" "/http/request_bytes": 300
-    "abc.com/myattribute": true
-
-    Messages:
-      AdditionalProperty: An additional property for a AttributeMapValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AttributeMapValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AttributeMapValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleApiServicecontrolV1AttributeValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleApiServicecontrolV1AttributeValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  attributeMap = _messages.MessageField('AttributeMapValue', 1)
-  droppedAttributesCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GoogleApiServicecontrolV1Distribution(_messages.Message):
-  r"""Distribution represents a frequency distribution of double-valued sample
-  points. It contains the size of the population of sample points plus
-  additional optional information: * the arithmetic mean of the samples * the
-  minimum and maximum of the samples * the sum-squared-deviation of the
-  samples, used to compute variance * a histogram of the values of the sample
-  points
-
-  Fields:
-    bucketCounts: The number of samples in each histogram bucket.
-      `bucket_counts` are optional. If present, they must sum to the `count`
-      value. The buckets are defined below in `bucket_option`. There are N
-      buckets. `bucket_counts[0]` is the number of samples in the underflow
-      bucket. `bucket_counts[1]` to `bucket_counts[N-1]` are the numbers of
-      samples in each of the finite buckets. And `bucket_counts[N] is the
-      number of samples in the overflow bucket. See the comments of
-      `bucket_option` below for more details. Any suffix of trailing zeros may
-      be omitted.
-    count: The total number of samples in the distribution. Must be >= 0.
-    exemplars: Example points. Must be in increasing order of `value` field.
-    explicitBuckets: Buckets with arbitrary user-provided width.
-    exponentialBuckets: Buckets with exponentially growing width.
-    linearBuckets: Buckets with constant width.
-    maximum: The maximum of the population of values. Ignored if `count` is
-      zero.
-    mean: The arithmetic mean of the samples in the distribution. If `count`
-      is zero then this field must be zero.
-    minimum: The minimum of the population of values. Ignored if `count` is
-      zero.
-    sumOfSquaredDeviation: The sum of squared deviations from the mean:
-      Sum[i=1..count]((x_i - mean)^2) where each x_i is a sample values. If
-      `count` is zero then this field must be zero, otherwise validation of
-      the request fails.
-  """
-
-  bucketCounts = _messages.IntegerField(1, repeated=True)
-  count = _messages.IntegerField(2)
-  exemplars = _messages.MessageField('DistributionExemplar', 3, repeated=True)
-  explicitBuckets = _messages.MessageField('GoogleApiServicecontrolV1ExplicitBuckets', 4)
-  exponentialBuckets = _messages.MessageField('GoogleApiServicecontrolV1ExponentialBuckets', 5)
-  linearBuckets = _messages.MessageField('GoogleApiServicecontrolV1LinearBuckets', 6)
-  maximum = _messages.FloatField(7)
-  mean = _messages.FloatField(8)
-  minimum = _messages.FloatField(9)
-  sumOfSquaredDeviation = _messages.FloatField(10)
-
-
-class GoogleApiServicecontrolV1ExplicitBuckets(_messages.Message):
-  r"""Describing buckets with arbitrary user-provided width.
-
-  Fields:
-    bounds: 'bound' is a list of strictly increasing boundaries between
-      buckets. Note that a list of length N-1 defines N buckets because of
-      fenceposting. See comments on `bucket_options` for details. The i'th
-      finite bucket covers the interval [bound[i-1], bound[i]) where i ranges
-      from 1 to bound_size() - 1. Note that there are no finite buckets at all
-      if 'bound' only contains a single element; in that special case the
-      single bound defines the boundary between the underflow and overflow
-      buckets. bucket number lower bound upper bound i == 0 (underflow) -inf
-      bound[i] 0 < i < bound_size() bound[i-1] bound[i] i == bound_size()
-      (overflow) bound[i-1] +inf
-  """
-
-  bounds = _messages.FloatField(1, repeated=True)
-
-
-class GoogleApiServicecontrolV1ExponentialBuckets(_messages.Message):
-  r"""Describing buckets with exponentially growing width.
-
-  Fields:
-    growthFactor: The i'th exponential bucket covers the interval [scale *
-      growth_factor^(i-1), scale * growth_factor^i) where i ranges from 1 to
-      num_finite_buckets inclusive. Must be larger than 1.0.
-    numFiniteBuckets: The number of finite buckets. With the underflow and
-      overflow buckets, the total number of buckets is `num_finite_buckets` +
-      2. See comments on `bucket_options` for details.
-    scale: The i'th exponential bucket covers the interval [scale *
-      growth_factor^(i-1), scale * growth_factor^i) where i ranges from 1 to
-      num_finite_buckets inclusive. Must be > 0.
-  """
-
-  growthFactor = _messages.FloatField(1)
-  numFiniteBuckets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  scale = _messages.FloatField(3)
-
-
-class GoogleApiServicecontrolV1HttpRequest(_messages.Message):
-  r"""A common proto for logging HTTP requests. Only contains semantics
-  defined by the HTTP specification. Product-specific logging information MUST
-  be defined in a separate message.
-
-  Fields:
-    cacheFillBytes: The number of HTTP response bytes inserted into cache. Set
-      only when a cache fill was attempted.
-    cacheHit: Whether or not an entity was served from cache (with or without
-      validation).
-    cacheLookup: Whether or not a cache lookup was attempted.
-    cacheValidatedWithOriginServer: Whether or not the response was validated
-      with the origin server before being served from cache. This field is
-      only meaningful if `cache_hit` is True.
-    latency: The request processing latency on the server, from the time the
-      request was received until the response was sent.
-    protocol: Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2",
-      "websocket"
-    referer: The referer URL of the request, as defined in [HTTP/1.1 Header
-      Field
-      Definitions](http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html).
-    remoteIp: The IP address (IPv4 or IPv6) of the client that issued the HTTP
-      request. Examples: `"192.168.1.1"`, `"FE80::0202:B3FF:FE1E:8329"`.
-    requestMethod: The request method. Examples: `"GET"`, `"HEAD"`, `"PUT"`,
-      `"POST"`.
-    requestSize: The size of the HTTP request message in bytes, including the
-      request headers and the request body.
-    requestUrl: The scheme (http, https), the host name, the path, and the
-      query portion of the URL that was requested. Example:
-      `"http://example.com/some/info?color=red"`.
-    responseSize: The size of the HTTP response message sent back to the
-      client, in bytes, including the response headers and the response body.
-    serverIp: The IP address (IPv4 or IPv6) of the origin server that the
-      request was sent to.
-    status: The response code indicating the status of the response. Examples:
-      200, 404.
-    userAgent: The user agent sent by the client. Example: `"Mozilla/4.0
-      (compatible; MSIE 6.0; Windows 98; Q312461; .NET CLR 1.0.3705)"`.
-  """
-
-  cacheFillBytes = _messages.IntegerField(1)
-  cacheHit = _messages.BooleanField(2)
-  cacheLookup = _messages.BooleanField(3)
-  cacheValidatedWithOriginServer = _messages.BooleanField(4)
-  latency = _messages.StringField(5)
-  protocol = _messages.StringField(6)
-  referer = _messages.StringField(7)
-  remoteIp = _messages.StringField(8)
-  requestMethod = _messages.StringField(9)
-  requestSize = _messages.IntegerField(10)
-  requestUrl = _messages.StringField(11)
-  responseSize = _messages.IntegerField(12)
-  serverIp = _messages.StringField(13)
-  status = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  userAgent = _messages.StringField(15)
-
-
-class GoogleApiServicecontrolV1LinearBuckets(_messages.Message):
-  r"""Describing buckets with constant width.
-
-  Fields:
-    numFiniteBuckets: The number of finite buckets. With the underflow and
-      overflow buckets, the total number of buckets is `num_finite_buckets` +
-      2. See comments on `bucket_options` for details.
-    offset: The i'th linear bucket covers the interval [offset + (i-1) *
-      width, offset + i * width) where i ranges from 1 to num_finite_buckets,
-      inclusive.
-    width: The i'th linear bucket covers the interval [offset + (i-1) * width,
-      offset + i * width) where i ranges from 1 to num_finite_buckets,
-      inclusive. Must be strictly positive.
-  """
-
-  numFiniteBuckets = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  offset = _messages.FloatField(2)
-  width = _messages.FloatField(3)
-
-
-class GoogleApiServicecontrolV1LogEntry(_messages.Message):
-  r"""An individual log entry.
-
-  Enums:
-    SeverityValueValuesEnum: The severity of the log entry. The default value
-      is `LogSeverity.DEFAULT`.
-
-  Messages:
-    LabelsValue: A set of user-defined (key, value) data that provides
-      additional information about the log entry.
-    ProtoPayloadValue: The log entry payload, represented as a protocol buffer
-      that is expressed as a JSON object. The only accepted type currently is
-      AuditLog.
-    StructPayloadValue: The log entry payload, represented as a structure that
-      is expressed as a JSON object.
-
-  Fields:
-    httpRequest: Optional. Information about the HTTP request associated with
-      this log entry, if applicable.
-    insertId: A unique ID for the log entry used for deduplication. If
-      omitted, the implementation will generate one based on operation_id.
-    labels: A set of user-defined (key, value) data that provides additional
-      information about the log entry.
-    name: Required. The log to which this log entry belongs. Examples:
-      `"syslog"`, `"book_log"`.
-    operation: Optional. Information about an operation associated with the
-      log entry, if applicable.
-    protoPayload: The log entry payload, represented as a protocol buffer that
-      is expressed as a JSON object. The only accepted type currently is
-      AuditLog.
-    severity: The severity of the log entry. The default value is
-      `LogSeverity.DEFAULT`.
-    sourceLocation: Optional. Source code location information associated with
-      the log entry, if any.
-    structPayload: The log entry payload, represented as a structure that is
-      expressed as a JSON object.
-    textPayload: The log entry payload, represented as a Unicode string
-      (UTF-8).
-    timestamp: The time the event described by the log entry occurred. If
-      omitted, defaults to operation start time.
-    trace: Optional. Resource name of the trace associated with the log entry,
-      if any. If this field contains a relative resource name, you can assume
-      the name is relative to `//tracing.googleapis.com`. Example:
-      `projects/my-projectid/traces/06796866738c859f2f19b7cfb3214824`
-  """
-
-  class SeverityValueValuesEnum(_messages.Enum):
-    r"""The severity of the log entry. The default value is
-    `LogSeverity.DEFAULT`.
-
-    Values:
-      DEFAULT: (0) The log entry has no assigned severity level.
-      DEBUG: (100) Debug or trace information.
-      INFO: (200) Routine information, such as ongoing status or performance.
-      NOTICE: (300) Normal but significant events, such as start up, shut
-        down, or a configuration change.
-      WARNING: (400) Warning events might cause problems.
-      ERROR: (500) Error events are likely to cause problems.
-      CRITICAL: (600) Critical events cause more severe problems or outages.
-      ALERT: (700) A person must take an action immediately.
-      EMERGENCY: (800) One or more systems are unusable.
-    """
-    DEFAULT = 0
-    DEBUG = 1
-    INFO = 2
-    NOTICE = 3
-    WARNING = 4
-    ERROR = 5
-    CRITICAL = 6
-    ALERT = 7
-    EMERGENCY = 8
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""A set of user-defined (key, value) data that provides additional
-    information about the log entry.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ProtoPayloadValue(_messages.Message):
-    r"""The log entry payload, represented as a protocol buffer that is
-    expressed as a JSON object. The only accepted type currently is AuditLog.
-
-    Messages:
-      AdditionalProperty: An additional property for a ProtoPayloadValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ProtoPayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StructPayloadValue(_messages.Message):
-    r"""The log entry payload, represented as a structure that is expressed as
-    a JSON object.
-
-    Messages:
-      AdditionalProperty: An additional property for a StructPayloadValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StructPayloadValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  httpRequest = _messages.MessageField('GoogleApiServicecontrolV1HttpRequest', 1)
-  insertId = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  operation = _messages.MessageField('GoogleApiServicecontrolV1LogEntryOperation', 5)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 6)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
-  sourceLocation = _messages.MessageField('GoogleApiServicecontrolV1LogEntrySourceLocation', 8)
-  structPayload = _messages.MessageField('StructPayloadValue', 9)
-  textPayload = _messages.StringField(10)
-  timestamp = _messages.StringField(11)
-  trace = _messages.StringField(12)
-
-
-class GoogleApiServicecontrolV1LogEntryOperation(_messages.Message):
-  r"""Additional information about a potentially long-running operation with
-  which a log entry is associated.
-
-  Fields:
-    first: Optional. Set this to True if this is the first log entry in the
-      operation.
-    id: Optional. An arbitrary operation identifier. Log entries with the same
-      identifier are assumed to be part of the same operation.
-    last: Optional. Set this to True if this is the last log entry in the
-      operation.
-    producer: Optional. An arbitrary producer identifier. The combination of
-      `id` and `producer` must be globally unique. Examples for `producer`:
-      `"MyDivision.MyBigCompany.com"`, `"github.com/MyProject/MyApplication"`.
-  """
-
-  first = _messages.BooleanField(1)
-  id = _messages.StringField(2)
-  last = _messages.BooleanField(3)
-  producer = _messages.StringField(4)
-
-
-class GoogleApiServicecontrolV1LogEntrySourceLocation(_messages.Message):
-  r"""Additional information about the source code location that produced the
-  log entry.
-
-  Fields:
-    file: Optional. Source file name. Depending on the runtime environment,
-      this might be a simple name or a fully-qualified name.
-    function: Optional. Human-readable name of the function or method being
-      invoked, with optional context such as the class or package name. This
-      information may be used in contexts such as the logs viewer, where a
-      file and line number are less meaningful. The format can vary by
-      language. For example: `qual.if.ied.Class.method` (Java),
-      `dir/package.func` (Go), `function` (Python).
-    line: Optional. Line within the source file. 1-based; 0 indicates no line
-      number available.
-  """
-
-  file = _messages.StringField(1)
-  function = _messages.StringField(2)
-  line = _messages.IntegerField(3)
-
-
-class GoogleApiServicecontrolV1MetricValue(_messages.Message):
-  r"""Represents a single metric value.
-
-  Messages:
-    LabelsValue: The labels describing the metric value. See comments on
-      google.api.servicecontrol.v1.Operation.labels for the overriding
-      relationship. Note that this map must not contain monitored resource
-      labels.
-
-  Fields:
-    boolValue: A boolean value.
-    distributionValue: A distribution value.
-    doubleValue: A double precision floating point value.
-    endTime: The end of the time period over which this metric value's
-      measurement applies. If not specified,
-      google.api.servicecontrol.v1.Operation.end_time will be used.
-    int64Value: A signed 64-bit integer value.
-    labels: The labels describing the metric value. See comments on
-      google.api.servicecontrol.v1.Operation.labels for the overriding
-      relationship. Note that this map must not contain monitored resource
-      labels.
-    moneyValue: A money value.
-    startTime: The start of the time period over which this metric value's
-      measurement applies. The time period has different semantics for
-      different metric types (cumulative, delta, and gauge). See the metric
-      definition documentation in the service configuration for details. If
-      not specified, google.api.servicecontrol.v1.Operation.start_time will be
-      used.
-    stringValue: A text string value.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""The labels describing the metric value. See comments on
-    google.api.servicecontrol.v1.Operation.labels for the overriding
-    relationship. Note that this map must not contain monitored resource
-    labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  boolValue = _messages.BooleanField(1)
-  distributionValue = _messages.MessageField('GoogleApiServicecontrolV1Distribution', 2)
-  doubleValue = _messages.FloatField(3)
-  endTime = _messages.StringField(4)
-  int64Value = _messages.IntegerField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  moneyValue = _messages.MessageField('Money', 7)
-  startTime = _messages.StringField(8)
-  stringValue = _messages.StringField(9)
-
-
-class GoogleApiServicecontrolV1MetricValueSet(_messages.Message):
-  r"""Represents a set of metric values in the same metric. Each metric value
-  in the set should have a unique combination of start time, end time, and
-  label values.
-
-  Fields:
-    metricName: The metric name defined in the service configuration.
-    metricValues: The values in this metric.
-  """
-
-  metricName = _messages.StringField(1)
-  metricValues = _messages.MessageField('GoogleApiServicecontrolV1MetricValue', 2, repeated=True)
-
-
-class GoogleApiServicecontrolV1Operation(_messages.Message):
-  r"""Represents information regarding an operation.
-
-  Enums:
-    ImportanceValueValuesEnum: DO NOT USE. This is an experimental field.
-
-  Messages:
-    LabelsValue: Labels describing the operation. Only the following labels
-      are allowed: - Labels describing monitored resources as defined in the
-      service configuration. - Default labels of metric values. When
-      specified, labels defined in the metric value override these default. -
-      The following labels defined by Google Cloud Platform: -
-      `cloud.googleapis.com/location` describing the location where the
-      operation happened, - `servicecontrol.googleapis.com/user_agent`
-      describing the user agent of the API request, -
-      `servicecontrol.googleapis.com/service_agent` describing the service
-      used to handle the API request (e.g. ESP), -
-      `servicecontrol.googleapis.com/platform` describing the platform where
-      the API is served, such as App Engine, Compute Engine, or Kubernetes
-      Engine.
-    UserLabelsValue: Private Preview. This feature is only available for
-      approved services. User defined labels for the resource that this
-      operation is associated with.
-
-  Fields:
-    consumerId: Identity of the consumer who is using the service. This field
-      should be filled in for the operations initiated by a consumer, but not
-      for service-initiated operations that are not related to a specific
-      consumer. - This can be in one of the following formats: -
-      project:PROJECT_ID, - project`_`number:PROJECT_NUMBER, -
-      projects/PROJECT_ID or PROJECT_NUMBER, - folders/FOLDER_NUMBER, -
-      organizations/ORGANIZATION_NUMBER, - api`_`key:API_KEY.
-    endTime: End time of the operation. Required when the operation is used in
-      ServiceController.Report, but optional when the operation is used in
-      ServiceController.Check.
-    importance: DO NOT USE. This is an experimental field.
-    labels: Labels describing the operation. Only the following labels are
-      allowed: - Labels describing monitored resources as defined in the
-      service configuration. - Default labels of metric values. When
-      specified, labels defined in the metric value override these default. -
-      The following labels defined by Google Cloud Platform: -
-      `cloud.googleapis.com/location` describing the location where the
-      operation happened, - `servicecontrol.googleapis.com/user_agent`
-      describing the user agent of the API request, -
-      `servicecontrol.googleapis.com/service_agent` describing the service
-      used to handle the API request (e.g. ESP), -
-      `servicecontrol.googleapis.com/platform` describing the platform where
-      the API is served, such as App Engine, Compute Engine, or Kubernetes
-      Engine.
-    logEntries: Represents information to be logged.
-    metricValueSets: Represents information about this operation. Each
-      MetricValueSet corresponds to a metric defined in the service
-      configuration. The data type used in the MetricValueSet must agree with
-      the data type specified in the metric definition. Within a single
-      operation, it is not allowed to have more than one MetricValue instances
-      that have the same metric names and identical label value combinations.
-      If a request has such duplicated MetricValue instances, the entire
-      request is rejected with an invalid argument error.
-    operationId: Identity of the operation. This must be unique within the
-      scope of the service that generated the operation. If the service calls
-      Check() and Report() on the same operation, the two calls should carry
-      the same id. UUID version 4 is recommended, though not required. In
-      scenarios where an operation is computed from existing information and
-      an idempotent id is desirable for deduplication purpose, UUID version 5
-      is recommended. See RFC 4122 for details.
-    operationName: Fully qualified name of the operation. Reserved for future
-      use.
-    quotaProperties: Represents the properties needed for quota check.
-      Applicable only if this operation is for a quota check request. If this
-      is not specified, no quota check will be performed.
-    resources: The resources that are involved in the operation. The maximum
-      supported number of entries in this field is 100.
-    startTime: Required. Start time of the operation.
-    traceSpans: Unimplemented. A list of Cloud Trace spans. The span names
-      shall contain the id of the destination project which can be either the
-      produce or the consumer project.
-    userLabels: Private Preview. This feature is only available for approved
-      services. User defined labels for the resource that this operation is
-      associated with.
-  """
-
-  class ImportanceValueValuesEnum(_messages.Enum):
-    r"""DO NOT USE. This is an experimental field.
-
-    Values:
-      LOW: Allows data caching, batching, and aggregation. It provides higher
-        performance with higher data loss risk.
-      HIGH: Disables data aggregation to minimize data loss. It is for
-        operations that contains significant monetary value or audit trail.
-        This feature only applies to the client libraries.
-      DEBUG: Deprecated. Do not use. Disables data aggregation and enables
-        additional validation logic. It should only be used during the
-        onboarding process. It is only available to Google internal services,
-        and the service must be approved by chemist-dev@google.com in order to
-        use this level.
-      PROMOTED: Used internally by Chemist.
-    """
-    LOW = 0
-    HIGH = 1
-    DEBUG = 2
-    PROMOTED = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels describing the operation. Only the following labels are
-    allowed: - Labels describing monitored resources as defined in the service
-    configuration. - Default labels of metric values. When specified, labels
-    defined in the metric value override these default. - The following labels
-    defined by Google Cloud Platform: - `cloud.googleapis.com/location`
-    describing the location where the operation happened, -
-    `servicecontrol.googleapis.com/user_agent` describing the user agent of
-    the API request, - `servicecontrol.googleapis.com/service_agent`
-    describing the service used to handle the API request (e.g. ESP), -
-    `servicecontrol.googleapis.com/platform` describing the platform where the
-    API is served, such as App Engine, Compute Engine, or Kubernetes Engine.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class UserLabelsValue(_messages.Message):
-    r"""Private Preview. This feature is only available for approved services.
-    User defined labels for the resource that this operation is associated
-    with.
-
-    Messages:
-      AdditionalProperty: An additional property for a UserLabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type UserLabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a UserLabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  consumerId = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  importance = _messages.EnumField('ImportanceValueValuesEnum', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  logEntries = _messages.MessageField('GoogleApiServicecontrolV1LogEntry', 5, repeated=True)
-  metricValueSets = _messages.MessageField('GoogleApiServicecontrolV1MetricValueSet', 6, repeated=True)
-  operationId = _messages.StringField(7)
-  operationName = _messages.StringField(8)
-  quotaProperties = _messages.MessageField('GoogleApiServicecontrolV1QuotaProperties', 9)
-  resources = _messages.MessageField('GoogleApiServicecontrolV1ResourceInfo', 10, repeated=True)
-  startTime = _messages.StringField(11)
-  traceSpans = _messages.MessageField('GoogleApiServicecontrolV1TraceSpan', 12, repeated=True)
-  userLabels = _messages.MessageField('UserLabelsValue', 13)
-
-
-class GoogleApiServicecontrolV1QuotaProperties(_messages.Message):
-  r"""Represents the properties needed for quota operations.
-
-  Enums:
-    QuotaModeValueValuesEnum: Quota mode for this operation.
-
-  Fields:
-    quotaMode: Quota mode for this operation.
-  """
-
-  class QuotaModeValueValuesEnum(_messages.Enum):
-    r"""Quota mode for this operation.
-
-    Values:
-      ACQUIRE: Decreases available quota by the cost specified for the
-        operation. If cost is higher than available quota, operation fails and
-        returns error.
-      ACQUIRE_BEST_EFFORT: Decreases available quota by the cost specified for
-        the operation. If cost is higher than available quota, operation does
-        not fail and available quota goes down to zero but it returns error.
-      CHECK: Does not change any available quota. Only checks if there is
-        enough quota. No lock is placed on the checked tokens neither.
-    """
-    ACQUIRE = 0
-    ACQUIRE_BEST_EFFORT = 1
-    CHECK = 2
-
-  quotaMode = _messages.EnumField('QuotaModeValueValuesEnum', 1)
-
-
-class GoogleApiServicecontrolV1ReportRequest(_messages.Message):
-  r"""Request message for the Report method.
-
-  Fields:
-    operations: Operations to be reported. Typically the service should report
-      one operation per request. Putting multiple operations into a single
-      request is allowed, but should be used only when multiple operations are
-      natually available at the time of the report. There is no limit on the
-      number of operations in the same ReportRequest, however the
-      ReportRequest size should be no larger than 1MB. See
-      ReportResponse.report_errors for partial failure behavior.
-    serviceConfigId: Specifies which version of service config should be used
-      to process the request. If unspecified or no matching version can be
-      found, the latest one will be used.
-    serviceName: The service name as specified in its service configuration.
-      For example, `"pubsub.googleapis.com"`. See
-      [google.api.Service](https://cloud.google.com/service-
-      management/reference/rpc/google.api#google.api.Service) for the
-      definition of a service name.
-  """
-
-  operations = _messages.MessageField('GoogleApiServicecontrolV1Operation', 1, repeated=True)
-  serviceConfigId = _messages.StringField(2)
-  serviceName = _messages.StringField(3)
-
-
-class GoogleApiServicecontrolV1ResourceInfo(_messages.Message):
-  r"""Describes a resource associated with this operation.
-
-  Fields:
-    permission: The resource permission required for this request.
-    resourceContainer: The identifier of the parent of this resource instance.
-      Must be in one of the following formats: - `projects/` - `folders/` -
-      `organizations/`
-    resourceLocation: The location of the resource. If not empty, the resource
-      will be checked against location policy. The value must be a valid zone,
-      region or multiregion. For example: "europe-west4" or "northamerica-
-      northeast1-a"
-    resourceName: Name of the resource. This is used for auditing purposes.
-  """
-
-  permission = _messages.StringField(1)
-  resourceContainer = _messages.StringField(2)
-  resourceLocation = _messages.StringField(3)
-  resourceName = _messages.StringField(4)
-
-
-class GoogleApiServicecontrolV1TraceSpan(_messages.Message):
-  r"""A span represents a single operation within a trace. Spans can be nested
-  to form a trace tree. Often, a trace contains a root span that describes the
-  end-to-end latency, and one or more subspans for its sub-operations. A trace
-  can also contain multiple root spans, or none at all. Spans do not need to
-  be contiguous-there may be gaps or overlaps between spans in a trace.
-
-  Enums:
-    SpanKindValueValuesEnum: Distinguishes between spans generated in a
-      particular context. For example, two spans with the same name may be
-      distinguished using `CLIENT` (caller) and `SERVER` (callee) to identify
-      an RPC call.
-
-  Fields:
-    attributes: A set of attributes on the span. You can have up to 32
-      attributes per span.
-    childSpanCount: An optional number of child spans that were generated
-      while this span was active. If set, allows implementation to detect
-      missing child spans.
-    displayName: A description of the span's operation (up to 128 bytes).
-      Stackdriver Trace displays the description in the Google Cloud Platform
-      Console. For example, the display name can be a qualified method name or
-      a file name and a line number where the operation is called. A best
-      practice is to use the same display name within an application and at
-      the same call point. This makes it easier to correlate spans in
-      different traces.
-    endTime: The end time of the span. On the client side, this is the time
-      kept by the local machine where the span execution ends. On the server
-      side, this is the time when the server application handler stops
-      running.
-    name: The resource name of the span in the following format:
-      projects/[PROJECT_ID]/traces/[TRACE_ID]/spans/SPAN_ID is a unique
-      identifier for a trace within a project; it is a 32-character
-      hexadecimal encoding of a 16-byte array. [SPAN_ID] is a unique
-      identifier for a span within a trace; it is a 16-character hexadecimal
-      encoding of an 8-byte array.
-    parentSpanId: The [SPAN_ID] of this span's parent span. If this is a root
-      span, then this field must be empty.
-    sameProcessAsParentSpan: (Optional) Set this parameter to indicate whether
-      this span is in the same process as its parent. If you do not set this
-      parameter, Stackdriver Trace is unable to take advantage of this helpful
-      information.
-    spanId: The [SPAN_ID] portion of the span's resource name.
-    spanKind: Distinguishes between spans generated in a particular context.
-      For example, two spans with the same name may be distinguished using
-      `CLIENT` (caller) and `SERVER` (callee) to identify an RPC call.
-    startTime: The start time of the span. On the client side, this is the
-      time kept by the local machine where the span execution starts. On the
-      server side, this is the time when the server's application handler
-      starts running.
-    status: An optional final status for this span.
-  """
-
-  class SpanKindValueValuesEnum(_messages.Enum):
-    r"""Distinguishes between spans generated in a particular context. For
-    example, two spans with the same name may be distinguished using `CLIENT`
-    (caller) and `SERVER` (callee) to identify an RPC call.
-
-    Values:
-      SPAN_KIND_UNSPECIFIED: Unspecified. Do NOT use as default.
-        Implementations MAY assume SpanKind.INTERNAL to be default.
-      INTERNAL: Indicates that the span is used internally. Default value.
-      SERVER: Indicates that the span covers server-side handling of an RPC or
-        other remote network request.
-      CLIENT: Indicates that the span covers the client-side wrapper around an
-        RPC or other remote request.
-      PRODUCER: Indicates that the span describes producer sending a message
-        to a broker. Unlike client and server, there is no direct critical
-        path latency relationship between producer and consumer spans (e.g.
-        publishing a message to a pubsub service).
-      CONSUMER: Indicates that the span describes consumer receiving a message
-        from a broker. Unlike client and server, there is no direct critical
-        path latency relationship between producer and consumer spans (e.g.
-        receiving a message from a pubsub service subscription).
-    """
-    SPAN_KIND_UNSPECIFIED = 0
-    INTERNAL = 1
-    SERVER = 2
-    CLIENT = 3
-    PRODUCER = 4
-    CONSUMER = 5
-
-  attributes = _messages.MessageField('GoogleApiServicecontrolV1Attributes', 1)
-  childSpanCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  displayName = _messages.MessageField('GoogleApiServicecontrolV1TruncatableString', 3)
-  endTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parentSpanId = _messages.StringField(6)
-  sameProcessAsParentSpan = _messages.BooleanField(7)
-  spanId = _messages.StringField(8)
-  spanKind = _messages.EnumField('SpanKindValueValuesEnum', 9)
-  startTime = _messages.StringField(10)
-  status = _messages.MessageField('Status', 11)
-
-
-class GoogleApiServicecontrolV1TruncatableString(_messages.Message):
-  r"""Represents a string that might be shortened to a specified length.
-
-  Fields:
-    truncatedByteCount: The number of bytes removed from the original string.
-      If this value is 0, then the string was not shortened.
-    value: The shortened string. For example, if the original string is 500
-      bytes long and the limit of the string is 128 bytes, then `value`
-      contains the first 128 bytes of the 500-byte string. Truncation always
-      happens on a UTF8 character boundary. If there are multi-byte characters
-      in the string, then the length of the shortened string might be less
-      than the size limit.
-  """
-
-  truncatedByteCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  value = _messages.StringField(2)
-
-
 class GoogleCloudNetworksecurityV1beta1CertificateProvider(_messages.Message):
   r"""Specification of certificate provider. Defines the mechanism to obtain
   the certificate and private key for peer to peer authentication.
@@ -1775,17 +657,11 @@ class GoogleCloudNetworksecurityV1beta1GrpcEndpoint(_messages.Message):
   r"""Specification of the GRPC Endpoint.
 
   Fields:
-    sdsResource: Optional. sds_resource is used to set the name of the SDS
-      configuration. When used in the context of GSM, the following rules
-      apply If the resource name is "default" and "ROOTCA" then it implies
-      ISTIO_MUTUAL tlsMode. If the resource name begins with "file-cert"
-      and/or "file-root", it implies custom MUTUAL tlsMode
     targetUri: Required. The target URI of the gRPC endpoint. Only UDS path is
       supported, and should start with "unix:".
   """
 
-  sdsResource = _messages.StringField(1)
-  targetUri = _messages.StringField(2)
+  targetUri = _messages.StringField(1)
 
 
 class GoogleIamV1AuditConfig(_messages.Message):
@@ -1830,7 +706,6 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
   Fields:
     exemptedMembers: Specifies the identities that do not cause logging for
       this type of permission. Follows the same format of Binding.members.
-    ignoreChildExemptions: A boolean attribute.
     logType: The log type that this config enables.
   """
 
@@ -1849,15 +724,13 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
     DATA_READ = 3
 
   exemptedMembers = _messages.StringField(1, repeated=True)
-  ignoreChildExemptions = _messages.BooleanField(2)
-  logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
 class GoogleIamV1Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
   Fields:
-    bindingId: A string attribute.
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
@@ -1936,272 +809,9 @@ class GoogleIamV1Binding(_messages.Message):
       [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
-  bindingId = _messages.StringField(1)
-  condition = _messages.MessageField('Expr', 2)
-  members = _messages.StringField(3, repeated=True)
-  role = _messages.StringField(4)
-
-
-class GoogleIamV1CloudAuditOptions(_messages.Message):
-  r"""Write a Cloud Audit log
-
-  Enums:
-    LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
-      Record.
-    PermissionTypeValueValuesEnum: The type associated with the permission.
-
-  Fields:
-    authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline. Will be deprecated once the migration to PermissionType is
-      complete (b/201806118).
-    logName: The log_name to populate in the Cloud Audit Record.
-    permissionType: The type associated with the permission.
-  """
-
-  class LogNameValueValuesEnum(_messages.Enum):
-    r"""The log_name to populate in the Cloud Audit Record.
-
-    Values:
-      UNSPECIFIED_LOG_NAME: Default. Should not be used.
-      ADMIN_ACTIVITY: Corresponds to "cloudaudit.googleapis.com/activity"
-      DATA_ACCESS: Corresponds to "cloudaudit.googleapis.com/data_access"
-    """
-    UNSPECIFIED_LOG_NAME = 0
-    ADMIN_ACTIVITY = 1
-    DATA_ACCESS = 2
-
-  class PermissionTypeValueValuesEnum(_messages.Enum):
-    r"""The type associated with the permission.
-
-    Values:
-      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
-      ADMIN_READ: Permissions that gate reading resource configuration or
-        metadata.
-      ADMIN_WRITE: Permissions that gate modification of resource
-        configuration or metadata.
-      DATA_READ: Permissions that gate reading user-provided data.
-      DATA_WRITE: Permissions that gate writing user-provided data.
-    """
-    PERMISSION_TYPE_UNSPECIFIED = 0
-    ADMIN_READ = 1
-    ADMIN_WRITE = 2
-    DATA_READ = 3
-    DATA_WRITE = 4
-
-  authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
-  logName = _messages.EnumField('LogNameValueValuesEnum', 2)
-  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 3)
-
-
-class GoogleIamV1Condition(_messages.Message):
-  r"""A condition to be met.
-
-  Enums:
-    IamValueValuesEnum: Trusted attributes supplied by the IAM system.
-    OpValueValuesEnum: An operator to apply the subject with.
-    SysValueValuesEnum: Trusted attributes supplied by any service that owns
-      resources and uses the IAM system for access control.
-
-  Fields:
-    iam: Trusted attributes supplied by the IAM system.
-    op: An operator to apply the subject with.
-    svc: Trusted attributes discharged by the service.
-    sys: Trusted attributes supplied by any service that owns resources and
-      uses the IAM system for access control.
-    values: The objects of the condition.
-  """
-
-  class IamValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by the IAM system.
-
-    Values:
-      NO_ATTR: Default non-attribute.
-      AUTHORITY: Either principal or (if present) authority selector.
-      ATTRIBUTION: The principal (even if an authority selector is present),
-        which must only be used for attribution, not authorization.
-      SECURITY_REALM: Any of the security realms in the IAMContext
-        (go/security-realms). When used with IN, the condition indicates "any
-        of the request's realms match one of the given values; with NOT_IN,
-        "none of the realms match any of the given values". Note that a value
-        can be: - 'self:campus' (i.e., clients that are in the same campus) -
-        'self:metro' (i.e., clients that are in the same metro) - 'self:cloud-
-        region' (i.e., allow connections from clients that are in the same
-        cloud region) - 'self:prod-region' (i.e., allow connections from
-        clients that are in the same prod region) - 'guardians' (i.e., allow
-        connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
-      APPROVER: An approver (distinct from the requester) that has authorized
-        this request. When used with IN, the condition indicates that one of
-        the approvers associated with the request matches the specified
-        principal, or is a member of the specified group. Approvers can only
-        grant additional access, and are thus only used in a strictly positive
-        context (e.g. ALLOW/IN or DENY/NOT_IN).
-      JUSTIFICATION_TYPE: What types of justifications have been supplied with
-        this request. String values should match enum names from
-        security.credentials.JustificationType, e.g. "MANUAL_STRING". It is
-        not permitted to grant access based on the *absence* of a
-        justification, so justification conditions can only be used in a
-        "positive" context (e.g., ALLOW/IN or DENY/NOT_IN). Multiple
-        justifications, e.g., a Buganizer ID and a manually-entered reason,
-        are normal and supported.
-      CREDENTIALS_TYPE: What type of credentials have been supplied with this
-        request. String values should match enum names from
-        security_loas_l2.CredentialsType - currently, only
-        CREDS_TYPE_EMERGENCY is supported. It is not permitted to grant access
-        based on the *absence* of a credentials type, so the conditions can
-        only be used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-      CREDS_ASSERTION: EXPERIMENTAL -- DO NOT USE. The conditions can only be
-        used in a "positive" context (e.g., ALLOW/IN or DENY/NOT_IN).
-    """
-    NO_ATTR = 0
-    AUTHORITY = 1
-    ATTRIBUTION = 2
-    SECURITY_REALM = 3
-    APPROVER = 4
-    JUSTIFICATION_TYPE = 5
-    CREDENTIALS_TYPE = 6
-    CREDS_ASSERTION = 7
-
-  class OpValueValuesEnum(_messages.Enum):
-    r"""An operator to apply the subject with.
-
-    Values:
-      NO_OP: Default no-op.
-      EQUALS: DEPRECATED. Use IN instead.
-      NOT_EQUALS: DEPRECATED. Use NOT_IN instead.
-      IN: The condition is true if the subject (or any element of it if it is
-        a set) matches any of the supplied values.
-      NOT_IN: The condition is true if the subject (or every element of it if
-        it is a set) matches none of the supplied values.
-      DISCHARGED: Subject is discharged
-    """
-    NO_OP = 0
-    EQUALS = 1
-    NOT_EQUALS = 2
-    IN = 3
-    NOT_IN = 4
-    DISCHARGED = 5
-
-  class SysValueValuesEnum(_messages.Enum):
-    r"""Trusted attributes supplied by any service that owns resources and
-    uses the IAM system for access control.
-
-    Values:
-      NO_ATTR: Default non-attribute type
-      REGION: Region of the resource
-      SERVICE: Service name
-      NAME: Resource name
-      IP: IP address of the caller
-    """
-    NO_ATTR = 0
-    REGION = 1
-    SERVICE = 2
-    NAME = 3
-    IP = 4
-
-  iam = _messages.EnumField('IamValueValuesEnum', 1)
-  op = _messages.EnumField('OpValueValuesEnum', 2)
-  svc = _messages.StringField(3)
-  sys = _messages.EnumField('SysValueValuesEnum', 4)
-  values = _messages.StringField(5, repeated=True)
-
-
-class GoogleIamV1CounterOptions(_messages.Message):
-  r"""Increment a streamz counter with the specified metric and field names.
-  Metric names should start with a '/', generally be lowercase-only, and end
-  in "_count". Field names should not contain an initial slash. The actual
-  exported metric names will have "/iam/policy" prepended. Field names
-  correspond to IAM request parameters and field values are their respective
-  values. Supported field names: - "authority", which is "[token]" if
-  IAMContext.token is present, otherwise the value of
-  IAMContext.authority_selector if present, and otherwise a representation of
-  IAMContext.principal; or - "iam_principal", a representation of
-  IAMContext.principal even if a token or authority selector is present; or -
-  "" (empty string), resulting in a counter with no fields. Examples: counter
-  { metric: "/debug_access_count" field: "iam_principal" } ==> increment
-  counter /iam/policy/debug_access_count {iam_principal=[value of
-  IAMContext.principal]}
-
-  Fields:
-    customFields: Custom fields.
-    field: The field value to attribute.
-    metric: The metric to update.
-  """
-
-  customFields = _messages.MessageField('GoogleIamV1CustomField', 1, repeated=True)
-  field = _messages.StringField(2)
-  metric = _messages.StringField(3)
-
-
-class GoogleIamV1CustomField(_messages.Message):
-  r"""Custom fields. These can be used to create a counter with arbitrary
-  field/value pairs. See: go/rpcsp-custom-fields.
-
-  Fields:
-    name: Name is the field name.
-    value: Value is the field value. It is important that in contrast to the
-      CounterOptions.field, the value here is a constant that is not derived
-      from the IAMContext.
-  """
-
-  name = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class GoogleIamV1DataAccessOptions(_messages.Message):
-  r"""Write a Data Access (Gin) log
-
-  Enums:
-    LogModeValueValuesEnum:
-
-  Fields:
-    logMode: A LogModeValueValuesEnum attribute.
-  """
-
-  class LogModeValueValuesEnum(_messages.Enum):
-    r"""LogModeValueValuesEnum enum type.
-
-    Values:
-      LOG_MODE_UNSPECIFIED: Client is not required to write a partial Gin log
-        immediately after the authorization check. If client chooses to write
-        one and it fails, client may either fail open (allow the operation to
-        continue) or fail closed (handle as a DENY outcome).
-      LOG_FAIL_CLOSED: The application's operation in the context of which
-        this authorization check is being made may only be performed if it is
-        successfully logged to Gin. For instance, the authorization library
-        may satisfy this obligation by emitting a partial log entry at
-        authorization check time and only returning ALLOW to the application
-        if it succeeds. If a matching Rule has this directive, but the client
-        has not indicated that it will honor such requirements, then the IAM
-        check will result in authorization failure by setting
-        CheckPolicyResponse.success=false.
-    """
-    LOG_MODE_UNSPECIFIED = 0
-    LOG_FAIL_CLOSED = 1
-
-  logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
-
-
-class GoogleIamV1LogConfig(_messages.Message):
-  r"""Specifies what kind of log the caller must write
-
-  Fields:
-    cloudAudit: Cloud audit options.
-    counter: Counter options.
-    dataAccess: Data access options.
-  """
-
-  cloudAudit = _messages.MessageField('GoogleIamV1CloudAuditOptions', 1)
-  counter = _messages.MessageField('GoogleIamV1CounterOptions', 2)
-  dataAccess = _messages.MessageField('GoogleIamV1DataAccessOptions', 3)
+  condition = _messages.MessageField('Expr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
 
 
 class GoogleIamV1Policy(_messages.Message):
@@ -2257,13 +867,6 @@ class GoogleIamV1Policy(_messages.Message):
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    rules: If more than one rule is specified, the rules are applied in the
-      following manner: - All matching LOG rules are always applied. - If any
-      DENY/DENY_WITH_LOG rule matches, permission is denied. Logging will be
-      applied if one or more matching rule requires logging. - Otherwise, if
-      any ALLOW/ALLOW_WITH_LOG rule matches, permission is granted. Logging
-      will be applied if one or more matching rule requires logging. -
-      Otherwise, if no rule applies, permission is denied.
     version: Specifies the format of the policy. Valid values are `0`, `1`,
       and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
@@ -2286,61 +889,7 @@ class GoogleIamV1Policy(_messages.Message):
   auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
   bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
-  rules = _messages.MessageField('GoogleIamV1Rule', 4, repeated=True)
-  version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-
-
-class GoogleIamV1Rule(_messages.Message):
-  r"""A rule to be applied in a Policy.
-
-  Enums:
-    ActionValueValuesEnum: Required
-
-  Fields:
-    action: Required
-    conditions: Additional restrictions that must be met. All conditions must
-      pass for the rule to match.
-    description: Human-readable description of the rule.
-    in_: If one or more 'in' clauses are specified, the rule matches if the
-      PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of CheckPolicy for any entries
-      that match the LOG action.
-    notIn: If one or more 'not_in' clauses are specified, the rule matches if
-      the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
-      for in and not_in entries can be found at in the Local IAM documentation
-      (see go/local-iam#features).
-    permissions: A permission is a string of form '..' (e.g.,
-      'storage.buckets.list'). A value of '*' matches all permissions, and a
-      verb part of '*' (e.g., 'storage.buckets.*') matches all verbs.
-  """
-
-  class ActionValueValuesEnum(_messages.Enum):
-    r"""Required
-
-    Values:
-      NO_ACTION: Default no action.
-      ALLOW: Matching 'Entries' grant access.
-      ALLOW_WITH_LOG: Matching 'Entries' grant access and the caller promises
-        to log the request per the returned log_configs.
-      DENY: Matching 'Entries' deny access.
-      DENY_WITH_LOG: Matching 'Entries' deny access and the caller promises to
-        log the request per the returned log_configs.
-      LOG: Matching 'Entries' tell IAM.Check callers to generate logs.
-    """
-    NO_ACTION = 0
-    ALLOW = 1
-    ALLOW_WITH_LOG = 2
-    DENY = 3
-    DENY_WITH_LOG = 4
-    LOG = 5
-
-  action = _messages.EnumField('ActionValueValuesEnum', 1)
-  conditions = _messages.MessageField('GoogleIamV1Condition', 2, repeated=True)
-  description = _messages.StringField(3)
-  in_ = _messages.StringField(4, repeated=True)
-  logConfig = _messages.MessageField('GoogleIamV1LogConfig', 5, repeated=True)
-  notIn = _messages.StringField(6, repeated=True)
-  permissions = _messages.StringField(7, repeated=True)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleIamV1SetIamPolicyRequest(_messages.Message):
@@ -2427,15 +976,13 @@ class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message)
     firewallPolicy: FirewallPolicy that is using the Address Group.
     rulePriority: Rule priority of the FirewallPolicy that is using the
       Address Group.
-    ruleType: Type of the rule (applies only to FIREWALL_POLICY references)
     securityPolicy: Cloud Armor SecurityPolicy that is using the Address
       Group.
   """
 
   firewallPolicy = _messages.StringField(1)
   rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  ruleType = _messages.StringField(3)
-  securityPolicy = _messages.StringField(4)
+  securityPolicy = _messages.StringField(3)
 
 
 class ListAddressGroupsResponse(_messages.Message):
@@ -2571,39 +1118,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListReferencesRequest(_messages.Message):
-  r"""The ListResourceMetadataRequest request.
-
-  Fields:
-    pageSize: The maximum number of items to return. If unspecified, server
-      will pick an appropriate default. Server may return fewer items than
-      requested. A caller should only rely on response's next_page_token to
-      determine if there are more References left to be queried.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any.
-    parent: Required. The parent resource name (target_resource of this
-      reference). For example: `//targetservice.googleapis.com/projects/{my-
-      project}/locations/{location}/instances/{my-instance}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3)
-
-
-class ListReferencesResponse(_messages.Message):
-  r"""The ListReferencesResponse response.
-
-  Fields:
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    references: The list of references.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  references = _messages.MessageField('Reference', 2, repeated=True)
 
 
 class ListSecurityProfileGroupsResponse(_messages.Message):
@@ -2774,8 +1288,6 @@ class MTLSPolicy(_messages.Message):
       `client_validation_mode` specifies how the client connection is handled.
       Required if the policy is to be used with the external HTTPS load
       balancing. For Traffic Director it must be empty.
-    TierValueValuesEnum: Mutual TLS tier. Allowed only if the policy is to be
-      used with external HTTPS load balancers.
 
   Fields:
     clientValidationCa: Required if the policy is to be used with Traffic
@@ -2791,8 +1303,6 @@ class MTLSPolicy(_messages.Message):
       certificatemanager.googleapis.com namespace. If specified, the chain
       validation will be performed against certificates configured in the
       given TrustConfig. Allowed only if the policy is to be used with
-      external HTTPS load balancers.
-    tier: Mutual TLS tier. Allowed only if the policy is to be used with
       external HTTPS load balancers.
   """
 
@@ -2820,46 +1330,9 @@ class MTLSPolicy(_messages.Message):
     ALLOW_INVALID_OR_MISSING_CLIENT_CERT = 1
     REJECT_INVALID = 2
 
-  class TierValueValuesEnum(_messages.Enum):
-    r"""Mutual TLS tier. Allowed only if the policy is to be used with
-    external HTTPS load balancers.
-
-    Values:
-      TIER_UNSPECIFIED: If tier is unspecified in the request, the system will
-        choose a default value - `STANDARD` tier at present.
-      STANDARD: Default Tier. Primarily for Software Providers (service to
-        service/API communication).
-      ADVANCED: Advanced Tier. For customers in strongly regulated
-        environments, specifying longer keys, complex certificate chains.
-    """
-    TIER_UNSPECIFIED = 0
-    STANDARD = 1
-    ADVANCED = 2
-
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
   clientValidationMode = _messages.EnumField('ClientValidationModeValueValuesEnum', 2)
   clientValidationTrustConfig = _messages.StringField(3)
-  tier = _messages.EnumField('TierValueValuesEnum', 4)
-
-
-class Money(_messages.Message):
-  r"""Represents an amount of money with its currency type.
-
-  Fields:
-    currencyCode: The three-letter currency code defined in ISO 4217.
-    nanos: Number of nano (10^-9) units of the amount. The value must be
-      between -999,999,999 and +999,999,999 inclusive. If `units` is positive,
-      `nanos` must be positive or zero. If `units` is zero, `nanos` can be
-      positive, zero, or negative. If `units` is negative, `nanos` must be
-      negative or zero. For example $-1.75 is represented as `units`=-1 and
-      `nanos`=-750,000,000.
-    units: The whole units of the amount. For example if `currencyCode` is
-      `"USD"`, then 1 unit is one US dollar.
-  """
-
-  currencyCode = _messages.StringField(1)
-  nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  units = _messages.IntegerField(3)
 
 
 class NetworksecurityOrganizationsLocationsAddressGroupsAddItemsRequest(_messages.Message):
@@ -4250,8 +2723,6 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
-    includeUnrevealedLocations: If true, the returned list will include
-      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -4260,10 +2731,9 @@ class NetworksecurityProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  includeUnrevealedLocations = _messages.BooleanField(2)
-  name = _messages.StringField(3, required=True)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -4313,180 +2783,6 @@ class NetworksecurityProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
-
-
-class NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The parent resource of the SecurityProfileGroup. Must be
-      in the format `projects|organizations/*/locations/{location}`.
-    securityProfileGroup: A SecurityProfileGroup resource to be passed as the
-      request body.
-    securityProfileGroupId: Required. Short name of the SecurityProfileGroup
-      resource to be created. This value should be 1-63 characters long,
-      containing only letters, numbers, hyphens, and underscores, and should
-      not start with a number. E.g. "security_profile_group1".
-  """
-
-  parent = _messages.StringField(1, required=True)
-  securityProfileGroup = _messages.MessageField('SecurityProfileGroup', 2)
-  securityProfileGroupId = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsSecurityProfileGroupsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsDeleteRequest
-  object.
-
-  Fields:
-    etag: Optional. If client provided etag is out of date, delete will return
-      FAILED_PRECONDITION error.
-    name: Required. A name of the SecurityProfileGroup to delete. Must be in
-      the format `projects|organizations/*/locations/{location}/securityProfil
-      eGroups/{security_profile_group}`.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfileGroupsGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsGetRequest
-  object.
-
-  Fields:
-    name: Required. A name of the SecurityProfileGroup to get. Must be in the
-      format `projects|organizations/*/locations/{location}/securityProfileGro
-      ups/{security_profile_group}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfileGroupsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsListRequest
-  object.
-
-  Fields:
-    pageSize: Maximum number of SecurityProfileGroups to return per call.
-    pageToken: The value returned by the last
-      `ListSecurityProfileGroupsResponse` Indicates that this is a
-      continuation of a prior `ListSecurityProfileGroups` call, and that the
-      system should return the next page of data.
-    parent: Required. The project or organization and location from which the
-      SecurityProfileGroups should be listed, specified in the format
-      `projects|organizations/*/locations/{location}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfileGroupsPatchRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfileGroupsPatchRequest
-  object.
-
-  Fields:
-    name: Immutable. Identifier. Name of the SecurityProfileGroup resource. It
-      matches pattern `projects|organizations/*/locations/{location}/securityP
-      rofileGroups/{security_profile_group}`.
-    securityProfileGroup: A SecurityProfileGroup resource to be passed as the
-      request body.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the SecurityProfileGroup resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask.
-  """
-
-  name = _messages.StringField(1, required=True)
-  securityProfileGroup = _messages.MessageField('SecurityProfileGroup', 2)
-  updateMask = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsSecurityProfilesCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfilesCreateRequest object.
-
-  Fields:
-    parent: Required. The parent resource of the SecurityProfile. Must be in
-      the format `projects|organizations/*/locations/{location}`.
-    securityProfile: A SecurityProfile resource to be passed as the request
-      body.
-    securityProfileId: Required. Short name of the SecurityProfile resource to
-      be created. This value should be 1-63 characters long, containing only
-      letters, numbers, hyphens, and underscores, and should not start with a
-      number. E.g. "security_profile1".
-  """
-
-  parent = _messages.StringField(1, required=True)
-  securityProfile = _messages.MessageField('SecurityProfile', 2)
-  securityProfileId = _messages.StringField(3)
-
-
-class NetworksecurityProjectsLocationsSecurityProfilesDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfilesDeleteRequest object.
-
-  Fields:
-    etag: Optional. If client provided etag is out of date, delete will return
-      FAILED_PRECONDITION error.
-    name: Required. A name of the SecurityProfile to delete. Must be in the
-      format `projects|organizations/*/locations/{location}/securityProfiles/{
-      security_profile_id}`.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfilesGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfilesGetRequest object.
-
-  Fields:
-    name: Required. A name of the SecurityProfile to get. Must be in the
-      format `projects|organizations/*/locations/{location}/securityProfiles/{
-      security_profile_id}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfilesListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfilesListRequest object.
-
-  Fields:
-    pageSize: Maximum number of SecurityProfiles to return per call.
-    pageToken: The value returned by the last `ListSecurityProfilesResponse`
-      Indicates that this is a continuation of a prior `ListSecurityProfiles`
-      call, and that the system should return the next page of data.
-    parent: Required. The project or organization and location from which the
-      SecurityProfiles should be listed, specified in the format
-      `projects|organizations/*/locations/{location}`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworksecurityProjectsLocationsSecurityProfilesPatchRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSecurityProfilesPatchRequest object.
-
-  Fields:
-    name: Immutable. Identifier. Name of the SecurityProfile resource. It
-      matches pattern `projects|organizations/*/locations/{location}/securityP
-      rofiles/{security_profile}`.
-    securityProfile: A SecurityProfile resource to be passed as the request
-      body.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the SecurityProfile resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask.
-  """
-
-  name = _messages.StringField(1, required=True)
-  securityProfile = _messages.MessageField('SecurityProfile', 2)
-  updateMask = _messages.StringField(3)
 
 
 class NetworksecurityProjectsLocationsServerTlsPoliciesCreateRequest(_messages.Message):
@@ -4938,67 +3234,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class Reference(_messages.Message):
-  r"""Represents a reference to a resource.
-
-  Messages:
-    DetailsValueListEntry: A DetailsValueListEntry object.
-
-  Fields:
-    createTime: Output only. The creation time.
-    details: Details of the reference type with no implied semantics.
-      Cumulative size of the field must not be more than 1KiB.
-    name: Output only. Relative resource name of the reference. Includes
-      target resource as a parent and reference uid
-      `{target_resource}/references/{reference_id}`. For example,
-      `projects/{my-project}/locations/{location}/instances/{my-
-      instance}/references/{xyz}`.
-    sourceResource: Required. Full resource name of the resource which refers
-      the target resource. For example:
-      //tpu.googleapis.com/projects/myproject/nodes/mynode
-    targetUniqueId: Output only. The unique_id of the target resource. Example
-      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
-      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
-      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
-    type: Required. Type of the reference. A service might impose limits on
-      number of references of a specific type. Note: It's recommended to use
-      CAPITALS_WITH_UNDERSCORES style for a type name.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DetailsValueListEntry(_messages.Message):
-    r"""A DetailsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a DetailsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DetailsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
-  name = _messages.StringField(3)
-  sourceResource = _messages.StringField(4)
-  targetUniqueId = _messages.StringField(5)
-  type = _messages.StringField(6)
-
-
 class RemoveAddressGroupItemsRequest(_messages.Message):
   r"""Request used by the RemoveAddressGroupItems method.
 
@@ -5042,7 +3277,7 @@ class Rule(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 9
+  ProfileTypes. Next ID: 10
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -5116,7 +3351,7 @@ class SecurityProfile(_messages.Message):
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 8
+  ProfileTypes. Next ID: 9
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
@@ -5181,16 +3416,6 @@ class ServerTlsPolicy(_messages.Message):
   TargetHttpsProxy with Traffic Director `INTERNAL_SELF_MANAGED` load
   balancing scheme.
 
-  Enums:
-    MaxTlsVersionValueValuesEnum: Optional. TLS max version used only for
-      Envoy. If not specified, Envoy will use default version. Envoy latest: h
-      ttps://www.envoyproxy.io/docs/envoy/latest/api-
-      v3/extensions/transport_sockets/tls/v3/common.proto
-    MinTlsVersionValueValuesEnum: Optional. TLS min version used only for
-      Envoy. If not specified, Envoy will use default version. Envoy latest: h
-      ttps://www.envoyproxy.io/docs/envoy/latest/api-
-      v3/extensions/transport_sockets/tls/v3/common.proto
-
   Messages:
     LabelsValue: Set of label tags associated with the resource.
 
@@ -5205,27 +3430,9 @@ class ServerTlsPolicy(_messages.Message):
       confirm compatibility. Consider using it if you wish to upgrade in place
       your deployment to TLS while having mixed TLS and non-TLS traffic
       reaching port :80.
-    cipherSuites: Optional. TLS custom cipher suites used only in CSM.
-      Following ciphers are supported: ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-
-      RSA-AES128-GCM-SHA256 ECDHE-ECDSA-AES256-GCM-SHA384 ECDHE-RSA-
-      AES256-GCM-SHA384 ECDHE-ECDSA-CHACHA20-POLY1305 ECDHE-RSA-
-      CHACHA20-POLY1305 ECDHE-ECDSA-AES128-SHA ECDHE-RSA-AES128-SHA ECDHE-
-      ECDSA-AES256-SHA ECDHE-RSA-AES256-SHA AES128-GCM-SHA256 AES256-GCM-
-      SHA384 AES128-SHA AES256-SHA DES-CBC3-SHA
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
-    internalCaller: Optional. A flag set to identify internal controllers
-      Setting this will trigger a P4SA check to validate the caller is from an
-      allowlisted service's P4SA even if other optional fields are unset.
     labels: Set of label tags associated with the resource.
-    maxTlsVersion: Optional. TLS max version used only for Envoy. If not
-      specified, Envoy will use default version. Envoy latest: https://www.env
-      oyproxy.io/docs/envoy/latest/api-
-      v3/extensions/transport_sockets/tls/v3/common.proto
-    minTlsVersion: Optional. TLS min version used only for Envoy. If not
-      specified, Envoy will use default version. Envoy latest: https://www.env
-      oyproxy.io/docs/envoy/latest/api-
-      v3/extensions/transport_sockets/tls/v3/common.proto
     mtlsPolicy: This field is required if the policy is used with external
       HTTPS load balancers. This field can be empty for Traffic Director.
       Defines a mechanism to provision peer validation certificates for peer
@@ -5241,47 +3448,8 @@ class ServerTlsPolicy(_messages.Message):
       provision server identity (public and private keys). Cannot be combined
       with `allow_open` as a permissive mode that allows both plain text and
       TLS is not supported.
-    subjectAltNames: Optional. Server side validation for client SAN, only
-      used in CSM. If not specified, the client SAN will not be checked by the
-      server.
     updateTime: Output only. The timestamp when the resource was updated.
   """
-
-  class MaxTlsVersionValueValuesEnum(_messages.Enum):
-    r"""Optional. TLS max version used only for Envoy. If not specified, Envoy
-    will use default version. Envoy latest: https://www.envoyproxy.io/docs/env
-    oy/latest/api-v3/extensions/transport_sockets/tls/v3/common.proto
-
-    Values:
-      TLS_VERSION_UNSPECIFIED: <no description>
-      TLS_V1_0: <no description>
-      TLS_V1_1: <no description>
-      TLS_V1_2: <no description>
-      TLS_V1_3: <no description>
-    """
-    TLS_VERSION_UNSPECIFIED = 0
-    TLS_V1_0 = 1
-    TLS_V1_1 = 2
-    TLS_V1_2 = 3
-    TLS_V1_3 = 4
-
-  class MinTlsVersionValueValuesEnum(_messages.Enum):
-    r"""Optional. TLS min version used only for Envoy. If not specified, Envoy
-    will use default version. Envoy latest: https://www.envoyproxy.io/docs/env
-    oy/latest/api-v3/extensions/transport_sockets/tls/v3/common.proto
-
-    Values:
-      TLS_VERSION_UNSPECIFIED: <no description>
-      TLS_V1_0: <no description>
-      TLS_V1_1: <no description>
-      TLS_V1_2: <no description>
-      TLS_V1_3: <no description>
-    """
-    TLS_VERSION_UNSPECIFIED = 0
-    TLS_V1_0 = 1
-    TLS_V1_1 = 2
-    TLS_V1_2 = 3
-    TLS_V1_3 = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -5308,18 +3476,13 @@ class ServerTlsPolicy(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allowOpen = _messages.BooleanField(1)
-  cipherSuites = _messages.StringField(2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  internalCaller = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  maxTlsVersion = _messages.EnumField('MaxTlsVersionValueValuesEnum', 7)
-  minTlsVersion = _messages.EnumField('MinTlsVersionValueValuesEnum', 8)
-  mtlsPolicy = _messages.MessageField('MTLSPolicy', 9)
-  name = _messages.StringField(10)
-  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 11)
-  subjectAltNames = _messages.StringField(12, repeated=True)
-  updateTime = _messages.StringField(13)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  mtlsPolicy = _messages.MessageField('MTLSPolicy', 5)
+  name = _messages.StringField(6)
+  serverCertificate = _messages.MessageField('GoogleCloudNetworksecurityV1beta1CertificateProvider', 7)
+  updateTime = _messages.StringField(8)
 
 
 class SeverityOverride(_messages.Message):
@@ -5524,16 +3687,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class ThirdPartyEndpointSettings(_messages.Message):
-  r"""Next ID: 2.
-
-  Fields:
-    targetFirewallAttachment: Optional. URL of the target firewall attachment.
-  """
-
-  targetFirewallAttachment = _messages.StringField(1)
 
 
 class ThreatOverride(_messages.Message):
@@ -5783,35 +3936,6 @@ class ValidationCA(_messages.Message):
   grpcEndpoint = _messages.MessageField('GoogleCloudNetworksecurityV1beta1GrpcEndpoint', 2)
 
 
-class WorkloadContextSelector(_messages.Message):
-  r"""Determines which workloads a policy is applicable for.
-
-  Fields:
-    metadataSelectors: Required. A map of metadata label values used to select
-      workloads. If multiple MetadataSelectors are provided, all
-      MetadataSelectors must match in order for the policy to be applied to
-      this workload. Therefore these selectors must be combined in an AND
-      fashion.
-  """
-
-  metadataSelectors = _messages.MessageField('WorkloadContextSelectorMetadataSelector', 1, repeated=True)
-
-
-class WorkloadContextSelectorMetadataSelector(_messages.Message):
-  r"""This message type exists as opposed to using a map to support additional
-  fields in the future such as priority.
-
-  Fields:
-    key: Required. The metadata field being selected on
-    value: Required. The value for this metadata field to be compared with
-  """
-
-  key = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-encoding.AddCustomJsonFieldMapping(
-    GoogleIamV1Rule, 'in_', 'in')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

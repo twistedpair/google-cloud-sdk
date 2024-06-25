@@ -2088,6 +2088,23 @@ def AddShowSqlNetworkArchitecture(parser):
   )
 
 
+def AddShowTransactionalLogStorageState(
+    parser, show_negated_in_help=False, hidden=True
+):
+  """Adds the `--show-transactional-log-storage-state` flag to the parser."""
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--show-transactional-log-storage-state',
+      required=False,
+      help=(
+          'Show the storage location of the transactional logs used for'
+          ' point-in-time recovery (PITR) by the instance.'
+      ),
+      hidden=hidden,
+      **kwargs
+  )
+
+
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'
 
 INSTANCES_FORMAT_COLUMNS = [
@@ -2146,6 +2163,33 @@ def GetInstanceListFormatForNetworkArchitectureUpgrade():
   table_format = '{} table({})'.format(
       INSTANCES_USERLABELS_FORMAT,
       ','.join(INSTANCES_FORMAT_COLUMNS_WITH_NETWORK_ARCHITECTURE),
+  )
+
+  return table_format
+
+INSTANCES_FORMAT_COLUMNS_WITH_TRANSACTIONAL_LOG_STORAGE_STATE = [
+    'name',
+    'databaseVersion',
+    'firstof(gceZone,region):label=LOCATION',
+    'settings.tier',
+    (
+        'ip_addresses.filter("type:PRIMARY").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIMARY_ADDRESS'
+    ),
+    (
+        'ip_addresses.filter("type:PRIVATE").*extract(ip_address).flatten()'
+        '.yesno(no="-"):label=PRIVATE_ADDRESS'
+    ),
+    'state:label=STATUS',
+    'settings.backupConfiguration.transactionalLogStorageState:label=TRANSACTIONAL_LOG_STORAGE_STATE',
+]
+
+
+def GetInstanceListFormatForTransactionalLogStorageSwitch():
+  """Returns the table format for listing instances with the storage location of their transactional logs."""
+  table_format = '{} table({})'.format(
+      INSTANCES_USERLABELS_FORMAT,
+      ','.join(INSTANCES_FORMAT_COLUMNS_WITH_TRANSACTIONAL_LOG_STORAGE_STATE),
   )
 
   return table_format
@@ -2538,6 +2582,19 @@ def AddEnableGoogleMLIntegration(parser, hidden=False):
       help=(
           'Enable Vertex AI integration for Google Cloud SQL. '
           'Currently, only PostgreSQL is supported.'
+      ),
+      action=arg_parsers.StoreTrueFalseAction,
+  )
+
+
+def AddEnableDataplexIntegration(parser):
+  """Adds --enable-dataplex-integration flag."""
+  parser.add_argument(
+      '--enable-dataplex-integration',
+      required=False,
+      hidden=True,
+      help=(
+          'Enable Dataplex integration for Google Cloud SQL.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
   )

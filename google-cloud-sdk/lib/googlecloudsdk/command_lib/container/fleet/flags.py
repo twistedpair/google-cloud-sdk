@@ -446,6 +446,17 @@ class FleetFlagParser:
     )
 
     if self.args.compliance is not None:
+      if self.args.compliance not in {'enabled', 'disabled'}:
+        raise errors.InvalidComplianceMode(self.args.compliance)
+
+      if (
+          self.args.compliance == 'disabled'
+          and self.args.compliance_standards is not None
+      ):
+        raise errors.ConfiguringDisabledCompliance(
+            'Cannot configure compliance standards when disabling Compliance.'
+        )
+
       if self.args.compliance == 'enabled':
         cfg.mode = (
             self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
@@ -454,8 +465,6 @@ class FleetFlagParser:
         cfg.mode = (
             self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
         )
-      else:
-        raise errors.InvalidComplianceMode(self.args.compliance)
 
     if self.args.compliance_standards is not None:
       cfg.complianceStandards = [

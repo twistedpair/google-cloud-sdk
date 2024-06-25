@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import os
+import re
 import time
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -270,6 +271,10 @@ COMPLIANCE_DISABLED_CONFIGURATION = """\
 Cannot specify --compliance-standards with --compliance=disabled
 """
 
+COMPLIANCE_INVALID_STANDARDS_CONFIGURATION = """\
+Invalid value '{standards}' for --compliance-standards: must provide a list of standards separated by commas.
+"""
+
 SECURITY_POSTURE_MODE_NOT_SUPPORTED = """\
 Invalid mode '{mode}' for '--security-posture' (must be one of 'disabled', 'standard', 'enterprise').
 """
@@ -284,6 +289,14 @@ Provided host maintenance interval type '{type}' is not supported.
 
 NODECONFIGDEFAULTS_READONLY_PORT_NOT_SUPPORTED = """\
 nodePoolDefaults.nodeKubeletConfig is not supported on GKE Autopilot clusters.
+"""
+
+ADDITIONAL_SUBNETWORKS_NOT_FOUND = """\
+Can not remove subnetwork {subnetwork}: not found in additional subnetworks
+"""
+
+ADDITIONAL_SUBNETWORKS_POD_RANG_ENOT_FOUND = """\
+Can not remove pod ipv4 range {range}: not found in additional subnetworks
 """
 
 MAX_NODES_PER_POOL = 2000
@@ -399,6 +412,10 @@ PRIMARY_LOGS_OPTIONS = [
 ]
 PLACEMENT_OPTIONS = ['UNSPECIFIED', 'COMPACT']
 LOCATION_POLICY_OPTIONS = ['BALANCED', 'ANY']
+
+# gcloud-disable-gdu-domain
+SUBNETWORK_URL_PATTERN = (
+    r'^https://www.googleapis.com/compute/[a-z1-9_]+/(?P<resource>.*)$')
 
 
 def CheckResponse(response):
@@ -1134,6 +1151,8 @@ class UpdateClusterOptions(object):
       enable_ray_cluster_monitoring=None,
       enable_insecure_binding_system_authenticated=None,
       enable_insecure_binding_system_unauthenticated=None,
+      additional_ip_ranges=None,
+      remove_additional_ip_ranges=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1304,6 +1323,8 @@ class UpdateClusterOptions(object):
     self.enable_insecure_binding_system_unauthenticated = (
         enable_insecure_binding_system_unauthenticated
     )
+    self.additional_ip_ranges = additional_ip_ranges
+    self.remove_additional_ip_ranges = remove_additional_ip_ranges
 
 
 class SetMasterAuthOptions(object):
@@ -2425,7 +2446,7 @@ class APIAdapter(object):
         )
 
     if options.compliance_standards is not None:
-      # --compliance=disabled and --complaince-standards=a,b,c are mutually
+      # --compliance=disabled and --compliance-standards=a,b,c are mutually
       # exclusive.
       if options.compliance is not None and options.compliance.lower() == 'disabled':
         raise util.Error(
@@ -3895,27 +3916,58 @@ class APIAdapter(object):
         options.compliance is not None
         or options.compliance_standards is not None
     ):
-      compliance_config = self.messages.CompliancePostureConfig()
-      if options.compliance is not None:
-        if options.compliance.lower() == 'enabled':
-          compliance_config.mode = (
-              self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+      # --compliance=disabled and --compliance-standards=a,b,c are mutually
+      # exclusive.
+      if options.compliance == 'disabled' and options.compliance_standards:
+        raise util.Error(COMPLIANCE_DISABLED_CONFIGURATION)
+
+      # Desired configuration to set.
+      compliance_update = self.messages.CompliancePostureConfig()
+      # Current configuration, if any.
+      cluster = self.GetCluster(cluster_ref)
+
+      compliance_mode = (
+          options.compliance.lower() if options.compliance else None
+      )
+      if (
+          compliance_mode is None
+      ):  # If not provided, look for current configuration.
+        if cluster.compliancePostureConfig is not None:
+          compliance_update.mode = cluster.compliancePostureConfig.mode
+      elif compliance_mode == 'disabled':
+        compliance_update.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
+        )
+      elif compliance_mode == 'enabled':
+        compliance_update.mode = (
+            self.messages.CompliancePostureConfig.ModeValueValuesEnum.ENABLED
+        )
+      else:  # Invalid input.
+        raise util.Error(
+            COMPLIANCE_MODE_NOT_SUPPORTED.format(mode=options.compliance)
+        )
+
+      if options.compliance_standards is None:
+        # If not provided, look for current configuration.
+        if cluster.compliancePostureConfig is not None:
+          compliance_update.complianceStandards = (
+              cluster.compliancePostureConfig.complianceStandards
           )
-        elif options.compliance.lower() == 'disabled':
-          if options.compliance_standards is not None:
-            # --compliance=disabled and --compliance-standards=a,b,c is mutually
-            # exclusive.
-            raise util.Error(COMPLIANCE_DISABLED_CONFIGURATION)
-          compliance_config.mode = (
-              self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
-          )
-      if options.compliance_standards is not None:
-        compliance_config.complianceStandards = [
+        # Otherwise do nothing.
+      elif not options.compliance_standards:  # Empty input is invalid.
+        raise util.Error(
+            COMPLIANCE_INVALID_STANDARDS_CONFIGURATION.format(
+                standards=options.compliance_standards
+            )
+        )
+      else:  # If a list, build new standards configuration.
+        compliance_update.complianceStandards = [
             self.messages.ComplianceStandard(standard=standard)
             for standard in options.compliance_standards.split(',')
         ]
+
       update = self.messages.ClusterUpdate(
-          desiredCompliancePostureConfig=compliance_config
+          desiredCompliancePostureConfig=compliance_update
       )
 
     if options.enable_security_posture is not None:
@@ -4073,6 +4125,61 @@ class APIAdapter(object):
             options.enable_insecure_binding_system_unauthenticated
         )
       update = self.messages.ClusterUpdate(desiredRBACBindingConfig=confg)
+
+    if (
+        options.additional_ip_ranges is not None or
+        options.remove_additional_ip_ranges is not None
+    ):
+      cluster = self.GetCluster(cluster_ref)
+      desired_ip_ranges = {}
+      if cluster.ipAllocationPolicy:
+        config = cluster.ipAllocationPolicy.additionalIpRangesConfigs
+        if config:
+          for ip_range in config:
+            secondary_ranges = set(ip_range.podIpv4RangeNames)
+            desired_ip_ranges[ip_range.subnetwork] = secondary_ranges
+
+      if options.additional_ip_ranges is not None:
+        for ip_range in options.additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              ip_range['subnetwork'], cluster_ref.projectId, cluster_ref.zone)
+          secondary_ranges = (desired_ip_ranges[subnetwork]
+                              if subnetwork in desired_ip_ranges else set())
+          secondary_ranges.add(ip_range['pod-ipv4-range'])
+          desired_ip_ranges[subnetwork] = secondary_ranges
+
+      if options.remove_additional_ip_ranges is not None:
+        for ip_remove in options.remove_additional_ip_ranges:
+          subnetwork = SubnetworkNameToPath(
+              ip_remove['subnetwork'], cluster_ref.projectId, cluster_ref.zone)
+          if subnetwork not in desired_ip_ranges:
+            raise util.Error(ADDITIONAL_SUBNETWORKS_NOT_FOUND.format(
+                subnetwork=subnetwork))
+          if 'pod-ipv4-range' in ip_remove:
+            removed_range = ip_remove['pod-ipv4-range']
+            try:
+              desired_ip_ranges[subnetwork].remove(removed_range)
+              if not desired_ip_ranges[subnetwork]:
+                desired_ip_ranges.pop(subnetwork)
+            except KeyError:
+              raise util.Error(
+                  ADDITIONAL_SUBNETWORKS_POD_RANG_ENOT_FOUND.format(
+                      range=removed_range
+                  ))
+          else:
+            desired_ip_ranges.pop(subnetwork)
+
+      update = self.messages.ClusterUpdate(
+          desiredAdditionalIpRangesConfig=self.messages.DesiredAdditionalIPRangesConfig(
+              additionalIpRangesConfigs=[
+                  self.messages.AdditionalIPRangesConfig(
+                      subnetwork=subnetwork,
+                      podIpv4RangeNames=list(secondary_ranges),
+                  )
+                  for subnetwork, secondary_ranges in desired_ip_ranges.items()
+              ]
+          )
+      )
 
     return update
 
@@ -7502,6 +7609,23 @@ def ProjectLocationClusterNodePool(project, location, cluster, nodepool):
 
 def ProjectLocationOperation(project, location, operation):
   return ProjectLocation(project, location) + '/operations/' + operation
+
+
+def ProjectLocationSubnetwork(project, region, subnetwork):
+  return ('projects/' + project + '/regions/' + region  + '/subnetworks/' +
+          subnetwork)
+
+
+def SubnetworkNameToPath(subnetwork, project, zone):
+  match = re.match(SUBNETWORK_URL_PATTERN + '$', subnetwork)
+  if match:
+    subnetwork = match[1]
+  parts = subnetwork.split('/')
+  if (len(parts) == 6 and parts[0] == 'projects' and parts[2] == 'regions' and
+      parts[4] == 'subnetworks'):
+    return subnetwork
+  region = zone[:zone.rfind('-')]
+  return ProjectLocationSubnetwork(project, region, subnetwork)
 
 
 def NormalizeBinauthzEvaluationMode(evaluation_mode):

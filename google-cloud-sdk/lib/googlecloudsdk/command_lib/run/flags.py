@@ -1418,13 +1418,13 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
   )
 
 
-def AddScalingModeFlag(parser):
+def AddScalingModeFlag(parser, resource_kind='service'):
   """Add scaling mode flag."""
   parser.add_argument(
       '--scaling-mode',
       choices=_SCALING_MODES,
       help='The scaling mode to use for this resource.',
-      hidden=True,
+      hidden=resource_kind == 'service',
   )
 
 
@@ -2163,7 +2163,7 @@ def _GetWorkerScalingChanges(args):
   """Return the changes for engine-level scaling for Worker resources for the given args."""
   result = []
   # TODO(b/322180968): Once Worker API is ready, replace Service related
-  # references and switch max instance implementation to engine-level.
+  # references.
   if 'min_instances' in args and args.min_instances is not None:
     scale_value = args.min_instances
     if scale_value.restore_default or scale_value.instance_count == 0:
@@ -2179,20 +2179,19 @@ def _GetWorkerScalingChanges(args):
               str(scale_value.instance_count),
           )
       )
-  # Until Worker API is ready with engine-level max instance support,
-  # we go with version-level max scaling here.
   if 'max_instances' in args and args.max_instances is not None:
     scale_value = args.max_instances
     if scale_value.restore_default:
       result.append(
-          config_changes.DeleteTemplateAnnotationChange(
-              revision.MAX_SCALE_ANNOTATION
+          config_changes.DeleteAnnotationChange(
+              service.SERVICE_MAX_SCALE_ANNOTATION
           )
       )
     else:
       result.append(
-          config_changes.SetTemplateAnnotationChange(
-              revision.MAX_SCALE_ANNOTATION, str(scale_value.instance_count)
+          config_changes.SetAnnotationChange(
+              service.SERVICE_MAX_SCALE_ANNOTATION,
+              str(scale_value.instance_count),
           )
       )
   if 'max_surge' in args and args.max_surge is not None:

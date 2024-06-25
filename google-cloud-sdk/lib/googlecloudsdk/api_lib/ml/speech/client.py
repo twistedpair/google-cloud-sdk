@@ -19,13 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import contextlib
+import os
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.util import files
 from six.moves import urllib
+
 
 _API_NAME = 'speech'
 _API_VERSION = 'v2'
@@ -46,8 +51,9 @@ ENCODING_OPTIONS = frozenset(EXPLICIT_ENCODING_OPTIONS) | {'AUTO'}
 @contextlib.contextmanager
 def _OverrideEndpoint(override):
   """Context manager to override an API's endpoint overrides for a while."""
-  endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
-                              _API_NAME)
+  endpoint_property = getattr(
+      properties.VALUES.api_endpoint_overrides, _API_NAME
+  )
   old_endpoint = endpoint_property.Get()
   try:
     endpoint_property.Set(override)
@@ -133,28 +139,41 @@ class SpeechV2Client(object):
   ):
     """Call API CreateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer(
-        displayName=display_name, model=model, languageCodes=language_codes)
+        displayName=display_name, model=model, languageCodes=language_codes
+    )
     recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
     recognizer.defaultRecognitionConfig.features = (
-        self._messages.RecognitionFeatures())
+        self._messages.RecognitionFeatures()
+    )
     recognizer.defaultRecognitionConfig.features.profanityFilter = (
-        profanity_filter)
+        profanity_filter
+    )
     recognizer.defaultRecognitionConfig.features.enableWordTimeOffsets = (
-        enable_word_time_offsets)
+        enable_word_time_offsets
+    )
     recognizer.defaultRecognitionConfig.features.enableWordConfidence = (
-        enable_word_confidence)
+        enable_word_confidence
+    )
     recognizer.defaultRecognitionConfig.features.enableAutomaticPunctuation = (
-        enable_automatic_punctuation)
+        enable_automatic_punctuation
+    )
     recognizer.defaultRecognitionConfig.features.enableSpokenPunctuation = (
-        enable_spoken_punctuation)
+        enable_spoken_punctuation
+    )
     recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = (
-        enable_spoken_emojis)
+        enable_spoken_emojis
+    )
 
     if min_speaker_count is not None and max_speaker_count is not None:
-      recognizer.defaultRecognitionConfig.features.diarizationConfig = self._messages.SpeakerDiarizationConfig(
+      recognizer.defaultRecognitionConfig.features.diarizationConfig = (
+          self._messages.SpeakerDiarizationConfig()
       )
-      recognizer.defaultRecognitionConfig.features.diarizationConfig.minSpeakerCount = min_speaker_count
-      recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = max_speaker_count
+      recognizer.defaultRecognitionConfig.features.diarizationConfig.minSpeakerCount = (
+          min_speaker_count
+      )
+      recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = (
+          max_speaker_count
+      )
 
     recognizer, _ = self._MatchEncoding(recognizer, encoding)
     if encoding is not None and encoding != 'AUTO':
@@ -167,27 +186,35 @@ class SpeechV2Client(object):
 
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent(
-            parent_collection='speech.projects.locations').RelativeName(),
+            parent_collection='speech.projects.locations'
+        ).RelativeName(),
         recognizerId=resource.Name(),
-        recognizer=recognizer)
+        recognizer=recognizer,
+    )
     return self._RecognizerServiceForLocation(
-        location=resource.Parent().Name()).Create(request)
+        location=resource.Parent().Name()
+    ).Create(request)
 
   def GetRecognizer(self, resource):
     request = self._messages.SpeechProjectsLocationsRecognizersGetRequest(
-        name=resource.RelativeName())
+        name=resource.RelativeName()
+    )
     return self._RecognizerServiceForLocation(
-        location=resource.Parent().Name()).Get(request)
+        location=resource.Parent().Name()
+    ).Get(request)
 
   def DeleteRecognizer(self, resource):
     request = self._messages.SpeechProjectsLocationsRecognizersDeleteRequest(
-        name=resource.RelativeName())
+        name=resource.RelativeName()
+    )
     return self._RecognizerServiceForLocation(
-        location=resource.Parent().Name()).Delete(request)
+        location=resource.Parent().Name()
+    ).Delete(request)
 
   def ListRecognizers(self, location_resource, limit=None, page_size=None):
     request = self._messages.SpeechProjectsLocationsRecognizersListRequest(
-        parent=location_resource.RelativeName())
+        parent=location_resource.RelativeName()
+    )
     if page_size:
       request.page_size = page_size
     return list_pager.YieldFromList(
@@ -196,7 +223,8 @@ class SpeechV2Client(object):
         limit=limit,
         batch_size_attribute='pageSize',
         batch_size=page_size,
-        field='recognizers')
+        field='recognizers',
+    )
 
   def UpdateRecognizer(
       self,
@@ -233,7 +261,8 @@ class SpeechV2Client(object):
       recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
     if recognizer.defaultRecognitionConfig.features is None:
       recognizer.defaultRecognitionConfig.features = (
-          self._messages.RecognitionFeatures())
+          self._messages.RecognitionFeatures()
+      )
     features = recognizer.defaultRecognitionConfig.features
 
     if profanity_filter is not None:
@@ -243,30 +272,36 @@ class SpeechV2Client(object):
     if enable_word_time_offsets is not None:
       features.enableWordTimeOffsets = enable_word_time_offsets
       update_mask.append(
-          'default_recognition_config.features.enable_word_time_offsets')
+          'default_recognition_config.features.enable_word_time_offsets'
+      )
 
     if enable_word_confidence is not None:
       features.enableWordConfidence = enable_word_confidence
       update_mask.append(
-          'default_recognition_config.features.enable_word_confidence')
+          'default_recognition_config.features.enable_word_confidence'
+      )
 
     if enable_automatic_punctuation is not None:
       features.enableAutomaticPunctuation = enable_automatic_punctuation
       update_mask.append(
-          'default_recognition_config.features.enable_automatic_punctuation')
+          'default_recognition_config.features.enable_automatic_punctuation'
+      )
 
     if enable_spoken_punctuation is not None:
       features.enableSpokenPunctuation = enable_spoken_punctuation
       update_mask.append(
-          'default_recognition_config.features.enable_spoken_punctuation')
+          'default_recognition_config.features.enable_spoken_punctuation'
+      )
 
     if enable_spoken_emojis is not None:
       features.enableSpokenEmojis = enable_spoken_emojis
       update_mask.append(
-          'default_recognition_config.features.enable_spoken_emojis')
+          'default_recognition_config.features.enable_spoken_emojis'
+      )
 
-    if features.diarizationConfig is None and (min_speaker_count is not None or
-                                               max_speaker_count is not None):
+    if features.diarizationConfig is None and (
+        min_speaker_count is not None or max_speaker_count is not None
+    ):
       features.diarizationConfig = self._messages.SpeakerDiarizationConfig()
 
     if min_speaker_count is not None:
@@ -312,14 +347,84 @@ class SpeechV2Client(object):
     request = self._messages.SpeechProjectsLocationsRecognizersPatchRequest(
         name=resource.RelativeName(),
         recognizer=recognizer,
-        updateMask=','.join(update_mask))
+        updateMask=','.join(update_mask),
+    )
     return self._RecognizerServiceForLocation(
-        location=resource.Parent().Name()).Patch(request)
+        location=resource.Parent().Name()
+    ).Patch(request)
+
+  def RunShort(
+      self,
+      resource,
+      audio,
+      model,
+      language_code,
+      encoding,
+      sample_rate,
+      audio_channel_count,
+  ):
+    """Call API Recognize method with provided arguments."""
+    recognize_req = self._messages.RecognizeRequest()
+    if os.path.isfile(audio):
+      recognize_req.content = files.ReadBinaryFileContents(audio)
+    elif storage_util.ObjectReference.IsStorageUrl(audio):
+      recognize_req.uri = audio
+
+    recognizer_service = self._RecognizerServiceForLocation(
+        location=resource.Parent().Name()
+    )
+
+    recognize_req.config = self._messages.RecognitionConfig()
+
+    if encoding is not None:
+      if encoding == 'AUTO':
+        recognize_req.config.autoDecodingConfig = (
+            self._messages.AutoDetectDecodingConfig()
+        )
+
+      elif encoding in EXPLICIT_ENCODING_OPTIONS:
+        recognize_req.config.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+
+        recognize_req.config.explicitDecodingConfig.encoding = (
+            self._encoding_to_message[encoding]
+        )
+
+        recognize_req.config.explicitDecodingConfig.sampleRateHertz = (
+            sample_rate
+        )
+
+        recognize_req.config.explicitDecodingConfig.audioChannelCount = (
+            audio_channel_count
+        )
+      else:
+        raise exceptions.InvalidArgumentException(
+            '--encoding',
+            '[--encoding] must be set to LINEAR16, MULAW, ALAW, or AUTO.',
+        )
+    else:
+      recognize_req.config.autoDecodingConfig = (
+          self._messages.AutoDetectDecodingConfig()
+      )
+
+    if model is not None:
+      recognize_req.config.model = model
+
+    if language_code is not None:
+      recognize_req.config.languageCodes = [language_code]
+
+    request = self._messages.SpeechProjectsLocationsRecognizersRecognizeRequest(
+        recognizeRequest=recognize_req,
+        recognizer=resource.RelativeName(),
+    )
+    return recognizer_service.Recognize(request)
 
   def GetOperationRef(self, operation):
     """Converts an Operation to a Resource."""
     return self._resource_parser.ParseRelativeName(
-        operation.name, 'speech.projects.locations.operations')
+        operation.name, 'speech.projects.locations.operations'
+    )
 
   def WaitForRecognizerOperation(self, location, operation_ref, message):
     """Waits for a Recognizer operation to complete.
@@ -338,14 +443,16 @@ class SpeechV2Client(object):
     """
     poller = waiter.CloudOperationPoller(
         result_service=self._RecognizerServiceForLocation(location),
-        operation_service=self._OperationsServiceForLocation(location))
+        operation_service=self._OperationsServiceForLocation(location),
+    )
 
     return waiter.WaitFor(
         poller=poller,
         operation_ref=operation_ref,
         message=message,
         pre_start_sleep_ms=100,
-        max_wait_ms=20000)
+        max_wait_ms=20000,
+    )
 
   def GetLocation(self, location_resource):
     request = self._messages.SpeechProjectsLocationsGetRequest(

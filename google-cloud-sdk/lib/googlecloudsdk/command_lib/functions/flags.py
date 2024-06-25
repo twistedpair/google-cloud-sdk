@@ -1144,14 +1144,22 @@ def _ValidateJsonOrRaiseError(data, arg_name):
 
 
 def AddBuildServiceAccountFlag(parser):
-  parser.add_argument(
+  """Adds flags for configuring the build service account for Cloud Function."""
+  mutex_group = parser.add_group(mutex=True)
+  mutex_group.add_argument(
       '--build-service-account',
       help="""\
           IAM service account whose credentials will be used for the build step.
-          Must be of the format projects/${PROJECT_ID}/serviceAccounts/${ACCOUNT_EMAIL_ADDRESS}
-          or {ACCOUNT_EMAIL_ADDRESS}.
+          Must be of the format projects/${PROJECT_ID}/serviceAccounts/${ACCOUNT_EMAIL_ADDRESS}.
 
           If not provided, the function will use the project's default
           service account for Cloud Build.
+      """,
+  )
+  mutex_group.add_argument(
+      '--clear-build-service-account',
+      action='store_true',
+      help="""\
+          Clears the build service account field.
       """,
   )

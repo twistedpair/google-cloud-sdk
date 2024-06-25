@@ -161,3 +161,67 @@ def AddAllFlagsToParser(parser, create=False):
           Supported for LINEAR16, MULAW, ALAW.
           """,
   )
+
+
+def AddRunShortFlagsToParser(parser):
+  """Parses all flags for v2 STT API for command run-short."""
+  AddRecognizerArgToParser(parser)
+  parser.add_argument(
+      '--audio',
+      required=True,
+      help=(
+          'Location of the audio file to transcribe. '
+          'Must be a audio data bytes, local file, or Google Cloud Storage URL '
+          '(in the format gs://bucket/object).'
+      ),
+  )
+  parser.add_argument(
+      '--model',
+      help="""\
+          Model to use for recognition requests. Select the
+      model best suited to your domain to get best results. Guidance for
+      choosing which model to use can be found in the [Transcription Models
+      Documentation](https://cloud.google.com/speech-to-
+      text/v2/docs/transcription-model) and the models supported in each
+      region can be found in the [Table Of Supported
+      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
+      supported-languages).
+          """,
+  )
+  parser.add_argument(
+      '--language-codes',
+      help="""\
+          Language of the supplied audio as a
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
+      Language tags are normalized to BCP-47 before they are used eg "en-us"
+      becomes "en-US". Supported languages for each model are listed in the
+      [Table of Supported Models](https://cloud.google.com/speech-to-
+      text/v2/docs/speech-to-text-supported-languages). If additional
+      languages are provided, recognition result will contain recognition in
+      the most likely language detected. The recognition result will include
+      the language tag of the language detected in the audio.
+          """,
+  )
+  parser.add_argument(
+      '--encoding',
+      help="""\
+          Encoding format of the provided audio. For headerless formats, must be set to `LINEAR16`, `MULAW,` or `ALAW`. For other formats, set to `AUTO`. Overrides the recognizer configuration if present, else uses recognizer encoding.
+          """,
+  )
+  parser.add_argument(
+      '--sample-rate',
+      type=arg_parsers.BoundedInt(8000, 48000),
+      help="""\
+          Sample rate in Hertz of the audio data sent for recognition.
+          Required if --encoding flag is specified and is not AUTO.
+          """,
+  )
+  parser.add_argument(
+      '--audio-channel-count',
+      type=arg_parsers.BoundedInt(1, 8),
+      help="""\
+          Number of channels present in the audio data sent for recognition.
+          Supported for LINEAR16, MULAW, ALAW.
+          Required if --encoding flag is specified and is not AUTO.
+          """,
+  )

@@ -18,13 +18,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.network_connectivity import util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+
 
 GLOBAL_ARGUMENT = '--global'
 REGION_ARGUMENT = '--region'
@@ -58,6 +62,53 @@ def AddIncludeExportRangesFlag(parser, hide_include_export_ranges_flag):
   )
 
 
+def GetCapacityArg(messages):
+  return arg_utils.ChoiceEnumMapper(
+      arg_name='--capacity',
+      message_enum=messages.Gateway.CapacityValueValuesEnum,
+      custom_mappings={
+          'CAPACITY_1_GBPS': ('1g', 'Gateway will have capacity of 1 Gbps'),
+          'CAPACITY_5_GBPS': ('5g', 'Gateway will have capacity of 5 Gbps'),
+          'CAPACITY_10_GBPS': ('10g', 'Gateway will have capacity of 10 Gbps'),
+          'CAPACITY_25_GBPS': ('25g', 'Gateway will have capacity of 25 Gbps'),
+          'CAPACITY_50_GBPS': ('50g', 'Gateway will have capacity of 50 Gbps'),
+          'CAPACITY_100_GBPS': (
+              '100g',
+              'Gateway will have capacity of 100 Gbps',
+          ),
+      },
+      help_str='Set the capacity of the gateway in Gbps.',
+      required=True,
+  )
+
+
+def AddCapacityFlag(messages, parser):
+  GetCapacityArg(messages).choice_arg.AddToParser(parser)
+
+
+def AddIpRangeReservationsFlag(parser):
+  """Adds the --ip-range-reservation argument to the given parser."""
+  parser.add_argument(
+      '--ip-range-reservations',
+      required=True,
+      type=arg_parsers.ArgList(),
+      default=[],
+      metavar='CIDR_RANGE',
+      help="""The IP range reservation for the spoke.""",
+  )
+
+
+def AddLandingNetworkFlag(parser):
+  """Adds the --landing-network argument to the given parser."""
+  # TODO: b/233653552 - Parse this with a resource argument.
+  parser.add_argument(
+      '--landing-network',
+      required=True,
+      help="""The landing network for the spoke. The network must already
+      exist.""",
+  )
+
+
 def AddAsyncFlag(parser):
   """Add the --async argument to the given parser."""
   base.ASYNC_FLAG.AddToParser(parser)
@@ -80,17 +131,29 @@ def AddSpokeFlag(parser, help_text):
       help=help_text)
 
 
-def AddGroupFlag(parser):
+def AddGroupFlag(parser, required=False):
   """Adds the --group argument to the given parser."""
   # TODO(b/233653552) Parse this with a resouce argument.
-  parser.add_argument(
-      '--group',
-      required=False,
-      hidden=True,
-      help=(
-          'Group that the spoke will be part of. The group must already exist.'
-      ),
-  )
+  if required:
+    parser.add_argument(
+        '--group',
+        required=True,
+        hidden=False,
+        help=(
+            'Group that the spoke will be part of. The group must already'
+            ' exist.'
+        ),
+    )
+  else:
+    parser.add_argument(
+        '--group',
+        required=False,
+        hidden=True,
+        help=(
+            'Group that the spoke will be part of. The group must already'
+            ' exist.'
+        ),
+    )
 
 
 def AddNetworkFlag(parser):
@@ -148,16 +211,15 @@ def AddGlobalFlag(parser, hidden):
       action=util.StoreGlobalAction)
 
 
-def AddRegionFlag(parser, supports_region_wildcard, hidden):
+def AddRegionFlag(parser, supports_region_wildcard, hidden, required):
   """Add the --region argument to the given parser."""
   region_help_text = """ \
         A Google Cloud region. To see the names of regions, see [Viewing a list of available regions](https://cloud.google.com/compute/docs/regions-zones/viewing-regions-zones#viewing_a_list_of_available_regions)."""  # pylint: disable=line-too-long
   if supports_region_wildcard:
     region_help_text += ' Use ``-`` to specify all regions.'
   parser.add_argument(
-      REGION_ARGUMENT,
-      hidden=hidden,
-      help=region_help_text)
+      REGION_ARGUMENT, hidden=hidden, required=required, help=region_help_text
+  )
 
 
 def AddRegionGroup(parser,
@@ -167,7 +229,9 @@ def AddRegionGroup(parser,
   """Add a group which contains the global and region arguments to the given parser."""
   region_group = parser.add_group(required=False, mutex=True)
   AddGlobalFlag(region_group, hide_global_arg)
-  AddRegionFlag(region_group, supports_region_wildcard, hide_region_arg)
+  AddRegionFlag(
+      region_group, supports_region_wildcard, hide_region_arg, required=False
+  )
 
 
 def AddSpokeLocationsFlag(parser):
@@ -293,19 +357,36 @@ def GetRegionResourceSpec(location_arguments):
       'networkconnectivity.projects.locations',
       resource_name='region',
       locationsId=LocationAttributeConfig(
-          location_arguments, region_resource_command=True),
+          location_arguments, region_resource_command=True
+      ),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
-def GetResourceLocationArguments(global_spoke_command):
-  if not global_spoke_command:
-    return [GLOBAL_ARGUMENT, REGION_ARGUMENT]
-  else:
-    return [GLOBAL_ARGUMENT]
+def GetResourceLocationArguments(resource_location_type):
+  mapping = {
+      ResourceLocationType.GLOBAL_ONLY: [GLOBAL_ARGUMENT],
+      ResourceLocationType.REGION_ONLY: [REGION_ARGUMENT],
+      ResourceLocationType.REGION_AND_GLOBAL: [
+          GLOBAL_ARGUMENT,
+          REGION_ARGUMENT,
+      ],
+  }
+  return mapping[resource_location_type]
 
 
-def AddSpokeResourceArg(parser, verb, global_spoke_command=False):
+@enum.unique
+class ResourceLocationType(enum.Enum):
+  """Type of locations supported by a resource."""
+  GLOBAL_ONLY = enum.auto()
+  REGION_ONLY = enum.auto()
+  REGION_AND_GLOBAL = enum.auto()
+
+
+def AddSpokeResourceArg(
+    parser, verb, resource_location_type=ResourceLocationType.REGION_AND_GLOBAL
+):
   """Add a resource argument for a spoke.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -313,10 +394,10 @@ def AddSpokeResourceArg(parser, verb, global_spoke_command=False):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    global_spoke_command: bool, if the spoke resource arg is for a VPC
-      spoke-specific command.
+    resource_location_type: ResourceLocationType, the type of locations
+      supported by the resource.
   """
-  location_arguments = GetResourceLocationArguments(global_spoke_command)
+  location_arguments = GetResourceLocationArguments(resource_location_type)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='spoke',
       concept_spec=GetSpokeResourceSpec(location_arguments),
@@ -327,7 +408,9 @@ def AddSpokeResourceArg(parser, verb, global_spoke_command=False):
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddRegionResourceArg(parser, verb, global_spoke_command=False):
+def AddRegionResourceArg(
+    parser, verb, resource_location_type=ResourceLocationType.REGION_AND_GLOBAL
+):
   """Add a resource argument for a region.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -335,11 +418,11 @@ def AddRegionResourceArg(parser, verb, global_spoke_command=False):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    global_spoke_command: bool, if the spoke resource arg is for a VPC
-      spoke-specific command.
+    resource_location_type: ResourceLocationType, the type of locations
+      supported by the resource.
   """
 
-  location_arguments = GetResourceLocationArguments(global_spoke_command)
+  location_arguments = GetResourceLocationArguments(resource_location_type)
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='region',
       concept_spec=GetRegionResourceSpec(location_arguments),
@@ -348,3 +431,4 @@ def AddRegionResourceArg(parser, verb, global_spoke_command=False):
       group_help='The region of the spokes {}.'.format(verb),
   )
   concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+

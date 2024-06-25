@@ -814,10 +814,9 @@ def _GetBuildConfig(
   if args.build_worker_pool is not None or args.clear_build_worker_pool:
     updated_fields.add('build_config.worker_pool')
 
-  service_account = None
-  if args.IsKnownAndSpecified('build_service_account'):
+  service_account = args.build_service_account
+  if service_account is not None or args.clear_build_service_account:
     updated_fields.add('build_config.service_account')
-    service_account = args.build_service_account
   messages = client.MESSAGES_MODULE
 
   automatic_update_policy = None

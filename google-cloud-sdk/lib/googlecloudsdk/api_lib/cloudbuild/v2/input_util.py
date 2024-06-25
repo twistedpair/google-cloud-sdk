@@ -132,6 +132,18 @@ def TaskStepTransform(task_step):
   if "ref" in task_step:
     RefTransform(task_step["ref"])
   ParamDictTransform(task_step.get("params", []))
+  if "onError" in task_step:
+    OnErrorTransform(task_step)
+
+
+def OnErrorTransform(data):
+  if data["onError"] not in ["continue", "stopAndFail"]:
+    raise cloudbuild_exceptions.InvalidYamlError(
+        "Unsupported onError value: {value}. Supported: continue, stopAndFail"
+        .format(value=data["onError"])
+    )
+  else:
+    data["onError"] = CamelToSnake(data["onError"]).upper()
 
 
 def TaskResultTransform(task_result):

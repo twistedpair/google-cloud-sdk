@@ -633,9 +633,9 @@ class AutotuningConfig(_messages.Message):
     ScenariosValueListEntryValuesEnum:
 
   Fields:
-    cohort: Required. Autotuning cohort identifier. Identifies families of the
+    cohort: Optional. Autotuning cohort identifier. Identifies families of the
       workloads having the same shape, e.g. daily ETL jobs.
-    scenarios: Required. Scenarios for which tunings are applied.
+    scenarios: Optional. Scenarios for which tunings are applied.
   """
 
   class ScenariosValueListEntryValuesEnum(_messages.Enum):
@@ -643,15 +643,15 @@ class AutotuningConfig(_messages.Message):
 
     Values:
       SCENARIO_UNSPECIFIED: Default value.
-      OOM: Out-of-memory errors remediation.
       SCALING: Scaling recommendations such as initialExecutors.
       BHJ: Adding hints for potential relation broadcasts.
+      BROADCAST_HASH_JOIN: Adding hints for potential relation broadcasts.
       MEMORY: Memory management for workloads.
     """
     SCENARIO_UNSPECIFIED = 0
-    OOM = 1
-    SCALING = 2
-    BHJ = 3
+    SCALING = 1
+    BHJ = 2
+    BROADCAST_HASH_JOIN = 3
     MEMORY = 4
 
   cohort = _messages.StringField(1)
@@ -3679,6 +3679,34 @@ class DataprocProjectsRegionsClustersNodeGroupsResizeRequest(_messages.Message):
   resizeNodeGroupRequest = _messages.MessageField('ResizeNodeGroupRequest', 2)
 
 
+class DataprocProjectsRegionsClustersNodeGroupsStartRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsStartRequest object.
+
+  Fields:
+    name: Required. The name of the node group to start. Format: projects/{pro
+      ject}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+    startNodeGroupRequest: A StartNodeGroupRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  startNodeGroupRequest = _messages.MessageField('StartNodeGroupRequest', 2)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsStopRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsStopRequest object.
+
+  Fields:
+    name: Required. The name of the node group to stop. Format: projects/{proj
+      ect}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+    stopNodeGroupRequest: A StopNodeGroupRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  stopNodeGroupRequest = _messages.MessageField('StopNodeGroupRequest', 2)
+
+
 class DataprocProjectsRegionsClustersNodeGroupsUpdateLabelsRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersNodeGroupsUpdateLabelsRequest object.
 
@@ -4391,6 +4419,15 @@ class DiskConfig(_messages.Message):
   r"""Specifies the config of disk options for a group of VM instances.
 
   Fields:
+    bootDiskProvisionedIops: Optional. Indicates how many IOPS to provision
+      for the disk. This sets the number of I/O operations per second that the
+      disk can handle. Note: This field is only supported if boot_disk_type is
+      hyperdisk-balanced.
+    bootDiskProvisionedThroughput: Optional. Indicates how much throughput to
+      provision for the disk. This sets the number of throughput mb per second
+      that the disk can handle. Values must be greater than or equal to 1.
+      Note: This field is only supported if boot_disk_type is hyperdisk-
+      balanced.
     bootDiskSizeGb: Optional. Size in GB of the boot disk (default is 500GB).
     bootDiskType: Optional. Type of the boot disk (default is "pd-standard").
       Valid values: "pd-balanced" (Persistent Disk Balanced Solid State
@@ -4411,10 +4448,12 @@ class DiskConfig(_messages.Message):
       vCPUs selected.
   """
 
-  bootDiskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  bootDiskType = _messages.StringField(2)
-  localSsdInterface = _messages.StringField(3)
-  numLocalSsds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  bootDiskProvisionedIops = _messages.IntegerField(1)
+  bootDiskProvisionedThroughput = _messages.IntegerField(2)
+  bootDiskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  bootDiskType = _messages.StringField(4)
+  localSsdInterface = _messages.StringField(5)
+  numLocalSsds = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class DriverRunner(_messages.Message):
@@ -5093,9 +5132,8 @@ class GceClusterConfig(_messages.Message):
       partial URI, or short name are valid. Examples: https://www.googleapis.c
       om/compute/v1/projects/[project_id]/regions/[region]/subnetworks/sub0
       projects/[project_id]/regions/[region]/subnetworks/sub0 sub0
-    tags: The Compute Engine tags to add to all instances (see Tagging
-      instances (https://cloud.google.com/compute/docs/label-or-tag-
-      resources#tags)).
+    tags: The Compute Engine network tags to add to all instances (see Tagging
+      instances (https://cloud.google.com/vpc/docs/add-remove-network-tags)).
     zoneUri: Optional. The Compute Engine zone where the Dataproc cluster will
       be located. If omitted, the service will pick a zone in the cluster's
       Compute Engine region. On a get request, zone will always be present.A
@@ -7205,6 +7243,8 @@ class NodeGroupOperationMetadata(_messages.Message):
       RESIZE: Resize node group operation type.
       REPAIR: Repair node group operation type.
       UPDATE_LABELS: Update node group label operation type.
+      START: Start node group operation type.
+      STOP: Stop node group operation type.
     """
     NODE_GROUP_OPERATION_TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -7213,6 +7253,8 @@ class NodeGroupOperationMetadata(_messages.Message):
     RESIZE = 4
     REPAIR = 5
     UPDATE_LABELS = 6
+    START = 7
+    STOP = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -10761,6 +10803,25 @@ class StartClusterRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class StartNodeGroupRequest(_messages.Message):
+  r"""A request to start a node group.
+
+  Fields:
+    parentOperationId: Optional. Operation id of the parent operation sending
+      the start node group request.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two StartNodeGroupRequest with the same ID, the second
+      request is ignored and the first google.longrunning.Operation created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  parentOperationId = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class StartupConfig(_messages.Message):
   r"""Configuration to handle the startup of instances during cluster create
   and update process.
@@ -10948,6 +11009,25 @@ class StopClusterRequest(_messages.Message):
   """
 
   clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
+class StopNodeGroupRequest(_messages.Message):
+  r"""A request to stop a node group.
+
+  Fields:
+    parentOperationId: Optional. Operation id of the parent operation sending
+      the stop request.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two StopNodeGroupRequest with the same ID, the second
+      request is ignored and the first google.longrunning.Operation created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  parentOperationId = _messages.StringField(1)
   requestId = _messages.StringField(2)
 
 

@@ -1252,7 +1252,6 @@ def AddSubscriptionType(parser, alloydb_messages):
   parser.add_argument(
       '--subscription-type',
       required=False,
-      hidden=True,
       type=alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum,
       choices=[
           # Don't allow UNSPECIFIED

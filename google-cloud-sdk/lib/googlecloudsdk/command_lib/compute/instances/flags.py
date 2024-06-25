@@ -3744,13 +3744,16 @@ def AddPerformanceMonitoringUnitArgs(parser):
   parser.add_argument(
       '--performance-monitoring-unit',
       choices={
-          'architectural': 'Enable architecturally defined non-LLC events.',
-          'standard': 'Enable most documented core/L2 events.',
-          'enhanced': 'Enable most documented core/L2 and LLC events.',
+          'architectural': (
+              'This enables architecturally defined non-last level cache (LLC)'
+              ' events.'
+          ),
+          'standard': 'This enables most documented core/L2 events.',
+          'enhanced': 'This enables most documented core/L2 and LLC events.',
       },
       type=str,
       help=(
-          'The set of performance measurement counters to enable for the'
+          'The type of performance monitoring counters (PMCs) to enable in the'
           ' instance.'
       ),
   )

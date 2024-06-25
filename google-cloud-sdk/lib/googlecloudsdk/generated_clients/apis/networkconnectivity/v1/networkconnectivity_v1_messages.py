@@ -512,6 +512,50 @@ class Filter(_messages.Message):
   srcRange = _messages.StringField(4)
 
 
+class Gateway(_messages.Message):
+  r"""A gateway that can apply specialized traffic processing.
+
+  Enums:
+    CapacityValueValuesEnum: Optional. The aggregate processing capacity of
+      this gateway.
+
+  Fields:
+    capacity: Optional. The aggregate processing capacity of this gateway.
+    ipRangeReservations: Optional. A list of IP ranges that are reserved for
+      this gateway's internal intfrastructure.
+    landingNetwork: Optional. This field will be deprecated and replaced
+      before gateway spokes reach General Availability.
+  """
+
+  class CapacityValueValuesEnum(_messages.Enum):
+    r"""Optional. The aggregate processing capacity of this gateway.
+
+    Values:
+      GATEWAY_CAPACITY_UNSPECIFIED: The gateway capacity is unspecified.
+      CAPACITY_1_GBPS: The gateway has 1 Gbps of aggregate processing capacity
+      CAPACITY_5_GBPS: The gateway has 5 Gbps of aggregate processing capacity
+      CAPACITY_10_GBPS: The gateway has 10 Gbps of aggregate processing
+        capacity
+      CAPACITY_25_GBPS: The gateway has 25 Gbps of aggregate processing
+        capacity
+      CAPACITY_50_GBPS: The gateway has 50 Gbps of aggregate processing
+        capacity
+      CAPACITY_100_GBPS: The gateway has 100 Gbps of aggregate processing
+        capacity
+    """
+    GATEWAY_CAPACITY_UNSPECIFIED = 0
+    CAPACITY_1_GBPS = 1
+    CAPACITY_5_GBPS = 2
+    CAPACITY_10_GBPS = 3
+    CAPACITY_25_GBPS = 4
+    CAPACITY_50_GBPS = 5
+    CAPACITY_100_GBPS = 6
+
+  capacity = _messages.EnumField('CapacityValueValuesEnum', 1)
+  ipRangeReservations = _messages.MessageField('IpRangeReservation', 2, repeated=True)
+  landingNetwork = _messages.MessageField('LandingNetwork', 3)
+
+
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -965,10 +1009,14 @@ class Hub(_messages.Message):
       STAR: Star topology is implemented. Two groups, `center` and `edge`, are
         automatically created along with hub creation. Spokes have to join one
         of the groups during creation.
+      HYBRID_INSPECTION: Hybrid inspection has 4 groups ('non-prod', 'prod',
+        'services', and 'untrusted') that are automatically created along with
+        hub creation.
     """
     PRESET_TOPOLOGY_UNSPECIFIED = 0
     MESH = 1
     STAR = 2
+    HYBRID_INSPECTION = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this hub.
@@ -1207,6 +1255,40 @@ class InternalRange(_messages.Message):
   users = _messages.StringField(13, repeated=True)
 
 
+class IpRangeReservation(_messages.Message):
+  r"""A list of IP ranges that are reserved for this gateway's internal
+  intfrastructure.
+
+  Fields:
+    ipRange: Required. A block of IP addresses used to allocate supporting
+      infrastructure for this gateway. This block must not overlap with
+      subnets in any spokes or peer VPC networks that the gateway can
+      communicate with. Example: "10.1.2.0/24"
+  """
+
+  ipRange = _messages.StringField(1)
+
+
+class LandingNetwork(_messages.Message):
+  r"""Information about the landing network connected to this gateway.
+
+  Fields:
+    network: Optional. A VPC network containing Interconnect VLAN attachments.
+      We will initiate peering to this network; you probably want to
+      reciprocate by peering `network` with `peer_network`.
+    peerNetwork: Optional. We'll initiate peering to `landing_network_uri`
+      from this VPC network. You should reciprocate peering to this network.
+    targetIp: Optional. To egress traffic to the Internet, you should create a
+      static route in the landing network that directs traffic toward this IP
+      address. We will pass traffic through any services attached to this
+      gateway en route to or from the Internet.
+  """
+
+  network = _messages.StringField(1)
+  peerNetwork = _messages.StringField(2)
+  targetIp = _messages.StringField(3)
+
+
 class LinkedInterconnectAttachments(_messages.Message):
   r"""A collection of VLAN attachment resources. These resources should be
   redundant attachments that all advertise the same prefixes to Google Cloud.
@@ -1230,23 +1312,6 @@ class LinkedInterconnectAttachments(_messages.Message):
   siteToSiteDataTransfer = _messages.BooleanField(2)
   uris = _messages.StringField(3, repeated=True)
   vpcNetwork = _messages.StringField(4)
-
-
-class LinkedPrivateServicesAccess(_messages.Message):
-  r"""Next ID: 4 Deprecated. Use LinkedProducerVpcNetwork instead.
-
-  Fields:
-    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
-      excluded from peering.
-    includeExportRanges: Optional. IP ranges allowed to be included from
-      peering.
-    network: Immutable. The URI of the home VPC uri where private services
-      access is peered with.
-  """
-
-  excludeExportRanges = _messages.StringField(1, repeated=True)
-  includeExportRanges = _messages.StringField(2, repeated=True)
-  network = _messages.StringField(3)
 
 
 class LinkedProducerVpcNetwork(_messages.Message):
@@ -3380,6 +3445,59 @@ class NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest(_messa
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NextHopInterconnectAttachment(_messages.Message):
+  r"""A route next hop that leads to an interconnect attachment resource.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this interconnect attachment resource. Data transfer is
+      available only in [supported
+      locations](https://cloud.google.com/network-connectivity/docs/network-
+      connectivity-center/concepts/locations).
+    uri: The URI of the interconnect attachment resource.
+    vpcNetwork: The VPC network where this interconnect attachment is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
+class NextHopRouterApplianceInstance(_messages.Message):
+  r"""A route next hop that leads to a Router appliance instance.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this Router appliance instance resource. Data transfer is
+      available only in [supported
+      locations](https://cloud.google.com/network-connectivity/docs/network-
+      connectivity-center/concepts/locations).
+    uri: The URI of the Router appliance instance.
+    vpcNetwork: The VPC network where this VM is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
+class NextHopVPNTunnel(_messages.Message):
+  r"""A route next hop that leads to a VPN tunnel resource.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this VPN tunnel resource. Data transfer is available only in
+      [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
+    uri: The URI of the VPN tunnel resource.
+    vpcNetwork: The VPC network where this VPN tunnel is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
 class NextHopVpcNetwork(_messages.Message):
   r"""A NextHopVpcNetwork object.
 
@@ -3860,8 +3978,17 @@ class Route(_messages.Message):
     name: Immutable. The name of the route. Route names must be unique. Route
       names use the following form: `projects/{project_number}/locations/globa
       l/hubs/{hub}/routeTables/{route_table_id}/routes/{route_id}`
+    nextHopInterconnectAttachment: Immutable. The next-hop VLAN attachment for
+      packets on this route.
+    nextHopRouterApplianceInstance: Immutable. The next-hop Router appliance
+      instance for packets on this route.
     nextHopVpcNetwork: Immutable. The destination VPC network for packets on
       this route.
+    nextHopVpnTunnel: Immutable. The next-hop VPN tunnel for packets on this
+      route.
+    priority: Output only. The priority of this route. Priority is used to
+      break ties in cases where a destination matches more than one route. In
+      these cases the route with the lowest-numbered priority value wins.
     spoke: Immutable. The spoke that this route leads to. Example:
       projects/12345/locations/global/spokes/SPOKE
     state: Output only. The current lifecycle state of the route.
@@ -3913,10 +4040,14 @@ class Route(_messages.Message):
         address range of the VPC network's subnet.
       VPC_SECONDARY_SUBNET: The route leads to a destination within the
         secondary address range of the VPC network's subnet.
+      DYNAMIC_ROUTE: The route leads to a destination in a dynamic route.
+        Dynamic routes are derived from Border Gateway Protocol (BGP)
+        advertisements received from an NCC hybrid spoke.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     VPC_PRIMARY_SUBNET = 1
     VPC_SECONDARY_SUBNET = 2
+    DYNAMIC_ROUTE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3950,12 +4081,16 @@ class Route(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   location = _messages.StringField(5)
   name = _messages.StringField(6)
-  nextHopVpcNetwork = _messages.MessageField('NextHopVpcNetwork', 7)
-  spoke = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  nextHopInterconnectAttachment = _messages.MessageField('NextHopInterconnectAttachment', 7)
+  nextHopRouterApplianceInstance = _messages.MessageField('NextHopRouterApplianceInstance', 8)
+  nextHopVpcNetwork = _messages.MessageField('NextHopVpcNetwork', 9)
+  nextHopVpnTunnel = _messages.MessageField('NextHopVPNTunnel', 10)
+  priority = _messages.IntegerField(11)
+  spoke = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class RouteTable(_messages.Message):
@@ -4415,6 +4550,8 @@ class Spoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: An optional description of the spoke.
+    gateway: Optional. This is a gateway that can apply specialized processing
+      to traffic going through it.
     group: Optional. The name of the group that this spoke is associated with.
     hub: Immutable. The name of the hub that this spoke is attached to.
     labels: Optional labels in key-value pair format. For more information
@@ -4423,8 +4560,6 @@ class Spoke(_messages.Message):
       managing-labels#requirements).
     linkedInterconnectAttachments: VLAN attachments that are associated with
       the spoke.
-    linkedPrivateServicesAccess: Optional. The linked private service access
-      that is associated with the spoke.
     linkedProducerVpcNetwork: Optional. The linked producer VPC that is
       associated with the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
@@ -4454,7 +4589,6 @@ class Spoke(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
-      PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -4462,8 +4596,7 @@ class Spoke(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRIVATE_SERVICES_ACCESS = 5
-    PRODUCER_VPC_NETWORK = 6
+    PRODUCER_VPC_NETWORK = 5
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current lifecycle state of this spoke.
@@ -4522,11 +4655,11 @@ class Spoke(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  group = _messages.StringField(3)
-  hub = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 6)
-  linkedPrivateServicesAccess = _messages.MessageField('LinkedPrivateServicesAccess', 7)
+  gateway = _messages.MessageField('Gateway', 3)
+  group = _messages.StringField(4)
+  hub = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 7)
   linkedProducerVpcNetwork = _messages.MessageField('LinkedProducerVpcNetwork', 8)
   linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 9)
   linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 10)
@@ -4661,7 +4794,6 @@ class SpokeTypeCount(_messages.Message):
       INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
       ROUTER_APPLIANCE: Spokes associated with router appliance instances.
       VPC_NETWORK: Spokes associated with VPC networks.
-      PRIVATE_SERVICES_ACCESS: Spokes that are private services access.
       PRODUCER_VPC_NETWORK: Spokes that are backed by a producer VPC network.
     """
     SPOKE_TYPE_UNSPECIFIED = 0
@@ -4669,8 +4801,7 @@ class SpokeTypeCount(_messages.Message):
     INTERCONNECT_ATTACHMENT = 2
     ROUTER_APPLIANCE = 3
     VPC_NETWORK = 4
-    PRIVATE_SERVICES_ACCESS = 5
-    PRODUCER_VPC_NETWORK = 6
+    PRODUCER_VPC_NETWORK = 5
 
   count = _messages.IntegerField(1)
   spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 2)

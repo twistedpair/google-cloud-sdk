@@ -30,3 +30,15 @@ class InvalidFlagValueError(exceptions.Error):
 
 class InvalidComplianceMode(InvalidFlagValueError):
   """An error raised when the caller specifies an invalid Compliance mode."""
+
+
+class MutuallyExclusiveFlags(InvalidFlagValueError):
+  """An error raised when the caller specifies mutually exclusive flags."""
+
+
+class ConfiguringDisabledCompliance(MutuallyExclusiveFlags):
+  """Compliance does not support disabling and configuring standards at once.
+
+  This error is raised when the caller tries to specify the compliance mode of
+  disabled along with compliance standards configuration at the same time.
+  """

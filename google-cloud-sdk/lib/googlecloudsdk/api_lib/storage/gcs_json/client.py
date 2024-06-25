@@ -258,6 +258,7 @@ class JsonClient(cloud_api.CloudApi):
       cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
       cloud_api.Capability.ENCRYPTION,
       cloud_api.Capability.MANAGED_FOLDERS,
+      cloud_api.Capability.STORAGE_LAYOUT,
       cloud_api.Capability.RESUMABLE_UPLOAD,
       cloud_api.Capability.SLICED_DOWNLOAD,
   }
@@ -1594,3 +1595,11 @@ class JsonClient(cloud_api.CloudApi):
           )
       )
     return operation
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_storage_layout(self, bucket_name):
+    """See CloudApi class for function doc strings."""
+    storage_layout_request = (
+        self.messages.StorageBucketsGetStorageLayoutRequest(bucket=bucket_name)
+    )
+    return self.client.buckets.GetStorageLayout(storage_layout_request)

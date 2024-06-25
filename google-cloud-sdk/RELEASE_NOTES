@@ -5,6 +5,70 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 482.0.0 (2024-06-25)
+
+### App Engine
+
+* Removed unused python2 dependencies that have CVEs.
+
+### Cloud Bigtable
+
+*   Adds `force` option to `cbt setgcpolicy`.
+
+### Cloud Dataflow
+
+* Elevate jinja variables to top-level flag in dataflow yaml run.
+
+### Cloud Functions
+
+* Added `--clear-build-service-account` flag for `gcloud functions deploy`.
+
+### Cloud Key Management Service
+
+*   Added `--allowed-access-reasons` flag to `gcloud kms keys create` to create
+    a key with a Key Access Justifications policy configured.
+*   Added `--allowed-access-reasons` flag to `gcloud kms keys update` to update
+    the Key Access Justifications policy on a key.
+*   Added `--remove-key-access-justifications-policy` flag to `gcloud kms keys
+    update` to remove the Key Access Justifications policy on a key.
+
+### Cloud Services
+
+* Promoted `gcloud services policies add-enable-rules` to beta.
+* Promoted `gcloud services policies remove-enable-rules` to beta.
+* Promoted `gcloud services policies get` to beta.
+* Promoted `gcloud services policies get-effective` to beta.
+* Promoted `gcloud services policies test-enabled` to beta.
+* Promoted `gcloud services groups list-ancestor-groups` to beta.
+* Promoted `gcloud services groups list-descendant-services` to beta.
+* Promoted `gcloud services groups list-members` to beta.
+
+### Compute Engine
+
+* Added `--size` flag to `gcloud compute instance-groups managed update` for v1.
+* Promoted `--confidential-compute-type` flag for the command `gcloud compute instance create` to GA.
+* Promoted `--performance-monitoring-unit` flag for the command `gcloud compute instance-templates create` to GA.
+* Promoted `--performance-monitoring-unit` flag for the command `gcloud compute instances bulk create` to GA.
+* Promoted `--performance-monitoring-unit` flag for the command `gcloud compute instances create ` to GA.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.27.14 to 1.27.15.
+* Additional kubectl versions:
+  * kubectl.1.27 (1.27.15)
+  * kubectl.1.28 (1.28.11)
+  * kubectl.1.25 (1.29.6)
+  * kubectl.1.30 (1.30.2)
+
+### Network Connectivity
+
+* Added `include-import-ranges` flag to hybrid spoke creation to support
+  importing hub subnets.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 481.0.0 (2024-06-18)
 
 ### Breaking Changes

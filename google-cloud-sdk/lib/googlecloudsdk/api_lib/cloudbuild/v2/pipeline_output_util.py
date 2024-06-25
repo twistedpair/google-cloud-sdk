@@ -17,9 +17,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild.v2 import output_util
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.resource import custom_printer_base
+
 
 PRINTER_FORMAT = "tekton"
 
@@ -203,6 +205,11 @@ def _TransformTaskSpec(ts):
   return task_spec
 
 
+def _TransformOnError(oe):
+  """Convert OnError into Tekton yaml."""
+  return cloudbuild_util.SnakeToCamelString(oe.lower())
+
+
 def _TransformSteps(steps):
   """Convert Steps into Tekton yaml."""
   results = []
@@ -212,6 +219,8 @@ def _TransformSteps(steps):
     if "params" in step:
       step["params"] = _TransformParams(step.pop("params"))
     results.append(step)
+    if "onError" in step:
+      step["onError"] = _TransformOnError(step.pop("onError"))
   return results
 
 

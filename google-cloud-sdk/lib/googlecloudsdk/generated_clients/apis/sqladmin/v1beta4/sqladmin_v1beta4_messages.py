@@ -868,6 +868,8 @@ class DatabaseInstance(_messages.Message):
       property was applicable only to First Generation instances.
     kind: This is always `sql#instance`.
     maintenanceVersion: The current software version on the instance.
+    majorVersionUpgradeIncludesReplicas: Input only. Allows for Cluster Major
+      Version Upgrade
     masterInstanceName: The name of the instance which will act as primary in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
@@ -1289,32 +1291,33 @@ class DatabaseInstance(_messages.Message):
   ipv6Address = _messages.StringField(18)
   kind = _messages.StringField(19)
   maintenanceVersion = _messages.StringField(20)
-  masterInstanceName = _messages.StringField(21)
-  maxDiskSize = _messages.IntegerField(22)
-  name = _messages.StringField(23)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 24)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 25)
-  primaryDnsName = _messages.StringField(26)
-  project = _messages.StringField(27)
-  pscServiceAttachmentLink = _messages.StringField(28)
-  region = _messages.StringField(29)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 30)
-  replicaNames = _messages.StringField(31, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 32)
-  rootPassword = _messages.StringField(33)
-  satisfiesPzs = _messages.BooleanField(34)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 35)
-  secondaryGceZone = _messages.StringField(36)
-  selfLink = _messages.StringField(37)
-  serverCaCert = _messages.MessageField('SslCert', 38)
-  serviceAccountEmailAddress = _messages.StringField(39)
-  settings = _messages.MessageField('Settings', 40)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 41)
-  state = _messages.EnumField('StateValueValuesEnum', 42)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 43, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(44)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 45, repeated=True)
-  writeEndpoint = _messages.StringField(46)
+  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(21)
+  masterInstanceName = _messages.StringField(22)
+  maxDiskSize = _messages.IntegerField(23)
+  name = _messages.StringField(24)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 25)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 26)
+  primaryDnsName = _messages.StringField(27)
+  project = _messages.StringField(28)
+  pscServiceAttachmentLink = _messages.StringField(29)
+  region = _messages.StringField(30)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 31)
+  replicaNames = _messages.StringField(32, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 33)
+  rootPassword = _messages.StringField(34)
+  satisfiesPzs = _messages.BooleanField(35)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 36)
+  secondaryGceZone = _messages.StringField(37)
+  selfLink = _messages.StringField(38)
+  serverCaCert = _messages.MessageField('SslCert', 39)
+  serviceAccountEmailAddress = _messages.StringField(40)
+  settings = _messages.MessageField('Settings', 41)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 42)
+  state = _messages.EnumField('StateValueValuesEnum', 43)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 44, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(45)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 46, repeated=True)
+  writeEndpoint = _messages.StringField(47)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -2565,38 +2568,41 @@ class MaintenanceWindow(_messages.Message):
   restarted for system maintenance purposes.
 
   Enums:
-    UpdateTrackValueValuesEnum: Maintenance timing setting: `canary` (Earlier)
-      or `stable` (Later). [Learn
-      more](https://cloud.google.com/sql/docs/mysql/instance-
-      settings#maintenance-timing-2ndgen).
+    UpdateTrackValueValuesEnum: Maintenance timing settings: `canary`,
+      `stable`, or `week5`. For more information, see [About maintenance on
+      Cloud SQL
+      instances](https://cloud.google.com/sql/docs/mysql/maintenance).
 
   Fields:
-    day: day of week (1-7), starting on Monday.
-    hour: hour of day - 0 to 23.
+    day: Day of week - `MONDAY`, `TUESDAY`, `WEDNESDAY`, `THURSDAY`, `FRIDAY`,
+      `SATURDAY`, or `SUNDAY`. Specify in the UTC time zone. Returned in
+      output as an integer, 1 to 7, where `1` equals Monday.
+    hour: Hour of day - 0 to 23. Specify in the UTC time zone.
     kind: This is always `sql#maintenanceWindow`.
-    updateTrack: Maintenance timing setting: `canary` (Earlier) or `stable`
-      (Later). [Learn more](https://cloud.google.com/sql/docs/mysql/instance-
-      settings#maintenance-timing-2ndgen).
+    updateTrack: Maintenance timing settings: `canary`, `stable`, or `week5`.
+      For more information, see [About maintenance on Cloud SQL
+      instances](https://cloud.google.com/sql/docs/mysql/maintenance).
   """
 
   class UpdateTrackValueValuesEnum(_messages.Enum):
-    r"""Maintenance timing setting: `canary` (Earlier) or `stable` (Later).
-    [Learn more](https://cloud.google.com/sql/docs/mysql/instance-
-    settings#maintenance-timing-2ndgen).
+    r"""Maintenance timing settings: `canary`, `stable`, or `week5`. For more
+    information, see [About maintenance on Cloud SQL
+    instances](https://cloud.google.com/sql/docs/mysql/maintenance).
 
     Values:
       SQL_UPDATE_TRACK_UNSPECIFIED: This is an unknown maintenance timing
         preference.
-      canary: For instance update that requires a restart, this update track
-        indicates your instance prefer to restart for new version early in
-        maintenance window.
-      stable: For instance update that requires a restart, this update track
-        indicates your instance prefer to let Cloud SQL choose the timing of
-        restart (within its Maintenance window, if applicable).
-      week5: For instance update that requires a restart, this update track
-        indicates your instance prefer to let Cloud SQL choose the timing of
-        restart (within its Maintenance window, if applicable) to be at least
-        5 weeks after the notification.
+      canary: For an instance with a scheduled maintenance window, this
+        maintenance timing indicates that the maintenance update is scheduled
+        7 to 14 days after the notification is sent out. Also referred to as
+        `Week 1` (Console) and `preview` (gcloud CLI).
+      stable: For an instance with a scheduled maintenance window, this
+        maintenance timing indicates that the maintenance update is scheduled
+        15 to 21 days after the notification is sent out. Also referred to as
+        `Week 2` (Console) and `production` (gcloud CLI).
+      week5: For instance with a scheduled maintenance window, this
+        maintenance timing indicates that the maintenance update is scheduled
+        35 to 42 days after the notification is sent out.
     """
     SQL_UPDATE_TRACK_UNSPECIFIED = 0
     canary = 1
@@ -3847,6 +3853,10 @@ class SqlExternalSyncSettingError(_messages.Message):
       PG_CRON_FLAG_ENABLED_IN_REPLICA: The error message indicates that
         pg_cron flags are enabled on the destination which is not supported
         during the migration.
+      EXTENSIONS_NOT_ENABLED_IN_REPLICA: This error message indicates that the
+        specified extensions are not enabled on destination instance. For
+        example, before you can migrate data to the destination instance, you
+        must enable the PGAudit extension on the instance.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3896,6 +3906,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_EXTENSIONS_NOT_MIGRATED = 45
     EXTENSIONS_NOT_MIGRATED = 46
     PG_CRON_FLAG_ENABLED_IN_REPLICA = 47
+    EXTENSIONS_NOT_ENABLED_IN_REPLICA = 48
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

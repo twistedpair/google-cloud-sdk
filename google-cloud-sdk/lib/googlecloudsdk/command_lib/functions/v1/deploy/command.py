@@ -382,7 +382,9 @@ def _ApplyBuildServiceAccountToFunction(function, args):
     updated_fields: update mask containing the list of fields to be updated.
   """
   updated_fields = []
-  if args.IsSpecified('build_service_account'):
+  if args.IsSpecified('build_service_account') or args.IsSpecified(
+      'clear_build_service_account'
+  ):
     function.buildServiceAccount = args.build_service_account
     updated_fields.append('build_service_account')
 
@@ -671,13 +673,12 @@ def Run(args, track=None):
       _ApplyBuildpackStackArgsToFunction(function, args, track)
   )
 
+  updated_fields.extend(_ApplyBuildServiceAccountToFunction(function, args))
+
   # TODO(b/287538740): Can be cleaned up after a full transition to the AR.
+  # Expected to be set after all other fields.
   updated_fields.extend(
       _DefaultDockerRegistryIfUnspecified(function, updated_fields)
-  )
-
-  updated_fields.extend(
-      _ApplyBuildServiceAccountToFunction(function, args)
   )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')

@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.accesscontextmanager import util
-from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
@@ -57,6 +56,8 @@ def AddUpdateMaskAlpha(ref, args, req):
       'restricted_client_application_client_ids'
   ) or args.IsKnownAndSpecified('restricted_client_application_names'):
     update_mask.append('restricted_client_applications')
+  if args.IsKnownAndSpecified('session_length'):
+    update_mask.append('reauth_settings')
 
   if not update_mask:
     raise calliope_exceptions.MinimumArgumentException([
@@ -64,6 +65,7 @@ def AddUpdateMaskAlpha(ref, args, req):
         '--dry_run_level',
         '--restricted_client_application_names',
         '--restricted_client_application_client_ids',
+        '--session-length',
     ])
 
   req.updateMask = ','.join(update_mask)
@@ -276,7 +278,14 @@ def ProcessLevels(ref, args, req):
 def ProcessSessionLength(string):
   """Process the session-length argument into an acceptable form for GCSL reauth settings."""
 
-  duration = times.ParseDuration(string)
+  # If we receive the empty string then return a negative duration. This will
+  # signal to the request processor that reauthSettings should be cleared.
+  # This is primarily used for clearing bindings on calls to update, and is a
+  # no-op for calls to create.
+
+  duration = (
+      times.ParseDuration(string) if string else iso_duration.Duration(hours=-1)
+  )
 
   # TODO(b/346781832)
   if duration.total_seconds > iso_duration.Duration(days=1).total_seconds:
@@ -316,7 +325,9 @@ def ProcessReauthSettings(unused_ref, args, req):
     session_length = int(
         req.gcpUserAccessBinding.reauthSettings.sessionLength[:-1]
     )
-    if session_length == 0:  # Case where we disable reauth
+    if session_length < 0:  # Case where --session_length=''
+      req.gcpUserAccessBinding.reauthSettings = None
+    elif session_length == 0:  # Case where we disable reauth
       req.gcpUserAccessBinding.reauthSettings.sessionLengthEnabled = False
     else:  # Normal case
       req.gcpUserAccessBinding.reauthSettings.sessionLengthEnabled = True

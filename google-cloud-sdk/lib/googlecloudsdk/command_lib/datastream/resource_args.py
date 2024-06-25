@@ -580,7 +580,9 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
       help="""\
       Path to a YAML (or JSON) file containing the configuration for Google BigQuery Destination Config.
 
-      The JSON file is formatted as follows:
+      The YAML (or JSON) file should be formatted as follows:
+
+      BigQuery configuration with source hierarchy datasets and merge mode (merge mode is by default):
 
       ```
       {
@@ -591,6 +593,33 @@ def AddStreamResourceArg(parser, verb, release_track, required=True):
             "kmsKeyName": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
           }
         },
+        "merge": {}
+        "dataFreshness": "3600s"
+      }
+      ```
+
+      BigQuery configuration with source hierarchy datasets and append only mode:
+      ```
+      {
+        "sourceHierarchyDatasets": {
+          "datasetTemplate": {
+            "location": "us-central1",
+            "datasetIdPrefix": "my_prefix",
+            "kmsKeyName": "projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{cryptoKey}"
+          }
+        },
+        "appendOnly": {}
+      }
+      ```
+
+      BigQuery configuration with single target dataset and merge mode:
+
+      ```
+      {
+        "singleTargetDataset": {
+          "datasetId": "projectId:my_dataset"
+        },
+        "merge": {}
         "dataFreshness": "3600s"
       }
       ```

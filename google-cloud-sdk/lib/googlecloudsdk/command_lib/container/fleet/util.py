@@ -409,8 +409,8 @@ def IamMemberFromRbacArgs(user, group):
   """Returns Iam member for the specified user/group.
 
   Args:
-    user: user email or None
-    group: group email or None
+    user: user email, principal or None
+    group: group email, principal set or None
 
   Returns:
     an Iam member, e.g., "user:person@google.com" or "group:people@google.com"
@@ -419,8 +419,12 @@ def IamMemberFromRbacArgs(user, group):
     a core.Error, if both user and group are None
   """
   if user:
+    if user.startswith('principal://'):
+      return user
     return 'user:' + user
   elif group:
+    if group.startswith('principalSet://'):
+      return group
     return 'group:' + group
   raise exceptions.Error(
       'User or group is required in the args.'

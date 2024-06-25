@@ -62,6 +62,18 @@ def _WorkflowTransform(workflow):
 
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
+    if not param_spec.get("name", ""):
+      raise cloudbuild_exceptions.InvalidYamlError(
+          "Workflow parameter name is required"
+      )
+    if (
+        param_spec.get("type", "string") != "string"
+        or param_spec.get("default", {"type": "STRING"}).get("type") != "STRING"
+    ):
+      raise cloudbuild_exceptions.InvalidYamlError(
+          "Only string are supported for workflow parameters, error at "
+          "parameter with name: {}".format(param_spec.get("name"))
+      )
 
   if "pipelineSpec" in workflow:
     workflow["pipelineSpecYaml"] = yaml.dump(

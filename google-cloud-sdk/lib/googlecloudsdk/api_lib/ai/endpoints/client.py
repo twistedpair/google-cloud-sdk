@@ -577,6 +577,79 @@ class EndpointsClient(object):
     for resp in _DoStreamHttpPost(url, headers, request):
       yield resp
 
+  def DirectPredict(self, endpoint_ref, inputs_json):
+    """Sends online direct prediction request to an endpoint using v1 API."""
+    direct_predict_request = (
+        self.messages.GoogleCloudAiplatformV1DirectPredictRequest(
+            inputs=_ConvertPyListToMessageList(
+                self.messages.GoogleCloudAiplatformV1Tensor,
+                inputs_json['inputs'],
+            )
+        )
+    )
+    if 'parameters' in inputs_json:
+      direct_predict_request.parameters = encoding.PyValueToMessage(
+          self.messages.GoogleCloudAiplatformV1Tensor, inputs_json['parameters']
+      )
+
+    req = (
+        self.messages.AiplatformProjectsLocationsEndpointsDirectPredictRequest(
+            endpoint=endpoint_ref.RelativeName(),
+            googleCloudAiplatformV1DirectPredictRequest=direct_predict_request,
+        )
+    )
+    return self.client.projects_locations_endpoints.DirectPredict(req)
+
+  def DirectPredictBeta(self, endpoint_ref, inputs_json):
+    """Sends online direct prediction request to an endpoint using v1beta1 API."""
+    direct_predict_request = (
+        self.messages.GoogleCloudAiplatformV1beta1DirectPredictRequest(
+            inputs=_ConvertPyListToMessageList(
+                self.messages.GoogleCloudAiplatformV1beta1Tensor,
+                inputs_json['inputs'],
+            )
+        )
+    )
+    if 'parameters' in inputs_json:
+      direct_predict_request.parameters = encoding.PyValueToMessage(
+          self.messages.GoogleCloudAiplatformV1beta1Tensor,
+          inputs_json['parameters'],
+      )
+
+    req = self.messages.AiplatformProjectsLocationsEndpointsDirectPredictRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1DirectPredictRequest=direct_predict_request,
+    )
+    return self.client.projects_locations_endpoints.DirectPredict(req)
+
+  def DirectRawPredict(self, endpoint_ref, input_json):
+    """Sends online direct raw prediction request to an endpoint using v1 API."""
+    direct_raw_predict_request = self.messages.GoogleCloudAiplatformV1DirectRawPredictRequest(
+        input=bytes(input_json['input'], 'utf-8'),
+        # Method name can be "methodName" or "method_name"
+        methodName=input_json.get('methodName', input_json.get('method_name')),
+    )
+
+    req = self.messages.AiplatformProjectsLocationsEndpointsDirectRawPredictRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1DirectRawPredictRequest=direct_raw_predict_request,
+    )
+    return self.client.projects_locations_endpoints.DirectRawPredict(req)
+
+  def DirectRawPredictBeta(self, endpoint_ref, input_json):
+    """Sends online direct raw prediction request to an endpoint using v1beta1 API."""
+    direct_raw_predict_request = self.messages.GoogleCloudAiplatformV1beta1DirectRawPredictRequest(
+        input=bytes(input_json['input'], 'utf-8'),
+        # Method name can be "methodName" or "method_name"
+        methodName=input_json.get('methodName', input_json.get('method_name')),
+    )
+
+    req = self.messages.AiplatformProjectsLocationsEndpointsDirectRawPredictRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1beta1DirectRawPredictRequest=direct_raw_predict_request,
+    )
+    return self.client.projects_locations_endpoints.DirectRawPredict(req)
+
   def Explain(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""
     explain_request = self.messages.GoogleCloudAiplatformV1ExplainRequest(
@@ -671,7 +744,6 @@ class EndpointsClient(object):
     model_ref = _ParseModel(model, region)
 
     resource_type = _GetModelDeploymentResourceType(model_ref, self.client)
-    deployed_model = None
     if resource_type == 'DEDICATED_RESOURCES':
       # dedicated resources
       machine_spec = self.messages.GoogleCloudAiplatformV1MachineSpec()
@@ -812,7 +884,6 @@ class EndpointsClient(object):
     resource_type = _GetModelDeploymentResourceType(
         model_ref, self.client, shared_resources_ref
     )
-    deployed_model = None
     if resource_type == 'DEDICATED_RESOURCES':
       # dedicated resources
       machine_spec = self.messages.GoogleCloudAiplatformV1beta1MachineSpec()

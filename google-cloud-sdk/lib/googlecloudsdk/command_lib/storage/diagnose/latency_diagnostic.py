@@ -16,7 +16,7 @@
 """Latency Diagnostic."""
 
 import math
-from typing import Dict, List
+from typing import List
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -29,6 +29,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
 
 _DEFAULT_OBJECT_SIZES = [0, 10000]
+_DIAGNOSTIC_NAME = 'Latency Diagnostic'
 _ITERATION_COUNT = 5
 
 _UPLOAD_OPERATION_TITLE = 'upload'
@@ -218,16 +219,9 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
         )
 
   @property
-  def result(self) -> Dict[str, Dict[str, Dict[str, float]]]:
-    """The result of the diagnostic.
-
-    Returns:
-      A dictionary containing the result of the diagnostic keyed by differnt
-      operation types.
-    """
-    result = {}
+  def result(self) -> diagnostic.DiagnosticResult:
+    operation_results = []
     for operation_title, object_number_to_latency_dict in self._result.items():
-      result[operation_title] = {}
       for object_number in object_number_to_latency_dict.keys():
         trials = self._result[operation_title][object_number].values()
         cumulative_result_dict = {}
@@ -246,13 +240,16 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
             statistics_util.find_percentile(list(trials), 90)
         )
 
-        result[operation_title][
-            'object size: {} at index : {}'.format(
+        operation_result = diagnostic.DiagnosticOperationResult(
+            operation_title,
+            cumulative_result_dict,
+            payload_description='object size: {} at index : {}'.format(
                 self.object_sizes[object_number], object_number
-            )
-        ] = cumulative_result_dict
+            ),
+        )
+        operation_results.append(operation_result)
 
-    return result
+    return diagnostic.DiagnosticResult(_DIAGNOSTIC_NAME, operation_results)
 
 
 class DummyFile(object):

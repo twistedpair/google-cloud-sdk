@@ -335,7 +335,7 @@ def CreateSchedulingMessage(
   if availability_domain:
     scheduling.availabilityDomain = availability_domain
 
-  if discard_local_ssds_at_termination_timestamp:
+  if discard_local_ssds_at_termination_timestamp is not None:
     scheduling.onInstanceStopAction = messages.SchedulingOnInstanceStopAction(
         discardLocalSsd=discard_local_ssds_at_termination_timestamp
     )

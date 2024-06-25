@@ -6596,3 +6596,66 @@ def AddInsecureRBACBindingFlags(parser, hidden=True):
       help=help_text,
       hidden=hidden,
   )
+
+
+def AddAdditionalIpRangesFlag(parser):
+  """Adds additional IP ranges flag to parser."""
+
+  help_text = """\
+Add additional subnetworks named "my-subnet" with pod ipv4 range named "my-range" to the cluster.
+
+Examples:
+
+  $ {command} example-cluster --additional-ip-ranges=subnetwork=my-subnet,pod-ipv4-range=my-range
+"""
+
+  spec = {
+      'subnetwork': str,
+      'pod-ipv4-range': str,
+  }
+
+  parser.add_argument(
+      '--additional-ip-ranges',
+      metavar='subnetwork=NAME,pod-ipv4-range=NAME',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['subnetwork', 'pod-ipv4-range'],
+      ),
+      action='append',
+      help=help_text,
+  )
+
+
+def AddRemoveAdditionalIpRangesFlag(parser):
+  """Adds flag to remove additional Ip ranges to parser."""
+
+  help_text = """\
+Additional subnetworks to be removed from the cluster.
+
+Examples:
+
+Remove pod range named "my-range" under additional subnetwork named "my-subnet" from the cluster.
+
+  $ {command} example-cluster --remove-additional-ip-ranges=subnetwork=my-subnet,pod-ipv4-range=my-range
+
+Remove additional subnetwork named "my-subnet", including all the pod ipv4 ranges under the subnetwork.
+
+  $ {command} example-cluster --remove-additional-ip-ranges=subnetwork=my-subnet
+
+
+"""
+  spec = {
+      'subnetwork': str,
+      'pod-ipv4-range': str,
+  }
+  parser.add_argument(
+      '--remove-additional-ip-ranges',
+      metavar='subnetwork=NAME,pod-ipv4-range=NAME',
+      type=arg_parsers.ArgDict(
+          spec=spec,
+          required_keys=['subnetwork'],
+      ),
+      action='append',
+      help=help_text,
+  )
+

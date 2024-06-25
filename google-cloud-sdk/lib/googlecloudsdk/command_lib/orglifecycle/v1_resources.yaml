@@ -23,7 +23,7 @@ organization:
   - &organization
     parameter_name: organizationsId
     attribute_name: organization
-    help: organizations TBD
+    help: The organization id of the {resource} resource.
   disable_auto_completers: true
 organization_location:
   name: location
@@ -34,7 +34,7 @@ organization_location:
   - &location
     parameter_name: locationsId
     attribute_name: location
-    help: locations TBD
+    help: The location id of the {resource} resource.
   disable_auto_completers: true
 organization_location_managed_organization:
   name: managedOrganization
@@ -46,5 +46,5 @@ organization_location_managed_organization:
   - &managedOrganization
     parameter_name: managedOrganizationsId
     attribute_name: managed_organization
-    help: managedOrganizations TBD
+    help: The managedOrganization id of the {resource} resource.
   disable_auto_completers: false

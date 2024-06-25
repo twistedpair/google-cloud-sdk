@@ -60,7 +60,7 @@ def AddFleetPackageFlag(parser):
 def AddSourceFlag(parser):
   parser.add_argument(
       '--source',
-      required=False,
+      required=True,
       help='Source file containing Fleet Package configuration.',
   )
 

@@ -14,7 +14,9 @@
 # limitations under the License.
 """Utilities for working with volumes."""
 import abc
+import argparse
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 
@@ -54,6 +56,7 @@ def add_volume(volume, volumes, messages, release_track):
     raise serverless_exceptions.ConfigurationError(
         'Volume type {} not supported'.format(volume['type'])
     )
+  vol_type.validate_fields(volume, release_track)
   vol_type.validate_volume_add(volume, release_track)
   vol_type.fill_volume(volume, new_vol, messages)
 
@@ -123,6 +126,12 @@ class _VolumeType(abc.ABC):
   @abc.abstractmethod
   def fill_volume(cls, volume, new_vol, messages):
     """Fills in the Volume message from the provided volume dict."""
+    pass
+
+  @classmethod
+  @abc.abstractmethod
+  def validate_fields(cls, volume, release_track):
+    """Validate any additional constraints on the volume type."""
     pass
 
   @classmethod
@@ -278,7 +287,28 @@ class _GcsVolume(_VolumeType):
     )
 
   @classmethod
+  def validate_fields(cls, volume, release_track):
+    if release_track == base.ReleaseTrack.ALPHA:
+      try:
+        bool_parser = arg_parsers.ArgBoolean()
+        dynamic_mounting = bool_parser(
+            volume.get('dynamic-mounting', 'false')
+        )
+      except argparse.ArgumentTypeError:
+        raise serverless_exceptions.ConfigurationError(
+            'dynamic-mounting must be set to true or false.'
+        )
+      if (dynamic_mounting and 'bucket' in volume) or (
+          not dynamic_mounting and 'bucket' not in volume
+          ):
+        raise serverless_exceptions.ConfigurationError(
+            'Either set bucket or enable dynamic-mounting, not both.'
+        )
+
+  @classmethod
   def required_fields(cls, release_track):
+    if release_track == base.ReleaseTrack.ALPHA:
+      return {}
     return {
         'bucket': 'the name of the bucket to use as the source of this volume'
     }
@@ -296,6 +326,14 @@ class _GcsVolume(_VolumeType):
           + 'should be specified without leading dashes and separated by '
           + 'semicolons.'
       )
+      fields['bucket'] = (
+          'the name of the bucket to use as the source of this volume.'
+      )
+      fields['dynamic-mounting'] = (
+          'A boolean. If true, the volume will be mounted dynamically. '
+          + 'Note: You will either need to specify a bucket or set '
+          + 'dynamic-mounting to true, but not both.'
+      )
     return fields
 
   @classmethod
@@ -304,16 +342,26 @@ class _GcsVolume(_VolumeType):
         driver='gcsfuse.run.googleapis.com', readOnly=_is_readonly(volume)
     )
     src.volumeAttributes = messages.CSIVolumeSource.VolumeAttributesValue()
-    src.volumeAttributes.additionalProperties.append(
-        messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
-            key='bucketName', value=volume['bucket']
-        )
-    )
+    if 'bucket' in volume:
+      src.volumeAttributes.additionalProperties.append(
+          messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
+              key='bucketName', value=volume['bucket']
+          )
+      )
     if 'mount-options' in volume:
       src.volumeAttributes.additionalProperties.append(
           messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
               key='mountOptions',
               value=volume['mount-options'].replace(';', ','),
+          )
+      )
+    if (
+        'dynamic-mounting' in volume
+        and volume['dynamic-mounting']
+    ):
+      src.volumeAttributes.additionalProperties.append(
+          messages.CSIVolumeSource.VolumeAttributesValue.AdditionalProperty(
+              key='bucketName', value='_'
           )
       )
     new_vol.csi = src

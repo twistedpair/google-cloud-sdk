@@ -5493,9 +5493,12 @@ class PartnerSSEEnvironmentSymantecEnvironmentOptions(_messages.Message):
 
   Fields:
     apiEndpoint: Optional. URL to use for calling the Symantec Locations API.
+    useNccgwFlow: Optional. If true, only SAC Realms can reference this
+      environment; if false, only SSE Realms can reference this environment.
   """
 
   apiEndpoint = _messages.StringField(1)
+  useNccgwFlow = _messages.BooleanField(2)
 
 
 class PartnerSSEGateway(_messages.Message):

@@ -122,3 +122,10 @@ KEY_MANAGEMENT_MODE_ENUM = (
 KEY_MANAGEMENT_MODE_MAPPER = arg_utils.ChoiceEnumMapper(
     'key_management_mode', KEY_MANAGEMENT_MODE_ENUM
 )
+
+ACCESS_REASON_ENUM = (
+    MESSAGES.KeyAccessJustificationsPolicy.AllowedAccessReasonsValueListEntryValuesEnum
+)
+ACCESS_REASON_MAPPER = arg_utils.ChoiceEnumMapper(
+    'access_reason_enum', ACCESS_REASON_ENUM
+)

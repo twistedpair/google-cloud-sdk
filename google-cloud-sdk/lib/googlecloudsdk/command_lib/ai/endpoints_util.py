@@ -19,15 +19,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
-import json
 
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
-from googlecloudsdk.core.util import encoding
-
-import six
 
 
 def ParseOperation(operation_name):
@@ -43,54 +39,34 @@ def ParseOperation(operation_name):
     try:
       return resources.REGISTRY.ParseRelativeName(
           operation_name,
-          collection='aiplatform.projects.locations.endpoints.operations')
+          collection='aiplatform.projects.locations.endpoints.operations',
+      )
     except resources.WrongResourceCollectionException:
       pass
   return resources.REGISTRY.ParseRelativeName(
-      operation_name, collection='aiplatform.projects.locations.operations')
+      operation_name, collection='aiplatform.projects.locations.operations'
+  )
 
 
-def ReadRequest(input_file):
-  """Reads a JSON request from the specified input file.
-
-  Args:
-    input_file: An open file-like object for the input file.
-
-  Returns:
-    A json object from the input file
-
-  Raises:
-    InvalidInstancesFileError: If the input file is invalid.
-  """
-  try:
-    request = yaml.load(input_file)
-  except ValueError:
-    raise errors.InvalidInstancesFileError(
-        'Input instances are not in JSON format. '
-        'See `gcloud ai endpoints predict --help` for details.')
-
-  if not isinstance(request, dict):
-    raise errors.InvalidInstancesFileError(
-        'Input instances are not in JSON format. '
-        'See `gcloud ai endpoints predict --help` for details.')
-
-  if 'instances' not in request:
-    raise errors.InvalidInstancesFileError(
-        'Invalid JSON request: missing "instances" attribute')
-
-  if not isinstance(request['instances'], list):
-    raise errors.InvalidInstancesFileError(
-        'Invalid JSON request: "instances" must be a list')
-
-  return request
+def _LoadYaml(file_path, sdk_method):
+  """Loads a YAML file."""
+  data = console_io.ReadFromFileOrStdin(file_path, binary=True)
+  with io.BytesIO(data) as f:
+    try:
+      return yaml.load(f)
+    except ValueError:
+      raise errors.InvalidInstancesFileError(
+          f'Input is not in JSON format. See `gcloud ai endpoints {sdk_method}'
+          ' --help` for details.'
+      )
 
 
 def ReadInstancesFromArgs(json_request):
   """Reads the instances from the given file path ('-' for stdin).
 
   Args:
-    json_request: str or None, a path to a file ('-' for stdin) containing
-        the JSON body of a prediction request.
+    json_request: str or None, a path to a file ('-' for stdin) containing the
+      JSON body of a prediction request.
 
   Returns:
     A list of instances.
@@ -100,9 +76,45 @@ def ReadInstancesFromArgs(json_request):
         contains too many/zero instances), or an improper combination of input
         files was given.
   """
-  data = console_io.ReadFromFileOrStdin(json_request, binary=True)
-  with io.BytesIO(data) as f:
-    return ReadRequest(f)
+  request = _LoadYaml(json_request, sdk_method='predict')
+
+  if not isinstance(request, dict):
+    raise errors.InvalidInstancesFileError(
+        'Input instances are not in JSON format. '
+        'See `gcloud ai endpoints predict --help` for details.'
+    )
+
+  if 'instances' not in request:
+    raise errors.InvalidInstancesFileError(
+        'Invalid JSON request: missing "instances" attribute'
+    )
+
+  if not isinstance(request['instances'], list):
+    raise errors.InvalidInstancesFileError(
+        'Invalid JSON request: "instances" must be a list'
+    )
+
+  return request
+
+
+def ReadInputsFromArgs(json_request):
+  """Validates and reads json request for Direct Prediction."""
+  request = _LoadYaml(json_request, sdk_method='direct-predict')
+  if 'inputs' not in request:
+    raise errors.InvalidInstancesFileError('Input json must contain "inputs"')
+  return request
+
+
+def ReadInputFromArgs(json_request):
+  """Validates and reads json request for Direct Raw Prediction."""
+  request = _LoadYaml(json_request, sdk_method='direct-raw-predict')
+  if 'input' not in request:
+    raise errors.InvalidInstancesFileError('Input json must contain "input"')
+  if 'method_name' not in request and 'methodName' not in request:
+    raise errors.InvalidInstancesFileError(
+        'Input json must contain "method_name" or "methodName"'
+    )
+  return request
 
 
 def GetDefaultFormat(predictions, key_name='predictions'):

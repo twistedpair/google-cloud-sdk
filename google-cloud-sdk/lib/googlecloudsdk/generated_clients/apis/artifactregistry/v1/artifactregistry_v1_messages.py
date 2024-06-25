@@ -505,6 +505,7 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
 
   Fields:
     filter: Optional. The filter to apply to the list of repositories.
+    orderBy: Optional. The field to order the results by.
     pageSize: The maximum number of repositories to return. Maximum page size
       is 1,000.
     pageToken: The next_page_token value returned from a previous list
@@ -514,9 +515,10 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ArtifactregistryProjectsLocationsRepositoriesMavenArtifactsGetRequest(_messages.Message):
@@ -1186,43 +1188,6 @@ class BatchDeleteVersionsRequest(_messages.Message):
 
   names = _messages.StringField(1, repeated=True)
   validateOnly = _messages.BooleanField(2)
-
-
-class BcidEnforcementConfig(_messages.Message):
-  r"""Config for whether to enforce bcid for the repository.
-
-  Enums:
-    EnablementConfigValueValuesEnum: Optional. Config for whether this
-      repository has bcid enforcement enabled.
-
-  Fields:
-    enablementConfig: Optional. Config for whether this repository has bcid
-      enforcement enabled.
-  """
-
-  class EnablementConfigValueValuesEnum(_messages.Enum):
-    r"""Optional. Config for whether this repository has bcid enforcement
-    enabled.
-
-    Values:
-      ENABLEMENT_CONFIG_UNSPECIFIED: Unspecified config was not set. This will
-        be interpreted as DISABLED.
-      DISABLED: DISABLED indicates the artifacts promoted to this repository
-        does not require BCID VSA check.
-      ENABLED: ENABLED means all the artifacts promoted to this repository
-        have to have passed the BCID VSA check and bcid compliant. On AR side,
-        if the flag is enabled, AR will initiate the BCID check on promotion
-        flow.
-      DRY_RUN: DRY_RUN means all the artifacts promoted to this repository
-        will call BCID to get the VSA. The VSA result however will not block
-        the promotion, instead it will be recorded in logging.
-    """
-    ENABLEMENT_CONFIG_UNSPECIFIED = 0
-    DISABLED = 1
-    ENABLED = 2
-    DRY_RUN = 3
-
-  enablementConfig = _messages.EnumField('EnablementConfigValueValuesEnum', 1)
 
 
 class Binding(_messages.Message):
@@ -2453,15 +2418,20 @@ class NetworkConfig(_messages.Message):
       can be accessed through. Routing a host to AR needs to be handled
       externally via PSC NEGs. Only 1 project per region may use a given
       alternative hostname.
+    isDefault: Optional. Whether this is the default repository for the
+      alternative hostname. Only 1 repository per hostname may be marked as
+      the default. This repository will only be defaulted to if no path prefix
+      is matched, allowing the customer to pull images from a hostname without
+      a project or path prefix in the request path.
     prefix: Optional. A path prefix the repo can be accessed through, to
       differentiate multiple repositories using the same alternative hostname.
-      This value can be left blank if you'd like to access this repo when
-      using the hostname without any additional path. Only 1 repo per hostname
-      may have an empty path prefix.
+      If the customer does not set this value, it will default to the repo
+      name.
   """
 
   alternativeHostname = _messages.StringField(1)
-  prefix = _messages.StringField(2)
+  isDefault = _messages.BooleanField(2)
+  prefix = _messages.StringField(3)
 
 
 class NpmPackage(_messages.Message):
@@ -2936,8 +2906,6 @@ class Repository(_messages.Message):
       contain lowercase letters, numeric characters, underscores, and dashes.
 
   Fields:
-    bcidEnforcementConfig: Optional. Config and state for the bcid enforcement
-      on the repository.
     cleanupPolicies: Optional. Cleanup policies for this repository. Cleanup
       policies indicate when certain package versions can be automatically
       deleted. Map keys are policy IDs supplied by users during policy
@@ -3092,28 +3060,27 @@ class Repository(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  bcidEnforcementConfig = _messages.MessageField('BcidEnforcementConfig', 1)
-  cleanupPolicies = _messages.MessageField('CleanupPoliciesValue', 2)
-  cleanupPolicyDryRun = _messages.BooleanField(3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  disallowUnspecifiedMode = _messages.BooleanField(6)
-  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 7)
-  format = _messages.EnumField('FormatValueValuesEnum', 8)
-  kmsKeyName = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 11)
-  mode = _messages.EnumField('ModeValueValuesEnum', 12)
-  name = _messages.StringField(13)
-  networkConfig = _messages.MessageField('NetworkConfig', 14)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 15)
-  satisfiesPzi = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  sbomConfig = _messages.MessageField('SbomConfig', 18)
-  sizeBytes = _messages.IntegerField(19)
-  updateTime = _messages.StringField(20)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 21)
-  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 22)
+  cleanupPolicies = _messages.MessageField('CleanupPoliciesValue', 1)
+  cleanupPolicyDryRun = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  disallowUnspecifiedMode = _messages.BooleanField(5)
+  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 6)
+  format = _messages.EnumField('FormatValueValuesEnum', 7)
+  kmsKeyName = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 10)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 14)
+  satisfiesPzi = _messages.BooleanField(15)
+  satisfiesPzs = _messages.BooleanField(16)
+  sbomConfig = _messages.MessageField('SbomConfig', 17)
+  sizeBytes = _messages.IntegerField(18)
+  updateTime = _messages.StringField(19)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 20)
+  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 21)
 
 
 class SbomConfig(_messages.Message):

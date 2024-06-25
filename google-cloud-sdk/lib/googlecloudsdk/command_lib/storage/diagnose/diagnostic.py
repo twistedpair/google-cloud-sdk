@@ -18,8 +18,11 @@ Storage diagnostics are a bunch of tests that can be run to diagnose issues
 with the storage system.
 """
 
+from __future__ import annotations
+
 import abc
 import contextlib
+import dataclasses
 import io
 import os
 import random
@@ -39,6 +42,38 @@ _PROCESS_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_PROCESS_COUNT'
 
 class DiagnosticIgnorableError(errors.Error):
   """Ignorable Exception thrown during the diagnostic execution."""
+
+
+@dataclasses.dataclass
+class DiagnosticOperationResult:
+  """Result of a operation performed as part of a diagnostic.
+
+  Attributes:
+    name: The name of the operation.
+    result: The result of the operation.
+    payload_description: The description of the payload used for running this
+      operation.
+  """
+
+  name: str
+  result: Dict[any, any]
+  payload_description: str | None = None
+
+
+@dataclasses.dataclass
+class DiagnosticResult:
+  """Result of a diagnostic execution.
+
+  Attributes:
+    name: The name of the diagnostic.
+    operation_results: The results of the operations performed as part of this
+      diagnostic.
+    metadata: Additional metadata associated with the diagnostic.
+  """
+
+  name: str
+  operation_results: List[DiagnosticOperationResult]
+  metadata: Dict[any, any] | None = None
 
 
 class Diagnostic(abc.ABC):

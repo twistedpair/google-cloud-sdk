@@ -1302,18 +1302,24 @@ class EventSource(_messages.Message):
   Fields:
     eventSource: Output only. The fully qualified resource name for the event
       source.
+    gitRepoLink: Resource name of Developer Connect GitRepositoryLink.
     gitRepositoryLink: Output only. Resource name of Developer Connect
       GitRepositoryLink.
     id: identification to Resource.
     repository: Output only. Resource name of GCB v2 repo.
-    subscription: Output only. Resource name of PubSub subscription.
+    subscription: Output only. Resource name of Pub/Sub subscription.
+    topic: Resource name of Pub/Sub topic.
+    url: SCM Repo URL.
   """
 
   eventSource = _messages.StringField(1)
-  gitRepositoryLink = _messages.StringField(2)
-  id = _messages.StringField(3)
-  repository = _messages.StringField(4)
-  subscription = _messages.StringField(5)
+  gitRepoLink = _messages.StringField(2)
+  gitRepositoryLink = _messages.StringField(3)
+  id = _messages.StringField(4)
+  repository = _messages.StringField(5)
+  subscription = _messages.StringField(6)
+  topic = _messages.StringField(7)
+  url = _messages.StringField(8)
 
 
 class ExecAction(_messages.Message):
@@ -1625,20 +1631,6 @@ class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
-
-
-class GoogleDevtoolsCloudbuildV2SecretManagerSecret(_messages.Message):
-  r"""Pairs a secret environment variable with a SecretVersion in Secret
-  Manager.
-
-  Fields:
-    env: Environment variable name to associate with the secret.
-    secretVersion: Resource name of the SecretVersion. In format:
-      projects/*/secrets/*/versions/*
-  """
-
-  env = _messages.StringField(1)
-  secretVersion = _messages.StringField(2)
 
 
 class GoogleDevtoolsCloudbuildV2ServiceDirectoryConfig(_messages.Message):
@@ -4132,8 +4124,7 @@ class Workflow(_messages.Message):
     ref: PipelineRef refer to a specific instance of a Pipeline. Deprecated;
       please use pipeline_ref instead.
     resources: Resources referenceable within a workflow.
-    secrets: Pairs a secret environment variable with a SecretVersion in
-      Secret Manager.
+    secrets: Optional. Secrets referenceable within a workflow.
     serviceAccount: If omitted, the default Cloud Build Service Account is
       used instead. Format:
       `projects/{project}/serviceAccounts/{serviceAccount}` Deprecated; please
@@ -4207,7 +4198,7 @@ class Workflow(_messages.Message):
   pipelineSpecYaml = _messages.StringField(10)
   ref = _messages.MessageField('PipelineRef', 11)
   resources = _messages.MessageField('ResourcesValue', 12)
-  secrets = _messages.MessageField('GoogleDevtoolsCloudbuildV2SecretManagerSecret', 13, repeated=True)
+  secrets = _messages.MessageField('WorkflowSecret', 13, repeated=True)
   serviceAccount = _messages.StringField(14)
   uid = _messages.StringField(15)
   updateTime = _messages.StringField(16)
@@ -4239,32 +4230,45 @@ class WorkflowOptions(_messages.Message):
   workerPool = _messages.StringField(7)
 
 
+class WorkflowSecret(_messages.Message):
+  r"""Secret referenceable within a workflow.
+
+  Fields:
+    name: Immutable. The name of the secret.
+    secretVersion: Required. The version of the secret.
+  """
+
+  name = _messages.StringField(1)
+  secretVersion = _messages.StringField(2)
+
+
 class WorkflowStatusUpdateOptions(_messages.Message):
   r"""Configure how/where status is posted.
 
   Enums:
-    RepositoryStatusValueValuesEnum: Options that specify additional
-      information related to a Repo that should be sent in Pub/Sub
-      Notifications
+    RepositoryStatusValueValuesEnum: Options that specify the level of details
+      related to the PipelineRun that was created by a triggered workflow sent
+      back to the GitHub CheckRun.
 
   Fields:
     pubsubTopic: Controls which Pub/Sub topic is used to send status updates
       as a build progresses and terminates. Default: projects//pub-
       sub/topics/cloud-build
-    repositoryStatus: Options that specify additional information related to a
-      Repo that should be sent in Pub/Sub Notifications
+    repositoryStatus: Options that specify the level of details related to the
+      PipelineRun that was created by a triggered workflow sent back to the
+      GitHub CheckRun.
   """
 
   class RepositoryStatusValueValuesEnum(_messages.Enum):
-    r"""Options that specify additional information related to a Repo that
-    should be sent in Pub/Sub Notifications
+    r"""Options that specify the level of details related to the PipelineRun
+    that was created by a triggered workflow sent back to the GitHub CheckRun.
 
     Values:
-      REPOSITORY_STATUS_UNSPECIFIED: Default value. This value is unused.
-      REPOSITORY_STATUS_NAME: Include the event_source of the WorkflowTrigger
-        that results in the PipelineRun/TaskRun
-      REPOSITORY_STATUS_NAME_LOG: Include the GCL log url of the
-        PipelineRun/TaskRun in addition to the event source
+      REPOSITORY_STATUS_UNSPECIFIED: This value is unused.
+      REPOSITORY_STATUS_NAME: Include the status of the PipelineRun. This is
+        the default value.
+      REPOSITORY_STATUS_NAME_LOG: Include the status of the PipelineRun and
+        the GCL log url of it.
     """
     REPOSITORY_STATUS_UNSPECIFIED = 0
     REPOSITORY_STATUS_NAME = 1
@@ -4297,6 +4301,8 @@ class WorkflowTrigger(_messages.Message):
     updateTime: Output only. Update time of the WorkflowTrigger.
     uuid: Output only. The internal id of the WorkflowTrigger.
     webhookSecret: The webhook secret resource.
+    webhookValidationSecret: Resource name of SecretManagerSecret version
+      validating webhook triggers.
   """
 
   class EventTypeValueValuesEnum(_messages.Enum):
@@ -4340,6 +4346,7 @@ class WorkflowTrigger(_messages.Message):
   updateTime = _messages.StringField(11)
   uuid = _messages.StringField(12)
   webhookSecret = _messages.MessageField('WebhookSecret', 13)
+  webhookValidationSecret = _messages.StringField(14)
 
 
 class WorkspaceBinding(_messages.Message):

@@ -41,16 +41,18 @@ CONTEXT_AWARE_ACCESS_DENIED_ERROR = 'access_denied'
 CONTEXT_AWARE_ACCESS_DENIED_ERROR_DESCRIPTION = 'Account restricted'
 # TODO: b/339747060 - Revert back to the old message when b/309559824 is fixed.
 # CONTEXT_AWARE_ACCESS_HELP_MSG = (
-#     'Access was blocked due to an organization policy, please contact your '
-#     'admin to gain access.'
+#     'Access was blocked by Context Aware Access, please contact your'
+#     ' administrator to gain access.'
+# )
+
 CONTEXT_AWARE_ACCESS_HELP_MSG = (
-    'Access was blocked due to an organization policy. If you are using gcloud'
+    'Access was blocked by Context Aware Access. If you are using gcloud'
     ' in an SSH session and your organization requires gcloud from a company'
     ' registered device, please first RDP into your remote machine and log into'
     ' Chrome.'
 )
 CONTEXT_AWARE_ACCESS_HELP_MSG_GOOGLER = (
-    'Access was blocked due to an organization policy. If you are using gcloud'
+    'Access was blocked by Context Aware Access. If you are using gcloud'
     ' in an SSH session and your organization requires gcloud from a company'
     ' registered device, please first RDP into your remote machine and log into'
     ' Chrome. If you are not able to RDP, please apply for policy exemption via'

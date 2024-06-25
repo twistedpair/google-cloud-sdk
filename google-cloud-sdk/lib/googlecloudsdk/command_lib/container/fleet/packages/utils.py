@@ -27,36 +27,36 @@ ROLLOUTS_DESCRIBE_ROLLING_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStrat
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
-                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.syncState:label=DESIRED_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.endTime:label=END_TIME,
+                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.state:label=STATE,
                     trim_message():label=MESSAGE)"""
 
 ROLLOUTS_DESCRIBE_ALLATONCE_TRUNCATED_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
-                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.syncState:label=DESIRED_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.endTime:label=END_TIME,
+                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.state:label=STATE,
                     trim_message():label=MESSAGE)"""
 
 ROLLOUTS_DESCRIBE_ROLLING_FULL_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.rollingStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
-                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.desired.syncState:label=DESIRED_STATE,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.rollingStrategyInfo.clusters.endTime:label=END_TIME,
+                    info.rolloutStrategyInfo.rollingStrategyInfo.clusters.state:label=STATE,
                     all_messages():label=MESSAGES)"""
 
 ROLLOUTS_DESCRIBE_ALLATONCE_FULL_MESSAGES_FORMAT = """table(info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.membership.basename():label=CLUSTER,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.version:label=CURRENT_VERSION,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.current.syncState:label=CURRENT_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.version:label=DESIRED_VERSION,
-                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.desired.syncState:label=DESIRED_STATE,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.startTime:label=START_TIME,
                     info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.endTime:label=END_TIME,
+                    info.rolloutStrategyInfo.allAtOnceStrategyInfo.clusters.state:label=STATE,
                     all_messages():label=MESSAGES)"""
 
 
@@ -128,6 +128,10 @@ def _VariantNameFromDir(path):
     path += '/'
   variant_name = path.split('/')[-2]
   return variant_name
+
+
+def ExpandPathForUser(path):
+  return os.path.expanduser(path)
 
 
 def _ExpandPathForUserAndVars(path):

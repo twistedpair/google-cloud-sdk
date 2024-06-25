@@ -31,6 +31,7 @@ class Capability(enum.Enum):
   CLIENT_SIDE_HASH_VALIDATION = 'CLIENT_SIDE_HASH_VALIDATION'
   ENCRYPTION = 'ENCRYPTION'
   MANAGED_FOLDERS = 'MANAGED_FOLDERS'
+  STORAGE_LAYOUT = 'STORAGE_LAYOUT'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
   # For daisy chain operations, the upload stream is not purely seekable.
@@ -1227,3 +1228,22 @@ class CloudApi(object):
       GoogleLongrunningOperation Apitools object for restoring objects.
     """
     raise NotImplementedError('bulk_restore_object must be overridden.')
+
+  def get_storage_layout(self, bucket_name):
+    """Returns the storage layout configuration for the specified bucket.
+
+    Note that this operation requires storage.objects.list permission.
+
+    Args:
+      bucket_name (str): Name of the Bucket for which we need layout
+        configuration details.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+
+    Returns:
+      apitools BucketStorageLayout object.
+    """
+    raise NotImplementedError('get_storage_layout must be overridden.')
