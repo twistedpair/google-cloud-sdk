@@ -1699,6 +1699,14 @@ apis:
       default: true
     v1alpha1:
       discovery_doc: vmmigration_v1alpha1.json
+  modelarmor:
+    v1alpha:
+      discovery_doc: modelarmor_v1alpha.json
+      default: true
+  cloudaicompanion:
+    v1alpha:
+      discovery_doc: cloudaicompanion_v1alpha.json
+      default: true
 canonical_surfaces:
   accessapproval:
     name: accessapproval
@@ -1786,6 +1794,10 @@ canonical_surfaces:
   cloudasset:
     name: cloudasset
     command: asset
+  cloudaicompanion:
+    name: cloudaicompanion
+    command: gemini
+    hidden: true
   cloudbilling:
     name: cloudbilling
     command: billing
@@ -2012,6 +2024,10 @@ canonical_surfaces:
     command: metastore
   ml:
     name: ml
+    hidden: true
+  modelarmor:
+    name: modelarmor
+    command: modelarmor
     hidden: true
   monitoring:
     name: monitoring

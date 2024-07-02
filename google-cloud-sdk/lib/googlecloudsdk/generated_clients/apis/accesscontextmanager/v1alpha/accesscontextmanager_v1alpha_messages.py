@@ -640,9 +640,9 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   Fields:
     gcpUserAccessBinding: A GcpUserAccessBinding resource to be passed as the
       request body.
-    name: Immutable. Assigned by the server during creation. The last segment
-      has an arbitrary length and has only URI unreserved characters (as
-      defined by [RFC 3986 Section
+    name: Immutable. Identifier. Assigned by the server during creation. The
+      last segment has an arbitrary length and has only URI unreserved
+      characters (as defined by [RFC 3986 Section
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
@@ -1365,7 +1365,7 @@ class Expr(_messages.Message):
 
 class GcpUserAccessBinding(_messages.Message):
   r"""Restricts access to Cloud Console and Google Cloud APIs for a set of
-  users using Context-Aware Access. Next ID: 9
+  users using Context-Aware Access. Next ID: 10
 
   Fields:
     accessLevels: Optional. Access level that a user must have to be granted
@@ -1384,9 +1384,9 @@ class GcpUserAccessBinding(_messages.Message):
       address/alias is changed, this resource will continue to point at the
       changed group. This field does not accept group email addresses or
       aliases. Example: "01d520gv4vjcrht"
-    name: Immutable. Assigned by the server during creation. The last segment
-      has an arbitrary length and has only URI unreserved characters (as
-      defined by [RFC 3986 Section
+    name: Immutable. Identifier. Assigned by the server during creation. The
+      last segment has an arbitrary length and has only URI unreserved
+      characters (as defined by [RFC 3986 Section
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
@@ -2250,6 +2250,7 @@ class SupportedService(_messages.Message):
   properties.
 
   Enums:
+    ServiceSupportStageValueValuesEnum: The support stage of the service.
     SupportStageValueValuesEnum: The support stage of the service.
 
   Fields:
@@ -2262,11 +2263,29 @@ class SupportedService(_messages.Message):
       controls/docs/supported-products) for details.
     name: The service name/address of the supported service, such as
       'service.googleapis.com'
+    serviceSupportStage: The support stage of the service.
     supportStage: The support stage of the service.
     supportedMethods: The list of the supported methods. This field exists
       only in response to GetSupportedService
     title: The name of the supported product, such as 'Cloud Product API'.
   """
+
+  class ServiceSupportStageValueValuesEnum(_messages.Enum):
+    r"""The support stage of the service.
+
+    Values:
+      SERVICE_SUPPORT_STAGE_UNSPECIFIED: Do not use this default value.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      PREVIEW: PREVIEW indicates a pre-release stage where the product is
+        functionally complete but undergoing real-world testing.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed.
+    """
+    SERVICE_SUPPORT_STAGE_UNSPECIFIED = 0
+    GA = 1
+    PREVIEW = 2
+    DEPRECATED = 3
 
   class SupportStageValueValuesEnum(_messages.Enum):
     r"""The support stage of the service.
@@ -2315,9 +2334,10 @@ class SupportedService(_messages.Message):
   availableOnRestrictedVip = _messages.BooleanField(1)
   knownLimitations = _messages.BooleanField(2)
   name = _messages.StringField(3)
-  supportStage = _messages.EnumField('SupportStageValueValuesEnum', 4)
-  supportedMethods = _messages.MessageField('MethodSelector', 5, repeated=True)
-  title = _messages.StringField(6)
+  serviceSupportStage = _messages.EnumField('ServiceSupportStageValueValuesEnum', 4)
+  supportStage = _messages.EnumField('SupportStageValueValuesEnum', 5)
+  supportedMethods = _messages.MessageField('MethodSelector', 6, repeated=True)
+  title = _messages.StringField(7)
 
 
 class TestIamPermissionsRequest(_messages.Message):

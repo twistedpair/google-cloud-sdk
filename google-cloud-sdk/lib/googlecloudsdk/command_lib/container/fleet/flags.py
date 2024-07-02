@@ -396,15 +396,12 @@ class FleetFlagParser:
           _PREREQUISITE_OPTION_ERROR_MSG.format(
               prerequisite='binauthz-evaluation-mode',
               opt='binauthz-policy-bindings',
-          )
+          ),
       )
 
     # If evaluation mode is set to disabled, clear policy_bindings.
     if ret.evaluationMode == (
-        fleet_messages
-        .BinaryAuthorizationConfig
-        .EvaluationModeValueValuesEnum
-        .DISABLED
+        fleet_messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum.DISABLED
     ):
       ret.policyBindings = []
     return self.TrimEmpty(ret)
@@ -445,6 +442,11 @@ class FleetFlagParser:
         else self.messages.CompliancePostureConfig()
     )
 
+    # Short circuit if no compliance flags are set.
+    if self.args.compliance is None and self.args.compliance_standards is None:
+      return self.TrimEmpty(cfg)
+
+    # Determine user desired compliance mode.
     if self.args.compliance is not None:
       if self.args.compliance not in {'enabled', 'disabled'}:
         raise errors.InvalidComplianceMode(self.args.compliance)
@@ -466,11 +468,24 @@ class FleetFlagParser:
             self.messages.CompliancePostureConfig.ModeValueValuesEnum.DISABLED
         )
 
+    # Check configuration landed in a valid compliance mode state.
+    if cfg.mode is None:
+      raise errors.ConfiguringMissingCompliance(
+          'Cannot configure compliance standards without a mode first being'
+          ' set.'
+      )
+
+    # Determine user desired compliance standards.
     if self.args.compliance_standards is not None:
-      cfg.complianceStandards = [
+      desired_standards = [
           self.messages.ComplianceStandard(standard=s)
           for s in self.args.compliance_standards
       ]
+      if not desired_standards:
+        raise errors.ConfiguringMissingCompliance(
+            '--compliance-standards must be a non-empty comma-delimited list.'
+        )
+      cfg.complianceStandards = desired_standards
 
     return self.TrimEmpty(cfg)
 

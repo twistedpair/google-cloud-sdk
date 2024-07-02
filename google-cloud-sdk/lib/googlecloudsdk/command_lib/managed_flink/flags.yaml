@@ -4,22 +4,28 @@ deployment-name:
   help_text: |
     deployment name.
 
-parallelism:
-  api_field: deployment.spec.job.autotuningConfig.minParallelism
-  arg_name: parallelism
+max-slots:
+  api_field: deployment.deploymentSpec.maxSlots
+  arg_name: max-slots
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
   help_text: |
-    parallelism of the Flink job.
+    max slots of the Flink deployment.
 
-jar-uri:
-  api_field: deployment.spec.job.jarUris
-  arg_name: jar-uris
-  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+workload-identity:
+  api_field: deployment.deploymentSpec.workloadIdentity
+  arg_name: workload-identity
   help_text: |
-    URI of the job jar within the Flink docker container. For example:
-    `gs:///opt/flink/examples/streaming/StateMachineExample.jar`.
+    workload identity service account for the Flink deployment.
 
-entry-class:
-  api_field: deployment.spec.entryClass
-  arg_name: entry-class
+network-config-vpc:
+  api_field: deployment.deploymentSpec.networkConfig.vpc
+  arg_name: network-config-vpc
   help_text: |
-    fully qualified main class name of the Flink job. For example: `com.package.Main`.
+    fully qualified VPC network for the Flink deployment network config.
+    Formatted as: projects/{project}/global/networks/{network_id}.
+
+network-config-subnetwork:
+  api_field: deployment.deploymentSpec.networkConfig.subnetwork
+  arg_name: network-config-subnetwork
+  help_text: |
+    subnetwork for the Flink deployment network config.

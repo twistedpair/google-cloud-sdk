@@ -803,3 +803,20 @@ def AddEnableSSHToVM(parser):
       action='store_true',
       help=help_text,
   )
+
+
+def AddVmTags(parser):
+  """Adds a --vm-tags flag to the given parser."""
+  help_text = """\
+  Resource manager tags to be bound to the instance.
+  Tag keys and values have the same definition as
+  https://cloud.google.com/resource-manager/docs/tags/tags-overview
+
+  Example:
+
+    $ {command} --vm-tags=tagKeys/key1=tagValues/value1,tagKeys/key2=tagValues/value2"""
+  parser.add_argument(
+      '--vm-tags',
+      metavar='VM_TAGS',
+      type=arg_parsers.ArgDict(key_type=str, value_type=str),
+      help=help_text)

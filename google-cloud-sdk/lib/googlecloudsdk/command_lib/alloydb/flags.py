@@ -65,24 +65,13 @@ def AddAvailabilityType(parser):
   )
 
 
-def AddBackup(parser, positional=True):
+def AddBackup(parser):
   """Adds a positional backup argument to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    positional: whether or not --backup is positional.
   """
-  if positional:
-    parser.add_argument(
-        'backup',
-        type=str,
-        help='AlloyDB backup ID')
-  else:
-    parser.add_argument(
-        '--backup',
-        required=True,
-        type=str,
-        help='AlloyDB backup ID')
+  parser.add_argument('backup', type=str, help='AlloyDB backup ID')
 
 
 def AddEnforcedRetention(parser):
@@ -952,6 +941,78 @@ def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help):
   )
 
 
+def AddObservabilityConfigEnabled(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--observability-config-enabled',
+      required=False,
+      help="""Enable enhanced query insights feature.""",
+      **kwargs
+  )
+
+
+def AddObservabilityConfigPreserveComments(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--observability-config-preserve-comments',
+      required=False,
+      help="""Allow preservation of comments in query string recorded by the
+        enhanced query insights feature.""",
+      **kwargs
+  )
+
+
+def AddObservabilityConfigTrackWaitEvents(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--observability-config-track-wait-events',
+      required=False,
+      help="""Track wait events during query execution.""",
+      **kwargs
+  )
+
+
+def AddObservabilityConfigMaxQueryStringLength(parser):
+  parser.add_argument(
+      '--observability-config-max-query-string-length',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=1024, upper_bound=100000),
+      help="""Query string length in bytes to be stored by the enhanced query
+        insights feature. Default length is 10k bytes.""",
+  )
+
+
+def AddObservabilityConfigRecordApplicationTags(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--observability-config-record-application-tags',
+      required=False,
+      help="""Allow application tags to be recorded by the enhanced query
+        insights feature.""",
+      **kwargs
+  )
+
+
+def AddObservabilityConfigQueryPlansPerMinute(parser):
+  parser.add_argument(
+      '--observability-config-query-plans-per-minute',
+      required=False,
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=20),
+      help="""Number of query plans to sample every minute.
+        Default value is 200. Allowed range: 0 to 200.""",
+  )
+
+
+def AddObservabilityConfigTrackActiveQueries(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--observability-config-track-active-queries',
+      required=False,
+      help="""Track actively running queries.""",
+      **kwargs
+  )
+
+
 def KmsKeyAttributeConfig():
   # For anchor attribute, help text is generated automatically.
   return concepts.ResourceParameterAttributeConfig(name='kms-key')
@@ -1224,12 +1285,13 @@ def AddDatabaseVersion(parser, alloydb_messages, release_track):
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
+    release_track: Release track of the command.
   """
   choices = [
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_14,
       alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_15,
   ]
-  if release_track == base.ReleaseTrack.ALPHA:
+  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
     choices.append(
         alloydb_messages.Cluster.DatabaseVersionValueValuesEnum.POSTGRES_16
     )

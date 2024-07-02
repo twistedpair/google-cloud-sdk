@@ -71,10 +71,8 @@ def AddVolumeNetworkArg(parser, required=True):
         *name*::: The name of the Google Compute Engine
         [VPC network](/compute/docs/networks-and-firewalls#networks) to which
         the volume is connected.
-        *psa-range*::: The `psa-range` is the name of the allocated range of the
-        Private Service Access connection. The range you specify can't
-        overlap with either existing subnets or assigned IP address ranges for
-        other Cloud NetApp Files Volumes in the selected VPC network.
+        *psa-range*::: This field is not implemented. The values provided in
+        this field are ignored.
   """
 
   parser.add_argument(

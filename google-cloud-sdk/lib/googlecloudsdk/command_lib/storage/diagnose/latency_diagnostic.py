@@ -17,6 +17,7 @@
 
 import math
 from typing import List
+import uuid
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
@@ -27,11 +28,12 @@ from googlecloudsdk.command_lib.storage.diagnose import diagnostic
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files as file_utils
+from googlecloudsdk.core.util import scaled_integer
 
-_DEFAULT_OBJECT_SIZES = [0, 10000]
+# Default object size of 0B, 1KB, 100KB, and 1MB.
+_DEFAULT_OBJECT_SIZES = [0, 1024, 100 * 1024, 1024 * 1024]
 _DIAGNOSTIC_NAME = 'Latency Diagnostic'
 _ITERATION_COUNT = 5
-
 _UPLOAD_OPERATION_TITLE = 'upload'
 _DOWNLOAD_OPERATION_TITLE = 'download'
 _DELETE_OPERATION_TITLE = 'delete'
@@ -41,6 +43,18 @@ _MEAN_TITLE = 'Mean'
 _STANDARD_DEVIATION_TITLE = 'Standard deviation'
 _PERCENTILE_90TH_TITLE = '90th percentile'
 _PERCENTILE_50TH_TITLE = '50th percentile'
+
+
+def _format_as_milliseconds(time_in_seconds: float) -> str:
+  """Formats a time in seconds as milliseconds."""
+  time_in_milliseconds = time_in_seconds * 1000
+  return f'{time_in_milliseconds:.2f}ms'
+
+
+def _get_payload_description(object_size: int, object_number: int) -> str:
+  """Returns the payload description for the given object size and number."""
+  scaled_object_size = scaled_integer.FormatInteger(object_size)
+  return f'object size {scaled_object_size} at index [{object_number}]'
 
 
 class LatencyDiagnostic(diagnostic.Diagnostic):
@@ -66,10 +80,13 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     # A dictionary which stores the latency data of each operation.
     # _result = {'upload': {'0Kb' : 'iteration1' : values}}
     self._result = {}
+    # Make sure the prefix is unique to avoid collisions with other diagnostics
+    # and previous runs of this diagnostic.
+    self.object_prefix = 'latency_diagnostics_' + str(uuid.uuid4())
 
   def _pre_process(self):
     """Creates the test files to be used in the diagnostic."""
-    is_done = self._create_test_files(self.object_sizes, 'latency_diagnostics_')
+    is_done = self._create_test_files(self.object_sizes, self.object_prefix)
 
     if not is_done:
       raise diagnostic.DiagnosticIgnorableError('Failed to create test files.')
@@ -176,7 +193,6 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     """
     for iteration in range(_ITERATION_COUNT):
       log.status.Print('Running latency iteration {}'.format(iteration))
-
       # Run operation for each file and store the results.
       for object_number in range(self.object_count):
         file_path = self._files[object_number]
@@ -227,23 +243,31 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
         cumulative_result_dict = {}
 
         mean = sum(trials) / _ITERATION_COUNT
-        cumulative_result_dict[_MEAN_TITLE] = mean
+        cumulative_result_dict[_MEAN_TITLE] = _format_as_milliseconds(mean)
 
-        cumulative_result_dict[_STANDARD_DEVIATION_TITLE] = (
+        standard_deviation = (
             math.sqrt(sum((x - mean) ** 2 for x in trials) / len(trials))
             / _ITERATION_COUNT
         )
+        cumulative_result_dict[_STANDARD_DEVIATION_TITLE] = (
+            _format_as_milliseconds(standard_deviation)
+        )
+
         cumulative_result_dict[_PERCENTILE_50TH_TITLE] = (
-            statistics_util.find_percentile(list(trials), 50)
+            _format_as_milliseconds(
+                statistics_util.find_percentile(list(trials), 50)
+            )
         )
         cumulative_result_dict[_PERCENTILE_90TH_TITLE] = (
-            statistics_util.find_percentile(list(trials), 90)
+            _format_as_milliseconds(
+                statistics_util.find_percentile(list(trials), 90)
+            )
         )
 
         operation_result = diagnostic.DiagnosticOperationResult(
             operation_title,
             cumulative_result_dict,
-            payload_description='object size: {} at index : {}'.format(
+            payload_description=_get_payload_description(
                 self.object_sizes[object_number], object_number
             ),
         )

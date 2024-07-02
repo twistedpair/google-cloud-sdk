@@ -85,6 +85,12 @@ configs:
     already exists, only that configuration is updated. If the map contains a key that does not
     exist, the entry is appended to the topic configuration.
 
+clear-configs:
+  arg_name: clear-configs
+  action: store_true
+  help_text: |
+    Remove all the configurations for the topic.
+
 # TODO(b/336117815): Provide hard examples and external docs on this flag.
 topics-file:
   arg_name: topics-file

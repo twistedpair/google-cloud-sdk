@@ -1163,3 +1163,27 @@ def AddBuildServiceAccountFlag(parser):
           Clears the build service account field.
       """,
   )
+
+
+def AddBinaryAuthorizationMutexGroup(parser, track):
+  """Add flag for specifying Binary Authorization Policy to the parser."""
+  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    mutex_group = parser.add_group(mutex=True)
+    mutex_group.add_argument(
+        '--binary-authorization',
+        help="""\
+          Name of the Binary Authorization policy that the function image should
+          be checked against when deploying to Cloud Run.
+
+          Example: default
+
+          The flag is only applicable to 2nd gen functions.
+        """,
+    )
+    mutex_group.add_argument(
+        '--clear-binary-authorization',
+        action='store_true',
+        help="""\
+          Clears the Binary Authorization policy field.
+        """,
+    )

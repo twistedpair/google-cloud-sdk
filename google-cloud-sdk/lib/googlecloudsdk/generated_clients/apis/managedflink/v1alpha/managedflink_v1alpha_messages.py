@@ -17,15 +17,20 @@ class AutotuningConfig(_messages.Message):
   r"""The autotuning configuration for the Flink job.
 
   Fields:
-    enableHorizontalAutoscaling: Optional. Whether horizontal autoscaling is
-      enabled for the Flink job.
-    maxParallelism: Optional. Max parallelism of the Flink job.
-    minParallelism: Optional. Min parallelism of the Flink job.
+    enableHorizontalAutoscaling: Optional.
+    fixed: Fixed policy to disable autoscaling.
+    maxParallelism: Optional.
+    minParallelism: Optional.
+    throughputBased: The throughput based autoscaling policy leveraging
+      observed throughput, true processing rate (i.e. estimated maximum
+      achievable throughput) to autoscale the task parallelism per job vertex.
   """
 
   enableHorizontalAutoscaling = _messages.BooleanField(1)
-  maxParallelism = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minParallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  fixed = _messages.MessageField('Fixed', 2)
+  maxParallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minParallelism = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  throughputBased = _messages.MessageField('Elastic', 5)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -33,21 +38,41 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Deployment(_messages.Message):
-  r"""Message describing Deployment object
+  r"""Message describing the Flink Deployment resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the Flink deployment.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    deploymentStatus: Output only. Last observed status of the Flink
-      deployment.
-    gcpConfig: Optional. The GCP configurations for a ManagedFlink resource.
+    createTime: Output only. The time when the deployment was created.
+    deploymentSpec: Optional. Spec that describes a Flink deployment.
+    displayName: Optional. The display name of the deployment.
     labels: Optional. Labels as key value pairs
-    name: name of resource
-    spec: Optional. Spec that describes a Flink session cluster deployment.
-    updateTime: Output only. [Output only] Update time stamp
+    name: Identifier. The name of the deployment.
+    state: Output only. The state of the Flink deployment.
+    updateTime: Output only. The time when the deployment was last updated.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Flink deployment.
+
+    Values:
+      STATE_UNSPECIFIED: State unspecified.
+      INITIALIZING: Deployment is initializing.
+      CREATED: Deployment has been created.
+      RUNNING: Deployment is running.
+      TERMINATING: Deployment is terminating.
+      TERMINATED: Deployment has terminated.
+    """
+    STATE_UNSPECIFIED = 0
+    INITIALIZING = 1
+    CREATED = 2
+    RUNNING = 3
+    TERMINATING = 4
+    TERMINATED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -74,12 +99,41 @@ class Deployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  deploymentStatus = _messages.MessageField('ManagedFlinkDeploymentStatus', 2)
-  gcpConfig = _messages.MessageField('GcpConfig', 3)
+  deploymentSpec = _messages.MessageField('DeploymentSpec', 2)
+  displayName = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  spec = _messages.MessageField('ManagedFlinkDeploymentSpec', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
   updateTime = _messages.StringField(7)
+
+
+class DeploymentSpec(_messages.Message):
+  r"""The specification of the Flink deployment.
+
+  Fields:
+    maxSlots: Optional. Maximum number of slots for the deployment.
+    networkConfig: Optional. Network configuration for the deployment.
+    workloadIdentity: Optional. Workload identity service account for the
+      deployment.
+  """
+
+  maxSlots = _messages.IntegerField(1)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  workloadIdentity = _messages.StringField(3)
+
+
+class Elastic(_messages.Message):
+  r"""Elastic autoscaling policy to enable autoscaling with min/max limits.
+
+  Fields:
+    maxParallelism: Optional. The maximum task parallelism for the Flink job.
+    minParallelism: Optional. The minimum task parallelism for the Flink job.
+    parallelism: Optional. The initial task parallelism for the Flink job.
+  """
+
+  maxParallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minParallelism = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  parallelism = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -91,15 +145,14 @@ class Empty(_messages.Message):
 
 
 
-class GcpConfig(_messages.Message):
-  r"""The GCP configurations for a ManagedFlink resource.
+class Fixed(_messages.Message):
+  r"""Fixed policy to disable autoscaling.
 
   Fields:
-    networkConfigs: Optional. The GCP network configurations for a
-      ManagedFlink resource.
+    parallelism: Optional. The fixed task parallelism for the Flink job.
   """
 
-  networkConfigs = _messages.MessageField('NetworkConfig', 1)
+  parallelism = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class Job(_messages.Message):
@@ -196,9 +249,9 @@ class JobSpec(_messages.Message):
       Flink job graph.
     jarUris: Optional. The list of URIs for the job jars in cloud storage.
     jobGraphUri: Required. The flink job graph uri in cloud storage.
-    network: Optional. The VPC network for the Flink job.
-    subnetwork: Optional. The VPC subnet in which to create Private Service
-      Connect (PSC) interfaces for the Flink job.
+    networkConfig: Optional. Network configuration for the job.
+    workloadIdentityServiceAccount: Optional. Workload identity service
+      account for the job.
   """
 
   artifactUris = _messages.StringField(1, repeated=True)
@@ -206,8 +259,8 @@ class JobSpec(_messages.Message):
   displayName = _messages.StringField(3)
   jarUris = _messages.StringField(4, repeated=True)
   jobGraphUri = _messages.StringField(5)
-  network = _messages.StringField(6)
-  subnetwork = _messages.StringField(7)
+  networkConfig = _messages.MessageField('NetworkConfig', 6)
+  workloadIdentityServiceAccount = _messages.StringField(7)
 
 
 class ListDeploymentsResponse(_messages.Message):
@@ -346,176 +399,6 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
-class ManagedFlinkDeploymentSpec(_messages.Message):
-  r"""The specification of the Flink deployment.
-
-  Messages:
-    FlinkConfigValue: Optional. Flink configuration overrides for the Flink
-      deployment or Flink session job.
-    LogConfigValue: Optional. Log configuration overrides for the Flink
-      deployment. Format logConfigFileName -> configContent.
-
-  Fields:
-    entryClass: Optional. Adding temporarily to not break the existing code
-      for deployment workflow.
-    flinkConfig: Optional. Flink configuration overrides for the Flink
-      deployment or Flink session job.
-    image: Optional. Flink docker image used to start the Job and TaskManager
-      pods.
-    imagePullPolicy: Optional. Image pull policy of the Flink docker image.
-    job: Optional. --- POTENTIALLY REMOVE FIELD: --- Might make sense to
-      remove this field for the time being, based on OSS Flink's documentation
-      this field should only be specified for Application Mode and should be
-      empty for Session mode. I know we floated the idea of creating a Flink
-      Session Cluster + Flink Job in a single CreateDeployment call, but I'm
-      not sure if we're still trying to support ## that CUJ.
-      https://screenshot.googleplex.com/93wyzH6rUzoySrR Job specification for
-      application deployments/session job. Null for session clusters.
-    logConfig: Optional. Log configuration overrides for the Flink deployment.
-      Format logConfigFileName -> configContent.
-    restartNonce: Optional. Nonce used to manually trigger restart for the
-      cluster/session job. In order to trigger restart, change the number to a
-      different non-null value.
-    serviceAccount: Optional. Kubernetes service used by the Flink deployment.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FlinkConfigValue(_messages.Message):
-    r"""Optional. Flink configuration overrides for the Flink deployment or
-    Flink session job.
-
-    Messages:
-      AdditionalProperty: An additional property for a FlinkConfigValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type FlinkConfigValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FlinkConfigValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LogConfigValue(_messages.Message):
-    r"""Optional. Log configuration overrides for the Flink deployment. Format
-    logConfigFileName -> configContent.
-
-    Messages:
-      AdditionalProperty: An additional property for a LogConfigValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LogConfigValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LogConfigValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  entryClass = _messages.StringField(1)
-  flinkConfig = _messages.MessageField('FlinkConfigValue', 2)
-  image = _messages.StringField(3)
-  imagePullPolicy = _messages.StringField(4)
-  job = _messages.MessageField('JobSpec', 5)
-  logConfig = _messages.MessageField('LogConfigValue', 6)
-  restartNonce = _messages.IntegerField(7)
-  serviceAccount = _messages.StringField(8)
-
-
-class ManagedFlinkDeploymentStatus(_messages.Message):
-  r"""The status of the Flink deployment or Flink session job.
-
-  Enums:
-    LifecycleStateValueValuesEnum: Output only. Lifecycle state of the Flink
-      resource (including being rolled back, failed etc.).
-
-  Messages:
-    ClusterInfoValue: Output only. Information from running clusters.
-
-  Fields:
-    clusterInfo: Output only. Information from running clusters.
-    error: Output only. Error information about the
-      FlinkDeployment/FlinkSessionJob.
-    generation: Output only. Last observed generation of the
-      FlinkDeployment/FlinkSessionJob.
-    lifecycleState: Output only. Lifecycle state of the Flink resource
-      (including being rolled back, failed etc.).
-  """
-
-  class LifecycleStateValueValuesEnum(_messages.Enum):
-    r"""Output only. Lifecycle state of the Flink resource (including being
-    rolled back, failed etc.).
-
-    Values:
-      RESOURCE_LIFECYCLE_STATE_UNSPECIFIED: Unspecified state.
-      DEPLOYMENT_CREATED: Resource has been created.
-      DEPLOYMENT_DEPLOYED: Resource has been deployed.
-      DEPLOYMENT_FAILED: Resource has failed to deploy.
-      DEPLOYMENT_ROLLED_BACK: Resource has been rolled back.
-      DEPLOYMENT_ROLLING_BACK: Resource is stable.
-      DEPLOYMENT_STABLE: Resource is stable.
-      DEPLOYMENT_SUSPENDED: Resource is suspended.
-      DEPLOYMENT_UPGRADING: Resource is upgrading.
-    """
-    RESOURCE_LIFECYCLE_STATE_UNSPECIFIED = 0
-    DEPLOYMENT_CREATED = 1
-    DEPLOYMENT_DEPLOYED = 2
-    DEPLOYMENT_FAILED = 3
-    DEPLOYMENT_ROLLED_BACK = 4
-    DEPLOYMENT_ROLLING_BACK = 5
-    DEPLOYMENT_STABLE = 6
-    DEPLOYMENT_SUSPENDED = 7
-    DEPLOYMENT_UPGRADING = 8
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class ClusterInfoValue(_messages.Message):
-    r"""Output only. Information from running clusters.
-
-    Messages:
-      AdditionalProperty: An additional property for a ClusterInfoValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type ClusterInfoValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a ClusterInfoValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  clusterInfo = _messages.MessageField('ClusterInfoValue', 1)
-  error = _messages.StringField(2)
-  generation = _messages.IntegerField(3)
-  lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 4)
-
-
 class ManagedflinkProjectsLocationsDeploymentsCreateRequest(_messages.Message):
   r"""A ManagedflinkProjectsLocationsDeploymentsCreateRequest object.
 
@@ -601,7 +484,7 @@ class ManagedflinkProjectsLocationsDeploymentsPatchRequest(_messages.Message):
 
   Fields:
     deployment: A Deployment resource to be passed as the request body.
-    name: name of resource
+    name: Identifier. The name of the deployment.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

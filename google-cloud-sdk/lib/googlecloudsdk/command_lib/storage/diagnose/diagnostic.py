@@ -38,6 +38,8 @@ from googlecloudsdk.core.util import files as file_utils
 
 _THREAD_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_THREAD_COUNT'
 _PROCESS_COUNT_ENV_VAR = 'CLOUDSDK_STORAGE_PROCESS_COUNT'
+# Placeholder value for metrics that are not available or cannot be calculated.
+PLACEHOLDER_METRIC_VALUE = 'N/A'
 
 
 class DiagnosticIgnorableError(errors.Error):

@@ -779,6 +779,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'cloudaicompanion': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudaicompanion.v1alpha',
+                    client_classpath='cloudaicompanion_v1alpha_client.CloudaicompanionV1alpha',
+                    base_url='https://cloudaicompanion.googleapis.com/',
+                    messages_modulepath='cloudaicompanion_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'cloudasset': {
         'v1':
             APIDef(
@@ -2559,6 +2571,18 @@ MAP = {
                     client_classpath='ml_v1_client.MlV1',
                     base_url='https://ml.googleapis.com/',
                     messages_modulepath='ml_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'modelarmor': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.modelarmor.v1alpha',
+                    client_classpath='modelarmor_v1alpha_client.ModelarmorV1alpha',
+                    base_url='https://modelarmor.googleapis.com/',
+                    messages_modulepath='modelarmor_v1alpha_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

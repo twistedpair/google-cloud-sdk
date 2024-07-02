@@ -1657,6 +1657,33 @@ class DatamigrationV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ConvertApplicationCode(self, request, global_params=None):
+      r"""Convert the provided source code from accessing the source database to accessing the destination database.
+
+      Args:
+        request: (DatamigrationProjectsLocationsConvertApplicationCodeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ConvertApplicationCodeResponse) The response message.
+      """
+      config = self.GetMethodConfig('ConvertApplicationCode')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ConvertApplicationCode.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:convertApplicationCode',
+        http_method='POST',
+        method_id='datamigration.projects.locations.convertApplicationCode',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:convertApplicationCode',
+        request_field='convertApplicationCodeRequest',
+        request_type_name='DatamigrationProjectsLocationsConvertApplicationCodeRequest',
+        response_type_name='ConvertApplicationCodeResponse',
+        supports_download=False,
+    )
+
     def FetchStaticIps(self, request, global_params=None):
       r"""Fetches a set of static IP addresses that need to be allowlisted by the customer when using the static-IP connectivity method.
 

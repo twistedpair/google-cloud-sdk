@@ -15,7 +15,11 @@
 
 """Download Throughput Diagnostic."""
 
+
+from __future__ import annotations
+
 import enum
+import math
 import os
 from typing import List
 import uuid
@@ -30,9 +34,6 @@ from googlecloudsdk.core.util import scaled_integer
 
 _DEFAULT_OBJECT_COUNT = 5
 _DEFAULT_OBJECT_SIZE = 1024 * 1024
-# Make sure the prefix is unique to avoid collisions with other diagnostics
-# and previous runs of this diagnostic.
-_OBJECT_PREFIX = 'download_throughput_diagnostics_' + str(uuid.uuid4())
 _SLICED_OBJECT_DOWNLOAD_COMPONENT_SIZE_ENV_VAR = (
     'CLOUDSDK_STORAGE_SLICED_OBJECT_DOWNLOAD_COMPONENT_SIZE'
 )
@@ -46,6 +47,21 @@ _STREAMING_DOWNLOAD_PARALLELISM_WARNING = (
     'Process and/or thread count is set but streaming downloads dont'
     ' support parallelism. Ignoring these values.'
 )
+_METRIC_NAME = 'download throughput'
+
+
+def _get_payload_description(object_count: int, object_size: int) -> str:
+  """Returns the payload description for the given object count and size."""
+  return (
+      f'Transferred {object_count} objects for a total transfer size of'
+      f' {scaled_integer.FormatInteger(object_size)}.'
+  )
+
+
+def _get_formatted_download_throughput(download_throughput: float) -> str:
+  """Formats the download throughput to a human readable format."""
+  scaled_download_throughput = scaled_integer.FormatInteger(download_throughput)
+  return f'{scaled_download_throughput}/sec'
 
 
 class DownloadType(enum.Enum):
@@ -90,19 +106,22 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     self._old_env_vars = {}
     self.temp_dir = None
     self._download_dir = None
-    self.result = {}
+    self._result = {}
+    # Make sure the prefix is unique to avoid collisions with other diagnostics
+    # and previous runs of this diagnostic.
+    self.object_prefix = 'download_throughput_diagnostics_' + str(uuid.uuid4())
 
   def _pre_process(self):
     """Uploads test files to the bucket."""
     self._old_env_vars = os.environ.copy()
-    is_done = self._create_test_files(self._object_sizes, _OBJECT_PREFIX)
+    is_done = self._create_test_files(self._object_sizes, self.object_prefix)
 
     if not is_done:
       raise diagnostic.DiagnosticIgnorableError('Failed to create test files.')
 
     log.debug('Creating {} test objects.'.format(self._object_count))
     self._run_cp(
-        self.temp_dir.path + '/' + _OBJECT_PREFIX + '*',
+        self.temp_dir.path + '/' + self.object_prefix + '*',
         self.bucket_url.url_string,
     )
     log.debug('Finished creating test objects.')
@@ -149,9 +168,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
               self._object_count, _STREAMING_DOWNLOAD_DESTINATION
           )
       )
-      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self.result):
+      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
-            self.bucket_url.url_string + _OBJECT_PREFIX + '*',
+            self.bucket_url.url_string + self.object_prefix + '*',
             _STREAMING_DOWNLOAD_DESTINATION,
         )
     elif (
@@ -164,9 +183,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
               self._object_count, self._download_dir.path
           )
       )
-      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self.result):
+      with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
-            self.bucket_url.url_string + _OBJECT_PREFIX + '*',
+            self.bucket_url.url_string + self.object_prefix + '*',
             self._download_dir.path,
         )
     else:
@@ -199,3 +218,31 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
                 _DIAGNOSTIC_NAME, e
             )
         )
+
+  @property
+  def result(self) -> diagnostic.DiagnosticResult | None:
+    """Returns the summarized result of the diagnostic."""
+    if not self._result:
+      return None
+
+    download_time = self._result[_DOWNLOAD_THROUGHPUT_RESULT_KEY]
+    download_payload_size = sum(self._object_sizes)
+    # Handle division by zero case.
+    if math.isclose(download_time, 0.0):
+      download_throughput = diagnostic.PLACEHOLDER_METRIC_VALUE
+    else:
+      download_throughput = _get_formatted_download_throughput(
+          download_payload_size / download_time
+      )
+
+    operation_result = diagnostic.DiagnosticOperationResult(
+        name=_METRIC_NAME,
+        result=download_throughput,
+        payload_description=_get_payload_description(
+            self._object_count, download_payload_size
+        ),
+    )
+    return diagnostic.DiagnosticResult(
+        name=_DIAGNOSTIC_NAME,
+        operation_results=[operation_result],
+    )

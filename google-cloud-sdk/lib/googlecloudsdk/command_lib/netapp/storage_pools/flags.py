@@ -132,10 +132,8 @@ def AddStoragePoolNetworkArg(parser, required=True):
         the volume is connected. Short-form (VPC network ID) or long-form
         (full VPC network name: projects/PROJECT/locations/LOCATION/networks/NETWORK) are both
         accepted, but please use the long-form when attempting to create a Storage Pool using a shared VPC.
-        *psa-range*::: The `psa-range` is the name of the allocated range of the
-        Private Service Access connection. The range you specify can't
-        overlap with either existing subnets or assigned IP address ranges for
-        other Cloud NetApp Files Storage Pools in the selected VPC network.
+        *psa-range*::: This field is not implemented. The values provided in
+        this field are ignored.
   """
 
   parser.add_argument(

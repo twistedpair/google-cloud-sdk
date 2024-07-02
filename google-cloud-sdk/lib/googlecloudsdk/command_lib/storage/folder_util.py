@@ -51,6 +51,12 @@ class FolderSetting(enum.Enum):
   # Indicates that folders should be included as prefixes.
   LIST_AS_PREFIXES = 'list_as_prefixes'
 
+  # Indicates that any prefixes should be checked if they are
+  # folders and listed as such. Calls to ListFolders should only be done
+  # if they are an HNS bucket or ConflictErrors (arising out of calling
+  # the API on flat namespace buckets) should be absorbed.
+  LIST_AS_FOLDERS = 'list_as_folders'
+
   # Yields folder resources without object/prefix resources.
   LIST_WITHOUT_OBJECTS = 'list_without_objects'
 

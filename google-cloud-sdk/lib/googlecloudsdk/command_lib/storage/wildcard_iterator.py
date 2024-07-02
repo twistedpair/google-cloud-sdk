@@ -413,8 +413,17 @@ class CloudWildcardIterator(WildcardIterator):
         if self._url.is_bucket():
           yield bucket_or_unknown_resource
         else:  # URL is an object or prefix.
-          for resource in self._fetch_sub_bucket_resources(
+          # We have to fetch information metadata of a Bucket again as we
+          # do not always list the full scope of fields during the above steps.
+          # We may not want to do that even now, to avoid extra information
+          # being printed anywhere in the output.
+          is_hns_bucket = self._is_hns_bucket(
               bucket_or_unknown_resource.storage_url.bucket_name
+          )
+
+          for resource in self._fetch_sub_bucket_resources(
+              bucket_or_unknown_resource.storage_url.bucket_name,
+              is_hns_bucket=is_hns_bucket,
           ):
             if self._exclude_patterns and self._exclude_patterns.match(
                 resource.storage_url.versionless_url_string
@@ -505,7 +514,7 @@ class CloudWildcardIterator(WildcardIterator):
       pass
     return None
 
-  def _fetch_sub_bucket_resources(self, bucket_name):
+  def _fetch_sub_bucket_resources(self, bucket_name, is_hns_bucket=False):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
         contains_wildcard(self._url.object_name)
@@ -518,7 +527,7 @@ class CloudWildcardIterator(WildcardIterator):
       if direct_query_result:
         return [direct_query_result]
     # Will run if direct check found no result.
-    return self._expand_object_path(bucket_name)
+    return self._expand_object_path(bucket_name, is_hns_bucket)
 
   def _get_managed_folder_iterator(self, bucket_name, wildcard_parts):
     # Listing all objects under a prefix (recursive listing) occurs when
@@ -547,10 +556,18 @@ class CloudWildcardIterator(WildcardIterator):
       if self._raise_managed_folder_precondition_errors:
         raise
 
-  def _get_folder_iterator(self, bucket_name, wildcard_parts):
+  def _get_folder_iterator(
+      self, bucket_name, wildcard_parts, is_hns_bucket=False
+  ):
     is_recursive_expansion = wildcard_parts.delimiter is None
-    should_list_folders = self._folder_setting in (
-        folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,
+    is_list_as_folders = (
+        self._folder_setting is folder_util.FolderSetting.LIST_AS_FOLDERS
+        and is_hns_bucket
+    )
+    should_list_folders = (
+        self._folder_setting
+        in (folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,)
+        or is_list_as_folders
     )
 
     if wildcard_parts.prefix:
@@ -562,7 +579,11 @@ class CloudWildcardIterator(WildcardIterator):
     else:
       modified_prefix = None
 
-    if should_list_folders and is_recursive_expansion:
+    if (
+        should_list_folders
+        and cloud_api.Capability.FOLDERS in self._client.capabilities
+        and is_recursive_expansion
+    ):
       folder_iterator = self._client.list_folders(
           bucket_name=bucket_name,
           prefix=modified_prefix,
@@ -573,7 +594,9 @@ class CloudWildcardIterator(WildcardIterator):
     for resource in folder_iterator:
       yield resource
 
-  def _get_resource_iterator(self, bucket_name, wildcard_parts):
+  def _get_resource_iterator(
+      self, bucket_name, wildcard_parts, is_hns_bucket=False
+  ):
     if (
         (
             self._managed_folder_setting
@@ -624,7 +647,9 @@ class CloudWildcardIterator(WildcardIterator):
         bucket_name, wildcard_parts
     )
 
-    folder_iterator = self._get_folder_iterator(bucket_name, wildcard_parts)
+    folder_iterator = self._get_folder_iterator(
+        bucket_name, wildcard_parts, is_hns_bucket
+    )
 
     return heapq.merge(
         object_iterator,
@@ -657,7 +682,7 @@ class CloudWildcardIterator(WildcardIterator):
     except api_errors.NotFoundError:
       return resource
 
-  def _maybe_convert_prefix_to_folder(self, resource):
+  def _maybe_convert_prefix_to_folder(self, resource, is_hns_bucket=False):
     """If resource is a prefix, attempts to convert it to a folder."""
     if (
         # pylint: disable=unidiomatic-typecheck
@@ -667,7 +692,15 @@ class CloudWildcardIterator(WildcardIterator):
         or self._folder_setting
         not in {
             folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,
+            folder_util.FolderSetting.LIST_AS_FOLDERS,
         }
+        or cloud_api.Capability.FOLDERS not in self._client.capabilities
+    ):
+      return resource
+
+    if (
+        self._folder_setting is folder_util.FolderSetting.LIST_AS_FOLDERS
+        and not is_hns_bucket
     ):
       return resource
 
@@ -679,11 +712,12 @@ class CloudWildcardIterator(WildcardIterator):
     except api_errors.NotFoundError:
       return resource
 
-  def _expand_object_path(self, bucket_name):
+  def _expand_object_path(self, bucket_name, is_hns_bucket=False):
     """Expands object names.
 
     Args:
       bucket_name (str): Name of the bucket.
+      is_hns_bucket (bool): Whether the bucket is an HNS bucket.
 
     Yields:
       resource_reference.Resource objects where each resource can be
@@ -714,7 +748,7 @@ class CloudWildcardIterator(WildcardIterator):
 
       # Fetch all the objects and prefixes.
       resource_iterator = self._get_resource_iterator(
-          bucket_name, wildcard_parts
+          bucket_name, wildcard_parts, is_hns_bucket
       )
 
       # We have all the objects and prefixes that matched wildcard_parts.prefix.
@@ -755,7 +789,9 @@ class CloudWildcardIterator(WildcardIterator):
           # The order is important as Folders should take precdence
           # over Managed Folders for an HNS bucket, So if a resource is a
           # Folder, then we need not convert it to a Managed Folder
-          resource = self._maybe_convert_prefix_to_folder(resource)
+          resource = self._maybe_convert_prefix_to_folder(
+              resource, is_hns_bucket
+          )
           if not isinstance(resource, resource_reference.FolderResource):
             resource = self._maybe_convert_prefix_to_managed_folder(resource)
 
@@ -854,6 +890,30 @@ class CloudWildcardIterator(WildcardIterator):
     for bucket_resource in self._client.list_buckets(self._fields_scope):
       if bucket_pattern.match(bucket_resource.name):
         yield bucket_resource
+
+  def _is_hns_bucket(self, bucket_name):
+    if (
+        self._folder_setting is not folder_util.FolderSetting.LIST_AS_FOLDERS
+        or cloud_api.Capability.STORAGE_LAYOUT not in self._client.capabilities
+    ):
+      return False
+
+    try:
+      bucket_layout = self._client.get_storage_layout(bucket_name)
+    except api_errors.GcsApiError as error:
+      # GetStorageLayout requires ListObjects permission to work.
+      # While for most cases, (especially in this code path) the user would
+      # have the permission, we still ideally do not want to fail for a corner
+      # case where someone user may not have the required permission.
+      if error.payload.status_code != 403:
+        # Avoids unexpectedly escalating permissions.
+        raise
+      return False
+
+    return bool(
+        getattr(bucket_layout, 'hierarchicalNamespace', None)
+        and bucket_layout.hierarchicalNamespace.enabled
+    )
 
 
 class CloudWildcardParts:

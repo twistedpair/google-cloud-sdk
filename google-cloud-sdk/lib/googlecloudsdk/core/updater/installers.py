@@ -199,34 +199,30 @@ def _ExecuteRequestAndRaiseExceptions(url, headers, timeout):
   return response
 
 
-def DownloadAndExtractTar(url, download_dir, extract_dir,
-                          progress_callback=None, command_path='unknown'):
-  """Download and extract the given tar file.
+def DownloadTar(url, download_dir, progress_callback=None,
+                command_path='unknown'):
+  """Download the given tar file.
 
   Args:
     url: str, The URL to download.
     download_dir: str, The path to put the temporary download file into.
-    extract_dir: str, The path to extract the tar into.
     progress_callback: f(float), A function to call with the fraction of
       completeness.
     command_path: the command path to include in the User-Agent header if the
       URL is HTTP
 
   Returns:
-    [str], The files that were extracted from the tar file.
+    str, The path of the downloaded tar file.
 
   Raises:
     URLFetchError: If there is a problem fetching the given URL.
   """
-  for d in [download_dir, extract_dir]:
-    if not os.path.exists(d):
-      file_utils.MakeDir(d)
+  progress_callback = progress_callback or console_io.DefaultProgressBarCallback
+  if not os.path.exists(download_dir):
+    file_utils.MakeDir(download_dir)
   download_file_path = os.path.join(download_dir, os.path.basename(url))
   if os.path.exists(download_file_path):
     os.remove(download_file_path)
-
-  (download_callback, install_callback) = (
-      console_io.SplitProgressBar(progress_callback, [1, 1]))
 
   try:
     response = MakeRequest(url, command_path)
@@ -236,12 +232,31 @@ def DownloadAndExtractTar(url, download_dir, extract_dir,
       for chunk in response.iter_content(chunk_size=WRITE_BUFFER_SIZE):
         fp.write(chunk)
         total_written += len(chunk)
-        download_callback(total_written / total_size)
-    download_callback(1)
+        progress_callback(total_written / total_size)
+    progress_callback(1)
   except (requests.exceptions.HTTPError, OSError) as e:
     raise URLFetchError(e)
 
-  with tarfile.open(name=download_file_path) as tar:
+  return download_file_path
+
+
+def ExtractTar(downloaded_archive, extract_dir, progress_callback=None):
+  """Extracts the given archive.
+
+  Args:
+    downloaded_archive: str, The path to the archive downloaded previously.
+    extract_dir: str, The path to extract the tar into.
+    progress_callback: f(float), A function to call with the fraction of
+      completeness.
+
+  Returns:
+    [str], The files that were extracted from the tar file.
+  """
+  progress_callback = progress_callback or console_io.DefaultProgressBarCallback
+  if not os.path.exists(extract_dir):
+    file_utils.MakeDir(extract_dir)
+
+  with tarfile.open(name=downloaded_archive) as tar:
     members = tar.getmembers()
     total_files = len(members)
 
@@ -253,11 +268,11 @@ def DownloadAndExtractTar(url, download_dir, extract_dir,
       # Ensure read-and-write permission for all files
       if os.path.isfile(full_path) and not os.access(full_path, os.W_OK):
         os.chmod(full_path, stat.S_IWUSR|stat.S_IREAD)
-      install_callback(num / total_files)
+      progress_callback(num / total_files)
 
-    install_callback(1)
+    progress_callback(1)
 
-  os.remove(download_file_path)
+  os.remove(downloaded_archive)
   return files
 
 
@@ -275,39 +290,32 @@ class ComponentInstaller(object):
   # auth is required, you can also use this URL directly with no headers.
   GCS_API_DL_URL = 'https://storage.googleapis.com/'
 
-  def __init__(self, sdk_root, state_directory, snapshot):
+  def __init__(self, sdk_root, state_directory):
     """Initializes an installer for components of different source types.
 
     Args:
       sdk_root:  str, The path to the root directory of all Cloud SDK files.
       state_directory: str, The path to the directory where the local state is
         stored.
-      snapshot: snapshots.ComponentSnapshot, The snapshot that describes the
-        component to install.
     """
     self.__sdk_root = sdk_root
     self.__state_directory = state_directory
     self.__download_directory = os.path.join(
         self.__state_directory, ComponentInstaller.DOWNLOAD_DIR_NAME)
-    self.__snapshot = snapshot
 
-    for d in [self.__download_directory]:
-      if not os.path.isdir(d):
-        file_utils.MakeDir(d)
-
-  def Install(self, component_id, progress_callback=None,
-              command_path='unknown'):
-    """Installs the given component for whatever source type it has.
+  def Download(self, component, progress_callback=None, command_path='unknown'):
+    """Downloads the given component for whatever source type it has.
 
     Args:
-      component_id: str, The component id from the snapshot to install.
+      component: schemas.Component, The component from the snapshot to install.
       progress_callback: f(float), A function to call with the fraction of
         completeness.
       command_path: the command path to include in the User-Agent header if the
         URL is HTTP
 
     Returns:
-      list of str, The files that were installed.
+      Optional[str], The path of the downloaded archive, or None if the
+        component has no actual sources.
 
     Raises:
       UnsupportedSourceError: If the component data source is of an unknown
@@ -315,26 +323,46 @@ class ComponentInstaller(object):
       URLFetchError: If the URL associated with the component data source
         cannot be fetched.
     """
-    component = self.__snapshot.ComponentFromId(component_id)
     data = component.data
 
     if not data:
       # No source data, just a configuration component
-      return []
+      return None
 
     if data.type == 'tar':
-      return self._InstallTar(component, progress_callback=progress_callback,
-                              command_path=command_path)
+      return self._DownloadTar(
+          component, progress_callback=progress_callback,
+          command_path=command_path)
 
     raise UnsupportedSourceError(
         'tar is the only supported source format [{datatype}]'.format(
             datatype=data.type))
 
-  def _InstallTar(self, component, progress_callback=None,
-                  command_path='unknown'):
-    """Installer implementation for a component with source in a .tar.gz.
+  def Extract(self, downloaded_archive, progress_callback=None):
+    """Extracts the archive previously downloaded from self.Download().
 
-    Downloads the .tar for the component and extracts it.
+    Args:
+      downloaded_archive: Optional[str], The path to the archive downloaded
+        previously.
+      progress_callback: f(float), A function to call with the fraction of
+        completeness.
+
+    Returns:
+      list of str, The files that were installed or [] if nothing was installed.
+    """
+    if downloaded_archive is None:
+      # From a component with no actual data/sources; nothing to extract.
+      return []
+
+    return ExtractTar(
+        downloaded_archive, self.__sdk_root,
+        progress_callback=progress_callback)
+
+  def _DownloadTar(self, component, progress_callback=None,
+                   command_path='unknown'):
+    """Download implementation for a component with source in a .tar.gz.
+
+    Downloads the .tar for the component and returns its path.
 
     Args:
       component: schemas.Component, The component to install.
@@ -344,7 +372,8 @@ class ComponentInstaller(object):
         URL is HTTP
 
     Returns:
-      list of str, The files that were installed or [] if nothing was installed.
+      Optional[str], The path of the downloaded archive, or None if the
+        component has no actual sources.
 
     Raises:
       ValueError: If the source URL for the tar file is relative, but there is
@@ -355,7 +384,7 @@ class ComponentInstaller(object):
     url = component.data.source
     if not url:
       # not all components must have real source
-      return []
+      return None
 
     if not re.search(r'^\w+://', url):
       raise ValueError('Cannot install component [{0}] from a relative path '
@@ -363,9 +392,8 @@ class ComponentInstaller(object):
                        .format(component.id))
 
     try:
-      return DownloadAndExtractTar(
-          url, self.__download_directory, self.__sdk_root,
-          progress_callback=progress_callback,
+      return DownloadTar(
+          url, self.__download_directory, progress_callback=progress_callback,
           command_path=command_path)
     except (URLFetchError, AuthenticationError) as e:
       raise ComponentDownloadFailedError(component.id, e)

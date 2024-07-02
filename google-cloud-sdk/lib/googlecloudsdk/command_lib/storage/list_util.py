@@ -266,6 +266,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         fields_scope=fields_scope,
         halt_on_empty_response=self._halt_on_empty_response,
         managed_folder_setting=managed_folder_setting,
+        folder_setting=folder_util.FolderSetting.LIST_AS_PREFIXES,
         next_page_token=self._next_page_token,
         object_state=self._object_state,
     )
@@ -407,6 +408,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             get_bucket_metadata=self._buckets_flag,
             halt_on_empty_response=self._halt_on_empty_response,
             managed_folder_setting=managed_folder_setting,
+            folder_setting=folder_util.FolderSetting.LIST_AS_PREFIXES,
             next_page_token=self._next_page_token,
             object_state=self._object_state,
         )

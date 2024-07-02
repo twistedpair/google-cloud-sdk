@@ -13,11 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Flags for speech commands."""
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
-
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -30,12 +28,14 @@ def AddRecognizerArgToParser(parser):
   """Sets up an argument for the recognizer resource."""
   resource_data = yaml_data.ResourceYAMLData.FromPath('ml.speech.recognizer')
   resource_spec = concepts.ResourceSpec.FromYaml(
-      resource_data.GetData(), api_version='v2')
+      resource_data.GetData(), api_version='v2'
+  )
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name='recognizer',
       concept_spec=resource_spec,
       required=True,
-      group_help='recognizer.')
+      group_help='recognizer.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -47,7 +47,8 @@ def AddLocationArgToParser(parser):
       name='--location',
       concept_spec=resource_spec,
       required=True,
-      group_help='location.')
+      group_help='location.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -73,13 +74,15 @@ def AddAllFlagsToParser(parser, create=False):
       '--display-name',
       help="""\
       Name of this recognizer as it appears in UIs.
-      """)
+      """,
+  )
   parser.add_argument(
       '--model',
       required=create,
       help="""\
       `latest_long` or `latest_short`
-      """)
+      """,
+  )
   parser.add_argument(
       '--language-codes',
       metavar='LANGUAGE_CODE',
@@ -89,56 +92,80 @@ def AddAllFlagsToParser(parser, create=False):
       Language code is one of `en-US`, `en-GB`, `fr-FR`.
       Check [documentation](https://cloud.google.com/speech-to-text/docs/multiple-languages)
       for using more than one language code.
-      """)
+      """,
+  )
   parser.add_argument(
       '--profanity-filter',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, the server will censor profanities.
-      """)
+      """,
+  )
   parser.add_argument(
       '--enable-word-time-offsets',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, the top result includes a list of words and their timestamps.
-      """)
+      """,
+  )
   parser.add_argument(
       '--enable-word-confidence',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, the top result includes a list of words and the confidence for
       those words.
-      """)
+      """,
+  )
   parser.add_argument(
       '--enable-automatic-punctuation',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, adds punctuation to recognition result hypotheses.
-      """)
+      """,
+  )
   parser.add_argument(
       '--enable-spoken-punctuation',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, replaces spoken punctuation with the corresponding symbols in the request.
-      """)
+      """,
+  )
   parser.add_argument(
       '--enable-spoken-emojis',
       type=arg_parsers.ArgBoolean(),
       help="""\
       If true, adds spoken emoji formatting.
-      """)
+      """,
+  )
   parser.add_argument(
       '--min-speaker-count',
       type=arg_parsers.BoundedInt(1, 6),
       help="""\
         Minimum number of speakers in the conversation.
-        """)
+        """,
+  )
   parser.add_argument(
       '--max-speaker-count',
       type=arg_parsers.BoundedInt(1, 6),
       help="""\
         Maximum number of speakers in the conversation.
-        """)
+        """,
+  )
+  parser.add_argument(
+      '--separate-channel-recognition',
+      action='store_true' if create else arg_parsers.StoreTrueFalseAction,
+      help="""\
+        Mode for recognizing multi-channel audio using Separate Channel Recognition.
+        When set to `true`, the service will recognize each channel independently.
+        """,
+  )
+  parser.add_argument(
+      '--max-alternatives',
+      type=arg_parsers.BoundedInt(1, 30),
+      help="""\
+        Maximum number of recognition hypotheses to be returned. Valid values are `1`-`30`.
+        """,
+  )
   parser.add_argument(
       '--encoding',
       help="""\
@@ -163,8 +190,8 @@ def AddAllFlagsToParser(parser, create=False):
   )
 
 
-def AddRunShortFlagsToParser(parser):
-  """Parses all flags for v2 STT API for command run-short."""
+def AddRecognizeRequestFlagsToParser(parser, batch=False):
+  """Parses all flags for v2 STT API for command run-batch."""
   AddRecognizerArgToParser(parser)
   parser.add_argument(
       '--audio',
@@ -174,33 +201,6 @@ def AddRunShortFlagsToParser(parser):
           'Must be a audio data bytes, local file, or Google Cloud Storage URL '
           '(in the format gs://bucket/object).'
       ),
-  )
-  parser.add_argument(
-      '--model',
-      help="""\
-          Model to use for recognition requests. Select the
-      model best suited to your domain to get best results. Guidance for
-      choosing which model to use can be found in the [Transcription Models
-      Documentation](https://cloud.google.com/speech-to-
-      text/v2/docs/transcription-model) and the models supported in each
-      region can be found in the [Table Of Supported
-      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
-      supported-languages).
-          """,
-  )
-  parser.add_argument(
-      '--language-codes',
-      help="""\
-          Language of the supplied audio as a
-      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tag.
-      Language tags are normalized to BCP-47 before they are used eg "en-us"
-      becomes "en-US". Supported languages for each model are listed in the
-      [Table of Supported Models](https://cloud.google.com/speech-to-
-      text/v2/docs/speech-to-text-supported-languages). If additional
-      languages are provided, recognition result will contain recognition in
-      the most likely language detected. The recognition result will include
-      the language tag of the language detected in the audio.
-          """,
   )
   parser.add_argument(
       '--encoding',
@@ -225,3 +225,30 @@ def AddRunShortFlagsToParser(parser):
           Required if --encoding flag is specified and is not AUTO.
           """,
   )
+  parser.add_argument(
+      '--model',
+      help="""\
+          Which model to use for recognition requests. Select the
+      model best suited to your domain to get best results. Guidance for
+      choosing which model to use can be found in the [Transcription Models
+      Documentation](https://cloud.google.com/speech-to-
+      text/v2/docs/transcription-model) and the models supported in each
+      region can be found in the [Table Of Supported
+      Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
+      supported-languages).
+          """,
+  )
+  parser.add_argument(
+      '--language-codes',
+      metavar='LANGUAGE_CODE',
+      type=arg_parsers.ArgList(),
+      help="""\
+          Language code is one of `en-US`, `en-GB`, `fr-FR`.
+          Check [documentation](https://cloud.google.com/speech-to-text/docs/multiple-languages)
+          for using more than one language code.
+          """,
+  )
+
+  if batch:
+    base.ASYNC_FLAG.AddToParser(parser)
+    base.ASYNC_FLAG.SetDefault(parser, False)

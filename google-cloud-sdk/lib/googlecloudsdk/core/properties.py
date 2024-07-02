@@ -108,6 +108,7 @@ def _DefaultToFastUpdate():
       or config.INSTALLATION_CONFIG.IsAlternateReleaseChannel()
       or current_platform == platforms.OperatingSystem.WINDOWS
       or current_platform == platforms.OperatingSystem.MACOSX
+      or current_platform == platforms.OperatingSystem.LINUX
   )
 
 
@@ -1177,6 +1178,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.categorymanager = self._Add('categorymanager', hidden=True)
     self.certificatemanager = self._Add(
         'certificatemanager', command='gcloud certificate-manager')
+    self.cloudaicompanion = self._Add('cloudaicompanion', hidden=True)
     self.cloudasset = self._Add('cloudasset', command='gcloud asset')
     self.cloudbilling = self._Add('cloudbilling', command='gcloud billing')
     self.cloudbuild = self._Add('cloudbuild', command='gcloud builds')
@@ -1288,6 +1290,8 @@ class _SectionApiEndpointOverrides(_Section):
         'messagestreams', command='gcloud messagestreams', hidden=True)
     self.metastore = self._Add('metastore', command='gcloud metastore')
     self.ml = self._Add('ml', hidden=True)
+    self.modelarmor = self._Add(
+        'modelarmor', command='gcloud modelarmor', hidden=True)
     self.monitoring = self._Add('monitoring', command='gcloud monitoring')
     self.netapp = self._Add('netapp', command='gcloud netapp')
     self.networkconnectivity = self._Add(

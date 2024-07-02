@@ -5,6 +5,91 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 483.0.0 (2024-07-02)
+
+### Google Cloud CLI
+
+* Enabled faster component update mode by default on Linux. This avoids
+  making a backup copy of the installation directory when running certain
+  `gcloud components` commands, which should significantly improve the time
+  taken by these operations (including installation and updates).
+* Fixed issue where `gcloud components update` would leave installation in an
+  unusable state when downloading certain components failed.
+
+### AlloyDB
+
+* Added the following flags to `gcloud alloydb instances create` and
+  `gcloud alloydb instances update` in alpha and beta:
+   * `--observability-config-enabled`
+   * `--observability-config-preserve-comments`
+   * `--observability-config-track-wait-events`
+   * `--observability-config-max-query-string-length`
+   * `--observability-config-record-application-tags`
+   * `--observability-config-query-plans-per-minute`
+   * `--observability-config-track-active-queries`
+* Promoted AlloyDB Cross Region Replication commands to beta and GA track.
+Modified commands include: alloydb clusters switchover.
+* Added creating cross region and project backups support to `gcloud
+alloydb backups create` command.
+* Added ability to create clusters with database_version POSTGRES_16 in beta track.
+
+### Batch
+
+* Release resource-allowances commands to the alpha track.
+
+### Cloud Access Context Manager
+
+* Promoted `gcloud access-context-manager supported-services` to GA.
+
+### Cloud Filestore
+
+*   Enable Filestore promote-replica command in GA track.
+
+### Cloud Functions
+
+* Added `--binary-authorization` and `--clear-binary-authorization` flags for
+  2nd gen function in alpha and beta track.
+
+### Cloud NetApp
+
+* Updated `psa-range` comments on `gcloud netapp storage-pools` and `gcloud netapp volumes` to indicate that the `psa-range` key is not used and will be ignored.
+
+### Cloud SQL
+
+*   Adding support for `clean` and `if-exists` flags to parallel import and single-threaded-export.
+
+### Cloud Workstations
+
+* Added `--vm-tags` flag to `gcloud workstations config create` to add tags to
+  the workstation's underlying VM.
+
+### Compute Engine
+
+* Promoted `--preference` flag of `gcloud compute backend-services add-backend` and `gcloud compute backend-services update-backend` to GA.
+* Promoted `--service-lb-policy` flag of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+* Promote `gcloud compute instances ops-agents` to GA.
+* Added `IDPF` to the list of `guestOsFeatures`.
+* Promoted `--max-run-duration` flag of `gcloud compute instances create` to v1.
+  * Allows specifying the duration of time after which the instance will terminate.
+* Promoted `--termination-time` flag of `gcloud compute instances create` to v1.
+  * Allows specifying the timestamp that the instance will terminate.
+* Promoted `--discard-local-ssds-at-termination-timestamp` flag of `gcloud compute instances create` to v1.
+  * Allows specifying the option to whether discard attached local SSDs when automatically stopping this VM
+
+### Network Security
+
+* Renamed FIREWALL_POLICY column to SOURCE_RESOURCE column
+  in `gcloud networksecurity address-groups list-references` command.
+* Added `--purpose` flag to `gcloud alpha/beta network-security address-groups create/update` commands.
+
+### Secret Manager
+
+* Added flag `--location` and `--regional-kms-key-name` for secrets to use the regional secrets.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 482.0.0 (2024-06-25)
 
 ### App Engine

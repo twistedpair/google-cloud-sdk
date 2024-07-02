@@ -66,8 +66,6 @@ def CreateBackupScheduleMessage(
         encryption_config.kmsKeyNames = kms_key.kms_key_names
     backup_schedule.encryptionConfig = encryption_config
 
-  backup_schedule.fullBackupSpec = msgs.FullBackupSpec()
-
   if args.cron:
     backup_schedule.spec = msgs.BackupScheduleSpec(
         cronSpec=msgs.CrontabSpec(text=args.cron)
@@ -110,6 +108,8 @@ def Create(
   req.backupSchedule = CreateBackupScheduleMessage(
       backup_schedule_ref, args, msgs, encryption_type, kms_key
   )
+  if args.backup_type[0] == 'full-backup':
+    req.backupSchedule.fullBackupSpec = msgs.FullBackupSpec()
   req.backupScheduleId = backup_schedule_ref.Name()
   return client.projects_instances_databases_backupSchedules.Create(req)
 

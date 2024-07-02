@@ -860,6 +860,9 @@ class DatabaseInstance(_messages.Message):
       when the instance was created if the instance has failed over to its
       secondary zone. WARNING: Changing this might restart the instance.
     geminiConfig: Gemini instance configuration.
+    includeReplicasForMajorVersionUpgrade: Input only. Determines whether an
+      in-place major version upgrade of replicas happens when an in-place
+      major version upgrade of a primary instance is initiated.
     installedVersion: Stores the current database version including minor
       version such as `MYSQL_8_0_18`.
     instanceType: The instance type.
@@ -868,8 +871,8 @@ class DatabaseInstance(_messages.Message):
       property was applicable only to First Generation instances.
     kind: This is always `sql#instance`.
     maintenanceVersion: The current software version on the instance.
-    majorVersionUpgradeIncludesReplicas: Input only. Allows for Cluster Major
-      Version Upgrade
+    majorVersionUpgradeIncludesReplicas: Input only. Deprecated field. Use the
+      field include_replicas_for_major_version_upgrade instead.
     masterInstanceName: The name of the instance which will act as primary in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
@@ -1285,39 +1288,40 @@ class DatabaseInstance(_messages.Message):
   failoverReplica = _messages.MessageField('FailoverReplicaValue', 12)
   gceZone = _messages.StringField(13)
   geminiConfig = _messages.MessageField('GeminiInstanceConfig', 14)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 15)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 16)
-  ipAddresses = _messages.MessageField('IpMapping', 17, repeated=True)
-  ipv6Address = _messages.StringField(18)
-  kind = _messages.StringField(19)
-  maintenanceVersion = _messages.StringField(20)
-  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(21)
-  masterInstanceName = _messages.StringField(22)
-  maxDiskSize = _messages.IntegerField(23)
-  name = _messages.StringField(24)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 25)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 26)
-  primaryDnsName = _messages.StringField(27)
-  project = _messages.StringField(28)
-  pscServiceAttachmentLink = _messages.StringField(29)
-  region = _messages.StringField(30)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 31)
-  replicaNames = _messages.StringField(32, repeated=True)
-  replicationCluster = _messages.MessageField('ReplicationCluster', 33)
-  rootPassword = _messages.StringField(34)
-  satisfiesPzs = _messages.BooleanField(35)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 36)
-  secondaryGceZone = _messages.StringField(37)
-  selfLink = _messages.StringField(38)
-  serverCaCert = _messages.MessageField('SslCert', 39)
-  serviceAccountEmailAddress = _messages.StringField(40)
-  settings = _messages.MessageField('Settings', 41)
-  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 42)
-  state = _messages.EnumField('StateValueValuesEnum', 43)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 44, repeated=True)
-  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(45)
-  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 46, repeated=True)
-  writeEndpoint = _messages.StringField(47)
+  includeReplicasForMajorVersionUpgrade = _messages.BooleanField(15)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 16)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 17)
+  ipAddresses = _messages.MessageField('IpMapping', 18, repeated=True)
+  ipv6Address = _messages.StringField(19)
+  kind = _messages.StringField(20)
+  maintenanceVersion = _messages.StringField(21)
+  majorVersionUpgradeIncludesReplicas = _messages.BooleanField(22)
+  masterInstanceName = _messages.StringField(23)
+  maxDiskSize = _messages.IntegerField(24)
+  name = _messages.StringField(25)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 26)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 27)
+  primaryDnsName = _messages.StringField(28)
+  project = _messages.StringField(29)
+  pscServiceAttachmentLink = _messages.StringField(30)
+  region = _messages.StringField(31)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 32)
+  replicaNames = _messages.StringField(33, repeated=True)
+  replicationCluster = _messages.MessageField('ReplicationCluster', 34)
+  rootPassword = _messages.StringField(35)
+  satisfiesPzs = _messages.BooleanField(36)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 37)
+  secondaryGceZone = _messages.StringField(38)
+  selfLink = _messages.StringField(39)
+  serverCaCert = _messages.MessageField('SslCert', 40)
+  serviceAccountEmailAddress = _messages.StringField(41)
+  settings = _messages.MessageField('Settings', 42)
+  sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 43)
+  state = _messages.EnumField('StateValueValuesEnum', 44)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 45, repeated=True)
+  switchTransactionLogsToCloudStorageEnabled = _messages.BooleanField(46)
+  upgradableDatabaseVersions = _messages.MessageField('AvailableDatabaseVersion', 47, repeated=True)
+  writeEndpoint = _messages.StringField(48)
 
 
 class DatabasesListResponse(_messages.Message):

@@ -37,6 +37,8 @@ def SqlExportContext(
     offload=False,
     parallel=False,
     threads=None,
+    clean=False,
+    if_exists=False,
 ):
   """Generates the ExportContext for the given args, for exporting to SQL.
 
@@ -49,6 +51,13 @@ def SqlExportContext(
     offload: bool, The export offload flag.
     parallel: Whether to use parallel export or not.
     threads: The number of threads to use. Only applicable for parallel export.
+    clean: Whether to include SQL statement (DROP <object>) required to drop
+    database objects prior to import; corresponds to the clean flag on pg_dump.
+    Only applies to PostgreSQL non-parallel exports.
+    if_exists: Whether to include SQL statement (IF EXISTS) to each drop
+    statement produced by the clean flag; corresponds to the if-exists flag on
+    pg_dump. Only applies to PostgreSQL non-parallel exports.
+
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
@@ -65,6 +74,12 @@ def SqlExportContext(
         ),
     )
   else:
+    postgres_export_options = (
+        sql_messages.
+        ExportContext.SqlExportOptionsValue.PostgresExportOptionsValue(
+            clean=clean, ifExists=if_exists
+        )
+    )
     return sql_messages.ExportContext(
         kind='sql#exportContext',
         uri=uri,
@@ -72,7 +87,9 @@ def SqlExportContext(
         offload=offload,
         fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.SQL,
         sqlExportOptions=sql_messages.ExportContext.SqlExportOptionsValue(
-            tables=table or [], threads=threads
+            tables=table or [],
+            threads=threads,
+            postgresExportOptions=postgres_export_options,
         ),
     )
 

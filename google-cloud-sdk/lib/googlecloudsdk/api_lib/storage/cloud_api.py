@@ -31,6 +31,7 @@ class Capability(enum.Enum):
   CLIENT_SIDE_HASH_VALIDATION = 'CLIENT_SIDE_HASH_VALIDATION'
   ENCRYPTION = 'ENCRYPTION'
   MANAGED_FOLDERS = 'MANAGED_FOLDERS'
+  FOLDERS = 'FOLDERS'
   STORAGE_LAYOUT = 'STORAGE_LAYOUT'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
@@ -1247,3 +1248,17 @@ class CloudApi(object):
       apitools BucketStorageLayout object.
     """
     raise NotImplementedError('get_storage_layout must be overridden.')
+
+  def wait_for_operation(self, operation_ref):
+    """Waits for the given google.longrunning.Operation to complete.
+
+    Args:
+      operation_ref: The operation to poll.
+
+    Returns:
+      The Operation once it completes.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error.
+    """
+    raise NotImplementedError('wait_for_operation must be overridden.')

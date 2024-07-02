@@ -16,7 +16,7 @@ package = 'spanner'
 
 
 class AutoscalingConfig(_messages.Message):
-  r"""Autoscaling config for an instance.
+  r"""Autoscaling configuration for an instance.
 
   Fields:
     autoscalingLimits: Required. Autoscaling limits for an instance.
@@ -821,16 +821,16 @@ class CreateDatabaseRequest(_messages.Message):
       newly created database. Statements can create tables, indexes, etc.
       These statements execute atomically with the creation of the database:
       if there is an error in any statement, the database is not created.
-    protoDescriptors: Optional. Proto descriptors used by CREATE/ALTER PROTO
-      BUNDLE statements in 'extra_statements' above. Contains a protobuf-
-      serialized [google.protobuf.FileDescriptorSet](https://github.com/protoc
-      olbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto). To
-      generate it, [install](https://grpc.io/docs/protoc-installation/) and
-      run `protoc` with --include_imports and --descriptor_set_out. For
-      example, to generate for moon/shot/app.proto, run ``` $protoc
-      --proto_path=/app_path --proto_path=/lib_path \ --include_imports \
-      --descriptor_set_out=descriptors.data \ moon/shot/app.proto ``` For more
-      details, see protobuffer [self
+    protoDescriptors: Optional. Proto descriptors used by `CREATE/ALTER PROTO
+      BUNDLE` statements in 'extra_statements'. Contains a protobuf-serialized
+      [`google.protobuf.FileDescriptorSet`](https://github.com/protocolbuffers
+      /protobuf/blob/main/src/google/protobuf/descriptor.proto) descriptor
+      set. To generate it, [install](https://grpc.io/docs/protoc-
+      installation/) and run `protoc` with --include_imports and
+      --descriptor_set_out. For example, to generate for moon/shot/app.proto,
+      run ``` $protoc --proto_path=/app_path --proto_path=/lib_path \
+      --include_imports \ --descriptor_set_out=descriptors.data \
+      moon/shot/app.proto ``` For more details, see protobuffer [self
       description](https://developers.google.com/protocol-
       buffers/docs/techniques#self-description).
   """
@@ -860,7 +860,7 @@ class CreateInstanceConfigMetadata(_messages.Message):
 
   Fields:
     cancelTime: The time at which this operation was cancelled.
-    instanceConfig: The target instance config end state.
+    instanceConfig: The target instance configuration end state.
     progress: The progress of the CreateInstanceConfig operation.
   """
 
@@ -875,12 +875,12 @@ class CreateInstanceConfigRequest(_messages.Message):
   Fields:
     instanceConfig: Required. The InstanceConfig proto of the configuration to
       create. instance_config.name must be `/instanceConfigs/`.
-      instance_config.base_config must be a Google managed configuration name,
+      instance_config.base_config must be a Google-managed configuration name,
       e.g. /instanceConfigs/us-east1, /instanceConfigs/nam3.
-    instanceConfigId: Required. The ID of the instance config to create. Valid
-      identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]` and must be
-      between 2 and 64 characters in length. The `custom-` prefix is required
-      to avoid name conflicts with Google managed configurations.
+    instanceConfigId: Required. The ID of the instance configuration to
+      create. Valid identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]`
+      and must be between 2 and 64 characters in length. The `custom-` prefix
+      is required to avoid name conflicts with Google-managed configurations.
     validateOnly: An option to validate, but not actually execute, a request,
       and provide the same response.
   """
@@ -1493,7 +1493,9 @@ class ExecuteSqlRequest(_messages.Message):
       PLAN: This mode returns only the query plan, without any results or
         execution statistics information.
       PROFILE: This mode returns both the query plan and the execution
-        statistics along with the results.
+        statistics along with the results. This has a performance overhead
+        compared to the NORMAL mode. It is not recommended to use this mode
+        for production traffic.
     """
     NORMAL = 0
     PLAN = 1
@@ -1932,23 +1934,23 @@ class Instance(_messages.Message):
       changed after the instance is created. Values are of the form
       `projects//instances/a-z*[a-z0-9]`. The final segment of the name must
       be between 2 and 64 characters in length.
-    nodeCount: The number of nodes allocated to this instance. At most one of
-      either node_count or processing_units should be present in the message.
-      Users can set the node_count field to specify the target number of nodes
-      allocated to the instance. If autoscaling is enabled, node_count is
-      treated as an OUTPUT_ONLY field and reflects the current number of nodes
-      allocated to the instance. This may be zero in API responses for
-      instances that are not yet in state `READY`. See [the
-      documentation](https://cloud.google.com/spanner/docs/compute-capacity)
-      for more information about nodes and processing units.
+    nodeCount: The number of nodes allocated to this instance. At most, one of
+      either `node_count` or `processing_units` should be present in the
+      message. Users can set the node_count field to specify the target number
+      of nodes allocated to the instance. If autoscaling is enabled,
+      node_count is treated as an OUTPUT_ONLY field and reflects the current
+      number of nodes allocated to the instance. This might be zero in API
+      responses for instances that are not yet in the `READY` state. For more
+      information, see [Compute capacity, nodes, and processing
+      units](https://cloud.google.com/spanner/docs/compute-capacity).
     processingUnits: The number of processing units allocated to this
-      instance. At most one of processing_units or node_count should be
-      present in the message. Users can set the processing_units field to
-      specify the target number of processing units allocated to the instance.
-      If autoscaling is enabled, processing_units is treated as an OUTPUT_ONLY
-      field and reflects the current number of processing units allocated to
-      the instance. This may be zero in API responses for instances that are
-      not yet in state `READY`. See [the
+      instance. At most, one of either `processing_units` or `node_count`
+      should be present in the message. Users can set the `processing_units`
+      field to specify the target number of processing units allocated to the
+      instance. If autoscaling is enabled, `processing_units` is treated as an
+      `OUTPUT_ONLY` field and reflects the current number of processing units
+      allocated to the instance. This might be zero in API responses for
+      instances that are not yet in the `READY` state. See [the
       documentation](https://cloud.google.com/spanner/docs/compute-capacity)
       for more information about nodes and processing units.
     ssdCache: Optional. The name of the SSD cache to be used with this
@@ -2072,14 +2074,14 @@ class InstanceConfig(_messages.Message):
 
   Enums:
     AllowedStorageTypesValueListEntryValuesEnum:
-    ConfigTypeValueValuesEnum: Output only. Whether this instance config is a
-      Google or User Managed Configuration.
+    ConfigTypeValueValuesEnum: Output only. Whether this instance
+      configuration is a Google- or user-managed configuration.
     FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
       free instances are available to be created in this instance config.
     QuorumTypeValueValuesEnum: Output only. The `QuorumType` of the instance
       configuration.
-    StateValueValuesEnum: Output only. The current instance config state.
-      Applicable only for USER_MANAGED configs.
+    StateValueValuesEnum: Output only. The current instance configuration
+      state. Applicable only for `USER_MANAGED` configurations.
 
   Messages:
     LabelsValue: Cloud Labels are a flexible and lightweight mechanism for
@@ -2107,22 +2109,23 @@ class InstanceConfig(_messages.Message):
       type for any instance that has its default_storage_type field unset or
       set to STORAGE_TYPE_UNSPECIFIED.
     baseConfig: Base configuration name, e.g. projects//instanceConfigs/nam3,
-      based on which this configuration is created. Only set for user managed
+      based on which this configuration is created. Only set for user-managed
       configurations. `base_config` must refer to a configuration of type
-      GOOGLE_MANAGED in the same project as this configuration.
-    configType: Output only. Whether this instance config is a Google or User
-      Managed Configuration.
+      `GOOGLE_MANAGED` in the same project as this configuration.
+    configType: Output only. Whether this instance configuration is a Google-
+      or user-managed configuration.
     displayName: The name of this instance configuration as it appears in UIs.
     etag: etag is used for optimistic concurrency control as a way to help
-      prevent simultaneous updates of a instance config from overwriting each
-      other. It is strongly suggested that systems make use of the etag in the
-      read-modify-write cycle to perform instance config updates in order to
-      avoid race conditions: An etag is returned in the response which
-      contains instance configs, and systems are expected to put that etag in
-      the request to update instance config to ensure that their change will
-      be applied to the same version of the instance config. If no etag is
-      provided in the call to update instance config, then the existing
-      instance config is overwritten blindly.
+      prevent simultaneous updates of a instance configuration from
+      overwriting each other. It is strongly suggested that systems make use
+      of the etag in the read-modify-write cycle to perform instance
+      configuration updates in order to avoid race conditions: An etag is
+      returned in the response which contains instance configurations, and
+      systems are expected to put that etag in the request to update instance
+      configuration to ensure that their change is applied to the same version
+      of the instance configuration. If no etag is provided in the call to
+      update the instance configuration, then the existing instance
+      configuration is overwritten blindly.
     freeInstanceAvailability: Output only. Describes whether free instances
       are available to be created in this instance config.
     labels: Cloud Labels are a flexible and lightweight mechanism for
@@ -2146,22 +2149,22 @@ class InstanceConfig(_messages.Message):
     leaderOptions: Allowed values of the "default_leader" schema option for
       databases in instances that use this instance configuration.
     name: A unique identifier for the instance configuration. Values are of
-      the form `projects//instanceConfigs/a-z*`. User instance config must
-      start with `custom-`.
+      the form `projects//instanceConfigs/a-z*`. User instance configuration
+      must start with `custom-`.
     optionalReplicas: Output only. The available optional replicas to choose
-      from for user managed configurations. Populated for Google managed
+      from for user-managed configurations. Populated for Google-managed
       configurations.
     quorumType: Output only. The `QuorumType` of the instance configuration.
-    reconciling: Output only. If true, the instance config is being created or
-      updated. If false, there are no ongoing operations for the instance
-      config.
+    reconciling: Output only. If true, the instance configuration is being
+      created or updated. If false, there are no ongoing operations for the
+      instance config.
     replicas: The geographic placement of nodes in this instance configuration
-      and their replication properties. To create user managed configurations,
+      and their replication properties. To create user-managed configurations,
       input `replicas` must include all replicas in `replicas` of the
       `base_config` and include one or more replicas in the
       `optional_replicas` of the `base_config`.
-    state: Output only. The current instance config state. Applicable only for
-      USER_MANAGED configs.
+    state: Output only. The current instance configuration state. Applicable
+      only for `USER_MANAGED` configurations.
     storageLimitPerProcessingUnit: Output only. The storage limit in bytes per
       processing unit.
   """
@@ -2179,13 +2182,13 @@ class InstanceConfig(_messages.Message):
     HDD = 2
 
   class ConfigTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. Whether this instance config is a Google or User Managed
-    Configuration.
+    r"""Output only. Whether this instance configuration is a Google- or user-
+    managed configuration.
 
     Values:
       TYPE_UNSPECIFIED: Unspecified.
-      GOOGLE_MANAGED: Google managed configuration.
-      USER_MANAGED: User managed configuration.
+      GOOGLE_MANAGED: Google-managed configuration.
+      USER_MANAGED: User-managed configuration.
     """
     TYPE_UNSPECIFIED = 0
     GOOGLE_MANAGED = 1
@@ -2204,8 +2207,8 @@ class InstanceConfig(_messages.Message):
       DISABLED: Indicates that free instances are currently not available to
         be created in this instance config.
       QUOTA_EXCEEDED: Indicates that additional free instances cannot be
-        created in this instance config because the project has reached its
-        limit of free instances.
+        created in this instance configuration because the project has reached
+        its limit of free instances.
     """
     FREE_INSTANCE_AVAILABILITY_UNSPECIFIED = 0
     AVAILABLE = 1
@@ -2234,14 +2237,14 @@ class InstanceConfig(_messages.Message):
     MULTI_REGION = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current instance config state. Applicable only for
-    USER_MANAGED configs.
+    r"""Output only. The current instance configuration state. Applicable only
+    for `USER_MANAGED` configurations.
 
     Values:
       STATE_UNSPECIFIED: Not specified.
-      CREATING: The instance config is still being created.
-      READY: The instance config is fully created and ready to be used to
-        create instances.
+      CREATING: The instance configuration is still being created.
+      READY: The instance configuration is fully created and ready to be used
+        to create instances.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2353,14 +2356,14 @@ class InstancePartition(_messages.Message):
       An instance partition's name cannot be changed after the instance
       partition is created.
     nodeCount: The number of nodes allocated to this instance partition. Users
-      can set the node_count field to specify the target number of nodes
+      can set the `node_count` field to specify the target number of nodes
       allocated to the instance partition. This may be zero in API responses
       for instance partitions that are not yet in state `READY`.
     processingUnits: The number of processing units allocated to this instance
-      partition. Users can set the processing_units field to specify the
+      partition. Users can set the `processing_units` field to specify the
       target number of processing units allocated to the instance partition.
-      This may be zero in API responses for instance partitions that are not
-      yet in state `READY`.
+      This might be zero in API responses for instance partitions that are not
+      yet in the `READY` state.
     referencingBackups: Output only. The names of the backups that reference
       this instance partition. Referencing backups should share the parent
       instance. The existence of any referencing backup prevents the instance
@@ -2631,10 +2634,10 @@ class ListInstanceConfigOperationsResponse(_messages.Message):
     nextPageToken: `next_page_token` can be sent in a subsequent
       ListInstanceConfigOperations call to fetch more of the matching
       metadata.
-    operations: The list of matching instance config long-running operations.
-      Each operation's name will be prefixed by the instance config's name.
-      The operation's metadata field type `metadata.type_url` describes the
-      type of the metadata.
+    operations: The list of matching instance configuration long-running
+      operations. Each operation's name will be prefixed by the instance
+      config's name. The operation's metadata field type `metadata.type_url`
+      describes the type of the metadata.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2957,8 +2960,8 @@ class MoveInstanceRequest(_messages.Message):
   r"""The request for MoveInstance.
 
   Fields:
-    targetConfig: Required. The target instance config for the instance to
-      move. Values are of the form `projects//instanceConfigs/`.
+    targetConfig: Required. The target instance configuration for the instance
+      to move. Values are of the form `projects//instanceConfigs/`.
   """
 
   targetConfig = _messages.StringField(1)
@@ -3288,15 +3291,15 @@ class PartitionQueryRequest(_messages.Message):
     partitionOptions: Additional options that affect how many partitions are
       created.
     sql: Required. The query request to generate partitions for. The request
-      will fail if the query is not root partitionable. For a query to be root
+      fails if the query is not root partitionable. For a query to be root
       partitionable, it needs to satisfy a few conditions. For example, if the
       query execution plan contains a distributed union operator, then it must
       be the first operator in the plan. For more information about other
       conditions, see [Read data in parallel](https://cloud.google.com/spanner
       /docs/reads#read_data_in_parallel). The query request must not contain
-      DML commands, such as INSERT, UPDATE, or DELETE. Use ExecuteStreamingSql
-      with a PartitionedDml transaction for large, partition-friendly DML
-      operations.
+      DML commands, such as `INSERT`, `UPDATE`, or `DELETE`. Use
+      `ExecuteStreamingSql` with a PartitionedDml transaction for large,
+      partition-friendly DML operations.
     transaction: Read only snapshot transactions are supported, read/write and
       single use transactions are not.
   """
@@ -4110,18 +4113,18 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
       when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the
       form `projects//locations//keyRings//cryptoKeys/`.
     kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
-      keys used to encrypt the database. Values are of the form
+      keys used to encrypt the database. Values have the form
       `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
       kms_key_names must fully cover all regions of the database instance
       configuration. Some examples: * For single region database instance
-      configs, specify a single regional location KMS key. * For multi-
-      regional database instance configs of type GOOGLE_MANAGED, either
-      specify a multi-regional location KMS key or multiple regional location
-      KMS keys that cover all regions in the instance config. * For a database
-      instance config of type USER_MANAGED, please specify only regional
-      location KMS keys to cover each region in the instance config. Multi-
-      regional location KMS keys are not supported for USER_MANAGED instance
-      configs.
+      configurations, specify a single regional location KMS key. * For multi-
+      regional database instance configurations of type `GOOGLE_MANAGED`,
+      either specify a multi-regional location KMS key or multiple regional
+      location KMS keys that cover all regions in the instance configuration.
+      * For a database instance configuration of type `USER_MANAGED`, please
+      specify only regional location KMS keys to cover each region in the
+      instance configuration. Multi-regional location KMS keys are not
+      supported for USER_MANAGED instance configurations.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -4616,16 +4619,16 @@ class SpannerProjectsInstanceConfigOperationsListRequest(_messages.Message):
       `(metadata.instance_config.name:custom-config) AND` \
       `(metadata.progress.start_time < \"2021-03-28T14:50:00Z\") AND` \
       `(error:*)` - Return operations where: * The operation's metadata type
-      is CreateInstanceConfigMetadata. * The instance config name contains
-      "custom-config". * The operation started before 2021-03-28T14:50:00Z. *
-      The operation resulted in an error.
+      is CreateInstanceConfigMetadata. * The instance configuration name
+      contains "custom-config". * The operation started before
+      2021-03-28T14:50:00Z. * The operation resulted in an error.
     pageSize: Number of operations to be returned in the response. If 0 or
       less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListInstanceConfigOperationsResponse to the same
       `parent` and with the same `filter`.
-    parent: Required. The project of the instance config operations. Values
-      are of the form `projects/`.
+    parent: Required. The project of the instance configuration operations.
+      Values are of the form `projects/`.
   """
 
   filter = _messages.StringField(1)
@@ -4653,11 +4656,11 @@ class SpannerProjectsInstanceConfigsDeleteRequest(_messages.Message):
 
   Fields:
     etag: Used for optimistic concurrency control as a way to help prevent
-      simultaneous deletes of an instance config from overwriting each other.
-      If not empty, the API only deletes the instance config when the etag
-      provided matches the current status of the requested instance config.
-      Otherwise, deletes the instance config without checking the current
-      status of the requested instance config.
+      simultaneous deletes of an instance configuration from overwriting each
+      other. If not empty, the API only deletes the instance configuration
+      when the etag provided matches the current status of the requested
+      instance config. Otherwise, deletes the instance configuration without
+      checking the current status of the requested instance config.
     name: Required. The name of the instance configuration to be deleted.
       Values are of the form `projects//instanceConfigs/`
     validateOnly: An option to validate, but not actually execute, a request,
@@ -4750,8 +4753,8 @@ class SpannerProjectsInstanceConfigsPatchRequest(_messages.Message):
 
   Fields:
     name: A unique identifier for the instance configuration. Values are of
-      the form `projects//instanceConfigs/a-z*`. User instance config must
-      start with `custom-`.
+      the form `projects//instanceConfigs/a-z*`. User instance configuration
+      must start with `custom-`.
     updateInstanceConfigRequest: A UpdateInstanceConfigRequest resource to be
       passed as the request body.
   """
@@ -5261,6 +5264,22 @@ class SpannerProjectsInstancesDatabasesBackupSchedulesDeleteRequest(_messages.Me
   name = _messages.StringField(1, required=True)
 
 
+class SpannerProjectsInstancesDatabasesBackupSchedulesGetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being retrieved. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest object.
 
@@ -5313,6 +5332,39 @@ class SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest(_messages.Mes
   backupSchedule = _messages.MessageField('BackupSchedule', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesSetIamPolicyRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which the policy is
+      being set. The format is `projects//instances/` for instance resources
+      and `projects//instances//databases/` for databases resources.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  SpannerProjectsInstancesDatabasesBackupSchedulesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The Cloud Spanner resource for which permissions are
+      being tested. The format is `projects//instances/` for instance
+      resources and `projects//instances//databases/` for database resources.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class SpannerProjectsInstancesDatabasesCreateRequest(_messages.Message):
@@ -7093,7 +7145,7 @@ class UpdateInstanceConfigMetadata(_messages.Message):
 
   Fields:
     cancelTime: The time at which this operation was cancelled.
-    instanceConfig: The desired instance config after updating.
+    instanceConfig: The desired instance configuration after updating.
     progress: The progress of the UpdateInstanceConfig operation.
   """
 
@@ -7106,10 +7158,10 @@ class UpdateInstanceConfigRequest(_messages.Message):
   r"""The request for UpdateInstanceConfigRequest.
 
   Fields:
-    instanceConfig: Required. The user instance config to update, which must
-      always include the instance config name. Otherwise, only fields
-      mentioned in update_mask need be included. To prevent conflicts of
-      concurrent updates, etag can be used.
+    instanceConfig: Required. The user instance configuration to update, which
+      must always include the instance configuration name. Otherwise, only
+      fields mentioned in update_mask need be included. To prevent conflicts
+      of concurrent updates, etag can be used.
     updateMask: Required. A mask specifying which fields in InstanceConfig
       should be updated. The field mask must always be specified; this
       prevents any future fields in InstanceConfig from being erased

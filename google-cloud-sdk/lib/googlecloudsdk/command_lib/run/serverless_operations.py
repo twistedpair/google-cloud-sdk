@@ -43,6 +43,7 @@ from googlecloudsdk.api_lib.run import service
 from googlecloudsdk.api_lib.run import task
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
@@ -74,6 +75,8 @@ ALLOW_UNAUTH_POLICY_BINDING_MEMBER = 'allUsers'
 ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
 
 NEEDED_IAM_PERMISSIONS = ['run.services.setIamPolicy']
+
+FAKE_IMAGE_DIGEST = 'sha256:fd2fdc0ac4a07f8d96ebe538566331e9da0f4bea069fb88de981cd8054b8cabc'
 
 
 class UnknownAPIError(exceptions.Error):
@@ -617,6 +620,12 @@ class ServerlessOperations(object):
     except api_exceptions.HttpBadRequestError as e:
       exceptions.reraise(serverless_exceptions.HttpError(e))
     except api_exceptions.HttpNotFoundError as e:
+      parsed_err = api_lib_exceptions.HttpException(e)
+      if (
+          hasattr(parsed_err.payload, 'domain_details')
+          and 'run.googleapis.com' in parsed_err.payload.domain_details
+      ):
+        raise parsed_err
       platform = properties.VALUES.run.platform.Get()
       error_msg = 'Deployment endpoint was not found.'
       if platform == 'gke':
@@ -776,6 +785,7 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
+      self._ValidateService(service_ref, config_changes)
       image_digest = deployer.CreateImage(
           tracker,
           build_image,
@@ -1659,6 +1669,16 @@ class ServerlessOperations(object):
         request
     )
     return set(NEEDED_IAM_PERMISSIONS).issubset(set(response.permissions))
+
+  def _ValidateService(self, service_ref, config_changes):
+    """Validates starting service operation with provided config."""
+    serv = self.GetService(service_ref)
+    fake_validation_image = _AddDigestToImageChange(FAKE_IMAGE_DIGEST)
+    config_changes.append(fake_validation_image)
+    self._UpdateOrCreateService(
+        service_ref, config_changes, with_code=True, serv=serv, dry_run=True
+    )
+    config_changes.pop()
 
   def ValidateConfigOverrides(self, job_ref, config_overrides):
     """Apply config changes to Job resource to validate.

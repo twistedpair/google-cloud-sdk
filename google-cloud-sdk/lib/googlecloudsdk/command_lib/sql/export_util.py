@@ -129,6 +129,8 @@ def RunSqlExportCommand(args, client):
       offload=args.offload,
       parallel=args.parallel,
       threads=args.threads,
+      clean=args.clean,
+      if_exists=args.if_exists,
   )
   if args.offload:
     log.status.write(

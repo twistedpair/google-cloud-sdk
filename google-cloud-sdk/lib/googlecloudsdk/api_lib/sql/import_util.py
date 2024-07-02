@@ -30,7 +30,14 @@ def ParseBakType(sql_messages, bak_type):
 
 
 def SqlImportContext(
-    sql_messages, uri, database=None, user=None, parallel=False, threads=None
+    sql_messages,
+    uri,
+    database=None,
+    user=None,
+    parallel=False,
+    threads=None,
+    clean=False,
+    if_exists=False,
 ):
   """Generates the ImportContext for the given args, for importing from SQL.
 
@@ -43,11 +50,27 @@ def SqlImportContext(
       '--parallel' flag.
     threads: The number of threads to use; the output of the '--threads' flag.
       Only applicable for parallel import.
+    clean: Clean (DROP) database objects before recreating them. Corresponds to
+      the --clean flag on pg_restore. Only applies if --parallel is set.
+      PostgreSQL only.
+    if_exists: Include SQL statement (IF EXISTS) with each
+      DROP statement produced by --clean; Corresponds to the --if-exists  flag
+      on pg_restore. Only applies if --parallel is set. PostgreSQL only.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
   """
   if parallel:
+    postgres_import_options = None
+    if clean or if_exists:
+      postgres_import_options = (
+          sql_messages.ImportContext.SqlImportOptionsValue
+          .PostgresImportOptionsValue(
+              clean=clean,
+              ifExists=if_exists,
+          )
+      )
+
     return sql_messages.ImportContext(
         kind='sql#importContext',
         uri=uri,
@@ -55,7 +78,9 @@ def SqlImportContext(
         fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.SQL,
         importUser=user,
         sqlImportOptions=sql_messages.ImportContext.SqlImportOptionsValue(
-            parallel=parallel, threads=threads
+            parallel=parallel,
+            threads=threads,
+            postgresImportOptions=postgres_import_options,
         ),
     )
   else:

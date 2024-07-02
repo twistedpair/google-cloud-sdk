@@ -213,7 +213,7 @@ def ValidateGcrRepo(repo_name, repo_format, location, docker_format):
 
 
 def AppendRepoDataToRequest(repo_ref, repo_args, request):
-  """Adds repository data to CreateRepositoryRequest."""
+  """Adds repository data to CreateRepositoryRequest or UpdateRepositoryRequest."""
   repo_name = repo_ref.repositoriesId
   location = GetLocation(repo_args)
   messages = _GetMessagesForResource(repo_ref)
@@ -228,6 +228,17 @@ def AppendRepoDataToRequest(repo_ref, repo_args, request):
     request = remote_repo_util.AppendRemoteRepoConfigToRequest(
         messages, repo_args, request
     )
+  if hasattr(repo_args, "alternative_hostname"):  # only v1 has this
+    if repo_args.alternative_hostname:
+      request.repository.networkConfig.alternativeHostname = (
+          repo_args.alternative_hostname
+      )
+    if repo_args.alternative_hostname_path_prefix:
+      request.repository.networkConfig.prefix = (
+          repo_args.alternative_hostname_path_prefix
+      )
+    if repo_args.alternative_hostname_default:
+      request.repository.networkConfig.isDefault = True
 
   request.repository.name = repo_ref.RelativeName()
   request.repositoryId = repo_ref.repositoriesId

@@ -21,9 +21,13 @@ from __future__ import unicode_literals
 import types
 from typing import Any, Dict, List
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.compute import alias_ip_range_utils
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files
 
 
 class ComputeUtil(object):
@@ -64,8 +68,8 @@ class ComputeUtil(object):
         message.network = network_interface["network"]
       if "subnet" in network_interface:
         message.subnetwork = network_interface["subnet"]
-      if "address" in network_interface:
-        message.networkIP = network_interface["address"]
+      if "private-network-ip" in network_interface:
+        message.networkIP = network_interface["private-network-ip"]
       if "internal-ipv6-address" in network_interface:
         message.ipv6Address = network_interface["internal-ipv6-address"]
         if "internal-ipv6-prefix-length" in network_interface:
@@ -78,8 +82,8 @@ class ComputeUtil(object):
               "Prefix length of the provided IPv6 address is expected but not"
               " found",
           )
-      if "external-ipaddress" in network_interface:
-        access_config.natIP = network_interface["external-ipaddress"]
+      if "address" in network_interface:
+        access_config.natIP = network_interface["address"]
       if "external-ipv6-address" in network_interface:
         access_config_ipv6.externalIpv6 = network_interface[
             "external-ipv6-address"
@@ -302,3 +306,110 @@ class ComputeUtil(object):
             acceleratorCount=accelerator.get("count", 1),
         )
     ]
+
+  class NodeAffinityFileParseError(core_exceptions.Error):
+    """Error raised when node affinity file cannot be parsed."""
+
+  @staticmethod
+  def GetNodeAffinitiesFromFile(
+      client_messages: types.ModuleType, file_path: str
+  ):
+    """Parses the node affinity data from file into client messages.
+
+    Args:
+      client_messages:
+      file_path: A path to the file containing the node affinity data.
+
+    Returns:
+      List of parsed client messages for NodeAffinity
+
+    Raises:
+      NodeAffinityFileParseError:
+    """
+
+    if file_path is None:
+      return None
+
+    node_affinities_file = files.ReadFileContents(file_path)
+    affinities_yaml = yaml.load(node_affinities_file)
+    if not affinities_yaml:
+      raise ComputeUtil.NodeAffinityFileParseError(
+          "No node affinity labels specified. You must specify at least one "
+          "label to create a sole tenancy instance."
+      )
+
+    node_affinities = []
+    for affinity in affinities_yaml:
+      if not affinity:
+        raise ComputeUtil.NodeAffinityFileParseError(
+            "Empty list item in JSON/YAML file."
+        )
+      try:
+        node_affinity = encoding.PyValueToMessage(
+            client_messages.NodeAffinity, affinity
+        )
+      except Exception as e:  # pylint: disable=broad-except
+        raise ComputeUtil.NodeAffinityFileParseError(
+            "Failed to parse node affinity values from the file {}.".format(
+                file_path
+            )
+        ) from e
+      if not node_affinity.key:
+        raise ComputeUtil.NodeAffinityFileParseError(
+            "A key must be specified for every node affinity label."
+        )
+      if node_affinity.all_unrecognized_fields():
+        raise ComputeUtil.NodeAffinityFileParseError(
+            "Key [{0}] has invalid field formats for: {1}".format(
+                node_affinity.key, node_affinity.all_unrecognized_fields()
+            )
+        )
+      node_affinities.append(node_affinity)
+    return node_affinities
+
+  RESERVATION_AFFINITY_KEY = "compute.googleapis.com/reservation-name"
+
+  @staticmethod
+  def ParseReservationAffinity(
+      client_messages: types.ModuleType,
+      reservation_affinity: str,
+      reservation: str,
+  ):
+    """Parses the reservation affinity data into client messages.
+
+    Args:
+      client_messages:
+      reservation_affinity: type of reservation affinity
+      reservation: name of the specific reservation
+
+    Returns:
+      List of parsed client messages for ReservationAffinity
+
+    Raises:
+      InvalidArgumentException:
+    """
+    if reservation_affinity is None:
+      return None
+
+    if reservation_affinity == "any":
+      return client_messages.AllocationAffinity(
+          consumeReservationType=client_messages.AllocationAffinity.ConsumeReservationTypeValueValuesEnum.ANY_RESERVATION
+      )
+
+    if reservation_affinity == "none":
+      return client_messages.AllocationAffinity(
+          consumeReservationType=client_messages.AllocationAffinity.ConsumeReservationTypeValueValuesEnum.NO_RESERVATION
+      )
+
+    if reservation_affinity == "specific":
+      if reservation is None:
+        raise exceptions.InvalidArgumentException(
+            "reservation",
+            "Reservation is required for specific reservation affinity",
+        )
+      return client_messages.AllocationAffinity(
+          consumeReservationType=client_messages.AllocationAffinity.ConsumeReservationTypeValueValuesEnum.SPECIFIC_RESERVATION,
+          key=ComputeUtil.RESERVATION_AFFINITY_KEY,
+          values=[reservation],
+      )
+    return None

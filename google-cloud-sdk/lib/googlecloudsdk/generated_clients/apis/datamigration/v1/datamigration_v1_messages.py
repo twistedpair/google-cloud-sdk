@@ -1108,6 +1108,29 @@ class ConversionWorkspaceInfo(_messages.Message):
   name = _messages.StringField(2)
 
 
+class ConvertApplicationCodeRequest(_messages.Message):
+  r"""Request for ConvertApplicationCode.
+
+  Fields:
+    sourceCode: Required. The source code to convert.
+  """
+
+  sourceCode = _messages.StringField(1)
+
+
+class ConvertApplicationCodeResponse(_messages.Message):
+  r"""Response for ConvertApplicationCode.
+
+  Fields:
+    resultMessage: A message to display to the user.
+    sourceCode: The converted source code. Will be empty if the conversion
+      failed or did not yield any change.
+  """
+
+  resultMessage = _messages.StringField(1)
+  sourceCode = _messages.StringField(2)
+
+
 class ConvertConversionWorkspaceRequest(_messages.Message):
   r"""Request message for 'ConvertConversionWorkspace' request.
 
@@ -2039,6 +2062,20 @@ class DatamigrationProjectsLocationsConversionWorkspacesTestIamPermissionsReques
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DatamigrationProjectsLocationsConvertApplicationCodeRequest(_messages.Message):
+  r"""A DatamigrationProjectsLocationsConvertApplicationCodeRequest object.
+
+  Fields:
+    convertApplicationCodeRequest: A ConvertApplicationCodeRequest resource to
+      be passed as the request body.
+    name: Required. The resource name for the location. Must be in the format
+      `projects/*/locations/*`.
+  """
+
+  convertApplicationCodeRequest = _messages.MessageField('ConvertApplicationCodeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class DatamigrationProjectsLocationsFetchStaticIpsRequest(_messages.Message):

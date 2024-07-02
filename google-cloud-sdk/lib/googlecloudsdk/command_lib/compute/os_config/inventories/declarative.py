@@ -98,6 +98,9 @@ def CreateTableViewResponseHook(inventory_list, args):
   Returns:
     ListTableRow
   """
+  if args.unmodified_api_response:
+    return inventory_list
+
   view = args.view if args.view else 'basic'
   rows = []
   for inventory in inventory_list:

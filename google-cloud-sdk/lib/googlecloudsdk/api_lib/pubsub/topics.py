@@ -131,7 +131,7 @@ class TopicsClient(object):
       elif cloud_storage_ingestion_input_format == 'avro':
         cloud_storage_source.avroFormat = self.messages.AvroFormat()
       elif cloud_storage_ingestion_input_format == 'pubsub_avro':
-        cloud_storage_source.pubsubAvroFormat = self.messages.PubsubAvroFormat()
+        cloud_storage_source.pubsubAvroFormat = self.messages.PubSubAvroFormat()
 
       return self.messages.IngestionDataSourceSettings(
           cloudStorage=cloud_storage_source

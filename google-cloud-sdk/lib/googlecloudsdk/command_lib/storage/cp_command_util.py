@@ -169,18 +169,39 @@ def add_gzip_in_flight_flags(parser):
   )
 
 
-def add_include_managed_folders_flag(parser):
+def add_include_managed_folders_flag(parser, hns_feature_warning=False):
+  """Adds --include-managed-folders flag to the parser.
+
+  Args:
+    parser: (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    hns_feature_warning: (bool) Whether to add a warning for HNS buckets to the
+      flag.
+  """
+  # Adding an hns_features_warning flag to add a warning about
+  # --include-managed-folders flag only for commands that are supporting
+  # HNS buckets right now.
+  hns_feature_warning_help_text = (
+      'Includes managed folders in command operations. For'
+      ' transfers, gcloud storage will set up managed folders in the'
+      ' destination with the same IAM policy bindings as the source.'
+      ' Managed folders are only included with recursive cloud-to-cloud'
+      ' transfers.'
+      ' Please note that for hierarchical namespace buckets,'
+      ' managed folders are always included. Hence this flag would not be'
+      ' applicable to hierarchical namespace buckets.'
+  )
+  help_text = (
+      'Includes managed folders in command operations. For'
+      ' transfers, gcloud storage will set up managed folders in the'
+      ' destination with the same IAM policy bindings as the source.'
+      ' Managed folders are only included with recursive cloud-to-cloud'
+      ' transfers.'
+  )
   parser.add_argument(
       '--include-managed-folders',
       action='store_true',
       default=False,
-      help=(
-          'Includes managed folders in command operations. For'
-          ' transfers, gcloud storage will set up managed folders in the'
-          ' destination with the same IAM policy bindings as the source.'
-          ' Managed folders are only included with recursive cloud-to-cloud'
-          ' transfers.'
-      ),
+      help=hns_feature_warning_help_text if hns_feature_warning else help_text,
   )
 
 
@@ -267,7 +288,7 @@ def add_cp_and_mv_flags(parser):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
-  add_include_managed_folders_flag(parser)
+  add_include_managed_folders_flag(parser, hns_feature_warning=True)
   symlinks_group = parser.add_group(
       mutex=True,
       help=(
@@ -476,6 +497,7 @@ def _execute_copy_tasks(
     parallelizable,
     raw_destination_url,
     source_expansion_iterator,
+    folders_only=False,
 ):
   """Returns appropriate exit code after creating and executing copy tasks."""
   if raw_destination_url.is_stdio:
@@ -500,7 +522,18 @@ def _execute_copy_tasks(
         skip_unsupported=args.skip_unsupported,
         task_status_queue=task_status_queue,
         user_request_args=user_request_args,
+        folders_only=folders_only,
     )
+
+    if folders_only:
+      task_iterator = plurality_checkable_iterator.PluralityCheckableIterator(
+          task_iterator
+      )
+
+      if task_iterator.is_empty():
+        # If there are no Folder Tasks, we need not proceed when we want to only
+        # proceed to work with folders.
+        return 0
 
     return task_executor.execute_tasks(
         task_iterator,
@@ -520,9 +553,262 @@ def _get_managed_folder_iterator(args, url_found_match_tracker):
       managed_folder_setting=(
           folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
       ),
+      folder_setting=folder_util.FolderSetting.DO_NOT_LIST,
       raise_error_for_unmatched_urls=False,
       recursion_requested=name_expansion.RecursionSetting.YES,
       url_found_match_tracker=url_found_match_tracker,
+  )
+
+
+def _copy_or_rename_folders(
+    args, delete_source, raw_destination_url, url_found_match_tracker
+):
+  """Handles copies or renames specifically for Folders.
+
+  Folders (of HNS buckets) are technically not objects. Hence the usual
+  copy_object approach does not work for them.
+  For renaming, while there is a specific API, it only works when renaming
+  folders in the same bucket and for cross bucket renaming, we still require
+  folder by folder approach.
+
+  Hence, as a first step, in the case of rename only, this method tries to
+  use the rename_folder API. If its successfully done, we need not handle
+  individual folders.
+  However, if that is not possible, or we are in the copy case, we need to
+  handle things folder by folder and for that we have the second iterator
+  and which creates a second set of copy tasks.
+
+  Args:
+    args: The command line arguments.
+    delete_source: Boolean indicating if the source should be deleted after the
+      copy operation. Pointing to the fact that this is a mv command.
+    raw_destination_url: The destination URL.
+    url_found_match_tracker: The url found match tracker.
+  """
+  if not (
+      args.recursive
+      and isinstance(raw_destination_url, storage_url.CloudUrl)
+      and raw_destination_url.scheme == storage_url.ProviderPrefix.GCS
+  ):
+    return
+
+  if delete_source and not args.daisy_chain:
+    # Means we are copying for mv command and the user has not opted for an
+    # explicit daisy chain option.
+    # For such a case, for HNS buckets, we have to try to use the option of a
+    # folder (and its sub-folders and objects) being renamed through
+    # the rename_folder API directly.
+    #
+    # Since we need not care if the folder has content or not, if the input_url
+    # specifies a Folder to be renamed into the same bucket, we simply call
+    # RenameFolder operation on it.
+    updated_sources = _filter_and_modify_source_for_folders_only(
+        args.source, is_rename_folders=True
+    )
+    folder_rename_match_tracker = collections.OrderedDict()
+    source_expansion_iterator = name_expansion.NameExpansionIterator(
+        updated_sources,
+        managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+        folder_setting=folder_util.FolderSetting.LIST_AS_FOLDERS,
+        raise_error_for_unmatched_urls=False,
+        recursion_requested=name_expansion.RecursionSetting.NO,
+        url_found_match_tracker=folder_rename_match_tracker,
+    )
+
+    _execute_copy_tasks(
+        args=args,
+        delete_source=delete_source,
+        parallelizable=False,
+        raw_destination_url=raw_destination_url,
+        source_expansion_iterator=source_expansion_iterator,
+        folders_only=True,
+    )
+    _correct_url_found_match_tracker_for_copy_and_renames(
+        args.source,
+        updated_sources,
+        url_found_match_tracker,
+        folder_rename_match_tracker,
+        is_rename_folders=True,
+    )
+
+  # In case of a rename, if the above operation happened, then this iterator
+  # would be empty for the corresponding URL, hence we do not require any
+  # handling for the same.
+  #
+  # However, in case the above rename could not be done, then we need to collect
+  # information about the Folder (if it exists) and all its sub-folders and copy
+  # them recursively into the destination. For renames, the deletion will then
+  # automatically get handled at the end of the rename operation in the run_cp
+  # method for Folders seprarately.
+  updated_sources = _filter_and_modify_source_for_folders_only(
+      args.source, is_rename_folders=False
+  )
+  folder_match_tracker = collections.OrderedDict()
+  source_expansion_iterator = name_expansion.NameExpansionIterator(
+      updated_sources,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      folder_setting=folder_util.FolderSetting.LIST_AS_FOLDERS,
+      raise_error_for_unmatched_urls=False,
+      recursion_requested=name_expansion.RecursionSetting.YES,
+      url_found_match_tracker=folder_match_tracker,
+  )
+
+  _execute_copy_tasks(
+      args=args,
+      delete_source=False,
+      parallelizable=False,
+      raw_destination_url=raw_destination_url,
+      source_expansion_iterator=source_expansion_iterator,
+      folders_only=True,
+  )
+
+  _correct_url_found_match_tracker_for_copy_and_renames(
+      args.source,
+      updated_sources,
+      url_found_match_tracker,
+      folder_match_tracker,
+  )
+
+
+def _correct_url_found_match_tracker_for_copy_and_renames(
+    original_sources,
+    updated_sources,
+    url_found_match_tracker,
+    folders_tracker,
+    is_rename_folders=False,
+):
+  """Corrects the results of url match tracker for copy and renames.
+
+  Args:
+    original_sources: Original sources given by the user.
+    updated_sources: Updated sources after filtering and modifying for folders
+      only.
+    url_found_match_tracker: The common url found match tracker.
+    folders_tracker: The url found match tracker we have created specifically
+      for folders feature.
+    is_rename_folders: Is the rename folders case.
+  """
+  for url in original_sources:
+    if url in folders_tracker and folders_tracker[url]:
+      # No need to set false values
+      url_found_match_tracker[url] = folders_tracker[url]
+
+    if url.endswith('/**') or url.endswith('/**/'):
+      if is_rename_folders:
+        possible_updated_url = url[:-1] if url.endswith('**') else url[:-2]
+      else:
+        # Because for copy folders, we remove the entire ** at the end
+        # since we already have the recursion setting on. So we need to avoid
+        # double recursion there.
+        possible_updated_url = url[:-2] if url.endswith('**') else url[:-3]
+
+      if (
+          possible_updated_url in updated_sources
+          and possible_updated_url in folders_tracker
+          # No need to set false values
+          and folders_tracker[possible_updated_url]
+      ):
+        url_found_match_tracker[url] = folders_tracker[possible_updated_url]
+
+
+def _filter_and_modify_source_for_folders_only(
+    sources, is_rename_folders=False
+):
+  """Filters and modifies sources urls for the purpose of HNS bucket rename_folder.
+
+  We filter out any source URL which is not a GCS URL as rename folders is only
+  applicable to HNS buckets which is a GCS feature.
+  Apart from this, if the given URL ends with a **, we change it to a single *
+  to match the filesystem behaviour.
+  In case of a regular Linux filesystem, a ** or a * will rename folders under
+  the given path to the destination. But in case of Gcloud, we would recursively
+  list all sub-directories under it and try to renma them. This is not required
+  for rename_folder operations.
+  Hence, by replacing them with a *, we can simply rename the given sub-folders.
+
+  Args:
+    sources: List of source URLs given by the user to the command.
+    is_rename_folders: Boolean indicating if the operation is for renaming
+      folders.
+
+  Returns:
+    A list of source URLs which are filtered and modified for the purpose of
+    rename_folders only operation.
+  """
+  updated_source_list = []
+  for source in sources:
+    if not is_gcs_cloud_url(storage_url.storage_url_from_string(source)):
+      continue
+    if source.endswith('/**') or source.endswith('/**/'):
+      if is_rename_folders:
+        updated_source = source[:-1] if source.endswith('**') else source[:-2]
+      else:
+        updated_source = source[:-2] if source.endswith('**') else source[:-3]
+
+      if updated_source not in sources:
+        updated_source_list.append(updated_source)
+    else:
+      updated_source_list.append(source)
+  return updated_source_list
+
+
+def _remove_folders(args, url_found_match_tracker):
+  """Helper method to remove folders from HNS buckets.
+
+  Removing folders is only applicable for HNS buckets.
+  In the case where a source is a FileURL, we will see a failure in the
+  DeleteTaskIteratorFactory as we try to call is_bucket() on a FileURL.
+  This happens specifically in the case where we use --no-clobber flag and where
+  the destination already exists. For such cases, we would skip deletion of the
+  source. So the NameExpansionIterator will contain a FileURL which the
+  DeleteTaskIteratorFactory will not be able to handle.
+
+  Hence, we are skipping a given source if it's not a CloudURL since Folders
+  are only applicable to CloudURLs (which are GCS) and running any attempt to
+  find and delete a Folder is of no use on any other type of URL.
+
+  Args:
+    args: User provided arguments for the command.
+    url_found_match_tracker: The common url found match tracker.
+
+  Returns:
+    Exit code for the operation.
+  """
+  # We are only filtering and not manipulating the URLs here.
+  # So if a URL is updated with a False or True result in the
+  # url_found_match_tracker, then it is the correct result.
+  # Hence we need to leave it as is, to be considered in later iterators
+  # since we do not throw an exception here when nothing is found.
+  cloud_urls = []
+  for url_string in args.source:
+    if is_gcs_cloud_url(storage_url.storage_url_from_string(url_string)):
+      cloud_urls.append(url_string)
+
+  if not cloud_urls:
+    # Since there is no need to remove folders if there are no CloudURLs,
+    # there is no point in returning a Non-Zero (failure code) since
+    # nothing has technically failed.
+    return 0
+
+  folder_expansion_iterator = name_expansion.NameExpansionIterator(
+      cloud_urls,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      folder_setting=folder_util.FolderSetting.LIST_AS_FOLDERS,
+      raise_error_for_unmatched_urls=False,
+      recursion_requested=name_expansion.RecursionSetting.YES,
+      url_found_match_tracker=url_found_match_tracker,
+  )
+  return rm_command_util.remove_folders(
+      folder_expansion_iterator,
+      task_graph_executor.multiprocessing_context.Queue(),
+  )
+
+
+def is_gcs_cloud_url(url):
+  """Returns True if the URL is of type CloudURL and has a GCS ProviderPrefix."""
+  return (
+      isinstance(url, storage_url.CloudUrl)
+      and url.scheme is storage_url.ProviderPrefix.GCS
   )
 
 
@@ -533,6 +819,10 @@ def run_cp(args, delete_source=False):
   encryption_util.initialize_key_store(args)
 
   url_found_match_tracker = collections.OrderedDict()
+
+  _copy_or_rename_folders(
+      args, delete_source, raw_destination_url, url_found_match_tracker
+  )
 
   # TODO(b/304524534): Replace with args.include_managed_folders.
   if args.include_managed_folders:
@@ -576,6 +866,7 @@ def run_cp(args, delete_source=False):
       fields_scope=fields_scope,
       ignore_symlinks=args.ignore_symlinks,
       managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      folder_setting=folder_util.FolderSetting.LIST_AS_PREFIXES,
       object_state=flags.get_object_state_from_flags(args),
       preserve_symlinks=args.preserve_symlinks,
       recursion_requested=name_expansion.RecursionSetting.YES
@@ -591,18 +882,26 @@ def run_cp(args, delete_source=False):
       source_expansion_iterator=source_expansion_iterator,
   )
 
-  if delete_source and args.include_managed_folders:
-    managed_folder_expansion_iterator = name_expansion.NameExpansionIterator(
-        args.source,
-        managed_folder_setting=folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
-        raise_error_for_unmatched_urls=False,
-        recursion_requested=name_expansion.RecursionSetting.YES,
-        url_found_match_tracker=url_found_match_tracker,
-    )
-    exit_code = rm_command_util.remove_managed_folders(
-        args,
-        managed_folder_expansion_iterator,
-        task_graph_executor.multiprocessing_context.Queue(),
-    )
+  if delete_source:
+    folder_exit_code = _remove_folders(args, url_found_match_tracker)
+    if folder_exit_code != 0:
+      # Avoiding the scenario where the folder deletion succeeds and overrides
+      # a failed scenario during object listings, renames, etc.
+      exit_code = folder_exit_code
+
+    if args.include_managed_folders:
+      managed_folder_expansion_iterator = name_expansion.NameExpansionIterator(
+          args.source,
+          managed_folder_setting=folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+          folder_setting=folder_util.FolderSetting.DO_NOT_LIST,
+          raise_error_for_unmatched_urls=False,
+          recursion_requested=name_expansion.RecursionSetting.YES,
+          url_found_match_tracker=url_found_match_tracker,
+      )
+      exit_code = rm_command_util.remove_managed_folders(
+          args,
+          managed_folder_expansion_iterator,
+          task_graph_executor.multiprocessing_context.Queue(),
+      )
 
   return exit_code

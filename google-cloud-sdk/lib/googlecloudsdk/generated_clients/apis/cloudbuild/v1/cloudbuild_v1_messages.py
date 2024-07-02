@@ -1463,7 +1463,7 @@ class CloudbuildProjectsGithubEnterpriseConfigsCreateRequest(_messages.Message):
       character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    parent: Required. Name of the parent project. For example:
+    parent: Name of the parent project. For example:
       projects/{$project_number} or projects/{$project_id}
     projectId: ID of the project.
   """
@@ -2052,7 +2052,7 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.
       character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
-    parent: Required. Name of the parent project. For example:
+    parent: Name of the parent project. For example:
       projects/{$project_number} or projects/{$project_id}
     projectId: ID of the project.
   """
@@ -3573,13 +3573,13 @@ class HttpConfig(_messages.Message):
 
   Fields:
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
-      proxy URL should be in format protocol://@]proxyhost[:port].
-    proxySslCaInfo: Optional. Cloud Storage object storing the certificate to
-      use with the HTTP proxy.
+      Service Account used in the build (either the default Service Account or
+      user-specified Service Account) should have
+      secretmanager.versions.access permissions on this secret. The proxy URL
+      should be in format protocol://@]proxyhost[:port].
   """
 
   proxySecretVersionName = _messages.StringField(1)
-  proxySslCaInfo = _messages.MessageField('GCSLocation', 2)
 
 
 class HybridPoolConfig(_messages.Message):

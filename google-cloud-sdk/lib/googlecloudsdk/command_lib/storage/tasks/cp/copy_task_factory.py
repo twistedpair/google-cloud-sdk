@@ -22,6 +22,7 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_folder_task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_managed_folder_task
 from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
@@ -157,7 +158,36 @@ def get_copy_task(
           'Cannot preserve ACLs while copying between cloud providers.'
       )
 
-    if isinstance(source_resource, resource_reference.ManagedFolderResource):
+    # If the source_resource is a folder and other conditions for rename_folders
+    # are met, we need not invoke the CopyManagedFolderTask
+    # as the CopyFolderTask would take care of it automaticlally.
+    is_folders_use_case = (
+        isinstance(source_resource, resource_reference.FolderResource)
+        and not different_providers
+    )
+    if (
+        is_folders_use_case
+        and delete_source
+        and not force_daisy_chain
+        and source_resource.bucket
+        == destination_resource.storage_url.bucket_name
+    ):
+      return copy_folder_task.RenameFolderTask(
+          source_resource,
+          destination_resource,
+          print_created_message=print_created_message,
+          user_request_args=user_request_args,
+          verbose=verbose,
+      )
+    elif is_folders_use_case:
+      return copy_folder_task.CopyFolderTask(
+          source_resource,
+          destination_resource,
+          print_created_message=print_created_message,
+          user_request_args=user_request_args,
+          verbose=verbose,
+      )
+    elif isinstance(source_resource, resource_reference.ManagedFolderResource):
       return copy_managed_folder_task.CopyManagedFolderTask(
           source_resource,
           destination_resource,

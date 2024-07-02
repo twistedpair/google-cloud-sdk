@@ -124,3 +124,21 @@ def GetOneOfValidator(name, options):
       str,
   )
   return validtor
+
+
+class EnumMapper(object):
+  """Maps the args to Enum values."""
+
+  def __init__(self, enum_mapping):
+    self.enum_mapping = enum_mapping
+
+  def Parse(self, s):
+    if s in self.enum_mapping:
+      return self.enum_mapping[s]
+    else:
+      raise arg_parsers.ArgumentTypeError(
+          'Failed to parse the arg ({}). Value should be one of {}'.format(
+              s,
+              ', '.join(list(self.enum_mapping.keys())),
+          )
+      )

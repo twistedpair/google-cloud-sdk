@@ -645,6 +645,20 @@ class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   restoreClusterRequest = _messages.MessageField('RestoreClusterRequest', 2)
 
 
+class AlloydbProjectsLocationsClustersSwitchoverRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersSwitchoverRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Cluster.name field
+    switchoverClusterRequest: A SwitchoverClusterRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchoverClusterRequest = _messages.MessageField('SwitchoverClusterRequest', 2)
+
+
 class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersUsersCreateRequest object.
 
@@ -1018,11 +1032,13 @@ class Backup(_messages.Message):
       POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
+    POSTGRES_16 = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the backup.
@@ -1326,11 +1342,13 @@ class Cluster(_messages.Message):
       POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
+    POSTGRES_16 = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the cluster.
@@ -2462,15 +2480,14 @@ class ObservabilityInstanceConfig(_messages.Message):
   r"""Observability Instance specific configuration.
 
   Fields:
-    enabled: Observability feature status for an instance. This is a read-only
-      flag and modifiable only by producer API. This flag is turned "off" by
-      default.
+    enabled: Observability feature status for an instance. This flag is turned
+      "off" by default.
     maxQueryStringLength: Query string length. The default value is 10k.
     preserveComments: Preserve comments in query string for an instance. This
       flag is turned "off" by default.
     queryPlansPerMinute: Number of query execution plans captured by Insights
-      per minute for all queries combined. The default value is 5. Any integer
-      between 0 to 20 is considered valid.
+      per minute for all queries combined. The default value is 200. Any
+      integer between 0 to 200 is considered valid.
     recordApplicationTags: Record application tags for an instance. This flag
       is turned "off" by default.
     trackActiveQueries: Track actively running queries on the instance. If not
@@ -4570,11 +4587,13 @@ class SupportedDatabaseFlag(_messages.Message):
       POSTGRES_13: DEPRECATED - The database version is Postgres 13.
       POSTGRES_14: The database version is Postgres 14.
       POSTGRES_15: The database version is Postgres 15.
+      POSTGRES_16: The database version is Postgres 16.
     """
     DATABASE_VERSION_UNSPECIFIED = 0
     POSTGRES_13 = 1
     POSTGRES_14 = 2
     POSTGRES_15 = 3
+    POSTGRES_16 = 4
 
   class ValueTypeValueValuesEnum(_messages.Enum):
     r"""ValueTypeValueValuesEnum enum type.
@@ -4600,6 +4619,30 @@ class SupportedDatabaseFlag(_messages.Message):
   stringRestrictions = _messages.MessageField('StringRestrictions', 6)
   supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 7, repeated=True)
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
+
+
+class SwitchoverClusterRequest(_messages.Message):
+  r"""Message for switching over to a cluster
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the delete.
+  """
+
+  requestId = _messages.StringField(1)
+  validateOnly = _messages.BooleanField(2)
 
 
 class TimeBasedRetention(_messages.Message):

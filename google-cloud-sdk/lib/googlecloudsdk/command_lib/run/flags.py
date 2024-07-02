@@ -1362,6 +1362,20 @@ def AddServiceMinInstancesFlag(parser):
   )
 
 
+def AddServiceMaxInstancesFlag(parser):
+  """Add service-level max scaling flag."""
+  parser.add_argument(
+      '--service-max-instances',
+      type=_ScaleValue,
+      help=(
+          'The maximum number of container instances for this Service to run. '
+          'This instance limit will be divided among all Revisions receiving a '
+          'percentage of traffic. Once service-max-instances is enabled for a '
+          'service, it cannot be disabled.'
+      ),
+  )
+
+
 def AddMaxInstancesFlag(parser, resource_kind='service'):
   """Add max scaling flag."""
   help_text = (
@@ -2134,6 +2148,13 @@ def _GetServiceScalingChanges(args):
               str(scale_value.instance_count),
           )
       )
+  if 'service_max_instances' in args and args.service_max_instances is not None:
+    result.append(
+        config_changes.SetAnnotationChange(
+            service.SERVICE_MAX_SCALE_ANNOTATION,
+            str(args.service_max_instances.instance_count),
+        )
+    )
   if 'max_surge' in args and args.max_surge is not None:
     max_surge_value = args.max_surge
     if max_surge_value.restore_default or max_surge_value.surge_percent == 0:

@@ -33,6 +33,7 @@ from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import module_util
+from googlecloudsdk.core.util import http_encoding
 
 
 NAME_FORMAT_KEY = '__name__'
@@ -228,6 +229,7 @@ BUILTIN_TYPES = {
     'long': int,
     'float': float,
     'bool': bool,
+    'bytes': http_encoding.Encode,
 }
 
 

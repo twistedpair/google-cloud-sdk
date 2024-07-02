@@ -133,6 +133,8 @@ class SpeechV2Client(object):
       enable_spoken_emojis=False,
       min_speaker_count=None,
       max_speaker_count=None,
+      separate_channel_recognition=False,
+      max_alternatives=1,
       encoding=None,
       sample_rate=None,
       audio_channel_count=None,
@@ -163,6 +165,14 @@ class SpeechV2Client(object):
     recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = (
         enable_spoken_emojis
     )
+    recognizer.defaultRecognitionConfig.features.maxAlternatives = (
+        max_alternatives
+    )
+
+    if separate_channel_recognition:
+      recognizer.defaultRecognitionConfig.features.multiChannelMode = (
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL
+      )
 
     if min_speaker_count is not None and max_speaker_count is not None:
       recognizer.defaultRecognitionConfig.features.diarizationConfig = (
@@ -183,7 +193,6 @@ class SpeechV2Client(object):
       recognizer.defaultRecognitionConfig.explicitDecodingConfig.audioChannelCount = (
           audio_channel_count
       )
-
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent(
             parent_collection='speech.projects.locations'
@@ -240,6 +249,8 @@ class SpeechV2Client(object):
       enable_spoken_emojis=None,
       min_speaker_count=None,
       max_speaker_count=None,
+      separate_channel_recognition=False,
+      max_alternatives=1,
       encoding=None,
       sample_rate=None,
       audio_channel_count=None,
@@ -299,6 +310,25 @@ class SpeechV2Client(object):
           'default_recognition_config.features.enable_spoken_emojis'
       )
 
+    if separate_channel_recognition:
+      features.multiChannelMode = (
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL
+      )
+      update_mask.append(
+          'default_recognition_config.features.multi_channel_mode'
+      )
+    else:
+      features.multiChannelMode = (
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.MULTI_CHANNEL_MODE_UNSPECIFIED
+      )
+      update_mask.append(
+          'default_recognition_config.features.multi_channel_mode'
+      )
+
+    if max_alternatives is not None:
+      features.maxAlternatives = max_alternatives
+      update_mask.append('default_recognition_config.features.max_alternatives')
+
     if features.diarizationConfig is None and (
         min_speaker_count is not None or max_speaker_count is not None
     ):
@@ -353,12 +383,56 @@ class SpeechV2Client(object):
         location=resource.Parent().Name()
     ).Patch(request)
 
+  def SetDecodingConfig(
+      self, recognize_request, encoding, sample_rate, audio_channel_count
+  ):
+    """Set DecodingConfig attribute in recognize request based on encoding type.
+
+    Args:
+      recognize_request: recognize request (either BatchRecognizeRequest or
+        RecognizeRequest)
+      encoding: encoding type
+      sample_rate: sample rate
+      audio_channel_count: audio channel count
+    """
+    if encoding is not None:
+      if encoding == 'AUTO':
+        recognize_request.config.autoDecodingConfig = (
+            self._messages.AutoDetectDecodingConfig()
+        )
+
+      elif encoding in EXPLICIT_ENCODING_OPTIONS:
+        recognize_request.config.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+
+        recognize_request.config.explicitDecodingConfig.encoding = (
+            self._encoding_to_message[encoding]
+        )
+
+        recognize_request.config.explicitDecodingConfig.sampleRateHertz = (
+            sample_rate
+        )
+
+        recognize_request.config.explicitDecodingConfig.audioChannelCount = (
+            audio_channel_count
+        )
+      else:
+        raise exceptions.InvalidArgumentException(
+            '--encoding',
+            '[--encoding] must be set to LINEAR16, MULAW, ALAW, or AUTO.',
+        )
+    else:
+      recognize_request.config.autoDecodingConfig = (
+          self._messages.AutoDetectDecodingConfig()
+      )
+
   def RunShort(
       self,
       resource,
       audio,
       model,
-      language_code,
+      language_codes,
       encoding,
       sample_rate,
       audio_channel_count,
@@ -376,49 +450,68 @@ class SpeechV2Client(object):
 
     recognize_req.config = self._messages.RecognitionConfig()
 
-    if encoding is not None:
-      if encoding == 'AUTO':
-        recognize_req.config.autoDecodingConfig = (
-            self._messages.AutoDetectDecodingConfig()
-        )
-
-      elif encoding in EXPLICIT_ENCODING_OPTIONS:
-        recognize_req.config.explicitDecodingConfig = (
-            self._messages.ExplicitDecodingConfig()
-        )
-
-        recognize_req.config.explicitDecodingConfig.encoding = (
-            self._encoding_to_message[encoding]
-        )
-
-        recognize_req.config.explicitDecodingConfig.sampleRateHertz = (
-            sample_rate
-        )
-
-        recognize_req.config.explicitDecodingConfig.audioChannelCount = (
-            audio_channel_count
-        )
-      else:
-        raise exceptions.InvalidArgumentException(
-            '--encoding',
-            '[--encoding] must be set to LINEAR16, MULAW, ALAW, or AUTO.',
-        )
-    else:
-      recognize_req.config.autoDecodingConfig = (
-          self._messages.AutoDetectDecodingConfig()
-      )
+    self.SetDecodingConfig(
+        recognize_req, encoding, sample_rate, audio_channel_count
+    )
 
     if model is not None:
       recognize_req.config.model = model
 
-    if language_code is not None:
-      recognize_req.config.languageCodes = [language_code]
+    if language_codes is not None:
+      recognize_req.config.languageCodes = language_codes
 
     request = self._messages.SpeechProjectsLocationsRecognizersRecognizeRequest(
         recognizeRequest=recognize_req,
         recognizer=resource.RelativeName(),
     )
     return recognizer_service.Recognize(request)
+
+  def RunBatch(
+      self,
+      resource,
+      audio,
+      model,
+      language_codes,
+      encoding,
+      sample_rate,
+      audio_channel_count,
+  ):
+    """Call API Recognize method with provided arguments in batch mode."""
+    recognize_req = self._messages.BatchRecognizeRequest()
+
+    recognize_req.recognizer = resource.RelativeName()
+
+    recognize_req.config = self._messages.RecognitionConfig()
+
+    batch_audio_metadata = self._messages.BatchRecognizeFileMetadata()
+
+    batch_audio_metadata.uri = audio
+
+    recognizer_service = self._RecognizerServiceForLocation(
+        location=resource.Parent().Name()
+    )
+
+    self.SetDecodingConfig(
+        recognize_req, encoding, sample_rate, audio_channel_count
+    )
+
+    recognize_req.files.append(batch_audio_metadata)
+
+    recognize_req.recognitionOutputConfig = (
+        self._messages.RecognitionOutputConfig()
+    )
+
+    recognize_req.recognitionOutputConfig.inlineResponseConfig = (
+        self._messages.InlineOutputConfig()
+    )
+
+    if model is not None:
+      recognize_req.config.model = model
+
+    if language_codes is not None:
+      recognize_req.config.languageCodes = language_codes
+
+    return recognizer_service.BatchRecognize(recognize_req)
 
   def GetOperationRef(self, operation):
     """Converts an Operation to a Resource."""
@@ -452,6 +545,33 @@ class SpeechV2Client(object):
         message=message,
         pre_start_sleep_ms=100,
         max_wait_ms=20000,
+    )
+
+  def WaitForBatchRecognizeOperation(self, location, operation_ref, message):
+    """Waits for a Batch Recognize operation to complete.
+
+    Polls the Speech Operation service until the operation completes, fails, or
+      max_wait_ms elapses.
+
+    Args:
+      location: The location of the resource.
+      operation_ref: A Resource created by GetOperationRef describing the
+        Operation.
+      message: The message to display to the user while they wait.
+
+    Returns:
+      An Endpoint entity.
+    """
+    poller = waiter.CloudOperationPollerNoResources(
+        self._OperationsServiceForLocation(location),
+        lambda x: x,
+    )
+
+    return waiter.WaitFor(
+        poller,
+        operation_ref,
+        message=message,
+        wait_ceiling_ms=86400000,
     )
 
   def GetLocation(self, location_resource):

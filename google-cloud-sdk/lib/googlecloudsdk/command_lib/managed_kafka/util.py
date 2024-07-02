@@ -177,4 +177,7 @@ def PatchConfigs(_, args, request):
     request.updateMask = AppendUpdateMask(
         ",".join(update_mask), ",".join(configs_list)
     )
+  # This flag is guarded with a mutex so it won't conflict with the above.
+  if args.clear_configs:
+    request.updateMask = AppendUpdateMask(request.updateMask, "configs")
   return request

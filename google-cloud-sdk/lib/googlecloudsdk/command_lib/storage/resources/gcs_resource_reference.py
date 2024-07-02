@@ -51,7 +51,7 @@ def _get_json_dump(resource):
 
 def _get_formatted_acl(acl):
   """Removes unnecessary fields from acl."""
-  if acl is None:
+  if acl is None or not isinstance(acl, list):
     return acl
   formatted_acl = []
   for acl_entry in acl:

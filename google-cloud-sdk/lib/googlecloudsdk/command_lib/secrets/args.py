@@ -114,12 +114,24 @@ def AddReplicaLocation(parser, positional=False, **kwargs):
       **kwargs)
 
 
-def AddSecret(parser, purpose, positional=False, **kwargs):
+def AddSecret(parser, purpose='', positional=False, help_text=None, **kwargs):
+  """Add secret resource argument to the parser.
+
+  Args:
+    parser: The parser to add the argument to.
+    purpose: The purpose of the secret, used to generate the help text.
+    positional: Whether the argument is positional.
+    help_text: The help text to use for the argument.
+    **kwargs: Extra arguments.
+  """
+  if help_text is None:  # NOMUTANTS--no good way to test
+    help_text = 'The secret {}.'.format(purpose)
   concept_parsers.ConceptParser.ForResource(
       name=_ArgOrFlag('secret', positional),
       resource_spec=GetSecretResourceSpec(),
-      group_help='The secret {}.'.format(purpose),
-      **kwargs).AddToParser(parser)
+      group_help=help_text,
+      **kwargs,
+  ).AddToParser(parser)
 
 
 def AddVersion(parser, purpose, positional=False, **kwargs):
@@ -282,7 +294,7 @@ def AddUpdateRegionalKmsKey(
       positional : Whether the argument is positional.
       **kwargs: Extra arguments.
   """
-  group = parser.add_group(mutex=True, help='regional kms key.', hidden=True)
+  group = parser.add_group(mutex=True, help='regional kms key.')
   group.add_argument(
       _ArgOrFlag('regional-kms-key-name', positional),
       metavar='REGIONAL-KMS-KEY-NAME',
@@ -401,7 +413,6 @@ def AddRegionalKmsKeyName(parser, positional=False, **kwargs):
           'Regional KMS key with which to encrypt and decrypt the secret. Only '
           'valid for regional secrets.'
       ),
-      hidden=True,
       **kwargs,
   )
 

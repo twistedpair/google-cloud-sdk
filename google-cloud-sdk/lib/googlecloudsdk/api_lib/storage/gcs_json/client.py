@@ -43,9 +43,11 @@ from googlecloudsdk.api_lib.storage.gcs_json import metadata_util
 from googlecloudsdk.api_lib.storage.gcs_json import patch_apitools_messages
 from googlecloudsdk.api_lib.storage.gcs_json import upload
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import gzip_util
+from googlecloudsdk.command_lib.storage import operations_util
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
@@ -250,6 +252,39 @@ def _update_api_version_for_uploads_if_needed(client):
       'v1', api_version)
 
 
+class CloudStorageLroPoller(waiter.CloudOperationPollerNoResources):
+  """Poller for Storage LROs."""
+
+  _MESSAGES = core_apis.GetMessagesModule('storage', 'v1')
+
+  def Poll(self, operation_ref):
+    """Overrides."""
+
+    try:
+      bucket, operation_id = (
+          operations_util.get_operation_bucket_and_id_from_name(
+              operation_ref.name
+          )
+      )
+    except command_errors.Error:
+      log.warning(
+          'We could not wait for the operation to complete because the required'
+          ' data was incorrect. The operation may still have completed in the'
+          ' background. Please check if the operation has completed'
+          ' before retrying.'
+      )
+      raise cloud_errors.GcsApiError(
+          'Invalid operation data initiated for this command:'
+          f' {operation_ref.name}. Please check if command completed in the'
+          ' background before '
+      )
+
+    request = self._MESSAGES.StorageBucketsOperationsGetRequest(
+        bucket=bucket, operationId=operation_id
+    )
+    return self.operation_service.Get(request)
+
+
 class JsonClient(cloud_api.CloudApi):
   """Client for Google Cloud Storage API."""
 
@@ -258,6 +293,7 @@ class JsonClient(cloud_api.CloudApi):
       cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
       cloud_api.Capability.ENCRYPTION,
       cloud_api.Capability.MANAGED_FOLDERS,
+      cloud_api.Capability.FOLDERS,
       cloud_api.Capability.STORAGE_LAYOUT,
       cloud_api.Capability.RESUMABLE_UPLOAD,
       cloud_api.Capability.SLICED_DOWNLOAD,
@@ -1603,3 +1639,13 @@ class JsonClient(cloud_api.CloudApi):
         self.messages.StorageBucketsGetStorageLayoutRequest(bucket=bucket_name)
     )
     return self.client.buckets.GetStorageLayout(storage_layout_request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def wait_for_operation(self, operation_ref):
+    """See CloudApi class for function doc strings."""
+
+    poller = CloudStorageLroPoller(
+        self.client.operations, (lambda ref: ref.name)
+    )
+
+    return waiter.WaitFor(poller, operation_ref)

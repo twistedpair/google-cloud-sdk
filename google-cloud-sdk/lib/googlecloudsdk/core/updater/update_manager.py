@@ -922,21 +922,46 @@ version [{1}].  To clear your fixed version setting, run:
         takes a single argument which is the component id.
       first: bool, True if this is the first stacked ProgressBar group.
       last: bool, True if this is the last stacked ProgressBar group.
+
+    Returns:
+      dict, Map of component ID to result of action_func for each component.
     """
+    results_map = {}
     for index, component in enumerate(components):
       label = '{action}: {name}'.format(action=action,
                                         name=component.details.display_name)
       with console_io.ProgressBar(
           label=label, stream=log.status, first=first,
           last=last and index == len(components) - 1) as pb:
-        action_func(component.id, progress_callback=pb.SetProgress)
+        result = action_func(component.id, progress_callback=pb.SetProgress)
+        results_map[component.id] = result
       first = False
+    return results_map
 
-  def _InstallFunction(self, install_state, diff):
+  def _DownloadAndInstallFunction(self, install_state, diff):
     def Inner(component_id, progress_callback):
-      return install_state.Install(diff.latest, component_id,
-                                   progress_callback=progress_callback,
-                                   command_path='components.update')
+      (download_callback, install_callback) = (
+          console_io.SplitProgressBar(progress_callback, [1, 1]))
+      downloaded_archive = install_state.Download(
+          diff.latest, component_id, progress_callback=download_callback,
+          command_path='components.update')
+      return install_state.Install(
+          diff.latest, component_id, downloaded_archive,
+          progress_callback=install_callback)
+    return Inner
+
+  def _DownloadFunction(self, install_state, diff):
+    def Inner(component_id, progress_callback):
+      return install_state.Download(
+          diff.latest, component_id, progress_callback=progress_callback,
+          command_path='components.update')
+    return Inner
+
+  def _InstallFunction(self, install_state, diff, downloads_map):
+    def Inner(component_id, progress_callback):
+      return install_state.Install(
+          diff.latest, component_id, downloads_map[component_id],
+          progress_callback=progress_callback)
     return Inner
 
   def Install(self, components, allow_no_backup=False,
@@ -1101,17 +1126,21 @@ version [{1}].  To clear your fixed version setting, run:
         # Uninstall, then cleaning it up after Install if it's no longer needed
         # (which could happen if e.g. certifi changes the path in the future).
         with self._EnsureCaCertsCleanedUpIfObsoleted() as ca_certs_path:
+          downloads_map = self._UpdateWithProgressBar(
+              components_to_install, 'Downloading',
+              self._DownloadFunction(install_state, diff),
+              first=True, last=False)
           with _EnsureCaCertsRestoredIfDeleted(ca_certs_path):
             self._UpdateWithProgressBar(components_to_remove, 'Uninstalling',
                                         install_state.Uninstall,
-                                        first=True,
+                                        first=not components_to_install,
                                         last=not components_to_install)
           # CA certs are now restored to their original path (they may get
           # overwritten during the install).
           self._UpdateWithProgressBar(components_to_install, 'Installing',
                                       self._InstallFunction(
-                                          install_state, diff),
-                                      first=not components_to_remove,
+                                          install_state, diff, downloads_map),
+                                      first=False,
                                       last=True)
     else:
       with console_io.ProgressBar(
@@ -1122,7 +1151,8 @@ version [{1}].  To clear your fixed version setting, run:
                                   staging_state.Uninstall, first=False,
                                   last=False)
       self._UpdateWithProgressBar(components_to_install, 'Installing',
-                                  self._InstallFunction(staging_state, diff),
+                                  self._DownloadAndInstallFunction(
+                                      staging_state, diff),
                                   first=False, last=False)
       with console_io.ProgressBar(
           label='Creating backup and activating new installation',

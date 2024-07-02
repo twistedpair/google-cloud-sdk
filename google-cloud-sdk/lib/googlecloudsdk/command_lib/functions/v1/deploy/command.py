@@ -485,6 +485,18 @@ def Run(args, track=None):
         function.eventTrigger, trigger_params['trigger_event']
     )
 
+  if args.IsKnownAndSpecified('binary_authorization'):
+    raise calliope_exceptions.InvalidArgumentException(
+        '--binary_authorization',
+        'Binary authorization is not supported for 1st gen Cloud Functions.',
+    )
+
+  if args.IsKnownAndSpecified('clear_binary_authorization'):
+    raise calliope_exceptions.InvalidArgumentException(
+        '--clear_binary_authorization',
+        'Binary authorization is not supported for 1st gen Cloud Functions.',
+    )
+
   # Keep track of which fields are updated in the case of patching.
   updated_fields = []
 

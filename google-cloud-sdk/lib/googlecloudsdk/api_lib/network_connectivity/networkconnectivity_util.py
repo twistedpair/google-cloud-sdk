@@ -23,7 +23,10 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
 API_NAME = 'networkconnectivity'
-VERSION_MAP = {base.ReleaseTrack.GA: 'v1'}
+VERSION_MAP = {
+    base.ReleaseTrack.BETA: 'v1beta',
+    base.ReleaseTrack.GA: 'v1',
+}
 
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):

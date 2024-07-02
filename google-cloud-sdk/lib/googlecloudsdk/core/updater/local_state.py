@@ -210,6 +210,8 @@ class InstallationState(object):
 
     self.__sdk_staging_root = (os.path.normpath(self.__sdk_root) +
                                InstallationState.STAGING_ROOT_SUFFIX)
+    self._component_installer = installers.ComponentInstaller(
+        self.__sdk_root, self._state_directory)
 
   @_RaisesPermissionsError
   def _CreateStateDir(self):
@@ -361,9 +363,13 @@ class InstallationState(object):
     with file_utils.TemporaryDirectory() as t:
       download_dir = os.path.join(t, '.download')
       extract_dir = os.path.join(t, '.extract')
-      installers.DownloadAndExtractTar(
-          url, download_dir, extract_dir, progress_callback=progress_callback,
+      (download_callback, extract_callback) = (
+          console_io.SplitProgressBar(progress_callback, [1, 1]))
+      downloaded_tar = installers.DownloadTar(
+          url, download_dir, progress_callback=download_callback,
           command_path='components.reinstall')
+      installers.ExtractTar(
+          downloaded_tar, extract_dir, progress_callback=extract_callback)
       files = os.listdir(extract_dir)
       if len(files) != 1:
         raise InvalidDownloadError()
@@ -492,24 +498,10 @@ class InstallationState(object):
     if progress_callback:
       progress_callback(1)
 
-  def _GetInstaller(self, snapshot):
-    """Gets a component installer based on the given snapshot.
-
-    Args:
-      snapshot: snapshots.ComponentSnapshot, The snapshot that describes the
-        component to install.
-
-    Returns:
-      The installers.ComponentInstaller.
-    """
-    return installers.ComponentInstaller(self.__sdk_root,
-                                         self._state_directory,
-                                         snapshot)
-
   @_RaisesPermissionsError
-  def Install(self, snapshot, component_id, progress_callback=None,
-              command_path='unknown'):
-    """Installs the given component based on the given snapshot.
+  def Download(self, snapshot, component_id, progress_callback=None,
+               command_path='unknown'):
+    """Downloads the given component based on the given snapshot.
 
     Args:
       snapshot: snapshots.ComponentSnapshot, The snapshot that describes the
@@ -520,15 +512,37 @@ class InstallationState(object):
       command_path: the command path to include in the User-Agent header if the
         URL is HTTP
 
+    Returns:
+      Optional[str], The path of the downloaded archive, or None if the
+        component has no actual sources.
+
     Raises:
       installers.URLFetchError: If the component associated with the provided
         component ID has a URL that is not fetched correctly.
     """
     self._CreateStateDir()
-
-    files = self._GetInstaller(snapshot).Install(
-        component_id, progress_callback=progress_callback,
+    component = snapshot.ComponentFromId(component_id)
+    downloaded_archive = self._component_installer.Download(
+        component, progress_callback=progress_callback,
         command_path=command_path)
+    return downloaded_archive
+
+  @_RaisesPermissionsError
+  def Install(self, snapshot, component_id, downloaded_archive,
+              progress_callback=None):
+    """Installs the archive previously downloaded from self.Download().
+
+    Args:
+      snapshot: snapshots.ComponentSnapshot, The snapshot that describes the
+        component to install.
+      component_id: str, The component to install from the given snapshot.
+      downloaded_archive: Optional[str], The path to the archive downloaded
+        previously.
+      progress_callback: f(float), A function to call with the fraction of
+        completeness.
+    """
+    files = self._component_installer.Extract(
+        downloaded_archive, progress_callback=progress_callback)
     manifest = InstallationManifest(self._state_directory, component_id)
     manifest.MarkInstalled(snapshot, files)
 

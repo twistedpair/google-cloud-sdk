@@ -341,6 +341,13 @@ class GceConfidentialInstanceConfig(_messages.Message):
 class GceInstance(_messages.Message):
   r"""A runtime using a Compute Engine instance.
 
+  Messages:
+    VmTagsValue: Optional. Resource manager tags to be bound to this instance.
+      Tag keys and values have the same definition as
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`.
+
   Fields:
     accelerators: Optional. A list of the type and count of accelerator cards
       attached to the instance.
@@ -424,7 +431,39 @@ class GceInstance(_messages.Message):
       of [firewall
       rules](https://cloud.google.com/workstations/docs/configure-firewall-
       rules).
+    vmTags: Optional. Resource manager tags to be bound to this instance. Tag
+      keys and values have the same definition as
+      https://cloud.google.com/resource-manager/docs/tags/tags-overview Keys
+      must be in the format `tagKeys/{tag_key_id}`, and values are in the
+      format `tagValues/456`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VmTagsValue(_messages.Message):
+    r"""Optional. Resource manager tags to be bound to this instance. Tag keys
+    and values have the same definition as https://cloud.google.com/resource-
+    manager/docs/tags/tags-overview Keys must be in the format
+    `tagKeys/{tag_key_id}`, and values are in the format `tagValues/456`.
+
+    Messages:
+      AdditionalProperty: An additional property for a VmTagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type VmTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VmTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerators = _messages.MessageField('Accelerator', 1, repeated=True)
   bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -439,6 +478,7 @@ class GceInstance(_messages.Message):
   serviceAccountScopes = _messages.StringField(11, repeated=True)
   shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 12)
   tags = _messages.StringField(13, repeated=True)
+  vmTags = _messages.MessageField('VmTagsValue', 14)
 
 
 class GcePersistentDisk(_messages.Message):

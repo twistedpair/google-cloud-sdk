@@ -1364,6 +1364,58 @@ def AddThreadsArgument(parser, operation):
   )
 
 
+def AddCleanExportArgument(parser):
+  """Add the 'clean' argument to the parser."""
+  parser.add_argument(
+      '--clean',
+      action='store_true',
+      help=(
+          'Include SQL statements (DROP <object>) required to'
+          ' drop database objects prior to import; corresponds to the clean'
+          ' flag for pg_dump. Only applies to PostgreSQL non-parallel exports.'
+      ),
+  )
+
+
+def AddIfExistsExportsArgument(parser):
+  """Add the 'if-exists' argument to the parser."""
+  parser.add_argument(
+      '--if-exists',
+      action='store_true',
+      help=(
+          'Include an SQL statement (IF EXISTS) with each drop statement'
+          ' produced by the clean flag; corresponds to the if-exists flag'
+          ' for pg_dump. Only applies to PostgreSQL non-parallel exports.'
+      ),
+  )
+
+
+def AddCleanImportArgument(parser):
+  """Add the 'clean' argument to the parser."""
+  parser.add_argument(
+      '--clean',
+      action='store_true',
+      help=(
+          'Option to clean (DROP) database objects before recreating them.'
+          ' corresponds to the clean flag for pg_restore. Only applies if'
+          ' --parallel is set. PostgreSQL only.'
+      ),
+  )
+
+
+def AddIfExistsImportsArgument(parser):
+  """Add the 'if-exists' argument to the parser."""
+  parser.add_argument(
+      '--if-exists',
+      action='store_true',
+      help=(
+          'Include an SQL statement (IF EXISTS) with each DROP statement'
+          ' produced by --clean; corresponds to the if-exists flag for'
+          ' pg_restore. Only applies if --parallel is set. PostgreSQL only.'
+      ),
+  )
+
+
 def AddQuoteArgument(parser):
   """Add the 'quote' argument to the parser."""
   parser.add_argument(

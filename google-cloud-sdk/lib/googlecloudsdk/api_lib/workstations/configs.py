@@ -232,6 +232,15 @@ class Configs:
     if args.replica_zones:
       config.replicaZones = args.replica_zones
 
+    if args.vm_tags:
+      tags_val = self.messages.GceInstance.VmTagsValue()
+      for key, value in args.vm_tags.items():
+        tags_val.additionalProperties.append(
+            self.messages.GceInstance.VmTagsValue.AdditionalProperty(
+                key=key, value=value
+            ))
+      config.host.gceInstance.vmTags = tags_val
+
     create_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest(
         parent=parent, workstationConfigId=config_id, workstationConfig=config
     )
@@ -471,6 +480,16 @@ class Configs:
     if args.IsSpecified('container_run_as_user'):
       config.container.runAsUser = args.container_run_as_user
       update_mask.append('container.run_as_user')
+
+    if args.IsSpecified('vm_tags'):
+      tags_val = self.messages.GceInstance.VmTagsValue()
+      for key, value in args.vm_tags.items():
+        tags_val.additionalProperties.append(
+            self.messages.GceInstance.VmTagsValue.AdditionalProperty(
+                key=key, value=value
+            ))
+      config.host.gceInstance.vmTags = tags_val
+      update_mask.append('host.gce_instance.vm_tags')
 
     if not update_mask:
       log.error('No fields were specified.')

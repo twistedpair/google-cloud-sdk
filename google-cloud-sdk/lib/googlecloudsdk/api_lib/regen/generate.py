@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import logging
 import os
 
@@ -141,14 +142,14 @@ def _MakeGapicClientDef(root_package, api_name, api_version):
       class_path=class_path)
 
 
-def _MakeApiMap(package_map, api_config):
+def _MakeApiMap(package_map, apis_config):
   """Combines package_map and api_config maps into ApiDef map.
 
   Args:
     package_map: {api_name->api_version->root_package},
                  package where each generated api resides.
-    api_config: {api_name->api_version->{discovery,default,version,...}},
-                description of each api.
+    apis_config: {api_name->api_version->{discovery,default,version,...}},
+                 description of each api.
   Returns:
     {api_name->api_version->ApiDef()}.
 
@@ -156,12 +157,27 @@ def _MakeApiMap(package_map, api_config):
     NoDefaultApiError: if for some api with multiple versions
         default was not specified.
   """
-  apis_map = {}
-  apis_with_default = set()
-  for api_name, api_version_config in six.iteritems(api_config):
-    api_versions_map = apis_map.setdefault(api_name, {})
-    has_default = False
-    for api_version, api_config in six.iteritems(api_version_config):
+  # Validate that each API has exactly one default version configured.
+  default_versions_map = {}
+  for api_name, api_version_config in apis_config.items():
+    for api_version, api_config in api_version_config.items():
+      if api_config.get('default') or len(api_version_config) == 1:
+        if api_name in default_versions_map:
+          raise NoDefaultApiError(
+              'Multiple default client versions found for [{}]!'
+              .format(api_name))
+        default_versions_map[api_name] = api_version
+  apis_without_default = (
+      set(apis_config.keys()).difference(default_versions_map.keys()))
+  if apis_without_default:
+    raise NoDefaultApiError('No default client versions found for [{0}]!'
+                            .format(', '.join(sorted(apis_without_default))))
+
+  apis_map = collections.defaultdict(dict)
+  for api_name, api_version_config in apis_config.items():
+    for api_version, api_config in api_version_config.items():
+      if package_map.get(api_name, {}).get(api_version, None) is None:
+        continue
       root_package = package_map[api_name][api_version]
       if api_config.get('discovery_doc'):
         apitools_client = _MakeApitoolsClientDef(
@@ -173,27 +189,13 @@ def _MakeApiMap(package_map, api_config):
         gapic_client = _MakeGapicClientDef(root_package, api_name, api_version)
       else:
         gapic_client = None
-
-      default = api_config.get('default', len(api_version_config) == 1)
-      if has_default and default:
-        raise NoDefaultApiError(
-            'Multiple default client versions found for [{}]!'
-            .format(api_name))
-      has_default = has_default or default
-
+      default = (api_version == default_versions_map[api_name])
       enable_mtls = api_config.get('enable_mtls', True)
       mtls_endpoint_override = api_config.get('mtls_endpoint_override', '')
-      api_versions_map[api_version] = api_def.APIDef(
+      apis_map[api_name][api_version] = api_def.APIDef(
           apitools_client,
           gapic_client,
           default, enable_mtls, mtls_endpoint_override)
-    if has_default:
-      apis_with_default.add(api_name)
-
-  apis_without_default = set(apis_map.keys()).difference(apis_with_default)
-  if apis_without_default:
-    raise NoDefaultApiError('No default client versions found for [{0}]!'
-                            .format(', '.join(sorted(apis_without_default))))
   return apis_map
 
 

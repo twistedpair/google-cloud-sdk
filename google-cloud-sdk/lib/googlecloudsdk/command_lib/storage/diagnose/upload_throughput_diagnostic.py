@@ -14,7 +14,10 @@
 # limitations under the License.
 """Upload Throughput Diagnostic."""
 
+from __future__ import annotations
+
 import enum
+import math
 import os
 from typing import List
 import uuid
@@ -27,9 +30,6 @@ from googlecloudsdk.core.util import scaled_integer
 
 _DEFAULT_OBJECT_COUNT = 5
 _DEFAULT_OBJECT_SIZE = 1024 * 1024
-# Make sure the prefix is unique to avoid collisions with other diagnostics
-# and previous runs of this diagnostic.
-_OBJECT_PREFIX = 'upload_throughput_diagnostics_' + str(uuid.uuid4())
 _ENABLE_PARALLEL_COMPOSITE_ENV_VAR = (
     'CLOUDSDK_STORAGE_PARALLEL_COMPOSITE_UPLOAD_ENABLED'
 )
@@ -48,6 +48,21 @@ _STREAMING_UPLOAD_PARALLELISM_WARNING = (
     'Process and/or thread count is set but streaming uploads dont'
     ' support parallelism. Ignoring these values.'
 )
+_METRIC_NAME = 'upload throughput'
+
+
+def _get_payload_description(object_count: int, object_size: int) -> str:
+  """Returns the payload description for the given object count and size."""
+  return (
+      f'Transferred {object_count} objects for a total transfer size of'
+      f' {scaled_integer.FormatInteger(object_size)}.'
+  )
+
+
+def _get_formatted_upload_throughput(upload_throughput: float) -> str:
+  """Formats the upload throughput to a human readable format."""
+  scaled_upload_throughput = scaled_integer.FormatInteger(upload_throughput)
+  return f'{scaled_upload_throughput}/sec'
 
 
 class UploadType(enum.Enum):
@@ -85,7 +100,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     self._files = []
     self._old_env_vars = {}
     self.temp_dir = None
-    self.result = {}
+    self._result = {}
     if object_sizes:
       self._object_sizes = object_sizes
     else:
@@ -95,6 +110,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
           else [_DEFAULT_STREAMING_SIZE]
       )
     self._object_count = len(self._object_sizes)
+    # Make sure the prefix is unique to avoid collisions with other diagnostics
+    # and previous runs of this diagnostic.
+    self.object_prefix = 'upload_throughput_diagnostics_' + str(uuid.uuid4())
 
   def _pre_process(self):
     """Prepares the environment for the diagnostic test."""
@@ -113,7 +131,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
       # Do not create test files for streaming uploads.
       return
 
-    if not self._create_test_files(self._object_sizes, _OBJECT_PREFIX):
+    if not self._create_test_files(self._object_sizes, self.object_prefix):
       raise diagnostic.DiagnosticIgnorableError('Failed to create test files.')
 
   def _set_parallel_composite_env_vars(self):
@@ -155,7 +173,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     self._set_cloud_sdk_env_vars()
 
     if self._upload_type == UploadType.STREAMING:
-      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self.result):
+      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
         log.debug(
             'Starting Streaming Upload of {} bytes to : {}'.format(
                 self.streaming_size, self.bucket_url
@@ -175,9 +193,10 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
               self._object_count, self.bucket_url
           )
       )
-      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self.result):
+      with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
-            self.temp_dir.path + '/' + _OBJECT_PREFIX + '*', self.bucket_url
+            self.temp_dir.path + '/' + self.object_prefix + '*',
+            self.bucket_url.url_string,
         )
     else:
       raise diagnostic.DiagnosticIgnorableError(
@@ -199,3 +218,30 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         log.warning(
             '{} : Failed to clean up temp files. {}'.format(_DIAGNOSTIC_NAME, e)
         )
+
+  @property
+  def result(self) -> diagnostic.DiagnosticResult | None:
+    """Returns the summarized result of the diagnostic execution."""
+    if not self._result or _UPLOAD_THROUGHPUT_RESULT_KEY not in self._result:
+      return None
+
+    upload_time = self._result[_UPLOAD_THROUGHPUT_RESULT_KEY]
+    upload_payload_size = sum(self._object_sizes)
+    if math.isclose(upload_time, 0.0):
+      upload_throughput = diagnostic.PLACEHOLDER_METRIC_VALUE
+    else:
+      upload_throughput = _get_formatted_upload_throughput(
+          upload_payload_size / upload_time
+      )
+
+    operation_result = diagnostic.DiagnosticOperationResult(
+        name=_METRIC_NAME,
+        result=upload_throughput,
+        payload_description=_get_payload_description(
+            self._object_count, upload_payload_size
+        ),
+    )
+    return diagnostic.DiagnosticResult(
+        name=_DIAGNOSTIC_NAME,
+        operation_results=[operation_result],
+    )

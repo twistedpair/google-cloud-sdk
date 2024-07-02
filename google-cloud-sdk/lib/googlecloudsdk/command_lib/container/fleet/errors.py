@@ -42,3 +42,11 @@ class ConfiguringDisabledCompliance(MutuallyExclusiveFlags):
   This error is raised when the caller tries to specify the compliance mode of
   disabled along with compliance standards configuration at the same time.
   """
+
+
+class ConfiguringMissingCompliance(InvalidFlagValueError):
+  """Compliance does not support configuring standards without a set mode.
+
+  This error is raised when the caller tries to configure compliance standards
+  on a configuration that is neither enabled nor disabled.
+  """

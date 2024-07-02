@@ -296,7 +296,7 @@ def _GetPreference():
           This is the default setting. If the designated preferred backends
           don't have enough capacity, backends in the default category are used.
           Traffic is distributed between default backends based on the load
-          balancing algorithm you use.
+          balancing algorithm used.
           """),
       'PREFERRED': textwrap.dedent("""
           Backends with this preference setting are used up to their capacity
@@ -309,8 +309,8 @@ def _GetPreference():
 def AddPreference(parser):
   """Adds preference argument to the argparse."""
   help_text = """\
-  Defines whether a backend should be fully utilized before
-  sending traffic to backends with default preference.
+  This parameter specifies whether a backend should be fully utilized before
+  sending traffic to backends with the default preference.
   """
   incompatible_types = ['INTERNET_IP_PORT', 'INTERNET_FQDN_PORT', 'SERVERLESS']
   help_text += """\

@@ -23,6 +23,7 @@ from typing import Tuple
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 
 class SystemInfoProvider(abc.ABC):
@@ -204,3 +205,12 @@ class OsxSystemInfoProvider(SystemInfoProvider):
       respectively.
     """
     return (self._get_total_memory(), self._get_free_memory())
+
+
+def get_system_info_provider() -> SystemInfoProvider:
+  """Factory for fetching system info provider based on the OS."""
+  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.WINDOWS:
+    return WindowsSystemInfoProvider()
+  if platforms.OperatingSystem.Current() == platforms.OperatingSystem.MACOSX:
+    return OsxSystemInfoProvider()
+  return UnixSystemInfoProvider()

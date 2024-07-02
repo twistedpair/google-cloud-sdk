@@ -296,6 +296,7 @@ class NameExpansionIterator:
       )
       should_return_folder = self._folder_setting in {
           folder_util.FolderSetting.LIST_WITHOUT_OBJECTS,
+          folder_util.FolderSetting.LIST_AS_FOLDERS,
       } and isinstance(
           name_expansion_result.resource,
           resource_reference.FolderResource,

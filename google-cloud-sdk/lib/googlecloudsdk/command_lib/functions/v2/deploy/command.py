@@ -417,6 +417,13 @@ def _GetServiceConfig(
   if secret_volumes != old_secret_volumes:
     updated_fields.add('service_config.secret_volumes')
 
+  binary_authorization_policy = None
+  if args.IsKnownAndSpecified('clear_binary_authorization'):
+    updated_fields.add('service_config.binary_authorization_policy')
+  elif args.IsKnownAndSpecified('binary_authorization'):
+    binary_authorization_policy = args.binary_authorization
+    updated_fields.add('service_config.binary_authorization_policy')
+
   service_updated_fields = frozenset.union(
       vpc_updated_fields, ingress_updated_fields, updated_fields
   )
@@ -454,6 +461,7 @@ def _GetServiceConfig(
           ),
           maxInstanceRequestConcurrency=concurrency,
           availableCpu=_ValidateK8sCpuStr(cpu),
+          binaryAuthorizationPolicy=binary_authorization_policy,
       ),
       service_updated_fields,
   )

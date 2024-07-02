@@ -28,13 +28,32 @@ class BackupPlansClient(util.BackupDrClientBase):
     super(BackupPlansClient, self).__init__()
     self.service = self.client.projects_locations_backupPlans
 
-  def Create(self, resource, backup_vault, resource_type, backup_rules):
+  def Create(
+      self,
+      resource,
+      backup_vault,
+      resource_type,
+      backup_rules,
+      description,
+      labels,
+  ):
     parent = resource.Parent().RelativeName()
     backup_plan_id = resource.Name()
     backup_plan = self.messages.BackupPlan(
         resourceType=resource_type,
         backupVault=backup_vault,
     )
+    if description is not None:
+      backup_plan.description = description
+    if labels is not None:
+      backup_plan.labels = self.messages.BackupPlan.LabelsValue(
+          additionalProperties=[
+              self.messages.BackupPlan.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in labels.items()
+          ]
+      )
     for backup_rule in backup_rules:
       standard_schedule = self.messages.StandardSchedule()
       standard_schedule.timeZone = (
@@ -58,6 +77,16 @@ class BackupPlansClient(util.BackupDrClientBase):
             )
             for day in backup_rule['days-of-week']
         ]
+      if 'week-day-of-month' in backup_rule:
+        week_day_of_month = backup_rule['week-day-of-month'].split('-')
+        standard_schedule.weekDayOfMonth = self.messages.WeekDayOfMonth(
+            weekOfMonth=self.messages.WeekDayOfMonth.WeekOfMonthValueValuesEnum(
+                week_day_of_month[0]
+            ),
+            dayOfWeek=self.messages.WeekDayOfMonth.DayOfWeekValueValuesEnum(
+                week_day_of_month[1]
+            ),
+        )
       if 'days-of-month' in backup_rule:
         standard_schedule.daysOfMonth = backup_rule['days-of-month']
       if 'months' in backup_rule:

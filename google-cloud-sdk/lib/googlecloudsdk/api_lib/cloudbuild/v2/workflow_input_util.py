@@ -17,8 +17,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild.v2 import client_util
@@ -32,15 +30,11 @@ _WORKFLOW_OPTIONS_ENUMS = [
     "options.provenance.region",
 ]
 
-_GCB_REPOSITORY_PAT = re.compile("^projects/[^/]+/locations/[^/]+/connections/"
-                                 "[^/]+/repositories/[^/]+$")
-_DC_GIT_REPO_LINK_PAT = re.compile("^projects/[^/]+/locations/[^/]+/connections"
-                                   "/[^/]+/gitRepositoryLinks/[^/]+$")
-
 
 def CloudBuildYamlDataToWorkflow(workflow):
   """Convert cloudbuild.yaml file into Workflow message."""
   _WorkflowTransform(workflow)
+  _WorkflowValidate(workflow)
 
   messages = client_util.GetMessagesModule()
   schema_message = encoding.DictToMessage(workflow, messages.Workflow)
@@ -48,17 +42,34 @@ def CloudBuildYamlDataToWorkflow(workflow):
   return schema_message
 
 
+def _WorkflowValidate(workflow):
+  """Check that the given workflow has all required fields.
+
+  Args:
+    workflow: The user-supplied Cloud Build Workflow YAML.
+
+  Raises:
+    InvalidYamlError: If the workflow is invalid.
+  """
+  if (
+      "options" not in workflow
+      or "security" not in workflow["options"]
+      or "serviceAccount" not in workflow["options"]["security"]
+  ):
+    raise cloudbuild_exceptions.InvalidYamlError(
+        "A service account is required. Specify your user-managed service"
+        " account using the options.security.serviceAccount field"
+    )
+
+
 def _WorkflowTransform(workflow):
   """Transform workflow message."""
-
-  _ResourcesTransform(workflow)
 
   if "triggers" in workflow:
     workflow["workflowTriggers"] = workflow.pop("triggers")
 
   for workflow_trigger in workflow.get("workflowTriggers", []):
-    input_util.WorkflowTriggerTransform(
-        workflow_trigger, workflow.get("resources", {}))
+    input_util.WorkflowTriggerTransform(workflow_trigger)
 
   for param_spec in workflow.get("params", []):
     input_util.ParamSpecTransform(param_spec)
@@ -94,39 +105,6 @@ def _WorkflowTransform(workflow):
 
   for option in _WORKFLOW_OPTIONS_ENUMS:
     input_util.SetDictDottedKeyUpperCase(workflow, option)
-
-
-def _ResourcesTransform(workflow):
-  """Transform resources message."""
-
-  resources_map = {}
-  types = ["topic", "secretVersion"]
-  for resource in workflow.get("resources", []):
-    if "name" not in resource:
-      raise cloudbuild_exceptions.InvalidYamlError(
-          "Name is required for resource.")
-    if any(t in resource for t in types):
-      resources_map[resource.pop("name")] = resource
-    elif "repository" in resource:
-      if re.match(_GCB_REPOSITORY_PAT, resource["repository"]):
-        resource["repo"] = resource.pop("repository")
-      elif re.match(_DC_GIT_REPO_LINK_PAT, resource["repository"]):
-        resource["gitRepoLink"] = resource.pop("repository")
-      elif resource["repository"].startswith("https://"):
-        resource["url"] = resource.pop("repository")
-      else:
-        raise cloudbuild_exceptions.InvalidYamlError(
-            "Malformed repo/gitRepoLink/url resource: {}".format(
-                resource["repository"]))
-      resources_map[resource.pop("name")] = resource
-    else:
-      raise cloudbuild_exceptions.InvalidYamlError(
-          ("Unknown resource. "
-           "Accepted types: {types}").format(
-               types=",".join(types + ["repository"])))
-
-  if resources_map:
-    workflow["resources"] = resources_map
 
 
 def _PipelineSpecTransform(pipeline_spec):

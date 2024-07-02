@@ -204,6 +204,8 @@ def RunSqlImportCommand(args, client):
       args.user,
       parallel=args.parallel,
       threads=args.threads,
+      clean=args.clean,
+      if_exists=args.if_exists,
   )
   return RunImportCommand(args, client, sql_import_context)
 

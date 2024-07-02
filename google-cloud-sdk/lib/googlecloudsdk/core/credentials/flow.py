@@ -110,6 +110,18 @@ def HandleOauth2FlowErrors():
       rfc6749_errors.InvalidGrantError,
   ) as e:
     six.raise_from(AuthRequestRejectedError(e), e)
+  except rfc6749_errors.MissingTokenError:
+    # The real error is swallowed by the requests-oauthlib library. The
+    # exception we catch here just says "Missing access token parameter.". It's
+    # not helpful, so here we raise a new error to ask the user to run with
+    # --log-http to view the error response.
+    e = rfc6749_errors.MissingTokenError(
+        description=(
+            'Token is not returned from the token endpoint. Re-run the command'
+            ' with --log-http to view the error response.'
+        )
+    )
+    raise six.raise_from(AuthRequestFailedError(e), e)
   except ValueError as e:
     raise six.raise_from(AuthRequestFailedError(e), e)
 

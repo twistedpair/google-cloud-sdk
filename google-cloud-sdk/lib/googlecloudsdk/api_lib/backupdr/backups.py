@@ -49,6 +49,20 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "VisibleCoreCount",
         "Accelerator",
         "MinCpuPlatform",
+        "MaintenancePolicy",
+        "Preemptible",
+        "RestartOnFailure",
+        "MinNodeCpus",
+        "ProvisioningModel",
+        "InstanceTerminationAction",
+        "LocalSsdRecoveryTimeout",
+        "NodeAffinityFile",
+        "ReservationAffinity",
+        "Reservation",
+        "EnableDisplayDevice",
+        "CanIpForward",
+        "PrivateIpv6GoogleAccessType",
+        "NetworkPerformanceConfigs",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -203,20 +217,123 @@ class BackupsClient(util.BackupDrClientBase):
         restore_request.computeInstanceRestoreProperties.guestAccelerators = (
             accelerators_message
         )
-        # Few scheduling properties are needed to be set for using GPUs
-        # TODO: b/342962091 - Remove the following code on
-        # implementing scheduling
-        restore_request.computeInstanceRestoreProperties.scheduling = self.messages.Scheduling(
-            onHostMaintenance=self.messages.Scheduling.OnHostMaintenanceValueValuesEnum(
-                "TERMINATE"
-            ),
-            automaticRestart=True,
-        )
 
     # MinCpuPlatform
     if "MinCpuPlatform" in restore_config:
       restore_request.computeInstanceRestoreProperties.minCpuPlatform = (
           restore_config["MinCpuPlatform"]
+      )
+
+    # Scheduling Flags
+    if any(
+        flag in restore_config
+        for flag in [
+            "MaintenancePolicy",
+            "Preemptible",
+            "RestartOnFailure",
+            "MinNodeCpus",
+            "ProvisioningModel",
+            "InstanceTerminationAction",
+            "LocalSsdRecoveryTimeout",
+            "NodeAffinityFile",
+        ]
+    ):
+      restore_request.computeInstanceRestoreProperties.scheduling = (
+          self.messages.Scheduling()
+      )
+
+    # MaintenancePolicy
+    if "MaintenancePolicy" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.onHostMaintenance = self.messages.Scheduling.OnHostMaintenanceValueValuesEnum(
+          restore_config["MaintenancePolicy"]
+      )
+
+    # Preemptible
+    if "Preemptible" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.preemptible = restore_config[
+          "Preemptible"
+      ]
+
+    # RestartOnFailure
+    if "RestartOnFailure" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.automaticRestart = restore_config[
+          "RestartOnFailure"
+      ]
+
+    # MinNodeCpus
+    if "MinNodeCpus" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.minNodeCpus = restore_config[
+          "MinNodeCpus"
+      ]
+
+    # ProvisioningModel
+    if "ProvisioningModel" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.provisioningModel = self.messages.Scheduling.ProvisioningModelValueValuesEnum(
+          restore_config["ProvisioningModel"]
+      )
+
+    # InstanceTerminationAction
+    if "InstanceTerminationAction" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.instanceTerminationAction = self.messages.Scheduling.InstanceTerminationActionValueValuesEnum(
+          restore_config["InstanceTerminationAction"]
+      )
+
+    # LocalSsdRecoveryTimeout
+    if "LocalSsdRecoveryTimeout" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.localSsdRecoveryTimeout = self.messages.SchedulingDuration(
+          seconds=restore_config["LocalSsdRecoveryTimeout"]
+      )
+
+    # NodeAffinityFile
+    if "NodeAffinityFile" in restore_config:
+      restore_request.computeInstanceRestoreProperties.scheduling.nodeAffinities = ComputeUtil.GetNodeAffinitiesFromFile(
+          self.messages, restore_config["NodeAffinityFile"]
+      )
+
+    # ReservationAffinity & Reservation
+    if "ReservationAffinity" in restore_config:
+      restore_request.computeInstanceRestoreProperties.reservationAffinity = (
+          ComputeUtil.ParseReservationAffinity(
+              self.messages,
+              restore_config["ReservationAffinity"],
+              restore_config.get("Reservation", None),
+          )
+      )
+
+    # EnableDisplayDevice
+    if "EnableDisplayDevice" in restore_config:
+      restore_request.computeInstanceRestoreProperties.displayDevice = (
+          self.messages.DisplayDevice(
+              enableDisplay=restore_config["EnableDisplayDevice"]
+          )
+      )
+
+    # CanIpForward
+    if "CanIpForward" in restore_config:
+      restore_request.computeInstanceRestoreProperties.canIpForward = (
+          restore_config["CanIpForward"]
+      )
+
+    # PrivateIpv6GoogleAccess
+    if "PrivateIpv6GoogleAccessType" in restore_config:
+      restore_request.computeInstanceRestoreProperties.privateIpv6GoogleAccess = self.messages.ComputeInstanceRestoreProperties.PrivateIpv6GoogleAccessValueValuesEnum(
+          restore_config["PrivateIpv6GoogleAccessType"]
+      )
+
+    # NetworkPerformanceConfigs
+    if "NetworkPerformanceConfigs" in restore_config:
+      network_performance_configs = self.messages.NetworkPerformanceConfig()
+      if (
+          "total-egress-bandwidth-tier"
+          in restore_config["NetworkPerformanceConfigs"]
+      ):
+        network_performance_configs.totalEgressBandwidthTier = self.messages.NetworkPerformanceConfig.TotalEgressBandwidthTierValueValuesEnum(
+            restore_config["NetworkPerformanceConfigs"][
+                "total-egress-bandwidth-tier"
+            ]
+        )
+      restore_request.computeInstanceRestoreProperties.networkPerformanceConfig = (
+          network_performance_configs
       )
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(

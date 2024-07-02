@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.backupdr import util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
 def AddNameArg(parser, required=True):
@@ -65,10 +66,10 @@ def AddNetworkInterfaceArg(parser, required=True):
   network_interface_spec = {
       'network': str,
       'subnet': str,
-      'address': str,
+      'private-network-ip': str,
       'internal-ipv6-address': str,
       'internal-ipv6-prefix-length': int,
-      'external-ipaddress': str,
+      'address': str,
       'external-ipv6-address': str,
       'external-ipv6-prefix-length': int,
       'public-ptr-domain': str,
@@ -89,8 +90,8 @@ def AddNetworkInterfaceArg(parser, required=True):
       help=(
           'Adds a network interface to the instance. This flag can be repeated'
           ' to specify multiple network interfaces. The following keys are'
-          ' allowed: network, subnet, address, internal-ipv6-address,'
-          ' internal-ipv6-prefix-length, external-ipaddress,'
+          ' allowed: network, subnet, private-network-ip,'
+          ' internal-ipv6-address, internal-ipv6-prefix-length, address,'
           ' external-ipv6-address, external-ipv6-prefix-length,'
           ' public-ptr-domain, ipv6-public-ptr-domain, network-tier, aliases,'
           ' stack-type, queue-count, nic-type, network-attachment'
@@ -392,5 +393,272 @@ def AddMinCpuPlatform(parser, required=True):
       type=str,
       required=required,
       metavar='PLATFORM',
+      help=helptext,
+  )
+
+
+def AddMaintenancePolicyArg(parser, required=True):
+  """Maintenance policy to be used for the instance."""
+  helptext = """\
+      Specifies the behavior of the VMs when their host machines undergo
+      maintenance. The default is MIGRATE.
+      For more information, see
+      https://cloud.google.com/compute/docs/instances/host-maintenance-options.
+      """
+  parser.add_argument(
+      '--maintenance-policy',
+      choices={
+          'MIGRATE': (
+              'The instances should be migrated to a new host. This will'
+              ' temporarily impact the performance of instances during a'
+              ' migration event.'
+          ),
+          'TERMINATE': 'The instances should be terminated.',
+      },
+      type=arg_utils.ChoiceToEnumName,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddPreemptibleArg(parser, required=True):
+  """Preemptible state to be used for the instance."""
+  helptext = """\
+      If provided, instances will be preemptible and time-limited. Instances
+      might be preempted to free up resources for standard VM instances,
+      and will only be able to run for a limited amount of time. Preemptible
+      instances can not be restarted and will not migrate.
+      """
+  parser.add_argument(
+      '--preemptible',
+      action='store_true',
+      default=False,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddRestartOnFailureArg(parser, required=True):
+  """Restart on failure state to be used for the instance."""
+  helptext = """\
+      The instances will be restarted if they are terminated by Compute Engine.
+      This does not affect terminations performed by the user.
+      """
+  parser.add_argument(
+      '--restart-on-failure',
+      action='store_true',
+      default=False,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddMinNodeCpuArg(parser, required=False):
+  """Minimum Node CPUs to be used for the instance."""
+  helptext = """\
+      Minimum number of virtual CPUs this instance will consume when running on
+      a sole-tenant node.
+      """
+  parser.add_argument(
+      '--min-node-cpu',
+      type=int,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddProvisioningModelArg(parser, required=False):
+  """Provisioning model to be used for the instance."""
+  helptext = """\
+      Specifies provisioning model, which determines price, obtainability,
+      and runtime for the restored VM instance.
+      """
+  parser.add_argument(
+      '--provisioning-model',
+      choices={
+          'SPOT': (
+              'Spot VMs are spare capacity; Spot VMs are discounted '
+              'to have much lower prices than standard VMs '
+              'but have no guaranteed runtime. Spot VMs are the new version '
+              'of preemptible VM instances, except Spot VMs do not have '
+              'a 24-hour maximum runtime.'
+          ),
+          'STANDARD': (
+              'Default. Standard provisioning model for VM instances, '
+              'which has user-controlled runtime '
+              'but no Spot discounts.'
+          ),
+      },
+      type=arg_utils.ChoiceToEnumName,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddInstanceTerminationActionArg(parser, required=False):
+  """Termination action to be used for the instance."""
+  helptext = """\
+      Specifies the termination action that will be taken upon VM preemption
+        (--provisioning-model=SPOT) or automatic instance
+        termination (--max-run-duration or --termination-time).
+      """
+  parser.add_argument(
+      '--instance-termination-action',
+      choices={
+          'STOP': (
+              'Default only for Spot VMs. Stop the VM without preserving'
+              ' memory. The VM can be restarted later.'
+          ),
+          'DELETE': 'Permanently delete the VM.',
+      },
+      type=arg_utils.ChoiceToEnumName,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddLocalSsdRecoveryTimeoutArg(parser, required=False):
+  """Local SSD recovery timeout to be used for the instance."""
+  helptext = """\
+      Specifies the maximum amount of time a Local SSD VM should wait while
+      recovery of the Local SSD state is attempted. Its value should be in
+      between 0 and 168 hours with hour granularity and the default value being 1
+      hour.
+      """
+  parser.add_argument(
+      '--local-ssd-recovery-timeout',
+      type=arg_parsers.Duration(
+          default_unit='h', lower_bound='0h', upper_bound='168h'
+      ),
+      required=required,
+      help=helptext,
+  )
+
+
+def AddNodeAffinityFileArg(parser, required=False):
+  """Node affinity file to be used for the instance."""
+  helptext = """\
+      The JSON/YAML file containing the configuration of desired nodes onto
+      which this instance could be scheduled. These rules filter the nodes
+      according to their node affinity labels. A node's affinity labels come
+      from the node template of the group the node is in.
+
+      The file should contain a list of a JSON/YAML objects. For an example,
+      see https://cloud.google.com/compute/docs/nodes/provisioning-sole-tenant-vms#configure_node_affinity_labels.
+      The following list describes the fields:
+
+      *key*::: Corresponds to the node affinity label keys of
+      the Node resource.
+      *operator*::: Specifies the node selection type. Must be one of:
+        `IN`: Requires Compute Engine to seek for matched nodes.
+        `NOT_IN`: Requires Compute Engine to avoid certain nodes.
+      *values*::: Optional. A list of values which correspond to the node
+      affinity label values of the Node resource.
+      """
+  parser.add_argument(
+      '--node-affinity-file',
+      type=arg_parsers.YAMLFileContents(),
+      required=required,
+      help=helptext,
+  )
+
+
+def AddReservationArgs(parser, required=False):
+  """Reservation affinity to be used for the instance."""
+  reservation_group_helptext = """Specifies the reservation for the instance."""
+  reservation_affinity_helptext = """\
+      Specifies the reservation affinity of the instance.
+      """
+  reservation_help_text = """The name of the reservation, required when `--reservation-affinity=specific`."""
+
+  group = parser.add_group(help=reservation_group_helptext)
+
+  group.add_argument(
+      '--reservation-affinity',
+      choices={
+          'any': 'Consume any available, matching reservation.',
+          'none': 'Do not consume from any reserved capacity.',
+          'specific': 'Must consume from a specific reservation.',
+      },
+      required=required,
+      help=reservation_affinity_helptext,
+  )
+
+  group.add_argument(
+      '--reservation',
+      required=required,
+      help=reservation_help_text,
+  )
+
+
+def AddEnableDisplayDeviceArg(parser, required=False):
+  """Enable display device for the instance."""
+  helptext = """\
+      Enable a display device on the restored VM instances. Disabled by default.
+      """
+  parser.add_argument(
+      '--enable-display-device',
+      action='store_true',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddCanIpForwardArg(parser, required=False):
+  """Enable can ip forward for the restored instance."""
+  helptext = """\
+      If provided, allows the restored instances to send and receive packets
+      with non-matching destination or source IP addresses.
+      """
+  parser.add_argument(
+      '--can-ip-forward',
+      action='store_true',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddPrivateIpv6GoogleAccessArg(parser, required=False):
+  """Enable private ipv6 google access for the  restored instance."""
+  helptext = """\
+      The private IPv6 Google access type for the restored VM.
+      """
+  enum_mappings = {
+      'inherit-subnetwork': 'INHERIT_FROM_SUBNETWORK',
+      'enable-bidirectional-access': 'ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE',
+      'enable-outbound-vm-access': 'ENABLE_OUTBOUND_VM_ACCESS_TO_GOOGLE',
+  }
+  helptext += 'PRIVATE_IPV6_GOOGLE_ACCESS_TYPE must be one of: {}'.format(
+      ', '.join(list(enum_mappings.keys()))
+  )
+  parser.add_argument(
+      '--private-ipv6-google-access-type',
+      type=util.EnumMapper(enum_mappings).Parse,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddNetworkPerformanceConfigsArg(parser, required=False):
+  """Enable network performance config for the restored instance."""
+  helptext = """\
+      Configures network performance settings for the restored instance.
+      If this flag is not specified, the restored instance will be created
+      with its source instance's network performance configuration.
+
+      *total-egress-bandwidth-tier*::: Total egress bandwidth is the available
+      outbound bandwidth from a VM, regardless of whether the traffic
+      is going to internal IP or external IP destinations.
+      The following tier values are allowed: [DEFAULT, TIER_1]
+      """
+  parser.add_argument(
+      '--network-performance-configs',
+      type=arg_parsers.ArgDict(
+          spec={
+              'total-egress-bandwidth-tier': str,
+          },
+      ),
+      metavar='PROPERTY=VALUE',
+      required=required,
       help=helptext,
   )

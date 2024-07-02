@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import itertools
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
@@ -367,25 +368,27 @@ def AddOutputFormat(parser, output_format):
   })
 
 
-def AddDescription(parser):
+def AddDescription(parser, help_text=None):
   """Adds the --description flag to the given parser."""
-  help_text = (
-      'Optional description for the backup vault (2048 characters or less).'
+  final_help_text = (
+      help_text
+      or 'Optional description for the backup vault (2048 characters or less).'
   )
-  parser.add_argument('--description', type=str, help=help_text)
+  parser.add_argument('--description', type=str, help=final_help_text)
 
 
-def AddLabels(parser):
+def AddLabels(parser, help_text=None):
   """Adds the --labels flag to the given parser."""
-  help_text = (
-      'Optional resource labels to represent metadata provided by the user.'
+  final_help_text = (
+      help_text
+      or 'Optional resource labels to represent metadata provided by the user.'
   )
   parser.add_argument(
       '--labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       action=arg_parsers.UpdateAction,
-      help=help_text,
+      help=final_help_text,
   )
 
 
@@ -415,15 +418,17 @@ def AddAllowMissing(parser, resource):
   )
 
 
-def AddUnlockEnforcedRetention(parser):
-  """Adds the --unlock-enforced-retention flag to the given parser."""
+def AddUnlockBackupMinEnforcedRetention(parser):
+  """Adds the --unlock-backup-min-enforced-retention flag to the given parser."""
   help_text = (
-      'Removes the lock on the enforced retention period, and resets the'
-      ' effective time. When unlocked, the enforced retention period can be'
-      ' changed at any time.'
+      'Removes the lock on the backup minimum enforced retention period, and'
+      ' resets the effective time. When unlocked, the enforced retention period'
+      ' can be changed at any time.'
   )
   parser.add_argument(
-      '--unlock-enforced-retention', action='store_true', help=help_text
+      '--unlock-backup-min-enforced-retention',
+      action='store_true',
+      help=help_text,
   )
 
 
@@ -483,15 +488,18 @@ def AddBackupRule(parser, required=True):
   }
 
   recurrence_options = ['HOURLY', 'DAILY', 'WEEKLY', 'MONTHLY', 'YEARLY']
-  recurrence_validator = arg_parsers.CustomFunctionValidator(
-      lambda arg: arg in recurrence_options,
-      'Recurrence should be one of the following: '
-      + ', '.join(recurrence_options),
-      str,
-  )
+  week_options = ['FIRST', 'SECOND', 'THIRD', 'FOURTH', 'LAST']
+  week_day_of_month_options = [
+      f'{week}-{day}'
+      for week, day in itertools.product(week_options, day_options.values())
+  ]
 
   def ArgListParser(obj_parser, delim=' '):
     return arg_parsers.ArgList(obj_parser, custom_delim_char=delim)
+
+  recurrence_validator = util.GetOneOfValidator(
+      'recurrence', recurrence_options
+  )
 
   parser.add_argument(
       '--backup-rule',
@@ -511,6 +519,9 @@ def AddBackupRule(parser, required=True):
               'days-of-month': ArgListParser(arg_parsers.BoundedInt(1, 31)),
               'months': ArgListParser(
                   util.OptionsMapValidator(month_options).Parse
+              ),
+              'week-day-of-month': util.GetOneOfValidator(
+                  'week-day-of-month', week_day_of_month_options
               ),
           },
           required_keys=[
@@ -539,6 +550,7 @@ def AddBackupRule(parser, required=True):
           - days-of-week (for WEEKLY recurrence, eg: 'MON TUE')
           - days-of-month (for MONTHLY & YEARLY recurrence, eg: '1 7 5' days)
           - months (for YEARLY recurrence, eg: 'JANUARY JUNE')
+          - week-day-of-month (for MONTHLY & YEARLY recurrence, eg: 'FIRST-MONDAY')
 
           This flag can be repeated to specify multiple backup rules.
 
