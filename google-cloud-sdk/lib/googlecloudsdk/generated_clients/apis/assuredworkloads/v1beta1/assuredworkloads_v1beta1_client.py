@@ -291,6 +291,33 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EnableComplianceUpdates(self, request, global_params=None):
+      r"""This endpoint enables Assured Workloads service to offer compliance updates for the folder based assured workload. It sets up an Assured Workloads Service Agent, having permissions to read compliance controls (for example: Org Policies) applied on the workload. The caller must have `resourcemanager.folders.getIamPolicy` and `resourcemanager.folders.setIamPolicy` permissions on the assured workload folder.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdatesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1beta1EnableComplianceUpdatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('EnableComplianceUpdates')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableComplianceUpdates.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:enableComplianceUpdates',
+        http_method='PUT',
+        method_id='assuredworkloads.organizations.locations.workloads.enableComplianceUpdates',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:enableComplianceUpdates',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdatesRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1beta1EnableComplianceUpdatesResponse',
+        supports_download=False,
+    )
+
     def EnableResourceMonitoring(self, request, global_params=None):
       r"""Enable resource violation monitoring for a workload.
 

@@ -4230,7 +4230,7 @@ class BackendService(_messages.Message):
       references this backend service. Not supported when the backend service
       is referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true. Instead, use maxStreamDuration.
-    usedBy: A BackendServiceUsedBy attribute.
+    usedBy: [Output Only] List of resources referencing given backend service.
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
@@ -5602,7 +5602,9 @@ class BackendServiceUsedBy(_messages.Message):
   r"""A BackendServiceUsedBy object.
 
   Fields:
-    reference: A string attribute.
+    reference: [Output Only] Server-defined URL for resources referencing
+      given BackendService like UrlMaps, TargetTcpProxies, TargetSslProxies
+      and ForwardingRule.
   """
 
   reference = _messages.StringField(1)
@@ -6494,6 +6496,7 @@ class Commitment(_messages.Message):
       COMPUTE_OPTIMIZED_C3D: <no description>
       COMPUTE_OPTIMIZED_H3: <no description>
       GENERAL_PURPOSE: <no description>
+      GENERAL_PURPOSE_C4: <no description>
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
@@ -6514,16 +6517,17 @@ class Commitment(_messages.Message):
     COMPUTE_OPTIMIZED_C3D = 6
     COMPUTE_OPTIMIZED_H3 = 7
     GENERAL_PURPOSE = 8
-    GENERAL_PURPOSE_E2 = 9
-    GENERAL_PURPOSE_N2 = 10
-    GENERAL_PURPOSE_N2D = 11
-    GENERAL_PURPOSE_N4 = 12
-    GENERAL_PURPOSE_T2D = 13
-    GRAPHICS_OPTIMIZED = 14
-    MEMORY_OPTIMIZED = 15
-    MEMORY_OPTIMIZED_M3 = 16
-    STORAGE_OPTIMIZED_Z3 = 17
-    TYPE_UNSPECIFIED = 18
+    GENERAL_PURPOSE_C4 = 9
+    GENERAL_PURPOSE_E2 = 10
+    GENERAL_PURPOSE_N2 = 11
+    GENERAL_PURPOSE_N2D = 12
+    GENERAL_PURPOSE_N4 = 13
+    GENERAL_PURPOSE_T2D = 14
+    GRAPHICS_OPTIMIZED = 15
+    MEMORY_OPTIMIZED = 16
+    MEMORY_OPTIMIZED_M3 = 17
+    STORAGE_OPTIMIZED_Z3 = 18
+    TYPE_UNSPECIFIED = 19
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -41656,10 +41660,16 @@ class InstanceGroupManager(_messages.Message):
       template configuration for the group.
     autoHealingPolicies: The autohealing policy for this managed instance
       group. You can specify only one value.
-    baseInstanceName: The base instance name to use for instances in this
-      group. The value must be 1-58 characters long. Instances are named by
-      appending a hyphen and a random four-character string to the base
-      instance name. The base instance name must comply with RFC1035.
+    baseInstanceName: The base instance name is a prefix that you want to
+      attach to the names of all VMs in a MIG. The maximum character length is
+      58 and the name must comply with RFC1035 format. When a VM is created in
+      the group, the MIG appends a hyphen and a random four-character string
+      to the base instance name. If you want the MIG to assign sequential
+      numbers instead of a random string, then end the base instance name with
+      a hyphen followed by one or more hash symbols. The hash symbols indicate
+      the number of digits. For example, a base instance name of "vm-###"
+      results in "vm-001" as a VM name. @pattern
+      [a-z](([-a-z0-9]{0,57})|([-a-z0-9]{0,52}-#{1,10}(\\[[0-9]{1,10}\\])?))
     creationTimestamp: [Output Only] The creation timestamp for this managed
       instance group in RFC3339 text format.
     currentActions: [Output Only] The list of instance actions and the number
@@ -44453,10 +44463,11 @@ class InstanceProperties(_messages.Message):
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
-      these properties. This field only accept machine types name. e.g.
-      n2-standard-4 and does not accept machine type full or partial url. e.g.
-      projects/my-l7ilb-project/zones/us-central1-a/machineTypes/n2-standard-4
-      will throw INTERNAL_ERROR.
+      these properties. This field only accepts a machine type name, for
+      example `n2-standard-4`. If you use the machine type full or partial
+      URL, for example `projects/my-l7ilb-project/zones/us-
+      central1-a/machineTypes/n2-standard-4`, the request will result in an
+      `INTERNAL_ERROR`.
     metadata: The metadata key/value pairs to assign to instances that are
       created from these properties. These pairs can consist of custom
       metadata or predefined keys. See Project and instance metadata for more
@@ -66127,6 +66138,10 @@ class Scheduling(_messages.Message):
       instances. Preemptible instances cannot be automatically restarted. By
       default, this is set to true so an instance is automatically restarted
       if it is terminated by Compute Engine.
+    availabilityDomain: Specifies the availability domain to place the
+      instance in. The value must be a number between 1 and the number of
+      availability domains specified in the spread placement policy attached
+      to the instance.
     instanceTerminationAction: Specifies the termination action for the
       instance.
     localSsdRecoveryTimeout: Specifies the maximum amount of time a Local Ssd
@@ -66202,17 +66217,18 @@ class Scheduling(_messages.Message):
     STANDARD = 1
 
   automaticRestart = _messages.BooleanField(1)
-  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 2)
-  localSsdRecoveryTimeout = _messages.MessageField('Duration', 3)
-  locationHint = _messages.StringField(4)
-  maxRunDuration = _messages.MessageField('Duration', 5)
-  minNodeCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 7, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 8)
-  onInstanceStopAction = _messages.MessageField('SchedulingOnInstanceStopAction', 9)
-  preemptible = _messages.BooleanField(10)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 11)
-  terminationTime = _messages.StringField(12)
+  availabilityDomain = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 3)
+  localSsdRecoveryTimeout = _messages.MessageField('Duration', 4)
+  locationHint = _messages.StringField(5)
+  maxRunDuration = _messages.MessageField('Duration', 6)
+  minNodeCpus = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 8, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 9)
+  onInstanceStopAction = _messages.MessageField('SchedulingOnInstanceStopAction', 10)
+  preemptible = _messages.BooleanField(11)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 12)
+  terminationTime = _messages.StringField(13)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -66872,15 +66888,56 @@ class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConf
     autoDeployExpirationSec: A integer attribute.
     autoDeployImpactedBaselineThreshold: A number attribute.
     autoDeployLoadThreshold: A number attribute.
+    detectionAbsoluteQps: A number attribute.
+    detectionLoadThreshold: A number attribute.
+    detectionRelativeToBaselineQps: A number attribute.
     name: The name must be 1-63 characters long, and comply with RFC1035. The
       name must be unique within the security policy.
+    trafficGranularityConfigs: Configuration options for enabling Adaptive
+      Protection to operate on specified granular traffic units.
   """
 
   autoDeployConfidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
   autoDeployExpirationSec = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   autoDeployImpactedBaselineThreshold = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
   autoDeployLoadThreshold = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  name = _messages.StringField(5)
+  detectionAbsoluteQps = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  detectionLoadThreshold = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  detectionRelativeToBaselineQps = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  name = _messages.StringField(8)
+  trafficGranularityConfigs = _messages.MessageField('SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig', 9, repeated=True)
+
+
+class SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig(_messages.Message):
+  r"""Configurations to specifc granular traffic units processed by Adaptive
+  Protection.
+
+  Enums:
+    TypeValueValuesEnum: Type of this configuration.
+
+  Fields:
+    enableEachUniqueValue: If enabled, traffic matching each unique value for
+      the specified type constitutes a separate traffic unit. It can only be
+      set to true if `value` is empty.
+    type: Type of this configuration.
+    value: Requests that match this value constitute a granular traffic unit.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this configuration.
+
+    Values:
+      HTTP_HEADER_HOST: <no description>
+      HTTP_PATH: <no description>
+      UNSPECIFIED_TYPE: <no description>
+    """
+    HTTP_HEADER_HOST = 0
+    HTTP_PATH = 1
+    UNSPECIFIED_TYPE = 2
+
+  enableEachUniqueValue = _messages.BooleanField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
 
 
 class SecurityPolicyAdvancedOptionsConfig(_messages.Message):
@@ -79677,7 +79734,8 @@ class VpnGateway(_messages.Message):
       HA-VPN gateway interfaces. If not specified, IPV4 will be used.
     StackTypeValueValuesEnum: The stack type for this VPN gateway to identify
       the IP protocols that are enabled. Possible values are: IPV4_ONLY,
-      IPV4_IPV6. If not specified, IPV4_ONLY will be used.
+      IPV4_IPV6, IPV6_ONLY. If not specified, IPV4_ONLY is used if the gateway
+      IP version is IPV4, or IPV4_IPV6 if the gateway IP version is IPV6.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -79718,8 +79776,9 @@ class VpnGateway(_messages.Message):
     region: [Output Only] URL of the region where the VPN gateway resides.
     selfLink: [Output Only] Server-defined URL for the resource.
     stackType: The stack type for this VPN gateway to identify the IP
-      protocols that are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6.
-      If not specified, IPV4_ONLY will be used.
+      protocols that are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6,
+      IPV6_ONLY. If not specified, IPV4_ONLY is used if the gateway IP version
+      is IPV4, or IPV4_IPV6 if the gateway IP version is IPV6.
     vpnInterfaces: The list of VPN interfaces associated with this VPN
       gateway.
   """
@@ -79737,8 +79796,9 @@ class VpnGateway(_messages.Message):
 
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""The stack type for this VPN gateway to identify the IP protocols that
-    are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6. If not specified,
-    IPV4_ONLY will be used.
+    are enabled. Possible values are: IPV4_ONLY, IPV4_IPV6, IPV6_ONLY. If not
+    specified, IPV4_ONLY is used if the gateway IP version is IPV4, or
+    IPV4_IPV6 if the gateway IP version is IPV6.
 
     Values:
       IPV4_IPV6: Enable VPN gateway with both IPv4 and IPv6 protocols.

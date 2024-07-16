@@ -146,11 +146,10 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       `. The binding parent is the closest Resource Manager resource (i.e.,
       Project, Folder or Organization) to the binding target. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     policy: Required. Immutable. The resource name of the policy to be bound.
       The binding parent and policy must belong to the same Organization (or
       Project).
@@ -235,8 +234,7 @@ class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER` *
       `//cloudresourcemanager.googleapis.com/projects/PROJECT_ID` * Workload
       Identity Pool: `//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
-      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` // NOLINT * Workforce
-      Identity:
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID` * Workforce Identity:
       `//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID`
       * Workspace Identity:
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
@@ -634,11 +632,10 @@ class IamFoldersLocationsPolicyBindingsDeleteRequest(_messages.Message):
       must match the server's etag.
     name: Required. The name of the policy binding to delete. Format: - `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT - `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT - `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
   """
@@ -654,11 +651,10 @@ class IamFoldersLocationsPolicyBindingsGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the policy binding to retrieve. Format: - `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT - `projects/{project_number}/locations/{location}/policyBi
-      ndings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{
-      location}/policyBindings/{policy_binding_id}` // NOLINT - `organizations
-      /{organization_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT
+      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      location}/policyBindings/{policy_binding_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -707,11 +703,10 @@ class IamFoldersLocationsPolicyBindingsPatchRequest(_messages.Message):
       `. The binding parent is the closest Resource Manager resource (i.e.,
       Project, Folder or Organization) to the binding target. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -748,7 +743,7 @@ class IamFoldersLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messag
       binding. Format: -
       `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` // NOLINT -
+      Pools/POOL_ID` -
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
       `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
       `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -
@@ -806,11 +801,10 @@ class IamOrganizationsLocationsPolicyBindingsDeleteRequest(_messages.Message):
       must match the server's etag.
     name: Required. The name of the policy binding to delete. Format: - `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT - `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT - `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
   """
@@ -826,11 +820,10 @@ class IamOrganizationsLocationsPolicyBindingsGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the policy binding to retrieve. Format: - `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT - `projects/{project_number}/locations/{location}/policyBi
-      ndings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{
-      location}/policyBindings/{policy_binding_id}` // NOLINT - `organizations
-      /{organization_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT
+      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      location}/policyBindings/{policy_binding_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -879,11 +872,10 @@ class IamOrganizationsLocationsPolicyBindingsPatchRequest(_messages.Message):
       `. The binding parent is the closest Resource Manager resource (i.e.,
       Project, Folder or Organization) to the binding target. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -921,7 +913,7 @@ class IamOrganizationsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_
       binding. Format: -
       `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` // NOLINT -
+      Pools/POOL_ID` -
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
       `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
       `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -
@@ -1111,11 +1103,10 @@ class IamProjectsLocationsPolicyBindingsDeleteRequest(_messages.Message):
       must match the server's etag.
     name: Required. The name of the policy binding to delete. Format: - `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT - `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT - `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` - `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` - `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     validateOnly: Optional. If set, validate the request and preview the
       deletion, but do not actually post it.
   """
@@ -1131,11 +1122,10 @@ class IamProjectsLocationsPolicyBindingsGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the policy binding to retrieve. Format: - `pro
       jects/{project_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT - `projects/{project_number}/locations/{location}/policyBi
-      ndings/{policy_binding_id}` // NOLINT - `folders/{folder_id}/locations/{
-      location}/policyBindings/{policy_binding_id}` // NOLINT - `organizations
-      /{organization_id}/locations/{location}/policyBindings/{policy_binding_i
-      d}` // NOLINT
+      d}` - `projects/{project_number}/locations/{location}/policyBindings/{po
+      licy_binding_id}` - `folders/{folder_id}/locations/{location}/policyBind
+      ings/{policy_binding_id}` - `organizations/{organization_id}/locations/{
+      location}/policyBindings/{policy_binding_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1184,11 +1174,10 @@ class IamProjectsLocationsPolicyBindingsPatchRequest(_messages.Message):
       `. The binding parent is the closest Resource Manager resource (i.e.,
       Project, Folder or Organization) to the binding target. Format: * `proje
       cts/{project_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT * `projects/{project_number}/locations/{location}/policyBind
-      ings/{policy_binding_id}` // NOLINT * `folders/{folder_id}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` // NOLINT * `organizations/{
-      organization_id}/locations/{location}/policyBindings/{policy_binding_id}
-      ` // NOLINT
+      ` * `projects/{project_number}/locations/{location}/policyBindings/{poli
+      cy_binding_id}` * `folders/{folder_id}/locations/{location}/policyBindin
+      gs/{policy_binding_id}` * `organizations/{organization_id}/locations/{lo
+      cation}/policyBindings/{policy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -1225,7 +1214,7 @@ class IamProjectsLocationsPolicyBindingsSearchTargetPolicyBindingsRequest(_messa
       binding. Format: -
       `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` - `//iam.
       googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentity
-      Pools/POOL_ID` // NOLINT -
+      Pools/POOL_ID` -
       `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID` -
       `//cloudresourcemanager.googleapis.com/projects/{project_number}` -
       `//cloudresourcemanager.googleapis.com/folders/{folder_id}` -

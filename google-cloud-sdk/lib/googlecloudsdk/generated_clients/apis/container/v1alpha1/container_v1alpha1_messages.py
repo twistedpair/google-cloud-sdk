@@ -72,38 +72,26 @@ class AdditionalNodeNetworkConfig(_messages.Message):
   subnetwork = _messages.StringField(2)
 
 
-class AdditionalPSCInterface(_messages.Message):
-  r"""AdditionalPSCInterface is the configuration for additional PSC
-  interfaces within the NodeNetworkConfig message
-
-  Fields:
-    maxPodsConstraint: The maximum number of pods per node which can use this
-      PSC interface.
-    networkAttachment: Name of the network attachment tied to this PSC
-      interface. Format:
-      projects/PROJECT_ID/regions/REGION/networkAttachments/NETWORK_ATTACHMENT
-  """
-
-  maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 1)
-  networkAttachment = _messages.StringField(2)
-
-
 class AdditionalPodNetworkConfig(_messages.Message):
   r"""AdditionalPodNetworkConfig is the configuration for additional pod
   networks within the NodeNetworkConfig message
 
   Fields:
     maxPodsPerNode: The maximum number of pods per node which use this pod
-      network
+      network.
+    networkAttachment: The name of the network attachment for pods to
+      communicate to; cannot be specified along with subnetwork or
+      secondary_pod_range.
     secondaryPodRange: The name of the secondary range on the subnet which
-      provides IP address for this pod range
+      provides IP address for this pod range.
     subnetwork: Name of the subnetwork where the additional pod network
-      belongs
+      belongs.
   """
 
   maxPodsPerNode = _messages.MessageField('MaxPodsConstraint', 1)
-  secondaryPodRange = _messages.StringField(2)
-  subnetwork = _messages.StringField(3)
+  networkAttachment = _messages.StringField(2)
+  secondaryPodRange = _messages.StringField(3)
+  subnetwork = _messages.StringField(4)
 
 
 class AdditionalPodRangesConfig(_messages.Message):
@@ -111,8 +99,7 @@ class AdditionalPodRangesConfig(_messages.Message):
   secondary ranges supporting the ClusterUpdate message.
 
   Fields:
-    podRangeInfo: Output only. [Output only] Information for additional pod
-      range.
+    podRangeInfo: Output only. Information for additional pod range.
     podRangeNames: Name for pod secondary ipv4 range which has the actual
       range defined ahead.
   """
@@ -142,6 +129,8 @@ class AddonsConfig(_messages.Message):
     gcsFuseCsiDriverConfig: Configuration for the Cloud Storage Fuse CSI
       driver.
     gkeBackupAgentConfig: Configuration for the Backup for GKE agent addon.
+    highScaleCheckpointingConfig: Configuration for the High Scale
+      Checkpointing add-on.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -176,16 +165,17 @@ class AddonsConfig(_messages.Message):
   gcpFilestoreCsiDriverConfig = _messages.MessageField('GcpFilestoreCsiDriverConfig', 6)
   gcsFuseCsiDriverConfig = _messages.MessageField('GcsFuseCsiDriverConfig', 7)
   gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 8)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 9)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 10)
-  istioConfig = _messages.MessageField('IstioConfig', 11)
-  kalmConfig = _messages.MessageField('KalmConfig', 12)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 13)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 14)
-  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 15)
-  rayConfig = _messages.MessageField('RayConfig', 16)
-  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 17)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 18)
+  highScaleCheckpointingConfig = _messages.MessageField('HighScaleCheckpointingConfig', 9)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 10)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 11)
+  istioConfig = _messages.MessageField('IstioConfig', 12)
+  kalmConfig = _messages.MessageField('KalmConfig', 13)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 14)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 15)
+  parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 16)
+  rayConfig = _messages.MessageField('RayConfig', 17)
+  rayOperatorConfig = _messages.MessageField('RayOperatorConfig', 18)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 19)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -316,10 +306,10 @@ class AutoUpgradeOptions(_messages.Message):
   how the Auto Upgrades will proceed.
 
   Fields:
-    autoUpgradeStartTime: [Output only] This field is set when upgrades are
+    autoUpgradeStartTime: Output only. This field is set when upgrades are
       about to commence with the approximate start time for the upgrades, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
-    description: [Output only] This field is set when upgrades are about to
+    description: Output only. This field is set when upgrades are about to
       commence with the description of the upgrade.
   """
 
@@ -821,7 +811,7 @@ class Cluster(_messages.Message):
 
   Enums:
     NodeSchedulingStrategyValueValuesEnum: Defines behaviour of k8s scheduler.
-    StatusValueValuesEnum: [Output only] The current status of this cluster.
+    StatusValueValuesEnum: Output only. The current status of this cluster.
 
   Messages:
     ResourceLabelsValue: The resource labels for the cluster to use to
@@ -859,13 +849,13 @@ class Cluster(_messages.Message):
       endpoints.
     costManagementConfig: Configuration for the fine-grained cost management
       feature.
-    createTime: [Output only] The time the cluster was created, in
+    createTime: Output only. The time the cluster was created, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     currentMasterVersion: The current software version of the master endpoint.
-    currentNodeCount: [Output only] The number of nodes currently in the
+    currentNodeCount: Output only. The number of nodes currently in the
       cluster. Deprecated. Call Kubernetes API directly to retrieve node
       information.
-    currentNodeVersion: [Output only] Deprecated, use
+    currentNodeVersion: Output only. Deprecated, use
       [NodePool.version](https://cloud.google.com/kubernetes-engine/docs/refer
       ence/rest/v1alpha1/projects.locations.clusters.nodePool) instead. The
       current version of the node software components. If they are currently
@@ -892,7 +882,7 @@ class Cluster(_messages.Message):
       days after creation.
     enableTpu: Enable the ability to use Cloud TPUs in this cluster. This
       field is deprecated, use tpu_config.enabled instead.
-    endpoint: [Output only] The IP address of this cluster's master endpoint.
+    endpoint: Output only. The IP address of this cluster's master endpoint.
       The endpoint can be accessed from the internet at
       `https://username:password@endpoint/`. See the `masterAuth` property of
       this resource for username and password information.
@@ -900,7 +890,7 @@ class Cluster(_messages.Message):
     etag: This checksum is computed by the server based on the value of
       cluster fields, and may be sent on update requests to ensure the client
       has an up-to-date value before proceeding.
-    expireTime: [Output only] The time the cluster will be automatically
+    expireTime: Output only. The time the cluster will be automatically
       deleted in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     fleet: Fleet information for the cluster.
     gkeOidcConfig: Security message for security related configuration
@@ -924,13 +914,14 @@ class Cluster(_messages.Message):
       "node_config") will be used to create a "NodePool" object with an auto-
       generated name. Do not use this and a node_pool at the same time. This
       field is deprecated, use node_pool.initial_node_count instead.
-    instanceGroupUrls: Deprecated. Use node_pools.instance_group_urls.
+    instanceGroupUrls: Output only. Deprecated. Use
+      node_pools.instance_group_urls.
     ipAllocationPolicy: Configuration for cluster IP allocation.
     kubernetesObjectsExportConfig: Configuration which enables export of
       kubernetes objects changes and snapshots to specified targets.
     labelFingerprint: The fingerprint of the set of labels for this cluster.
     legacyAbac: Configuration for the legacy ABAC authorization mode.
-    location: [Output only] The name of the Google Compute Engine
+    location: Output only. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) or
       [region](https://cloud.google.com/compute/docs/regions-zones/regions-
@@ -1001,7 +992,7 @@ class Cluster(_messages.Message):
       configuration of each node pool, see `node_pool.config`) If unspecified,
       the defaults are used. This field is deprecated, use node_pool.config
       instead.
-    nodeIpv4CidrSize: [Output only] The size of the address space on each node
+    nodeIpv4CidrSize: Output only. The size of the address space on each node
       for hosting containers. This is provisioned from within the
       `container_ipv4_cidr` range. This field will only be set when cluster is
       in route-based network mode.
@@ -1049,15 +1040,15 @@ class Cluster(_messages.Message):
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
     securityProfile: User selected security profile
-    selfLink: [Output only] Server-defined URL for the resource.
-    servicesIpv4Cidr: [Output only] The IP address range of the Kubernetes
+    selfLink: Output only. Server-defined URL for the resource.
+    servicesIpv4Cidr: Output only. The IP address range of the Kubernetes
       services in this cluster, in
       [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
       notation (e.g. `1.2.3.4/29`). Service addresses are typically put in the
       last `/16` from the container CIDR.
     shieldedNodes: Shielded Nodes configuration.
-    status: [Output only] The current status of this cluster.
-    statusMessage: [Output only] Additional information about the current
+    status: Output only. The current status of this cluster.
+    statusMessage: Output only. Additional information about the current
       status of this cluster, if available. Deprecated, use the field
       conditions instead.
     subnetwork: The name of the Google Compute Engine
@@ -1065,7 +1056,7 @@ class Cluster(_messages.Message):
       the cluster is connected. On output this shows the subnetwork ID instead
       of the name.
     tpuConfig: Configuration for Cloud TPU support;
-    tpuIpv4CidrBlock: [Output only] The IP address range of the Cloud TPUs in
+    tpuIpv4CidrBlock: Output only. The IP address range of the Cloud TPUs in
       this cluster, in [CIDR](http://en.wikipedia.org/wiki/Classless_Inter-
       Domain_Routing) notation (e.g. `1.2.3.4/29`).
     userManagedKeysConfig: The Custom keys configuration for the cluster.
@@ -1080,7 +1071,7 @@ class Cluster(_messages.Message):
       in GCP IAM policies.
     workloadMonitoringEnabledEap: Whether to send workload metrics from the
       cluster to Google Cloud Monitoring. Temporary flag for EAP.
-    zone: [Output only] The name of the Google Compute Engine
+    zone: Output only. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the cluster resides. This field is deprecated, use location instead.
   """
@@ -1101,7 +1092,7 @@ class Cluster(_messages.Message):
     PRIORITIZE_MEDIUM_UTILIZED = 2
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output only] The current status of this cluster.
+    r"""Output only. The current status of this cluster.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -2608,21 +2599,25 @@ class DNSEndpointConfig(_messages.Message):
   r"""Describes the configuration of a DNS endpoint.
 
   Fields:
+    allowExternalTraffic: Controls whether user traffic is allowed over this
+      endpoint. Note that GCP-managed services may still use the endpoint even
+      if this is false.
     enabled: Controls whether this endpoint is available.
     endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
       format address. This is accessible from the public internet. Ex: uid.us-
       central1.gke.goog.
   """
 
-  enabled = _messages.BooleanField(1)
-  endpoint = _messages.StringField(2)
+  allowExternalTraffic = _messages.BooleanField(1)
+  enabled = _messages.BooleanField(2)
+  endpoint = _messages.StringField(3)
 
 
 class DailyMaintenanceWindow(_messages.Message):
   r"""Time window specified for daily maintenance operations.
 
   Fields:
-    duration: [Output only] Duration of the time window, automatically chosen
+    duration: Output only. Duration of the time window, automatically chosen
       to be smallest possible in the given scenario.
     startTime: Time within the maintenance window to start the maintenance
       operations. It must be in format "HH:MM", where HH : [00-23] and MM :
@@ -2787,17 +2782,16 @@ class EnterpriseConfig(_messages.Message):
   r"""EnterpriseConfig is the cluster enterprise configuration.
 
   Enums:
-    ClusterTierValueValuesEnum: Output only. [Output only] cluster_tier
-      specifies the premium tier of the cluster.
+    ClusterTierValueValuesEnum: Output only. cluster_tier specifies the
+      premium tier of the cluster.
 
   Fields:
-    clusterTier: Output only. [Output only] cluster_tier specifies the premium
-      tier of the cluster.
+    clusterTier: Output only. cluster_tier specifies the premium tier of the
+      cluster.
   """
 
   class ClusterTierValueValuesEnum(_messages.Enum):
-    r"""Output only. [Output only] cluster_tier specifies the premium tier of
-    the cluster.
+    r"""Output only. cluster_tier specifies the premium tier of the cluster.
 
     Values:
       CLUSTER_TIER_UNSPECIFIED: CLUSTER_TIER_UNSPECIFIED is when cluster_tier
@@ -2904,10 +2898,10 @@ class Fleet(_messages.Message):
   r"""Fleet is the fleet configuration for the cluster.
 
   Fields:
-    membership: [Output only] The full resource name of the registered fleet
+    membership: Output only. The full resource name of the registered fleet
       membership of the cluster, in the format
       `//gkehub.googleapis.com/projects/*/locations/*/memberships/*`.
-    preRegistered: [Output only] Whether the cluster has been registered
+    preRegistered: Output only. Whether the cluster has been registered
       through the fleet API.
     project: The Fleet host project(project ID or project number) where this
       cluster will be registered to. This field cannot be changed after the
@@ -3155,6 +3149,16 @@ class GkeOidcConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class HighScaleCheckpointingConfig(_messages.Message):
+  r"""Configuration for the High Scale Checkpointing.
+
+  Fields:
+    enabled: Whether the High Scale Checkpointing is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class HorizontalPodAutoscaling(_messages.Message):
   r"""Configuration options for the horizontal pod autoscaling feature, which
   increases or decreases the number of replica pods a replication controller
@@ -3268,15 +3272,15 @@ class IPAllocationPolicy(_messages.Message):
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
-    additionalIpRangesConfigs: Output only. [Output only] The additional IP
-      ranges that are added to the cluster. These IP ranges can be used by new
-      node pools to allocate node and pod IPs automatically. Each
-      AdditionalIPRangesConfig corresponds to a single subnetwork. Once a
-      range is removed it will not show up in IPAllocationPolicy.
-    additionalPodRangesConfig: Output only. [Output only] The additional pod
-      ranges that are added to the cluster. These pod ranges can be used by
-      new node pools to allocate pod IPs automatically. Once the range is
-      removed it will not show up in IPAllocationPolicy.
+    additionalIpRangesConfigs: Output only. The additional IP ranges that are
+      added to the cluster. These IP ranges can be used by new node pools to
+      allocate node and pod IPs automatically. Each AdditionalIPRangesConfig
+      corresponds to a single subnetwork. Once a range is removed it will not
+      show up in IPAllocationPolicy.
+    additionalPodRangesConfig: Output only. The additional pod ranges that are
+      added to the cluster. These pod ranges can be used by new node pools to
+      allocate pod IPs automatically. Once the range is removed it will not
+      show up in IPAllocationPolicy.
     allowRouteOverlap: If true, allow allocation of cluster CIDR ranges that
       overlap with certain kinds of network routes. By default we do not allow
       cluster CIDR ranges to intersect with any user declared routes. With
@@ -3305,10 +3309,9 @@ class IPAllocationPolicy(_messages.Message):
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
-    defaultPodIpv4RangeUtilization: Output only. [Output only] The utilization
-      of the cluster default IPv4 range for the pod. The ratio is Usage/[Total
-      number of IPs in the secondary range],
-      Usage=numNodes*numZones*podIPsPerNode.
+    defaultPodIpv4RangeUtilization: Output only. The utilization of the
+      cluster default IPv4 range for the pod. The ratio is Usage/[Total number
+      of IPs in the secondary range], Usage=numNodes*numZones*podIPsPerNode.
     ipv6AccessType: The ipv6 access type (internal or external) when
       create_subnetwork is true
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
@@ -3338,16 +3341,16 @@ class IPAllocationPolicy(_messages.Message):
       notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
       `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
       range to use.
-    servicesIpv6CidrBlock: Output only. [Output only] The services IPv6 CIDR
-      block for the cluster.
+    servicesIpv6CidrBlock: Output only. The services IPv6 CIDR block for the
+      cluster.
     servicesSecondaryRangeName: The name of the secondary range to be used as
       for the services CIDR block. The secondary range will be used for
       service ClusterIPs. This must be an existing secondary range associated
       with the cluster subnetwork. This field is only applicable with
       use_ip_aliases is true and create_subnetwork is false.
     stackType: IP stack type
-    subnetIpv6CidrBlock: Output only. [Output only] The subnet's IPv6 CIDR
-      block used by nodes and pods.
+    subnetIpv6CidrBlock: Output only. The subnet's IPv6 CIDR block used by
+      nodes and pods.
     subnetworkName: A custom subnetwork name to be used if `create_subnetwork`
       is true. If this field is empty, then an automatic name will be chosen
       for the new subnetwork.
@@ -4101,14 +4104,14 @@ class MasterAuth(_messages.Message):
   certificates.
 
   Fields:
-    clientCertificate: [Output only] Base64-encoded public certificate used by
+    clientCertificate: Output only. Base64-encoded public certificate used by
       clients to authenticate to the cluster endpoint.
     clientCertificateConfig: Configuration for client certificate
       authentication on the cluster. For clusters before v1.12, if no
       configuration is specified, a client certificate is issued.
-    clientKey: [Output only] Base64-encoded private key used by clients to
+    clientKey: Output only. Base64-encoded private key used by clients to
       authenticate to the cluster endpoint.
-    clusterCaCertificate: [Output only] Base64-encoded public certificate that
+    clusterCaCertificate: Output only. Base64-encoded public certificate that
       is the root of trust for the cluster.
     password: The password to use for HTTP basic authentication to the master
       endpoint. Because the master endpoint is open to the Internet, you
@@ -5037,9 +5040,6 @@ class NodeNetworkConfig(_messages.Message):
     additionalPodNetworkConfigs: We specify the additional pod networks for
       this node pool using this list. Each pod network corresponds to an
       additional alias IP range for the node
-    additionalPscInterfaces: We specify the additional PSC interfaces for this
-      node pool using this list. Each PSC interface corresponds to a PSC
-      interface on the node
     createPodRange: Input only. Whether to create a new range for pod IPs in
       this node pool. Defaults are provided for `pod_range` and
       `pod_ipv4_cidr_block` if they are not specified. If neither
@@ -5069,14 +5069,19 @@ class NodeNetworkConfig(_messages.Message):
       notation (e.g. `10.96.0.0/14`) to pick a specific range to use. Only
       applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
       cannot be changed after the node pool has been created.
-    podIpv4RangeUtilization: Output only. [Output only] The utilization of the
-      IPv4 range for the pod. The ratio is Usage/[Total number of IPs in the
-      secondary range], Usage=numNodes*numZones*podIPsPerNode.
+    podIpv4RangeUtilization: Output only. The utilization of the IPv4 range
+      for the pod. The ratio is Usage/[Total number of IPs in the secondary
+      range], Usage=numNodes*numZones*podIPsPerNode.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range. If `create_pod_range` is
       false, uses an existing secondary range with this ID. Only applicable if
       `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
       changed after the node pool has been created.
+    subnetwork: Output only. The subnetwork path for the node pool. Format:
+      projects/{project}/regions/{region}/subnetworks/{subnetwork} If the
+      cluster is associated with multiple subnetworks, the subnetwork for the
+      node pool is picked based on the IP utilization during node pool
+      creation and is immutable.
     targetPodIpv4Range: The target IP address range of the pod IPs in this
       node pool. This setting works in conjunction with `pod_ipv4_cidr_block`.
       When `pod_ipv4_cidr_block` specifies an IP mask length then the
@@ -5088,15 +5093,15 @@ class NodeNetworkConfig(_messages.Message):
 
   additionalNodeNetworkConfigs = _messages.MessageField('AdditionalNodeNetworkConfig', 1, repeated=True)
   additionalPodNetworkConfigs = _messages.MessageField('AdditionalPodNetworkConfig', 2, repeated=True)
-  additionalPscInterfaces = _messages.MessageField('AdditionalPSCInterface', 3, repeated=True)
-  createPodRange = _messages.BooleanField(4)
-  enableEndpointsliceProxying = _messages.BooleanField(5)
-  enablePrivateNodes = _messages.BooleanField(6)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 7)
-  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 8)
-  podIpv4CidrBlock = _messages.StringField(9)
-  podIpv4RangeUtilization = _messages.FloatField(10)
-  podRange = _messages.StringField(11)
+  createPodRange = _messages.BooleanField(3)
+  enableEndpointsliceProxying = _messages.BooleanField(4)
+  enablePrivateNodes = _messages.BooleanField(5)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 6)
+  podCidrOverprovisionConfig = _messages.MessageField('PodCIDROverprovisionConfig', 7)
+  podIpv4CidrBlock = _messages.StringField(8)
+  podIpv4RangeUtilization = _messages.FloatField(9)
+  podRange = _messages.StringField(10)
+  subnetwork = _messages.StringField(11)
   targetPodIpv4Range = _messages.StringField(12)
 
 
@@ -5120,7 +5125,7 @@ class NodePool(_messages.Message):
   the workload.
 
   Enums:
-    StatusValueValuesEnum: [Output only] The status of the nodes in this pool
+    StatusValueValuesEnum: Output only. The status of the nodes in this pool
       instance.
 
   Fields:
@@ -5135,11 +5140,11 @@ class NodePool(_messages.Message):
     initialNodeCount: The initial node count for the pool. You must ensure
       that your Compute Engine resource quota is sufficient for this number of
       instances. You must also have available firewall and routes quota.
-    instanceGroupUrls: [Output only] The resource URLs of the [managed
-      instance groups](https://cloud.google.com/compute/docs/instance-
-      groups/creating-groups-of-managed-instances) associated with this node
-      pool. During the node pool blue-green upgrade operation, the URLs
-      contain both blue and green resources.
+    instanceGroupUrls: Output only. The resource URLs of the [managed instance
+      groups](https://cloud.google.com/compute/docs/instance-groups/creating-
+      groups-of-managed-instances) associated with this node pool. During the
+      node pool blue-green upgrade operation, the URLs contain both blue and
+      green resources.
     locations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the NodePool's nodes should be located. If this value is unspecified
@@ -5155,18 +5160,18 @@ class NodePool(_messages.Message):
     networkConfig: Networking configuration for this NodePool. If specified,
       it overrides the cluster-level defaults.
     placementPolicy: Specifies the node placement policy.
-    podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
+    podIpv4CidrSize: Output only. The pod CIDR block size per node in this
       node pool.
     queuedProvisioning: Specifies the configuration of queued provisioning.
     resourceVersion: Server-defined resource version (etag). Deprecated; use
       etag instead.
-    selfLink: [Output only] Server-defined URL for the resource.
-    status: [Output only] The status of the nodes in this pool instance.
-    statusMessage: [Output only] Additional information about the current
+    selfLink: Output only. Server-defined URL for the resource.
+    status: Output only. The status of the nodes in this pool instance.
+    statusMessage: Output only. Additional information about the current
       status of this node pool instance, if available. Deprecated, use the
       field conditions instead.
-    updateInfo: Output only. [Output only] Upgrade info contains relevant
-      information during a node pool update.
+    updateInfo: Output only. Upgrade info contains relevant information during
+      a node pool update.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of Kubernetes running on this NodePool's nodes. If
@@ -5176,7 +5181,7 @@ class NodePool(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output only] The status of the nodes in this pool instance.
+    r"""Output only. The status of the nodes in this pool instance.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -5379,51 +5384,51 @@ class Operation(_messages.Message):
   are happening on the cluster. All fields are output only.
 
   Enums:
-    OperationTypeValueValuesEnum: The operation type.
-    StatusValueValuesEnum: The current status of the operation.
+    OperationTypeValueValuesEnum: Output only. The operation type.
+    StatusValueValuesEnum: Output only. The current status of the operation.
 
   Fields:
     clusterConditions: Which conditions caused the current cluster state.
       Deprecated. Use field error instead.
-    detail: Detailed operation progress, if available.
-    endTime: [Output only] The time the operation completed, in
+    detail: Output only. Detailed operation progress, if available.
+    endTime: Output only. The time the operation completed, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
     error: The error result of the operation in case of failure.
-    location: [Output only] The name of the Google Compute Engine
+    location: Output only. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) or
       [region](https://cloud.google.com/compute/docs/regions-zones/regions-
       zones#available) in which the cluster resides.
-    name: The server-assigned ID for the operation.
+    name: Output only. The server-assigned ID for the operation.
     nodepoolConditions: Which conditions caused the current node pool state.
       Deprecated. Use field error instead.
-    operationType: The operation type.
-    progress: Output only. [Output only] Progress information for an
-      operation.
-    selfLink: Server-defined URI for the resource.
-    startTime: [Output only] The time the operation started, in
+    operationType: Output only. The operation type.
+    progress: Output only. Progress information for an operation.
+    selfLink: Output only. Server-defined URI for the resource.
+    startTime: Output only. The time the operation started, in
       [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
-    status: The current status of the operation.
+    status: Output only. The current status of the operation.
     statusMessage: Output only. If an error has occurred, a textual
       description of the error. Deprecated. Use the field error instead.
-    targetLink: Server-defined URI for the target of the operation. The format
-      of this is a URI to the resource being modified (such as a cluster, node
-      pool, or node). For node pool repairs, there may be multiple nodes being
-      repaired, but only one will be the target. Examples: -
+    targetLink: Output only. Server-defined URI for the target of the
+      operation. The format of this is a URI to the resource being modified
+      (such as a cluster, node pool, or node). For node pool repairs, there
+      may be multiple nodes being repaired, but only one will be the target.
+      Examples: -
       `https://container.googleapis.com/v1alpha1/projects/123/locations/us-
       central1/clusters/my-cluster` -
       `https://container.googleapis.com/v1alpha1/projects/123/zones/us-
       central1-c/clusters/my-cluster/nodePools/my-np` -
       `https://container.googleapis.com/v1alpha1/projects/123/zones/us-
       central1-c/clusters/my-cluster/nodePools/my-np/node/my-node`
-    zone: The name of the Google Compute Engine
+    zone: Output only. The name of the Google Compute Engine
       [zone](https://cloud.google.com/compute/docs/zones#available) in which
       the operation is taking place. This field is deprecated, use location
       instead.
   """
 
   class OperationTypeValueValuesEnum(_messages.Enum):
-    r"""The operation type.
+    r"""Output only. The operation type.
 
     Values:
       TYPE_UNSPECIFIED: Not set.
@@ -5528,7 +5533,7 @@ class Operation(_messages.Message):
     FLEET_FEATURE_UPGRADE = 19
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The current status of the operation.
+    r"""Output only. The current status of the operation.
 
     Values:
       STATUS_UNSPECIFIED: Not set.
@@ -5759,13 +5764,36 @@ class PodSecurityPolicyConfig(_messages.Message):
 class PolicyBinding(_messages.Message):
   r"""Binauthz policy that applies to this cluster.
 
+  Enums:
+    EnforcementModeValueValuesEnum: Mode of operation for binauthz policy
+      enforcement.
+
   Fields:
+    enforcementMode: Mode of operation for binauthz policy enforcement.
     name: The relative resource name of the binauthz platform policy to
       evaluate. GKE platform policies have the following format:
       `projects/{project_number}/platforms/gke/policies/{policy_id}`.
   """
 
-  name = _messages.StringField(1)
+  class EnforcementModeValueValuesEnum(_messages.Enum):
+    r"""Mode of operation for binauthz policy enforcement.
+
+    Values:
+      ENFORCEMENT_MODE_UNSPECIFIED: Default value. For backwards
+        compatibility, this has the same behavior as AUDIT.
+      AUDIT: Enable Continuous Validation only.
+      AUDIT_AND_DRYRUN: Enable Continuous Validation and produce warnings, but
+        do not block workloads which are not conformant with the policy.
+      AUDIT_AND_ENFORCE: Enable Continuous Validation and block workloads
+        which are not conformant with the policy.
+    """
+    ENFORCEMENT_MODE_UNSPECIFIED = 0
+    AUDIT = 1
+    AUDIT_AND_DRYRUN = 2
+    AUDIT_AND_ENFORCE = 3
+
+  enforcementMode = _messages.EnumField('EnforcementModeValueValuesEnum', 1)
+  name = _messages.StringField(2)
 
 
 class PrivateClusterConfig(_messages.Message):
@@ -5932,8 +5960,8 @@ class RangeInfo(_messages.Message):
   cluster.
 
   Fields:
-    rangeName: Output only. [Output only] Name of a range.
-    utilization: Output only. [Output only] The utilization of the range.
+    rangeName: Output only. Name of a range.
+    utilization: Output only. The utilization of the range.
   """
 
   rangeName = _messages.StringField(1)
@@ -5945,8 +5973,7 @@ class RayClusterLoggingConfig(_messages.Message):
   clusters.
 
   Fields:
-    enabled: When Ray addon is enabled in a cluster, this flag controls
-      whether log-processing sidecar is enabled for each Ray pod.
+    enabled: Enable log collection for Ray clusters.
   """
 
   enabled = _messages.BooleanField(1)
@@ -5957,8 +5984,7 @@ class RayClusterMonitoringConfig(_messages.Message):
   clusters.
 
   Fields:
-    enabled: When Ray addon is enabled in a cluster, this flag controls
-      whether monitroing is enabled for Ray.
+    enabled: Enable metrics collection for Ray clusters.
   """
 
   enabled = _messages.BooleanField(1)
@@ -5979,8 +6005,7 @@ class RayLoggingConfig(_messages.Message):
   r"""RayLoggingConfig specifies configuration of Ray logging.
 
   Fields:
-    enabled: When Ray addon is enabled in a cluster, this flag controls
-      whether logging is enabled for Ray.
+    enabled: Enable log collection for Ray clusters.
   """
 
   enabled = _messages.BooleanField(1)
@@ -5990,8 +6015,7 @@ class RayMonitoringConfig(_messages.Message):
   r"""RayMonitoringConfig specifies configuration of Ray Monitoring feature.
 
   Fields:
-    enabled: When Ray addon is enabled in a cluster, this flag controls
-      whether monitroing is enabled for Ray.
+    enabled: Enable metrics collection for Ray clusters.
   """
 
   enabled = _messages.BooleanField(1)
@@ -7693,11 +7717,15 @@ class UpgradeSettings(_messages.Message):
       BLUE_GREEN: blue-green upgrade.
       SURGE: SURGE is the traditional way of upgrading a node pool. max_surge
         and max_unavailable determines the level of upgrade parallelism.
+      QUEUED_PROVISIONING: QUEUED_PROVISIONING is the dedicated upgrade
+        strategy for QueuedProvisioning nodepools scaled up only by enqueueing
+        to the Dynamic Workload Scheduler (DWS).
     """
     NODE_POOL_UPDATE_STRATEGY_UNSPECIFIED = 0
     ROLLING = 1
     BLUE_GREEN = 2
     SURGE = 3
+    QUEUED_PROVISIONING = 4
 
   blueGreenSettings = _messages.MessageField('BlueGreenSettings', 1)
   maxSurge = _messages.IntegerField(2, variant=_messages.Variant.INT32)

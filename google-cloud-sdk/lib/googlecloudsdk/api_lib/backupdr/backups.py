@@ -63,6 +63,12 @@ class ComputeRestoreConfig(util.RestrictedDict):
         "CanIpForward",
         "PrivateIpv6GoogleAccessType",
         "NetworkPerformanceConfigs",
+        "ConfidentialCompute",
+        "DeletionProtection",
+        "ResourceManagerTags",
+        "ResourcePolicies",
+        "KeyRevocationActionType",
+        "InstanceKmsKey",
     ]
     super(ComputeRestoreConfig, self).__init__(supported_flags, *args, **kwargs)
 
@@ -334,6 +340,53 @@ class BackupsClient(util.BackupDrClientBase):
         )
       restore_request.computeInstanceRestoreProperties.networkPerformanceConfig = (
           network_performance_configs
+      )
+
+    # ConfidentialCompute
+    if "ConfidentialCompute" in restore_config:
+      restore_request.computeInstanceRestoreProperties.confidentialInstanceConfig = self.messages.ConfidentialInstanceConfig(
+          enableConfidentialCompute=restore_config["ConfidentialCompute"]
+      )
+
+    # DeletionProtection
+    if "DeletionProtection" in restore_config:
+      restore_request.computeInstanceRestoreProperties.deletionProtection = (
+          restore_config["DeletionProtection"]
+      )
+
+    # ResourceManagerTags
+    if "ResourceManagerTags" in restore_config:
+      restore_request.computeInstanceRestoreProperties.params = self.messages.InstanceParams(
+          resourceManagerTags=self.messages.InstanceParams.ResourceManagerTagsValue(
+              additionalProperties=[
+                  self.messages.InstanceParams.ResourceManagerTagsValue.AdditionalProperty(
+                      key=key, value=value
+                  )
+                  for key, value in restore_config[
+                      "ResourceManagerTags"
+                  ].items()
+              ]
+          )
+      )
+
+    # ResourcePolicies
+    if "ResourcePolicies" in restore_config:
+      restore_request.computeInstanceRestoreProperties.resourcePolicies = (
+          restore_config["ResourcePolicies"]
+      )
+
+    # KeyRevocationActionType
+    if "KeyRevocationActionType" in restore_config:
+      restore_request.computeInstanceRestoreProperties.keyRevocationActionType = self.messages.ComputeInstanceRestoreProperties.KeyRevocationActionTypeValueValuesEnum(
+          restore_config["KeyRevocationActionType"]
+      )
+
+    # InstanceKmsKey
+    if "InstanceKmsKey" in restore_config:
+      restore_request.computeInstanceRestoreProperties.instanceEncryptionKey = (
+          self.messages.CustomerEncryptionKey(
+              kmsKeyName=restore_config["InstanceKmsKey"],
+          )
       )
 
     request = self.messages.BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(

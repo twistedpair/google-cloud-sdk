@@ -160,6 +160,8 @@ class AwsSourceDetails(_messages.Message):
       generated resource in AWS. These tags will be set in addition to the
       default tags that are set as part of the migration process. The tags
       must not begin with the reserved prefix `m2vm`.
+    networkInsights: Output only. Information about the network coniguration
+      of the source. Only gatherred upon request.
     publicIp: Output only. The source's public IP. All communication initiated
       by this source will originate from this IP.
     state: Output only. State of the source as determined by the health check.
@@ -217,8 +219,9 @@ class AwsSourceDetails(_messages.Message):
   inventorySecurityGroupNames = _messages.StringField(4, repeated=True)
   inventoryTagList = _messages.MessageField('Tag', 5, repeated=True)
   migrationResourcesUserTags = _messages.MessageField('MigrationResourcesUserTagsValue', 6)
-  publicIp = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  networkInsights = _messages.MessageField('NetworkInsights', 7)
+  publicIp = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
 
 
 class AwsSourceVmDetails(_messages.Message):
@@ -677,11 +680,14 @@ class BootDiskDefaults(_messages.Message):
       COMPUTE_ENGINE_DISK_TYPE_SSD: SSD hard disk type.
       COMPUTE_ENGINE_DISK_TYPE_BALANCED: An alternative to SSD persistent
         disks that balance performance and cost.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
+        type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
 
   deviceName = _messages.StringField(1)
   diskName = _messages.StringField(2)
@@ -696,6 +702,10 @@ class CancelCloneJobRequest(_messages.Message):
 
 class CancelCutoverJobRequest(_messages.Message):
   r"""Request message for 'CancelCutoverJob' request."""
+
+
+class CancelDiskMigrationJobRequest(_messages.Message):
+  r"""Request message for 'CancelDiskMigrationJob' request."""
 
 
 class CancelImageImportJobRequest(_messages.Message):
@@ -903,11 +913,14 @@ class ComputeEngineTargetDefaults(_messages.Message):
       COMPUTE_ENGINE_DISK_TYPE_SSD: SSD hard disk type.
       COMPUTE_ENGINE_DISK_TYPE_BALANCED: An alternative to SSD persistent
         disks that balance performance and cost.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
+        type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""The license type to use in OS adaptation.
@@ -1052,11 +1065,14 @@ class ComputeEngineTargetDetails(_messages.Message):
       COMPUTE_ENGINE_DISK_TYPE_SSD: SSD hard disk type.
       COMPUTE_ENGINE_DISK_TYPE_BALANCED: An alternative to SSD persistent
         disks that balance performance and cost.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
+        type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
 
   class LicenseTypeValueValuesEnum(_messages.Enum):
     r"""The license type to use in OS adaptation.
@@ -1452,6 +1468,9 @@ class DiskImageTargetDetails(_messages.Message):
 
   Fields:
     additionalLicenses: Optional. Additional licenses to assign to the image.
+      Format: https://www.googleapis.com/compute/v1/projects/PROJECT_ID/global
+      /licenses/LICENSE_NAME Or https://www.googleapis.com/compute/beta/projec
+      ts/PROJECT_ID/global/licenses/LICENSE_NAME
     dataDiskImageImport: Optional. Use to skip OS adaptation process.
     description: Optional. An optional description of the image.
     encryption: Immutable. The encryption to apply to the image.
@@ -2194,7 +2213,10 @@ class MachineImageTargetDetails(_messages.Message):
 
   Fields:
     additionalLicenses: Optional. Additional licenses to assign to the
-      instance created by the machine image.
+      instance created by the machine image. Format: https://www.googleapis.co
+      m/compute/v1/projects/PROJECT_ID/global/licenses/LICENSE_NAME Or https:/
+      /www.googleapis.com/compute/beta/projects/PROJECT_ID/global/licenses/LIC
+      ENSE_NAME
     description: Optional. An optional description of the machine image.
     encryption: Immutable. The encryption to apply to the machine image.
     labels: Optional. The labels to apply to the instance created by the
@@ -2202,6 +2224,8 @@ class MachineImageTargetDetails(_messages.Message):
     machineImageName: Required. The name of the machine image to be created.
     machineImageParametersOverrides: Optional. Parameters overriding decisions
       based on the source machine image configurations.
+    networkInterfaces: Optional. The network interfaces to create with the
+      instance created by the machine image.
     osAdaptationParameters: Optional. Use to set the parameters relevant for
       the OS adaptation process.
     serviceAccount: Optional. The service account to assign to the instance
@@ -2249,13 +2273,14 @@ class MachineImageTargetDetails(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   machineImageName = _messages.StringField(5)
   machineImageParametersOverrides = _messages.MessageField('MachineImageParametersOverrides', 6)
-  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 7)
-  serviceAccount = _messages.MessageField('ServiceAccount', 8)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 9)
-  singleRegionStorage = _messages.BooleanField(10)
-  skipOsAdaptation = _messages.MessageField('SkipOsAdaptation', 11)
-  tags = _messages.StringField(12, repeated=True)
-  targetProject = _messages.StringField(13)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 7, repeated=True)
+  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 8)
+  serviceAccount = _messages.MessageField('ServiceAccount', 9)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 10)
+  singleRegionStorage = _messages.BooleanField(11)
+  skipOsAdaptation = _messages.MessageField('SkipOsAdaptation', 12)
+  tags = _messages.StringField(13, repeated=True)
+  targetProject = _messages.StringField(14)
 
 
 class MigratingVm(_messages.Message):
@@ -2499,8 +2524,27 @@ class MigrationWarning(_messages.Message):
   warningTime = _messages.StringField(5)
 
 
+class NetworkInsights(_messages.Message):
+  r"""Information about the network coniguration of the source.
+
+  Fields:
+    sourceNetworkConfig: Output only. The gathered network configuration of
+      the source. Presented in json format.
+    sourceNetworkTerraform: Output only. The gathered network configuration of
+      the source. Presented in terraform format.
+  """
+
+  sourceNetworkConfig = _messages.StringField(1)
+  sourceNetworkTerraform = _messages.StringField(2)
+
+
 class NetworkInterface(_messages.Message):
   r"""NetworkInterface represents a NIC of a VM.
+
+  Enums:
+    NetworkTierValueValuesEnum: Optional. The networking tier used for
+      configuring network access configuration. If left empty, will default to
+      PREMIUM.
 
   Fields:
     externalIp: Optional. The external IP to define in the NIC.
@@ -2508,13 +2552,30 @@ class NetworkInterface(_messages.Message):
       accepted are: `ephemeral` \ ipv4 address \ a named address resource full
       path.
     network: The network to connect the NIC to.
-    subnetwork: The subnetwork to connect the NIC to.
+    networkTier: Optional. The networking tier used for configuring network
+      access configuration. If left empty, will default to PREMIUM.
+    subnetwork: Optional. The subnetwork to connect the NIC to.
   """
+
+  class NetworkTierValueValuesEnum(_messages.Enum):
+    r"""Optional. The networking tier used for configuring network access
+    configuration. If left empty, will default to PREMIUM.
+
+    Values:
+      COMPUTE_ENGINE_NETWORK_TIER_UNSPECIFIED: An unspecified network tier.
+        Will be used as PREMIUM.
+      NETWORK_TIER_STANDARD: A standard network tier.
+      NETWORK_TIER_PREMIUM: A premium network tier.
+    """
+    COMPUTE_ENGINE_NETWORK_TIER_UNSPECIFIED = 0
+    NETWORK_TIER_STANDARD = 1
+    NETWORK_TIER_PREMIUM = 2
 
   externalIp = _messages.StringField(1)
   internalIp = _messages.StringField(2)
   network = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  networkTier = _messages.EnumField('NetworkTierValueValuesEnum', 4)
+  subnetwork = _messages.StringField(5)
 
 
 class OSDescription(_messages.Message):
@@ -2716,7 +2777,7 @@ class PersistentDiskDefaults(_messages.Message):
     encryption: Optional. The encryption to apply to the disk.
     sourceDiskNumber: Required. The ordinal number of the source VM disk.
     vmAttachmentDetails: Optional. Details for attachment of the disk to a VM.
-      Used when the disk is set to be attacked to a target VM.
+      Used when the disk is set to be attached to a target VM.
   """
 
   class DiskTypeValueValuesEnum(_messages.Enum):
@@ -2729,11 +2790,14 @@ class PersistentDiskDefaults(_messages.Message):
       COMPUTE_ENGINE_DISK_TYPE_SSD: SSD hard disk type.
       COMPUTE_ENGINE_DISK_TYPE_BALANCED: An alternative to SSD persistent
         disks that balance performance and cost.
+      COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED: Hyperdisk balanced disk
+        type.
     """
     COMPUTE_ENGINE_DISK_TYPE_UNSPECIFIED = 0
     COMPUTE_ENGINE_DISK_TYPE_STANDARD = 1
     COMPUTE_ENGINE_DISK_TYPE_SSD = 2
     COMPUTE_ENGINE_DISK_TYPE_BALANCED = 3
+    COMPUTE_ENGINE_DISK_TYPE_HYPERDISK_BALANCED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AdditionalLabelsValue(_messages.Message):
@@ -2872,6 +2936,10 @@ class ReplicationSync(_messages.Message):
 
 class ResumeMigrationRequest(_messages.Message):
   r"""Request message for 'ResumeMigration' request."""
+
+
+class RunDiskMigrationJobRequest(_messages.Message):
+  r"""Request message for 'RunDiskMigrationJobRequest' request."""
 
 
 class SchedulePolicy(_messages.Message):
@@ -3917,6 +3985,33 @@ class VmmigrationProjectsLocationsSourcesDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsCancelRequest
+  object.
+
+  Fields:
+    cancelDiskMigrationJobRequest: A CancelDiskMigrationJobRequest resource to
+      be passed as the request body.
+    name: Required. The name of the DiskMigrationJob.
+  """
+
+  cancelDiskMigrationJobRequest = _messages.MessageField('CancelDiskMigrationJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest(_messages.Message):
+  r"""A VmmigrationProjectsLocationsSourcesDiskMigrationJobsRunRequest object.
+
+  Fields:
+    name: Required. The name of the DiskMigrationJob.
+    runDiskMigrationJobRequest: A RunDiskMigrationJobRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  runDiskMigrationJobRequest = _messages.MessageField('RunDiskMigrationJobRequest', 2)
 
 
 class VmmigrationProjectsLocationsSourcesFetchInventoryRequest(_messages.Message):

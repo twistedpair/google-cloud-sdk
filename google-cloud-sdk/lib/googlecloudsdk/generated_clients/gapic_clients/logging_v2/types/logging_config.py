@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,7 +79,9 @@ __protobuf__ = proto.module(
         'UpdateSettingsRequest',
         'ListSavedQueriesRequest',
         'ListSavedQueriesResponse',
+        'GetSavedQueryRequest',
         'CreateSavedQueryRequest',
+        'UpdateSavedQueryRequest',
         'DeleteSavedQueryRequest',
         'ListRecentQueriesRequest',
         'ListRecentQueriesResponse',
@@ -2615,6 +2617,7 @@ class UpdateSettingsRequest(proto.Message):
             ::
 
                 "organizations/[ORGANIZATION_ID]/settings"
+                "folders/[FOLDER_ID]/settings"
 
             For example:
 
@@ -2693,6 +2696,30 @@ class ListSavedQueriesRequest(proto.Message):
             Non-positive values are ignored. The presence of
             ``nextPageToken`` in the response indicates that more
             results might be available.
+        filter (str):
+            Optional. Specifies the type ("Logging" or "OpsAnalytics")
+            and the visibility (PRIVATE or SHARED) of the saved queries
+            to list. If provided, the filter must contain either the
+            ``type`` function or a ``visibility`` token, or both. If
+            both are chosen, they can be placed in any order, but they
+            must be joined by the AND operator or the empty character.
+
+            The two supported ``type`` function calls are:
+
+            -  ``type("Logging")``
+            -  ``type("OpsAnalytics")``
+
+            The two supported ``visibility`` tokens are:
+
+            -  ``visibility = PRIVATE``
+            -  ``visibility = SHARED``
+
+            For example:
+
+            ``type("Logging") AND visibility = PRIVATE``
+            ``visibility=SHARED type("OpsAnalytics")``
+            ``type("OpsAnalytics)"`` ``visibility = PRIVATE``
+            ``visibility = SHARED``
     """
 
     parent: str = proto.Field(
@@ -2706,6 +2733,10 @@ class ListSavedQueriesRequest(proto.Message):
     page_size: int = proto.Field(
         proto.INT32,
         number=3,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=5,
     )
 
 
@@ -2758,6 +2789,33 @@ class ListSavedQueriesResponse(proto.Message):
     unreachable: MutableSequence[str] = proto.RepeatedField(
         proto.STRING,
         number=3,
+    )
+
+
+class GetSavedQueryRequest(proto.Message):
+    r"""The parameters to 'GetSavedQuery'
+
+    Attributes:
+        name (str):
+            Required. The resource name of the saved query.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+            For example:
+
+            ::
+
+                "projects/my-project/locations/global/savedQueries/my-saved-query".
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
     )
 
 
@@ -2815,6 +2873,51 @@ class CreateSavedQueryRequest(proto.Message):
         proto.MESSAGE,
         number=2,
         message='SavedQuery',
+    )
+
+
+class UpdateSavedQueryRequest(proto.Message):
+    r"""The parameters to 'UpdateSavedQuery'.
+
+    Attributes:
+        saved_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery):
+            Required. The updated value for the query.
+
+            The ``saved_query``'s ``name`` field is used to identify the
+            saved query to update. Format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]".
+        update_mask (google.protobuf.field_mask_pb2.FieldMask):
+            Required. A non-empty list of fields to change in the
+            existing saved query. Fields are relative to the
+            ``saved_query`` and new values for the fields are taken from
+            the corresponding fields in the
+            [SavedQuery][google.logging.v2.SavedQuery] included in this
+            request. Fields not mentioned in ``update_mask`` are not
+            changed and are ignored in the request.
+
+            To update all mutable fields, specify an ``update_mask`` of
+            ``*``.
+
+            For example, to change the description and query filter text
+            of a saved query, specify an ``update_mask`` of
+            ``"description, query.filter"``.
+    """
+
+    saved_query: 'SavedQuery' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        message='SavedQuery',
+    )
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message=field_mask_pb2.FieldMask,
     )
 
 
@@ -2878,6 +2981,14 @@ class ListRecentQueriesRequest(proto.Message):
             request. Non-positive values are ignored. The presence of
             ``nextPageToken`` in the response indicates that more
             results might be available.
+        filter (str):
+            Optional. Specifies the type ("Logging" or "OpsAnalytics")
+            of the recent queries to list. The only valid value for this
+            field is one of the two allowable ``type`` function calls,
+            which are the following:
+
+            -  ``type("Logging")``
+            -  ``type("OpsAnalytics")``
     """
 
     parent: str = proto.Field(
@@ -2891,6 +3002,10 @@ class ListRecentQueriesRequest(proto.Message):
     page_size: int = proto.Field(
         proto.INT32,
         number=3,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=5,
     )
 
 

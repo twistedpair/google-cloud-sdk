@@ -102,10 +102,10 @@ class Destination(_messages.Message):
       and should be set only by users interested in authenticated push.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
-    outputDataFormat: Optional. The output message format. If not set, the
-      message will be delivered in the format it was originally delivered to
-      the Stream. This field can only be set if Stream.input_data_format is
-      also set.
+    outputPayloadFormat: Optional. The format of the payload before it's
+      delivered to the destination. If not set, the message will be delivered
+      in the format it was originally delivered to the Stream. This field can
+      only be set if `Stream.input_payload_format` is also set.
     serviceEndpoint: Required. The URL of a endpoint to route traffic to. If a
       DNS FQDN is provided as the endpoint, Message Streams will create a
       peering zone to the consumer VPC and forward DNS requests to the VPC
@@ -115,7 +115,7 @@ class Destination(_messages.Message):
 
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
   networkConfig = _messages.MessageField('NetworkConfig', 2)
-  outputDataFormat = _messages.MessageField('MessageDataFormat', 3)
+  outputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 3)
   serviceEndpoint = _messages.StringField(4)
 
 
@@ -394,8 +394,8 @@ class Mediation(_messages.Message):
   transformation = _messages.MessageField('Transformation', 2)
 
 
-class MessageDataFormat(_messages.Message):
-  r"""The format of a message data.
+class MessagePayloadFormat(_messages.Message):
+  r"""The format of a message payload.
 
   Fields:
     avro: Optional. AVRO format.
@@ -1036,14 +1036,14 @@ class Stream(_messages.Message):
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
     eventarcTransformationType: Optional.
-    inputDataFormat: Optional. The data format expected for the messages
-      received by the Stream. If input_data_format is set then any messages
+    inputPayloadFormat: Optional. The data format expected for the messages
+      received by the Stream. If input_payload_format is set then any messages
       not matching this format will be treated as persistent errors. If
-      input_data_format is not set, then the message data will be treated as
-      an opaque binary and no output format can be set on the stream through
-      the Stream.Destination.output_data_format field. Any Mediations on the
-      stream that involve access to the data field will fail as persistent
-      errors.
+      input_payload_format is not set, then the message data will be treated
+      as an opaque binary and no output format can be set on the stream
+      through the Stream.Destination.output_payload_format field. Any
+      Mediations on the stream that involve access to the data field will fail
+      as persistent errors.
     labels: Optional. Labels as key value pairs
     mediations: Optional. Mediations to define the way to modify the incoming
       message.
@@ -1156,7 +1156,7 @@ class Stream(_messages.Message):
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
-  inputDataFormat = _messages.MessageField('MessageDataFormat', 6)
+  inputPayloadFormat = _messages.MessageField('MessagePayloadFormat', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   mediations = _messages.MessageField('Mediation', 8, repeated=True)
   name = _messages.StringField(9)

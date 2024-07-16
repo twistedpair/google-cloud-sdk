@@ -325,10 +325,10 @@ class CustomerEncryptionKey(_messages.Message):
 
 
 class DomainConfig(_messages.Message):
-  r"""Configuration options for private workstation clusters.
+  r"""Configuration options for a custom domain.
 
   Fields:
-    domain: Immutable. Whether Workstations endpoint is private.
+    domain: Immutable. Domain used by Workstations for HTTP ingress.
   """
 
   domain = _messages.StringField(1)
@@ -692,6 +692,23 @@ class Host(_messages.Message):
   gceInstance = _messages.MessageField('GceInstance', 1)
 
 
+class HttpOptions(_messages.Message):
+  r"""Http options for the running workstations.
+
+  Fields:
+    allowedUnauthenticatedCorsPreflightRequests: Optional. By default, the
+      workstations service makes sure that all requests to the workstation are
+      authenticated. CORS preflight requests do not include cookies or custom
+      headers, and so are considered unauthenticated and blocked by the
+      workstations service. Enabling this option allows these unauthenticated
+      CORS preflight requests through to the workstation, where it becomes the
+      responsibility of the destination server in the workstation to validate
+      the request.
+  """
+
+  allowedUnauthenticatedCorsPreflightRequests = _messages.BooleanField(1)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -1005,8 +1022,8 @@ class Policy(_messages.Message):
 
 
 class PortRange(_messages.Message):
-  r"""A PortsConfig defines a range of ports. Both first and last are
-  inclusive. To specify a single port, both first and last should be the same.
+  r"""A PortRange defines a range of ports. Both first and last are inclusive.
+  To specify a single port, both first and last should be the same.
 
   Fields:
     first: Required. Starting port number for the current range of ports.
@@ -1018,13 +1035,26 @@ class PortRange(_messages.Message):
 
 
 class PrivateClusterConfig(_messages.Message):
-  r"""A PrivateClusterConfig object.
+  r"""Configuration options for private workstation clusters.
 
   Fields:
-    allowedProjects: A string attribute.
-    clusterHostname: A string attribute.
-    enablePrivateEndpoint: A boolean attribute.
-    serviceAttachmentUri: A string attribute.
+    allowedProjects: Optional. Additional projects that are allowed to attach
+      to the workstation cluster's service attachment. By default, the
+      workstation cluster's project and the VPC host project (if different)
+      are allowed.
+    clusterHostname: Output only. Hostname for the workstation cluster. This
+      field will be populated only when private endpoint is enabled. To access
+      workstations in the workstation cluster, create a new DNS zone mapping
+      this domain name to an internal IP address and a forwarding rule mapping
+      that address to the service attachment.
+    enablePrivateEndpoint: Immutable. Whether Workstations endpoint is
+      private.
+    serviceAttachmentUri: Output only. Service attachment URI for the
+      workstation cluster. The service attachemnt is created when private
+      endpoint is enabled. To access workstations in the workstation cluster,
+      configure access to the managed service using [Private Service
+      Connect](https://cloud.google.com/vpc/docs/configure-private-service-
+      connect-services).
   """
 
   allowedProjects = _messages.StringField(1, repeated=True)
@@ -1582,6 +1612,8 @@ class WorkstationConfig(_messages.Message):
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
     host: Optional. Runtime host for the workstation.
+    httpOptions: Optional. Http options that customize the behavior of the
+      workstation service's http proxy.
     idleTimeout: Optional. Number of seconds to wait before automatically
       stopping a workstation after it last received user traffic. A value of
       `"0s"` indicates that Cloud Workstations VMs created with this
@@ -1694,16 +1726,17 @@ class WorkstationConfig(_messages.Message):
   ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 12, repeated=True)
   etag = _messages.StringField(13)
   host = _messages.MessageField('Host', 14)
-  idleTimeout = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 18, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 19, repeated=True)
-  reconciling = _messages.BooleanField(20)
-  replicaZones = _messages.StringField(21, repeated=True)
-  runningTimeout = _messages.StringField(22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  httpOptions = _messages.MessageField('HttpOptions', 15)
+  idleTimeout = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 19, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 20, repeated=True)
+  reconciling = _messages.BooleanField(21)
+  replicaZones = _messages.StringField(22, repeated=True)
+  runningTimeout = _messages.StringField(23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

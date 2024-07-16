@@ -288,6 +288,17 @@ def GetFromNamespace(namespace, arg_name, fallback=None, use_defaults=False):
   return value
 
 
+class FileType(object):
+  """An interface for custom type generators derived from a file."""
+
+  def GenerateType(self, field):
+    """Generates an argparse type function to use to parse the argument."""
+
+  def Action(self):
+    """The argparse action to use for this argument."""
+    return 'store'
+
+
 class ArgObjectType(object):
   """An interface for custom type generators that bind directly to a message.
 
@@ -381,8 +392,11 @@ def GenerateFlagType(field, attributes, fix_bools=True):
     (str) -> Any, a type or function that returns input into correct type
     action, flag action used with a given type
   """
-  variant = field.variant if field else None
-  flag_type = attributes.type or TYPES.get(variant, None)
+  if attributes.type and isinstance(attributes.type, FileType):
+    flag_type = attributes.type.GenerateType(field)
+  else:
+    variant = field.variant if field else None
+    flag_type = attributes.type or TYPES.get(variant, None)
 
   action = attributes.action
   if flag_type == bool and fix_bools and not action:

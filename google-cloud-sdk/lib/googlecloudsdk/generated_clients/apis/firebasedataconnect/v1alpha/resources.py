@@ -74,17 +74,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_SERVICES_CONNECTORS_REVISIONS = (
-      'projects.locations.services.connectors.revisions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/services/'
-              '{servicesId}/connectors/{connectorsId}/revisions/{revisionsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_SERVICES_SCHEMAS = (
       'projects.locations.services.schemas',
       '{+name}',
@@ -92,17 +81,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/services/'
               '{servicesId}/schemas/{schemasId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SERVICES_SCHEMAS_REVISIONS = (
-      'projects.locations.services.schemas.revisions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/services/'
-              '{servicesId}/schemas/{schemasId}/revisions/{revisionsId}',
       },
       ['name'],
       True

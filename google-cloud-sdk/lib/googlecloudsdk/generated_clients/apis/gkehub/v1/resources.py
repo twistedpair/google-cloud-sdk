@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_MEMBERSHIPS_RBACROLEBINDINGS = (
+      'projects.locations.memberships.rbacrolebindings',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/memberships/'
+              '{membershipsId}/rbacrolebindings/{rbacrolebindingsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

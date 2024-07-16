@@ -1390,6 +1390,8 @@ class GcpUserAccessBinding(_messages.Message):
       2.3](https://tools.ietf.org/html/rfc3986#section-2.3)). Should not be
       specified by the client during creation. Example:
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
+    principal: Optional. Immutable. The principal that is subject to the
+      access policies in this policy binding.
     reauthSettings: Optional. GCSL policy for the group key.
     restrictedClientApplications: Optional. A list of applications that are
       subject to this binding's restrictions. If the list is empty, the
@@ -1400,8 +1402,9 @@ class GcpUserAccessBinding(_messages.Message):
   dryRunAccessLevels = _messages.StringField(2, repeated=True)
   groupKey = _messages.StringField(3)
   name = _messages.StringField(4)
-  reauthSettings = _messages.MessageField('ReauthSettings', 5)
-  restrictedClientApplications = _messages.MessageField('Application', 6, repeated=True)
+  principal = _messages.MessageField('Principal', 5)
+  reauthSettings = _messages.MessageField('ReauthSettings', 6)
+  restrictedClientApplications = _messages.MessageField('Application', 7, repeated=True)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -1880,33 +1883,52 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Principal(_messages.Message):
+  r"""The comprehensive identity container supporting all 1p and 3p
+  identities. Only one of them can be set to create an access binding. Next
+  ID: 5
+
+  Fields:
+    serviceAccount: Immutable. Service account email used to assign policies
+      to a single 1p service account.
+    serviceAccountProjectNumber: Immutable. Project number used to assign
+      policies to all service accounts in a Google Cloud project.
+  """
+
+  serviceAccount = _messages.StringField(1)
+  serviceAccountProjectNumber = _messages.StringField(2)
+
+
 class ReauthSettings(_messages.Message):
   r"""Stores settings related to Google Cloud Session Length including session
   duration, the type of challenge (i.e. method) they should face when their
   session expires, and other related settings.
 
   Enums:
-    ReauthMethodValueValuesEnum: Reauth method when users GCP session is up.
+    ReauthMethodValueValuesEnum: Optional. Reauth method when users GCP
+      session is up.
 
   Fields:
-    maxInactivity: How long a user is allowed to take between actions before a
-      new access token must be issued. Presently only set for Cloud Apps.
-    reauthMethod: Reauth method when users GCP session is up.
-    sessionLength: The session length. Setting this field to zero is equal to
-      disabling. Reauth. Also can set infinite session by flipping the enabled
-      bit to false below. If use_oidc_max_age is true, for OIDC apps, the
-      session length will be the minimum of this field and OIDC max_age param.
-    sessionLengthEnabled: Big red button to turn off GCSL. When false, all
-      fields set above will be disregarded and the session length is basically
-      infinite.
-    useOidcMaxAge: Only useful for OIDC apps. When false, the OIDC max_age
-      param, if passed in the authentication request will be ignored. When
-      true, the re-auth period will be the minimum of the session_length field
-      and the max_age OIDC param.
+    maxInactivity: Optional. How long a user is allowed to take between
+      actions before a new access token must be issued. Presently only set for
+      Cloud Apps.
+    reauthMethod: Optional. Reauth method when users GCP session is up.
+    sessionLength: Optional. The session length. Setting this field to zero is
+      equal to disabling. Reauth. Also can set infinite session by flipping
+      the enabled bit to false below. If use_oidc_max_age is true, for OIDC
+      apps, the session length will be the minimum of this field and OIDC
+      max_age param.
+    sessionLengthEnabled: Optional. Big red button to turn off GCSL. When
+      false, all fields set above will be disregarded and the session length
+      is basically infinite.
+    useOidcMaxAge: Optional. Only useful for OIDC apps. When false, the OIDC
+      max_age param, if passed in the authentication request will be ignored.
+      When true, the re-auth period will be the minimum of the session_length
+      field and the max_age OIDC param.
   """
 
   class ReauthMethodValueValuesEnum(_messages.Enum):
-    r"""Reauth method when users GCP session is up.
+    r"""Optional. Reauth method when users GCP session is up.
 
     Values:
       REAUTH_METHOD_UNSPECIFIED: If method undefined in API, we will use LOGIN

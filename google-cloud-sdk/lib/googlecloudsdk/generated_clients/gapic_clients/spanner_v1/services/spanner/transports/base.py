@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ class SpannerTransport(abc.ABC):
 
         Args:
             host (Optional[str]):
-                 The hostname to connect to.
+                 The hostname to connect to (default: 'spanner.googleapis.com').
             credentials (Optional[google.auth.credentials.Credentials]): The
                 authorization credentials to attach to requests. These
                 credentials identify the application to the service; if none
@@ -115,13 +115,20 @@ class SpannerTransport(abc.ABC):
             host += ':443'
         self._host = host
 
+    @property
+    def host(self):
+        return self._host
+
     def _prep_wrapped_messages(self, client_info):
         # Precompute the wrapped methods.
         self._wrapped_methods = {
             self.create_session: gapic_v1.method.wrap_method(
                 self.create_session,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -133,7 +140,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.batch_create_sessions: gapic_v1.method.wrap_method(
                 self.batch_create_sessions,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -145,7 +155,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.get_session: gapic_v1.method.wrap_method(
                 self.get_session,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -157,7 +170,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.list_sessions: gapic_v1.method.wrap_method(
                 self.list_sessions,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -169,7 +185,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.delete_session: gapic_v1.method.wrap_method(
                 self.delete_session,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -181,7 +200,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.execute_sql: gapic_v1.method.wrap_method(
                 self.execute_sql,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -198,7 +220,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.execute_batch_dml: gapic_v1.method.wrap_method(
                 self.execute_batch_dml,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -210,7 +235,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.read: gapic_v1.method.wrap_method(
                 self.read,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -227,7 +255,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.begin_transaction: gapic_v1.method.wrap_method(
                 self.begin_transaction,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -239,7 +270,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.commit: gapic_v1.method.wrap_method(
                 self.commit,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -251,7 +285,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.rollback: gapic_v1.method.wrap_method(
                 self.rollback,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -263,7 +300,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.partition_query: gapic_v1.method.wrap_method(
                 self.partition_query,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),
@@ -275,7 +315,10 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             self.partition_read: gapic_v1.method.wrap_method(
                 self.partition_read,
                 default_retry=retries.Retry(
-initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                    initial=0.25,
+                    maximum=32.0,
+                    multiplier=1.3,
+                    predicate=retries.if_exception_type(
                         core_exceptions.ResourceExhausted,
                         core_exceptions.ServiceUnavailable,
                     ),

@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import platforms
 
 KUBECONTEXT_FORMAT = 'connectgateway_{project}_{location}_{membership}'
 SERVER_FORMAT = 'https://{service_name}/{version}/projects/{project_number}/locations/{location}/{collection}/{membership}'
@@ -141,6 +142,27 @@ class GetCredentialsCommand(hub_base.HubCommand, base.Command):
       )
 
     new = kconfig.Kubeconfig.LoadFromBytes(resp.kubeconfig)
+    # TODO(b/345527618): Remove once platform-dependent server-side
+    # functionality is complete.
+    for user in new.users.values():
+      try:
+        exec_config = user['user']['exec']
+        # The gke-gcloud-auth-plugin binary ends in `.exe` on Windows.
+        # Conditionally add the extension if the server has not already.
+        if (
+            isinstance(exec_config['command'], str)
+            and (not exec_config['command'].endswith('.exe'))
+            and platforms.OperatingSystem.IsWindows()
+        ):
+          exec_config['command'] += '.exe'
+      except KeyError:
+        if platforms.OperatingSystem.IsWindows():
+          log.warning(
+              "Your kubeconfig's authentication may be misconfigured. Please"
+              ' verify you are able to authenticate with the membership using'
+              ' kubectl.'
+          )
+
     kubeconfig = kconfig.Kubeconfig.Default()
     kubeconfig.Merge(new, overwrite=True)
     # The returned kubeconfig should only have one context.
@@ -281,22 +303,4 @@ def RecordClientSideFallback(e: Exception):
   metrics.CustomTimedEvent('getCredentials_ClientSideFallback')
   metrics.CustomKeyValue(
       command_name, 'getCredentials_ClientSideFallback_Error', str(e)
-  )
-
-
-def RecordServerSideFailure(e: Exception):
-  """Records that server-side Kubeconfig generation failed.
-
-  Logs to the debug log and reports a metric for analysis.
-
-  Args:
-    e: The caught error.
-  """
-  log.debug(
-      f'Server-side generation failed: {e}'
-  )
-  command_name = properties.VALUES.metrics.command_name.Get()
-  metrics.CustomTimedEvent('getCredentials_ServerSideFailure')
-  metrics.CustomKeyValue(
-      command_name, 'getCredentials_ServerSideFailure_Error', str(e)
   )

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -28,11 +28,14 @@ from .types.content import CitationMetadata
 from .types.content import Content
 from .types.content import FileData
 from .types.content import GenerationConfig
+from .types.content import GroundingChunk
 from .types.content import GroundingMetadata
+from .types.content import GroundingSupport
 from .types.content import Part
 from .types.content import SafetyRating
 from .types.content import SafetySetting
 from .types.content import SearchEntryPoint
+from .types.content import Segment
 from .types.content import VideoMetadata
 from .types.content import HarmCategory
 from .types.explanation import Attribution
@@ -156,7 +159,9 @@ __all__ = (
 'GenerationConfig',
 'GoogleDriveSource',
 'GoogleSearchRetrieval',
+'GroundingChunk',
 'GroundingMetadata',
+'GroundingSupport',
 'HarmCategory',
 'Int64Array',
 'IntegratedGradientsAttribution',
@@ -174,6 +179,7 @@ __all__ = (
 'SampledShapleyAttribution',
 'Schema',
 'SearchEntryPoint',
+'Segment',
 'SmoothGradConfig',
 'StreamDirectPredictRequest',
 'StreamDirectPredictResponse',

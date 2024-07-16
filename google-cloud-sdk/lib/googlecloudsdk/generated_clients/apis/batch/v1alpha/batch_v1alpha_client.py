@@ -131,6 +131,33 @@ class BatchV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancel a Job.
+
+      Args:
+        request: (BatchProjectsLocationsJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/jobs/{jobsId}:cancel',
+        http_method='POST',
+        method_id='batch.projects.locations.jobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:cancel',
+        request_field='cancelJobRequest',
+        request_type_name='BatchProjectsLocationsJobsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Create a Job.
 

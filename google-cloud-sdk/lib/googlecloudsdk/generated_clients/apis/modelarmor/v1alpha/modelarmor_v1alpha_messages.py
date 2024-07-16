@@ -552,15 +552,12 @@ class PiAndJailbreakFilterResult(_messages.Message):
   r"""Prompt injection and Jailbreak Filter Result.
 
   Enums:
-    ConfidenceLevelValueValuesEnum: Confidence level identified for PI and
-      Jailbreak.
     ExecutionStateValueValuesEnum: Output only. Reports whether Prompt
       injection and Jailbreak filter was successfully executed or not.
     MatchStateValueValuesEnum: Output only. Match state for Prompt injection
       and Jailbreak.
 
   Fields:
-    confidenceLevel: Confidence level identified for PI and Jailbreak.
     executionState: Output only. Reports whether Prompt injection and
       Jailbreak filter was successfully executed or not.
     matchState: Output only. Match state for Prompt injection and Jailbreak.
@@ -568,19 +565,6 @@ class PiAndJailbreakFilterResult(_messages.Message):
       provide warnings or error details. For example, if execution state is
       skipped then this field provides related reason/explanation.
   """
-
-  class ConfidenceLevelValueValuesEnum(_messages.Enum):
-    r"""Confidence level identified for PI and Jailbreak.
-
-    Values:
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_LOW_AND_ABOVE: Highest chance of a
-        false positive.
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_HIGH: Low chance of false positives.
-    """
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED = 0
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_LOW_AND_ABOVE = 1
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_HIGH = 2
 
   class ExecutionStateValueValuesEnum(_messages.Enum):
     r"""Output only. Reports whether Prompt injection and Jailbreak filter was
@@ -608,50 +592,22 @@ class PiAndJailbreakFilterResult(_messages.Message):
     NO_MATCH_FOUND = 1
     MATCH_FOUND = 2
 
-  confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
-  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 2)
-  matchState = _messages.EnumField('MatchStateValueValuesEnum', 3)
-  messageItems = _messages.MessageField('MessageItem', 4, repeated=True)
+  executionState = _messages.EnumField('ExecutionStateValueValuesEnum', 1)
+  matchState = _messages.EnumField('MatchStateValueValuesEnum', 2)
+  messageItems = _messages.MessageField('MessageItem', 3, repeated=True)
 
 
 class PiAndJailbreakFilterSettings(_messages.Message):
   r"""Prompt injection and Jailbreak Filter settings.
 
   Enums:
-    ConfidenceLevelValueValuesEnum: Optional. Confidence level for PI and
-      Jailbreak filter. During data sanitization, if data is classified under
-      this filter with a confidence level equal to or greater than the
-      specified level, a positive match is reported. If the confidence level
-      is unspecified (i.e., 0), the system will use LOW_AND_ABOVE.
     FilterEnforcementValueValuesEnum: Optional. Tells whether Prompt injection
       and Jailbreak filter is enabled or disabled.
 
   Fields:
-    confidenceLevel: Optional. Confidence level for PI and Jailbreak filter.
-      During data sanitization, if data is classified under this filter with a
-      confidence level equal to or greater than the specified level, a
-      positive match is reported. If the confidence level is unspecified
-      (i.e., 0), the system will use LOW_AND_ABOVE.
     filterEnforcement: Optional. Tells whether Prompt injection and Jailbreak
       filter is enabled or disabled.
   """
-
-  class ConfidenceLevelValueValuesEnum(_messages.Enum):
-    r"""Optional. Confidence level for PI and Jailbreak filter. During data
-    sanitization, if data is classified under this filter with a confidence
-    level equal to or greater than the specified level, a positive match is
-    reported. If the confidence level is unspecified (i.e., 0), the system
-    will use LOW_AND_ABOVE.
-
-    Values:
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED: Unused
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_LOW_AND_ABOVE: Highest chance of a
-        false positive.
-      PI_AND_JAILBREAK_CONFIDENCE_LEVEL_HIGH: Low chance of false positives.
-    """
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_UNSPECIFIED = 0
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_LOW_AND_ABOVE = 1
-    PI_AND_JAILBREAK_CONFIDENCE_LEVEL_HIGH = 2
 
   class FilterEnforcementValueValuesEnum(_messages.Enum):
     r"""Optional. Tells whether Prompt injection and Jailbreak filter is
@@ -666,8 +622,7 @@ class PiAndJailbreakFilterSettings(_messages.Message):
     ENABLED = 1
     DISABLED = 2
 
-  confidenceLevel = _messages.EnumField('ConfidenceLevelValueValuesEnum', 1)
-  filterEnforcement = _messages.EnumField('FilterEnforcementValueValuesEnum', 2)
+  filterEnforcement = _messages.EnumField('FilterEnforcementValueValuesEnum', 1)
 
 
 class RaiFilter(_messages.Message):
@@ -972,15 +927,12 @@ class SanitizeModelResponseRequest(_messages.Message):
       TOXICITY filter and template uses HIGH confidence level, then
       Sanitization is performed using LOW_AND_ABOVE confidence level.
     modelResponseData: Required. Model response data to sanitize.
-    userPromptData: Optional. User Prompt data associated with Model response.
-      User prompt is required to execute certain filters. For example,
-      Topicality Filter identifies topics present in user prompt and model
-      response and reports similarity score between the two.
+    userPrompt: Optional. User Prompt associated with Model response.
   """
 
   filterConfig = _messages.MessageField('FilterConfig', 1)
   modelResponseData = _messages.MessageField('DataItem', 2)
-  userPromptData = _messages.MessageField('DataItem', 3)
+  userPrompt = _messages.StringField(3)
 
 
 class SanitizeModelResponseResponse(_messages.Message):

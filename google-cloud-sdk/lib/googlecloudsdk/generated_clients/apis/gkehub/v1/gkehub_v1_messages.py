@@ -750,15 +750,23 @@ class Condition(_messages.Message):
         cloud region) - 'self:prod-region' (i.e., allow connections from
         clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
+        glossary#guardian for more information.) - 'cryto_core_guardians'
+        (i.e., allow connections from its crypto core guardian realms. See
+        go/security-realms-glossary#guardian for more information.) Crypto
+        Core coverage is a super-set of Default coverage, containing
+        information about coverage between higher tier data centers (e.g.,
+        YAWNs). Most services should use Default coverage and only use Crypto
+        Core coverage if the service is involved in greenfield turnup of new
+        higher tier data centers (e.g., credential infrastructure, machine/job
+        management systems, etc.). - 'self' [DEPRECATED] (i.e., allow
+        connections from clients that are in the same security realm, which is
+        currently but not guaranteed to be campus-sized) - a realm (e.g.,
+        'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -883,8 +891,11 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     GitSyncValueValuesEnum: Deployment state of the git-sync pod
     ImporterValueValuesEnum: Deployment state of the importer pod
     MonitorValueValuesEnum: Deployment state of the monitor pod
+    OtelCollectorValueValuesEnum: Deployment state of otel-collector
     ReconcilerManagerValueValuesEnum: Deployment state of reconciler-manager
       pod
+    ResourceGroupControllerManagerValueValuesEnum: Deployment state of
+      resource-group-controller-manager
     RootReconcilerValueValuesEnum: Deployment state of root-reconciler
     SyncerValueValuesEnum: Deployment state of the syncer pod
 
@@ -893,7 +904,10 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     gitSync: Deployment state of the git-sync pod
     importer: Deployment state of the importer pod
     monitor: Deployment state of the monitor pod
+    otelCollector: Deployment state of otel-collector
     reconcilerManager: Deployment state of reconciler-manager pod
+    resourceGroupControllerManager: Deployment state of resource-group-
+      controller-manager
     rootReconciler: Deployment state of root-reconciler
     syncer: Deployment state of the syncer pod
   """
@@ -962,8 +976,40 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     ERROR = 3
     PENDING = 4
 
+  class OtelCollectorValueValuesEnum(_messages.Enum):
+    r"""Deployment state of otel-collector
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
+  class ResourceGroupControllerManagerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of resource-group-controller-manager
 
     Values:
       DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
@@ -1014,9 +1060,11 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
   importer = _messages.EnumField('ImporterValueValuesEnum', 3)
   monitor = _messages.EnumField('MonitorValueValuesEnum', 4)
-  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 5)
-  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 6)
-  syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
+  otelCollector = _messages.EnumField('OtelCollectorValueValuesEnum', 5)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 6)
+  resourceGroupControllerManager = _messages.EnumField('ResourceGroupControllerManagerValueValuesEnum', 7)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 8)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 9)
 
 
 class ConfigManagementConfigSyncError(_messages.Message):
@@ -1115,11 +1163,14 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   r"""Specific versioning information pertaining to ConfigSync's Pods
 
   Fields:
-    admissionWebhook: Version of the deployed admission_webhook pod
+    admissionWebhook: Version of the deployed admission-webhook pod
     gitSync: Version of the deployed git-sync pod
     importer: Version of the deployed importer pod
     monitor: Version of the deployed monitor pod
+    otelCollector: Version of the deployed otel-collector pod
     reconcilerManager: Version of the deployed reconciler-manager pod
+    resourceGroupControllerManager: Version of the deployed resource-group-
+      controller-manager pod
     rootReconciler: Version of the deployed reconciler container in root-
       reconciler pod
     syncer: Version of the deployed syncer pod
@@ -1129,9 +1180,11 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   gitSync = _messages.StringField(2)
   importer = _messages.StringField(3)
   monitor = _messages.StringField(4)
-  reconcilerManager = _messages.StringField(5)
-  rootReconciler = _messages.StringField(6)
-  syncer = _messages.StringField(7)
+  otelCollector = _messages.StringField(5)
+  reconcilerManager = _messages.StringField(6)
+  resourceGroupControllerManager = _messages.StringField(7)
+  rootReconciler = _messages.StringField(8)
+  syncer = _messages.StringField(9)
 
 
 class ConfigManagementErrorResource(_messages.Message):
@@ -2488,6 +2541,16 @@ class GenerateConnectManifestResponse(_messages.Message):
   manifest = _messages.MessageField('ConnectAgentResource', 1, repeated=True)
 
 
+class GenerateMembershipRBACRoleBindingYAMLResponse(_messages.Message):
+  r"""Response for GenerateRBACRoleBindingYAML.
+
+  Fields:
+    roleBindingsYaml: a yaml text blob including the RBAC policies.
+  """
+
+  roleBindingsYaml = _messages.StringField(1)
+
+
 class GetReferenceRequest(_messages.Message):
   r"""The GetReferenceRequest request.
 
@@ -3100,6 +3163,113 @@ class GkehubProjectsLocationsMembershipsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRBACRoleBindingYAMLRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRB
+  ACRoleBindingYAMLRequest object.
+
+  Fields:
+    parent: Required. The parent (project and location) where the
+      RBACRoleBinding will be created. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    rbacrolebindingId: Required. Client chosen ID for the RBACRoleBinding.
+      `rbacrolebinding_id` must be a valid RFC 1123 compliant DNS label: 1. At
+      most 63 characters in length 2. It must consist of lower case
+      alphanumeric characters or `-` 3. It must start and end with an
+      alphanumeric character Which can be expressed as the regex:
+      `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  rbacrolebindingId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest object.
+
+  Fields:
+    name: Required. The RBACRoleBinding resource name in the format
+      `projects/*/locations/*/memberships/*/rbacrolebindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsListRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListMembershipRBACRoleBindings` which specifies the position in the
+      list from where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Features
+      will be listed. Specified in the format
+      `projects/*/locations/*/memberships/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest object.
+
+  Fields:
+    name: The resource name for the rbacrolebinding `projects/{project}/locati
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
+    rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
+      body.
+    updateMask: Required. The fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rBACRoleBinding = _messages.MessageField('RBACRoleBinding', 2)
+  updateMask = _messages.StringField(3)
 
 
 class GkehubProjectsLocationsMembershipsSetIamPolicyRequest(_messages.Message):
@@ -4232,6 +4402,23 @@ class ListMembershipBindingsResponse(_messages.Message):
 
   membershipBindings = _messages.MessageField('MembershipBinding', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMembershipRBACRoleBindingsResponse(_messages.Message):
+  r"""List of Membership RBACRoleBindings.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListMembershipRBACRoleBindings` method. The value of an empty string
+      means that there are no more resources to return.
+    rbacrolebindings: The list of Membership RBACRoleBindings.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rbacrolebindings = _messages.MessageField('RBACRoleBinding', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -6476,12 +6663,13 @@ class ServiceMeshMembershipSpec(_messages.Message):
   Enums:
     ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
       automatic control plane management.
-    ManagementValueValuesEnum: Enables automatic Service Mesh management.
+    ManagementValueValuesEnum: Optional. Enables automatic Service Mesh
+      management.
 
   Fields:
     controlPlane: Deprecated: use `management` instead Enables automatic
       control plane management.
-    management: Enables automatic Service Mesh management.
+    management: Optional. Enables automatic Service Mesh management.
   """
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
@@ -6502,7 +6690,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     MANUAL = 2
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Enables automatic Service Mesh management.
+    r"""Optional. Enables automatic Service Mesh management.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified

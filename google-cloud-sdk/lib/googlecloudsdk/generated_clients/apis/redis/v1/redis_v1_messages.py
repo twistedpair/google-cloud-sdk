@@ -194,8 +194,8 @@ class Cluster(_messages.Message):
     discoveryEndpoints: Output only. Endpoints created on each given network,
       for Redis clients to connect to the cluster. Currently only one
       discovery endpoint is supported.
-    name: Required. Unique name of the resource in this scope including
-      project and location using the form:
+    name: Required. Identifier. Unique name of the resource in this scope
+      including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     nodeType: Optional. The type of a redis node in the cluster. NodeType
       determines the underlying machine-type of a redis node.
@@ -424,7 +424,7 @@ class DatabaseResourceFeed(_messages.Message):
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    observabilityMetricData: More feed data would be added in subsequent CLs
+    observabilityMetricData: A ObservabilityMetricData attribute.
     recommendationSignalData: A DatabaseResourceRecommendationSignalData
       attribute.
     resourceHealthSignalData: A DatabaseResourceHealthSignalData attribute.
@@ -2853,8 +2853,8 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: Required. Unique name of the resource in this scope including
-      project and location using the form:
+    name: Required. Identifier. Unique name of the resource in this scope
+      including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     requestId: Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be

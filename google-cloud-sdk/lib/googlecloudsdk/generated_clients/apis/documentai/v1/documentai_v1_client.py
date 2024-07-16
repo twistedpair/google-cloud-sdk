@@ -634,7 +634,7 @@ class DocumentaiV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a processor from the ProcessorType provided. The processor will be at `ENABLED` state by default after its creation.
+      r"""Creates a processor from the ProcessorType provided. The processor will be at `ENABLED` state by default after its creation. Note that this method requires the `documentai.processors.create` permission on the project, which is highly privileged. A user or service account with this permission can create new processors that can interact with any gcs bucket in your project.
 
       Args:
         request: (DocumentaiProjectsLocationsProcessorsCreateRequest) input message

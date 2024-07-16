@@ -62,6 +62,7 @@ class SupportedFeatures:
       support_custom_hostnames,
       support_specific_then_x_affinity,
       support_watchdog_timer,
+      support_turbo_mode,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -97,6 +98,7 @@ class SupportedFeatures:
     self.support_custom_hostnames = support_custom_hostnames
     self.support_specific_then_x_affinity = support_specific_then_x_affinity
     self.support_watchdog_timer = support_watchdog_timer
+    self.support_turbo_mode = support_turbo_mode
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -390,6 +392,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
           supported_features.support_watchdog_timer
           and args.enable_watchdog_timer is not None
       )
+      or (supported_features.support_turbo_mode and args.turbo_mode is not None)
   ):
     visible_core_count = (
         args.visible_core_count
@@ -412,6 +415,7 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
             args.enable_watchdog_timer
             if supported_features.support_watchdog_timer
             else None,
+            args.turbo_mode if supported_features.support_turbo_mode else None,
         )
     )
 
@@ -459,8 +463,9 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
     instance_properties.secureTags = secure_tags_utils.GetSecureTags(
         args.secure_tags)
   if args.resource_manager_tags:
-    ret_resource_manager_tags = resource_manager_tags_utils.GetResourceManagerTags(
-        args.resource_manager_tags)
+    ret_resource_manager_tags = (
+        resource_manager_tags_utils.GetResourceManagerTags(
+            args.resource_manager_tags))
     if ret_resource_manager_tags is not None:
       properties_message = compute_client.messages.InstanceProperties
       instance_properties.resourceManagerTags = properties_message.ResourceManagerTagsValue(
@@ -473,15 +478,18 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
   if supported_features.support_display_device and display_device:
     instance_properties.displayDevice = display_device
 
-  if supported_features.support_confidential_compute and confidential_instance_config:
-    instance_properties.confidentialInstanceConfig = confidential_instance_config
+  if (supported_features.support_confidential_compute and
+      confidential_instance_config):
+    instance_properties.confidentialInstanceConfig = (
+        confidential_instance_config)
 
   if supported_features.support_erase_vss and args.IsSpecified(
       'erase_windows_vss_signature'):
-    instance_properties.eraseWindowsVssSignature = args.erase_windows_vss_signature
+    instance_properties.eraseWindowsVssSignature = (
+        args.erase_windows_vss_signature)
 
-  if supported_features.support_post_key_revocation_action_type and args.IsSpecified(
-      'post_key_revocation_action_type'):
+  if (supported_features.support_post_key_revocation_action_type and
+      args.IsSpecified('post_key_revocation_action_type')):
     instance_properties.postKeyRevocationActionType = arg_utils.ChoiceToEnum(
         args.post_key_revocation_action_type, compute_client.messages.Instance
         .PostKeyRevocationActionTypeValueValuesEnum)

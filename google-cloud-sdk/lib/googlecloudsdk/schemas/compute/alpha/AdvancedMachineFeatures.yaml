@@ -62,3 +62,7 @@ properties:
     description: |-
       Whether to enable watchdog timer device during instance creation.
     type: boolean
+  turboMode:
+    description: |-
+      The turbo frequency of the instance.
+    type: string

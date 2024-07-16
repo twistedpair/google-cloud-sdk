@@ -14,7 +14,7 @@ package = 'securityposture'
 
 
 class AssetDetails(_messages.Message):
-  r"""A AssetDetails object.
+  r"""Details of the asset which got violated.
 
   Fields:
     asset: JSON string representing CAI asset. Format/representation may
@@ -51,14 +51,16 @@ class Constraint(_messages.Message):
   Fields:
     orgPolicyConstraint: Optional. Org Policy builtin constraint.
     orgPolicyConstraintCustom: Optional. Org Policy custom constraint.
+    regoPolicy: Optional. Rego policy constraint.
     securityHealthAnalyticsCustomModule: Optional. SHA custom detector.
     securityHealthAnalyticsModule: Optional. SHA built-in detector.
   """
 
   orgPolicyConstraint = _messages.MessageField('OrgPolicyConstraint', 1)
   orgPolicyConstraintCustom = _messages.MessageField('OrgPolicyConstraintCustom', 2)
-  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 3)
-  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 4)
+  regoPolicy = _messages.MessageField('RegoPolicy', 3)
+  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 4)
+  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 5)
 
 
 class CreateIaCValidationReportRequest(_messages.Message):
@@ -712,7 +714,7 @@ class Policy(_messages.Message):
 
 
 class PolicyDetails(_messages.Message):
-  r"""A PolicyDetails object.
+  r"""Details of the policy which got violated.
 
   Enums:
     ConstraintTypeValueValuesEnum: Type of policy constraint.
@@ -730,9 +732,10 @@ class PolicyDetails(_messages.Message):
     r"""Type of policy constraint.
 
     Values:
-      CONSTRAINT_TYPE_UNSPECIFIED: <no description>
-      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
-      ORG_POLICY_CUSTOM: <no description>
+      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint type.
+      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: Custom SHA module constraint
+        type.
+      ORG_POLICY_CUSTOM: Custom org policy constraint type.
       SECURITY_HEALTH_ANALYTICS_MODULE: SHA module constraint type.
       ORG_POLICY: Org policy constraint type.
     """
@@ -811,11 +814,13 @@ class Posture(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -938,11 +943,13 @@ class PostureDeployment(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -1062,11 +1069,13 @@ class PostureTemplate(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.
@@ -1104,13 +1113,54 @@ class Property(_messages.Message):
   valueExpression = _messages.MessageField('Expr', 2)
 
 
+class RegoPolicy(_messages.Message):
+  r"""Message for Rego policy constraint.
+
+  Enums:
+    SeverityValueValuesEnum: Optional. Severity of the asset violation against
+      this rego policy.
+
+  Fields:
+    definition: Required. Rego language based policy captured in string
+      format. Total size of rego policy should not exceed 24KB.
+    id: Required. The unique identifier (ID) for the rego policy. It should be
+      unique across the posture. The regex pattern for id should be ^A-Za-z*$.
+    nextSteps: Optional. Next steps required to fix an asset violation against
+      this rego policy.
+    severity: Optional. Severity of the asset violation against this rego
+      policy.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. Severity of the asset violation against this rego policy.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity. This is the default severity if the severity is
+        unknown.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  definition = _messages.StringField(1)
+  id = _messages.StringField(2)
+  nextSteps = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+
+
 class Report(_messages.Message):
   r"""========================== Reports ========================== Definition
   of the resource 'Report'.
 
   Fields:
     createTime: Output only. The timestamp when the report was created.
-    iacValidationReport: A IaCValidationReport attribute.
+    iacValidationReport: Output only. Details of an IaC Validation report.
     name: Required. The name of this Report resource, in the format of
       organizations/{organization}/locations/{location}/reports/{reportID}.
     updateTime: Output only. The timestamp when the report was updated.
@@ -1460,15 +1510,18 @@ class SecuritypostureOrganizationsLocationsPosturesListRequest(_messages.Message
   r"""A SecuritypostureOrganizationsLocationsPosturesListRequest object.
 
   Fields:
+    filter: Optional. Filter to be applied on the resource, defined by EBNF
+      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListPosturesRequest.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest(_messages.Message):

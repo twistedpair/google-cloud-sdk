@@ -349,6 +349,22 @@ class AnnotationStore(_messages.Message):
   name = _messages.StringField(2)
 
 
+class ApplyAdminConsentsErrorDetail(_messages.Message):
+  r"""Contains the error details of the unsupported admin Consent resources
+  for when the ApplyAdminConsents method fails to apply one or more Consent
+  resources.
+
+  Fields:
+    consentErrors: The list of Consent resources that are unsupported or
+      cannot be applied and the error associated with each of them.
+    existingOperationId: The currently in progress non-validate-only
+      ApplyAdminConsents operation ID if exist.
+  """
+
+  consentErrors = _messages.MessageField('ConsentErrors', 1, repeated=True)
+  existingOperationId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+
+
 class ApplyAdminConsentsRequest(_messages.Message):
   r"""Request to apply the admin Consent resources for the specified FHIR
   store.
@@ -1205,9 +1221,10 @@ class ConsentConfig(_messages.Message):
     accessDeterminationLogConfig: Optional. Specifies how the server logs the
       consent-aware requests. If not specified, the
       `AccessDeterminationLogConfig.LogLevel.MINIMUM` option is used.
-    accessEnforced: Optional. If set to true, when accessing FHIR resources,
-      the consent headers will be verified against consents given by patients.
-      See the ConsentEnforcementVersion for the supported consent headers.
+    accessEnforced: Optional. The default value is false. If set to true, when
+      accessing FHIR resources, the consent headers will be verified against
+      consents given by patients. See the ConsentEnforcementVersion for the
+      supported consent headers.
     consentHeaderHandling: Optional. Different options to configure the
       behaviour of the server when handling the `X-Consent-Scope` header.
     enforcedAdminConsents: The versioned names of the enforced admin Consent
@@ -1245,6 +1262,23 @@ class ConsentConfig(_messages.Message):
   consentHeaderHandling = _messages.MessageField('ConsentHeaderHandling', 3)
   enforcedAdminConsents = _messages.StringField(4, repeated=True)
   version = _messages.EnumField('VersionValueValuesEnum', 5)
+
+
+class ConsentErrors(_messages.Message):
+  r"""The Consent resource name and error.
+
+  Fields:
+    error: The error code and message.
+    name: The versioned name of the admin Consent resource, in the format `pro
+      jects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirStores
+      /{fhir_store_id}/fhir/Consent/{resource_id}/_history/{version_id}`. For
+      FHIR stores with `disable_resource_versioning=true`, the format is `proj
+      ects/{project_id}/locations/{location}/datasets/{dataset_id}/fhirStores/
+      {fhir_store_id}/fhir/Consent/{resource_id}`.
+  """
+
+  error = _messages.MessageField('Status', 1)
+  name = _messages.StringField(2)
 
 
 class ConsentEvaluation(_messages.Message):
@@ -1464,6 +1498,10 @@ class Dataset(_messages.Message):
   records or medical imaging data.
 
   Fields:
+    encryptionSpec: Customer-managed encryption key spec for a Dataset. If
+      set, this Dataset and all of its sub-resources will be secured by this
+      key. If empty, the Dataset is secured by the default Google encryption
+      key.
     name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     timeZone: The default timezone used by this dataset. Must be a either a
@@ -1472,8 +1510,9 @@ class Dataset(_messages.Message):
       HL7 messages, where no explicit timezone is specified.
   """
 
-  name = _messages.StringField(1)
-  timeZone = _messages.StringField(2)
+  encryptionSpec = _messages.MessageField('EncryptionSpec', 1)
+  name = _messages.StringField(2)
+  timeZone = _messages.StringField(3)
 
 
 class DateShiftConfig(_messages.Message):
@@ -1544,12 +1583,12 @@ class DeidentifyConfig(_messages.Message):
     text: Configures de-identification of text wherever it is found in the
       source_dataset.
     useRegionalDataProcessing: Ensures in-flight data remains in the region of
-      origin during de-identification. Using this option results in a
-      significant reduction of throughput, and is not compatible with
-      `LOCATION` or `ORGANIZATION_NAME` infoTypes. If the deprecated
-      DicomConfig or FhirConfig are used, then `LOCATION` must be excluded
-      within TextConfig, and must also be excluded within ImageConfig if image
-      redaction is required.
+      origin during de-identification. The default value is false. Using this
+      option results in a significant reduction of throughput, and is not
+      compatible with `LOCATION` or `ORGANIZATION_NAME` infoTypes. If the
+      deprecated DicomConfig or FhirConfig are used, then `LOCATION` must be
+      excluded within TextConfig, and must also be excluded within ImageConfig
+      if image redaction is required.
   """
 
   annotation = _messages.MessageField('AnnotationConfig', 1)
@@ -1901,6 +1940,21 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EncryptionSpec(_messages.Message):
+  r"""Represents a customer-managed encryption key spec that can be applied to
+  a resource.
+
+  Fields:
+    kmsKeyName: Required. The resource name of customer-managed encryption key
+      that is used to secure a resource and its sub-resources. Only the key in
+      the same location as this dataset is allowed to be used for encryption.
+      Format is: `projects/{project}/locations/{location}/keyRings/{keyRing}/c
+      ryptoKeys/{key}`
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class Entity(_messages.Message):
@@ -2694,20 +2748,21 @@ class FhirNotificationConfig(_messages.Message):
       Cloud Logging. For more information, see [Viewing error logs in Cloud
       Logging](https://cloud.google.com/healthcare-api/docs/how-tos/logging).
     sendFullResource: Whether to send full FHIR resource to this Pub/Sub topic
-      for Create and Update operation. Note that setting this to true does not
-      guarantee that all resources will be sent in the format of full FHIR
-      resource. When a resource change is too large or during heavy traffic,
-      only the resource name will be sent. Clients should always check the
-      "payloadType" label from a Pub/Sub message to determine whether it needs
-      to fetch the full resource as a separate operation.
-    sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
-      Pub/Sub topic for deleting FHIR resource. Note that setting this to true
-      does not guarantee that all previous resources will be sent in the
-      format of full FHIR resource. When a resource change is too large or
-      during heavy traffic, only the resource name will be sent. Clients
+      for Create and Update operation. The default value is false. Note that
+      setting this to true does not guarantee that all resources will be sent
+      in the format of full FHIR resource. When a resource change is too large
+      or during heavy traffic, only the resource name will be sent. Clients
       should always check the "payloadType" label from a Pub/Sub message to
-      determine whether it needs to fetch the full previous resource as a
-      separate operation.
+      determine whether it needs to fetch the full resource as a separate
+      operation.
+    sendPreviousResourceOnDelete: Whether to send full FHIR resource to this
+      Pub/Sub topic for deleting FHIR resource. The default value is false.
+      Note that setting this to true does not guarantee that all previous
+      resources will be sent in the format of full FHIR resource. When a
+      resource change is too large or during heavy traffic, only the resource
+      name will be sent. Clients should always check the "payloadType" label
+      from a Pub/Sub message to determine whether it needs to fetch the full
+      previous resource as a separate operation.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -2782,7 +2837,7 @@ class FhirStore(_messages.Message):
       specification default `handling=lenient` which ignores unrecognized
       search parameters. The handling can always be changed from the default
       on an individual API call by setting the HTTP header `Prefer:
-      handling=strict` or `Prefer: handling=lenient`.
+      handling=strict` or `Prefer: handling=lenient`. Defaults to false.
     disableReferentialIntegrity: Immutable. Whether to disable referential
       integrity in this FHIR store. This field is immutable after FHIR store
       creation. The default value is false, meaning that the API enforces
@@ -2793,16 +2848,15 @@ class FhirStore(_messages.Message):
       if broken references exist.
     disableResourceVersioning: Immutable. Whether to disable resource
       versioning for this FHIR store. This field can not be changed after the
-      creation of FHIR store. If set to false, which is the default behavior,
-      all write operations cause historical versions to be recorded
-      automatically. The historical versions can be fetched through the
-      history APIs, but cannot be updated. If set to true, no historical
-      versions are kept. The server sends errors for attempts to read the
-      historical versions.
+      creation of FHIR store. If set to false, all write operations cause
+      historical versions to be recorded automatically. The historical
+      versions can be fetched through the history APIs, but cannot be updated.
+      If set to true, no historical versions are kept. The server sends errors
+      for attempts to read the historical versions. Defaults to false.
     enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
       accept history bundles, and directly insert and overwrite historical
       resource versions into the FHIR store. If set to false, using history
-      bundles fails with an error.
+      bundles fails with an error. Defaults to false.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -2813,7 +2867,8 @@ class FhirStore(_messages.Message):
       or encode any sensitive data such as patient identifiers in client-
       specified resource IDs. Those IDs are part of the FHIR resource path
       recorded in Cloud audit logs and Pub/Sub notifications. Those IDs can
-      also be contained in reference fields within other resources.
+      also be contained in reference fields within other resources. Defaults
+      to false.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -4852,10 +4907,10 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstanc
   tancesGetStorageInfoRequest object.
 
   Fields:
-    resource: Required. The path of the resource for which the storage info is
-      requested (for exaxmple for a DICOM Instance: `projects/{projectID}/loca
-      tions/{locationID}/datasets/{datasetID}/dicomStores/{dicomStoreId}/dicom
-      Web/studies/{study_uid}/series/{series_uid}/instances/{instance_uid}`)
+    resource: Required. The path of the instance to return storage info for,
+      in the form: `projects/{projectID}/locations/{locationID}/datasets/{data
+      setID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{se
+      riesUID}/instances/{instanceUID}`
   """
 
   resource = _messages.StringField(1, required=True)
@@ -9175,10 +9230,9 @@ class StorageInfo(_messages.Message):
     blobStorageInfo: Info about the data stored in blob storage for the
       resource.
     referencedResource: The resource whose storage info is returned. For
-      example, to specify the resource path of a DICOM Instance: `projects/{pr
-      ojectID}/locations/{locationID}/datasets/{datasetID}/dicomStores/{dicom_
-      store_id}/dicomWeb/studi/{study_uid}/series/{series_uid}/instances/{inst
-      ance_uid}`
+      example: `projects/{projectID}/locations/{locationID}/datasets/{datasetI
+      D}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{series
+      UID}/instances/{instanceUID}`
     structuredStorageInfo: Info about the data stored in structured storage
       for the resource.
   """
@@ -9489,26 +9543,29 @@ class ValidationConfig(_messages.Message):
 
   Fields:
     disableFhirpathValidation: Whether to disable FHIRPath validation for
-      incoming resources. Set this to true to disable checking incoming
-      resources for conformance against FHIRPath requirement defined in the
-      FHIR specification. This property only affects resource types that do
-      not have profiles configured for them, any rules in enabled
-      implementation guides will still be enforced.
+      incoming resources. The default value is false. Set this to true to
+      disable checking incoming resources for conformance against FHIRPath
+      requirement defined in the FHIR specification. This property only
+      affects resource types that do not have profiles configured for them,
+      any rules in enabled implementation guides will still be enforced.
     disableProfileValidation: Whether to disable profile validation for this
-      FHIR store. Set this to true to disable checking incoming resources for
-      conformance against StructureDefinitions in this FHIR store.
+      FHIR store. The default value is false. Set this to true to disable
+      checking incoming resources for conformance against StructureDefinitions
+      in this FHIR store.
     disableReferenceTypeValidation: Whether to disable reference type
-      validation for incoming resources. Set this to true to disable checking
-      incoming resources for conformance against reference type requirement
-      defined in the FHIR specification. This property only affects resource
-      types that do not have profiles configured for them, any rules in
-      enabled implementation guides will still be enforced.
+      validation for incoming resources. The default value is false. Set this
+      to true to disable checking incoming resources for conformance against
+      reference type requirement defined in the FHIR specification. This
+      property only affects resource types that do not have profiles
+      configured for them, any rules in enabled implementation guides will
+      still be enforced.
     disableRequiredFieldValidation: Whether to disable required fields
-      validation for incoming resources. Set this to true to disable checking
-      incoming resources for conformance against required fields requirement
-      defined in the FHIR specification. This property only affects resource
-      types that do not have profiles configured for them, any rules in
-      enabled implementation guides will still be enforced.
+      validation for incoming resources. The default value is false. Set this
+      to true to disable checking incoming resources for conformance against
+      required fields requirement defined in the FHIR specification. This
+      property only affects resource types that do not have profiles
+      configured for them, any rules in enabled implementation guides will
+      still be enforced.
     enabledImplementationGuides: A list of ImplementationGuide URLs in this
       FHIR store that are used to configure the profiles to use for
       validation. For example, to use the US Core profiles for validation, set

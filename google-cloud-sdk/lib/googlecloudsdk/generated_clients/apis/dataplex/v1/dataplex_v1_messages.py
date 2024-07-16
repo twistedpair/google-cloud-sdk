@@ -23,9 +23,9 @@ class DataplexProjectsLocationsAspectTypesCreateRequest(_messages.Message):
       resource to be passed as the request body.
     parent: Required. The resource name of the AspectType, of the form:
       projects/{project_number}/locations/{location_id} where location_id
-      refers to a GCP region.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
+      refers to a Google Cloud region.
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
   """
 
   aspectTypeId = _messages.StringField(1)
@@ -40,7 +40,7 @@ class DataplexProjectsLocationsAspectTypesDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. If the client provided etag value does not match the
       current etag value, the DeleteAspectTypeRequest method returns an
-      ABORTED error response
+      ABORTED error response.
     name: Required. The resource name of the AspectType: projects/{project_num
       ber}/locations/{location_id}/aspectTypes/{aspect_type_id}.
   """
@@ -88,23 +88,23 @@ class DataplexProjectsLocationsAspectTypesListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsAspectTypesListRequest object.
 
   Fields:
-    filter: Optional. Filter request. Filters are case-sensitive. The
-      following formats are supported:labels.key1 = "value1" labels:key1 name
-      = "value" These restrictions can be coinjoined with AND, OR and NOT
+    filter: Optional. Filter request. Filters are case-sensitive. The service
+      supports the following formats: labels.key1 = "value1" labels:key1 name
+      = "value"These restrictions can be conjoined with AND, OR, and NOT
       conjunctions.
-    orderBy: Optional. Order by fields (name or create_time) for the result.
-      If not specified, the ordering is undefined.
+    orderBy: Optional. Orders the result by name or create_time fields. If not
+      specified, the ordering is undefined.
     pageSize: Optional. Maximum number of AspectTypes to return. The service
-      may return fewer than this value. If unspecified, at most 10 AspectTypes
-      will be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      may return fewer than this value. If unspecified, the service returns at
+      most 10 AspectTypes. The maximum value is 1000; values above 1000 will
+      be coerced to 1000.
     pageToken: Optional. Page token received from a previous ListAspectTypes
       call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to ListAspectTypes must match the call that
+      other parameters you provide to ListAspectTypes must match the call that
       provided the page token.
     parent: Required. The resource name of the AspectType location, of the
       form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -934,8 +934,8 @@ class DataplexProjectsLocationsEntryGroupsCreateRequest(_messages.Message):
     parent: Required. The resource name of the entryGroup, of the form:
       projects/{project_number}/locations/{location_id} where location_id
       refers to a GCP region.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
   """
 
   entryGroupId = _messages.StringField(1)
@@ -950,7 +950,7 @@ class DataplexProjectsLocationsEntryGroupsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. If the client provided etag value does not match the
       current etag value, the DeleteEntryGroupRequest method returns an
-      ABORTED error response
+      ABORTED error response.
     name: Required. The resource name of the EntryGroup: projects/{project_num
       ber}/locations/{location_id}/entryGroups/{entry_group_id}.
   """
@@ -964,18 +964,18 @@ class DataplexProjectsLocationsEntryGroupsEntriesCreateRequest(_messages.Message
 
   Fields:
     entryId: Required. Entry identifier. It has to be unique within an Entry
-      Group.Entries corresponding to Google Cloud resources use Entry ID
-      format based on Full Resource Names (https://cloud.google.com/apis/desig
-      n/resource_names#full_resource_name). The format is a Full Resource Name
-      of the resource without the prefix double slashes in the API Service
-      Name part of Full Resource Name. This allows retrieval of entries using
-      their associated resource name.For example if the Full Resource Name of
-      a resource is //library.googleapis.com/shelves/shelf1/books/book2, then
-      the suggested entry_id is
-      library.googleapis.com/shelves/shelf1/books/book2.It is also suggested
-      to follow the same convention for entries corresponding to resources
-      from other providers or systems than Google Cloud.The maximum size of
-      the field is 4000 characters.
+      Group.Entries corresponding to Google Cloud resources use an Entry ID
+      format based on full resource names (https://cloud.google.com/apis/desig
+      n/resource_names#full_resource_name). The format is a full resource name
+      of the resource without the prefix double slashes in the API service
+      name part of the full resource name. This allows retrieval of entries
+      using their associated resource name.For example, if the full resource
+      name of a resource is
+      //library.googleapis.com/shelves/shelf1/books/book2, then the suggested
+      entry_id is library.googleapis.com/shelves/shelf1/books/book2.It is also
+      suggested to follow the same convention for entries corresponding to
+      resources from providers or systems other than Google Cloud.The maximum
+      size of the field is 4000 characters.
     googleCloudDataplexV1Entry: A GoogleCloudDataplexV1Entry resource to be
       passed as the request body.
     parent: Required. The resource name of the parent Entry Group:
@@ -1002,24 +1002,23 @@ class DataplexProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsEntryGroupsEntriesGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. View for controlling which parts of an
-      entry are to be returned.
+    ViewValueValuesEnum: Optional. View to control which parts of an entry the
+      service should return.
 
   Fields:
     aspectTypes: Optional. Limits the aspects returned to the provided aspect
-      types. Only works if the CUSTOM view is selected.
+      types. It only works for CUSTOM view.
     name: Required. The resource name of the Entry: projects/{project}/locatio
       ns/{location}/entryGroups/{entry_group}/entries/{entry}.
     paths: Optional. Limits the aspects returned to those associated with the
-      provided paths within the Entry. Only works if the CUSTOM view is
-      selected.
-    view: Optional. View for controlling which parts of an entry are to be
-      returned.
+      provided paths within the Entry. It only works for CUSTOM view.
+    view: Optional. View to control which parts of an entry the service should
+      return.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View for controlling which parts of an entry are to be
-    returned.
+    r"""Optional. View to control which parts of an entry the service should
+    return.
 
     Values:
       ENTRY_VIEW_UNSPECIFIED: Unspecified EntryView. Defaults to FULL.
@@ -1027,9 +1026,8 @@ class DataplexProjectsLocationsEntryGroupsEntriesGetRequest(_messages.Message):
       FULL: Returns all required aspects as well as the keys of all non-
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
-        the number of aspects would exceed 100, the first 100 will be
-        returned.
-      ALL: Returns all aspects. If the number of aspects would exceed 100, the
+        the number of aspects exceeds 100, the first 100 will be returned.
+      ALL: Returns all aspects. If the number of aspects exceeds 100, the
         first 100 will be returned.
     """
     ENTRY_VIEW_UNSPECIFIED = 0
@@ -1049,20 +1047,24 @@ class DataplexProjectsLocationsEntryGroupsEntriesListRequest(_messages.Message):
 
   Fields:
     filter: Optional. A filter on the entries to return. Filters are case-
-      sensitive. The request can be filtered by the following fields:
-      entry_type, entry_source.display_name. The comparison operators are =,
-      !=, <, >, <=, >= (strings are compared according to lexical order) The
-      logical operators AND, OR, NOT can be used in the filter. Wildcard "*"
-      can be used, but for entry_type the full project id or number needs to
-      be provided. Example filter expressions:
+      sensitive. You can filter the request by the following fields:
+      entry_type entry_source.display_nameThe comparison operators are =, !=,
+      <, >, <=, >=. The service compares strings according to lexical
+      order.You can use the logical operators AND, OR, NOT in the filter.You
+      can use Wildcard "*", but for entry_type you need to provide the full
+      project id or number.Example filter expressions:
       "entry_source.display_name=AnExampleDisplayName"
       "entry_type=projects/example-
       project/locations/global/entryTypes/example-entry_type"
       "entry_type=projects/example-project/locations/us/entryTypes/a* OR
       entry_type=projects/another-project/locations/*" "NOT
       entry_source.display_name=AnotherExampleDisplayName"
-    pageSize: A integer attribute.
-    pageToken: Optional. The pagination token returned by a previous request.
+    pageSize: Optional. Number of items to return per page. If there are
+      remaining results, the service returns a next_page_token. If
+      unspecified, the service returns at most 10 Entries. The maximum value
+      is 100; values above 100 will be coerced to 100.
+    pageToken: Optional. Page token received from a previous ListEntries call.
+      Provide this to retrieve the subsequent page.
     parent: Required. The resource name of the parent Entry Group:
       projects/{project}/locations/{location}/entryGroups/{entry_group}.
   """
@@ -1077,19 +1079,20 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
   r"""A DataplexProjectsLocationsEntryGroupsEntriesPatchRequest object.
 
   Fields:
-    allowMissing: Optional. If set to true and the entry does not exist, it
-      will be created.
-    aspectKeys: Optional. The map keys of the Aspects which should be
-      modified. Supports the following syntaxes: * - matches aspect on given
-      type and empty path * @path - matches aspect on given type and specified
-      path * * - matches aspects on given type for all paths * *@path -
-      matches aspects of all types on the given pathExisting aspects matching
-      the syntax will not be removed unless delete_missing_aspects is set to
-      true.If this field is left empty, it will be treated as specifying
-      exactly those Aspects present in the request.
+    allowMissing: Optional. If set to true and the entry doesn't exist, the
+      service will create it.
+    aspectKeys: Optional. The map keys of the Aspects which the service should
+      modify. It supports the following syntaxes: - matches an aspect of the
+      given type and empty path. @path - matches an aspect of the given type
+      and specified path. * - matches aspects of the given type for all paths.
+      *@path - matches aspects of all types on the given path.The service will
+      not remove existing aspects matching the syntax unless
+      delete_missing_aspects is set to true.If this field is left empty, the
+      service treats it as specifying exactly those Aspects present in the
+      request.
     deleteMissingAspects: Optional. If set to true and the aspect_keys specify
-      aspect ranges, any existing aspects from that range not provided in the
-      request will be deleted.
+      aspect ranges, the service deletes any existing aspects from that range
+      that weren't provided in the request.
     googleCloudDataplexV1Entry: A GoogleCloudDataplexV1Entry resource to be
       passed as the request body.
     name: Identifier. The relative resource name of the Entry, of the form: pr
@@ -1097,7 +1100,8 @@ class DataplexProjectsLocationsEntryGroupsEntriesPatchRequest(_messages.Message)
       {entry}.
     updateMask: Optional. Mask of fields to update. To update Aspects, the
       update_mask must contain the value "aspects".If the update_mask is
-      empty, all modifiable fields present in the request will be updated.
+      empty, the service will update all modifiable fields present in the
+      request.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -1150,16 +1154,16 @@ class DataplexProjectsLocationsEntryGroupsListRequest(_messages.Message):
     filter: Optional. Filter request.
     orderBy: Optional. Order by fields for the result.
     pageSize: Optional. Maximum number of EntryGroups to return. The service
-      may return fewer than this value. If unspecified, at most 10 EntryGroups
-      will be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      may return fewer than this value. If unspecified, the service returns at
+      most 10 EntryGroups. The maximum value is 1000; values above 1000 will
+      be coerced to 1000.
     pageToken: Optional. Page token received from a previous ListEntryGroups
       call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to ListEntryGroups must match the call that
+      other parameters you provide to ListEntryGroups must match the call that
       provided the page token.
     parent: Required. The resource name of the entryGroup location, of the
       form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -1179,8 +1183,8 @@ class DataplexProjectsLocationsEntryGroupsPatchRequest(_messages.Message):
       form: projects/{project_number}/locations/{location_id}/entryGroups/{ent
       ry_group_id}.
     updateMask: Required. Mask of fields to update.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
+    validateOnly: Optional. The service validates the request, without
+      performing any mutations. The default is false.
   """
 
   googleCloudDataplexV1EntryGroup = _messages.MessageField('GoogleCloudDataplexV1EntryGroup', 1)
@@ -1230,9 +1234,9 @@ class DataplexProjectsLocationsEntryTypesCreateRequest(_messages.Message):
       to be passed as the request body.
     parent: Required. The resource name of the EntryType, of the form:
       projects/{project_number}/locations/{location_id} where location_id
-      refers to a GCP region.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
+      refers to a Google Cloud region.
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
   """
 
   entryTypeId = _messages.StringField(1)
@@ -1247,7 +1251,7 @@ class DataplexProjectsLocationsEntryTypesDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. If the client provided etag value does not match the
       current etag value, the DeleteEntryTypeRequest method returns an ABORTED
-      error response
+      error response.
     name: Required. The resource name of the EntryType: projects/{project_numb
       er}/locations/{location_id}/entryTypes/{entry_type_id}.
   """
@@ -1295,23 +1299,23 @@ class DataplexProjectsLocationsEntryTypesListRequest(_messages.Message):
   r"""A DataplexProjectsLocationsEntryTypesListRequest object.
 
   Fields:
-    filter: Optional. Filter request. Filters are case-sensitive. The
-      following formats are supported:labels.key1 = "value1" labels:key1 name
-      = "value" These restrictions can be coinjoined with AND, OR and NOT
+    filter: Optional. Filter request. Filters are case-sensitive. The service
+      supports the following formats: labels.key1 = "value1" labels:key1 name
+      = "value"These restrictions can be conjoined with AND, OR, and NOT
       conjunctions.
-    orderBy: Optional. Order by fields (name or create_time) for the result.
-      If not specified, the ordering is undefined.
+    orderBy: Optional. Orders the result by name or create_time fields. If not
+      specified, the ordering is undefined.
     pageSize: Optional. Maximum number of EntryTypes to return. The service
-      may return fewer than this value. If unspecified, at most 10 EntryTypes
-      will be returned. The maximum value is 1000; values above 1000 will be
+      may return fewer than this value. If unspecified, the service returns at
+      most 10 EntryTypes. The maximum value is 1000; values above 1000 will be
       coerced to 1000.
     pageToken: Optional. Page token received from a previous ListEntryTypes
       call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to ListEntryTypes must match the call that
+      other parameters you provided to ListEntryTypes must match the call that
       provided the page token.
     parent: Required. The resource name of the EntryType location, of the
       form: projects/{project_number}/locations/{location_id} where
-      location_id refers to a GCP region.
+      location_id refers to a Google Cloud region.
   """
 
   filter = _messages.StringField(1)
@@ -1331,8 +1335,8 @@ class DataplexProjectsLocationsEntryTypesPatchRequest(_messages.Message):
       form: projects/{project_number}/locations/{location_id}/entryTypes/{entr
       y_type_id}.
     updateMask: Required. Mask of fields to update.
-    validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is false.
+    validateOnly: Optional. The service validates the request without
+      performing any mutations. The default is false.
   """
 
   googleCloudDataplexV1EntryType = _messages.MessageField('GoogleCloudDataplexV1EntryType', 1)
@@ -2891,26 +2895,25 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLookupEntryRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. View for controlling which parts of an
-      entry are to be returned.
+    ViewValueValuesEnum: Optional. View to control which parts of an entry the
+      service should return.
 
   Fields:
     aspectTypes: Optional. Limits the aspects returned to the provided aspect
-      types. Only works if the CUSTOM view is selected.
+      types. It only works for CUSTOM view.
     entry: Required. The resource name of the Entry: projects/{project}/locati
       ons/{location}/entryGroups/{entry_group}/entries/{entry}.
     name: Required. The project to which the request should be attributed in
       the following form: projects/{project}/locations/{location}.
     paths: Optional. Limits the aspects returned to those associated with the
-      provided paths within the Entry. Only works if the CUSTOM view is
-      selected.
-    view: Optional. View for controlling which parts of an entry are to be
-      returned.
+      provided paths within the Entry. It only works for CUSTOM view.
+    view: Optional. View to control which parts of an entry the service should
+      return.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. View for controlling which parts of an entry are to be
-    returned.
+    r"""Optional. View to control which parts of an entry the service should
+    return.
 
     Values:
       ENTRY_VIEW_UNSPECIFIED: Unspecified EntryView. Defaults to FULL.
@@ -2918,9 +2921,8 @@ class DataplexProjectsLocationsLookupEntryRequest(_messages.Message):
       FULL: Returns all required aspects as well as the keys of all non-
         required aspects.
       CUSTOM: Returns aspects matching custom fields in GetEntryRequest. If
-        the number of aspects would exceed 100, the first 100 will be
-        returned.
-      ALL: Returns all aspects. If the number of aspects would exceed 100, the
+        the number of aspects exceeds 100, the first 100 will be returned.
+      ALL: Returns all aspects. If the number of aspects exceeds 100, the
         first 100 will be returned.
     """
     ENTRY_VIEW_UNSPECIFIED = 0
@@ -2992,15 +2994,17 @@ class DataplexProjectsLocationsSearchEntriesRequest(_messages.Message):
   Fields:
     name: Required. The project to which the request should be attributed in
       the following form: projects/{project}/locations/{location}.
-    orderBy: Optional. Ordering of the results. Supported options to be added
-      later.
-    pageSize: Optional. Pagination.
-    pageToken: A string attribute.
+    orderBy: Optional. Specifies the ordering of results.
+    pageSize: Optional. Number of results in the search page. If <=0, then
+      defaults to 10. Max limit for page_size is 1000. Throws an invalid
+      argument for page_size > 1000.
+    pageToken: Optional. Page token received from a previous SearchEntries
+      call. Provide this to retrieve the subsequent page.
     query: Required. The query against which entries in scope should be
       matched.
-    scope: Optional. The scope under which the search should be operating.
-      Should either be organizations/ or projects/. If left unspecified, it
-      will default to the organization where the project provided in name is
+    scope: Optional. The scope under which the search should be operating. It
+      must either be organizations/ or projects/. If it is unspecified, it
+      defaults to the organization where the project provided in name is
       located.
   """
 
@@ -3225,8 +3229,7 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
 
   Messages:
     DataValue: Required. The content of the aspect, according to its aspect
-      type schema. This will replace content. The maximum size of the field is
-      120KB (encoded as UTF-8).
+      type schema. The maximum size of the field is 120KB (encoded as UTF-8).
 
   Fields:
     aspectSource: A GoogleCloudDataplexV1AspectSource attribute.
@@ -3234,8 +3237,7 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
       Aspect.
     createTime: Output only. The time when the Aspect was created.
     data: Required. The content of the aspect, according to its aspect type
-      schema. This will replace content. The maximum size of the field is
-      120KB (encoded as UTF-8).
+      schema. The maximum size of the field is 120KB (encoded as UTF-8).
     path: Output only. The path in the entry under which the aspect is
       attached.
     updateTime: Output only. The time when the Aspect was last updated.
@@ -3244,8 +3246,7 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
     r"""Required. The content of the aspect, according to its aspect type
-    schema. This will replace content. The maximum size of the field is 120KB
-    (encoded as UTF-8).
+    schema. The maximum size of the field is 120KB (encoded as UTF-8).
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.
@@ -3276,7 +3277,8 @@ class GoogleCloudDataplexV1Aspect(_messages.Message):
 
 
 class GoogleCloudDataplexV1AspectSource(_messages.Message):
-  r"""AspectSource contains source system related information for the aspect.
+  r"""AspectSource contains information related to the source system of the
+  Aspect.
 
   Fields:
     createTime: The create time of the aspect in the source system.
@@ -3288,55 +3290,30 @@ class GoogleCloudDataplexV1AspectSource(_messages.Message):
 
 
 class GoogleCloudDataplexV1AspectType(_messages.Message):
-  r"""Aspect Type is a template for creating Aspects, and represents the JSON-
-  schema for a given Entry, e.g., BigQuery Table Schema.
-
-  Enums:
-    TransferStatusValueValuesEnum: Output only. Denotes the transfer status of
-      the Aspect Type. It is unspecified for Aspect Types created from
-      Dataplex API.
+  r"""AspectType is a template for creating Aspects, and represents the JSON-
+  schema for a given Entry, for example, BigQuery Table Schema.
 
   Messages:
     LabelsValue: Optional. User-defined labels for the AspectType.
 
   Fields:
-    authorization: Immutable. Authorization defined for this type.
+    authorization: Immutable. Defines the Authorization for this type.
     createTime: Output only. The time when the AspectType was created.
     description: Optional. Description of the AspectType.
     displayName: Optional. User friendly display name.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
+    etag: The service computes this checksum. The client may send it on update
+      and delete requests to ensure it has an up-to-date value before
+      proceeding.
     labels: Optional. User-defined labels for the AspectType.
     metadataTemplate: Required. MetadataTemplate of the aspect.
     name: Output only. The relative resource name of the AspectType, of the
       form: projects/{project_number}/locations/{location_id}/aspectTypes/{asp
       ect_type_id}.
-    transferStatus: Output only. Denotes the transfer status of the Aspect
-      Type. It is unspecified for Aspect Types created from Dataplex API.
     uid: Output only. System generated globally unique ID for the AspectType.
-      This ID will be different if the AspectType is deleted and re-created
-      with the same name.
+      If you delete and recreate the AspectType with the same name, then this
+      ID will be different.
     updateTime: Output only. The time when the AspectType was last updated.
   """
-
-  class TransferStatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Denotes the transfer status of the Aspect Type. It is
-    unspecified for Aspect Types created from Dataplex API.
-
-    Values:
-      TRANSFER_STATUS_UNSPECIFIED: The default value. It is set for resources
-        that were not subject for migration from Data Catalog service.
-      TRANSFER_STATUS_MIGRATED: Indicates that a resource was migrated from
-        Data Catalog service but it hasn't been transferred yet. In particular
-        the resource cannot be updated from Dataplex API.
-      TRANSFER_STATUS_TRANSFERRED: Indicates that a resource was transferred
-        from Data Catalog service. The resource can only be updated from
-        Dataplex API.
-    """
-    TRANSFER_STATUS_UNSPECIFIED = 0
-    TRANSFER_STATUS_MIGRATED = 1
-    TRANSFER_STATUS_TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3370,62 +3347,61 @@ class GoogleCloudDataplexV1AspectType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   metadataTemplate = _messages.MessageField('GoogleCloudDataplexV1AspectTypeMetadataTemplate', 7)
   name = _messages.StringField(8)
-  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudDataplexV1AspectTypeAuthorization(_messages.Message):
-  r"""Autorization for an Aspect Type.
+  r"""Autorization for an AspectType.
 
   Fields:
     alternateUsePermission: Immutable. The IAM permission grantable on the
-      Entry Group to allow access to instantiate Aspects of Dataplex owned
-      Aspect Types, only settable for Dataplex owned Types.
+      EntryGroup to allow access to instantiate Aspects of Dataplex owned
+      AspectTypes, only settable for Dataplex owned Types.
   """
 
   alternateUsePermission = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1AspectTypeMetadataTemplate(_messages.Message):
-  r"""MetadataTemplate definition for AspectType
+  r"""MetadataTemplate definition for an AspectType.
 
   Fields:
     annotations: Optional. Specifies annotations on this field.
-    arrayItems: Optional. array_items needs to be set if the type is array.
-      array_items can refer to a primitive field or a complex (record only)
-      field. To specify a primitive field, just name and type needs to be set
-      in the nested MetadataTemplate. The recommended value for the name field
-      is item, as this is not used in the actual payload.
+    arrayItems: Optional. If the type is array, set array_items. array_items
+      can refer to a primitive field or a complex (record only) field. To
+      specify a primitive field, you only need to set name and type in the
+      nested MetadataTemplate. The recommended value for the name field is
+      item, as this isn't used in the actual payload.
     constraints: Optional. Specifies the constraints on this field.
-    enumValues: Optional. The list of values for an enum type. Needs to be
-      defined if the type is enum.
+    enumValues: Optional. The list of values for an enum type. You must define
+      it if the type is enum.
     index: Optional. Index is used to encode Template messages. The value of
       index can range between 1 and 2,147,483,647. Index must be unique within
       all fields in a Template. (Nested Templates can reuse indexes). Once a
       Template is defined, the index cannot be changed, because it identifies
       the field in the actual storage format. Index is a mandatory field, but
       it is optional for top level fields, and map/array "values" definitions.
-    mapItems: Optional. map_items needs to be set if the type is map.
-      map_items can refer to a primitive field or a complex (record only)
-      field. To specify a primitive field, just name and type needs to be set
-      in the nested MetadataTemplate. The recommended value for the name field
-      is item, as this is not used in the actual payload.
+    mapItems: Optional. If the type is map, set map_items. map_items can refer
+      to a primitive field or a complex (record only) field. To specify a
+      primitive field, you only need to set name and type in the nested
+      MetadataTemplate. The recommended value for the name field is item, as
+      this isn't used in the actual payload.
     name: Required. The name of the field.
-    recordFields: Optional. Field definition, needs to be specified if the
-      type is record. Defines the nested fields.
+    recordFields: Optional. Field definition. You must specify it if the type
+      is record. It defines the nested fields.
     type: Required. The datatype of this field. The following values are
-      supported: Primitive types (string, integer, boolean, double, datetime);
-      datetime must be of the format RFC3339 UTC "Zulu" (Examples:
-      "2014-10-02T15:01:23Z" and "2014-10-02T15:01:23.045123456Z"). Complex
-      types (enum, array, map, record).
-    typeId: Optional. Id can be used if this definition of the field needs to
-      be reused later. Id needs to be unique across the entire template. Id
-      can only be specified if the field type is record.
-    typeRef: Optional. A reference to another field definition (instead of an
-      inline definition). The value must be equal to the value of an id field
-      defined elsewhere in the MetadataTemplate. Only fields with type as
-      record can refer to other fields.
+      supported:Primitive types: string integer boolean double datetime. Must
+      be of the format RFC3339 UTC "Zulu" (Examples: "2014-10-02T15:01:23Z"
+      and "2014-10-02T15:01:23.045123456Z").Complex types: enum array map
+      record
+    typeId: Optional. You can use type id if this definition of the field
+      needs to be reused later. The type id must be unique across the entire
+      template. You can only specify it if the field type is record.
+    typeRef: Optional. A reference to another field definition (not an inline
+      definition). The value must be equal to the value of an id field defined
+      elsewhere in the MetadataTemplate. Only fields with record type can
+      refer to other fields.
   """
 
   annotations = _messages.MessageField('GoogleCloudDataplexV1AspectTypeMetadataTemplateAnnotations', 1)
@@ -3442,22 +3418,22 @@ class GoogleCloudDataplexV1AspectTypeMetadataTemplate(_messages.Message):
 
 
 class GoogleCloudDataplexV1AspectTypeMetadataTemplateAnnotations(_messages.Message):
-  r"""Definition of the annotations of a field
+  r"""Definition of the annotations of a field.
 
   Fields:
-    deprecated: Optional. Marks a field as deprecated, a deprecation message
-      can be included.
-    description: Optional. Specify a description for a field
-    displayName: Optional. Specify a displayname for a field.
-    displayOrder: Optional. Specify a display order for a field. Display order
-      can be used to reorder where a field is rendered
-    stringType: Optional. String Type annotations can be used to specify
+    deprecated: Optional. Marks a field as deprecated. You can include a
+      deprecation message.
+    description: Optional. Description for a field.
+    displayName: Optional. Display name for a field.
+    displayOrder: Optional. Display order for a field. You can use this to
+      reorder where a field is rendered.
+    stringType: Optional. You can use String Type annotations to specify
       special meaning to string fields. The following values are supported:
       richText: The field must be interpreted as a rich text field. url: A
-      fully qualified url link. resource: A service qualified resource
+      fully qualified URL link. resource: A service qualified resource
       reference.
-    stringValues: Optional. Suggested hints for string fields. These can be
-      used to suggest values to users, through an UI for example.
+    stringValues: Optional. Suggested hints for string fields. You can use
+      them to suggest values to users through console.
   """
 
   deprecated = _messages.StringField(1)
@@ -3469,24 +3445,24 @@ class GoogleCloudDataplexV1AspectTypeMetadataTemplateAnnotations(_messages.Messa
 
 
 class GoogleCloudDataplexV1AspectTypeMetadataTemplateConstraints(_messages.Message):
-  r"""Definition of the constraints of a field
+  r"""Definition of the constraints of a field.
 
   Fields:
-    required: Optional. Marks this as an optional/required field.
+    required: Optional. Marks this field as optional or required.
   """
 
   required = _messages.BooleanField(1)
 
 
 class GoogleCloudDataplexV1AspectTypeMetadataTemplateEnumValue(_messages.Message):
-  r"""Definition of Enumvalue (to be used by enum fields)
+  r"""Definition of Enumvalue, to be used for enum fields.
 
   Fields:
-    deprecated: Optional. Optional deprecation message to be set if an enum
-      value needs to be deprecated.
-    index: Required. Index for the enum. Cannot be modified.
+    deprecated: Optional. You can set this message if you need to deprecate an
+      enum value.
+    index: Required. Index for the enum value. It can't be modified.
     name: Required. Name of the enumvalue. This is the actual value that the
-      aspect will contain.
+      aspect can contain.
   """
 
   deprecated = _messages.StringField(1)
@@ -5432,6 +5408,7 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     TypeValueValuesEnum: Output only. The type of the parent DataScan.
 
   Fields:
+    createTime: Output only. The time when the DataScanJob was created.
     dataProfileResult: Output only. The result of the data profile scan.
     dataProfileSpec: Output only. DataProfileScan related setting.
     dataQualityResult: Output only. The result of the data quality scan.
@@ -5480,17 +5457,18 @@ class GoogleCloudDataplexV1DataScanJob(_messages.Message):
     DATA_QUALITY = 1
     DATA_PROFILE = 2
 
-  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 1)
-  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 2)
-  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 3)
-  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 4)
-  endTime = _messages.StringField(5)
-  message = _messages.StringField(6)
-  name = _messages.StringField(7)
-  startTime = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
+  createTime = _messages.StringField(1)
+  dataProfileResult = _messages.MessageField('GoogleCloudDataplexV1DataProfileResult', 2)
+  dataProfileSpec = _messages.MessageField('GoogleCloudDataplexV1DataProfileSpec', 3)
+  dataQualityResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResult', 4)
+  dataQualitySpec = _messages.MessageField('GoogleCloudDataplexV1DataQualitySpec', 5)
+  endTime = _messages.StringField(6)
+  message = _messages.StringField(7)
+  name = _messages.StringField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  uid = _messages.StringField(12)
 
 
 class GoogleCloudDataplexV1DataSource(_messages.Message):
@@ -5875,19 +5853,20 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
 
   Messages:
     AspectsValue: Optional. The Aspects attached to the Entry. The format for
-      the key can be one of the following: 1.
+      the key can be one of the following:
       {projectId}.{locationId}.{aspectTypeId} (if the aspect is attached
-      directly to the entry) 2. {projectId}.{locationId}.{aspectTypeId}@{path}
+      directly to the entry) {projectId}.{locationId}.{aspectTypeId}@{path}
       (if the aspect is attached to an entry's path)
 
   Fields:
     aspects: Optional. The Aspects attached to the Entry. The format for the
-      key can be one of the following: 1.
-      {projectId}.{locationId}.{aspectTypeId} (if the aspect is attached
-      directly to the entry) 2. {projectId}.{locationId}.{aspectTypeId}@{path}
-      (if the aspect is attached to an entry's path)
+      key can be one of the following: {projectId}.{locationId}.{aspectTypeId}
+      (if the aspect is attached directly to the entry)
+      {projectId}.{locationId}.{aspectTypeId}@{path} (if the aspect is
+      attached to an entry's path)
     createTime: Output only. The time when the Entry was created.
-    entrySource: Optional. Source system related information for an entry.
+    entrySource: Optional. Information related to the source system for an
+      entry.
     entryType: Required. Immutable. The resource name of the EntryType used to
       create this Entry.
     fullyQualifiedName: Optional. A name for the entry that can reference it
@@ -5902,8 +5881,8 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AspectsValue(_messages.Message):
     r"""Optional. The Aspects attached to the Entry. The format for the key
-    can be one of the following: 1. {projectId}.{locationId}.{aspectTypeId}
-    (if the aspect is attached directly to the entry) 2.
+    can be one of the following: {projectId}.{locationId}.{aspectTypeId} (if
+    the aspect is attached directly to the entry)
     {projectId}.{locationId}.{aspectTypeId}@{path} (if the aspect is attached
     to an entry's path)
 
@@ -5940,11 +5919,6 @@ class GoogleCloudDataplexV1Entry(_messages.Message):
 class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   r"""An Entry Group represents a logical grouping of one or more Entries.
 
-  Enums:
-    TransferStatusValueValuesEnum: Output only. Denotes the transfer status of
-      the Entry Group. It is unspecified for Entry Group created from Dataplex
-      API.
-
   Messages:
     LabelsValue: Optional. User-defined labels for the EntryGroup.
 
@@ -5952,38 +5926,18 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
     createTime: Output only. The time when the EntryGroup was created.
     description: Optional. Description of the EntryGroup.
     displayName: Optional. User friendly display name.
-    etag: This checksum is computed by the server based on the value of other
-      fields, and may be sent on update and delete requests to ensure the
-      client has an up-to-date value before proceeding.
+    etag: This checksum is computed by the service, and might be sent on
+      update and delete requests to ensure the client has an up-to-date value
+      before proceeding.
     labels: Optional. User-defined labels for the EntryGroup.
     name: Output only. The relative resource name of the EntryGroup, of the
       form: projects/{project_number}/locations/{location_id}/entryGroups/{ent
       ry_group_id}.
-    transferStatus: Output only. Denotes the transfer status of the Entry
-      Group. It is unspecified for Entry Group created from Dataplex API.
     uid: Output only. System generated globally unique ID for the EntryGroup.
-      This ID will be different if the EntryGroup is deleted and re-created
-      with the same name.
+      If you delete and recreate the EntryGroup with the same name, this ID
+      will be different.
     updateTime: Output only. The time when the EntryGroup was last updated.
   """
-
-  class TransferStatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Denotes the transfer status of the Entry Group. It is
-    unspecified for Entry Group created from Dataplex API.
-
-    Values:
-      TRANSFER_STATUS_UNSPECIFIED: The default value. It is set for resources
-        that were not subject for migration from Data Catalog service.
-      TRANSFER_STATUS_MIGRATED: Indicates that a resource was migrated from
-        Data Catalog service but it hasn't been transferred yet. In particular
-        the resource cannot be updated from Dataplex API.
-      TRANSFER_STATUS_TRANSFERRED: Indicates that a resource was transferred
-        from Data Catalog service. The resource can only be updated from
-        Dataplex API.
-    """
-    TRANSFER_STATUS_UNSPECIFIED = 0
-    TRANSFER_STATUS_MIGRATED = 1
-    TRANSFER_STATUS_TRANSFERRED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6015,13 +5969,13 @@ class GoogleCloudDataplexV1EntryGroup(_messages.Message):
   etag = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  transferStatus = _messages.EnumField('TransferStatusValueValuesEnum', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudDataplexV1EntrySource(_messages.Message):
-  r"""EntrySource contains source system related information for the entry.
+  r"""EntrySource contains information related to the source system of the
+  Entry.
 
   Messages:
     LabelsValue: User-defined labels. The maximum size of keys and values is
@@ -6036,10 +5990,10 @@ class GoogleCloudDataplexV1EntrySource(_messages.Message):
       500 characters.
     labels: User-defined labels. The maximum size of keys and values is 128
       characters each.
-    location: Output only. Location of the resource in the source system.
-      Entry will be searchable by this location. By default, this should match
-      the location of the EntryGroup containing this entry. A different value
-      allows capturing source location for data external to GCP.
+    location: Output only. Location of the resource in the source system. You
+      can search the Entry by this location. By default, this should match the
+      location of the EntryGroup containing this entry. A different value
+      allows capturing the source location for data external to Google Cloud.
     platform: The platform containing the source system. The maximum size of
       the field is 64 characters.
     resource: The name of the resource in the source system. The maximum size
@@ -6110,9 +6064,9 @@ class GoogleCloudDataplexV1EntryType(_messages.Message):
     createTime: Output only. The time when the EntryType was created.
     description: Optional. Description of the EntryType.
     displayName: Optional. User friendly display name.
-    etag: Optional. This checksum is computed by the server based on the value
-      of other fields, and may be sent on update and delete requests to ensure
-      the client has an up-to-date value before proceeding.
+    etag: Optional. This checksum is computed by the service, and might be
+      sent on update and delete requests to ensure the client has an up-to-
+      date value before proceeding.
     labels: Optional. User-defined labels for the EntryType.
     name: Output only. The relative resource name of the EntryType, of the
       form: projects/{project_number}/locations/{location_id}/entryTypes/{entr
@@ -6121,8 +6075,8 @@ class GoogleCloudDataplexV1EntryType(_messages.Message):
     requiredAspects: AspectInfo for the entry type.
     system: Optional. The system that Entries of this type belongs to.
       Examples include CloudSQL, MariaDB etc
-    typeAliases: Optional. Indicates the class this Entry Type belongs to, for
-      example, TABLE, DATABASE, MODEL.
+    typeAliases: Optional. Indicates the classes this Entry Type belongs to,
+      for example, TABLE, DATABASE, MODEL.
     uid: Output only. System generated globally unique ID for the EntryType.
       This ID will be different if the EntryType is deleted and re-created
       with the same name.
@@ -6860,13 +6814,13 @@ class GoogleCloudDataplexV1ListActionsResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListAspectTypesResponse(_messages.Message):
-  r"""List AspectTypes response
+  r"""List AspectTypes response.
 
   Fields:
-    aspectTypes: ListAspectTypes under the given parent location.
+    aspectTypes: AspectTypes under the given parent location.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachableLocations: Locations that could not be reached.
+    unreachableLocations: Locations that the service couldn't reach.
   """
 
   aspectTypes = _messages.MessageField('GoogleCloudDataplexV1AspectType', 1, repeated=True)
@@ -6988,11 +6942,12 @@ class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListEntriesResponse(_messages.Message):
-  r"""A GoogleCloudDataplexV1ListEntriesResponse object.
+  r"""List Entries response.
 
   Fields:
-    entries: The list of entries.
-    nextPageToken: Pagination token.
+    entries: The list of entries under the given parent location.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
   """
 
   entries = _messages.MessageField('GoogleCloudDataplexV1Entry', 1, repeated=True)
@@ -7000,13 +6955,13 @@ class GoogleCloudDataplexV1ListEntriesResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListEntryGroupsResponse(_messages.Message):
-  r"""List ListEntryGroups response.
+  r"""List entry groups response.
 
   Fields:
-    entryGroups: ListEntryGroups under the given parent location.
+    entryGroups: Entry groups under the given parent location.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachableLocations: Locations that could not be reached.
+    unreachableLocations: Locations that the service couldn't reach.
   """
 
   entryGroups = _messages.MessageField('GoogleCloudDataplexV1EntryGroup', 1, repeated=True)
@@ -7015,13 +6970,13 @@ class GoogleCloudDataplexV1ListEntryGroupsResponse(_messages.Message):
 
 
 class GoogleCloudDataplexV1ListEntryTypesResponse(_messages.Message):
-  r"""List EntryTypes response
+  r"""List EntryTypes response.
 
   Fields:
-    entryTypes: ListEntryTypes under the given parent location.
+    entryTypes: EntryTypes under the given parent location.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results in the list.
-    unreachableLocations: Locations that could not be reached.
+    unreachableLocations: Locations that the service couldn't reach.
   """
 
   entryTypes = _messages.MessageField('GoogleCloudDataplexV1EntryType', 1, repeated=True)
@@ -7531,12 +7486,13 @@ class GoogleCloudDataplexV1SearchEntriesResponse(_messages.Message):
   r"""A GoogleCloudDataplexV1SearchEntriesResponse object.
 
   Fields:
-    nextPageToken: Pagination token.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
     results: The results matching the search query.
-    totalSize: The estimated total number of matching entries. Not guaranteed
-      to be accurate.
-    unreachable: Unreachable locations. Search results don't include data from
-      those locations.
+    totalSize: The estimated total number of matching entries. This number
+      isn't guaranteed to be accurate.
+    unreachable: Locations that the service couldn't reach. Search results
+      don't include data from these locations.
   """
 
   nextPageToken = _messages.StringField(1)

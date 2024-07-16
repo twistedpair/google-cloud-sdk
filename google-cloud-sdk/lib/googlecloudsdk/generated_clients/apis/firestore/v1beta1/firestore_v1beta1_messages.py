@@ -1373,7 +1373,7 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
     snapshotTime: The timestamp that corresponds to the version of the
       database that is being read to get the list of documents to delete. This
       time can also be used as the timestamp of PITR in case of disaster
-      recovery(subject to PITR window limit).
+      recovery (subject to PITR window limit).
     startTime: The time this operation started.
   """
 

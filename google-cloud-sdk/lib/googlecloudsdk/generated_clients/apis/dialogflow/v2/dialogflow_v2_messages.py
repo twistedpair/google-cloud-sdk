@@ -1715,17 +1715,11 @@ class DialogflowProjectsConversationsListRequest(_messages.Message):
   r"""A DialogflowProjectsConversationsListRequest object.
 
   Fields:
-    filter: A filter expression that filters conversations listed in the
-      response. In general, the expression must specify the field name, a
-      comparison operator, and the value to use for filtering: - The value
-      must be a string, a number, or a boolean. - The comparison operator must
-      be either `=`,`!=`, `>`, or `<`. - To filter on multiple expressions,
-      separate the expressions with `AND` or `OR` (omitting both implies
-      `AND`). - For clarity, expressions can be enclosed in parentheses. Only
-      `lifecycle_state` can be filtered on in this way. For example, the
-      following expression only returns `COMPLETED` conversations:
-      `lifecycle_state = "COMPLETED"` For more information about filtering,
-      see [API Filtering](https://aip.dev/160).
+    filter: Optional. A filter expression that filters conversations listed in
+      the response. Only `lifecycle_state` can be filtered on in this way. For
+      example, the following expression only returns `COMPLETED`
+      conversations: `lifecycle_state = "COMPLETED"` For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -3761,17 +3755,11 @@ class DialogflowProjectsLocationsConversationsListRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsConversationsListRequest object.
 
   Fields:
-    filter: A filter expression that filters conversations listed in the
-      response. In general, the expression must specify the field name, a
-      comparison operator, and the value to use for filtering: - The value
-      must be a string, a number, or a boolean. - The comparison operator must
-      be either `=`,`!=`, `>`, or `<`. - To filter on multiple expressions,
-      separate the expressions with `AND` or `OR` (omitting both implies
-      `AND`). - For clarity, expressions can be enclosed in parentheses. Only
-      `lifecycle_state` can be filtered on in this way. For example, the
-      following expression only returns `COMPLETED` conversations:
-      `lifecycle_state = "COMPLETED"` For more information about filtering,
-      see [API Filtering](https://aip.dev/160).
+    filter: Optional. A filter expression that filters conversations listed in
+      the response. Only `lifecycle_state` can be filtered on in this way. For
+      example, the following expression only returns `COMPLETED`
+      conversations: `lifecycle_state = "COMPLETED"` For more information
+      about filtering, see [API Filtering](https://aip.dev/160).
     pageSize: Optional. The maximum number of items to return in a single
       page. By default 100 and at most 1000.
     pageToken: Optional. The next_page_token value returned from a previous
@@ -3979,6 +3967,21 @@ class DialogflowProjectsLocationsDeleteAgentRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
+class DialogflowProjectsLocationsEncryptionSpecInitializeRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsEncryptionSpecInitializeRequest object.
+
+  Fields:
+    googleCloudDialogflowV2InitializeEncryptionSpecRequest: A
+      GoogleCloudDialogflowV2InitializeEncryptionSpecRequest resource to be
+      passed as the request body.
+    name: Immutable. The resource name of the encryption key specification
+      resource. Format: projects/{project}/locations/{location}/encryptionSpec
+  """
+
+  googleCloudDialogflowV2InitializeEncryptionSpecRequest = _messages.MessageField('GoogleCloudDialogflowV2InitializeEncryptionSpecRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DialogflowProjectsLocationsGeneratorsCreateRequest(_messages.Message):
   r"""A DialogflowProjectsLocationsGeneratorsCreateRequest object.
 
@@ -4066,6 +4069,16 @@ class DialogflowProjectsLocationsGetAgentRequest(_messages.Message):
   """
 
   parent = _messages.StringField(1, required=True)
+
+
+class DialogflowProjectsLocationsGetEncryptionSpecRequest(_messages.Message):
+  r"""A DialogflowProjectsLocationsGetEncryptionSpecRequest object.
+
+  Fields:
+    name: Required. The name of the encryption spec resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class DialogflowProjectsLocationsGetRequest(_messages.Message):
@@ -5056,6 +5069,8 @@ class GoogleCloudDialogflowCxV3EventHandler(_messages.Message):
       `projects//locations//agents//flows/`.
     targetPage: The target page to transition to. Format:
       `projects//locations//agents//flows//pages/`.
+    targetPlaybook: The target playbook to transition to. Format:
+      `projects//locations//agents//playbooks/`.
     triggerFulfillment: The fulfillment to call when the event occurs.
       Handling webhook errors with a fulfillment enabled with webhook could
       cause infinite loop. It is invalid to specify such fulfillment for a
@@ -5066,7 +5081,8 @@ class GoogleCloudDialogflowCxV3EventHandler(_messages.Message):
   name = _messages.StringField(2)
   targetFlow = _messages.StringField(3)
   targetPage = _messages.StringField(4)
-  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 5)
+  targetPlaybook = _messages.StringField(5)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 6)
 
 
 class GoogleCloudDialogflowCxV3EventInput(_messages.Message):
@@ -6555,14 +6571,14 @@ class GoogleCloudDialogflowCxV3TestConfig(_messages.Message):
   Fields:
     flow: Flow name to start the test case with. Format:
       `projects//locations//agents//flows/`. Only one of `flow` and `page`
-      should be set to indicate the starting point of the test case. If both
-      are set, `page` takes precedence over `flow`. If neither is set, the
-      test case will start with start page on the default start flow.
+      should be set to indicate the starting point of the test case. If
+      neither is set, the test case will start with start page on the default
+      start flow.
     page: The page to start the test case with. Format:
       `projects//locations//agents//flows//pages/`. Only one of `flow` and
       `page` should be set to indicate the starting point of the test case. If
-      both are set, `page` takes precedence over `flow`. If neither is set,
-      the test case will start with start page on the default start flow.
+      neither is set, the test case will start with start page on the default
+      start flow.
     trackingParameters: Session parameters to be compared when calculating
       differences.
   """
@@ -7826,6 +7842,8 @@ class GoogleCloudDialogflowCxV3beta1EventHandler(_messages.Message):
       `projects//locations//agents//flows/`.
     targetPage: The target page to transition to. Format:
       `projects//locations//agents//flows//pages/`.
+    targetPlaybook: The target playbook to transition to. Format:
+      `projects//locations//agents//playbooks/`.
     triggerFulfillment: The fulfillment to call when the event occurs.
       Handling webhook errors with a fulfillment enabled with webhook could
       cause infinite loop. It is invalid to specify such fulfillment for a
@@ -7836,7 +7854,8 @@ class GoogleCloudDialogflowCxV3beta1EventHandler(_messages.Message):
   name = _messages.StringField(2)
   targetFlow = _messages.StringField(3)
   targetPage = _messages.StringField(4)
-  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 5)
+  targetPlaybook = _messages.StringField(5)
+  triggerFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 6)
 
 
 class GoogleCloudDialogflowCxV3beta1EventInput(_messages.Message):
@@ -9310,14 +9329,14 @@ class GoogleCloudDialogflowCxV3beta1TestConfig(_messages.Message):
   Fields:
     flow: Flow name to start the test case with. Format:
       `projects//locations//agents//flows/`. Only one of `flow` and `page`
-      should be set to indicate the starting point of the test case. If both
-      are set, `page` takes precedence over `flow`. If neither is set, the
-      test case will start with start page on the default start flow.
+      should be set to indicate the starting point of the test case. If
+      neither is set, the test case will start with start page on the default
+      start flow.
     page: The page to start the test case with. Format:
       `projects//locations//agents//flows//pages/`. Only one of `flow` and
       `page` should be set to indicate the starting point of the test case. If
-      both are set, `page` takes precedence over `flow`. If neither is set,
-      the test case will start with start page on the default start flow.
+      neither is set, the test case will start with start page on the default
+      start flow.
     trackingParameters: Session parameters to be compared when calculating
       differences.
   """
@@ -11187,8 +11206,8 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
   Conversations can include phone calls and text-based chat sessions.
 
   Enums:
-    ConversationStageValueValuesEnum: The stage of a conversation. It
-      indicates whether the virtual agent or a human agent is handling the
+    ConversationStageValueValuesEnum: Optional. The stage of a conversation.
+      It indicates whether the virtual agent or a human agent is handling the
       conversation. If the conversation is created with the conversation
       profile that has Dialogflow config set, defaults to
       ConversationStage.VIRTUAL_AGENT_STAGE; Otherwise, defaults to
@@ -11205,9 +11224,9 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
     conversationProfile: Required. The Conversation Profile to be used to
       configure this Conversation. This field cannot be updated. Format:
       `projects//locations//conversationProfiles/`.
-    conversationStage: The stage of a conversation. It indicates whether the
-      virtual agent or a human agent is handling the conversation. If the
-      conversation is created with the conversation profile that has
+    conversationStage: Optional. The stage of a conversation. It indicates
+      whether the virtual agent or a human agent is handling the conversation.
+      If the conversation is created with the conversation profile that has
       Dialogflow config set, defaults to
       ConversationStage.VIRTUAL_AGENT_STAGE; Otherwise, defaults to
       ConversationStage.HUMAN_ASSIST_STAGE. If the conversation is created
@@ -11218,21 +11237,22 @@ class GoogleCloudDialogflowV2Conversation(_messages.Message):
       ConversationStage.HUMAN_ASSIST_STAGE.
     endTime: Output only. The time the conversation was finished.
     lifecycleState: Output only. The current state of the Conversation.
-    name: Output only. The unique identifier of this conversation. Format:
-      `projects//locations//conversations/`.
+    name: Output only. Identifier. The unique identifier of this conversation.
+      Format: `projects//locations//conversations/`.
     phoneNumber: Output only. It will not be empty if the conversation is to
       be connected over telephony.
     startTime: Output only. The time the conversation was started.
   """
 
   class ConversationStageValueValuesEnum(_messages.Enum):
-    r"""The stage of a conversation. It indicates whether the virtual agent or
-    a human agent is handling the conversation. If the conversation is created
-    with the conversation profile that has Dialogflow config set, defaults to
-    ConversationStage.VIRTUAL_AGENT_STAGE; Otherwise, defaults to
-    ConversationStage.HUMAN_ASSIST_STAGE. If the conversation is created with
-    the conversation profile that has Dialogflow config set but explicitly
-    sets conversation_stage to ConversationStage.HUMAN_ASSIST_STAGE, it skips
+    r"""Optional. The stage of a conversation. It indicates whether the
+    virtual agent or a human agent is handling the conversation. If the
+    conversation is created with the conversation profile that has Dialogflow
+    config set, defaults to ConversationStage.VIRTUAL_AGENT_STAGE; Otherwise,
+    defaults to ConversationStage.HUMAN_ASSIST_STAGE. If the conversation is
+    created with the conversation profile that has Dialogflow config set but
+    explicitly sets conversation_stage to
+    ConversationStage.HUMAN_ASSIST_STAGE, it skips
     ConversationStage.VIRTUAL_AGENT_STAGE stage and directly goes to
     ConversationStage.HUMAN_ASSIST_STAGE.
 
@@ -11915,6 +11935,25 @@ class GoogleCloudDialogflowV2DtmfParameters(_messages.Message):
   acceptsDtmfInput = _messages.BooleanField(1)
 
 
+class GoogleCloudDialogflowV2EncryptionSpec(_messages.Message):
+  r"""A customer-managed encryption key specification that can be applied to
+  all created resources (e.g. Conversation).
+
+  Fields:
+    kmsKey: Required. The name of customer-managed encryption key that is used
+      to secure a resource and its sub-resources. If empty, the resource is
+      secured by the default Google encryption key. Only the key in the same
+      location as this resource is allowed to be used for encryption. Format:
+      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
+      key}`
+    name: Immutable. The resource name of the encryption key specification
+      resource. Format: projects/{project}/locations/{location}/encryptionSpec
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -12585,11 +12624,11 @@ class GoogleCloudDialogflowV2GenerateStatelessSummaryRequest(_messages.Message):
       information required for Summary generation. Required fields:
       {language_code, security_settings} Optional fields:
       {agent_assistant_config}
-    latestMessage: The name of the latest conversation message used as context
-      for generating a Summary. If empty, the latest message of the
+    latestMessage: Optional. The name of the latest conversation message used
+      as context for generating a Summary. If empty, the latest message of the
       conversation will be used. The format is specific to the user and the
       names of the messages provided.
-    maxContextSize: Max number of messages prior to and including
+    maxContextSize: Optional. Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 500 and at most 1000.
     statelessConversation: Required. The conversation to suggest a summary
@@ -13328,6 +13367,30 @@ class GoogleCloudDialogflowV2InferenceParameter(_messages.Message):
   temperature = _messages.FloatField(2)
   topK = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   topP = _messages.FloatField(4)
+
+
+class GoogleCloudDialogflowV2InitializeEncryptionSpecMetadata(_messages.Message):
+  r"""Metadata for initializing a location-level encryption specification.
+
+  Fields:
+    request: Output only. The original request for initialization.
+  """
+
+  request = _messages.MessageField('GoogleCloudDialogflowV2InitializeEncryptionSpecRequest', 1)
+
+
+class GoogleCloudDialogflowV2InitializeEncryptionSpecRequest(_messages.Message):
+  r"""The request to initialize a location-level encryption specification.
+
+  Fields:
+    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
+      is required that the kms key is in the same region as the endpoint. The
+      same key will be used for all provisioned resources, if encryption is
+      available. If the kms_key_name is left empty, no encryption will be
+      enforced.
+  """
+
+  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2EncryptionSpec', 1)
 
 
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
@@ -15558,21 +15621,21 @@ class GoogleCloudDialogflowV2SearchKnowledgeRequest(_messages.Message):
   r"""The request message for Conversations.SearchKnowledge.
 
   Fields:
-    conversation: The conversation (between human agent and end user) where
-      the search request is triggered. Format:
+    conversation: Optional. The conversation (between human agent and end
+      user) where the search request is triggered. Format:
       `projects//locations//conversations/`.
     conversationProfile: Required. The conversation profile used to configure
       the search. Format: `projects//locations//conversationProfiles/`.
-    latestMessage: The name of the latest conversation message when the
-      request is triggered. Format:
+    latestMessage: Optional. The name of the latest conversation message when
+      the request is triggered. Format:
       `projects//locations//conversations//messages/`.
-    parent: The parent resource contains the conversation profile Format:
-      'projects/' or `projects//locations/`.
+    parent: Required. The parent resource contains the conversation profile
+      Format: 'projects/' or `projects//locations/`.
     query: Required. The natural language text query for knowledge search.
-    sessionId: The ID of the search session. The session_id can be combined
-      with Dialogflow V3 Agent ID retrieved from conversation profile or on
-      its own to identify a search session. The search history of the same
-      session will impact the search result. It's up to the API caller to
+    sessionId: Optional. The ID of the search session. The session_id can be
+      combined with Dialogflow V3 Agent ID retrieved from conversation profile
+      or on its own to identify a search session. The search history of the
+      same session will impact the search result. It's up to the API caller to
       choose an appropriate `Session ID`. It can be a random number or some
       type of session identifiers (preferably hashed). The length must not
       exceed 36 characters.
@@ -15911,6 +15974,8 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
   r"""Configures speech transcription for ConversationProfile.
 
   Enums:
+    AudioEncodingValueValuesEnum: Audio encoding of the audio content to
+      process.
     SpeechModelVariantValueValuesEnum: The speech model used in speech to
       text. `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be
       treated as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest
@@ -15919,6 +15984,23 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       language does not exist, then it would emit an error.
 
   Fields:
+    alternativeLanguageCodes: Defines the list of other language codes in
+      addition to the one provided by the conversation profile that may be
+      detected as the language code for the utterances over the conversation.
+      See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes.
+    audioEncoding: Audio encoding of the audio content to process.
+    enableWordInfo: If `true`, Dialogflow returns SpeechWordInfo in
+      StreamingRecognitionResult with information about the recognized speech
+      words, e.g. start and end time offsets. If false or unspecified, Speech
+      doesn't return any word-level information.
+    languageCode: The language of the supplied audio. Dialogflow does not do
+      translations. See [Language
+      Support](https://cloud.google.com/dialogflow/docs/reference/language)
+      for a list of the currently supported language codes. Note that queries
+      in the same session do not necessarily need to specify the same
+      language.
     model: Which Speech model to select. Select the model best suited to your
       domain to get best results. If a model is not explicitly specified, then
       Dialogflow auto-selects a model based on other parameters in the
@@ -15933,6 +16015,10 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
       Dialogflow non-telephony) - command_and_search Leave this field
       unspecified to use [Agent Speech settings](https://cloud.google.com/dial
       ogflow/cx/docs/concept/agent#settings-speech) for model selection.
+    sampleRateHertz: Sample rate (in Hertz) of the audio content sent in the
+      query. Refer to [Cloud Speech API
+      documentation](https://cloud.google.com/speech-to-text/docs/basics) for
+      more details.
     speechModelVariant: The speech model used in speech to text.
       `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated
       as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and
@@ -15942,6 +16028,51 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
     useTimeoutBasedEndpointing: Use timeout based endpointing, interpreting
       endpointer sensitivy as seconds of timeout value.
   """
+
+  class AudioEncodingValueValuesEnum(_messages.Enum):
+    r"""Audio encoding of the audio content to process.
+
+    Values:
+      AUDIO_ENCODING_UNSPECIFIED: Not specified.
+      AUDIO_ENCODING_LINEAR_16: Uncompressed 16-bit signed little-endian
+        samples (Linear PCM).
+      AUDIO_ENCODING_FLAC: [`FLAC`](https://xiph.org/flac/documentation.html)
+        (Free Lossless Audio Codec) is the recommended encoding because it is
+        lossless (therefore recognition is not compromised) and requires only
+        about half the bandwidth of `LINEAR16`. `FLAC` stream encoding
+        supports 16-bit and 24-bit samples, however, not all fields in
+        `STREAMINFO` are supported.
+      AUDIO_ENCODING_MULAW: 8-bit samples that compand 14-bit audio samples
+        using G.711 PCMU/mu-law.
+      AUDIO_ENCODING_AMR: Adaptive Multi-Rate Narrowband codec.
+        `sample_rate_hertz` must be 8000.
+      AUDIO_ENCODING_AMR_WB: Adaptive Multi-Rate Wideband codec.
+        `sample_rate_hertz` must be 16000.
+      AUDIO_ENCODING_OGG_OPUS: Opus encoded audio frames in Ogg container
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
+        be 16000.
+      AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE: Although the use of lossy
+        encodings is not recommended, if a very low bitrate encoding is
+        required, `OGG_OPUS` is highly preferred over Speex encoding. The
+        [Speex](https://speex.org/) encoding supported by Dialogflow API has a
+        header byte in each block, as in MIME type `audio/x-speex-with-header-
+        byte`. It is a variant of the RTP Speex encoding defined in [RFC
+        5574](https://tools.ietf.org/html/rfc5574). The stream is a sequence
+        of blocks, one block per RTP packet. Each block starts with a byte
+        containing the length of the block, in bytes, followed by one or more
+        frames of Speex data, padded to an integral number of bytes (octets)
+        as specified in RFC 5574. In other words, each RTP header is replaced
+        with a single byte containing the block length. Only Speex wideband is
+        supported. `sample_rate_hertz` must be 16000.
+    """
+    AUDIO_ENCODING_UNSPECIFIED = 0
+    AUDIO_ENCODING_LINEAR_16 = 1
+    AUDIO_ENCODING_FLAC = 2
+    AUDIO_ENCODING_MULAW = 3
+    AUDIO_ENCODING_AMR = 4
+    AUDIO_ENCODING_AMR_WB = 5
+    AUDIO_ENCODING_OGG_OPUS = 6
+    AUDIO_ENCODING_SPEEX_WITH_HEADER_BYTE = 7
 
   class SpeechModelVariantValueValuesEnum(_messages.Enum):
     r"""The speech model used in speech to text.
@@ -15977,9 +16108,14 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
     USE_STANDARD = 2
     USE_ENHANCED = 3
 
-  model = _messages.StringField(1)
-  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 2)
-  useTimeoutBasedEndpointing = _messages.BooleanField(3)
+  alternativeLanguageCodes = _messages.StringField(1, repeated=True)
+  audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 2)
+  enableWordInfo = _messages.BooleanField(3)
+  languageCode = _messages.StringField(4)
+  model = _messages.StringField(5)
+  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  speechModelVariant = _messages.EnumField('SpeechModelVariantValueValuesEnum', 7)
+  useTimeoutBasedEndpointing = _messages.BooleanField(8)
 
 
 class GoogleCloudDialogflowV2SuggestArticlesRequest(_messages.Message):
@@ -16022,13 +16158,13 @@ class GoogleCloudDialogflowV2SuggestConversationSummaryRequest(_messages.Message
   r"""The request message for Conversations.SuggestConversationSummary.
 
   Fields:
-    assistQueryParams: Parameters for a human assist query. Only used for
-      POC/demo purpose.
-    contextSize: Max number of messages prior to and including
+    assistQueryParams: Optional. Parameters for a human assist query. Only
+      used for POC/demo purpose.
+    contextSize: Optional. Max number of messages prior to and including
       [latest_message] to use as context when compiling the suggestion. By
       default 500 and at most 1000.
-    latestMessage: The name of the latest conversation message used as context
-      for compiling suggestion. If empty, the latest message of the
+    latestMessage: Optional. The name of the latest conversation message used
+      as context for compiling suggestion. If empty, the latest message of the
       conversation will be used. Format:
       `projects//locations//conversations//messages/`.
   """
@@ -17155,6 +17291,25 @@ class GoogleCloudDialogflowV2beta1DialogflowAssistAnswer(_messages.Message):
   queryResult = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 3)
 
 
+class GoogleCloudDialogflowV2beta1EncryptionSpec(_messages.Message):
+  r"""A customer-managed encryption key specification that can be applied to
+  all created resources (e.g. Conversation).
+
+  Fields:
+    kmsKey: Required. The name of customer-managed encryption key that is used
+      to secure a resource and its sub-resources. If empty, the resource is
+      secured by the default Google encryption key. Only the key in the same
+      location as this resource is allowed to be used for encryption. Format:
+      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
+      key}`
+    name: Immutable. The resource name of the encryption key specification
+      resource. Format: projects/{project}/locations/{location}/encryptionSpec
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -17440,6 +17595,30 @@ class GoogleCloudDialogflowV2beta1ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecMetadata(_messages.Message):
+  r"""Metadata for initializing a location-level encryption specification.
+
+  Fields:
+    request: Output only. The original request for initialization.
+  """
+
+  request = _messages.MessageField('GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest', 1)
+
+
+class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest(_messages.Message):
+  r"""The request to initialize a location-level encryption specification.
+
+  Fields:
+    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
+      is required that the kms key is in the same region as the endpoint. The
+      same key will be used for all provisioned resources, if encryption is
+      available. If the kms_key_name is left empty, no encryption will be
+      enforced.
+  """
+
+  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2beta1EncryptionSpec', 1)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):
@@ -18807,6 +18986,7 @@ class GoogleCloudDialogflowV2beta1Message(_messages.Message):
       `projects//locations//conversations//messages/`.
     participant: Output only. The participant that sends this message.
     participantRole: Output only. The role of the participant.
+    responseMessages: Optional. Automated agent responses.
     sendTime: Optional. The time when the message was sent.
     sentimentAnalysis: Output only. The sentiment analysis result for the
       message.
@@ -18835,8 +19015,9 @@ class GoogleCloudDialogflowV2beta1Message(_messages.Message):
   name = _messages.StringField(5)
   participant = _messages.StringField(6)
   participantRole = _messages.EnumField('ParticipantRoleValueValuesEnum', 7)
-  sendTime = _messages.StringField(8)
-  sentimentAnalysis = _messages.MessageField('GoogleCloudDialogflowV2beta1SentimentAnalysisResult', 9)
+  responseMessages = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessage', 8, repeated=True)
+  sendTime = _messages.StringField(9)
+  sentimentAnalysis = _messages.MessageField('GoogleCloudDialogflowV2beta1SentimentAnalysisResult', 10)
 
 
 class GoogleCloudDialogflowV2beta1MessageAnnotation(_messages.Message):
@@ -19122,6 +19303,163 @@ class GoogleCloudDialogflowV2beta1QueryResult(_messages.Message):
   speechRecognitionConfidence = _messages.FloatField(15, variant=_messages.Variant.FLOAT)
   webhookPayload = _messages.MessageField('WebhookPayloadValue', 16)
   webhookSource = _messages.StringField(17)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessage(_messages.Message):
+  r"""Response messages from an automated agent.
+
+  Messages:
+    PayloadValue: Returns a response containing a custom, platform-specific
+      payload.
+
+  Fields:
+    endInteraction: A signal that indicates the interaction with the
+      Dialogflow agent has ended.
+    liveAgentHandoff: Hands off conversation to a live agent.
+    mixedAudio: An audio response message composed of both the synthesized
+      Dialogflow agent responses and the audios hosted in places known to the
+      client.
+    payload: Returns a response containing a custom, platform-specific
+      payload.
+    telephonyTransferCall: A signal that the client should transfer the phone
+      call connected to this agent to a third-party endpoint.
+    text: Returns a text response.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PayloadValue(_messages.Message):
+    r"""Returns a response containing a custom, platform-specific payload.
+
+    Messages:
+      AdditionalProperty: An additional property for a PayloadValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PayloadValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  endInteraction = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageEndInteraction', 1)
+  liveAgentHandoff = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageLiveAgentHandoff', 2)
+  mixedAudio = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageMixedAudio', 3)
+  payload = _messages.MessageField('PayloadValue', 4)
+  telephonyTransferCall = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageTelephonyTransferCall', 5)
+  text = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageText', 6)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageEndInteraction(_messages.Message):
+  r"""Indicates that interaction with the Dialogflow agent has ended."""
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageLiveAgentHandoff(_messages.Message):
+  r"""Indicates that the conversation should be handed off to a human agent.
+  Dialogflow only uses this to determine which conversations were handed off
+  to a human agent for measurement purposes. What else to do with this signal
+  is up to you and your handoff procedures. You may set this, for example: *
+  In the entry fulfillment of a CX Page if entering the page indicates
+  something went extremely wrong in the conversation. * In a webhook response
+  when you determine that the customer issue can only be handled by a human.
+
+  Messages:
+    MetadataValue: Custom metadata for your handoff procedure. Dialogflow
+      doesn't impose any structure on this.
+
+  Fields:
+    metadata: Custom metadata for your handoff procedure. Dialogflow doesn't
+      impose any structure on this.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Custom metadata for your handoff procedure. Dialogflow doesn't impose
+    any structure on this.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageMixedAudio(_messages.Message):
+  r"""Represents an audio message that is composed of both segments
+  synthesized from the Dialogflow agent prompts and ones hosted externally at
+  the specified URIs.
+
+  Fields:
+    segments: Segments this audio response is composed of.
+  """
+
+  segments = _messages.MessageField('GoogleCloudDialogflowV2beta1ResponseMessageMixedAudioSegment', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageMixedAudioSegment(_messages.Message):
+  r"""Represents one segment of audio.
+
+  Fields:
+    allowPlaybackInterruption: Whether the playback of this segment can be
+      interrupted by the end user's speech and the client should then start
+      the next Dialogflow request.
+    audio: Raw audio synthesized from the Dialogflow agent's response using
+      the output config specified in the request.
+    uri: Client-specific URI that points to an audio clip accessible to the
+      client.
+  """
+
+  allowPlaybackInterruption = _messages.BooleanField(1)
+  audio = _messages.BytesField(2)
+  uri = _messages.StringField(3)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageTelephonyTransferCall(_messages.Message):
+  r"""Represents the signal that telles the client to transfer the phone call
+  connected to the agent to a third-party endpoint.
+
+  Fields:
+    phoneNumber: Transfer the call to a phone number in [E.164
+      format](https://en.wikipedia.org/wiki/E.164).
+    sipUri: Transfer the call to a SIP endpoint.
+  """
+
+  phoneNumber = _messages.StringField(1)
+  sipUri = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowV2beta1ResponseMessageText(_messages.Message):
+  r"""The text response message.
+
+  Fields:
+    text: A collection of text responses.
+  """
+
+  text = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudDialogflowV2beta1Sentiment(_messages.Message):

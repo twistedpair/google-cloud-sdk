@@ -95,6 +95,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  BILLINGACCOUNTS_LOCATIONS_SAVEDQUERIES = (
+      'billingAccounts.locations.savedQueries',
+      '{+name}',
+      {
+          '':
+              'billingAccounts/{billingAccountsId}/locations/{locationsId}/'
+              'savedQueries/{savedQueriesId}',
+      },
+      ['name'],
+      True
+  )
   BILLINGACCOUNTS_SINKS = (
       'billingAccounts.sinks',
       '{+sinkName}',
@@ -182,6 +193,17 @@ class Collections(enum.Enum):
           '':
               'folders/{foldersId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  FOLDERS_LOCATIONS_SAVEDQUERIES = (
+      'folders.locations.savedQueries',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/savedQueries/'
+              '{savedQueriesId}',
       },
       ['name'],
       True
@@ -320,6 +342,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_SAVEDQUERIES = (
+      'organizations.locations.savedQueries',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'savedQueries/{savedQueriesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SINKS = (
       'organizations.sinks',
       '{+sinkName}',
@@ -397,6 +430,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SAVEDQUERIES = (
+      'projects.locations.savedQueries',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/savedQueries/'
+              '{savedQueriesId}',
       },
       ['name'],
       True

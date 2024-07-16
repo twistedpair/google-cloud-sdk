@@ -63,7 +63,8 @@ def ConstructCreateRequestFromArgsBeta(
     Fully-constructed request to create an AlloyDB instance.
   """
   instance_resource = _ConstructInstanceFromArgsBeta(
-      client, alloydb_messages, args)
+      client, alloydb_messages, args
+  )
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
@@ -89,7 +90,8 @@ def ConstructCreateRequestFromArgsAlpha(
     Fully-constructed request to create an AlloyDB instance.
   """
   instance_resource = _ConstructInstanceFromArgsAlpha(
-      client, alloydb_messages, args)
+      client, alloydb_messages, args
+  )
 
   return (
       alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreateRequest(
@@ -115,23 +117,28 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
 
   # set availability-type if provided
   instance_resource.availabilityType = ParseAvailabilityType(
-      alloydb_messages, args.availability_type)
+      alloydb_messages, args.availability_type
+  )
   instance_resource.machineConfig = alloydb_messages.MachineConfig(
-      cpuCount=args.cpu_count)
+      cpuCount=args.cpu_count
+  )
   instance_ref = client.resource_parser.Create(
       'alloydb.projects.locations.clusters.instances',
       projectsId=properties.VALUES.core.project.GetOrFail,
       locationsId=args.region,
       clustersId=args.cluster,
-      instancesId=args.instance)
+      instancesId=args.instance,
+  )
   instance_resource.name = instance_ref.RelativeName()
 
   instance_resource.databaseFlags = labels_util.ParseCreateArgs(
       args,
       alloydb_messages.Instance.DatabaseFlagsValue,
-      labels_dest='database_flags')
-  instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
-                                                      args.instance_type)
+      labels_dest='database_flags',
+  )
+  instance_resource.instanceType = _ParseInstanceType(
+      alloydb_messages, args.instance_type
+  )
 
   if (
       instance_resource.instanceType
@@ -207,7 +214,8 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
     An AlloyDB instance to create with the specified command line arguments.
   """
   instance_resource = _ConstructInstanceFromArgsBeta(
-      client, alloydb_messages, args)
+      client, alloydb_messages, args
+  )
   return instance_resource
 
 
@@ -223,18 +231,20 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
     Fully-constructed request to update an AlloyDB instance.
   """
   instance_resource, paths = ConstructInstanceAndUpdatePathsFromArgs(
-      alloydb_messages, instance_ref, args)
+      alloydb_messages, instance_ref, args
+  )
   mask = ','.join(paths) if paths else None
 
-  return (
-      alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
-          instance=instance_resource,
-          name=instance_ref.RelativeName(),
-          updateMask=mask))
+  return alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
+      instance=instance_resource,
+      name=instance_ref.RelativeName(),
+      updateMask=mask,
+  )
 
 
 def ConstructInstanceAndUpdatePathsFromArgs(
-    alloydb_messages, instance_ref, args):
+    alloydb_messages, instance_ref, args
+):
   """Validates command line arguments and creates the instance and update paths.
 
   Args:
@@ -268,7 +278,8 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   instance_resource.name = instance_ref.RelativeName()
 
   availability_type = ParseAvailabilityType(
-      alloydb_messages, args.availability_type)
+      alloydb_messages, args.availability_type
+  )
   if availability_type:
     instance_resource.availabilityType = availability_type
     paths.append(availability_type_path)
@@ -276,19 +287,22 @@ def ConstructInstanceAndUpdatePathsFromArgs(
   database_flags = labels_util.ParseCreateArgs(
       args,
       alloydb_messages.Instance.DatabaseFlagsValue,
-      labels_dest='database_flags')
+      labels_dest='database_flags',
+  )
   if database_flags:
     instance_resource.databaseFlags = database_flags
     paths.append(database_flags_path)
 
   if args.cpu_count:
     instance_resource.machineConfig = alloydb_messages.MachineConfig(
-        cpuCount=args.cpu_count)
+        cpuCount=args.cpu_count
+    )
     paths.append(cpu_count_path)
 
   if args.read_pool_node_count:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-        nodeCount=args.read_pool_node_count)
+        nodeCount=args.read_pool_node_count
+    )
     paths.append(read_pool_node_count_path)
 
   if args.insights_config_query_string_length:
@@ -320,8 +334,10 @@ def ConstructInstanceAndUpdatePathsFromArgs(
         alloydb_messages, args.ssl_mode, args.require_connectors
     )
 
-  if (args.assign_inbound_public_ip or
-      args.authorized_external_networks is not None):
+  if (
+      args.assign_inbound_public_ip
+      or args.authorized_external_networks is not None
+  ):
     instance_resource.networkConfig = NetworkConfig(
         alloydb_messages,
         args.assign_inbound_public_ip,
@@ -514,21 +530,24 @@ def ClientConnectionConfig(
 def ParseAvailabilityType(alloydb_messages, availability_type):
   if availability_type:
     return alloydb_messages.Instance.AvailabilityTypeValueValuesEnum.lookup_by_name(
-        availability_type.upper())
+        availability_type.upper()
+    )
   return None
 
 
 def _ParseInstanceType(alloydb_messages, instance_type):
   if instance_type:
     return alloydb_messages.Instance.InstanceTypeValueValuesEnum.lookup_by_name(
-        instance_type.upper())
+        instance_type.upper()
+    )
   return None
 
 
 def _ParseUpdateMode(alloydb_messages, update_mode):
   if update_mode:
     return alloydb_messages.UpdatePolicy.ModeValueValuesEnum.lookup_by_name(
-        update_mode.upper())
+        update_mode.upper()
+    )
   return None
 
 
@@ -574,18 +593,22 @@ def NetworkConfig(
         assign_inbound_public_ip
     )
   if authorized_external_networks is not None:
-    if (assign_inbound_public_ip is not None
-        and not instance_network_config.enablePublicIp):
-      raise DetailedArgumentError('Cannot update an instance\'s authorized '
-                                  'networks and disable Public-IP. You must do '
-                                  'one or the other. Note, that disabling '
-                                  'Public-IP will clear the list of authorized '
-                                  'networks.')
+    if (
+        assign_inbound_public_ip is not None
+        and not instance_network_config.enablePublicIp
+    ):
+      raise DetailedArgumentError(
+          "Cannot update an instance's authorized "
+          'networks and disable Public-IP. You must do '
+          'one or the other. Note, that disabling '
+          'Public-IP will clear the list of authorized '
+          'networks.'
+      )
     instance_network_config.authorizedExternalNetworks = (
         _ParseAuthorizedExternalNetworks(
             alloydb_messages,
             authorized_external_networks,
-            instance_network_config.enablePublicIp
+            instance_network_config.enablePublicIp,
         )
     )
   return instance_network_config
@@ -637,9 +660,7 @@ def _ParseAuthorizedExternalNetworks(
   if public_ip_enabled is not None and not public_ip_enabled:
     return auth_networks
   for network in authorized_external_networks:
-    network = alloydb_messages.AuthorizedNetwork(
-        cidrRange=str(network)
-    )
+    network = alloydb_messages.AuthorizedNetwork(cidrRange=str(network))
     auth_networks.append(network)
   return auth_networks
 
@@ -760,3 +781,48 @@ def ConstructInstanceAndUpdatePathsFromArgsAlpha(
       alloydb_messages, instance_ref, args
   )
   return instance_resource, paths
+
+
+def ConstructRestartRequestFromArgs(alloydb_messages, project_ref):
+  """Constructs the request to restart an AlloyDB instance.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    project_ref: parent resource path of the resource being updated
+
+  Returns:
+    Fully-constructed request to restart an AlloyDB instance.
+  """
+  req = (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesRestartRequest(
+          name=project_ref.RelativeName(),
+      )
+  )
+  return req
+
+
+def ConstructRestartRequestFromArgsAlphaBeta(
+    alloydb_messages, project_ref, args
+):
+  """Constructs the request to restart an AlloyDB instance in the alpha or beta tracks.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    project_ref: parent resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    Fully-constructed request to restart an AlloyDB instance.
+  """
+
+  req = (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesRestartRequest(
+          name=project_ref.RelativeName()
+      )
+  )
+  if args.node_ids:
+    restart_request = alloydb_messages.RestartInstanceRequest(
+        nodeIds=args.node_ids
+    )
+    req.restartInstanceRequest = restart_request
+  return req

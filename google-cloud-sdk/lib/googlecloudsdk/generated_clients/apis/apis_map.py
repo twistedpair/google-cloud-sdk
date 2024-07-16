@@ -465,7 +465,7 @@ MAP = {
                     client_classpath='artifactregistry_v1_client.ArtifactregistryV1',
                     base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha1':
@@ -495,7 +495,7 @@ MAP = {
                     client_classpath='artifactregistry_v1beta2_client.ArtifactregistryV1beta2',
                     base_url='https://artifactregistry.googleapis.com/',
                     messages_modulepath='artifactregistry_v1beta2_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -2111,6 +2111,16 @@ MAP = {
                     client_classpath='gkehub_v1beta1_client.GkehubV1beta1',
                     base_url='https://gkehub.googleapis.com/',
                     messages_modulepath='gkehub_v1beta1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.gkehub.v2alpha',
+                    client_classpath='gkehub_v2alpha_client.GkehubV2alpha',
+                    base_url='https://gkehub.googleapis.com/',
+                    messages_modulepath='gkehub_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

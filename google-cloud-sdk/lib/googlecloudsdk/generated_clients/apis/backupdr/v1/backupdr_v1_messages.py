@@ -13,6 +13,26 @@ from apitools.base.py import extra_types
 package = 'backupdr'
 
 
+class AbandonBackupRequest(_messages.Message):
+  r"""request message for AbandonBackup.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class AcceleratorConfig(_messages.Message):
   r"""A specification of the type and number of accelerator cards attached to
   the instance.
@@ -180,6 +200,7 @@ class AttachedDisk(_messages.Message):
       use for attaching this disk.
     DiskTypeValueValuesEnum: Optional. Specifies the type of the disk.
     ModeValueValuesEnum: Optional. The mode in which to attach this disk.
+    SavedStateValueValuesEnum: Optional. Output only. The state of the disk.
 
   Fields:
     autoDelete: Optional. Specifies whether the disk will be auto-deleted when
@@ -196,6 +217,8 @@ class AttachedDisk(_messages.Message):
       this disk.
     diskSizeGb: Optional. The size of the disk in GB.
     diskType: Optional. Specifies the type of the disk.
+    diskTypeUri: Optional. Output only. The URI of the disk type resource. For
+      example: projects/project/zones/zone/diskTypes/pd-standard or pd-ssd
     guestOsFeature: Optional. A list of features to enable on the guest
       operating system. Applicable only for bootable images.
     index: Optional. A zero-based index to this disk, where 0 is reserved for
@@ -205,6 +228,7 @@ class AttachedDisk(_messages.Message):
     kind: Optional. Type of the resource.
     license: Optional. Any valid publicly visible licenses.
     mode: Optional. The mode in which to attach this disk.
+    savedState: Optional. Output only. The state of the disk.
     source: Optional. Specifies a valid partial or full URL to an existing
       Persistent Disk resource.
   """
@@ -255,6 +279,16 @@ class AttachedDisk(_messages.Message):
     READ_ONLY = 2
     LOCKED = 3
 
+  class SavedStateValueValuesEnum(_messages.Enum):
+    r"""Optional. Output only. The state of the disk.
+
+    Values:
+      DISK_SAVED_STATE_UNSPECIFIED: Default Disk state has not been preserved.
+      PRESERVED: Disk state has been preserved.
+    """
+    DISK_SAVED_STATE_UNSPECIFIED = 0
+    PRESERVED = 1
+
   autoDelete = _messages.BooleanField(1)
   boot = _messages.BooleanField(2)
   deviceName = _messages.StringField(3)
@@ -262,13 +296,15 @@ class AttachedDisk(_messages.Message):
   diskInterface = _messages.EnumField('DiskInterfaceValueValuesEnum', 5)
   diskSizeGb = _messages.IntegerField(6)
   diskType = _messages.EnumField('DiskTypeValueValuesEnum', 7)
-  guestOsFeature = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  index = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  initializeParams = _messages.MessageField('InitializeParams', 10)
-  kind = _messages.StringField(11)
-  license = _messages.StringField(12, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 13)
-  source = _messages.StringField(14)
+  diskTypeUri = _messages.StringField(8)
+  guestOsFeature = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  index = _messages.IntegerField(10)
+  initializeParams = _messages.MessageField('InitializeParams', 11)
+  kind = _messages.StringField(12)
+  license = _messages.StringField(13, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 14)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 15)
+  source = _messages.StringField(16)
 
 
 class AuditConfig(_messages.Message):
@@ -335,7 +371,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Message describing Backup object.
+  r"""Message describing a Backup object.
 
   Enums:
     BackupTypeValueValuesEnum:
@@ -363,7 +399,7 @@ class Backup(_messages.Message):
     etag: Optional. Server specified ETag to prevent updates from overwriting
       each other.
     expireTime: Optional. When this backup is automatically expired.
-    gcpBackupPlanInfo: Output only. Configuration for a GCP resource.
+    gcpBackupPlanInfo: Output only. Configuration for a Google Cloud resource.
     labels: Optional. Resource labels to represent user provided metadata. No
       labels currently defined.
     name: Output only. Name of the resource.
@@ -471,8 +507,8 @@ class BackupApplianceBackupConfig(_messages.Message):
 
 
 class BackupApplianceBackupProperties(_messages.Message):
-  r"""BackupApplianceBackupProperties represents Compute Engine instance
-  backup properties.
+  r"""BackupApplianceBackupProperties represents BackupDR backup appliance's
+  properties.
 
   Fields:
     finalizeTime: Output only. The time when this backup object was finalized
@@ -528,7 +564,7 @@ class BackupConfigInfo(_messages.Message):
   Fields:
     backupApplianceBackupConfig: Configuration for an application backed up by
       a Backup Appliance.
-    gcpBackupConfig: Configuration for a GCP resource.
+    gcpBackupConfig: Configuration for a Google Cloud resource.
     lastBackupError: Output only. If the last backup failed, this field has
       the error message.
     lastBackupState: Output only. The status of the last backup to this
@@ -571,7 +607,7 @@ class BackupLock(_messages.Message):
     lockUntilTime: Required. The time after which this lock is not considered
       valid and will no longer protect the Backup from deletion.
     serviceLockInfo: Output only. Contains metadata about the lock exist for
-      GCP native backups.
+      Google Cloud native backups.
   """
 
   backupApplianceLockInfo = _messages.MessageField('BackupApplianceLockInfo', 1)
@@ -768,7 +804,7 @@ class BackupRule(_messages.Message):
 
 
 class BackupVault(_messages.Message):
-  r"""Message describing BackupVault object.
+  r"""Message describing a BackupVault object.
 
   Enums:
     StateValueValuesEnum: Output only. The BackupVault resource instance
@@ -1142,7 +1178,7 @@ class BackupdrProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is `false`.
+      mutations. The default is 'false'.
   """
 
   backupVault = _messages.MessageField('BackupVault', 1)
@@ -1150,6 +1186,21 @@ class BackupdrProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   validateOnly = _messages.BooleanField(5)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesAbandonBackupRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesAbandonBackupRequest
+  object.
+
+  Fields:
+    abandonBackupRequest: A AbandonBackupRequest resource to be passed as the
+      request body.
+    dataSource: Required. The resource name of the instance, in the format
+      'projects/*/locations/*/backupVaults/*/dataSources/'.
+  """
+
+  abandonBackupRequest = _messages.MessageField('AbandonBackupRequest', 1)
+  dataSource = _messages.StringField(2, required=True)
 
 
 class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsDeleteRequest(_messages.Message):
@@ -1180,9 +1231,9 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsGetRequest(_message
   object.
 
   Fields:
-    name: Required. Name of the data source resource name, in the format `proj
+    name: Required. Name of the data source resource name, in the format 'proj
       ects/{project_id}/locations/{location}/backupVaults/{backupVault}/dataSo
-      urces/{datasource}/backups/{backup}`
+      urces/{datasource}/backups/{backup}'
   """
 
   name = _messages.StringField(1, required=True)
@@ -1200,10 +1251,10 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest(_messag
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. The project and location for which to retrieve backup
-      information, in the format `projects/{project_id}/locations/{location}`.
-      In Cloud Backup and DR, locations map to GCP regions, for example **us-
-      central1**. To retrieve data sources for all locations, use "-" for the
-      `{location}` value.
+      information, in the format 'projects/{project_id}/locations/{location}'.
+      In Cloud Backup and DR, locations map to Google Cloud regions, for
+      example **us-central1**. To retrieve data sources for all locations, use
+      "-" for the '{location}' value.
   """
 
   filter = _messages.StringField(1)
@@ -1213,13 +1264,44 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsListRequest(_messag
   parent = _messages.StringField(5, required=True)
 
 
+class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest
+  object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. Name of the resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Backup resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then the request will fail.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
 class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest
   object.
 
   Fields:
     name: Required. The resource name of the Backup instance, in the format
-      `projects/*/locations/*/backupVaults/*/dataSources/*/backups/`.
+      'projects/*/locations/*/backupVaults/*/dataSources/*/backups/'.
     restoreBackupRequest: A RestoreBackupRequest resource to be passed as the
       request body.
   """
@@ -1228,16 +1310,63 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest(_mes
   restoreBackupRequest = _messages.MessageField('RestoreBackupRequest', 2)
 
 
+class BackupdrProjectsLocationsBackupVaultsDataSourcesFetchAccessTokenRequest(_messages.Message):
+  r"""A
+  BackupdrProjectsLocationsBackupVaultsDataSourcesFetchAccessTokenRequest
+  object.
+
+  Fields:
+    fetchAccessTokenRequest: A FetchAccessTokenRequest resource to be passed
+      as the request body.
+    name: Required. The resource name for the location for which static IPs
+      should be returned. Must be in the format
+      'projects/*/locations/*/backupVaults/*/dataSources'.
+  """
+
+  fetchAccessTokenRequest = _messages.MessageField('FetchAccessTokenRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesFinalizeBackupRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesFinalizeBackupRequest
+  object.
+
+  Fields:
+    dataSource: Required. The resource name of the instance, in the format
+      'projects/*/locations/*/backupVaults/*/dataSources/'.
+    finalizeBackupRequest: A FinalizeBackupRequest resource to be passed as
+      the request body.
+  """
+
+  dataSource = _messages.StringField(1, required=True)
+  finalizeBackupRequest = _messages.MessageField('FinalizeBackupRequest', 2)
+
+
 class BackupdrProjectsLocationsBackupVaultsDataSourcesGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesGetRequest object.
 
   Fields:
-    name: Required. Name of the data source resource name, in the format `proj
+    name: Required. Name of the data source resource name, in the format 'proj
       ects/{project_id}/locations/{location}/backupVaults/{resource_name}/data
-      Source/{resource_name}`
+      Source/{resource_name}'
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesInitiateBackupRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesInitiateBackupRequest
+  object.
+
+  Fields:
+    dataSource: Required. The resource name of the instance, in the format
+      'projects/*/locations/*/backupVaults/*/dataSources/'.
+    initiateBackupRequest: A InitiateBackupRequest resource to be passed as
+      the request body.
+  """
+
+  dataSource = _messages.StringField(1, required=True)
+  initiateBackupRequest = _messages.MessageField('InitiateBackupRequest', 2)
 
 
 class BackupdrProjectsLocationsBackupVaultsDataSourcesListRequest(_messages.Message):
@@ -1252,9 +1381,10 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesListRequest(_messages.Mess
       should return.
     parent: Required. The project and location for which to retrieve data
       sources information, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Backup and DR,
-      locations map to GCP regions, for example **us-central1**. To retrieve
-      data sources for all locations, use "-" for the `{location}` value.
+      'projects/{project_id}/locations/{location}'. In Cloud Backup and DR,
+      locations map to Google Cloud regions, for example **us-central1**. To
+      retrieve data sources for all locations, use "-" for the '{location}'
+      value.
   """
 
   filter = _messages.StringField(1)
@@ -1262,6 +1392,67 @@ class BackupdrProjectsLocationsBackupVaultsDataSourcesListRequest(_messages.Mess
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest object.
+
+  Fields:
+    allowMissing: Optional. Enable upsert.
+    dataSource: A DataSource resource to be passed as the request body.
+    name: Output only. The resource name.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the DataSource resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then the request will fail.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  dataSource = _messages.MessageField('DataSource', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesRemoveRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsDataSourcesRemoveRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    removeDataSourceRequest: A RemoveDataSourceRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeDataSourceRequest = _messages.MessageField('RemoveDataSourceRequest', 2)
+
+
+class BackupdrProjectsLocationsBackupVaultsDataSourcesSetInternalStatusRequest(_messages.Message):
+  r"""A
+  BackupdrProjectsLocationsBackupVaultsDataSourcesSetInternalStatusRequest
+  object.
+
+  Fields:
+    dataSource: Required. The resource name of the instance, in the format
+      'projects/*/locations/*/backupVaults/*/dataSources/'.
+    setInternalStatusRequest: A SetInternalStatusRequest resource to be passed
+      as the request body.
+  """
+
+  dataSource = _messages.StringField(1, required=True)
+  setInternalStatusRequest = _messages.MessageField('SetInternalStatusRequest', 2)
 
 
 class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
@@ -1288,7 +1479,7 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is `false`.
+      mutations. The default is 'false'.
   """
 
   allowMissing = _messages.BooleanField(1)
@@ -1299,13 +1490,38 @@ class BackupdrProjectsLocationsBackupVaultsDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(6)
 
 
+class BackupdrProjectsLocationsBackupVaultsFetchUsableRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsFetchUsableRequest object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. The project and location for which to retrieve
+      backupvault stores information, in the format
+      'projects/{project_id}/locations/{location}'. In Cloud Backup and DR,
+      locations map to Google Cloud regions, for example **us-central1**. To
+      retrieve backupvault stores for all locations, use "-" for the
+      '{location}' value.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class BackupdrProjectsLocationsBackupVaultsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsBackupVaultsGetRequest object.
 
   Fields:
     name: Required. Name of the backupvault store resource name, in the format
-      `projects/{project_id}/locations/{location}/backupVaults/{resource_name}
-      `
+      'projects/{project_id}/locations/{location}/backupVaults/{resource_name}
+      '
   """
 
   name = _messages.StringField(1, required=True)
@@ -1323,10 +1539,10 @@ class BackupdrProjectsLocationsBackupVaultsListRequest(_messages.Message):
       should return.
     parent: Required. The project and location for which to retrieve
       backupvault stores information, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Backup and DR,
-      locations map to GCP regions, for example **us-central1**. To retrieve
-      backupvault stores for all locations, use "-" for the `{location}`
-      value.
+      'projects/{project_id}/locations/{location}'. In Cloud Backup and DR,
+      locations map to Google Cloud regions, for example **us-central1**. To
+      retrieve backupvault stores for all locations, use "-" for the
+      '{location}' value.
   """
 
   filter = _messages.StringField(1)
@@ -1341,6 +1557,8 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
 
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
+    force: Optional. If set to true, will not check plan duration against
+      backup vault enforcement duration. Non-standard field.
     name: Output only. The resource name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1359,14 +1577,31 @@ class BackupdrProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then the request will fail.
     validateOnly: Optional. Only validate the request, but do not perform
-      mutations. The default is `false`.
+      mutations. The default is 'false'.
   """
 
   backupVault = _messages.MessageField('BackupVault', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
+
+
+class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class BackupdrProjectsLocationsGetRequest(_messages.Message):
@@ -1408,8 +1643,8 @@ class BackupdrProjectsLocationsManagementServersCreateRequest(_messages.Message)
     managementServerId: Required. The name of the management server to create.
       The name must be unique for the specified project and location.
     parent: Required. The management server project and location in the format
-      `projects/{project_id}/locations/{location}`. In Cloud Backup and DR
-      locations map to GCP regions, for example **us-central1**.
+      'projects/{project_id}/locations/{location}'. In Cloud Backup and DR
+      locations map to Google Cloud regions, for example **us-central1**.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1482,8 +1717,8 @@ class BackupdrProjectsLocationsManagementServersGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the management server resource name, in the format
-      `projects/{project_id}/locations/{location}/managementServers/{resource_
-      name}`
+      'projects/{project_id}/locations/{location}/managementServers/{resource_
+      name}'
   """
 
   name = _messages.StringField(1, required=True)
@@ -1501,10 +1736,10 @@ class BackupdrProjectsLocationsManagementServersListRequest(_messages.Message):
       should return.
     parent: Required. The project and location for which to retrieve
       management servers information, in the format
-      `projects/{project_id}/locations/{location}`. In Cloud BackupDR,
-      locations map to GCP regions, for example **us-central1**. To retrieve
-      management servers for all locations, use "-" for the `{location}`
-      value.
+      'projects/{project_id}/locations/{location}'. In Cloud BackupDR,
+      locations map to Google Cloud regions, for example **us-central1**. To
+      retrieve management servers for all locations, use "-" for the
+      '{location}' value.
   """
 
   filter = _messages.StringField(1)
@@ -1735,6 +1970,11 @@ class ComputeInstanceBackupProperties(_messages.Message):
       tokens for these service accounts are available to the instances that
       are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
+    sourceInstance: The source instance used to create this backup. This can
+      be a partial or full URL to the resource. For example, the following are
+      valid values: -https://www.googleapis.com/compute/v1/projects/project/zo
+      nes/zone/instances/instance
+      -projects/project/zones/zone/instances/instance
     tags: A list of tags to apply to the instances that are created from these
       properties. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
@@ -1767,7 +2007,8 @@ class ComputeInstanceBackupProperties(_messages.Message):
   networkInterface = _messages.MessageField('NetworkInterface', 9, repeated=True)
   scheduling = _messages.MessageField('Scheduling', 10)
   serviceAccount = _messages.MessageField('ServiceAccount', 11, repeated=True)
-  tags = _messages.MessageField('Tags', 12)
+  sourceInstance = _messages.StringField(12)
+  tags = _messages.MessageField('Tags', 13)
 
 
 class ComputeInstanceDataSourceProperties(_messages.Message):
@@ -1991,7 +2232,7 @@ class CustomerEncryptionKey(_messages.Message):
 
 
 class DataSource(_messages.Message):
-  r"""Message describing DataSource object. Datasource object used to
+  r"""Message describing a DataSource object. Datasource object used to
   represent Datasource details for both admin and basic view.
 
   Enums:
@@ -2010,9 +2251,10 @@ class DataSource(_messages.Message):
     createTime: Output only. The time when the instance was created.
     dataSourceBackupApplianceApplication: The backed up resource is a backup
       appliance application.
-    dataSourceGcpResource: The backed up resource is a GCP resource. The word
-      "DataSource" was included in the names to indicate that this is the
-      representation of the GCP resource used within the DataSource object.
+    dataSourceGcpResource: The backed up resource is a Google Cloud resource.
+      The word 'DataSource' was included in the names to indicate that this is
+      the representation of the Google Cloud resource used within the
+      DataSource object.
     etag: Server specified ETag for the ManagementServer resource to prevent
       simultaneous updates from overwiting each other.
     labels: Optional. Resource labels to represent user provided metadata. No
@@ -2120,19 +2362,19 @@ class DataSourceBackupApplianceApplication(_messages.Message):
 
 
 class DataSourceGcpResource(_messages.Message):
-  r"""DataSourceGcpResource is used for protected resources that are GCP
-  Resources. This name is easeier to understand than GcpResourceDataSource or
-  GcpDataSourceResource
+  r"""DataSourceGcpResource is used for protected resources that are Google
+  Cloud Resources. This name is easeier to understand than
+  GcpResourceDataSource or GcpDataSourceResource
 
   Fields:
     computeInstanceDatasourceProperties: ComputeInstanceDataSourceProperties
       has a subset of Compute Instance properties that are useful at the
       Datasource level.
-    gcpResourcename: Output only. Full resource pathname URL of the source GCP
-      resource.
+    gcpResourcename: Output only. Full resource pathname URL of the source
+      Google Cloud resource.
     location: Location of the resource: //"global"/"unspecified".
-    type: The type of the GCP resource. Use the Unified Resource Type, eg.
-      compute.googleapis.com/Instance.
+    type: The type of the Google Cloud resource. Use the Unified Resource
+      Type, eg. compute.googleapis.com/Instance.
   """
 
   computeInstanceDatasourceProperties = _messages.MessageField('ComputeInstanceDataSourceProperties', 1)
@@ -2211,9 +2453,97 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class FetchAccessTokenRequest(_messages.Message):
+  r"""Request message for FetchAccessToken.
+
+  Fields:
+    generationId: Required. The generation of the backup to update.
+  """
+
+  generationId = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class FetchAccessTokenResponse(_messages.Message):
+  r"""Response message for FetchAccessToken.
+
+  Fields:
+    expireTime: The token is valid until this time.
+    readLocation: The location in bucket that can be used for reading.
+    token: The downscoped token that was created.
+    writeLocation: The location in bucket that can be used for writing.
+  """
+
+  expireTime = _messages.StringField(1)
+  readLocation = _messages.StringField(2)
+  token = _messages.StringField(3)
+  writeLocation = _messages.StringField(4)
+
+
+class FetchUsableBackupVaultsResponse(_messages.Message):
+  r"""Response message for fetching usable BackupVaults.
+
+  Fields:
+    backupVaults: The list of BackupVault instances in the project for the
+      specified location. If the '{location}' value in the request is "-", the
+      response contains a list of instances from all locations. In case any
+      location is unreachable, the response will only return backup vaults in
+      reachable locations and the 'unreachable' field will be populated with a
+      list of unreachable locations.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  backupVaults = _messages.MessageField('BackupVault', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class FinalizeBackupRequest(_messages.Message):
+  r"""Message for finalizing a Backup.
+
+  Fields:
+    backupId: Required. Resource ID of the Backup resource to be finalized.
+      This must be the same backup_id that was used in the
+      InitiateBackupRequest.
+    consistencyTime: The point in time when this backup was captured from the
+      source. This will be assigned to the consistency_time field of the newly
+      created Backup.
+    description: This will be assigned to the description field of the newly
+      created Backup.
+    recoveryRangeEndTime: The latest timestamp of data available in this
+      Backup. This will be set on the newly created Backup.
+    recoveryRangeStartTime: The earliest timestamp of data available in this
+      Backup. This will set on the newly created Backup.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    retentionDuration: The ExpireTime on the backup will be set to
+      FinalizeTime plus this duration. If the resulting ExpireTime is less
+      than EnforcedRetentionEndTime, then ExpireTime is set to
+      EnforcedRetentionEndTime.
+  """
+
+  backupId = _messages.StringField(1)
+  consistencyTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  recoveryRangeEndTime = _messages.StringField(4)
+  recoveryRangeStartTime = _messages.StringField(5)
+  requestId = _messages.StringField(6)
+  retentionDuration = _messages.StringField(7)
+
+
 class GCPBackupPlanInfo(_messages.Message):
-  r"""GCPBackupPlanInfo captures the plan configuration details of GCP
-  resources at the time of backup.
+  r"""GCPBackupPlanInfo captures the plan configuration details of Google
+  Cloud resources at the time of backup.
 
   Fields:
     backupPlan: Resource name of backup plan by which workload is protected at
@@ -2228,9 +2558,9 @@ class GCPBackupPlanInfo(_messages.Message):
 
 
 class GcpBackupConfig(_messages.Message):
-  r"""GcpBackupConfig captures the Backup configuration details for GCP
-  resources. All GCP resources regardless of type are protected with backup
-  plan associations.
+  r"""GcpBackupConfig captures the Backup configuration details for Google
+  Cloud resources. All Google Cloud resources regardless of type are protected
+  with backup plan associations.
 
   Fields:
     backupPlan: The name of the backup plan.
@@ -2307,6 +2637,43 @@ class InitializeParams(_messages.Message):
 
   diskName = _messages.StringField(1)
   replicaZones = _messages.StringField(2, repeated=True)
+
+
+class InitiateBackupRequest(_messages.Message):
+  r"""request message for InitiateBackup.
+
+  Fields:
+    backupId: Required. Resource ID of the Backup resource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backupId = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
+class InitiateBackupResponse(_messages.Message):
+  r"""Response message for InitiateBackup.
+
+  Fields:
+    backup: The name of the backup that was created.
+    baseBackupGenerationId: The generation id of the base backup. It is needed
+      for the incremental backups.
+    newBackupGenerationId: The generation id of the new backup.
+  """
+
+  backup = _messages.StringField(1)
+  baseBackupGenerationId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  newBackupGenerationId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class InstanceParams(_messages.Message):
@@ -2393,11 +2760,11 @@ class ListBackupPlansResponse(_messages.Message):
 
 
 class ListBackupVaultsResponse(_messages.Message):
-  r"""Response message for listing backup vaults.
+  r"""Response message for listing BackupVaults.
 
   Fields:
     backupVaults: The list of BackupVault instances in the project for the
-      specified location. If the `{location}` value in the request is "-", the
+      specified location. If the '{location}' value in the request is "-", the
       response contains a list of instances from all locations. In case any
       location is unreachable, the response will only return backup vaults in
       reachable locations and the 'unreachable' field will be populated with a
@@ -2413,11 +2780,11 @@ class ListBackupVaultsResponse(_messages.Message):
 
 
 class ListBackupsResponse(_messages.Message):
-  r"""Response message for listing backups.
+  r"""Response message for listing Backups.
 
   Fields:
     backups: The list of Backup instances in the project for the specified
-      location. If the `{location}` value in the request is "-", the response
+      location. If the '{location}' value in the request is "-", the response
       contains a list of instances from all locations. In case any location is
       unreachable, the response will only return data sources in reachable
       locations and the 'unreachable' field will be populated with a list of
@@ -2433,11 +2800,11 @@ class ListBackupsResponse(_messages.Message):
 
 
 class ListDataSourcesResponse(_messages.Message):
-  r"""Response message for listing data sources.
+  r"""Response message for listing DataSources.
 
   Fields:
     dataSources: The list of DataSource instances in the project for the
-      specified location. If the `{location}` value in the request is "-", the
+      specified location. If the '{location}' value in the request is "-", the
       response contains a list of instances from all locations. In case any
       location is unreachable, the response will only return data sources in
       reachable locations and the 'unreachable' field will be populated with a
@@ -2470,7 +2837,7 @@ class ListManagementServersResponse(_messages.Message):
 
   Fields:
     managementServers: The list of ManagementServer instances in the project
-      for the specified location. If the `{location}` value in the request is
+      for the specified location. If the '{location}' value in the request is
       "-", the response contains a list of instances from all locations. In
       case any location is unreachable, the response will only return
       management servers in reachable locations and the 'unreachable' field
@@ -3050,7 +3417,7 @@ class OperationMetadata(_messages.Message):
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
-      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+      google.rpc.Status.code of 1, corresponding to 'Code.CANCELLED'.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
@@ -3172,8 +3539,28 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class RemoveDataSourceRequest(_messages.Message):
+  r"""Message for deleting a DataSource.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
 class RestoreBackupRequest(_messages.Message):
-  r"""Request message for restoring a Backup instance.
+  r"""Request message for restoring from a Backup.
 
   Fields:
     computeInstanceRestoreProperties: Compute Engine instance properties to be
@@ -3382,6 +3769,50 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SetInternalStatusRequest(_messages.Message):
+  r"""Request message for SetStatusInternal method.
+
+  Enums:
+    BackupConfigStateValueValuesEnum: Required. The new BackupConfigState to
+      set for the DataSource.
+
+  Fields:
+    backupConfigState: Required. The new BackupConfigState to set for the
+      DataSource.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+    value: Required. The value required for this method to work. This field
+      must be the 32-byte SHA256 hash of the DataSourceID. The DataSourceID
+      used here is only the final piece of the fully qualified resource path
+      for this DataSource (i.e. the part after '.../dataSources/'). This field
+      exists to make this method difficult to call since it is intended for
+      use only by Backup Appliances.
+  """
+
+  class BackupConfigStateValueValuesEnum(_messages.Enum):
+    r"""Required. The new BackupConfigState to set for the DataSource.
+
+    Values:
+      BACKUP_CONFIG_STATE_UNSPECIFIED: The possible states of backup
+        configuration. Status not set.
+      ACTIVE: The data source is actively protected (i.e. there is a
+        BackupPlanAssociation or Appliance SLA pointing to it)
+      PASSIVE: The data source is no longer protected (but may have backups
+        under it)
+    """
+    BACKUP_CONFIG_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PASSIVE = 2
+
+  backupConfigState = _messages.EnumField('BackupConfigStateValueValuesEnum', 1)
+  requestId = _messages.StringField(2)
+  value = _messages.BytesField(3)
 
 
 class ShieldedInstanceConfig(_messages.Message):

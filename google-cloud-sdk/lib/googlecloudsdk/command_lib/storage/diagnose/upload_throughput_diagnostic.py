@@ -55,13 +55,15 @@ def _get_payload_description(object_count: int, object_size: int) -> str:
   """Returns the payload description for the given object count and size."""
   return (
       f'Transferred {object_count} objects for a total transfer size of'
-      f' {scaled_integer.FormatInteger(object_size)}.'
+      f' {scaled_integer.FormatBinaryNumber(object_size, decimal_places=1)}.'
   )
 
 
 def _get_formatted_upload_throughput(upload_throughput: float) -> str:
   """Formats the upload throughput to a human readable format."""
-  scaled_upload_throughput = scaled_integer.FormatInteger(upload_throughput)
+  scaled_upload_throughput = scaled_integer.FormatBinaryNumber(
+      upload_throughput, decimal_places=1
+  )
   return f'{scaled_upload_throughput}/sec'
 
 
@@ -114,6 +116,10 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     # and previous runs of this diagnostic.
     self.object_prefix = 'upload_throughput_diagnostics_' + str(uuid.uuid4())
 
+  @property
+  def name(self) -> str:
+    return _DIAGNOSTIC_NAME
+
   def _pre_process(self):
     """Prepares the environment for the diagnostic test."""
     self._old_env_vars = os.environ.copy()
@@ -121,10 +127,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
       self.streaming_size = _DEFAULT_STREAMING_SIZE
       if len(self._object_sizes) > 1:
         log.warning(
-            'Streaming uploads do not support multiple objects. Ignoring'
-            ' the object count and using default size. : {}'.format(
-                _DEFAULT_STREAMING_SIZE
-            )
+            'Streaming uploads do not support multiple objects. Ignoring the'
+            ' object count and using default size. :'
+            f' {_DEFAULT_STREAMING_SIZE}'
         )
       else:
         self.streaming_size = self._object_sizes[0]
@@ -174,7 +179,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
 
     if self._upload_type == UploadType.STREAMING:
       with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
-        log.debug(
+        log.status.Print(
             'Starting Streaming Upload of {} bytes to : {}'.format(
                 self.streaming_size, self.bucket_url
             )
@@ -188,10 +193,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         self._upload_type == UploadType.PARALLEL_COMPOSITE
         or self._upload_type == UploadType.FILE
     ):
-      log.debug(
-          'Starting Uploading {} objects to : {}'.format(
-              self._object_count, self.bucket_url
-          )
+      log.status.Print(
+          f'Starting Uploading {self._object_count} objects to :'
+          f' {self.bucket_url}'
       )
       with self._time_recorder(_UPLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -200,9 +204,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         )
     else:
       raise diagnostic.DiagnosticIgnorableError(
-          '{} : Unknown upload type: {}'.format(
-              _DIAGNOSTIC_NAME, self._upload_type
-          )
+          '{} : Unknown upload type: {}'.format(self.name, self._upload_type)
       )
 
   def _post_process(self):
@@ -213,11 +215,9 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
     if self.temp_dir:
       try:
         self.temp_dir.Close()
-        log.debug('Done cleaning up temp files.')
+        log.status.Print('Cleaned up temp files.')
       except OSError as e:
-        log.warning(
-            '{} : Failed to clean up temp files. {}'.format(_DIAGNOSTIC_NAME, e)
-        )
+        log.warning(f'{self.name} : Failed to clean up temp files. {e}')
 
   @property
   def result(self) -> diagnostic.DiagnosticResult | None:
@@ -231,7 +231,7 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
       upload_throughput = diagnostic.PLACEHOLDER_METRIC_VALUE
     else:
       upload_throughput = _get_formatted_upload_throughput(
-          upload_payload_size / upload_time
+          round(upload_payload_size / upload_time, 2)
       )
 
     operation_result = diagnostic.DiagnosticOperationResult(
@@ -242,6 +242,6 @@ class UploadThroughputDiagnostic(diagnostic.Diagnostic):
         ),
     )
     return diagnostic.DiagnosticResult(
-        name=_DIAGNOSTIC_NAME,
+        name=self.name,
         operation_results=[operation_result],
     )

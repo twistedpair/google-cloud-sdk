@@ -61,6 +61,15 @@ class DiagnosticOperationResult:
   result: Dict[any, any]
   payload_description: str | None = None
 
+  def __str__(self) -> str:
+    out = io.StringIO()
+    out.write('Diagnostic Operation Result\n')
+    out.write('Name: {}\n'.format(self.name))
+    if self.payload_description:
+      out.write('Payload Description: {}\n'.format(self.payload_description))
+    out.write('Result: {}\n'.format(self.result))
+    return out.getvalue()
+
 
 @dataclasses.dataclass
 class DiagnosticResult:
@@ -77,6 +86,17 @@ class DiagnosticResult:
   operation_results: List[DiagnosticOperationResult]
   metadata: Dict[any, any] | None = None
 
+  def __str__(self) -> str:
+    out = io.StringIO()
+    out.write('Diagnostic Result\n')
+    out.write('Name: {}\n'.format(self.name))
+    if self.metadata:
+      out.write('Metadata: {}\n'.format(self.metadata))
+    out.write('\nOperation Results:\n')
+    for operation_result in self.operation_results:
+      out.write(str(operation_result) + '\n')
+    return out.getvalue()
+
 
 class Diagnostic(abc.ABC):
   """Base class for storage diagnostics.
@@ -85,6 +105,12 @@ class Diagnostic(abc.ABC):
   override the pre-processing, diagnostic and post-processing steps as needed.
   The execute method is the entry point for running the diagnostic.
   """
+
+  @property
+  @abc.abstractmethod
+  def name(self) -> str:
+    """The name of the diagnostic."""
+    pass
 
   @abc.abstractmethod
   def _pre_process(self):
@@ -117,14 +143,16 @@ class Diagnostic(abc.ABC):
 
   def execute(self):
     """Executes the diagnostic."""
+    log.status.Print(f'Running diagnostic: {self.name}...')
     try:
       self._pre_process()
       self._run()
     # TODO(b/338905869): Add support to optionaly suppress the exception.
     except DiagnosticIgnorableError as e:
-      log.error('Diagnostic execution failed: {}'.format(e))
+      log.error(f'{self.name} Diagnostic execution failed: {e}')
     finally:
       self._post_process()
+    log.status.Print(f'Finished running diagnostic: {self.name}')
 
   @contextlib.contextmanager
   def _time_recorder(self, key: str, result: Dict[str, float]) -> None:

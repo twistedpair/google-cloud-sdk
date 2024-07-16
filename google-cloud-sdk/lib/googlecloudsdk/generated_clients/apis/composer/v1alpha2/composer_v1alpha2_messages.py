@@ -255,13 +255,20 @@ class ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest(_messages.Mess
     pageToken: The next_page_token returned from a previous List request.
     parent: Required. List DAG runs in the given parent resource. Parent must
       be in the form: "projects/{projectId}/locations/{locationId}/environment
-      s/{environmentId}/dags/{dagId}".
+      s/{environmentId}/dags/{dagId}". If dagId is specified as a wildcard
+      '-', the response will contain the runs of all DAGs.
+    runsCountPerDag: Optional. If set to value greater than 0, the cross-DAG
+      list mode will be used and response will contain the specified number of
+      last DAG runs for selected DAGs. Pagination is not supported if this
+      field is set. Sort order is descending by DAG run execution_date if this
+      field is set. Filter is supported.
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  runsCountPerDag = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesGetRequest(_messages.Message):
@@ -1090,6 +1097,10 @@ class DagRun(_messages.Message):
   Fields:
     dagId: The DAG ID of the DAG whose execution is described by this DAG run.
     dagRunId: The DAG run ID.
+    dataIntervalEnd: End of the data interval. Added in version 2.2. If run
+      has been triggered manually, this field is equal to execution_date.
+    dataIntervalStart: Start of the data interval. Added in version 2.2. If
+      run has been triggered manually, this field is equal to execution_date.
     endDate: Timestamp when the DAG run ended. Set only if the DAG run has
       finished.
     executionDate: The logical date and time which the DAG run and its task
@@ -1136,12 +1147,14 @@ class DagRun(_messages.Message):
 
   dagId = _messages.StringField(1)
   dagRunId = _messages.StringField(2)
-  endDate = _messages.StringField(3)
-  executionDate = _messages.StringField(4)
-  name = _messages.StringField(5)
-  startDate = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  dataIntervalEnd = _messages.StringField(3)
+  dataIntervalStart = _messages.StringField(4)
+  endDate = _messages.StringField(5)
+  executionDate = _messages.StringField(6)
+  name = _messages.StringField(7)
+  startDate = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class DagStats(_messages.Message):

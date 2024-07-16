@@ -533,9 +533,9 @@ class GoogleCloudEssentialcontactsV1beta1Contact(_messages.Message):
 
   Enums:
     NotificationCategorySubscriptionsValueListEntryValuesEnum:
-    ValidationStateValueValuesEnum: The validity of the contact. A contact is
-      considered valid if it is the correct recipient for notifications for a
-      particular resource.
+    ValidationStateValueValuesEnum: Output only. The validity of the contact.
+      A contact is considered valid if it is the correct recipient for
+      notifications for a particular resource.
 
   Fields:
     email: Required. The email address to send notifications to. The email
@@ -552,9 +552,9 @@ class GoogleCloudEssentialcontactsV1beta1Contact(_messages.Message):
     validateTime: The last time the validation_state was updated, either
       manually or automatically. A contact is considered stale if its
       validation state was updated more than 1 year ago.
-    validationState: The validity of the contact. A contact is considered
-      valid if it is the correct recipient for notifications for a particular
-      resource.
+    validationState: Output only. The validity of the contact. A contact is
+      considered valid if it is the correct recipient for notifications for a
+      particular resource.
   """
 
   class NotificationCategorySubscriptionsValueListEntryValuesEnum(_messages.Enum):
@@ -590,8 +590,9 @@ class GoogleCloudEssentialcontactsV1beta1Contact(_messages.Message):
     TECHNICAL_INCIDENTS = 8
 
   class ValidationStateValueValuesEnum(_messages.Enum):
-    r"""The validity of the contact. A contact is considered valid if it is
-    the correct recipient for notifications for a particular resource.
+    r"""Output only. The validity of the contact. A contact is considered
+    valid if it is the correct recipient for notifications for a particular
+    resource.
 
     Values:
       VALIDATION_STATE_UNSPECIFIED: The validation state is unknown or

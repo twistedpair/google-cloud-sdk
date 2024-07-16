@@ -498,6 +498,21 @@ class ApigeeOrganizationsApisListRequest(_messages.Message):
   space = _messages.StringField(4)
 
 
+class ApigeeOrganizationsApisMoveRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisMoveRequest object.
+
+  Fields:
+    googleCloudApigeeV1MoveApiProxyRequest: A
+      GoogleCloudApigeeV1MoveApiProxyRequest resource to be passed as the
+      request body.
+    name: Required. API proxy to move in the following format:
+      `organizations/{org}/apis/{api}`
+  """
+
+  googleCloudApigeeV1MoveApiProxyRequest = _messages.MessageField('GoogleCloudApigeeV1MoveApiProxyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsApisPatchRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisPatchRequest object.
 
@@ -4889,6 +4904,21 @@ class ApigeeOrganizationsSharedflowsListRequest(_messages.Message):
   space = _messages.StringField(4)
 
 
+class ApigeeOrganizationsSharedflowsMoveRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSharedflowsMoveRequest object.
+
+  Fields:
+    googleCloudApigeeV1MoveSharedFlowRequest: A
+      GoogleCloudApigeeV1MoveSharedFlowRequest resource to be passed as the
+      request body.
+    name: Required. Shared Flow to move in the following format:
+      `organizations/{org}/sharedflows/{shared_flow}`
+  """
+
+  googleCloudApigeeV1MoveSharedFlowRequest = _messages.MessageField('GoogleCloudApigeeV1MoveSharedFlowRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class ApigeeOrganizationsSharedflowsRevisionsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsSharedflowsRevisionsDeleteRequest object.
 
@@ -5266,10 +5296,10 @@ class ApigeeOrganizationsUpdateControlPlaneAccessRequest(_messages.Message):
     googleCloudApigeeV1ControlPlaneAccess: A
       GoogleCloudApigeeV1ControlPlaneAccess resource to be passed as the
       request body.
-    name: The resource name of the ControlPlaneAccess. Format:
+    name: Identifier. The resource name of the ControlPlaneAccess. Format:
       "organizations/{org}/controlPlaneAccess"
     updateMask: List of fields to be updated. Fields that can be updated:
-      portal_disabled, release_channel, addon_config.
+      synchronizer_identities, publisher_identities.
   """
 
   googleCloudApigeeV1ControlPlaneAccess = _messages.MessageField('GoogleCloudApigeeV1ControlPlaneAccess', 1)
@@ -6920,24 +6950,22 @@ class GoogleCloudApigeeV1ControlPlaneAccess(_messages.Message):
   and wish to assign a unique service account to each one.
 
   Fields:
-    loggerIdentities: Array of service accounts to grant access to control
-      plane resources (for the Logger component).
-    name: The resource name of the ControlPlaneAccess. Format:
+    analyticsPublisherIdentities: Optional. Array of service accounts
+      authorized to publish analytics data to the control plane (for the
+      Message Processor component).
+    name: Identifier. The resource name of the ControlPlaneAccess. Format:
       "organizations/{org}/controlPlaneAccess"
-    synchronizerIdentities: Required. Array of service accounts to grant
+    synchronizerIdentities: Optional. Array of service accounts to grant
       access to control plane resources (for the Synchronizer component). The
       service accounts must have **Apigee Synchronizer Manager** role. See
       also [Create service
       accounts](https://cloud.google.com/apigee/docs/hybrid/latest/sa-
       about#create-the-service-accounts).
-    udcaIdentities: Required. Array of service accounts to grant access to
-      control plane resources (for the UDCA component).
   """
 
-  loggerIdentities = _messages.StringField(1, repeated=True)
+  analyticsPublisherIdentities = _messages.StringField(1, repeated=True)
   name = _messages.StringField(2)
   synchronizerIdentities = _messages.StringField(3, repeated=True)
-  udcaIdentities = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudApigeeV1Credential(_messages.Message):
@@ -9044,8 +9072,7 @@ class GoogleCloudApigeeV1ListApiProductsResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListApiProxiesResponse(_messages.Message):
-  r"""To change this message, in the same CL add a change log in go/changing-
-  api-proto-breaks-ui
+  r"""A GoogleCloudApigeeV1ListApiProxiesResponse object.
 
   Fields:
     proxies: A GoogleCloudApigeeV1ApiProxy attribute.
@@ -9488,8 +9515,7 @@ class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
-  r"""To change this message, in the same CL add a change log in go/changing-
-  api-proto-breaks-ui
+  r"""A GoogleCloudApigeeV1ListSharedFlowsResponse object.
 
   Fields:
     sharedFlows: A GoogleCloudApigeeV1SharedFlow attribute.
@@ -9626,6 +9652,28 @@ class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   expiresAt = _messages.IntegerField(2)
+
+
+class GoogleCloudApigeeV1MoveApiProxyRequest(_messages.Message):
+  r"""Moves an API Proxy to a different space.
+
+  Fields:
+    space: Optional. Resource ID of the space to move the proxy to. If
+      unspecified, the proxy will be moved to the organization level.
+  """
+
+  space = _messages.StringField(1)
+
+
+class GoogleCloudApigeeV1MoveSharedFlowRequest(_messages.Message):
+  r"""Moves a Shared Flow to a different space.
+
+  Fields:
+    space: Optional. Resource ID of the space to move the shared flow to. If
+      unspecified, the shared flow will be moved to the organization level.
+  """
+
+  space = _messages.StringField(1)
 
 
 class GoogleCloudApigeeV1NatAddress(_messages.Message):

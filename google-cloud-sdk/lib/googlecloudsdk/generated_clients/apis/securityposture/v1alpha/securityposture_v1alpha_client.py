@@ -39,6 +39,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.organizations_locations_findingRemediationExecutions = self.OrganizationsLocationsFindingRemediationExecutionsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
     self.organizations_locations_postureDeployments = self.OrganizationsLocationsPostureDeploymentsService(self)
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
@@ -46,6 +47,43 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
+
+  class OrganizationsLocationsFindingRemediationExecutionsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_findingRemediationExecutions resource."""
+
+    _NAME = 'organizations_locations_findingRemediationExecutions'
+
+    def __init__(self, client):
+      super(SecuritypostureV1alpha.OrganizationsLocationsFindingRemediationExecutionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""========================== Remediate Findings ========================== Remediate findings. Creates a new FindingRemediationExecution resource.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/findingRemediationExecutions:create',
+        http_method='POST',
+        method_id='securityposture.organizations.locations.findingRemediationExecutions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/findingRemediationExecutions:create',
+        request_field='createFindingRemediationExecutionRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_operations resource."""
@@ -511,7 +549,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         method_id='securityposture.organizations.locations.postures.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+parent}/postures',
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsPosturesListRequest',
@@ -698,6 +736,33 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsGetRequest',
         response_type_name='Location',
+        supports_download=False,
+    )
+
+    def GetIacValidationReportMetrics(self, request, global_params=None):
+      r"""Gets the metrics for a given report.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (IaCValidationReportMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetIacValidationReportMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIacValidationReportMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/iacValidationReportMetrics',
+        http_method='GET',
+        method_id='securityposture.organizations.locations.getIacValidationReportMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['duration_days'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest',
+        response_type_name='IaCValidationReportMetrics',
         supports_download=False,
     )
 

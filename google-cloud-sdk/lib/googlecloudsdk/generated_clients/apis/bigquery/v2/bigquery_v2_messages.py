@@ -573,13 +573,13 @@ class BigLakeConfiguration(_messages.Message):
   Fields:
     connectionId: Required. The connection specifying the credentials to be
       used to read and write to external storage, such as Cloud Storage. The
-      connection_id can have the form
-      "<project\_id>.<location\_id>.<connection\_id>" or "projects/<project\_i
-      d>/locations/<location\_id>/connections/<connection\_id>".
+      connection_id can have the form `{project}.{location}.{connection_id}`
+      or
+      `projects/{project}/locations/{location}/connections/{connection_id}".
     fileFormat: Required. The file format the table data is stored in.
     storageUri: Required. The fully qualified location prefix of the external
       folder where table data is stored. The '*' wildcard character is not
-      allowed. The URI should be in the format "gs://bucket/path_to_table/"
+      allowed. The URI should be in the format `gs://bucket/path_to_table/`
     tableFormat: Required. The table format the metadata only snapshots are
       stored in.
   """
@@ -697,10 +697,10 @@ class BigqueryDatasetsListRequest(_messages.Message):
   Fields:
     all: Whether to list all datasets, including hidden ones
     filter: An expression for filtering the results of the request by label.
-      The syntax is \"labels.<name>[:<value>]\". Multiple filters can be ANDed
-      together by connecting with a space. Example:
-      \"labels.department:receiving labels.active\". See [Filtering datasets
-      using labels](/bigquery/docs/filtering-
+      The syntax is `labels.[:]`. Multiple filters can be ANDed together by
+      connecting with a space. Example: `labels.department:receiving
+      labels.active`. See [Filtering datasets using
+      labels](https://cloud.google.com/bigquery/docs/filtering-
       labels#filtering_datasets_using_labels) for details.
     maxResults: The maximum number of results to return in a single response
       page. Leverage the page tokens to iterate through the entire collection.
@@ -765,8 +765,8 @@ class BigqueryJobsCancelRequest(_messages.Message):
   Fields:
     jobId: Required. Job ID of the job to cancel
     location: The geographic location of the job. You must specify the
-      location to run the job for the following scenarios: - If the location
-      to run a job is not in the `us` or the `eu` multi-regional location - If
+      location to run the job for the following scenarios: * If the location
+      to run a job is not in the `us` or the `eu` multi-regional location * If
       the job's location is in a single region (for example, `us-central1`)
       For more information, see https://cloud.google.com/bigquery/docs/locatio
       ns#specifying_your_location.
@@ -810,8 +810,8 @@ class BigqueryJobsGetQueryResultsRequest(_messages.Message):
       Default is false.
     jobId: Required. Job ID of the query job.
     location: The geographic location of the job. You must specify the
-      location to run the job for the following scenarios: - If the location
-      to run a job is not in the `us` or the `eu` multi-regional location - If
+      location to run the job for the following scenarios: * If the location
+      to run a job is not in the `us` or the `eu` multi-regional location * If
       the job's location is in a single region (for example, `us-central1`)
       For more information, see https://cloud.google.com/bigquery/docs/locatio
       ns#specifying_your_location.
@@ -849,8 +849,8 @@ class BigqueryJobsGetRequest(_messages.Message):
   Fields:
     jobId: Required. Job ID of the requested job.
     location: The geographic location of the job. You must specify the
-      location to run the job for the following scenarios: - If the location
-      to run a job is not in the `us` or the `eu` multi-regional location - If
+      location to run the job for the following scenarios: * If the location
+      to run a job is not in the `us` or the `eu` multi-regional location * If
       the job's location is in a single region (for example, `us-central1`)
       For more information, see https://cloud.google.com/bigquery/docs/locatio
       ns#specifying_your_location.
@@ -1469,7 +1469,7 @@ class BigtableColumn(_messages.Message):
       column family level. However, the setting at this level takes precedence
       if 'onlyReadLatest' is set at both levels.
     qualifierEncoded: [Required] Qualifier of the column. Columns in the
-      parent column family that has this exact qualifier are exposed as .
+      parent column family that has this exact qualifier are exposed as `.`
       field. If the qualifier is valid UTF-8 string, it can be specified in
       the qualifier_string field. Otherwise, a base-64 encoded value must be
       set to qualifier_encoded. The column field name is the same as the
@@ -1500,8 +1500,8 @@ class BigtableColumnFamily(_messages.Message):
   Fields:
     columns: Optional. Lists of columns that should be exposed as individual
       fields as opposed to a list of (column name, value) pairs. All columns
-      whose qualifier matches a qualifier in this list can be accessed as ..
-      Other columns can be accessed as a list through .Column field.
+      whose qualifier matches a qualifier in this list can be accessed as `.`.
+      Other columns can be accessed as a list through the `.Column` field.
     encoding: Optional. The encoding of the values when the type is not
       STRING. Acceptable encoding values are: TEXT - indicates values are
       alphanumeric text strings. BINARY - indicates values are encoded using
@@ -1883,9 +1883,12 @@ class ConnectionProperty(_messages.Message):
   subsequent queries in a script or session will have this label. For the
   format in which a you can specify a query label, see labels in the
   JobConfiguration resource type: https://cloud.google.com/bigquery/docs/refer
-  ence/rest/v2/Job#jobconfiguration Additional properties are allowed, but
-  ignored. Specifying multiple connection properties with the same key returns
-  an error.
+  ence/rest/v2/Job#jobconfiguration * **service_account**: indicates the
+  service account to use to run a continuous query. If set, the query job uses
+  the service account to access Google Cloud resources. Service account access
+  is bounded by the IAM permissions that you have granted to the service
+  account. Additional properties are allowed, but ignored. Specifying multiple
+  connection properties with the same key returns an error.
 
   Fields:
     key: The key of the property to set.
@@ -2006,7 +2009,7 @@ class DataSplitResult(_messages.Message):
 
 
 class Dataset(_messages.Message):
-  r"""A Dataset object.
+  r"""Represents a BigQuery dataset.
 
   Enums:
     DefaultRoundingModeValueValuesEnum: Optional. Defines the default rounding
@@ -2024,8 +2027,9 @@ class Dataset(_messages.Message):
     AccessValueListEntry: An object that defines dataset access for an entity.
     LabelsValue: The labels associated with this dataset. You can use these to
       organize and group your datasets. You can set this property when
-      inserting or updating a dataset. See Creating and Updating Dataset
-      Labels for more information.
+      inserting or updating a dataset. See [Creating and Updating Dataset
+      Labels](https://cloud.google.com/bigquery/docs/creating-managing-
+      labels#creating_and_updating_dataset_labels) for more information.
     ResourceTagsValue: Optional. The [tags](/bigquery/docs/tags) attached to
       this dataset. Tag keys are globally unique. Tag key is expected to be in
       the namespaced format, for example "123456789012/environment" where
@@ -2044,7 +2048,10 @@ class Dataset(_messages.Message):
       access for the following entities: access.specialGroup: projectReaders;
       access.role: READER; access.specialGroup: projectWriters; access.role:
       WRITER; access.specialGroup: projectOwners; access.role: OWNER;
-      access.userByEmail: [dataset creator email]; access.role: OWNER;
+      access.userByEmail: [dataset creator email]; access.role: OWNER; If you
+      patch a dataset, then this field is overwritten by the patched dataset's
+      access field. To add entities, you must supply the entire existing
+      access array in addition to any new entities that you want to add.
     creationTime: Output only. The time when this dataset was created, in
       milliseconds since the epoch.
     datasetReference: Required. A reference that identifies the dataset.
@@ -2112,8 +2119,9 @@ class Dataset(_messages.Message):
     kind: Output only. The resource type.
     labels: The labels associated with this dataset. You can use these to
       organize and group your datasets. You can set this property when
-      inserting or updating a dataset. See Creating and Updating Dataset
-      Labels for more information.
+      inserting or updating a dataset. See [Creating and Updating Dataset
+      Labels](https://cloud.google.com/bigquery/docs/creating-managing-
+      labels#creating_and_updating_dataset_labels) for more information.
     lastModifiedTime: Output only. The date when this dataset was last
       modified, in milliseconds since the epoch.
     linkedDatasetMetadata: Output only. Metadata about the LinkedDataset.
@@ -2145,7 +2153,8 @@ class Dataset(_messages.Message):
       again. You can use this URL in Get or Update requests to the resource.
     storageBillingModel: Optional. Updates storage_billing_model for the
       dataset.
-    tags: Output only. Tags for the Dataset.
+    tags: Output only. Tags for the dataset. To provide tags as inputs, use
+      the `resourceTags` field.
     type: Output only. Same as `type` in `ListFormatDataset`. The type of the
       dataset, one of: * DEFAULT - only accessible by owner and authorized
       accounts, * PUBLIC - accessible by everyone, * LINKED - linked dataset,
@@ -2207,10 +2216,10 @@ class Dataset(_messages.Message):
         Policy but isn't a user, group, domain, or special group.
       role: An IAM role ID that should be granted to the user, group, or
         domain specified in this access entry. The following legacy mappings
-        will be applied: OWNER <=> roles/bigquery.dataOwner WRITER <=>
-        roles/bigquery.dataEditor READER <=> roles/bigquery.dataViewer This
-        field will accept any of the above formats, but will return only the
-        legacy format. For example, if you set this field to
+        will be applied: * `OWNER`: `roles/bigquery.dataOwner` * `WRITER`:
+        `roles/bigquery.dataEditor` * `READER`: `roles/bigquery.dataViewer`
+        This field will accept any of the above formats, but will return only
+        the legacy format. For example, if you set this field to
         "roles/bigquery.dataOwner", it will be returned back as "OWNER".
       routine: [Pick one] A routine from a different dataset to grant access
         to. Queries executed against that routine will have read access to
@@ -2219,9 +2228,9 @@ class Dataset(_messages.Message):
         is updated by any user, access to the routine needs to be granted
         again via an update operation.
       specialGroup: [Pick one] A special group to grant access to. Possible
-        values include: projectOwners: Owners of the enclosing project.
-        projectReaders: Readers of the enclosing project. projectWriters:
-        Writers of the enclosing project. allAuthenticatedUsers: All
+        values include: * projectOwners: Owners of the enclosing project. *
+        projectReaders: Readers of the enclosing project. * projectWriters:
+        Writers of the enclosing project. * allAuthenticatedUsers: All
         authenticated BigQuery users. Maps to similarly-named IAM members.
       userByEmail: [Pick one] An email address of a user to grant access to.
         For example: fred@example.com. Maps to IAM policy member "user:EMAIL"
@@ -2247,8 +2256,9 @@ class Dataset(_messages.Message):
   class LabelsValue(_messages.Message):
     r"""The labels associated with this dataset. You can use these to organize
     and group your datasets. You can set this property when inserting or
-    updating a dataset. See Creating and Updating Dataset Labels for more
-    information.
+    updating a dataset. See [Creating and Updating Dataset
+    Labels](https://cloud.google.com/bigquery/docs/creating-managing-
+    labels#creating_and_updating_dataset_labels) for more information.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2465,7 +2475,7 @@ class DatasetList(_messages.Message):
 
 
 class DatasetReference(_messages.Message):
-  r"""A DatasetReference object.
+  r"""Identifier for a dataset.
 
   Fields:
     datasetId: Required. A unique ID for this dataset, without the project
@@ -2667,7 +2677,7 @@ class DoubleRange(_messages.Message):
 
 
 class EncryptionConfiguration(_messages.Message):
-  r"""A EncryptionConfiguration object.
+  r"""Configuration for Cloud KMS encryption settings.
 
   Fields:
     kmsKeyName: Optional. Describes the Cloud KMS encryption key that will be
@@ -3045,8 +3055,8 @@ class ExternalDataConfiguration(_messages.Message):
     connectionId: Optional. The connection specifying the credentials to be
       used to read external storage, such as Azure Blob, Cloud Storage, or S3.
       The connection_id can have the form
-      "<project\_id>.<location\_id>.<connection\_id>" or "projects/<project\_i
-      d>/locations/<location\_id>/connections/<connection\_id>".
+      `{project_id}.{location_id};{connection_id}` or `projects/{project_id}/l
+      ocations/{location_id}/connections/{connection_id}`.
     csvOptions: Optional. Additional properties to set if sourceFormat is set
       to CSV.
     decimalTargetTypes: Defines the list of possible SQL data types to which
@@ -5516,8 +5526,8 @@ class MlStatistics(_messages.Message):
       RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
       TENSORFLOW_LITE: An imported TensorFlow Lite model.
       ONNX: An imported ONNX model.
-      TRANSFORM_ONLY: Model to capture the manual preprocessing logic in the
-        transform clause.
+      TRANSFORM_ONLY: Model to capture the columns and logic in the TRANSFORM
+        clause along with statistics useful for ML analytic functions.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5669,8 +5679,8 @@ class Model(_messages.Message):
       RANDOM_FOREST_CLASSIFIER: Random forest classifier model.
       TENSORFLOW_LITE: An imported TensorFlow Lite model.
       ONNX: An imported ONNX model.
-      TRANSFORM_ONLY: Model to capture the manual preprocessing logic in the
-        transform clause.
+      TRANSFORM_ONLY: Model to capture the columns and logic in the TRANSFORM
+        clause along with statistics useful for ML analytic functions.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     LINEAR_REGRESSION = 1
@@ -5882,6 +5892,11 @@ class PartitioningDefinition(_messages.Message):
       field is output only for all partitioning types other than metastore
       partitioned tables. BigQuery native tables only support 1 partitioning
       column. Other table types may support 0, 1 or more partitioning columns.
+      For metastore partitioned tables, the order must match the definition
+      order in the Hive Metastore, where it must match the physical layout of
+      the table. For example, CREATE TABLE a_table(id BIGINT, name STRING)
+      PARTITIONED BY (city STRING, state STRING). In this case the values must
+      be ['city', 'state'] in that order.
   """
 
   partitionedColumn = _messages.MessageField('PartitionedColumn', 1, repeated=True)
@@ -8464,6 +8479,8 @@ class TableMetadataCacheUsage(_messages.Message):
   Fields:
     explanation: Free form human-readable reason metadata caching was unused
       for the job.
+    staleness: Duration since last refresh as of this job for managed tables
+      (indicates metadata cache staleness as seen by this job).
     tableReference: Metadata caching eligible table referenced in the query.
     tableType: [Table
       type](/bigquery/docs/reference/rest/v2/tables#Table.FIELDS.type).
@@ -8488,9 +8505,10 @@ class TableMetadataCacheUsage(_messages.Message):
     OTHER_REASON = 3
 
   explanation = _messages.StringField(1)
-  tableReference = _messages.MessageField('TableReference', 2)
-  tableType = _messages.StringField(3)
-  unusedReason = _messages.EnumField('UnusedReasonValueValuesEnum', 4)
+  staleness = _messages.StringField(2)
+  tableReference = _messages.MessageField('TableReference', 3)
+  tableType = _messages.StringField(4)
+  unusedReason = _messages.EnumField('UnusedReasonValueValuesEnum', 5)
 
 
 class TableReference(_messages.Message):

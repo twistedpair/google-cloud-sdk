@@ -41,6 +41,24 @@ class Collections(enum.Enum):
       ['groupName'],
       True
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_GROUPS = (
+      'projects.locations.groups',
+      '{+groupName}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/groups/'
+              '{groupsId}',
+      },
+      ['groupName'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

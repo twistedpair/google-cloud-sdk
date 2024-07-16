@@ -2333,7 +2333,7 @@ class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputs(_messages.Message):
       argument might be "C:\Windows\System32\ping.exe" - that is, using drive
       letters and backslashes. A command for a *nix system, on the other hand,
       would use forward slashes. All other fields in the RWAPI must
-      consistently use forward slashes, since those fields may be interpretted
+      consistently use forward slashes, since those fields may be interpreted
       by both the service and the bot.
     environmentVariables: All environment variables required by the task.
     files: The input filesystem to be set up prior to the task beginning. The
@@ -2348,6 +2348,8 @@ class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputs(_messages.Message):
       that are indirectly referenced by an entry there. The bot should check
       against this list before downloading required task inputs to reduce the
       number of communications between itself and the remote CAS server.
+    inputRootDigest: The digest of the Merkle tree root of the inputs to the
+      task. If present, the 'files' field should be empty.
     workingDirectory: Directory from which a command is executed. It is a
       relative directory with respect to the bot's working directory (i.e.,
       "./"). If it is non-empty, then it must exist under "./". Otherwise,
@@ -2358,7 +2360,8 @@ class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputs(_messages.Message):
   environmentVariables = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2CommandTaskInputsEnvironmentVariable', 2, repeated=True)
   files = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Digest', 3, repeated=True)
   inlineBlobs = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Blob', 4, repeated=True)
-  workingDirectory = _messages.StringField(5)
+  inputRootDigest = _messages.MessageField('GoogleDevtoolsRemoteworkersV1test2Digest', 5)
+  workingDirectory = _messages.StringField(6)
 
 
 class GoogleDevtoolsRemoteworkersV1test2CommandTaskInputsEnvironmentVariable(_messages.Message):

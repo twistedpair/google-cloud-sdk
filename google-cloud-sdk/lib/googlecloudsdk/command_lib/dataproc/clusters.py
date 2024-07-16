@@ -168,20 +168,48 @@ def ArgsForClusterRef(
       help='The number of secondary worker nodes in the cluster.',
   )
 
-  parser.add_argument(
+  master_machine_type_group = parser.add_argument_group(mutex=True)
+  master_machine_type_group.add_argument(
       '--master-machine-type',
       help=(
           'The type of machine to use for the master. Defaults to '
           'server-specified.'
       ),
   )
-  parser.add_argument(
+  master_machine_type_group.add_argument(
+      '--master-machine-types',
+      help=(
+          'Types of machines with optional rank for master nodes to use. '
+          'Defaults to server-specified.'
+          'eg. --master-machine-types="type=e2-standard-8,type=t2d-standard-8,rank=0"'
+      ),
+      metavar='type=MACHINE_TYPE[,type=MACHINE_TYPE...][,rank=RANK]',
+      type=ArgMultiValueDict(),
+      hidden=True,
+      action=arg_parsers.FlattenAction(),
+  )
+
+  worker_machine_type_group = parser.add_argument_group(mutex=True)
+  worker_machine_type_group.add_argument(
       '--worker-machine-type',
       help=(
           'The type of machine to use for workers. Defaults to '
           'server-specified.'
       ),
   )
+  worker_machine_type_group.add_argument(
+      '--worker-machine-types',
+      help=(
+          'Types of machines with optional rank for worker nodes to use. '
+          'Defaults to server-specified.'
+          'eg. --worker-machine-types="type=e2-standard-8,type=t2d-standard-8,rank=0"'
+      ),
+      metavar='type=MACHINE_TYPE[,type=MACHINE_TYPE...][,rank=RANK]',
+      type=ArgMultiValueDict(),
+      hidden=True,
+      action=arg_parsers.FlattenAction(),
+  )
+
   parser.add_argument(
       '--min-secondary-worker-fraction',
       help=(
@@ -1216,6 +1244,9 @@ def GetClusterConfig(
               args.master_local_ssd_interface,
           ),
           minCpuPlatform=args.master_min_cpu_platform,
+          instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
+              dataproc, None, args.master_machine_types, alpha, 'master'
+          ),
       ),
       workerConfig=dataproc.messages.InstanceGroupConfig(
           numInstances=args.num_workers,
@@ -1231,6 +1262,9 @@ def GetClusterConfig(
               args.worker_local_ssd_interface,
           ),
           minCpuPlatform=args.worker_min_cpu_platform,
+          instanceFlexibilityPolicy=GetInstanceFlexibilityPolicy(
+              dataproc, None, args.worker_machine_types, alpha, 'worker'
+          ),
       ),
       initializationActions=init_actions,
       softwareConfig=software_config,
@@ -1371,9 +1405,7 @@ def GetClusterConfig(
           'kms-keyring',
       ]:
         if getattr(args, keyword.replace('-', '_'), None):
-          raise exceptions.ArgumentError(
-              '--kms-key was not fully specified.'
-          )
+          raise exceptions.ArgumentError('--kms-key was not fully specified.')
   if encryption_config.gcePdKmsKeyName or encryption_config.kmsKey:
     cluster_config.encryptionConfig = encryption_config
 
@@ -1402,8 +1434,13 @@ def GetClusterConfig(
       or args.min_secondary_worker_fraction is not None
   ):
     instance_flexibility_policy = GetInstanceFlexibilityPolicy(
-        dataproc, args, alpha
+        dataproc,
+        args.secondary_worker_standard_capacity_base if alpha else None,
+        args.secondary_worker_machine_types,
+        alpha,
+        'secondary-worker',
     )
+
     startup_config = GetStartupConfig(dataproc, args)
     cluster_config.secondaryWorkerConfig = (
         dataproc.messages.InstanceGroupConfig(
@@ -1656,28 +1693,35 @@ def GetDiskConfig(
   )
 
 
-def GetInstanceFlexibilityPolicy(dataproc, args, alpha):
+def GetInstanceFlexibilityPolicy(
+    dataproc, standard_capacity_base, machine_types, alpha, node_type
+):
   """Get instance flexibility policy.
 
   Args:
     dataproc: Dataproc object that contains client, messages, and resources
-    args: arguments of the request
+    standard_capacity_base: Standard capacity base for provisioning model mix
+    machine_types: Machine types with rank for instance selection
     alpha: checks if the release track is alpha
+    node_type: Type of the dataproc node. One of master, worker,
+      secondary-worker
 
   Returns:
     InstanceFlexibilityPolicy of the secondary worker group.
   """
 
-  if alpha and args.secondary_worker_standard_capacity_base is None:
+  if alpha and standard_capacity_base is None:
     return None
   provisioning_model_mix = None
   instance_selection_list = []
   if alpha:
     provisioning_model_mix = dataproc.messages.ProvisioningModelMix(
-        standardCapacityBase=args.secondary_worker_standard_capacity_base
+        standardCapacityBase=standard_capacity_base
     )
   else:
-    instance_selection_list = GetInstanceSelectionList(dataproc, args)
+    instance_selection_list = GetInstanceSelectionList(
+        dataproc, machine_types, node_type
+    )
   if provisioning_model_mix is None and not instance_selection_list:
     return None
   instance_flexibility_policy = dataproc.messages.InstanceFlexibilityPolicy(
@@ -2245,15 +2289,15 @@ def ParseSecureMultiTenancyUserServiceAccountMappingString(
   return user_service_account_mapping
 
 
-def GetInstanceSelectionList(dataproc, args):
+def GetInstanceSelectionList(dataproc, machine_types, node_type):
   """Build List of InstanceSelection from the given flags."""
-  if args.secondary_worker_machine_types is None:
+  if machine_types is None:
     return []
   instance_selection_list = []
-  for machine_type_config in args.secondary_worker_machine_types:
+  for machine_type_config in machine_types:
     if 'type' not in machine_type_config or not machine_type_config['type']:
       raise exceptions.ArgumentError(
-          'Missing machine type for secondary-worker-machine-types'
+          f'Missing machine type for {node_type}-machine-types'
       )
     machine_types = machine_type_config['type']
 
@@ -2263,7 +2307,7 @@ def GetInstanceSelectionList(dataproc, args):
       rank = machine_type_config['rank']
       if len(rank) != 1 or not rank[0].isdigit():
         raise exceptions.ArgumentError(
-            'Invalid value for rank in secondary-worker-machine-types'
+            f'Invalid value for rank in {node_type}-machine-types'
         )
       rank = int(rank[0])
 

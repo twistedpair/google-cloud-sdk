@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 from collections import OrderedDict
 import functools
 import re
-from typing import Dict, Mapping, MutableMapping, MutableSequence, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
+from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tuple, Type, Union
 
 from googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1 import gapic_version as package_version
 
 from google.api_core.client_options import ClientOptions
 from google.api_core import exceptions as core_exceptions
 from google.api_core import gapic_v1
-from google.api_core import retry as retries
+from google.api_core import retry_async as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
 
+
 try:
-    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault]
+    OptionalRetry = Union[retries.AsyncRetry, gapic_v1.method._MethodDefault, None]
 except AttributeError:  # pragma: NO COVER
-    OptionalRetry = Union[retries.Retry, object]  # type: ignore
+    OptionalRetry = Union[retries.AsyncRetry, object, None]  # type: ignore
 
 from google.api import httpbody_pb2  # type: ignore
 from cloudsdk.google.protobuf import any_pb2  # type: ignore
@@ -49,8 +50,12 @@ class PredictionServiceAsyncClient:
 
     _client: PredictionServiceClient
 
+    # Copy defaults from the synchronous client for use here.
+    # Note: DEFAULT_ENDPOINT is deprecated. Use _DEFAULT_ENDPOINT_TEMPLATE instead.
     DEFAULT_ENDPOINT = PredictionServiceClient.DEFAULT_ENDPOINT
     DEFAULT_MTLS_ENDPOINT = PredictionServiceClient.DEFAULT_MTLS_ENDPOINT
+    _DEFAULT_ENDPOINT_TEMPLATE = PredictionServiceClient._DEFAULT_ENDPOINT_TEMPLATE
+    _DEFAULT_UNIVERSE = PredictionServiceClient._DEFAULT_UNIVERSE
 
     common_billing_account_path = staticmethod(PredictionServiceClient.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(PredictionServiceClient.parse_common_billing_account_path)
@@ -139,15 +144,34 @@ class PredictionServiceAsyncClient:
         """
         return self._client.transport
 
+    @property
+    def api_endpoint(self):
+        """Return the API endpoint used by the client instance.
+
+        Returns:
+            str: The API endpoint used by the client instance.
+        """
+        return self._client._api_endpoint
+
+    @property
+    def universe_domain(self) -> str:
+        """Return the universe domain used by the client instance.
+
+        Returns:
+            str: The universe domain used
+                by the client instance.
+        """
+        return self._client._universe_domain
+
     get_transport_class = functools.partial(type(PredictionServiceClient).get_transport_class, type(PredictionServiceClient))
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
-            transport: Union[str, PredictionServiceTransport] = "grpc_asyncio",
+            transport: Optional[Union[str, PredictionServiceTransport, Callable[..., PredictionServiceTransport]]] = "grpc_asyncio",
             client_options: Optional[ClientOptions] = None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
             ) -> None:
-        """Instantiates the prediction service client.
+        """Instantiates the prediction service async client.
 
         Args:
             credentials (Optional[google.auth.credentials.Credentials]): The
@@ -155,25 +179,45 @@ class PredictionServiceAsyncClient:
                 credentials identify the application to the service; if none
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
-            transport (Union[str, ~.PredictionServiceTransport]): The
-                transport to use. If set to None, a transport is chosen
-                automatically.
-            client_options (ClientOptions): Custom options for the client. It
-                won't take effect if a ``transport`` instance is provided.
-                (1) The ``api_endpoint`` property can be used to override the
-                default endpoint provided by the client. GOOGLE_API_USE_MTLS_ENDPOINT
-                environment variable can also be used to override the endpoint:
+            transport (Optional[Union[str,PredictionServiceTransport,Callable[..., PredictionServiceTransport]]]):
+                The transport to use, or a Callable that constructs and returns a new transport to use.
+                If a Callable is given, it will be called with the same set of initialization
+                arguments as used in the PredictionServiceTransport constructor.
+                If set to None, a transport is chosen automatically.
+                NOTE: "rest" transport functionality is currently in a
+                beta state (preview). We welcome your feedback via an
+                issue in this library's source repository.
+            client_options (Optional[Union[google.api_core.client_options.ClientOptions, dict]]):
+                Custom options for the client.
+
+                1. The ``api_endpoint`` property can be used to override the
+                default endpoint provided by the client when ``transport`` is
+                not explicitly provided. Only if this property is not set and
+                ``transport`` was not explicitly provided, the endpoint is
+                determined by the GOOGLE_API_USE_MTLS_ENDPOINT environment
+                variable, which have one of the following values:
                 "always" (always use the default mTLS endpoint), "never" (always
-                use the default regular endpoint) and "auto" (auto switch to the
-                default mTLS endpoint if client certificate is present, this is
-                the default value). However, the ``api_endpoint`` property takes
-                precedence if provided.
-                (2) If GOOGLE_API_USE_CLIENT_CERTIFICATE environment variable
+                use the default regular endpoint) and "auto" (auto-switch to the
+                default mTLS endpoint if client certificate is present; this is
+                the default value).
+
+                2. If the GOOGLE_API_USE_CLIENT_CERTIFICATE environment variable
                 is "true", then the ``client_cert_source`` property can be used
-                to provide client certificate for mutual TLS transport. If
+                to provide a client certificate for mTLS transport. If
                 not provided, the default SSL client certificate will be used if
                 present. If GOOGLE_API_USE_CLIENT_CERTIFICATE is "false" or not
                 set, no client certificate will be used.
+
+                3. The ``universe_domain`` property can be used to override the
+                default "googleapis.com" universe. Note that ``api_endpoint``
+                property still takes precedence; and ``universe_domain`` is
+                currently not supported for mTLS.
+
+            client_info (google.api_core.gapic_v1.client_info.ClientInfo):
+                The client info used to send a user-agent string along with
+                API requests. If ``None``, then default info will be used.
+                Generally, you only need to set this if you're developing
+                your own client library.
 
         Raises:
             google.auth.exceptions.MutualTlsChannelError: If mutual TLS transport
@@ -268,7 +312,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``parameters`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -281,14 +325,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, instances, parameters])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.PredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.PredictRequest):
+            request = prediction_service.PredictRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -301,11 +348,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -314,6 +357,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -411,7 +457,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``http_body`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -467,14 +513,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, http_body])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.RawPredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.RawPredictRequest):
+            request = prediction_service.RawPredictRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -485,11 +534,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.raw_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.raw_predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -498,6 +543,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -568,7 +616,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``http_body`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -624,14 +672,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, http_body])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.StreamRawPredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.StreamRawPredictRequest):
+            request = prediction_service.StreamRawPredictRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -642,11 +693,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.stream_raw_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.stream_raw_predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -655,6 +702,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -708,7 +758,7 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.DirectPredictRequest, dict]]):
                 The request object. Request message for
                 [PredictionService.DirectPredict][google.cloud.aiplatform.v1beta1.PredictionService.DirectPredict].
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -721,15 +771,14 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        request = prediction_service.DirectPredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.DirectPredictRequest):
+            request = prediction_service.DirectPredictRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.direct_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.direct_predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -738,6 +787,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -790,7 +842,7 @@ class PredictionServiceAsyncClient:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.DirectRawPredictRequest, dict]]):
                 The request object. Request message for
                 [PredictionService.DirectRawPredict][google.cloud.aiplatform.v1beta1.PredictionService.DirectRawPredict].
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -803,15 +855,14 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        request = prediction_service.DirectRawPredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.DirectRawPredictRequest):
+            request = prediction_service.DirectRawPredictRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.direct_raw_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.direct_raw_predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -820,6 +871,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -889,7 +943,7 @@ class PredictionServiceAsyncClient:
                 [endpoint][google.cloud.aiplatform.v1beta1.StreamDirectPredictRequest.endpoint]
                 field and optionally [input][]. The subsequent messages
                 must contain [input][].
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -904,11 +958,10 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.stream_direct_predict,
-            default_timeout=5.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.stream_direct_predict]
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -983,7 +1036,7 @@ class PredictionServiceAsyncClient:
                 [input][google.cloud.aiplatform.v1beta1.StreamDirectRawPredictRequest.input].
                 [method_name][google.cloud.aiplatform.v1beta1.StreamDirectRawPredictRequest.method_name]
                 in the subsequent messages have no effect.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -998,11 +1051,10 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.stream_direct_raw_predict,
-            default_timeout=5.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.stream_direct_raw_predict]
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -1071,7 +1123,7 @@ class PredictionServiceAsyncClient:
                 [endpoint][google.cloud.aiplatform.v1beta1.StreamingPredictRequest.endpoint]
                 field and optionally [input][]. The subsequent messages
                 must contain [input][].
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1086,11 +1138,10 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.streaming_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.streaming_predict]
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -1149,7 +1200,7 @@ class PredictionServiceAsyncClient:
                 [endpoint][google.cloud.aiplatform.v1beta1.StreamingPredictRequest.endpoint]
                 field and optionally [input][]. The subsequent messages
                 must contain [input][].
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1162,15 +1213,14 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        request = prediction_service.StreamingPredictRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.StreamingPredictRequest):
+            request = prediction_service.StreamingPredictRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.server_streaming_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.server_streaming_predict]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1179,6 +1229,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -1253,7 +1306,7 @@ class PredictionServiceAsyncClient:
                 [input][google.cloud.aiplatform.v1beta1.StreamingRawPredictRequest.input].
                 [method_name][google.cloud.aiplatform.v1beta1.StreamingRawPredictRequest.method_name]
                 in the subsequent messages have no effect.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1268,11 +1321,10 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.streaming_raw_predict,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.streaming_raw_predict]
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -1385,7 +1437,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``deployed_model_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1398,14 +1450,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, instances, parameters, deployed_model_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.ExplainRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.ExplainRequest):
+            request = prediction_service.ExplainRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1420,11 +1475,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.explain,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.explain]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1433,6 +1484,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1472,17 +1526,8 @@ class PredictionServiceAsyncClient:
                 client = aiplatform_v1beta1.PredictionServiceAsyncClient()
 
                 # Initialize request argument(s)
-                instances = aiplatform_v1beta1.Value()
-                instances.null_value = "NULL_VALUE"
-
-                contents = aiplatform_v1beta1.Content()
-                contents.parts.text = "text_value"
-
                 request = aiplatform_v1beta1.CountTokensRequest(
                     endpoint="endpoint_value",
-                    model="model_value",
-                    instances=instances,
-                    contents=contents,
                 )
 
                 # Make the request
@@ -1504,7 +1549,7 @@ class PredictionServiceAsyncClient:
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
             instances (:class:`MutableSequence[google.protobuf.struct_pb2.Value]`):
-                Required. The instances that are the
+                Optional. The instances that are the
                 input to token counting call. Schema is
                 identical to the prediction schema of
                 the underlying model.
@@ -1512,7 +1557,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``instances`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1525,14 +1570,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, instances])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.CountTokensRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.CountTokensRequest):
+            request = prediction_service.CountTokensRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1543,11 +1591,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.count_tokens,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.count_tokens]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1556,6 +1600,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1631,7 +1678,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``contents`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1644,14 +1691,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([model, contents])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.GenerateContentRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.GenerateContentRequest):
+            request = prediction_service.GenerateContentRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1662,11 +1712,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.generate_content,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.generate_content]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1675,6 +1721,9 @@ class PredictionServiceAsyncClient:
                 ("model", request.model),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1752,7 +1801,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``contents`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1765,14 +1814,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([model, contents])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.GenerateContentRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.GenerateContentRequest):
+            request = prediction_service.GenerateContentRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1783,11 +1835,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.stream_generate_content,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.stream_generate_content]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1796,6 +1844,9 @@ class PredictionServiceAsyncClient:
                 ("model", request.model),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(
@@ -1866,7 +1917,7 @@ class PredictionServiceAsyncClient:
                 This corresponds to the ``http_body`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1922,14 +1973,17 @@ class PredictionServiceAsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([endpoint, http_body])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = prediction_service.ChatCompletionsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, prediction_service.ChatCompletionsRequest):
+            request = prediction_service.ChatCompletionsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1940,11 +1994,7 @@ class PredictionServiceAsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.chat_completions,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.chat_completions]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1953,6 +2003,9 @@ class PredictionServiceAsyncClient:
                 ("endpoint", request.endpoint),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = rpc(

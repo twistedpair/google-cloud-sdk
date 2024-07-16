@@ -1382,9 +1382,13 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesGetRequest(_
       The possible values for id {service} are: * container-threat-detection *
       event-threat-detection * security-health-analytics * vm-threat-detection
       * web-security-scanner
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   name = _messages.StringField(1, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(2)
 
 
 class SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest(_messages.Message):
@@ -1401,11 +1405,15 @@ class SecuritycentermanagementFoldersLocationsSecurityCenterServicesListRequest(
       services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementFoldersLocationsSecurityCenterServicesPatchRequest(_messages.Message):
@@ -1849,9 +1857,13 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesGetReq
       The possible values for id {service} are: * container-threat-detection *
       event-threat-detection * security-health-analytics * vm-threat-detection
       * web-security-scanner
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   name = _messages.StringField(1, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(2)
 
 
 class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRequest(_messages.Message):
@@ -1867,11 +1879,15 @@ class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesListRe
       services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementOrganizationsLocationsSecurityCenterServicesPatchRequest(_messages.Message):
@@ -2345,9 +2361,13 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesGetRequest(
       The possible values for id {service} are: * container-threat-detection *
       event-threat-detection * security-health-analytics * vm-threat-detection
       * web-security-scanner
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   name = _messages.StringField(1, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(2)
 
 
 class SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest(_messages.Message):
@@ -2364,11 +2384,15 @@ class SecuritycentermanagementProjectsLocationsSecurityCenterServicesListRequest
       services. Formats: * organizations/{organization}/locations/{location} *
       folders/{folder}/locations/{location} *
       projects/{project}/locations/{location}
+    showEligibleModulesOnly: Flag that, when set, will be used to filter the
+      ModuleSettings that are in scope. The default setting is that all
+      modules will be shown.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  showEligibleModulesOnly = _messages.BooleanField(4)
 
 
 class SecuritycentermanagementProjectsLocationsSecurityCenterServicesPatchRequest(_messages.Message):

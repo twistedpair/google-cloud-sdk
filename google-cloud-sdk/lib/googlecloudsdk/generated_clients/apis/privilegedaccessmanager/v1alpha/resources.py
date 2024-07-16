@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://privilegedaccessmanager.googleapis.com/v1alpha/'
-DOCS_URL = 'https://cloud.google.com/'
+DOCS_URL = 'https://cloud.google.com/iam/docs/pam-overview'
 
 
 class Collections(enum.Enum):

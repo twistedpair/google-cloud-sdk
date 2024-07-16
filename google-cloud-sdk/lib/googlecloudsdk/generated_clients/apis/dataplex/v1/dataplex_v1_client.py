@@ -105,7 +105,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a AspectType resource.
+      r"""Deletes an AspectType.
 
       Args:
         request: (DataplexProjectsLocationsAspectTypesDeleteRequest) input message
@@ -132,7 +132,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a AspectType resource.
+      r"""Gets an AspectType.
 
       Args:
         request: (DataplexProjectsLocationsAspectTypesGetRequest) input message
@@ -213,7 +213,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a AspectType resource.
+      r"""Updates an AspectType.
 
       Args:
         request: (DataplexProjectsLocationsAspectTypesPatchRequest) input message
@@ -1407,7 +1407,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a single entry.
+      r"""Gets an Entry.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsEntriesGetRequest) input message
@@ -1434,7 +1434,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists entries within an entry group.
+      r"""Lists Entries within an EntryGroup.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsEntriesListRequest) input message
@@ -1525,7 +1525,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a EntryGroup resource.
+      r"""Deletes an EntryGroup.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsDeleteRequest) input message
@@ -1552,7 +1552,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a EntryGroup resource.
+      r"""Gets an EntryGroup.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsGetRequest) input message
@@ -1633,7 +1633,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a EntryGroup resource.
+      r"""Updates an EntryGroup.
 
       Args:
         request: (DataplexProjectsLocationsEntryGroupsPatchRequest) input message
@@ -1751,7 +1751,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a EntryType resource.
+      r"""Deletes an EntryType.
 
       Args:
         request: (DataplexProjectsLocationsEntryTypesDeleteRequest) input message
@@ -1778,7 +1778,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves a EntryType resource.
+      r"""Gets an EntryType.
 
       Args:
         request: (DataplexProjectsLocationsEntryTypesGetRequest) input message
@@ -1859,7 +1859,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a EntryType resource.
+      r"""Updates an EntryType.
 
       Args:
         request: (DataplexProjectsLocationsEntryTypesPatchRequest) input message
@@ -4324,7 +4324,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def LookupEntry(self, request, global_params=None):
-      r"""Looks up a single entry.
+      r"""Looks up a single Entry by name using the permission on the source system.
 
       Args:
         request: (DataplexProjectsLocationsLookupEntryRequest) input message
@@ -4351,7 +4351,7 @@ class DataplexV1(base_api.BaseApiClient):
     )
 
     def SearchEntries(self, request, global_params=None):
-      r"""Searches for entries matching given query and scope.
+      r"""Searches for Entries matching the given query and scope.
 
       Args:
         request: (DataplexProjectsLocationsSearchEntriesRequest) input message

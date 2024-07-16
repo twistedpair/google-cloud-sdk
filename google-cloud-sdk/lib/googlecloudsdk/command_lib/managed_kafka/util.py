@@ -17,14 +17,24 @@
 from apitools.base.py import encoding
 from googlecloudsdk import core
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import exceptions
 
 # Retrieve all message type for conversions from gcloud primitives to
 # apitool types.
 _MESSAGE = apis.GetMessagesModule("managedkafka", "v1")
 
 
-def AddUpdateMaskForSubnets(_, args, request):
-  """Adds the update mask for the subnets in the request.
+def ValidateCPU(cpu):
+  """Validate CPU >= 3."""
+  if cpu < 3:
+    raise exceptions.BadArgumentException(
+        "--cpu", "CPU must be at least 3"
+    )
+  return cpu
+
+
+def PrepareUpdateWithSubnets(_, args, request):
+  """Prepare the update request with the information from the subnet flag.
 
   Args:
     _:  resource parameter required but unused variable.
@@ -32,10 +42,17 @@ def AddUpdateMaskForSubnets(_, args, request):
     request:  the payload to return.
 
   Returns:
-    The updated request with the update mask.
+    The updated request with the subnet.
   """
   if not args.subnets:
     return request
+
+  # The cluster is not created yet if only the subnet flag is set. This is
+  # because we don't formally map the subnet to the request the same way we do
+  # for other flags. Instead, subnets require special handling with the use of
+  # hooks.
+  if not request.cluster:
+    request.cluster = {}
 
   subnet_update_mask = "gcpConfig.accessConfig.networkConfigs"
   request.updateMask = AppendUpdateMask(request.updateMask, subnet_update_mask)

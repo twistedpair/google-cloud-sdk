@@ -2160,11 +2160,13 @@ class ParamSpec(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Default enum type; should not be used.
       STRING: Default
-      ARRAY: Arrary type.
+      ARRAY: Array type.
+      OBJECT: Object type.
     """
     TYPE_UNSPECIFIED = 0
     STRING = 1
     ARRAY = 2
+    OBJECT = 3
 
   default = _messages.MessageField('ParamValue', 1)
   description = _messages.StringField(2)
@@ -2178,8 +2180,12 @@ class ParamValue(_messages.Message):
   Enums:
     TypeValueValuesEnum: Type of parameter.
 
+  Messages:
+    ObjectValValue: Optional. Value of the parameter if type is object.
+
   Fields:
     arrayVal: Value of the parameter if type is array.
+    objectVal: Optional. Value of the parameter if type is object.
     stringVal: Value of the parameter if type is string.
     type: Type of parameter.
   """
@@ -2191,14 +2197,41 @@ class ParamValue(_messages.Message):
       TYPE_UNSPECIFIED: Default enum type; should not be used.
       STRING: Default
       ARRAY: Array type
+      OBJECT: Object type
     """
     TYPE_UNSPECIFIED = 0
     STRING = 1
     ARRAY = 2
+    OBJECT = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ObjectValValue(_messages.Message):
+    r"""Optional. Value of the parameter if type is object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ObjectValValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ObjectValValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ObjectValValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   arrayVal = _messages.StringField(1, repeated=True)
-  stringVal = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  objectVal = _messages.MessageField('ObjectValValue', 2)
+  stringVal = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class PipelineRef(_messages.Message):

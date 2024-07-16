@@ -5,6 +5,124 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 484.0.0 (2024-07-16)
+
+### Breaking Changes
+
+*   **(GKE Hub)** `gcloud container fleet memberships get-credentials` now requires the
+    permission `gkehub.gateway.generateCredentials` (automatically included in
+    roles `gkehub.gatewayReader`, `gkehub.gatewayEditor`, and
+    `gkehub.gatewayAdmin`), as well as network access to
+    `*connectgateway.googleapis.com`.
+
+
+### AlloyDB
+
+* Added `--node-ids` flag to `gcloud alloydb instances restart` command in the
+alpha and beta tracks. This flag allows users to allow users to specify a
+comma-separated list of read pool node IDs to perform the restart on. Without
+specifying this flag, every node in the read pool will be restarted.
+
+### App Engine
+
+* Removed Google App Engine PHP 5/5 support.
+
+* Updated the Java SDK to version 2.0.29 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.29>.
+
+### Artifact Registry
+
+* Fixed error codes for `gcloud artifacts docker upgrade migrate`.
+
+### Batch
+
+* Fixed the `--filter` flag of `gcloud batch list` command to match `gcloud topic filters` syntax.
+
+### BigQuery
+
+* Added support for non-ASCII characters in the field mask when updating Connections.
+* Added support for `configuration.authentication.profile_id` in the field mask when updating Connections.
+* Fixed a bug where `bq init` would be called even when `--use_google_auth` is specified.
+
+### Cloud Build
+
+* Add support in `gcloud builds worker-pools` commands for default region set in config.
+
+### Cloud Data Fusion
+
+* Added three new optional arguments to `gcloud beta data-fusion instances create` command:
+   * `--maintenance-window-start`
+   * `--maintenance-window-end`
+   * `--maintenance-window-recurrence`
+   * These arguments allow users to specify the start time, end time, and recurrence of the maintenance window for their Data Fusion instance.
+* Add four new optional arguments to `gcloud beta data-fusion instances update` command:
+   * `--maintenance-window-start`
+   * `--maintenance-window-end`
+   * `--maintenance-window-recurrence`
+   * `--clear-maintenance-window`
+   * These arguments allow users to update maintenance window for their Data Fusion instance by specifying the start time, end time, and recurrence, or clear the maintenance window using `--clear-maintenance-window`.
+
+### Cloud Run
+
+* Allows `--revision-suffix` to be specified with empty string to clear
+  client-set revision naming.
+
+### Cloud SQL
+
+* Added `--[no-]enable-dataplex-integration` flag to
+    `gcloud sql instances create` and `gcloud sql instances patch` to support
+    Dataplex Integration for Cloud SQL.
+* Added support for MySQL 8.4.
+
+### Cloud Spanner
+
+* Promoted `--type=DATABASE_CHANGE_QUORUM` option in `gcloud spanner
+operations list` to GA.
+* Fixed the DATABASE_CHANGE_QUORUM type filter string in `gcloud spanner operations list`.
+
+### Cloud Workstations
+
+* Adding `disable_ssl_validation` support for `workstations start-tcp-tunnel`
+and `workstations ssh`.
+
+### Compute Engine
+
+* Added `gcloud compute routers add-route-policy-term` which adds policy term to a Route Policy in Cloud Router.
+* Promoted `gcloud compute routers add-route-policy-term` to beta.
+* Added `gcloud compute routers update-route-policy-term` which updates policy term in a Route Policy in Cloud Router.
+* Promoted `gcloud compute routers update-route-policy-term` to beta.
+* Added `gcloud compute routers remove-route-policy-term` which removes policy term from Route Policy in Cloud Router.
+* Promoted `gcloud compute routers remove-route-policy-term` to beta.
+* Fixed a bug in `gcloud beta compute ssh` where a third-party identity subject bearing an '@' sign wouldn't be URL-escaped in the way the OS Login API expects, causing spurious rejection.
+* Promoted support of flags to `--detection-load-threshold`,
+`detection-absolute-qps`, `detection-relative-to-baseline-qps`, and
+`traffic-granularity-configs` in
+`gcloud compute security-policies add-layer7-ddos-defense-threshold-config` to
+GA.
+
+### Dataproc Metastore
+
+* Promoted `--min-scaling-factor`, `--max-scaling-factor`, and `--autoscaling-enabled` flag of `gcloud metastore services create` and `gcloud metastore services update` to GA.
+
+### Distributed Cloud Edge
+
+* Added `--offline-reboot-ttl` flag to `gcloud edge-cloud container clusters create` and `gcloud edge-cloud container clusters update` commands. This flag specifies the maximum duration a node can reboot offline (without connection to Google) and then rejoin its cluster to resume its designated workloads.
+
+### Kubernetes Engine
+
+* Added flag option `--addons=RayOperator` to enable/disable the Ray Operator addon
+for GKE Standard clusters.
+* Added flag `--[no]-enable-ray-operator` to enable/disable the Ray Operator
+addon for GKE Autopilot clusters.
+* Added flag `--[no]-enable-ray-cluster-logging` to enable/disable automatic
+log collection for Ray clusters when the Ray Operator addon is enabled.
+* Added flag `--[no]-enable-ray-cluster-monitoring` to enable/disable automatic
+metrics collection for Ray clusters when the Ray Operator addon is enabled.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 483.0.0 (2024-07-02)
 
 ### Google Cloud CLI

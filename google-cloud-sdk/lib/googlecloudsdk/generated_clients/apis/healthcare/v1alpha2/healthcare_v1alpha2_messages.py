@@ -1543,16 +1543,15 @@ class FhirStore(_messages.Message):
       broken references exist.
     disableResourceVersioning: Immutable. Whether to disable resource
       versioning for this FHIR store. This field can not be changed after the
-      creation of FHIR store. If set to false, which is the default behavior,
-      all write operations cause historical versions to be recorded
-      automatically. The historical versions can be fetched through the
-      history APIs, but cannot be updated. If set to true, no historical
-      versions are kept. The server sends errors for attempts to read the
-      historical versions.
+      creation of FHIR store. If set to false, all write operations cause
+      historical versions to be recorded automatically. The historical
+      versions can be fetched through the history APIs, but cannot be updated.
+      If set to true, no historical versions are kept. The server sends errors
+      for attempts to read the historical versions. Defaults to false.
     enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
       accept history bundles, and directly insert and overwrite historical
       resource versions into the FHIR store. If set to false, using history
-      bundles fails with an error.
+      bundles fails with an error. Defaults to false.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -1563,7 +1562,8 @@ class FhirStore(_messages.Message):
       or encode any sensitive data such as patient identifiers in client-
       specified resource IDs. Those IDs are part of the FHIR resource path
       recorded in Cloud audit logs and Pub/Sub notifications. Those IDs can
-      also be contained in reference fields within other resources.
+      also be contained in reference fields within other resources. Defaults
+      to false.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular

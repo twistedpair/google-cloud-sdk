@@ -928,7 +928,10 @@ class ResourceChanges(ContainerConfigChanger):
     if self.cpu is not None:
       container.resource_limits['cpu'] = self.cpu
     if self.gpu is not None:
-      container.resource_limits['nvidia.com/gpu'] = self.gpu
+      if self.gpu == '0':
+        container.resource_limits.pop('nvidia.com/gpu', None)
+      else:
+        container.resource_limits['nvidia.com/gpu'] = self.gpu
 
 
 @dataclasses.dataclass(frozen=True)
@@ -1094,6 +1097,10 @@ class RevisionNameChanges(TemplateConfigChanger):
 
   def Adjust(self, resource):
     """Mutates the given config's revision name to match what's desired."""
+    if not self.revision_suffix:
+      resource.template.name = ''
+      return resource
+
     max_prefix_length = (
         _MAX_RESOURCE_NAME_LENGTH - len(self.revision_suffix) - 1
     )
@@ -1851,9 +1858,14 @@ class GpuTypeChange(TemplateConfigChanger):
   gpu_type: str
 
   def Adjust(self, resource):
-    resource.template.node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR] = (
-        self.gpu_type
-    )
+    if self.gpu_type:
+      resource.template.node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR] = (
+          self.gpu_type
+      )
+    else:
+      resource.template.node_selector.pop(
+          k8s_object.GPU_TYPE_NODE_SELECTOR, None
+      )
     return resource
 
 

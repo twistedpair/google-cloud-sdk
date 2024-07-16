@@ -1439,7 +1439,8 @@ def AddMonitoringFlag(parser, autopilot=False):
   help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
-`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`
+`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`,
+`CADVISOR`, `KUBELET`, `DCGM`
 
 For more information, see
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
@@ -1454,14 +1455,15 @@ Examples:
     help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
 `SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
-`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`
+`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`,
+`CADVISOR`, `KUBELET`, `DCGM`
 
 For more information, see
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
 
 Examples:
 
-  $ {command} --monitoring=SYSTEM,API_SERVER,POD
+  $ {command} --monitoring=SYSTEM,API_SERVER,POD,DCGM
   $ {command} --monitoring=SYSTEM
 """
 
@@ -3485,7 +3487,6 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
           api_adapter.STATEFULHA,
           # TODO(b/314808639): Remove at AGA time
           api_adapter.PARALLELSTORECSIDRIVER,
-          api_adapter.RAYOPERATOR,
       ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
@@ -6369,7 +6370,7 @@ def AddEnableBackupRestoreFlag(parser):
   )
 
 
-def AddEnableRayOperatorFlag(parser, hidden=True):
+def AddEnableRayOperatorFlag(parser, hidden=False):
   """Adds --enable-ray-operator flag to the given parser.
 
   Args:
@@ -6389,7 +6390,7 @@ def AddEnableRayOperatorFlag(parser, hidden=True):
   )
 
 
-def AddEnableRayClusterLogging(parser, hidden=True, is_update=False):
+def AddEnableRayClusterLogging(parser, hidden=False, is_update=False):
   """Adds --enable-ray-cluster-logging flag to the given parser.
 
   Args:
@@ -6418,7 +6419,7 @@ def AddEnableRayClusterLogging(parser, hidden=True, is_update=False):
     )
 
 
-def AddEnableRayClusterMonitoring(parser, hidden=True, is_update=False):
+def AddEnableRayClusterMonitoring(parser, hidden=False, is_update=False):
   """Adds --enable-ray-cluster-monitoring flag to the given parser.
 
   Args:

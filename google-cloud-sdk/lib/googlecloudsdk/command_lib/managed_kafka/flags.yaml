@@ -1,6 +1,7 @@
 cpu:
   api_field: cluster.capacityConfig.vcpuCount
   arg_name: cpu
+  processor: googlecloudsdk.command_lib.managed_kafka.util:ValidateCPU
   help_text: |
     The number of vCPUs to provision for the cluster. The minimum is 3.
 

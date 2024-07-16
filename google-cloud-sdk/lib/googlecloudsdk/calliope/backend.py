@@ -127,6 +127,9 @@ class CommandCommon(object):
       if (parent_group.IsUniverseCompatible() and
           self._common_type._universe_compatible is None):
         self._common_type._universe_compatible = True
+      if (not parent_group.IsDefaultUniverseCompatible() or
+          self._common_type._default_universe_compatible is None):
+        self._common_type._default_universe_compatible = False
       # Propagate down the unicode supported attribute.
       if parent_group.IsUnicodeSupported():
         self._common_type._is_unicode_supported = True
@@ -157,6 +160,10 @@ class CommandCommon(object):
   def IsUniverseCompatible(self):
     """Gets the universe compatible status of this command or group."""
     return self._common_type.IsUniverseCompatible()
+
+  def IsDefaultUniverseCompatible(self):
+    """Gets the default universe compatible status of this command or group."""
+    return self._common_type.IsDefaultUniverseCompatible()
 
   def IsUnicodeSupported(self):
     """Gets the unicode supported status of this command or group."""

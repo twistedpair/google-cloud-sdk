@@ -3327,6 +3327,8 @@ class Service(_messages.Message):
         used.
       ERROR: The metastore service has encountered an error and cannot be
         used. The metastore service should be deleted.
+      AUTOSCALING: The Dataproc Metastore service 2 is being scaled up or
+        down.
       MIGRATING: The metastore service is processing a managed migration.
     """
     STATE_UNSPECIFIED = 0
@@ -3337,7 +3339,8 @@ class Service(_messages.Message):
     UPDATING = 5
     DELETING = 6
     ERROR = 7
-    MIGRATING = 8
+    AUTOSCALING = 8
+    MIGRATING = 9
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The tier of the service.

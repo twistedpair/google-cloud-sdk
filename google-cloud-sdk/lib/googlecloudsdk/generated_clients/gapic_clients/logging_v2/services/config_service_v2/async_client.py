@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,21 +16,22 @@
 from collections import OrderedDict
 import functools
 import re
-from typing import Dict, Mapping, MutableMapping, MutableSequence, Optional, Sequence, Tuple, Type, Union
+from typing import Dict, Callable, Mapping, MutableMapping, MutableSequence, Optional, Sequence, Tuple, Type, Union
 
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2 import gapic_version as package_version
 
 from google.api_core.client_options import ClientOptions
 from google.api_core import exceptions as core_exceptions
 from google.api_core import gapic_v1
-from google.api_core import retry as retries
+from google.api_core import retry_async as retries
 from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
 
+
 try:
-    OptionalRetry = Union[retries.Retry, gapic_v1.method._MethodDefault]
+    OptionalRetry = Union[retries.AsyncRetry, gapic_v1.method._MethodDefault, None]
 except AttributeError:  # pragma: NO COVER
-    OptionalRetry = Union[retries.Retry, object]  # type: ignore
+    OptionalRetry = Union[retries.AsyncRetry, object, None]  # type: ignore
 
 from google.api_core import operation  # type: ignore
 from google.api_core import operation_async  # type: ignore
@@ -49,8 +50,12 @@ class ConfigServiceV2AsyncClient:
 
     _client: ConfigServiceV2Client
 
+    # Copy defaults from the synchronous client for use here.
+    # Note: DEFAULT_ENDPOINT is deprecated. Use _DEFAULT_ENDPOINT_TEMPLATE instead.
     DEFAULT_ENDPOINT = ConfigServiceV2Client.DEFAULT_ENDPOINT
     DEFAULT_MTLS_ENDPOINT = ConfigServiceV2Client.DEFAULT_MTLS_ENDPOINT
+    _DEFAULT_ENDPOINT_TEMPLATE = ConfigServiceV2Client._DEFAULT_ENDPOINT_TEMPLATE
+    _DEFAULT_UNIVERSE = ConfigServiceV2Client._DEFAULT_UNIVERSE
 
     cmek_settings_path = staticmethod(ConfigServiceV2Client.cmek_settings_path)
     parse_cmek_settings_path = staticmethod(ConfigServiceV2Client.parse_cmek_settings_path)
@@ -157,15 +162,34 @@ class ConfigServiceV2AsyncClient:
         """
         return self._client.transport
 
+    @property
+    def api_endpoint(self):
+        """Return the API endpoint used by the client instance.
+
+        Returns:
+            str: The API endpoint used by the client instance.
+        """
+        return self._client._api_endpoint
+
+    @property
+    def universe_domain(self) -> str:
+        """Return the universe domain used by the client instance.
+
+        Returns:
+            str: The universe domain used
+                by the client instance.
+        """
+        return self._client._universe_domain
+
     get_transport_class = functools.partial(type(ConfigServiceV2Client).get_transport_class, type(ConfigServiceV2Client))
 
     def __init__(self, *,
             credentials: Optional[ga_credentials.Credentials] = None,
-            transport: Union[str, ConfigServiceV2Transport] = "grpc_asyncio",
+            transport: Optional[Union[str, ConfigServiceV2Transport, Callable[..., ConfigServiceV2Transport]]] = "grpc_asyncio",
             client_options: Optional[ClientOptions] = None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
             ) -> None:
-        """Instantiates the config service v2 client.
+        """Instantiates the config service v2 async client.
 
         Args:
             credentials (Optional[google.auth.credentials.Credentials]): The
@@ -173,25 +197,45 @@ class ConfigServiceV2AsyncClient:
                 credentials identify the application to the service; if none
                 are specified, the client will attempt to ascertain the
                 credentials from the environment.
-            transport (Union[str, ~.ConfigServiceV2Transport]): The
-                transport to use. If set to None, a transport is chosen
-                automatically.
-            client_options (ClientOptions): Custom options for the client. It
-                won't take effect if a ``transport`` instance is provided.
-                (1) The ``api_endpoint`` property can be used to override the
-                default endpoint provided by the client. GOOGLE_API_USE_MTLS_ENDPOINT
-                environment variable can also be used to override the endpoint:
+            transport (Optional[Union[str,ConfigServiceV2Transport,Callable[..., ConfigServiceV2Transport]]]):
+                The transport to use, or a Callable that constructs and returns a new transport to use.
+                If a Callable is given, it will be called with the same set of initialization
+                arguments as used in the ConfigServiceV2Transport constructor.
+                If set to None, a transport is chosen automatically.
+                NOTE: "rest" transport functionality is currently in a
+                beta state (preview). We welcome your feedback via an
+                issue in this library's source repository.
+            client_options (Optional[Union[google.api_core.client_options.ClientOptions, dict]]):
+                Custom options for the client.
+
+                1. The ``api_endpoint`` property can be used to override the
+                default endpoint provided by the client when ``transport`` is
+                not explicitly provided. Only if this property is not set and
+                ``transport`` was not explicitly provided, the endpoint is
+                determined by the GOOGLE_API_USE_MTLS_ENDPOINT environment
+                variable, which have one of the following values:
                 "always" (always use the default mTLS endpoint), "never" (always
-                use the default regular endpoint) and "auto" (auto switch to the
-                default mTLS endpoint if client certificate is present, this is
-                the default value). However, the ``api_endpoint`` property takes
-                precedence if provided.
-                (2) If GOOGLE_API_USE_CLIENT_CERTIFICATE environment variable
+                use the default regular endpoint) and "auto" (auto-switch to the
+                default mTLS endpoint if client certificate is present; this is
+                the default value).
+
+                2. If the GOOGLE_API_USE_CLIENT_CERTIFICATE environment variable
                 is "true", then the ``client_cert_source`` property can be used
-                to provide client certificate for mutual TLS transport. If
+                to provide a client certificate for mTLS transport. If
                 not provided, the default SSL client certificate will be used if
                 present. If GOOGLE_API_USE_CLIENT_CERTIFICATE is "false" or not
                 set, no client certificate will be used.
+
+                3. The ``universe_domain`` property can be used to override the
+                default "googleapis.com" universe. Note that ``api_endpoint``
+                property still takes precedence; and ``universe_domain`` is
+                currently not supported for mTLS.
+
+            client_info (google.api_core.gapic_v1.client_info.ClientInfo):
+                The client info used to send a user-agent string along with
+                API requests. If ``None``, then default info will be used.
+                Generally, you only need to set this if you're developing
+                your own client library.
 
         Raises:
             google.auth.exceptions.MutualTlsChannelError: If mutual TLS transport
@@ -263,7 +307,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -279,14 +323,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListBucketsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListBucketsRequest):
+            request = logging_config.ListBucketsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -295,11 +342,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_buckets,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_buckets]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -308,6 +351,9 @@ class ConfigServiceV2AsyncClient:
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -385,7 +431,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -398,14 +444,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetBucketRequest):
+            request = logging_config.GetBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -414,11 +463,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_bucket,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_bucket]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -427,6 +472,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -523,7 +571,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``bucket_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -539,14 +587,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, bucket, bucket_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateBucketRequest):
+            request = logging_config.CreateBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -559,11 +610,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_bucket_async,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_bucket_async]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -572,6 +619,9 @@ class ConfigServiceV2AsyncClient:
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -680,7 +730,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -696,14 +746,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name, bucket, update_mask])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateBucketRequest):
+            request = logging_config.UpdateBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -716,11 +769,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_bucket_async,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_bucket_async]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -729,6 +778,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -828,7 +880,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``bucket_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -841,14 +893,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, bucket, bucket_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateBucketRequest):
+            request = logging_config.CreateBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -861,11 +916,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_bucket,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_bucket]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -874,6 +925,9 @@ class ConfigServiceV2AsyncClient:
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -970,7 +1024,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -983,14 +1037,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name, bucket, update_mask])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateBucketRequest):
+            request = logging_config.UpdateBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1003,11 +1060,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_bucket,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_bucket]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1016,6 +1069,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1087,21 +1143,24 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteBucketRequest):
+            request = logging_config.DeleteBucketRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1110,11 +1169,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_bucket,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_bucket]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1123,6 +1178,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -1169,22 +1227,21 @@ class ConfigServiceV2AsyncClient:
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UndeleteBucketRequest, dict]]):
                 The request object. The parameters to ``UndeleteBucket``.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        request = logging_config.UndeleteBucketRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UndeleteBucketRequest):
+            request = logging_config.UndeleteBucketRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.undelete_bucket,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.undelete_bucket]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1193,6 +1250,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -1252,7 +1312,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1268,14 +1328,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListViewsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListViewsRequest):
+            request = logging_config.ListViewsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1284,11 +1347,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_views,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_views]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1297,6 +1356,9 @@ class ConfigServiceV2AsyncClient:
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1371,7 +1433,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1384,14 +1446,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetViewRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetViewRequest):
+            request = logging_config.GetViewRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1400,11 +1465,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_view,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_view]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1413,6 +1474,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1496,7 +1560,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``view_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1509,14 +1573,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, view, view_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateViewRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateViewRequest):
+            request = logging_config.CreateViewRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1529,11 +1596,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_view,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_view]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1542,6 +1605,9 @@ class ConfigServiceV2AsyncClient:
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1597,7 +1663,7 @@ class ConfigServiceV2AsyncClient:
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateViewRequest, dict]]):
                 The request object. The parameters to ``UpdateView``.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1610,15 +1676,14 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        request = logging_config.UpdateViewRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateViewRequest):
+            request = logging_config.UpdateViewRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_view,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_view]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1627,6 +1692,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1694,21 +1762,24 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteViewRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteViewRequest):
+            request = logging_config.DeleteViewRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1717,11 +1788,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_view,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_view]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1730,6 +1797,9 @@ class ConfigServiceV2AsyncClient:
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -1794,7 +1864,7 @@ class ConfigServiceV2AsyncClient:
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1809,14 +1879,17 @@ class ConfigServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListExclusionsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListExclusionsRequest):
+            request = logging_config.ListExclusionsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1825,19 +1898,7 @@ class ConfigServiceV2AsyncClient:
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_exclusions,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_exclusions]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1846,6 +1907,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -1923,7 +1987,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -1941,14 +2005,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetExclusionRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetExclusionRequest):
+            request = logging_config.GetExclusionRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -1957,19 +2024,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_exclusion,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_exclusion]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -1978,6 +2033,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2063,7 +2121,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``exclusion`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2081,14 +2139,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, exclusion])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateExclusionRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateExclusionRequest):
+            request = logging_config.CreateExclusionRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2099,11 +2160,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_exclusion,
-            default_timeout=120.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_exclusion]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2112,6 +2169,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2209,7 +2269,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2227,14 +2287,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name, exclusion, update_mask])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateExclusionRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateExclusionRequest):
+            request = logging_config.UpdateExclusionRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2247,11 +2310,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_exclusion,
-            default_timeout=120.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_exclusion]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2260,6 +2319,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2326,21 +2388,24 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteExclusionRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteExclusionRequest):
+            request = logging_config.DeleteExclusionRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2349,19 +2414,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_exclusion,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_exclusion]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2370,6 +2423,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -2433,7 +2489,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2448,14 +2504,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListSinksRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListSinksRequest):
+            request = logging_config.ListSinksRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2464,19 +2523,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_sinks,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_sinks]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2485,6 +2532,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2562,7 +2612,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``sink_name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2585,14 +2635,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetSinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetSinkRequest):
+            request = logging_config.GetSinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2601,19 +2654,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_sink,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_sink]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2622,6 +2663,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("sink_name", request.sink_name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2706,7 +2750,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``sink`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2729,14 +2773,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, sink])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateSinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateSinkRequest):
+            request = logging_config.CreateSinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2747,11 +2794,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_sink,
-            default_timeout=120.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_sink]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2760,6 +2803,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -2869,7 +2915,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -2892,14 +2938,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name, sink, update_mask])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateSinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateSinkRequest):
+            request = logging_config.UpdateSinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -2912,19 +2961,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_sink,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_sink]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -2933,6 +2970,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("sink_name", request.sink_name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3000,21 +3040,24 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``sink_name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([sink_name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteSinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteSinkRequest):
+            request = logging_config.DeleteSinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3023,19 +3066,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_sink,
-            default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
-                    core_exceptions.DeadlineExceeded,
-                    core_exceptions.InternalServerError,
-                    core_exceptions.ServiceUnavailable,
-                ),
-                deadline=60.0,
-            ),
-            default_timeout=60.0,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_sink]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3044,6 +3075,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("sink_name", request.sink_name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -3107,7 +3141,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3123,14 +3157,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListLinksRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListLinksRequest):
+            request = logging_config.ListLinksRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3139,11 +3176,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_links,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_links]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3152,6 +3185,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3225,7 +3261,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3238,14 +3274,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetLinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetLinkRequest):
+            request = logging_config.GetLinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3254,11 +3293,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_link,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_link]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3267,6 +3302,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3355,7 +3393,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``link_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3372,14 +3410,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, link, link_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateLinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateLinkRequest):
+            request = logging_config.CreateLinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3392,11 +3433,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_link,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_link]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3405,6 +3442,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3482,7 +3522,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3505,14 +3545,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteLinkRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteLinkRequest):
+            request = logging_config.DeleteLinkRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3521,11 +3564,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_link,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_link]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3534,6 +3573,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3631,7 +3673,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3654,14 +3696,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetCmekSettingsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetCmekSettingsRequest):
+            request = logging_config.GetCmekSettingsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3670,11 +3715,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_cmek_settings,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_cmek_settings]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3683,6 +3724,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3805,7 +3849,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``update_mask`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3828,14 +3872,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name, cmek_settings, update_mask])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateCmekSettingsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateCmekSettingsRequest):
+            request = logging_config.UpdateCmekSettingsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3848,11 +3895,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_cmek_settings,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_cmek_settings]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3861,6 +3904,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -3944,7 +3990,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -3958,14 +4004,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.GetSettingsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetSettingsRequest):
+            request = logging_config.GetSettingsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -3974,11 +4023,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.get_settings,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_settings]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -3987,6 +4032,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -4094,6 +4142,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ::
 
                     "organizations/[ORGANIZATION_ID]/settings"
+                    "folders/[FOLDER_ID]/settings"
 
                 For example:
 
@@ -4102,7 +4151,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -4116,14 +4165,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([settings, update_mask, name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.UpdateSettingsRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateSettingsRequest):
+            request = logging_config.UpdateSettingsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -4136,11 +4188,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.update_settings,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_settings]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -4149,6 +4197,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -4231,7 +4282,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -4247,14 +4298,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListSavedQueriesRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListSavedQueriesRequest):
+            request = logging_config.ListSavedQueriesRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -4263,11 +4317,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_saved_queries,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_saved_queries]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -4276,6 +4326,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -4291,6 +4344,120 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
             method=rpc,
             request=request,
             response=response,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def get_saved_query(self,
+            request: Optional[Union[logging_config.GetSavedQueryRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.SavedQuery:
+        r"""Returns all data associated with the requested query.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            async def sample_get_saved_query():
+                # Create a client
+                client = logging_v2.ConfigServiceV2AsyncClient()
+
+                # Initialize request argument(s)
+                request = logging_v2.GetSavedQueryRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                response = await client.get_saved_query(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.GetSavedQueryRequest, dict]]):
+                The request object. The parameters to 'GetSavedQuery'
+            name (:class:`str`):
+                Required. The resource name of the saved query.
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+                For example:
+
+                ::
+
+                    "projects/my-project/locations/global/savedQueries/my-saved-query"
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery:
+                Describes a query that has been saved
+                by a user.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.GetSavedQueryRequest):
+            request = logging_config.GetSavedQueryRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if name is not None:
+            request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.get_saved_query]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
             metadata=metadata,
         )
 
@@ -4393,7 +4560,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``saved_query_id`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -4406,14 +4573,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent, saved_query, saved_query_id])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.CreateSavedQueryRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CreateSavedQueryRequest):
+            request = logging_config.CreateSavedQueryRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -4426,11 +4596,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.create_saved_query,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.create_saved_query]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -4439,6 +4605,148 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
+
+        # Send the request.
+        response = await rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    async def update_saved_query(self,
+            request: Optional[Union[logging_config.UpdateSavedQueryRequest, dict]] = None,
+            *,
+            saved_query: Optional[logging_config.SavedQuery] = None,
+            update_mask: Optional[field_mask_pb2.FieldMask] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.SavedQuery:
+        r"""Updates an existing SavedQuery.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            async def sample_update_saved_query():
+                # Create a client
+                client = logging_v2.ConfigServiceV2AsyncClient()
+
+                # Initialize request argument(s)
+                saved_query = logging_v2.SavedQuery()
+                saved_query.logging_query.summary_field_start = 2046
+                saved_query.logging_query.filter = "filter_value"
+                saved_query.display_name = "display_name_value"
+                saved_query.visibility = "SHARED"
+
+                request = logging_v2.UpdateSavedQueryRequest(
+                    saved_query=saved_query,
+                )
+
+                # Make the request
+                response = await client.update_saved_query(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.UpdateSavedQueryRequest, dict]]):
+                The request object. The parameters to 'UpdateSavedQuery'.
+            saved_query (:class:`googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery`):
+                Required. The updated value for the query.
+
+                The ``saved_query``'s ``name`` field is used to identify
+                the saved query to update. Format:
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+                This corresponds to the ``saved_query`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            update_mask (:class:`google.protobuf.field_mask_pb2.FieldMask`):
+                Required. A non-empty list of fields to change in the
+                existing saved query. Fields are relative to the
+                ``saved_query`` and new values for the fields are taken
+                from the corresponding fields in the
+                [SavedQuery][google.logging.v2.SavedQuery] included in
+                this request. Fields not mentioned in ``update_mask``
+                are not changed and are ignored in the request.
+
+                To update all mutable fields, specify an ``update_mask``
+                of ``*``.
+
+                For example, to change the description and query filter
+                text of a saved query, specify an ``update_mask`` of
+                ``"description, query.filter"``.
+
+                This corresponds to the ``update_mask`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery:
+                Describes a query that has been saved
+                by a user.
+
+        """
+        # Create or coerce a protobuf request object.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
+        has_flattened_params = any([saved_query, update_mask])
+        if request is not None and has_flattened_params:
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
+
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.UpdateSavedQueryRequest):
+            request = logging_config.UpdateSavedQueryRequest(request)
+
+        # If we have keyword arguments corresponding to fields on the
+        # request, apply these.
+        if saved_query is not None:
+            request.saved_query = saved_query
+        if update_mask is not None:
+            request.update_mask = update_mask
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._client._transport._wrapped_methods[self._client._transport.update_saved_query]
+
+        # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("saved_query.name", request.saved_query.name),
+            )),
+        )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -4508,21 +4816,24 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([name])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.DeleteSavedQueryRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.DeleteSavedQueryRequest):
+            request = logging_config.DeleteSavedQueryRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -4531,11 +4842,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.delete_saved_query,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.delete_saved_query]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -4544,6 +4851,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("name", request.name),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         await rpc(
@@ -4617,7 +4927,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -4633,14 +4943,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        # Quick check: If we got a request object, we should *not* have
-        # gotten any keyword arguments that map to the request.
+        # - Quick check: If we got a request object, we should *not* have
+        #   gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
             raise ValueError("If the `request` argument is set, then none of "
                              "the individual field arguments should be set.")
 
-        request = logging_config.ListRecentQueriesRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.ListRecentQueriesRequest):
+            request = logging_config.ListRecentQueriesRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
@@ -4649,11 +4962,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.list_recent_queries,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.list_recent_queries]
 
         # Certain fields should be provided within the metadata header;
         # add these here.
@@ -4662,6 +4971,9 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
                 ("parent", request.parent),
             )),
         )
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(
@@ -4727,7 +5039,7 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
         Args:
             request (Optional[Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CopyLogEntriesRequest, dict]]):
                 The request object. The parameters to CopyLogEntries.
-            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+            retry (google.api_core.retry_async.AsyncRetry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
             metadata (Sequence[Tuple[str, str]]): Strings which should be
@@ -4744,15 +5056,17 @@ initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exc
 
         """
         # Create or coerce a protobuf request object.
-        request = logging_config.CopyLogEntriesRequest(request)
+        # - Use the request object if provided (there's no risk of modifying the input as
+        #   there are no flattened fields), or create one.
+        if not isinstance(request, logging_config.CopyLogEntriesRequest):
+            request = logging_config.CopyLogEntriesRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
         # and friendly error handling.
-        rpc = gapic_v1.method_async.wrap_method(
-            self._client._transport.copy_log_entries,
-            default_timeout=None,
-            client_info=DEFAULT_CLIENT_INFO,
-        )
+        rpc = self._client._transport._wrapped_methods[self._client._transport.copy_log_entries]
+
+        # Validate the universe domain.
+        self._client._validate_universe_domain()
 
         # Send the request.
         response = await rpc(

@@ -22,9 +22,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import threading
+from typing import List
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import log
+
+
+INITIAL_INDENT_LEVEL = 2
+TASK_GRAPH_HEADER = 'Task Graph:'
+TASK_WRAPPER_ID = '   - Task ID: {}\n'
+TASK_DETAILS = (
+    '    - Task: {}\n'
+    '    - Dependency Count: {}\n'
+    '    - Dependent Task IDs: {}\n'
+    '    - Is Submitted: {}\n'
+)
 
 
 class TaskWrapper:
@@ -49,6 +61,19 @@ class TaskWrapper:
     self.dependency_count = 0
     self.dependent_task_ids = dependent_task_ids
     self.is_submitted = False
+
+  def __str__(self):
+    """Returns a string representation of the TaskWrapper."""
+    return (
+        TASK_WRAPPER_ID.format(self.id) +
+        TASK_DETAILS.format(
+            self.task.__class__.__name__,
+            len(self.dependent_task_ids)
+            if self.dependent_task_ids else 0,
+            self.dependent_task_ids,
+            self.is_submitted
+        )
+    )
 
 
 class InvalidDependencyError(errors.Error):
@@ -274,3 +299,74 @@ class TaskGraph:
       if not parent_tasks_for_next_layer:
         self.complete(executed_task_wrapper)
       return parent_tasks_for_next_layer
+
+  def __str__(self):
+    """Returns a string representation of the TaskGraph."""
+    output: List[str] = [
+        TASK_GRAPH_HEADER,
+        f' - Empty: {self.is_empty.is_set()}',
+        f' - Task Wrappers: {len(self._task_wrappers_in_graph)}',
+    ]
+    if self._task_wrappers_in_graph:
+      printed_tasks = set()
+      output.extend(
+          self._print_task_wrapper_recursive(
+              self._task_wrappers_in_graph.values(),
+              INITIAL_INDENT_LEVEL,
+              printed_tasks,
+          )
+      )
+    else:
+      output.append('No tasks in the graph to print.')
+    return '\n'.join(output)
+
+  def _print_task_wrapper_recursive(
+      self, task_wrappers, indent_level, printed_tasks
+  ) -> List[str]:
+    """Recursively yields task wrappers and their dependencies.
+
+    Example:
+      Suppose we have task wrappers representing tasks with dependencies:
+
+      task_wrapper1 = TaskWrapper(id='task1',
+      dependent_task_ids=['task2', 'task3']),
+      task_wrapper2 = TaskWrapper(id='task2', dependent_task_ids=['task4'])
+      task_wrapper3 = TaskWrapper(id='task3', dependent_task_ids=[])
+      task_wrapper4 = TaskWrapper(id='task4', dependent_task_ids=[])
+
+      task_wrappers = [task_wrapper1, task_wrapper2,
+                       task_wrapper3, task_wrapper4]
+
+      Calling _print_task_wrapper_recursive(task_wrappers, 0, set())
+      would produce:
+
+      ['task1',
+        '  task2',
+        '    task4',
+        '  task3']
+
+      This shows the tasks and their dependencies formatted with appropriate
+      indentation levels.
+
+    Args:
+      task_wrappers (list): List of task wrappers to print.
+      indent_level (int): Current level of indentation for formatting.
+      printed_tasks (set): Set of task IDs that have already been printed.
+
+
+    Yields:
+      List of formatted strings representing the task wrappers
+      and their dependencies.
+    """
+
+    for task_wrapper in task_wrappers:
+      if task_wrapper.id not in printed_tasks:
+        printed_tasks.add(task_wrapper.id)
+        yield str(task_wrapper)
+        if task_wrapper.dependent_task_ids:
+          dependent_task_wrappers = [
+              self._task_wrappers_in_graph[task_id]
+              for task_id in task_wrapper.dependent_task_ids
+          ]
+          yield from self._print_task_wrapper_recursive(
+              dependent_task_wrappers, indent_level + 2, printed_tasks)

@@ -1123,8 +1123,8 @@ class Output(_messages.Message):
 
   Fields:
     uri: URI for the output file(s). For example, `gs://my-bucket/outputs/`.
-      If empty, the value is populated from Job.output_uri. See [Supported
-      input and output
+      Must be a directory and not a top-level bucket. If empty, the value is
+      populated from Job.output_uri. See [Supported input and output
       formats](https://cloud.google.com/transcoder/docs/concepts/supported-
       input-and-output-formats).
   """

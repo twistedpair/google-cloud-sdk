@@ -95,7 +95,6 @@ class BackupDrClientBase(object):
     )
 
 
-# TODO: b/332661929 - Add unit tests for this class.
 class RestrictedDict(dict):
   """Restricted dict only allows specific keys, useful in creating a config object."""
 

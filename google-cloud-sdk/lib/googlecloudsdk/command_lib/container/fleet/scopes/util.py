@@ -17,8 +17,70 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container.fleet import client
 from googlecloudsdk.command_lib.util.args import labels_util
+from googlecloudsdk.core import exceptions
+
+
+class ScopeLogViewCondition:
+  """Helper class for creating a scope log view iam condition.
+
+  This class defines a `get` object method that can be used by the iam util
+  lib to get the iam condition spec.
+  """
+
+  def __init__(self, project_id, scope_id):
+    self.project_id = project_id
+    self.scope_id = scope_id
+
+  # The condition should be iterable.
+  def __iter__(self):
+    return self
+
+  def __next__(self):
+    # There is only one condition.
+    raise StopIteration
+
+  def IsSpecified(self):
+    return True
+
+  def get(self, condition_spec):  # pylint: disable=invalid-name
+    # This method is called by the iam util lib.
+    if condition_spec == 'title':
+      return 'conditional log view access'
+    if condition_spec == 'description':
+      return 'log view access for scope {}'.format(self.scope_id)
+    if condition_spec == 'expression':
+      return (
+          'resource.name =='
+          f' "projects/{self.project_id}/locations/global/buckets/fleet-o11y-scope-{self.scope_id}/views/fleet-o11y-scope-{self.scope_id}-k8s_container"'
+          ' || resource.name =='
+          f' "projects/{self.project_id}/locations/global/buckets/fleet-o11y-scope-{self.scope_id}/views/fleet-o11y-scope-{self.scope_id}-k8s_pod"'
+      )
+
+
+class AppOperatorBinding:
+  """Helper class for containing a principal with their project-level IAM role, fleet scope-level role, and fleet scope RBAC role.
+  """
+
+  def __init__(self, principal, overall_role, scope_rrb_role, scope_iam_role, project_iam_role, log_view_access):
+    # The principal in the IAM format, e.g., "user:person@google.com".
+    self.principal = principal
+    # Overall role can be "view", "edit", or "admin" if the IAM and RBAC roles
+    # are consistent. Otherwise, it will be "custom".
+    self.overall_role = overall_role
+    # Scope RBAC role, if known, can be "view", "edit", or "admin".
+    self.scope_rrb_role = scope_rrb_role
+    # Scope-level IAM role, if known, can be "roles/gkehub.scopeViewer",
+    # "roles/gkehub.scopeEditor", or "roles/gkehub.scopeAdmin".
+    self.scope_iam_role = scope_iam_role
+    # Project-level IAM role, if known, can be
+    # "roles/gkehub.scopeViewerProjectLevel", or
+    # "roles/gkehub.scopeEditorProjectLevel".
+    self.project_iam_role = project_iam_role
+    # Log view access can be True or False.
+    self.log_view_access = log_view_access
 
 
 def SetParentCollection(ref, args, request):
@@ -114,3 +176,130 @@ def HandleNamespaceLabelsCreateRequest(ref, args, request):
   ).GetOrNone()
   request.scope.namespaceLabels = ns_labels
   return request
+
+
+def IamMemberFromRbac(user, group):
+  """Returns Iam member for the specified RBAC user/group.
+
+  Args:
+    user: user email, principal or None
+    group: group email, principal set or None
+
+  Returns:
+    an Iam member, e.g., "user:person@google.com" or "group:people@google.com"
+
+  Raises:
+    a core.Error, if both user and group are None
+  """
+  if user:
+    if user.startswith('principal://'):
+      return user
+    if user.endswith('gserviceaccount.com'):
+      return 'serviceAccount:' + user
+    return 'user:' + user
+  if group:
+    if group.startswith('principalSet://'):
+      return group
+    return 'group:' + group
+  raise exceptions.Error(
+      'User or group is required in the args.'
+  )
+
+
+def IamScopeLevelScopeRoleFromRbac(role):
+  """Returns Iam scope role (scope-level) based on the specified RBAC role.
+
+  Args:
+    role: RBAC role
+
+  Returns:
+    a scope-related Iam role, e.g., "roles/gkehub.scopeEditor"
+
+  Raises:
+    a core.Error, if the role is not admin, edit, or view
+  """
+  if role == 'admin':
+    return 'roles/gkehub.scopeAdmin'
+  if role == 'edit':
+    return 'roles/gkehub.scopeEditor'
+  if role == 'view':
+    return 'roles/gkehub.scopeViewer'
+  raise exceptions.Error(
+      'Role is required to be admin, edit, or view.'
+  )
+
+
+def AllIamScopeLevelScopeRoles():
+  """Returns all valid Iam scope roles at scope level.
+  """
+  return [
+      'roles/gkehub.scopeAdmin',
+      'roles/gkehub.scopeEditor',
+      'roles/gkehub.scopeViewer',
+  ]
+
+
+def IamProjectLevelScopeRoleFromRbac(role):
+  """Returns Iam scope role (project-level) based on the specified RBAC role.
+
+  Args:
+    role: RBAC role
+
+  Returns:
+    a scope-related Iam role, e.g., "roles/gkehub.scopeEditorProjectLevel"
+
+  Raises:
+    a core.Error, if the role is not admin, edit, or view
+  """
+  if role == 'admin':
+    # Admin needs the same project-level permissions as Editor.
+    return 'roles/gkehub.scopeEditorProjectLevel'
+  if role == 'edit':
+    return 'roles/gkehub.scopeEditorProjectLevel'
+  if role == 'view':
+    return 'roles/gkehub.scopeViewerProjectLevel'
+  raise exceptions.Error(
+      'Role is required to be admin, edit, or view.'
+  )
+
+
+def AllIamProjectLevelScopeRoles():
+  """Returns all valid Iam scope roles at project level.
+  """
+  return [
+      'roles/gkehub.scopeEditorProjectLevel',
+      'roles/gkehub.scopeViewerProjectLevel',
+  ]
+
+
+def ScopeRbacRoleString(role):
+  """Returns the RBAC role string from the specifiedRBAC role message.
+
+  Args:
+    role: RBAC role
+
+  Returns:
+    RBAC role string (admin, edit, or view)
+
+  Raises:
+    a core.Error, if the role is not admin, edit, or view
+  """
+  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'ADMIN':
+    return 'admin'
+  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'EDIT':
+    return 'edit'
+  if str(encoding.MessageToPyValue(role)['predefinedRole']) == 'VIEW':
+    return 'view'
+  raise exceptions.Error(
+      'Role is required to be admin, edit, or view.'
+  )
+
+
+def RbacAndScopeIamRolesMatch(rbac_role, scope_iam_role):
+  """Returns true if the specified RBAC role and scope IAM role match.
+  """
+  if rbac_role == 'admin' and scope_iam_role == 'roles/gkehub.scopeAdmin':
+    return True
+  if rbac_role == 'edit' and scope_iam_role == 'roles/gkehub.scopeEditor':
+    return True
+  return rbac_role == 'view' and scope_iam_role == 'roles/gkehub.scopeViewer'

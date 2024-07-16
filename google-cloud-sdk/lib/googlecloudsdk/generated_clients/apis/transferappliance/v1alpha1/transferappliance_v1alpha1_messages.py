@@ -1288,9 +1288,9 @@ class PickupInfo(_messages.Message):
       shipment type selected by the customer.
 
   Fields:
-    address: Required. The address to pick up the appliance from
-    contactName: Required. The name of the customer site contact.
-    phone: Required. The phone number of the customer site contact. Should be
+    address: Optional. The address to pick up the appliance from
+    contactName: Optional. The name of the customer site contact.
+    phone: Optional. The phone number of the customer site contact. Should be
       given in E.164 format consisting of the country calling code (1 to 3
       digits) and the subscriber number, with no additional spaces or
       formatting, e.g. "15552220123".

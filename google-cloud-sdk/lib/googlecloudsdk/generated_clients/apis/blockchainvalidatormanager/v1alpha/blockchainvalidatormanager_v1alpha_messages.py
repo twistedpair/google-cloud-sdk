@@ -722,8 +722,10 @@ class ExistingSeedPhraseReference(_messages.Message):
   the voting key.
 
   Fields:
-    depositTxData: Output only. Immutable. The deposit transaction data
-      corresponding to the derived key.
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key. This is the serialized form of the function call to
+      https://eth2book.info/capella/part2/deposits-
+      withdrawals/contract/#deposit along with its parameters.
     derivationIndex: Optional. Immutable. The index to derive the voting key
       at, used as part of a derivation path. The derivation path is built from
       this as "m/12381/3600//0/0" See also
@@ -1090,8 +1092,10 @@ class SeedPhraseReference(_messages.Message):
   Manager secret to backup the seed phrase to.
 
   Fields:
-    depositTxData: Output only. Immutable. The deposit transaction data
-      corresponding to the derived key.
+    depositTxData: Output only. The deposit transaction data corresponding to
+      the derived key. This is the serialized form of the function call to
+      https://eth2book.info/capella/part2/deposits-
+      withdrawals/contract/#deposit along with its parameters.
     derivationIndex: Output only. Immutable. The index to derive the voting
       key at, used as part of a derivation path. The derivation path is built
       from this as "m/12381/3600//0/0" See also

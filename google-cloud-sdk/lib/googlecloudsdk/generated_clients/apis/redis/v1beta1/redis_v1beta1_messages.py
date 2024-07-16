@@ -198,8 +198,8 @@ class Cluster(_messages.Message):
       allow or deny updates.
     maintenanceSchedule: Output only. ClusterMaintenanceSchedule Output only
       Published maintenance schedule.
-    name: Required. Unique name of the resource in this scope including
-      project and location using the form:
+    name: Required. Identifier. Unique name of the resource in this scope
+      including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     nodeType: Optional. The type of a redis node in the cluster. NodeType
       determines the underlying machine-type of a redis node.
@@ -533,7 +533,7 @@ class DatabaseResourceFeed(_messages.Message):
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    observabilityMetricData: More feed data would be added in subsequent CLs
+    observabilityMetricData: A ObservabilityMetricData attribute.
     recommendationSignalData: A DatabaseResourceRecommendationSignalData
       attribute.
     resourceHealthSignalData: A DatabaseResourceHealthSignalData attribute.
@@ -3016,8 +3016,8 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: Required. Unique name of the resource in this scope including
-      project and location using the form:
+    name: Required. Identifier. Unique name of the resource in this scope
+      including project and location using the form:
       `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
     requestId: Idempotent request UUID.
     updateMask: Required. Mask of fields to update. At least one path must be
@@ -3029,6 +3029,22 @@ class RedisProjectsLocationsClustersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest(_messages.Message):
+  r"""A RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest
+  object.
+
+  Fields:
+    name: Required. Redis Cluster instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleClusterMaintenanceRequest: A RescheduleClusterMaintenanceRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rescheduleClusterMaintenanceRequest = _messages.MessageField('RescheduleClusterMaintenanceRequest', 2)
 
 
 class RedisProjectsLocationsGetRequest(_messages.Message):
@@ -3281,6 +3297,39 @@ class RedisProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class RescheduleClusterMaintenanceRequest(_messages.Message):
+  r"""Request for rescheduling a cluster maintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Optional. Timestamp when the maintenance shall be
+      rescheduled to if reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for
+      example `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: Not set.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    SPECIFIC_TIME = 2
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
 
 
 class RescheduleMaintenanceRequest(_messages.Message):

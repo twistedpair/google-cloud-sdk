@@ -1294,18 +1294,38 @@ class ReportSummary(_messages.Message):
 class ResourceEnrollmentStatus(_messages.Message):
   r"""Represents a resource (project or folder) with its enrollment status.
 
+  Enums:
+    EnrollmentStateValueValuesEnum: Output only. Enrollment state of the
+      resource.
+
   Fields:
     displayName: Output only. Display name of the project/folder.
     enrolled: Output only. Is resource enrolled.
     enrollment: Output only. Enrollment which contains enrolled destination
       details for a resource
+    enrollmentState: Output only. Enrollment state of the resource.
     name: Identifier. The name of this resource.
   """
+
+  class EnrollmentStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Enrollment state of the resource.
+
+    Values:
+      RESOURCE_ENROLLMENT_STATE_UNSPECIFIED: Unspecified. Invalid state.
+      NOT_ENROLLED: Not enrolled.
+      INHERITED: Resource is not enrolled but the parent is enrolled.
+      ENROLLED: Enrolled.
+    """
+    RESOURCE_ENROLLMENT_STATE_UNSPECIFIED = 0
+    NOT_ENROLLED = 1
+    INHERITED = 2
+    ENROLLED = 3
 
   displayName = _messages.StringField(1)
   enrolled = _messages.BooleanField(2)
   enrollment = _messages.MessageField('Enrollment', 3)
-  name = _messages.StringField(4)
+  enrollmentState = _messages.EnumField('EnrollmentStateValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class StandardQueryParameters(_messages.Message):

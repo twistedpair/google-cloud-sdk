@@ -588,6 +588,10 @@ def AddCommonListArgs(parser, additional_choices=None):
           'Database restore operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '
           'with the given database (--database)',
+      'DATABASE_CHANGE_QUORUM':
+          'Database change quorum operations are returned for all databases '
+          'in the given instance (--instance only) or only those associated '
+          'with the given database (--database).',
       'DATABASE_CREATE':
           'Database create operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '

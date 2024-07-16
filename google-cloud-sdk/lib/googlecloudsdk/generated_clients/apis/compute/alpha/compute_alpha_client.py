@@ -69,6 +69,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.instanceSettings = self.InstanceSettingsService(self)
     self.instanceTemplates = self.InstanceTemplatesService(self)
     self.instances = self.InstancesService(self)
+    self.instantSnapshotGroups = self.InstantSnapshotGroupsService(self)
     self.instantSnapshots = self.InstantSnapshotsService(self)
     self.interconnectAttachments = self.InterconnectAttachmentsService(self)
     self.interconnectLocations = self.InterconnectLocationsService(self)
@@ -101,10 +102,12 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
+    self.regionInstanceGroupManagerResizeRequests = self.RegionInstanceGroupManagerResizeRequestsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstanceTemplates = self.RegionInstanceTemplatesService(self)
     self.regionInstances = self.RegionInstancesService(self)
+    self.regionInstantSnapshotGroups = self.RegionInstantSnapshotGroupsService(self)
     self.regionInstantSnapshots = self.RegionInstantSnapshotsService(self)
     self.regionMultiMigs = self.RegionMultiMigsService(self)
     self.regionNetworkEndpointGroups = self.RegionNetworkEndpointGroupsService(self)
@@ -8224,6 +8227,120 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class InstantSnapshotGroupsService(base_api.BaseApiService):
+    """Service class for the instantSnapshotGroups resource."""
+
+    _NAME = 'instantSnapshotGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.InstantSnapshotGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""deletes a Zonal InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.instantSnapshotGroups.delete',
+        ordered_params=['project', 'zone', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""returns the specified InstantSnapshotGroup resource in the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.get',
+        ordered_params=['project', 'zone', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'zone'],
+        query_params=[],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsGetRequest',
+        response_type_name='InstantSnapshotGroup',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""inserts a Zonal InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instantSnapshotGroups.insert',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['requestId', 'sourceConsistencyGroup'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups',
+        request_field='instantSnapshotGroup',
+        request_type_name='ComputeInstantSnapshotGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""retrieves the list of InstantSnapshotGroup resources contained within the specified zone.
+
+      Args:
+        request: (ComputeInstantSnapshotGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstantSnapshotGroups) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshotGroups.list',
+        ordered_params=['project', 'zone'],
+        path_params=['project', 'zone'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/zones/{zone}/instantSnapshotGroups',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotGroupsListRequest',
+        response_type_name='ListInstantSnapshotGroups',
+        supports_download=False,
+    )
+
   class InstantSnapshotsService(base_api.BaseApiService):
     """Service class for the instantSnapshots resource."""
 
@@ -15330,6 +15447,68 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class RegionInstanceGroupManagerResizeRequestsService(base_api.BaseApiService):
+    """Service class for the regionInstanceGroupManagerResizeRequests resource."""
+
+    _NAME = 'regionInstanceGroupManagerResizeRequests'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInstanceGroupManagerResizeRequestsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns all of the details about the specified resize request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstanceGroupManagerResizeRequest) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.get',
+        ordered_params=['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'region', 'resizeRequest'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}',
+        request_field='',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsGetRequest',
+        response_type_name='InstanceGroupManagerResizeRequest',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a new Resize Request that starts provisioning VMs immediately or queues VM creation.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagerResizeRequestsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagerResizeRequests.insert',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeRequests',
+        request_field='instanceGroupManagerResizeRequest',
+        request_type_name='ComputeRegionInstanceGroupManagerResizeRequestsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class RegionInstanceGroupManagersService(base_api.BaseApiService):
     """Service class for the regionInstanceGroupManagers resource."""
 
@@ -16329,6 +16508,120 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='bulkInsertInstanceResource',
         request_type_name='ComputeRegionInstancesBulkInsertRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class RegionInstantSnapshotGroupsService(base_api.BaseApiService):
+    """Service class for the regionInstantSnapshotGroups resource."""
+
+    _NAME = 'regionInstantSnapshotGroups'
+
+    def __init__(self, client):
+      super(ComputeAlpha.RegionInstantSnapshotGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""deletes a Regional InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='DELETE',
+        method_id='compute.regionInstantSnapshotGroups.delete',
+        ordered_params=['project', 'region', 'instantSnapshotGroup'],
+        path_params=['instantSnapshotGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshotGroup}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""returns the specified InstantSnapshotGroup resource in the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.get',
+        ordered_params=['project', 'region', 'instantSnapshot'],
+        path_params=['instantSnapshot', 'project', 'region'],
+        query_params=[],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups/{instantSnapshot}',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsGetRequest',
+        response_type_name='InstantSnapshotGroup',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""creates a Regional InstantSnapshotGroup resource.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstantSnapshotGroups.insert',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['requestId', 'sourceConsistencyGroup'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups',
+        request_field='instantSnapshotGroup',
+        request_type_name='ComputeRegionInstantSnapshotGroupsInsertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""retrieves the list of InstantSnapshotGroup resources contained within the specified region.
+
+      Args:
+        request: (ComputeRegionInstantSnapshotGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstantSnapshotGroups) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionInstantSnapshotGroups.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/instantSnapshotGroups',
+        request_field='',
+        request_type_name='ComputeRegionInstantSnapshotGroupsListRequest',
+        response_type_name='ListInstantSnapshotGroups',
         supports_download=False,
     )
 
@@ -19285,7 +19578,7 @@ class ComputeAlpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request.
+      r"""Returns the specified Region resource. To decrease latency for this method, you can optionally omit any unneeded information from the response by using a field mask. This practice is especially recommended for unused quota information (the `quotas` field). To exclude one or more fields, set your request's `fields` query parameter to only include the fields you need. For example, to only include the `id` and `selfLink` fields, add the query parameter `?fields=id,selfLink` to your request. This method fails if the quota information is unavailable for the region and if the organization policy constraint compute.requireBasicQuotaInResponse is enforced. This constraint, when enforced, disables the fail-open behaviour when quota information (the `items.quotas` field) is unavailable for the region. It is recommended to use the default setting for the constraint unless your application requires the fail-closed behaviour for this method.
 
       Args:
         request: (ComputeRegionsGetRequest) input message

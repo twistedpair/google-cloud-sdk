@@ -111,6 +111,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_FILESTOREDATAPROFILES = (
+      'organizations.locations.fileStoreDataProfiles',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'fileStoreDataProfiles/{fileStoreDataProfilesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_INSPECTTEMPLATES = (
       'organizations.locations.inspectTemplates',
       '{+name}',
@@ -297,6 +308,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/dlpJobs/'
               '{dlpJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FILESTOREDATAPROFILES = (
+      'projects.locations.fileStoreDataProfiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'fileStoreDataProfiles/{fileStoreDataProfilesId}',
       },
       ['name'],
       True

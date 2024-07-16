@@ -77,6 +77,7 @@ class Cluster(_messages.Message):
       managed by GEC.
     clusterCaCertificate: Output only. The PEM-encoded public certificate of
       the cluster's CA.
+    connectionState: Output only. The current connection state of the cluster.
     controlPlane: Optional. The configuration of the cluster control plane.
     controlPlaneEncryption: Optional. Remote control plane disk encryption
       options. This field is only used when enabling CMEK support.
@@ -173,28 +174,29 @@ class Cluster(_messages.Message):
 
   authorization = _messages.MessageField('Authorization', 1)
   clusterCaCertificate = _messages.StringField(2)
-  controlPlane = _messages.MessageField('ControlPlane', 3)
-  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 4)
-  controlPlaneVersion = _messages.StringField(5)
-  createTime = _messages.StringField(6)
-  defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(8)
-  externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
-  externalLoadBalancerIpv6AddressPools = _messages.StringField(10, repeated=True)
-  fleet = _messages.MessageField('Fleet', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 13, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 14)
-  name = _messages.StringField(15)
-  networking = _messages.MessageField('ClusterNetworking', 16)
-  nodeVersion = _messages.StringField(17)
-  port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 19)
-  status = _messages.EnumField('StatusValueValuesEnum', 20)
-  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 21)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 22)
-  targetVersion = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
+  connectionState = _messages.MessageField('ConnectionState', 3)
+  controlPlane = _messages.MessageField('ControlPlane', 4)
+  controlPlaneEncryption = _messages.MessageField('ControlPlaneEncryption', 5)
+  controlPlaneVersion = _messages.StringField(6)
+  createTime = _messages.StringField(7)
+  defaultMaxPodsPerNode = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(9)
+  externalLoadBalancerIpv4AddressPools = _messages.StringField(10, repeated=True)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(11, repeated=True)
+  fleet = _messages.MessageField('Fleet', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 14, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 15)
+  name = _messages.StringField(16)
+  networking = _messages.MessageField('ClusterNetworking', 17)
+  nodeVersion = _messages.StringField(18)
+  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 20)
+  status = _messages.EnumField('StatusValueValuesEnum', 21)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 22)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 23)
+  targetVersion = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
 
 
 class ClusterNetworking(_messages.Message):
@@ -223,6 +225,39 @@ class ClusterUser(_messages.Message):
   username = _messages.StringField(1)
 
 
+class ConnectionState(_messages.Message):
+  r"""ConnectionState holds the current connection state from the cluster to
+  Google.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current connection state.
+
+  Fields:
+    state: Output only. The current connection state.
+    updateTime: Output only. The time when the connection state was last
+      changed.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current connection state.
+
+    Values:
+      STATE_UNSPECIFIED: Unknown connection state.
+      DISCONNECTED: This cluster is currently disconnected from Google.
+      CONNECTED: This cluster is currently connected to Google.
+      CONNECTED_AND_SYNCING: This cluster is currently connected to Google,
+        but may have recently reconnected after a disconnection. It is still
+        syncing back.
+    """
+    STATE_UNSPECIFIED = 0
+    DISCONNECTED = 1
+    CONNECTED = 2
+    CONNECTED_AND_SYNCING = 3
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  updateTime = _messages.StringField(2)
+
+
 class ControlPlane(_messages.Message):
   r"""Configuration of the cluster control plane.
 
@@ -249,6 +284,8 @@ class ControlPlaneEncryption(_messages.Message):
       CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
       cannot access their local data. This can be caused by a lack of
       permissions to use the key, or if the key is disabled or deleted.
+    ResourceStateValueValuesEnum: Output only. The current resource state
+      associated with the cmek.
 
   Fields:
     kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
@@ -266,6 +303,8 @@ class ControlPlaneEncryption(_messages.Message):
       key. This field may be populated only if `kms_key_state` is not
       `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
       error status reported by Cloud KMS.
+    resourceState: Output only. The current resource state associated with the
+      cmek.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
@@ -285,10 +324,23 @@ class ControlPlaneEncryption(_messages.Message):
     KMS_KEY_STATE_KEY_AVAILABLE = 1
     KMS_KEY_STATE_KEY_UNAVAILABLE = 2
 
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state associated with the cmek.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
   kmsKey = _messages.StringField(1)
   kmsKeyActiveVersion = _messages.StringField(2)
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
   kmsStatus = _messages.MessageField('Status', 4)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
 class Details(_messages.Message):
@@ -910,6 +962,8 @@ class LocalDiskEncryption(_messages.Message):
       CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
       cannot access their local data. This can be caused by a lack of
       permissions to use the key, or if the key is disabled or deleted.
+    ResourceStateValueValuesEnum: Output only. The current resource state
+      associated with the cmek.
 
   Fields:
     kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
@@ -927,6 +981,8 @@ class LocalDiskEncryption(_messages.Message):
       key. This field may be populated only if `kms_key_state` is not
       `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
       error status reported by Cloud KMS.
+    resourceState: Output only. The current resource state associated with the
+      cmek.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
@@ -946,10 +1002,23 @@ class LocalDiskEncryption(_messages.Message):
     KMS_KEY_STATE_KEY_AVAILABLE = 1
     KMS_KEY_STATE_KEY_UNAVAILABLE = 2
 
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state associated with the cmek.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
   kmsKey = _messages.StringField(1)
   kmsKeyActiveVersion = _messages.StringField(2)
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
   kmsStatus = _messages.MessageField('Status', 4)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
 class Location(_messages.Message):

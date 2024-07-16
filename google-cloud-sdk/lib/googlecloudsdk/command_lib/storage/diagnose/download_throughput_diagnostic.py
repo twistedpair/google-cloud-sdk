@@ -54,13 +54,15 @@ def _get_payload_description(object_count: int, object_size: int) -> str:
   """Returns the payload description for the given object count and size."""
   return (
       f'Transferred {object_count} objects for a total transfer size of'
-      f' {scaled_integer.FormatInteger(object_size)}.'
+      f' {scaled_integer.FormatBinaryNumber(object_size, decimal_places=1)}.'
   )
 
 
 def _get_formatted_download_throughput(download_throughput: float) -> str:
   """Formats the download throughput to a human readable format."""
-  scaled_download_throughput = scaled_integer.FormatInteger(download_throughput)
+  scaled_download_throughput = scaled_integer.FormatBinaryNumber(
+      download_throughput, decimal_places=1
+  )
   return f'{scaled_download_throughput}/sec'
 
 
@@ -111,6 +113,10 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     # and previous runs of this diagnostic.
     self.object_prefix = 'download_throughput_diagnostics_' + str(uuid.uuid4())
 
+  @property
+  def name(self) -> str:
+    return _DIAGNOSTIC_NAME
+
   def _pre_process(self):
     """Uploads test files to the bucket."""
     self._old_env_vars = os.environ.copy()
@@ -119,12 +125,10 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     if not is_done:
       raise diagnostic.DiagnosticIgnorableError('Failed to create test files.')
 
-    log.debug('Creating {} test objects.'.format(self._object_count))
     self._run_cp(
         self.temp_dir.path + '/' + self.object_prefix + '*',
         self.bucket_url.url_string,
     )
-    log.debug('Finished creating test objects.')
 
   def _set_sliced_download_env_vars(self):
     """Sets the environment variables for sliced downloads."""
@@ -163,10 +167,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     self._set_cloud_sdk_env_vars()
 
     if self._download_type == DownloadType.STREAMING:
-      log.debug(
-          'Starting Downloading {} objects to path : {}'.format(
-              self._object_count, _STREAMING_DOWNLOAD_DESTINATION
-          )
+      log.status.Print(
+          f'Starting Downloading {self._object_count} objects to path :'
+          f' {_STREAMING_DOWNLOAD_DESTINATION}'
       )
       with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -178,10 +181,9 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
         or self._download_type == DownloadType.FILE
     ):
       self._download_dir = file_utils.TemporaryDirectory()
-      log.debug(
-          'Starting Downloading {} objects to path : {}'.format(
-              self._object_count, self._download_dir.path
-          )
+      log.status.Print(
+          f'Starting Downloading {self._object_count} objects to path :'
+          f' {self._download_dir.path}'
       )
       with self._time_recorder(_DOWNLOAD_THROUGHPUT_RESULT_KEY, self._result):
         self._run_cp(
@@ -190,9 +192,7 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
         )
     else:
       raise diagnostic.DiagnosticIgnorableError(
-          '{} : Unknown download type: {}'.format(
-              _DIAGNOSTIC_NAME, self._download_type
-          )
+          f'Unknown download type: {self._download_type}'
       )
 
   def _post_process(self):
@@ -203,20 +203,16 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
     if self.temp_dir:
       try:
         self.temp_dir.Close()
-        log.debug('Cleaned up temp files.')
+        log.status.Print('Cleaned up temp files.')
       except OSError as e:
-        log.warning(
-            '{} : Failed to clean up temp files. {}'.format(_DIAGNOSTIC_NAME, e)
-        )
+        log.warning(f'{self.name} : Failed to clean up temp files. {e}')
     if self._download_dir:
       try:
         self._download_dir.Close()
-        log.debug('Done cleaning up downloaded files.')
+        log.status.Print('Cleaned up downloaded files.')
       except OSError as e:
         log.warning(
-            '{} : Failed to clean up temp downloaded files. {}'.format(
-                _DIAGNOSTIC_NAME, e
-            )
+            f'{self.name} : Failed to clean up temp downloaded files. {e}'
         )
 
   @property
@@ -232,7 +228,7 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
       download_throughput = diagnostic.PLACEHOLDER_METRIC_VALUE
     else:
       download_throughput = _get_formatted_download_throughput(
-          download_payload_size / download_time
+          round(download_payload_size / download_time, 2)
       )
 
     operation_result = diagnostic.DiagnosticOperationResult(
@@ -243,6 +239,6 @@ class DownloadThroughputDiagnostic(diagnostic.Diagnostic):
         ),
     )
     return diagnostic.DiagnosticResult(
-        name=_DIAGNOSTIC_NAME,
+        name=self.name,
         operation_results=[operation_result],
     )

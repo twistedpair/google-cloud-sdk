@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import uuid
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import arg_parsers
@@ -50,11 +52,15 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
         [
             GetSparkApplicationResourcePresentationSpec(),
             GetApplicationEnvironmentResourcePresentationSpec(),
+            GetInstanceResourcePresentationSpec(),
         ],
         command_level_fallthroughs={
-            # Set the GDCE cluster location to the instance location
-            '--application-environment.instance': ['application.instance'],
-            '--application-environment.location': ['application.location'],
+            # Set the Application Environment to the same instance and location
+            # as the Spark Application.
+            '--application-environment.instance': ['--instance.instance'],
+            '--application-environment.location': ['--instance.location'],
+            '--application.instance': ['--instance.instance'],
+            '--application.location': ['--instance.location'],
         },
     ).AddToParser(parser)
     parser.add_argument(
@@ -105,6 +111,17 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
     base.ASYNC_FLAG.AddToParser(parser)
 
   def Submit(self, args, application_ref, create_req):
+    request_id = args.request_id or uuid.uuid4().hex
+    # If the application id was not set, generate a random id.
+    application_id = (
+        application_ref.Name()
+        if application_ref is not None
+        else uuid.uuid4().hex
+    )
+
+    create_req.requestId = request_id
+    create_req.sparkApplicationId = application_id
+
     dataprocgdc_client = apis.GetClientInstance(
         DATAPROCGDC_API_NAME, DATAPROCGDC_API_VERSION
     )
@@ -141,7 +158,7 @@ class BaseGDCSparkApplicationCommand(base.CreateCommand):
 
     log.status.Print(
         'Create request issued for: [{0}]\nCheck operation [{1}] for status.'
-        .format(application_ref.Name(), create_op.name)
+        .format(application_id, create_op.name)
     )
 
 
@@ -152,11 +169,12 @@ def GetSparkApplicationResourcePresentationSpec():
   # dataprocgdc.projects.locations.serviceInstances.sparkApplications
   resource_spec = concepts.ResourceSpec.FromYaml(application_data.GetData())
   return presentation_specs.ResourcePresentationSpec(
-      name='application',
+      name='--application',
       concept_spec=resource_spec,
       group_help='Spark application to create.',
-      required=True,
+      required=False,
       prefixes=False,
+      flag_name_overrides={'instance': '', 'location': ''},
   )
 
 
@@ -168,7 +186,10 @@ def GetApplicationEnvironmentResourcePresentationSpec():
   return presentation_specs.ResourcePresentationSpec(
       name='--application-environment',
       concept_spec=resource_spec,
-      group_help='Name of the application environment to create.',
+      group_help=(
+          'Name of the application environment to reference for this Spark '
+          'Application.'
+      ),
       required=False,
       prefixes=True,
       flag_name_overrides={'instance': '', 'location': ''},
@@ -181,10 +202,12 @@ def GetInstanceResourcePresentationSpec():
   )
   resource_spec = concepts.ResourceSpec.FromYaml(instance_data.GetData())
   return presentation_specs.ResourcePresentationSpec(
-      name='instance',
+      name='--instance',
       concept_spec=resource_spec,
-      group_help='Name of the service instance to create.',
+      group_help=(
+          'Name of the service instance on which this Spark Application will '
+          'run.'
+      ),
       required=True,
       prefixes=False,
   )
-

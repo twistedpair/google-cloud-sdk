@@ -203,6 +203,30 @@ securityProfileGroup:
     attribute_name: security_profile_group
     help: ID of the security profile group.
 
+sacRealm:
+  name: SAC realm
+  collection: networksecurity.projects.locations.sacRealms
+  request_id_field: sacRealmId
+  attributes:
+  - *project
+  - *globalDefaultLocation
+  - &sacRealm
+    parameter_name: sacRealmsId
+    attribute_name: sac_realm
+    help: Id of the SAC realm.
+
+sacAttachment:
+  name: SAC attachment
+  collection: networksecurity.projects.locations.sacAttachments
+  request_id_field: sacAttachmentId
+  attributes:
+  - *project
+  - *location
+  - &sacAttachment
+    parameter_name: sacAttachmentsId
+    attribute_name: sac_attachment
+    help: Id of the SAC attachment.
+
 sseRealm:
   name: SSE realm
   collection: networksecurity.projects.locations.sseRealms

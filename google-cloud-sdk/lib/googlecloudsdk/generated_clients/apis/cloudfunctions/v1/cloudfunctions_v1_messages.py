@@ -2086,7 +2086,7 @@ class SourceRepository(_messages.Message):
       alias. To refer to a specific fixed alias (tag):
       `https://source.developers.google.com/projects/*/repos/*/fixed-
       aliases/*/paths/*` You may omit `paths/*` if you want to use the main
-      directory.
+      directory. The function response may add an empty `/paths/` to the URL.
   """
 
   deployedUrl = _messages.StringField(1)

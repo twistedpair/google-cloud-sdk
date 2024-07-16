@@ -622,8 +622,8 @@ class MetadataOptions(_messages.Message):
     TimeCreatedValueValuesEnum: Specifies how each object's `timeCreated`
       metadata is preserved for transfers. If unspecified, the default
       behavior is the same as TIME_CREATED_SKIP. This behavior is supported
-      for transfers to GCS buckets from GCS, S3, Azure, S3 Compatible, and
-      Azure sources.
+      for transfers to Cloud Storage buckets from Cloud Storage, Amazon S3,
+      S3-compatible storage, and Azure sources.
     UidValueValuesEnum: Specifies how each file's POSIX user ID (UID)
       attribute should be handled by the transfer. By default, UID is not
       preserved. Only applicable to transfers involving POSIX file systems,
@@ -657,7 +657,8 @@ class MetadataOptions(_messages.Message):
     timeCreated: Specifies how each object's `timeCreated` metadata is
       preserved for transfers. If unspecified, the default behavior is the
       same as TIME_CREATED_SKIP. This behavior is supported for transfers to
-      GCS buckets from GCS, S3, Azure, S3 Compatible, and Azure sources.
+      Cloud Storage buckets from Cloud Storage, Amazon S3, S3-compatible
+      storage, and Azure sources.
     uid: Specifies how each file's POSIX user ID (UID) attribute should be
       handled by the transfer. By default, UID is not preserved. Only
       applicable to transfers involving POSIX file systems, and ignored for
@@ -791,8 +792,9 @@ class MetadataOptions(_messages.Message):
   class TimeCreatedValueValuesEnum(_messages.Enum):
     r"""Specifies how each object's `timeCreated` metadata is preserved for
     transfers. If unspecified, the default behavior is the same as
-    TIME_CREATED_SKIP. This behavior is supported for transfers to GCS buckets
-    from GCS, S3, Azure, S3 Compatible, and Azure sources.
+    TIME_CREATED_SKIP. This behavior is supported for transfers to Cloud
+    Storage buckets from Cloud Storage, Amazon S3, S3-compatible storage, and
+    Azure sources.
 
     Values:
       TIME_CREATED_UNSPECIFIED: TimeCreated behavior is unspecified.

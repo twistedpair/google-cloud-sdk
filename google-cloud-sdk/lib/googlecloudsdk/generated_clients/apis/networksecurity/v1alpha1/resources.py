@@ -188,12 +188,47 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_GLOBAL_SACREALMS = (
-      'projects.locations.global.sacRealms',
+  PROJECTS_LOCATIONS_INTERCEPTDEPLOYMENTGROUPS = (
+      'projects.locations.interceptDeploymentGroups',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/global/sacRealms/{sacRealmsId}',
+              'projects/{projectsId}/locations/{locationsId}/'
+              'interceptDeploymentGroups/{interceptDeploymentGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INTERCEPTDEPLOYMENTS = (
+      'projects.locations.interceptDeployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'interceptDeployments/{interceptDeploymentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INTERCEPTENDPOINTGROUPASSOCIATIONS = (
+      'projects.locations.interceptEndpointGroupAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'interceptEndpointGroupAssociations/'
+              '{interceptEndpointGroupAssociationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INTERCEPTENDPOINTGROUPS = (
+      'projects.locations.interceptEndpointGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'interceptEndpointGroups/{interceptEndpointGroupsId}',
       },
       ['name'],
       True
@@ -294,6 +329,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/sacAttachments/'
               '{sacAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SACREALMS = (
+      'projects.locations.sacRealms',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/sacRealms/'
+              '{sacRealmsId}',
       },
       ['name'],
       True

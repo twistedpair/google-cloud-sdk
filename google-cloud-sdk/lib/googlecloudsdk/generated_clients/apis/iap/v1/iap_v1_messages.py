@@ -754,6 +754,23 @@ class ListTunnelDestGroupsResponse(_messages.Message):
   tunnelDestGroups = _messages.MessageField('TunnelDestGroup', 2, repeated=True)
 
 
+class NextStateOfTags(_messages.Message):
+  r"""Used for calculating the next state of tags on the resource being passed
+  for the CheckCustomConstraints RPC call. The detail evaluation of each field
+  is described in go/op-create-update-time-tags and go/tags-in-orgpolicy-
+  requests.
+
+  Fields:
+    tagsFullState: A TagsFullState attribute.
+    tagsFullStateForChildResource: A TagsFullStateForChildResource attribute.
+    tagsPartialState: A TagsPartialState attribute.
+  """
+
+  tagsFullState = _messages.MessageField('TagsFullState', 1)
+  tagsFullStateForChildResource = _messages.MessageField('TagsFullStateForChildResource', 2)
+  tagsPartialState = _messages.MessageField('TagsPartialState', 3)
+
+
 class OAuth2(_messages.Message):
   r"""The OAuth 2.0 Settings
 
@@ -1040,6 +1057,14 @@ class Resource(_messages.Message):
       the document linked below for further details. See go/iam-conditions-
       sig-g3#populate-resource-attributes for specific details on populating
       this field.
+    nextStateOfTags: Used for calculating the next state of tags on the
+      resource being passed for Custom Org Policy enforcement. NOTE: Only one
+      of the tags representations (i.e. numeric or namespaced) should be
+      populated. The input tags will be converted to the same representation
+      before the calculation. This behavior intentionally may differ from
+      other tags related fields in CheckPolicy request, which may require both
+      formats to be passed in. IMPORTANT: If tags are unchanged, this field
+      should not be set.
     service: The name of the service this resource belongs to. It is
       configured using the official_service_name of the Service as defined in
       service configurations under //configs/cloud/resourcetypes. For example,
@@ -1142,8 +1167,9 @@ class Resource(_messages.Message):
   expectedNextState = _messages.MessageField('ExpectedNextStateValue', 1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  service = _messages.StringField(4)
-  type = _messages.StringField(5)
+  nextStateOfTags = _messages.MessageField('NextStateOfTags', 4)
+  service = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -1220,6 +1246,161 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class TagsFullState(_messages.Message):
+  r"""A TagsFullState object.
+
+  Messages:
+    TagsValue: If TagsFullState is initialized, the values in this field fully
+      represent all the tags in the next state (the current tag values are not
+      used). If tags.size() == 0, the next state of tags would be no tags for
+      evaluation purposes. Only one type of tags reference (numeric or
+      namespace) is required to be passed.
+
+  Fields:
+    tags: If TagsFullState is initialized, the values in this field fully
+      represent all the tags in the next state (the current tag values are not
+      used). If tags.size() == 0, the next state of tags would be no tags for
+      evaluation purposes. Only one type of tags reference (numeric or
+      namespace) is required to be passed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""If TagsFullState is initialized, the values in this field fully
+    represent all the tags in the next state (the current tag values are not
+    used). If tags.size() == 0, the next state of tags would be no tags for
+    evaluation purposes. Only one type of tags reference (numeric or
+    namespace) is required to be passed.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
+
+
+class TagsFullStateForChildResource(_messages.Message):
+  r"""A TagsFullStateForChildResource object.
+
+  Messages:
+    TagsValue: If TagsFullStateForChildResource is initialized, the values in
+      this field represent all the tags in the next state for the child
+      resource. Only one type of tags reference (numeric or namespace) is
+      required to be passed. IMPORTANT: This field should only be used when
+      the target resource IAM policy name is UNKNOWN and the resource's parent
+      IAM policy name is being passed in the request.
+
+  Fields:
+    tags: If TagsFullStateForChildResource is initialized, the values in this
+      field represent all the tags in the next state for the child resource.
+      Only one type of tags reference (numeric or namespace) is required to be
+      passed. IMPORTANT: This field should only be used when the target
+      resource IAM policy name is UNKNOWN and the resource's parent IAM policy
+      name is being passed in the request.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""If TagsFullStateForChildResource is initialized, the values in this
+    field represent all the tags in the next state for the child resource.
+    Only one type of tags reference (numeric or namespace) is required to be
+    passed. IMPORTANT: This field should only be used when the target resource
+    IAM policy name is UNKNOWN and the resource's parent IAM policy name is
+    being passed in the request.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tags = _messages.MessageField('TagsValue', 1)
+
+
+class TagsPartialState(_messages.Message):
+  r"""A TagsPartialState object.
+
+  Messages:
+    TagsToUpsertValue: Tags that'll be updated or added to the current state
+      of tags for evaluation purposes. If a key exists in both
+      "tags_to_upsert" and "tag_keys_to_remove", the one in
+      "tag_keys_to_remove" is ignored. Only one type of tags reference
+      (numeric or namespace) is required to be passed.
+
+  Fields:
+    tagKeysToRemove: Keys of the tags that should be removed for evaluation
+      purposes. IMPORTANT: Currently only numeric references are supported.
+      Once support for namespace references is added, both the tag references
+      (numeric and namespace) will be removed.
+    tagsToUpsert: Tags that'll be updated or added to the current state of
+      tags for evaluation purposes. If a key exists in both "tags_to_upsert"
+      and "tag_keys_to_remove", the one in "tag_keys_to_remove" is ignored.
+      Only one type of tags reference (numeric or namespace) is required to be
+      passed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsToUpsertValue(_messages.Message):
+    r"""Tags that'll be updated or added to the current state of tags for
+    evaluation purposes. If a key exists in both "tags_to_upsert" and
+    "tag_keys_to_remove", the one in "tag_keys_to_remove" is ignored. Only one
+    type of tags reference (numeric or namespace) is required to be passed.
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsToUpsertValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsToUpsertValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsToUpsertValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  tagKeysToRemove = _messages.StringField(1, repeated=True)
+  tagsToUpsert = _messages.MessageField('TagsToUpsertValue', 2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

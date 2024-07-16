@@ -662,3 +662,101 @@ def AddNetworkPerformanceConfigsArg(parser, required=False):
       required=required,
       help=helptext,
   )
+
+
+def AddConfidentialComputeArg(parser, required=False):
+  """Enable confidential compute for the restored instance."""
+  helptext = """\
+      The restored instance boots with Confidential Computing enabled.
+      Confidential Computing is based on Secure Encrypted Virtualization (SEV),
+      an AMD virtualization feature for running confidential instances.
+      """
+  parser.add_argument(
+      '--confidential-compute',
+      action='store_true',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddDeletionProtectionArg(parser, required=False):
+  """Enable deletion protection for the restored instance."""
+  helptext = """\
+      Enables deletion protection for the restored instance.
+      """
+  parser.add_argument(
+      '--deletion-protection',
+      action='store_true',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddResourceManagerTagsArg(parser, required=False):
+  """ResourceManagerTags to be added to the instance."""
+  helptext = """\
+      Specifies a list of resource manager tags to apply to the instance.
+      """
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddResourcePoliciesArg(parser, required=False):
+  """ResourcePolicies to be added to the instance."""
+  helptext = """\
+      A list of resource policy names to be added to the instance.
+      The policies must exist in the same region as the instance.
+      """
+  parser.add_argument(
+      '--resource-policies',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='RESOURCE_POLICY',
+      required=required,
+      help=helptext,
+  )
+
+
+def AddKeyRevocationActionTypeArg(parser, required=False):
+  """KeyRevocationActionType to be added to the instance."""
+  helptext = """\
+      Specifies the behavior of the instance when the KMS key of one of its
+      attached disks is revoked. The default is none. POLICY must be one of:
+      * none
+      No operation is performed.
+      * stop
+      The instance is stopped when the KMS key of one of its attached disks is
+      revoked.
+      """
+  enum_mappings = {
+      'none': 'NONE',
+      'stop': 'STOP',
+  }
+  parser.add_argument(
+      '--key-revocation-action-type',
+      metavar='POLICY',
+      type=util.EnumMapper(enum_mappings).Parse,
+      required=required,
+      help=helptext,
+  )
+
+
+def AddInstanceKmsKeyArg(parser, required=False):
+  """InstanceKmsKey to be added to the instance."""
+  helptext = """\
+      The Cloud KMS (Key Management Service) cryptokey that will be used to
+      protect the restored instance.
+
+      Provide the full resource name of the cryptokey in the format:
+      `projects/<project>/locations/<location>/keyRings/<key-ring>/cryptoKeys/<key>`
+      """
+  parser.add_argument(
+      '--instance-kms-key',
+      type=str,
+      required=required,
+      help=helptext,
+  )

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ from .logging_config import (
     GetCmekSettingsRequest,
     GetExclusionRequest,
     GetLinkRequest,
+    GetSavedQueryRequest,
     GetSettingsRequest,
     GetSinkRequest,
     GetViewRequest,
@@ -92,6 +93,7 @@ from .logging_config import (
     UpdateBucketRequest,
     UpdateCmekSettingsRequest,
     UpdateExclusionRequest,
+    UpdateSavedQueryRequest,
     UpdateSettingsRequest,
     UpdateSinkRequest,
     UpdateViewRequest,
@@ -150,6 +152,7 @@ __all__ = (
     'GetCmekSettingsRequest',
     'GetExclusionRequest',
     'GetLinkRequest',
+    'GetSavedQueryRequest',
     'GetSettingsRequest',
     'GetSinkRequest',
     'GetViewRequest',
@@ -184,6 +187,7 @@ __all__ = (
     'UpdateBucketRequest',
     'UpdateCmekSettingsRequest',
     'UpdateExclusionRequest',
+    'UpdateSavedQueryRequest',
     'UpdateSettingsRequest',
     'UpdateSinkRequest',
     'UpdateViewRequest',

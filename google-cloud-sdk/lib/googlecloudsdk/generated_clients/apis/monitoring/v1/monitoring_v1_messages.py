@@ -918,6 +918,8 @@ class EventAnnotation(_messages.Message):
       CLOUD_SQL_START_STOP: Start/stop of a Cloud SQL instance.
       CLOUD_SQL_STORAGE: Storage event for a Cloud SQL instance.
       UPTIME_CHECK_FAILURE: Failure of a Cloud Monitoring uptime check.
+      CLOUD_ALERTING_ALERT: Alerts from Cloud Alerting
+      SERVICE_HEALTH_INCIDENT: Incidents from Service Health
     """
     EVENT_TYPE_UNSPECIFIED = 0
     GKE_WORKLOAD_DEPLOYMENT = 1
@@ -939,6 +941,8 @@ class EventAnnotation(_messages.Message):
     CLOUD_SQL_START_STOP = 17
     CLOUD_SQL_STORAGE = 18
     UPTIME_CHECK_FAILURE = 19
+    CLOUD_ALERTING_ALERT = 20
+    SERVICE_HEALTH_INCIDENT = 21
 
   displayName = _messages.StringField(1)
   enabled = _messages.BooleanField(2)
@@ -1203,8 +1207,8 @@ class LogsPanel(_messages.Message):
       queries). Only log entries that match the filter are returned. An empty
       filter matches all log entries.
     resourceNames: The names of logging resources to collect logs for.
-      Currently only projects are supported. If empty, the widget will default
-      to the host project.
+      Currently projects and storage views are supported. If empty, the widget
+      will default to the host project.
   """
 
   filter = _messages.StringField(1)
@@ -1479,10 +1483,10 @@ class MonitoringProjectsLocationPrometheusApiV1LabelValuesRequest(_messages.Mess
     location: Location of the resource information. Has to be "global" now.
     match: A list of matchers encoded in the Prometheus label matcher format
       to constrain the values to series that satisfy them.
-    name: The workspace on which to execute the request. It is not part of the
-      open source API but used as a request path prefix to distinguish
-      different virtual Prometheus instances of Google Prometheus Engine. The
-      format is: projects/PROJECT_ID_OR_NUMBER.
+    name: Required. The workspace on which to execute the request. It is not
+      part of the open source API but used as a request path prefix to
+      distinguish different virtual Prometheus instances of Google Prometheus
+      Engine. The format is: projects/PROJECT_ID_OR_NUMBER.
     start: The start time to evaluate the query for. Either floating point
       UNIX seconds or RFC3339 formatted timestamp.
   """
@@ -1500,10 +1504,10 @@ class MonitoringProjectsLocationPrometheusApiV1LabelsRequest(_messages.Message):
 
   Fields:
     location: Location of the resource information. Has to be "global" now.
-    name: The workspace on which to execute the request. It is not part of the
-      open source API but used as a request path prefix to distinguish
-      different virtual Prometheus instances of Google Prometheus Engine. The
-      format is: projects/PROJECT_ID_OR_NUMBER.
+    name: Required. The workspace on which to execute the request. It is not
+      part of the open source API but used as a request path prefix to
+      distinguish different virtual Prometheus instances of Google Prometheus
+      Engine. The format is: projects/PROJECT_ID_OR_NUMBER.
     queryLabelsRequest: A QueryLabelsRequest resource to be passed as the
       request body.
   """
@@ -1539,8 +1543,8 @@ class MonitoringProjectsLocationPrometheusApiV1QueryExemplarsRequest(_messages.M
 
   Fields:
     location: Location of the resource information. Has to be "global" now.
-    name: The project on which to execute the request. Data associcated with
-      the project's workspace stored under the The format is:
+    name: Required. The project on which to execute the request. Data
+      associcated with the project's workspace stored under the The format is:
       projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
       path prefix to distinguish different virtual Prometheus instances of
       Google Prometheus Engine.
@@ -1558,8 +1562,8 @@ class MonitoringProjectsLocationPrometheusApiV1QueryRangeRequest(_messages.Messa
 
   Fields:
     location: Location of the resource information. Has to be "global" now.
-    name: The project on which to execute the request. Data associcated with
-      the project's workspace stored under the The format is:
+    name: Required. The project on which to execute the request. Data
+      associcated with the project's workspace stored under the The format is:
       projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
       path prefix to distinguish different virtual Prometheus instances of
       Google Prometheus Engine.
@@ -1577,8 +1581,8 @@ class MonitoringProjectsLocationPrometheusApiV1QueryRequest(_messages.Message):
 
   Fields:
     location: Location of the resource information. Has to be "global" now.
-    name: The project on which to execute the request. Data associcated with
-      the project's workspace stored under the The format is:
+    name: Required. The project on which to execute the request. Data
+      associcated with the project's workspace stored under the The format is:
       projects/PROJECT_ID_OR_NUMBER. Open source API but used as a request
       path prefix to distinguish different virtual Prometheus instances of
       Google Prometheus Engine.

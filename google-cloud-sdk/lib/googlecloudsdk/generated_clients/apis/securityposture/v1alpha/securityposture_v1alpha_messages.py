@@ -14,7 +14,7 @@ package = 'securityposture'
 
 
 class AssetDetails(_messages.Message):
-  r"""A AssetDetails object.
+  r"""Details of the asset which got violated.
 
   Fields:
     asset: JSON string representing CAI asset. Format/representation may
@@ -51,14 +51,27 @@ class Constraint(_messages.Message):
   Fields:
     orgPolicyConstraint: Optional. Org Policy builtin constraint.
     orgPolicyConstraintCustom: Optional. Org Policy custom constraint.
+    regoPolicy: Optional. Rego policy constraint.
     securityHealthAnalyticsCustomModule: Optional. SHA custom detector.
     securityHealthAnalyticsModule: Optional. SHA built-in detector.
   """
 
   orgPolicyConstraint = _messages.MessageField('OrgPolicyConstraint', 1)
   orgPolicyConstraintCustom = _messages.MessageField('OrgPolicyConstraintCustom', 2)
-  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 3)
-  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 4)
+  regoPolicy = _messages.MessageField('RegoPolicy', 3)
+  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 4)
+  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 5)
+
+
+class CreateFindingRemediationExecutionRequest(_messages.Message):
+  r"""Request message.
+
+  Fields:
+    findingRemediationExecution: Required. The resource being created which
+      contains the finding name.
+  """
+
+  findingRemediationExecution = _messages.MessageField('FindingRemediationExecution', 1)
 
 
 class CreateIaCValidationReportRequest(_messages.Message):
@@ -138,6 +151,16 @@ class CustomOutputSpec(_messages.Message):
   properties = _messages.MessageField('Property', 1, repeated=True)
 
 
+class Duration(_messages.Message):
+  r"""Duration representation
+
+  Fields:
+    days: Optional. Duration in days.
+  """
+
+  days = _messages.IntegerField(1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -198,6 +221,22 @@ class ExtractPostureRequest(_messages.Message):
 
   postureId = _messages.StringField(1)
   workload = _messages.StringField(2)
+
+
+class FindingRemediationExecution(_messages.Message):
+  r"""Message describing FindingRemediationExecution object.
+
+  Fields:
+    finding: Required. Name of the finding. The format of this value is as
+      follows: organizations/{organization}/sources/{source}/locations/{locati
+      on}/findings/{finding_id}
+    name: Output only. The id of the finding remediation execution. The format
+      of this value is as follows: organizations/{organization}/locations/{loc
+      ation}/findingRemediationExecutions/{finding_remediation_execution_id}
+  """
+
+  finding = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudSecuritypostureV1alphaCustomConstraint(_messages.Message):
@@ -366,7 +405,7 @@ class GoogleCloudSecuritypostureV1alphaReport(_messages.Message):
 
   Fields:
     createTime: Output only. The timestamp when the report was created.
-    iacValidationReport: A IaCValidationReport attribute.
+    iacValidationReport: Output only. Details of an IaC Validation report.
     name: Required. The name of this Report resource, in the format of
       organizations/{organization}/locations/{location}/reports/{reportID}.
     updateTime: Output only. The timestamp when the report was updated.
@@ -404,6 +443,38 @@ class IaCValidationReport(_messages.Message):
   note = _messages.StringField(1)
   skippedPolicies = _messages.MessageField('GoogleCloudSecuritypostureV1alphaIaCValidationReportPolicyDetails', 2, repeated=True)
   violations = _messages.MessageField('Violation', 3, repeated=True)
+
+
+class IaCValidationReportMetrics(_messages.Message):
+  r"""Definition of the resource 'IaCValidationReportMetrics'.
+
+  Fields:
+    createTime: Output only. The timestamp when the Report Metric was created.
+    duration: Output only. The duration for which the Report Metric was
+      created. The duration is in days. (smallest unit of duration is chosen
+      as 1 Day)
+    name: Required. Identifier. The name of this IaC Validation Report Metric
+      resource, in the format of organizations/{organization}/locations/{locat
+      ion}/iacValidationReportMetrics.
+    topViolatedPolicies: Top violated policies.
+    topViolatedProjects: Top violated projects.
+    topViolatingAssets: Top violating assets.
+    totalPoliciesViolated: Total number of policies violated.
+    totalReportsGenerated: Total number of reports generated.
+    totalViolatingAssets: Total number of violating assets.
+    totalViolations: Total number of violations.
+  """
+
+  createTime = _messages.StringField(1)
+  duration = _messages.MessageField('Duration', 2)
+  name = _messages.StringField(3)
+  topViolatedPolicies = _messages.MessageField('ViolatedPolicy', 4, repeated=True)
+  topViolatedProjects = _messages.StringField(5, repeated=True)
+  topViolatingAssets = _messages.StringField(6, repeated=True)
+  totalPoliciesViolated = _messages.IntegerField(7)
+  totalReportsGenerated = _messages.IntegerField(8)
+  totalViolatingAssets = _messages.IntegerField(9)
+  totalViolations = _messages.IntegerField(10)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -765,7 +836,7 @@ class Policy(_messages.Message):
 
 
 class PolicyDetails(_messages.Message):
-  r"""A PolicyDetails object.
+  r"""Details of the policy which got violated.
 
   Enums:
     ConstraintTypeValueValuesEnum: Type of policy constraint.
@@ -783,9 +854,10 @@ class PolicyDetails(_messages.Message):
     r"""Type of policy constraint.
 
     Values:
-      CONSTRAINT_TYPE_UNSPECIFIED: <no description>
-      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
-      ORG_POLICY_CUSTOM: <no description>
+      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint type.
+      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: Custom SHA module constraint
+        type.
+      ORG_POLICY_CUSTOM: Custom org policy constraint type.
       SECURITY_HEALTH_ANALYTICS_MODULE: SHA module constraint type.
       ORG_POLICY: Org policy constraint type.
     """
@@ -864,11 +936,13 @@ class Posture(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Required. State of Posture resource.
@@ -991,11 +1065,13 @@ class PostureDeployment(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureDeployment resource.
@@ -1115,11 +1191,13 @@ class PostureTemplate(_messages.Message):
       AI: AI Category.
       AWS: Posture contains AWS policies.
       GCP: Posture contains GCP policies.
+      CATEGORY_DATA_SECURITY: Posture with PostureType DATA_SECURITY.
     """
     CATEGORY_UNSPECIFIED = 0
     AI = 1
     AWS = 2
     GCP = 3
+    CATEGORY_DATA_SECURITY = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of PostureTemplate resource.
@@ -1155,6 +1233,47 @@ class Property(_messages.Message):
 
   name = _messages.StringField(1)
   valueExpression = _messages.MessageField('Expr', 2)
+
+
+class RegoPolicy(_messages.Message):
+  r"""Message for Rego policy constraint.
+
+  Enums:
+    SeverityValueValuesEnum: Optional. Severity of the asset violation against
+      this rego policy.
+
+  Fields:
+    definition: Required. Rego language based policy captured in string
+      format. Total size of rego policy should not exceed 24KB.
+    id: Required. The unique identifier (ID) for the rego policy. It should be
+      unique across the posture. The regex pattern for id should be ^A-Za-z*$.
+    nextSteps: Optional. Next steps required to fix an asset violation against
+      this rego policy.
+    severity: Optional. Severity of the asset violation against this rego
+      policy.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Optional. Severity of the asset violation against this rego policy.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unspecified severity.
+      CRITICAL: Critical severity.
+      HIGH: High severity.
+      MEDIUM: Medium severity. This is the default severity if the severity is
+        unknown.
+      LOW: Low severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  definition = _messages.StringField(1)
+  id = _messages.StringField(2)
+  nextSteps = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
 
 
 class ResourceSelector(_messages.Message):
@@ -1236,6 +1355,40 @@ class SecurityHealthAnalyticsModule(_messages.Message):
 
   moduleEnablementState = _messages.EnumField('ModuleEnablementStateValueValuesEnum', 1)
   moduleName = _messages.StringField(2)
+
+
+class SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreateRequest(_messages.Message):
+  r"""A SecuritypostureOrganizationsLocationsFindingRemediationExecutionsCreat
+  eRequest object.
+
+  Fields:
+    createFindingRemediationExecutionRequest: A
+      CreateFindingRemediationExecutionRequest resource to be passed as the
+      request body.
+    parent: Required. Parent is the organisation id of the finding. The format
+      of this value is as follows:
+      organizations/{organization}/locations/{location} Here, the location
+      will be global.
+  """
+
+  createFindingRemediationExecutionRequest = _messages.MessageField('CreateFindingRemediationExecutionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest(_messages.Message):
+  r"""A
+  SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest
+  object.
+
+  Fields:
+    duration_days: Optional. Duration in days.
+    name: Required. Name of the resource. The format of this value is as
+      follows: `organizations/{organization}/locations/{location}/iacValidatio
+      nReportMetrics`
+  """
+
+  duration_days = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class SecuritypostureOrganizationsLocationsGetRequest(_messages.Message):
@@ -1495,15 +1648,18 @@ class SecuritypostureOrganizationsLocationsPosturesListRequest(_messages.Message
   r"""A SecuritypostureOrganizationsLocationsPosturesListRequest object.
 
   Fields:
+    filter: Optional. Filter to be applied on the resource, defined by EBNF
+      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
     pageSize: Requested page size. Server may return fewer items than
       requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListPosturesRequest.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SecuritypostureOrganizationsLocationsPosturesListRevisionsRequest(_messages.Message):
@@ -1707,6 +1863,18 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class ViolatedPolicy(_messages.Message):
+  r"""message of violated policy.
+
+  Fields:
+    constraint: Name of the violated policy.
+    constraintType: Type of the violated policy.
+  """
+
+  constraint = _messages.StringField(1)
+  constraintType = _messages.StringField(2)
+
+
 class Violation(_messages.Message):
   r"""Details of violation.
 
@@ -1756,3 +1924,5 @@ encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_1', '1')
 encoding.AddCustomJsonEnumMapping(
     StandardQueryParameters.FXgafvValueValuesEnum, '_2', '2')
+encoding.AddCustomJsonFieldMapping(
+    SecuritypostureOrganizationsLocationsGetIacValidationReportMetricsRequest, 'duration_days', 'duration.days')

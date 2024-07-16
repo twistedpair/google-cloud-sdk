@@ -23,29 +23,19 @@ import re
 from googlecloudsdk.calliope import exceptions
 
 
-def _ValidateProject(flag_value):
-  if not re.match('^[a-z0-9-]+$', flag_value):
-    raise exceptions.InvalidArgumentException('project', flag_value)
-
-
-def _ValidateFolder(flag_value):
-  if not re.match('^[0-9]+$', flag_value):
-    raise exceptions.InvalidArgumentException('folder', flag_value)
-
-
-def _ValidateOrganization(flag_value):
-  if not re.match('^[0-9]+$', flag_value):
-    raise exceptions.InvalidArgumentException('organization', flag_value)
+def _ValidateContainer(container_type, flag_value):
+  if not re.match('^[a-z0-9-:]+$', flag_value):
+    raise exceptions.InvalidArgumentException(container_type, flag_value)
 
 
 def CreateConsumer(project, folder, organization):
   if project:
-    _ValidateProject(project)
+    _ValidateContainer('project', project)
     return 'projects/' + project
   if folder:
-    _ValidateFolder(folder)
+    _ValidateContainer('folder', folder)
     return 'folders/' + folder
   if organization:
-    _ValidateOrganization(organization)
+    _ValidateContainer('organization', organization)
     return 'organizations/' + organization
   return None

@@ -108,6 +108,18 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdatesRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableComplianceUpdates
+  Request object.
+
+  Fields:
+    name: Required. The `name` field is used to identify the workload. Format:
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitorin
   gRequest object.
@@ -345,32 +357,22 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
-      REGIONAL_CONTROLS_PREMIUM_US: Assured Workloads For US Regions data
-        protection controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
-      REGIONAL_CONTROLS_PREMIUM_EU: Assured Workloads For EU Regions and
-        Support controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
-      REGIONAL_CONTROLS_PREMIUM_CA: Assured Workloads For Canada Regions and
-        Support controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls
-      REGIONAL_CONTROLS_PREMIUM_AU: Assured Workloads for Australia Regions
-        and Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel Regions
-      REGIONAL_CONTROLS_PREMIUM_ISR: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
-      REGIONAL_CONTROLS_PREMIUM_JP: Assured Workloads for Japan Regions
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
     """
@@ -380,33 +382,31 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
     US_REGIONAL_ACCESS = 5
-    REGIONAL_CONTROLS_PREMIUM_US = 6
-    HIPAA = 7
-    HITRUST = 8
-    EU_REGIONS_AND_SUPPORT = 9
-    REGIONAL_CONTROLS_PREMIUM_EU = 10
-    CA_REGIONS_AND_SUPPORT = 11
-    REGIONAL_CONTROLS_PREMIUM_CA = 12
-    ITAR = 13
-    AU_REGIONS_AND_US_SUPPORT = 14
-    REGIONAL_CONTROLS_PREMIUM_AU = 15
-    ASSURED_WORKLOADS_FOR_PARTNERS = 16
-    ISR_REGIONS = 17
-    REGIONAL_CONTROLS_PREMIUM_ISR = 18
-    ISR_REGIONS_AND_SUPPORT = 19
-    CA_PROTECTED_B = 20
-    IL5 = 21
-    IL2 = 22
-    JP_REGIONS_AND_SUPPORT = 23
-    REGIONAL_CONTROLS_PREMIUM_JP = 24
-    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 25
-    REGIONAL_CONTROLS = 26
+    HIPAA = 6
+    HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
+    CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
+    ASSURED_WORKLOADS_FOR_PARTNERS = 12
+    ISR_REGIONS = 13
+    ISR_REGIONS_AND_SUPPORT = 14
+    CA_PROTECTED_B = 15
+    IL5 = 16
+    IL2 = 17
+    JP_REGIONS_AND_SUPPORT = 18
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
+    REGIONAL_CONTROLS = 20
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   parent = _messages.StringField(4)
   resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 5, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1beta1EnableComplianceUpdatesResponse(_messages.Message):
+  r"""Response for EnableComplianceUpdates endpoint."""
 
 
 class GoogleCloudAssuredworkloadsV1beta1EnableResourceMonitoringResponse(_messages.Message):
@@ -758,6 +758,9 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     complianceRegime: Required. Immutable. Compliance Regime associated with
       this workload.
     complianceStatus: Output only. Count of active Violations in the Workload.
+    complianceUpdatesEnabled: Output only. Indicates whether the compliance
+      updates feature is enabled for a workload. The compliance updates
+      feature can be enabled via the EnableComplianceUpdates endpoint.
     compliantButDisallowedServices: Output only. Urls for services which are
       compliant for this Assured Workload, but which are currently disallowed
       by the ResourceUsageRestriction org policy. Invoke
@@ -834,32 +837,22 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       FEDRAMP_MODERATE: FedRAMP Moderate data protection controls
       US_REGIONAL_ACCESS: Assured Workloads For US Regions data protection
         controls
-      REGIONAL_CONTROLS_PREMIUM_US: Assured Workloads For US Regions data
-        protection controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
-      REGIONAL_CONTROLS_PREMIUM_EU: Assured Workloads For EU Regions and
-        Support controls
       CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
         controls
-      REGIONAL_CONTROLS_PREMIUM_CA: Assured Workloads For Canada Regions and
-        Support controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
         Support controls
-      REGIONAL_CONTROLS_PREMIUM_AU: Assured Workloads for Australia Regions
-        and Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel Regions
-      REGIONAL_CONTROLS_PREMIUM_ISR: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
       IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
-      REGIONAL_CONTROLS_PREMIUM_JP: Assured Workloads for Japan Regions
       KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS: KSA R5 Controls.
       REGIONAL_CONTROLS: Assured Workloads for Regional Controls
     """
@@ -869,27 +862,21 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     FEDRAMP_HIGH = 3
     FEDRAMP_MODERATE = 4
     US_REGIONAL_ACCESS = 5
-    REGIONAL_CONTROLS_PREMIUM_US = 6
-    HIPAA = 7
-    HITRUST = 8
-    EU_REGIONS_AND_SUPPORT = 9
-    REGIONAL_CONTROLS_PREMIUM_EU = 10
-    CA_REGIONS_AND_SUPPORT = 11
-    REGIONAL_CONTROLS_PREMIUM_CA = 12
-    ITAR = 13
-    AU_REGIONS_AND_US_SUPPORT = 14
-    REGIONAL_CONTROLS_PREMIUM_AU = 15
-    ASSURED_WORKLOADS_FOR_PARTNERS = 16
-    ISR_REGIONS = 17
-    REGIONAL_CONTROLS_PREMIUM_ISR = 18
-    ISR_REGIONS_AND_SUPPORT = 19
-    CA_PROTECTED_B = 20
-    IL5 = 21
-    IL2 = 22
-    JP_REGIONS_AND_SUPPORT = 23
-    REGIONAL_CONTROLS_PREMIUM_JP = 24
-    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 25
-    REGIONAL_CONTROLS = 26
+    HIPAA = 6
+    HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
+    CA_REGIONS_AND_SUPPORT = 9
+    ITAR = 10
+    AU_REGIONS_AND_US_SUPPORT = 11
+    ASSURED_WORKLOADS_FOR_PARTNERS = 12
+    ISR_REGIONS = 13
+    ISR_REGIONS_AND_SUPPORT = 14
+    CA_PROTECTED_B = 15
+    IL5 = 16
+    IL2 = 17
+    JP_REGIONS_AND_SUPPORT = 18
+    KSA_REGIONS_AND_SUPPORT_WITH_SOVEREIGNTY_CONTROLS = 19
+    REGIONAL_CONTROLS = 20
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given
@@ -950,27 +937,28 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
   cjisSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings', 2)
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 3)
   complianceStatus = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadComplianceStatus', 4)
-  compliantButDisallowedServices = _messages.StringField(5, repeated=True)
-  createTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 8)
-  enableSovereignControls = _messages.BooleanField(9)
-  etag = _messages.StringField(10)
-  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 11)
-  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 12)
-  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 13)
-  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 14)
-  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  partner = _messages.EnumField('PartnerValueValuesEnum', 18)
-  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 19)
-  provisionedResourcesParent = _messages.StringField(20)
-  resourceMonitoringEnabled = _messages.BooleanField(21)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 22, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 23, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 24)
-  violationNotificationsEnabled = _messages.BooleanField(25)
+  complianceUpdatesEnabled = _messages.BooleanField(5)
+  compliantButDisallowedServices = _messages.StringField(6, repeated=True)
+  createTime = _messages.StringField(7)
+  displayName = _messages.StringField(8)
+  ekmProvisioningResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadEkmProvisioningResponse', 9)
+  enableSovereignControls = _messages.BooleanField(10)
+  etag = _messages.StringField(11)
+  fedrampHighSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampHighSettings', 12)
+  fedrampModerateSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadFedrampModerateSettings', 13)
+  il4Settings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadIL4Settings', 14)
+  kajEnrollmentState = _messages.EnumField('KajEnrollmentStateValueValuesEnum', 15)
+  kmsSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadKMSSettings', 16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  partner = _messages.EnumField('PartnerValueValuesEnum', 19)
+  partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadPartnerPermissions', 20)
+  provisionedResourcesParent = _messages.StringField(21)
+  resourceMonitoringEnabled = _messages.BooleanField(22)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings', 23, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo', 24, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1WorkloadSaaEnrollmentResponse', 25)
+  violationNotificationsEnabled = _messages.BooleanField(26)
 
 
 class GoogleCloudAssuredworkloadsV1beta1WorkloadCJISSettings(_messages.Message):

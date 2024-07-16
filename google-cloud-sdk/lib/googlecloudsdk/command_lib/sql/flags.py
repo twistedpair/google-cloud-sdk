@@ -519,6 +519,7 @@ def AddDatabaseVersion(
       'MYSQL_5_6',
       'MYSQL_5_7',
       'MYSQL_8_0',
+      'MYSQL_8_4',
       'POSTGRES_9_6',
       'POSTGRES_10',
       'POSTGRES_11',
@@ -567,6 +568,19 @@ def AddDatabaseVersion(
       if support_default_version
       else None,
       choices=_MajorVersionMatchList(choices) if restrict_choices else None,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddIncludeReplicasForMajorVersionUpgrade(parser, hidden=True):
+  """Adds `--include-replicas-for-major-version-upgrade` to the parser with boolean choice."""
+  help_text = """ Boolean determining whether an in-place major version upgrade
+                of replicas happens when an in-place major version upgrade
+                of a primary instance is initiated."""
+  parser.add_argument(
+      '--include-replicas-for-major-version-upgrade',
+      action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
       hidden=hidden,
   )
@@ -2639,15 +2653,13 @@ def AddEnableGoogleMLIntegration(parser, hidden=False):
   )
 
 
-def AddEnableDataplexIntegration(parser):
+def AddEnableDataplexIntegration(parser, hidden=False):
   """Adds --enable-dataplex-integration flag."""
   parser.add_argument(
       '--enable-dataplex-integration',
       required=False,
-      hidden=True,
-      help=(
-          'Enable Dataplex integration for Google Cloud SQL.'
-      ),
+      hidden=hidden,
+      help='Enable Dataplex integration for Google Cloud SQL.',
       action=arg_parsers.StoreTrueFalseAction,
   )
 

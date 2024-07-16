@@ -100,6 +100,11 @@
                 "get_link"
               ]
             },
+            "GetSavedQuery": {
+              "methods": [
+                "get_saved_query"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -173,6 +178,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "update_saved_query"
               ]
             },
             "UpdateSettings": {
@@ -285,6 +295,11 @@
                 "get_link"
               ]
             },
+            "GetSavedQuery": {
+              "methods": [
+                "get_saved_query"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -358,6 +373,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "update_saved_query"
               ]
             },
             "UpdateSettings": {
@@ -470,6 +490,11 @@
                 "get_link"
               ]
             },
+            "GetSavedQuery": {
+              "methods": [
+                "get_saved_query"
+              ]
+            },
             "GetSettings": {
               "methods": [
                 "get_settings"
@@ -543,6 +568,11 @@
             "UpdateExclusion": {
               "methods": [
                 "update_exclusion"
+              ]
+            },
+            "UpdateSavedQuery": {
+              "methods": [
+                "update_saved_query"
               ]
             },
             "UpdateSettings": {

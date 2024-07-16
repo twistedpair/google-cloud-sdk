@@ -238,11 +238,13 @@ class ChartData(_messages.Message):
 
   Fields:
     chartTitle: Optional. Chart title.
+    chartType: Optional. Chart type.
     rawData: Required. Raw chart data.
   """
 
   chartTitle = _messages.StringField(1)
-  rawData = _messages.MessageField('RawData', 2)
+  chartType = _messages.StringField(2)
+  rawData = _messages.MessageField('RawData', 3)
 
 
 class ChartMetadata(_messages.Message):
@@ -1240,6 +1242,8 @@ class CodePrompt(_messages.Message):
       GENERATE_CODE_TRANSFORMS: The code generation experience for Code
         Transforms.
       INTENT_CLASSIFICATION: The intent classification experience.
+      COMPLETE_CLOUDRUN: The code completion experience for Cloud Run
+        Functions.
     """
     EXPERIENCE_UNSPECIFIED = 0
     COMPLETE = 1
@@ -1257,6 +1261,7 @@ class CodePrompt(_messages.Message):
     GENERATE_SYNTHETIC_MONITORING = 13
     GENERATE_CODE_TRANSFORMS = 14
     INTENT_CLASSIFICATION = 15
+    COMPLETE_CLOUDRUN = 16
 
   additionalFiles = _messages.MessageField('File', 1, repeated=True)
   expectedSamples = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -1276,12 +1281,11 @@ class CodeRepositoryIndex(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    allowlistIpRanges: Output only. IP ranges from which indexer job can
-      access Git repositories.
     createTime: Output only. [Output only] Create time stamp
+    ipRanges: Output only. Ranges of possible IP addresses from which the RAG
+      index service will attempt to access linked Git repositories.
     labels: Optional. Labels as key value pairs
     name: Identifier. name of resource
-    repositories: Required. List of repositories to be indexed
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1309,12 +1313,11 @@ class CodeRepositoryIndex(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allowlistIpRanges = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  ipRanges = _messages.StringField(2, repeated=True)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  repositories = _messages.MessageField('Repository', 5, repeated=True)
-  updateTime = _messages.StringField(6)
+  updateTime = _messages.StringField(5)
 
 
 class Column(_messages.Message):
@@ -2239,11 +2242,13 @@ class IntegrationSkeleton(_messages.Message):
     integrationVersion: The integration version containing basic triggers and
       tasks.
     name: The name of the integration.
+    tag: Indicate the strategy/methodology used to generate the integration.
   """
 
   explanation = _messages.StringField(1)
   integrationVersion = _messages.MessageField('IntegrationVersion', 2)
   name = _messages.StringField(3)
+  tag = _messages.StringField(4)
 
 
 class IntegrationSkeletonsResponse(_messages.Message):
@@ -2732,6 +2737,7 @@ class QueryGrammar(_messages.Message):
       BIGQUERY_DATA_CANVAS: BigQuery data canvas.
       ALCHEMIST: Alchemist.
       OBSERVABILITY_ANALYTICS: Observability Analytics.
+      ALCHEMIST_LOOKER: Looker backed datasource for Alchemist.
     """
     PRODUCT_UNSPECIFIED = 0
     SPANNER = 1
@@ -2744,6 +2750,7 @@ class QueryGrammar(_messages.Message):
     BIGQUERY_DATA_CANVAS = 8
     ALCHEMIST = 9
     OBSERVABILITY_ANALYTICS = 10
+    ALCHEMIST_LOOKER = 11
 
   class QueryDialectValueValuesEnum(_messages.Enum):
     r"""Query dialect.
@@ -2818,15 +2825,14 @@ class Repository(_messages.Message):
   Fields:
     branchPattern: Required. The Git branch pattern used for indexing in RE2
       syntax. See https://github.com/google/re2/wiki/syntax for syntax.
-    defaultBranch: Required. The default Git branch name
     remoteUri: Output only. Git Clone HTTPS URI.
-    repositoryLink: Required. The link to the repository to be indexed
+    resource: Required. The link to the CloudBuild/DeveloperConnect repository
+      resource name or URL to be indexed.
   """
 
   branchPattern = _messages.StringField(1)
-  defaultBranch = _messages.StringField(2)
-  remoteUri = _messages.StringField(3)
-  repositoryLink = _messages.MessageField('RepositoryLink', 4)
+  remoteUri = _messages.StringField(2)
+  resource = _messages.StringField(3)
 
 
 class RepositoryGroup(_messages.Message):
@@ -2839,7 +2845,7 @@ class RepositoryGroup(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Identifier. name of resource
-    repositoryLinks: Required. List of repositories to group
+    repositories: Required. List of repositories to group
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -2870,21 +2876,8 @@ class RepositoryGroup(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  repositoryLinks = _messages.MessageField('RepositoryLink', 4, repeated=True)
+  repositories = _messages.MessageField('Repository', 4, repeated=True)
   updateTime = _messages.StringField(5)
-
-
-class RepositoryLink(_messages.Message):
-  r"""RepositoryLink contains a link to a Cloud Build or Developer Connect
-  resource.
-
-  Fields:
-    cloudBuildRepository: The original CloudBuild resource name
-    developerConnectRepository: The original DeveloperConnect resource name
-  """
-
-  cloudBuildRepository = _messages.StringField(1)
-  developerConnectRepository = _messages.StringField(2)
 
 
 class ResponseChunk(_messages.Message):

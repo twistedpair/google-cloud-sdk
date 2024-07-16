@@ -40,9 +40,7 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_services_connectors_revisions = self.ProjectsLocationsServicesConnectorsRevisionsService(self)
     self.projects_locations_services_connectors = self.ProjectsLocationsServicesConnectorsService(self)
-    self.projects_locations_services_schemas_revisions = self.ProjectsLocationsServicesSchemasRevisionsService(self)
     self.projects_locations_services_schemas = self.ProjectsLocationsServicesSchemasService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -163,97 +161,6 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='FirebasedataconnectProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsServicesConnectorsRevisionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_services_connectors_revisions resource."""
-
-    _NAME = 'projects_locations_services_connectors_revisions'
-
-    def __init__(self, client):
-      super(FirebasedataconnectV1alpha.ProjectsLocationsServicesConnectorsRevisionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single ConnectorRevision.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/connectors/{connectorsId}/revisions/{revisionsId}',
-        http_method='DELETE',
-        method_id='firebasedataconnect.projects.locations.services.connectors.revisions.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single ConnectorRevision.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ConnectorRevision) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/connectors/{connectorsId}/revisions/{revisionsId}',
-        http_method='GET',
-        method_id='firebasedataconnect.projects.locations.services.connectors.revisions.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsGetRequest',
-        response_type_name='ConnectorRevision',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists ConnectorRevisions in a given project and location.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListConnectorRevisionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/connectors/{connectorsId}/revisions',
-        http_method='GET',
-        method_id='firebasedataconnect.projects.locations.services.connectors.revisions.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/revisions',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsListRequest',
-        response_type_name='ListConnectorRevisionsResponse',
         supports_download=False,
     )
 
@@ -453,97 +360,6 @@ class FirebasedataconnectV1alpha(base_api.BaseApiClient):
         request_field='connector',
         request_type_name='FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsServicesSchemasRevisionsService(base_api.BaseApiService):
-    """Service class for the projects_locations_services_schemas_revisions resource."""
-
-    _NAME = 'projects_locations_services_schemas_revisions'
-
-    def __init__(self, client):
-      super(FirebasedataconnectV1alpha.ProjectsLocationsServicesSchemasRevisionsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single SchemaRevision.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesSchemasRevisionsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/schemas/{schemasId}/revisions/{revisionsId}',
-        http_method='DELETE',
-        method_id='firebasedataconnect.projects.locations.services.schemas.revisions.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'requestId', 'validateOnly'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesSchemasRevisionsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single SchemaRevision.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesSchemasRevisionsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (SchemaRevision) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/schemas/{schemasId}/revisions/{revisionsId}',
-        http_method='GET',
-        method_id='firebasedataconnect.projects.locations.services.schemas.revisions.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesSchemasRevisionsGetRequest',
-        response_type_name='SchemaRevision',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists SchemaRevisions in a given project and location.
-
-      Args:
-        request: (FirebasedataconnectProjectsLocationsServicesSchemasRevisionsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListSchemaRevisionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/schemas/{schemasId}/revisions',
-        http_method='GET',
-        method_id='firebasedataconnect.projects.locations.services.schemas.revisions.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/revisions',
-        request_field='',
-        request_type_name='FirebasedataconnectProjectsLocationsServicesSchemasRevisionsListRequest',
-        response_type_name='ListSchemaRevisionsResponse',
         supports_download=False,
     )
 

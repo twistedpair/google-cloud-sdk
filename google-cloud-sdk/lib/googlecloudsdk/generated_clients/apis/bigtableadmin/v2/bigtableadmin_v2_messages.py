@@ -442,8 +442,8 @@ class BigtableadminProjectsInstancesClustersBackupsCopyRequest(_messages.Message
     copyBackupRequest: A CopyBackupRequest resource to be passed as the
       request body.
     parent: Required. The name of the destination cluster that will contain
-      the backup copy. The cluster must already exists. Values are of the
-      form: `projects/{project}/instances/{instance}/clusters/{cluster}`.
+      the backup copy. The cluster must already exist. Values are of the form:
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
   """
 
   copyBackupRequest = _messages.MessageField('CopyBackupRequest', 1)
@@ -2266,18 +2266,48 @@ class GoogleBigtableAdminV2TypeAggregate(_messages.Message):
   return the `state_type` .
 
   Fields:
+    hllppUniqueCount: HyperLogLogPlusPlusUniqueCount aggregator.
     inputType: Type of the inputs that are accumulated by this `Aggregate`,
       which must specify a full encoding. Use `AddInput` mutations to
       accumulate new inputs.
+    max: Max aggregator.
+    min: Min aggregator.
     stateType: Output only. Type that holds the internal accumulator state for
       the `Aggregate`. This is a function of the `input_type` and `aggregator`
       chosen, and will always specify a full encoding.
     sum: Sum aggregator.
   """
 
-  inputType = _messages.MessageField('Type', 1)
-  stateType = _messages.MessageField('Type', 2)
-  sum = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateSum', 3)
+  hllppUniqueCount = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateHyperLogLogPlusPlusUniqueCount', 1)
+  inputType = _messages.MessageField('Type', 2)
+  max = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateMax', 3)
+  min = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateMin', 4)
+  stateType = _messages.MessageField('Type', 5)
+  sum = _messages.MessageField('GoogleBigtableAdminV2TypeAggregateSum', 6)
+
+
+class GoogleBigtableAdminV2TypeAggregateHyperLogLogPlusPlusUniqueCount(_messages.Message):
+  r"""Computes an approximate unique count over the input values. When using
+  raw data as input, be careful to use a consistent encoding. Otherwise the
+  same value encoded differently could count more than once, or two distinct
+  values could count as identical. Input: Any, or omit for Raw State: TBD
+  Special state conversions: `Int64` (the unique count estimate)
+  """
+
+
+
+class GoogleBigtableAdminV2TypeAggregateMax(_messages.Message):
+  r"""Computes the max of the input values. Allowed input: `Int64` State: same
+  as input
+  """
+
+
+
+class GoogleBigtableAdminV2TypeAggregateMin(_messages.Message):
+  r"""Computes the min of the input values. Allowed input: `Int64` State: same
+  as input
+  """
+
 
 
 class GoogleBigtableAdminV2TypeAggregateSum(_messages.Message):
@@ -2285,6 +2315,22 @@ class GoogleBigtableAdminV2TypeAggregateSum(_messages.Message):
   as input
   """
 
+
+
+class GoogleBigtableAdminV2TypeArray(_messages.Message):
+  r"""An ordered list of elements of a given type. Values of type `Array` are
+  stored in `Value.array_value`.
+
+  Fields:
+    elementType: The type of the elements in the array. This must not be
+      `Array`.
+  """
+
+  elementType = _messages.MessageField('Type', 1)
+
+
+class GoogleBigtableAdminV2TypeBool(_messages.Message):
+  r"""bool Values of type `Bool` are stored in `Value.bool_value`."""
 
 
 class GoogleBigtableAdminV2TypeBytes(_messages.Message):
@@ -2308,10 +2354,22 @@ class GoogleBigtableAdminV2TypeBytesEncoding(_messages.Message):
 
 
 class GoogleBigtableAdminV2TypeBytesEncodingRaw(_messages.Message):
-  r"""Leaves the value "as-is" * Natural sort? Yes * Self-delimiting? No *
+  r"""Leaves the value "as-is" * Order-preserving? Yes * Self-delimiting? No *
   Compatibility? N/A
   """
 
+
+
+class GoogleBigtableAdminV2TypeDate(_messages.Message):
+  r"""Date Values of type `Date` are stored in `Value.date_value`."""
+
+
+class GoogleBigtableAdminV2TypeFloat32(_messages.Message):
+  r"""Float32 Values of type `Float32` are stored in `Value.float_value`."""
+
+
+class GoogleBigtableAdminV2TypeFloat64(_messages.Message):
+  r"""Float64 Values of type `Float64` are stored in `Value.float_value`."""
 
 
 class GoogleBigtableAdminV2TypeInt64(_messages.Message):
@@ -2336,16 +2394,93 @@ class GoogleBigtableAdminV2TypeInt64Encoding(_messages.Message):
 
 class GoogleBigtableAdminV2TypeInt64EncodingBigEndianBytes(_messages.Message):
   r"""Encodes the value as an 8-byte big endian twos complement `Bytes` value.
-  * Natural sort? No (positive values only) * Self-delimiting? Yes *
+  * Order-preserving? No (positive values only) * Self-delimiting? Yes *
   Compatibility? - BigQuery Federation `BINARY` encoding - HBase
   `Bytes.toBytes` - Java `ByteBuffer.putLong()` with `ByteOrder.BIG_ENDIAN`
 
   Fields:
-    bytesType: The underlying `Bytes` type, which may be able to encode
-      further.
+    bytesType: Deprecated: ignored if set.
   """
 
   bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 1)
+
+
+class GoogleBigtableAdminV2TypeMap(_messages.Message):
+  r"""A mapping of keys to values of a given type. Values of type `Map` are
+  stored in a `Value.array_value` where each entry is another
+  `Value.array_value` with two elements (the key and the value, in that
+  order). Normally encoded Map values won't have repeated keys, however,
+  clients are expected to handle the case in which they do. If the same key
+  appears multiple times, the _last_ value takes precedence.
+
+  Fields:
+    keyType: The type of a map key. Only `Bytes`, `String`, and `Int64` are
+      allowed as key types.
+    valueType: The type of the values in a map.
+  """
+
+  keyType = _messages.MessageField('Type', 1)
+  valueType = _messages.MessageField('Type', 2)
+
+
+class GoogleBigtableAdminV2TypeString(_messages.Message):
+  r"""String Values of type `String` are stored in `Value.string_value`.
+
+  Fields:
+    encoding: The encoding to use when converting to/from lower level types.
+  """
+
+  encoding = _messages.MessageField('GoogleBigtableAdminV2TypeStringEncoding', 1)
+
+
+class GoogleBigtableAdminV2TypeStringEncoding(_messages.Message):
+  r"""Rules used to convert to/from lower level types.
+
+  Fields:
+    utf8Bytes: Use `Utf8Bytes` encoding.
+  """
+
+  utf8Bytes = _messages.MessageField('GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes', 1)
+
+
+class GoogleBigtableAdminV2TypeStringEncodingUtf8Bytes(_messages.Message):
+  r"""UTF-8 encoding * Order-preserving? Yes (code point order) * Self-
+  delimiting? No * Compatibility? - BigQuery Federation `TEXT` encoding -
+  HBase `Bytes.toBytes` - Java `String#getBytes(StandardCharsets.UTF_8)`
+  """
+
+
+
+class GoogleBigtableAdminV2TypeStruct(_messages.Message):
+  r"""A structured data value, consisting of fields which map to dynamically
+  typed values. Values of type `Struct` are stored in `Value.array_value`
+  where entries are in the same order and number as `field_types`.
+
+  Fields:
+    fields: The names and types of the fields in this struct.
+  """
+
+  fields = _messages.MessageField('GoogleBigtableAdminV2TypeStructField', 1, repeated=True)
+
+
+class GoogleBigtableAdminV2TypeStructField(_messages.Message):
+  r"""A struct field and its type.
+
+  Fields:
+    fieldName: The field name (optional). Fields without a `field_name` are
+      considered anonymous and cannot be referenced by name.
+    type: The type of values in this field.
+  """
+
+  fieldName = _messages.StringField(1)
+  type = _messages.MessageField('Type', 2)
+
+
+class GoogleBigtableAdminV2TypeTimestamp(_messages.Message):
+  r"""Timestamp Values of type `Timestamp` are stored in
+  `Value.timestamp_value`.
+  """
+
 
 
 class HotTablet(_messages.Message):
@@ -3631,37 +3766,49 @@ class Type(_messages.Message):
   stored in Bigtable. It is heavily based on the GoogleSQL standard to help
   maintain familiarity and consistency across products and features. For
   compatibility with Bigtable's existing untyped APIs, each `Type` includes an
-  `Encoding` which describes how to convert to/from the underlying data. This
-  might involve composing a series of steps into an "encoding chain," for
-  example to convert from INT64 -> STRING -> raw bytes. In most cases, a
-  "link" in the encoding chain will be based an on existing GoogleSQL
-  conversion function like `CAST`. Each link in the encoding chain also
-  defines the following properties: * Natural sort: Does the encoded value
-  sort consistently with the original typed value? Note that Bigtable will
-  always sort data based on the raw encoded value, *not* the decoded type. -
-  Example: BYTES values sort in the same order as their raw encodings. -
-  Counterexample: Encoding INT64 to a fixed-width STRING does *not* preserve
-  sort order when dealing with negative numbers. INT64(1) > INT64(-1), but
-  STRING("-00001") > STRING("00001). - The overall encoding chain has this
-  property if *every* link does. * Self-delimiting: If we concatenate two
-  encoded values, can we always tell where the first one ends and the second
-  one begins? - Example: If we encode INT64s to fixed-width STRINGs, the first
-  value will always contain exactly N digits, possibly preceded by a sign. -
-  Counterexample: If we concatenate two UTF-8 encoded STRINGs, we have no way
-  to tell where the first one ends. - The overall encoding chain has this
-  property if *any* link does. * Compatibility: Which other systems have
-  matching encoding schemes? For example, does this encoding have a GoogleSQL
-  equivalent? HBase? Java?
+  `Encoding` which describes how to convert to/from the underlying data. Each
+  encoding also defines the following properties: * Order-preserving: Does the
+  encoded value sort consistently with the original typed value? Note that
+  Bigtable will always sort data based on the raw encoded value, *not* the
+  decoded type. - Example: BYTES values sort in the same order as their raw
+  encodings. - Counterexample: Encoding INT64 as a fixed-width decimal string
+  does *not* preserve sort order when dealing with negative numbers. `INT64(1)
+  > INT64(-1)`, but `STRING("-00001") > STRING("00001)`. * Self-delimiting: If
+  we concatenate two encoded values, can we always tell where the first one
+  ends and the second one begins? - Example: If we encode INT64s to fixed-
+  width STRINGs, the first value will always contain exactly N digits,
+  possibly preceded by a sign. - Counterexample: If we concatenate two UTF-8
+  encoded STRINGs, we have no way to tell where the first one ends. *
+  Compatibility: Which other systems have matching encoding schemes? For
+  example, does this encoding have a GoogleSQL equivalent? HBase? Java?
 
   Fields:
     aggregateType: Aggregate
+    arrayType: Array
+    boolType: Bool
     bytesType: Bytes
+    dateType: Date
+    float32Type: Float32
+    float64Type: Float64
     int64Type: Int64
+    mapType: Map
+    stringType: String
+    structType: Struct
+    timestampType: Timestamp
   """
 
   aggregateType = _messages.MessageField('GoogleBigtableAdminV2TypeAggregate', 1)
-  bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 2)
-  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 3)
+  arrayType = _messages.MessageField('GoogleBigtableAdminV2TypeArray', 2)
+  boolType = _messages.MessageField('GoogleBigtableAdminV2TypeBool', 3)
+  bytesType = _messages.MessageField('GoogleBigtableAdminV2TypeBytes', 4)
+  dateType = _messages.MessageField('GoogleBigtableAdminV2TypeDate', 5)
+  float32Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat32', 6)
+  float64Type = _messages.MessageField('GoogleBigtableAdminV2TypeFloat64', 7)
+  int64Type = _messages.MessageField('GoogleBigtableAdminV2TypeInt64', 8)
+  mapType = _messages.MessageField('GoogleBigtableAdminV2TypeMap', 9)
+  stringType = _messages.MessageField('GoogleBigtableAdminV2TypeString', 10)
+  structType = _messages.MessageField('GoogleBigtableAdminV2TypeStruct', 11)
+  timestampType = _messages.MessageField('GoogleBigtableAdminV2TypeTimestamp', 12)
 
 
 class UndeleteTableMetadata(_messages.Message):

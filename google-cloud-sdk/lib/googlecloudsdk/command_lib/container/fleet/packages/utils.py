@@ -284,9 +284,9 @@ def _GetClusterLevelMessagesFromResource(resource):
     clusters = rollout_info.get('clusters', [])
     if 'messages' in clusters:
       messages.extend(clusters.get('messages', []))
-    for cluster in clusters.values():
-      if 'messages' in cluster:
-        messages.extend(cluster.get('messages', []))
+    current = clusters.get('current', {})
+    if 'messages' in current:
+      messages.extend(current.get('messages', []))
 
   info_errors = resource.get('info', {}).get('errors', [])
   if info_errors:

@@ -88,25 +88,33 @@ class AdaptiveMtTranslateRequest(_messages.Message):
     dataset: Required. The resource name for the dataset to use for adaptive
       MT. `projects/{project}/locations/{location-
       id}/adaptiveMtDatasets/{dataset}`
+    glossaryConfig: Optional. Glossary to be applied. The glossary must be
+      within the same region (have the same location-id) as the model,
+      otherwise an INVALID_ARGUMENT (400) error is returned.
     referenceSentenceConfig: Configuration for caller provided reference
       sentences.
   """
 
   content = _messages.StringField(1, repeated=True)
   dataset = _messages.StringField(2)
-  referenceSentenceConfig = _messages.MessageField('ReferenceSentenceConfig', 3)
+  glossaryConfig = _messages.MessageField('TranslateTextGlossaryConfig', 3)
+  referenceSentenceConfig = _messages.MessageField('ReferenceSentenceConfig', 4)
 
 
 class AdaptiveMtTranslateResponse(_messages.Message):
   r"""An AdaptiveMtTranslate response.
 
   Fields:
+    glossaryTranslations: Text translation response if a glossary is provided
+      in the request. This could be the same as 'translation' above if no
+      terms apply.
     languageCode: Output only. The translation's language code.
     translations: Output only. The translation.
   """
 
-  languageCode = _messages.StringField(1)
-  translations = _messages.MessageField('AdaptiveMtTranslation', 2, repeated=True)
+  glossaryTranslations = _messages.MessageField('AdaptiveMtTranslation', 1, repeated=True)
+  languageCode = _messages.StringField(2)
+  translations = _messages.MessageField('AdaptiveMtTranslation', 3, repeated=True)
 
 
 class AdaptiveMtTranslation(_messages.Message):
@@ -866,7 +874,7 @@ class GlossaryEntry(_messages.Message):
 
   Fields:
     description: Describes the glossary entry.
-    name: Required. The resource name of the entry. Format:
+    name: Identifier. The resource name of the entry. Format:
       "projects/*/locations/*/glossaries/*/glossaryEntries/*"
     termsPair: Used for an unidirectional glossary.
     termsSet: Used for an equivalent term sets glossary.

@@ -3575,8 +3575,8 @@ class HttpConfig(_messages.Message):
     proxySecretVersionName: SecretVersion resource of the HTTP proxy URL. The
       Service Account used in the build (either the default Service Account or
       user-specified Service Account) should have
-      secretmanager.versions.access permissions on this secret. The proxy URL
-      should be in format protocol://@]proxyhost[:port].
+      `secretmanager.versions.access` permissions on this secret. The proxy
+      URL should be in format `protocol://@]proxyhost[:port]`.
   """
 
   proxySecretVersionName = _messages.StringField(1)

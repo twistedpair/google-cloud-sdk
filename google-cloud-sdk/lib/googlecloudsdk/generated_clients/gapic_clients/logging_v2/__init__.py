@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,6 +65,7 @@ from .types.logging_config import GetBucketRequest
 from .types.logging_config import GetCmekSettingsRequest
 from .types.logging_config import GetExclusionRequest
 from .types.logging_config import GetLinkRequest
+from .types.logging_config import GetSavedQueryRequest
 from .types.logging_config import GetSettingsRequest
 from .types.logging_config import GetSinkRequest
 from .types.logging_config import GetViewRequest
@@ -99,6 +100,7 @@ from .types.logging_config import UndeleteBucketRequest
 from .types.logging_config import UpdateBucketRequest
 from .types.logging_config import UpdateCmekSettingsRequest
 from .types.logging_config import UpdateExclusionRequest
+from .types.logging_config import UpdateSavedQueryRequest
 from .types.logging_config import UpdateSettingsRequest
 from .types.logging_config import UpdateSinkRequest
 from .types.logging_config import UpdateViewRequest
@@ -145,6 +147,7 @@ __all__ = (
 'GetExclusionRequest',
 'GetLinkRequest',
 'GetLogMetricRequest',
+'GetSavedQueryRequest',
 'GetSettingsRequest',
 'GetSinkRequest',
 'GetViewRequest',
@@ -201,6 +204,7 @@ __all__ = (
 'UpdateCmekSettingsRequest',
 'UpdateExclusionRequest',
 'UpdateLogMetricRequest',
+'UpdateSavedQueryRequest',
 'UpdateSettingsRequest',
 'UpdateSinkRequest',
 'UpdateViewRequest',

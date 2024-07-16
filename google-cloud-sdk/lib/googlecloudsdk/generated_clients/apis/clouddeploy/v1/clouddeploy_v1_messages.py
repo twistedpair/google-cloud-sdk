@@ -739,7 +739,8 @@ class CanaryDeployment(_messages.Message):
   Fields:
     percentages: Required. The percentage based deployments that will occur as
       a part of a `Rollout`. List is expected in ascending order and each
-      integer n is 0 <= n < 100.
+      integer n is 0 <= n < 100. If the GatewayServiceMesh is configured for
+      Kubernetes, then the range for n is 0 <= n <= 100.
     postdeploy: Optional. Configuration for the postdeploy job of the last
       phase. If this is not configured, there will be no postdeploy job for
       this phase.
@@ -4885,7 +4886,6 @@ class RestrictRollout(_messages.Message):
 
   Enums:
     ActionsValueListEntryValuesEnum:
-    InvokerValueListEntryValuesEnum:
     InvokersValueListEntryValuesEnum:
 
   Fields:
@@ -4893,12 +4893,8 @@ class RestrictRollout(_messages.Message):
       empty, all actions will be restricted.
     id: Optional. Restriction rule ID. Required and must be unique within a
       DeployPolicy. The format is `[a-z]([a-z0-9-]{0,61}[a-z0-9])?`.
-    invoker: What invoked the action. If left empty, all invoker types will be
-      restricted.
     invokers: Optional. What invoked the action. If left empty, all invoker
       types will be restricted.
-    name: Required. Restriction rule name. Required and must be unique within
-      a DeployPolicy.
     timeWindow: Required. Time Window within which actions are restricted.
   """
 
@@ -4926,19 +4922,6 @@ class RestrictRollout(_messages.Message):
     ROLLBACK = 7
     TERMINATE_JOBRUN = 8
 
-  class InvokerValueListEntryValuesEnum(_messages.Enum):
-    r"""InvokerValueListEntryValuesEnum enum type.
-
-    Values:
-      INVOKER_UNSPECIFIED: Unspecified.
-      USER: The action is user-driven (e.g. creating a rollout manually via a
-        gcloud create command).
-      DEPLOY_AUTOMATION: Automated action by Cloud Deploy.
-    """
-    INVOKER_UNSPECIFIED = 0
-    USER = 1
-    DEPLOY_AUTOMATION = 2
-
   class InvokersValueListEntryValuesEnum(_messages.Enum):
     r"""InvokersValueListEntryValuesEnum enum type.
 
@@ -4954,10 +4937,8 @@ class RestrictRollout(_messages.Message):
 
   actions = _messages.EnumField('ActionsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
-  invoker = _messages.EnumField('InvokerValueListEntryValuesEnum', 3, repeated=True)
-  invokers = _messages.EnumField('InvokersValueListEntryValuesEnum', 4, repeated=True)
-  name = _messages.StringField(5)
-  timeWindow = _messages.MessageField('TimeWindow', 6)
+  invokers = _messages.EnumField('InvokersValueListEntryValuesEnum', 3, repeated=True)
+  timeWindow = _messages.MessageField('TimeWindow', 4)
 
 
 class Retry(_messages.Message):

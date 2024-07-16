@@ -92,6 +92,7 @@ class DialogflowV2(base_api.BaseApiClient):
     self.projects_locations_conversations_participants = self.ProjectsLocationsConversationsParticipantsService(self)
     self.projects_locations_conversations_suggestions = self.ProjectsLocationsConversationsSuggestionsService(self)
     self.projects_locations_conversations = self.ProjectsLocationsConversationsService(self)
+    self.projects_locations_encryptionSpec = self.ProjectsLocationsEncryptionSpecService(self)
     self.projects_locations_generators = self.ProjectsLocationsGeneratorsService(self)
     self.projects_locations_knowledgeBases_documents = self.ProjectsLocationsKnowledgeBasesDocumentsService(self)
     self.projects_locations_knowledgeBases = self.ProjectsLocationsKnowledgeBasesService(self)
@@ -6654,6 +6655,43 @@ class DialogflowV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsEncryptionSpecService(base_api.BaseApiService):
+    """Service class for the projects_locations_encryptionSpec resource."""
+
+    _NAME = 'projects_locations_encryptionSpec'
+
+    def __init__(self, client):
+      super(DialogflowV2.ProjectsLocationsEncryptionSpecService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Initialize(self, request, global_params=None):
+      r"""Initializes a location-level encryption key specification. An error will be thrown if the location has resources already created before the initialization. Once the encryption specification is initialized at a location, it is immutable and all newly created resources under the location will be encrypted with the existing specification.
+
+      Args:
+        request: (DialogflowProjectsLocationsEncryptionSpecInitializeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Initialize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Initialize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/encryptionSpec:initialize',
+        http_method='POST',
+        method_id='dialogflow.projects.locations.encryptionSpec.initialize',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:initialize',
+        request_field='googleCloudDialogflowV2InitializeEncryptionSpecRequest',
+        request_type_name='DialogflowProjectsLocationsEncryptionSpecInitializeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsGeneratorsService(base_api.BaseApiService):
     """Service class for the projects_locations_generators resource."""
 
@@ -7450,6 +7488,33 @@ class DialogflowV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DialogflowProjectsLocationsGetAgentRequest',
         response_type_name='GoogleCloudDialogflowV2Agent',
+        supports_download=False,
+    )
+
+    def GetEncryptionSpec(self, request, global_params=None):
+      r"""Gets location-level encryption key specification.
+
+      Args:
+        request: (DialogflowProjectsLocationsGetEncryptionSpecRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDialogflowV2EncryptionSpec) The response message.
+      """
+      config = self.GetMethodConfig('GetEncryptionSpec')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetEncryptionSpec.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/encryptionSpec',
+        http_method='GET',
+        method_id='dialogflow.projects.locations.getEncryptionSpec',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DialogflowProjectsLocationsGetEncryptionSpecRequest',
+        response_type_name='GoogleCloudDialogflowV2EncryptionSpec',
         supports_download=False,
     )
 

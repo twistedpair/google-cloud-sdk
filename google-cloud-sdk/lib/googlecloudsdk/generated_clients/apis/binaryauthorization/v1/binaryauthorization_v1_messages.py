@@ -436,11 +436,14 @@ class BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest(_messages.Messag
   r"""A BinaryauthorizationProjectsPlatformsPoliciesDeleteRequest object.
 
   Fields:
+    etag: Optional. Used to prevent deleting the policy when another request
+      has updated it since it was retrieved.
     name: Required. The name of the platform policy to delete, in the format
       `projects/*/platforms/*/policies/*`.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class BinaryauthorizationProjectsPlatformsPoliciesGetRequest(_messages.Message):
@@ -1368,6 +1371,8 @@ class PlatformPolicy(_messages.Message):
   Fields:
     cloudRunPolicy: Optional. Cloud Run platform-specific policy.
     description: Optional. A description comment about the policy.
+    etag: Optional. Used to prevent updating the policy when another request
+      has updated it since it was retrieved.
     gkePolicy: Optional. GKE platform-specific policy.
     name: Output only. The relative resource name of the Binary Authorization
       platform policy, in the form of `projects/*/platforms/*/policies/*`.
@@ -1376,9 +1381,10 @@ class PlatformPolicy(_messages.Message):
 
   cloudRunPolicy = _messages.MessageField('InlineCloudRunPolicy', 1)
   description = _messages.StringField(2)
-  gkePolicy = _messages.MessageField('GkePolicy', 3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(3)
+  gkePolicy = _messages.MessageField('GkePolicy', 4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class PodResult(_messages.Message):

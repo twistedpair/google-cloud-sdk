@@ -155,6 +155,22 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""Represents the autoscaling configuration of a metastore service.
+
+  Fields:
+    autoscalingEnabled: Optional. Whether or not autoscaling is enabled for
+      this service.
+    autoscalingFactor: Output only. The scaling factor of a service with
+      autoscaling enabled.
+    limitConfig: Optional. The LimitConfig of the service.
+  """
+
+  autoscalingEnabled = _messages.BooleanField(1)
+  autoscalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  limitConfig = _messages.MessageField('LimitConfig', 3)
+
+
 class AuxiliaryVersionConfig(_messages.Message):
   r"""Configuration information for the auxiliary service versions.
 
@@ -374,8 +390,118 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CancelMigrationRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.CancelMigration."""
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CdcConfig(_messages.Message):
+  r"""Configuration information to start the Change Data Capture (CDC) streams
+  from customer database to backend database of Dataproc Metastore.
+
+  Fields:
+    bucket: Optional. The bucket to write the intermediate stream event data
+      in. The bucket name must be without any prefix like "gs://". See the
+      bucket naming requirements
+      (https://cloud.google.com/storage/docs/buckets#naming). This field is
+      optional. If not set, the Artifacts Cloud Storage bucket will be used.
+    password: Required. Input only. The password for the user that Datastream
+      service should use for the MySQL connection. This field is not returned
+      on request.
+    reverseProxySubnet: Required. The URL of the subnetwork resource to create
+      the VM instance hosting the reverse proxy in. More context in
+      https://cloud.google.com/datastream/docs/private-connectivity#reverse-
+      csql-proxy The subnetwork should reside in the network provided in the
+      request that Datastream will peer to and should be in the same region as
+      Datastream, in the following format.
+      projects/{project_id}/regions/{region_id}/subnetworks/{subnetwork_id}
+    rootPath: Optional. The root path inside the Cloud Storage bucket. The
+      stream event data will be written to this path. The default value is
+      /migration.
+    subnetIpRange: Required. A /29 CIDR IP range for peering with datastream.
+    username: Required. The username that the Datastream service should use
+      for the MySQL connection.
+    vpcNetwork: Required. Fully qualified name of the Cloud SQL instance's VPC
+      network or the shared VPC network that Datastream will peer to, in the
+      following format:
+      projects/{project_id}/locations/global/networks/{network_id}. More
+      context in https://cloud.google.com/datastream/docs/network-
+      connectivity-options#privateconnectivity
+  """
+
+  bucket = _messages.StringField(1)
+  password = _messages.StringField(2)
+  reverseProxySubnet = _messages.StringField(3)
+  rootPath = _messages.StringField(4)
+  subnetIpRange = _messages.StringField(5)
+  username = _messages.StringField(6)
+  vpcNetwork = _messages.StringField(7)
+
+
+class CloudSQLConnectionConfig(_messages.Message):
+  r"""Configuration information to establish customer database connection
+  before the cutover phase of migration
+
+  Fields:
+    hiveDatabaseName: Required. The hive database name.
+    instanceConnectionName: Required. Cloud SQL database connection name
+      (project_id:region:instance_name)
+    ipAddress: Required. The private IP address of the Cloud SQL instance.
+    natSubnet: Required. The relative resource name of the subnetwork to be
+      used for Private Service Connect. Note that this cannot be a regular
+      subnet and is used only for NAT.
+      (https://cloud.google.com/vpc/docs/about-vpc-hosted-services#psc-
+      subnets) This subnet is used to publish the SOCKS5 proxy service. The
+      subnet size must be at least /29 and it should reside in a network
+      through which the Cloud SQL instance is accessible. The resource name
+      should be in the format,
+      projects/{project_id}/regions/{region_id}/subnetworks/{subnetwork_id}
+    password: Required. Input only. The password for the user that Dataproc
+      Metastore service will be using to connect to the database. This field
+      is not returned on request.
+    port: Required. The network port of the database.
+    proxySubnet: Required. The relative resource name of the subnetwork to
+      deploy the SOCKS5 proxy service in. The subnetwork should reside in a
+      network through which the Cloud SQL instance is accessible. The resource
+      name should be in the format,
+      projects/{project_id}/regions/{region_id}/subnetworks/{subnetwork_id}
+    username: Required. The username that Dataproc Metastore service will use
+      to connect to the database.
+  """
+
+  hiveDatabaseName = _messages.StringField(1)
+  instanceConnectionName = _messages.StringField(2)
+  ipAddress = _messages.StringField(3)
+  natSubnet = _messages.StringField(4)
+  password = _messages.StringField(5)
+  port = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  proxySubnet = _messages.StringField(7)
+  username = _messages.StringField(8)
+
+
+class CloudSQLMigrationConfig(_messages.Message):
+  r"""Configuration information for migrating from self-managed hive metastore
+  on Google Cloud using Cloud SQL as the backend database to Dataproc
+  Metastore.
+
+  Fields:
+    cdcConfig: Required. Configuration information to start the Change Data
+      Capture (CDC) streams from customer database to backend database of
+      Dataproc Metastore. Dataproc Metastore switches to using its backend
+      database after the cutover phase of migration.
+    cloudSqlConnectionConfig: Required. Configuration information to establish
+      customer database connection before the cutover phase of migration
+  """
+
+  cdcConfig = _messages.MessageField('CdcConfig', 1)
+  cloudSqlConnectionConfig = _messages.MessageField('CloudSQLConnectionConfig', 2)
+
+
+class CompleteMigrationRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.CompleteMigration."""
 
 
 class Consumer(_messages.Message):
@@ -980,6 +1106,20 @@ class LatestBackup(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
+class LimitConfig(_messages.Message):
+  r"""Represents the autoscaling limit configuration of a metastore service.
+
+  Fields:
+    maxScalingFactor: Optional. The highest scaling factor that the service
+      should be autoscaled to.
+    minScalingFactor: Optional. The lowest scaling factor that the service
+      should be autoscaled to.
+  """
+
+  maxScalingFactor = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minScalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class ListBackupsResponse(_messages.Message):
   r"""Response message for DataprocMetastore.ListBackups.
 
@@ -1034,6 +1174,21 @@ class ListMetadataImportsResponse(_messages.Message):
   """
 
   metadataImports = _messages.MessageField('MetadataImport', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListMigrationExecutionsResponse(_messages.Message):
+  r"""Response message for DataprocMetastore.ListMigrationExecutions.
+
+  Fields:
+    migrationExecutions: The migration executions on the specified service.
+    nextPageToken: A token that can be sent as page_token to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  migrationExecutions = _messages.MessageField('MigrationExecution', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -1750,6 +1905,36 @@ class MetastoreProjectsLocationsServicesBackupsSetIamPolicyRequest(_messages.Mes
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class MetastoreProjectsLocationsServicesCancelMigrationRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesCancelMigrationRequest object.
+
+  Fields:
+    cancelMigrationRequest: A CancelMigrationRequest resource to be passed as
+      the request body.
+    service: Required. The relative resource name of the metastore service to
+      cancel the ongoing migration to, in the following format:projects/{proje
+      ct_id}/locations/{location_id}/services/{service_id}.
+  """
+
+  cancelMigrationRequest = _messages.MessageField('CancelMigrationRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesCompleteMigrationRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesCompleteMigrationRequest object.
+
+  Fields:
+    completeMigrationRequest: A CompleteMigrationRequest resource to be passed
+      as the request body.
+    service: Required. The relative resource name of the metastore service to
+      complete the migration to, in the following format:projects/{project_id}
+      /locations/{location_id}/services/{service_id}.
+  """
+
+  completeMigrationRequest = _messages.MessageField('CompleteMigrationRequest', 1)
+  service = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesCreateRequest object.
 
@@ -2067,6 +2252,76 @@ class MetastoreProjectsLocationsServicesMetadataImportsPatchRequest(_messages.Me
   updateMask = _messages.StringField(4)
 
 
+class MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesMigrationExecutionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The relative resource name of the migrationExecution to
+      delete, in the following form:projects/{project_number}/locations/{locat
+      ion_id}/services/{service_id}/migrationExecutions/{migration_execution_i
+      d}.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class MetastoreProjectsLocationsServicesMigrationExecutionsGetRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesMigrationExecutionsGetRequest
+  object.
+
+  Fields:
+    name: Required. The relative resource name of the migration execution to
+      retrieve, in the following form:projects/{project_number}/locations/{loc
+      ation_id}/services/{service_id}/migrationExecutions/{migration_execution
+      _id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MetastoreProjectsLocationsServicesMigrationExecutionsListRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesMigrationExecutionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter to apply to list results.
+    orderBy: Optional. Specify the ordering of results as described in Sorting
+      Order
+      (https://cloud.google.com/apis/design/design_patterns#sorting_order). If
+      not specified, the results will be sorted in the default order.
+    pageSize: Optional. The maximum number of migration executions to return.
+      The response may contain less than the maximum number. If unspecified,
+      no more than 500 migration executions are returned. The maximum value is
+      1000; values above 1000 are changed to 1000.
+    pageToken: Optional. A page token, received from a previous
+      DataprocMetastore.ListMigrationExecutions call. Provide this token to
+      retrieve the subsequent page.To retrieve the first page, supply an empty
+      page token.When paginating, other parameters provided to
+      DataprocMetastore.ListMigrationExecutions must match the call that
+      provided the page token.
+    parent: Required. The relative resource name of the service whose
+      migration executions to list, in the following form:projects/{project_nu
+      mber}/locations/{location_id}/services/{service_id}/migrationExecutions.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesMoveTableToDatabaseRequest object.
 
@@ -2156,6 +2411,21 @@ class MetastoreProjectsLocationsServicesSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class MetastoreProjectsLocationsServicesStartMigrationRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesStartMigrationRequest object.
+
+  Fields:
+    service: Required. The relative resource name of the metastore service to
+      start migrating to, in the following format:projects/{project_id}/locati
+      ons/{location_id}/services/{service_id}.
+    startMigrationRequest: A StartMigrationRequest resource to be passed as
+      the request body.
+  """
+
+  service = _messages.StringField(1, required=True)
+  startMigrationRequest = _messages.MessageField('StartMigrationRequest', 2)
+
+
 class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesTestIamPermissionsRequest object.
 
@@ -2170,6 +2440,85 @@ class MetastoreProjectsLocationsServicesTestIamPermissionsRequest(_messages.Mess
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class MigrationExecution(_messages.Message):
+  r"""The details of a migration execution resource.
+
+  Enums:
+    PhaseValueValuesEnum: Output only. The current phase of the migration
+      execution.
+    StateValueValuesEnum: Output only. The current state of the migration
+      execution.
+
+  Fields:
+    cloudSqlMigrationConfig: Configuration information specific to migrating
+      from self-managed hive metastore on Google Cloud using Cloud SQL as the
+      backend database to Dataproc Metastore.
+    createTime: Output only. The time when the migration execution was
+      started.
+    endTime: Output only. The time when the migration execution finished.
+    name: Output only. The relative resource name of the migration execution,
+      in the following form: projects/{project_number}/locations/{location_id}
+      /services/{service_id}/migrationExecutions/{migration_execution_id}
+    phase: Output only. The current phase of the migration execution.
+    state: Output only. The current state of the migration execution.
+    stateMessage: Output only. Additional information about the current state
+      of the migration execution.
+  """
+
+  class PhaseValueValuesEnum(_messages.Enum):
+    r"""Output only. The current phase of the migration execution.
+
+    Values:
+      PHASE_UNSPECIFIED: The phase of the migration execution is unknown.
+      REPLICATION: Replication phase refers to the migration phase when
+        Dataproc Metastore is running a pipeline to replicate changes in the
+        customer database to its backend database. During this phase, Dataproc
+        Metastore uses the customer database as the hive metastore backend
+        database.
+      CUTOVER: Cutover phase refers to the migration phase when Dataproc
+        Metastore switches to using its own backend database. Migration enters
+        this phase when customer is done migrating all their
+        clusters/workloads to Dataproc Metastore and triggers
+        CompleteMigration.
+    """
+    PHASE_UNSPECIFIED = 0
+    REPLICATION = 1
+    CUTOVER = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the migration execution.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the migration execution is unknown.
+      STARTING: The migration execution is starting.
+      RUNNING: The migration execution is running.
+      CANCELLING: The migration execution is in the process of being
+        cancelled.
+      AWAITING_USER_ACTION: The migration execution is awaiting user action.
+      SUCCEEDED: The migration execution has completed successfully.
+      FAILED: The migration execution has failed.
+      CANCELLED: The migration execution is cancelled.
+      DELETING: The migration execution is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    STARTING = 1
+    RUNNING = 2
+    CANCELLING = 3
+    AWAITING_USER_ACTION = 4
+    SUCCEEDED = 5
+    FAILED = 6
+    CANCELLED = 7
+    DELETING = 8
+
+  cloudSqlMigrationConfig = _messages.MessageField('CloudSQLMigrationConfig', 1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  name = _messages.StringField(4)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateMessage = _messages.StringField(7)
 
 
 class MoveTableToDatabaseRequest(_messages.Message):
@@ -2563,6 +2912,7 @@ class ScalingConfig(_messages.Message):
       scaling_factor(0.1))
 
   Fields:
+    autoscalingConfig: Optional. The autoscaling configuration.
     instanceSize: An enum of readable instance sizes, with each instance size
       mapping to a float value (e.g. InstanceSize.EXTRA_SMALL =
       scaling_factor(0.1))
@@ -2589,8 +2939,9 @@ class ScalingConfig(_messages.Message):
     LARGE = 4
     EXTRA_LARGE = 5
 
-  instanceSize = _messages.EnumField('InstanceSizeValueValuesEnum', 1)
-  scalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  instanceSize = _messages.EnumField('InstanceSizeValueValuesEnum', 2)
+  scalingFactor = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class ScheduledBackup(_messages.Message):
@@ -2753,6 +3104,9 @@ class Service(_messages.Message):
         used.
       ERROR: The metastore service has encountered an error and cannot be
         used. The metastore service should be deleted.
+      AUTOSCALING: The Dataproc Metastore service 2 is being scaled up or
+        down.
+      MIGRATING: The metastore service is processing a managed migration.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2762,6 +3116,8 @@ class Service(_messages.Message):
     UPDATING = 5
     DELETING = 6
     ERROR = 7
+    AUTOSCALING = 8
+    MIGRATING = 9
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The tier of the service.
@@ -2933,6 +3289,26 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class StartMigrationRequest(_messages.Message):
+  r"""Request message for DataprocMetastore.StartMigration.
+
+  Fields:
+    migrationExecution: Required. The configuration details for the migration.
+    requestId: Optional. A request ID. Specify a unique request ID to allow
+      the server to ignore the request if it has completed. The server will
+      ignore subsequent requests that provide a duplicate request ID for at
+      least 60 minutes after the first request.For example, if an initial
+      request times out, followed by another request with the same request ID,
+      the server ignores the second request to prevent the creation of
+      duplicate commitments.The request ID must be a valid UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier#Format) A
+      zero UUID (00000000-0000-0000-0000-000000000000) is not supported.
+  """
+
+  migrationExecution = _messages.MessageField('MigrationExecution', 1)
+  requestId = _messages.StringField(2)
 
 
 class Status(_messages.Message):

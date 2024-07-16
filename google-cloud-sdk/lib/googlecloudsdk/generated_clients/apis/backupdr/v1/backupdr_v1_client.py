@@ -403,8 +403,35 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a Backup.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.backups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='backup',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
-      r"""Restore Backup.
+      r"""Restore from a Backup.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsDataSourcesBackupsRestoreRequest) input message
@@ -440,8 +467,89 @@ class BackupdrV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AbandonBackup(self, request, global_params=None):
+      r"""Internal only. Abandons a backup.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesAbandonBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AbandonBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AbandonBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:abandonBackup',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.abandonBackup',
+        ordered_params=['dataSource'],
+        path_params=['dataSource'],
+        query_params=[],
+        relative_path='v1/{+dataSource}:abandonBackup',
+        request_field='abandonBackupRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesAbandonBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def FetchAccessToken(self, request, global_params=None):
+      r"""Internal only. Fetch access token for a given data source.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesFetchAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:fetchAccessToken',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.fetchAccessToken',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:fetchAccessToken',
+        request_field='fetchAccessTokenRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesFetchAccessTokenRequest',
+        response_type_name='FetchAccessTokenResponse',
+        supports_download=False,
+    )
+
+    def FinalizeBackup(self, request, global_params=None):
+      r"""Internal only. Finalize a backup that was started by a call to InitiateBackup.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesFinalizeBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('FinalizeBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FinalizeBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:finalizeBackup',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.finalizeBackup',
+        ordered_params=['dataSource'],
+        path_params=['dataSource'],
+        query_params=[],
+        relative_path='v1/{+dataSource}:finalizeBackup',
+        request_field='finalizeBackupRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesFinalizeBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
-      r"""Gets details of a single DataSource.
+      r"""Gets details of a DataSource.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsDataSourcesGetRequest) input message
@@ -464,6 +572,33 @@ class BackupdrV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesGetRequest',
         response_type_name='DataSource',
+        supports_download=False,
+    )
+
+    def InitiateBackup(self, request, global_params=None):
+      r"""Internal only. Initiates a backup.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesInitiateBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InitiateBackupResponse) The response message.
+      """
+      config = self.GetMethodConfig('InitiateBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    InitiateBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:initiateBackup',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.initiateBackup',
+        ordered_params=['dataSource'],
+        path_params=['dataSource'],
+        query_params=[],
+        relative_path='v1/{+dataSource}:initiateBackup',
+        request_field='initiateBackupRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesInitiateBackupRequest',
+        response_type_name='InitiateBackupResponse',
         supports_download=False,
     )
 
@@ -494,6 +629,87 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates the settings of a DataSource.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}',
+        http_method='PATCH',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['allowMissing', 'requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='dataSource',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Remove(self, request, global_params=None):
+      r"""Deletes a DataSource. This is a custom method instead of a standard delete method because external clients will not delete DataSources except for BackupDR backup appliances.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesRemoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Remove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Remove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:remove',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.remove',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:remove',
+        request_field='removeDataSourceRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesRemoveRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetInternalStatus(self, request, global_params=None):
+      r"""Sets the internal status of a DataSource.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsDataSourcesSetInternalStatusRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetInternalStatus')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetInternalStatus.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}/dataSources/{dataSourcesId}:setInternalStatus',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.dataSources.setInternalStatus',
+        ordered_params=['dataSource'],
+        path_params=['dataSource'],
+        query_params=[],
+        relative_path='v1/{+dataSource}:setInternalStatus',
+        request_field='setInternalStatusRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsDataSourcesSetInternalStatusRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBackupVaultsService(base_api.BaseApiService):
     """Service class for the projects_locations_backupVaults resource."""
 
@@ -505,7 +721,7 @@ class BackupdrV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Backupvault.
+      r"""Create method for the projects_locations_backupVaults service.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsCreateRequest) input message
@@ -532,7 +748,7 @@ class BackupdrV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single BackupVault.
+      r"""Deletes a BackupVault.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsDeleteRequest) input message
@@ -558,8 +774,35 @@ class BackupdrV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def FetchUsable(self, request, global_params=None):
+      r"""FetchUsableBackupVaults lists usable BackupVaults in a given project and location. Usable BackupVault are the ones that user has backupdr.backupVaults.get permission.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsFetchUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FetchUsableBackupVaultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FetchUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FetchUsable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults:fetchUsable',
+        http_method='GET',
+        method_id='backupdr.projects.locations.backupVaults.fetchUsable',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupVaults:fetchUsable',
+        request_field='',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsFetchUsableRequest',
+        response_type_name='FetchUsableBackupVaultsResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
-      r"""Gets details of a single BackupVault.
+      r"""Gets details of a BackupVault.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsGetRequest) input message
@@ -613,7 +856,7 @@ class BackupdrV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single BackupVault.
+      r"""Updates the settings of a BackupVault.
 
       Args:
         request: (BackupdrProjectsLocationsBackupVaultsPatchRequest) input message
@@ -631,11 +874,38 @@ class BackupdrV1(base_api.BaseApiClient):
         method_id='backupdr.projects.locations.backupVaults.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId', 'updateMask', 'validateOnly'],
+        query_params=['force', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='backupVault',
         request_type_name='BackupdrProjectsLocationsBackupVaultsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on a BackupVault resource. A caller is not required to have Google IAM permission to make this request.
+
+      Args:
+        request: (BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/backupVaults/{backupVaultsId}:testIamPermissions',
+        http_method='POST',
+        method_id='backupdr.projects.locations.backupVaults.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

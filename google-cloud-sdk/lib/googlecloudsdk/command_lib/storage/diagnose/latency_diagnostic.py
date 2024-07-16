@@ -21,6 +21,7 @@ import uuid
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
+from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import statistics_util
 from googlecloudsdk.command_lib.storage import storage_url
@@ -32,7 +33,6 @@ from googlecloudsdk.core.util import scaled_integer
 
 # Default object size of 0B, 1KB, 100KB, and 1MB.
 _DEFAULT_OBJECT_SIZES = [0, 1024, 100 * 1024, 1024 * 1024]
-_DIAGNOSTIC_NAME = 'Latency Diagnostic'
 _ITERATION_COUNT = 5
 _UPLOAD_OPERATION_TITLE = 'upload'
 _DOWNLOAD_OPERATION_TITLE = 'download'
@@ -43,6 +43,7 @@ _MEAN_TITLE = 'Mean'
 _STANDARD_DEVIATION_TITLE = 'Standard deviation'
 _PERCENTILE_90TH_TITLE = '90th percentile'
 _PERCENTILE_50TH_TITLE = '50th percentile'
+_DIAGNOSTIC_NAME = 'Latency Diagnostic'
 
 
 def _format_as_milliseconds(time_in_seconds: float) -> str:
@@ -84,6 +85,10 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     # and previous runs of this diagnostic.
     self.object_prefix = 'latency_diagnostics_' + str(uuid.uuid4())
 
+  @property
+  def name(self) -> str:
+    return _DIAGNOSTIC_NAME
+
   def _pre_process(self):
     """Creates the test files to be used in the diagnostic."""
     is_done = self._create_test_files(self.object_sizes, self.object_prefix)
@@ -106,7 +111,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     if not self._result[operation_title].get(object_number):
       self._result[operation_title][object_number] = {}
 
-  def __upload_object(
+  def _upload_object(
       self, object_number, file_path, object_resource, request_config, iteration
   ) -> None:
     """Uploads an object and records the latency.
@@ -126,7 +131,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
       with file_utils.FileReader(file_path) as file:
         self._api_client.upload_object(file, object_resource, request_config)
 
-  def __fetch_object_metadata(self, object_number, object_name, iteration):
+  def _fetch_object_metadata(self, object_number, object_name, iteration):
     """Fetches object metadata and records the latency.
 
     Args:
@@ -144,7 +149,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
           self.bucket_url.bucket_name, object_name
       )
 
-  def __download_object(
+  def _download_object(
       self, object_number, object_resource, request_config, iteration
   ) -> None:
     """Downloads an object and records the latency.
@@ -167,7 +172,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
           download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
       )
 
-  def __delete_object(
+  def _delete_object(
       self, object_number, object_url, request_config, iteration
   ) -> None:
     """Deletes an object and records the latency.
@@ -192,7 +197,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
     latency of each operation.
     """
     for iteration in range(_ITERATION_COUNT):
-      log.status.Print('Running latency iteration {}'.format(iteration))
+      log.status.Print(f'Running latency iteration {iteration}')
       # Run operation for each file and store the results.
       for object_number in range(self.object_count):
         file_path = self._files[object_number]
@@ -212,27 +217,34 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
             size=file_size,
         )
 
-        self.__upload_object(
-            object_number, file_path, object_resource, request_config, iteration
-        )
-        self.__fetch_object_metadata(
-            object_number, object_resource.name, iteration
-        )
-        self.__download_object(
-            object_number, object_resource, request_config, iteration
-        )
-        self.__delete_object(
-            object_number, object_url, request_config, iteration
-        )
+        try:
+          self._upload_object(
+              object_number,
+              file_path,
+              object_resource,
+              request_config,
+              iteration,
+          )
+          self._fetch_object_metadata(
+              object_number, object_resource.name, iteration
+          )
+          self._download_object(
+              object_number, object_resource, request_config, iteration
+          )
+          self._delete_object(
+              object_number, object_url, request_config, iteration
+          )
+        except api_errors.CloudApiError as e:
+          raise diagnostic.DiagnosticIgnorableError(
+              f'Failed to run operation for object {object_resource.name}. {e}'
+          )
 
   def _post_process(self):
     if self.temp_dir is not None:
       try:
         self.temp_dir.Close()
       except OSError as e:
-        log.warning(
-            'Latency Diagnostic : Failed to clean up temp files. {}'.format(e)
-        )
+        log.warning(f'{self.name} : Failed to clean up temp files. {e}')
 
   @property
   def result(self) -> diagnostic.DiagnosticResult:
@@ -273,7 +285,7 @@ class LatencyDiagnostic(diagnostic.Diagnostic):
         )
         operation_results.append(operation_result)
 
-    return diagnostic.DiagnosticResult(_DIAGNOSTIC_NAME, operation_results)
+    return diagnostic.DiagnosticResult(self.name, operation_results)
 
 
 class DummyFile(object):

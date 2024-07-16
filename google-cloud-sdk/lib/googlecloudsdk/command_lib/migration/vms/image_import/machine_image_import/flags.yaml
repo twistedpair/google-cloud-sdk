@@ -147,3 +147,24 @@ enable_integrity_monitoring:
   required: false
   help_text: |
     Defines whether the instance created by the machine image has integrity monitoring enabled. This can be set to true only if the image boot option is EFI, and vTPM is enabled.
+
+network_interface:
+  api_field: imageImport.machineImageTargetDefaults.networkInterfaces
+  arg_name: network-interface
+  required: false
+  type:
+    arg_dict:
+      spec:
+      - api_field: network
+        required: false
+      - api_field: subnetwork
+        required: false
+      - api_field: networkTier
+        required: false
+  help_text: |
+    The network interface to use for the instance created by the machine image.
+    This is a dicionary with the following keys:
+    - network: The network to use for this network interface.
+    - subnetwork: The subnetwork to use for this network interface.
+    - network-tier: The network tier to use for this network interface.
+    This argument can be specified multiple times in case of multiple nics.

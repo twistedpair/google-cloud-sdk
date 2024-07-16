@@ -18,6 +18,8 @@ class Backup(_messages.Message):
   r"""A Filestore backup.
 
   Enums:
+    FileSystemProtocolValueValuesEnum: Output only. The file system protocol
+      of the source Filestore instance that this backup is created from.
     SourceInstanceTierValueValuesEnum: Output only. The service tier of the
       source Filestore instance that this backup is created from.
     StateValueValuesEnum: Output only. The backup state.
@@ -36,6 +38,8 @@ class Backup(_messages.Message):
       Requests with longer descriptions will be rejected.
     downloadBytes: Output only. Amount of bytes that will be downloaded if the
       backup is restored
+    fileSystemProtocol: Output only. The file system protocol of the source
+      Filestore instance that this backup is created from.
     kmsKeyName: Immutable. KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
@@ -58,6 +62,20 @@ class Backup(_messages.Message):
       this resource. For example: "123/environment": "production",
       "123/costCenter": "marketing"
   """
+
+  class FileSystemProtocolValueValuesEnum(_messages.Enum):
+    r"""Output only. The file system protocol of the source Filestore instance
+    that this backup is created from.
+
+    Values:
+      FILE_PROTOCOL_UNSPECIFIED: FILE_PROTOCOL_UNSPECIFIED serves a "not set"
+        default value when a FileProtocol is a separate field in a message.
+      NFS_V3: NFS 3.0.
+      NFS_V4_1: NFS 4.1.
+    """
+    FILE_PROTOCOL_UNSPECIFIED = 0
+    NFS_V3 = 1
+    NFS_V4_1 = 2
 
   class SourceInstanceTierValueValuesEnum(_messages.Enum):
     r"""Output only. The service tier of the source Filestore instance that
@@ -167,17 +185,18 @@ class Backup(_messages.Message):
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
   downloadBytes = _messages.IntegerField(4)
-  kmsKeyName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  satisfiesPzi = _messages.BooleanField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  sourceFileShare = _messages.StringField(10)
-  sourceInstance = _messages.StringField(11)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  storageBytes = _messages.IntegerField(14)
-  tags = _messages.MessageField('TagsValue', 15)
+  fileSystemProtocol = _messages.EnumField('FileSystemProtocolValueValuesEnum', 5)
+  kmsKeyName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  sourceFileShare = _messages.StringField(11)
+  sourceInstance = _messages.StringField(12)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  storageBytes = _messages.IntegerField(15)
+  tags = _messages.MessageField('TagsValue', 16)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -733,6 +752,8 @@ class FileShareConfig(_messages.Message):
       start with a letter. Immutable.
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
+    performanceConfig: Optional. Used to configure performance.
+    performanceLimits: Output only. Used for getting performance limits.
     sourceBackup: The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`,
       that this file share has been restored from.
@@ -741,7 +762,19 @@ class FileShareConfig(_messages.Message):
   capacityGb = _messages.IntegerField(1)
   name = _messages.StringField(2)
   nfsExportOptions = _messages.MessageField('NfsExportOptions', 3, repeated=True)
-  sourceBackup = _messages.StringField(4)
+  performanceConfig = _messages.MessageField('PerformanceConfig', 4)
+  performanceLimits = _messages.MessageField('PerformanceLimits', 5)
+  sourceBackup = _messages.StringField(6)
+
+
+class FixedIOPS(_messages.Message):
+  r"""Fixed IOPS parameters.
+
+  Fields:
+    maxReadIops: Required. Maximum raw read IOPS.
+  """
+
+  maxReadIops = _messages.IntegerField(1)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message):
@@ -1306,6 +1339,16 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
   nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 1, repeated=True)
   perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 2)
   tier = _messages.StringField(3)
+
+
+class IOPSPerGB(_messages.Message):
+  r"""IOPS per capacity parameters.
+
+  Fields:
+    maxReadIopsPerGb: Required. Maximum read IOPS per GB.
+  """
+
+  maxReadIopsPerGb = _messages.IntegerField(1)
 
 
 class Instance(_messages.Message):
@@ -2112,6 +2155,58 @@ class OperationMetadata(_messages.Message):
   statusDetail = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class PerformanceConfig(_messages.Message):
+  r"""Performance configuration. Used for setting the performance
+  configuration. Defaults to `iops_by_capacity` if unset in instance creation.
+
+  Fields:
+    fixedIops: Choose a fixed provisioned IOPS value for the instance, which
+      will remain constant regardless of instance capacity. Value must be a
+      multiple of 1000. If the chosen value is outside the supported range for
+      the instance's capacity during instance creation, instance creation will
+      fail with an `InvalidArgument` error. Similarly, if an instance capacity
+      update would result in a value outside the supported range, the update
+      will fail with an `InvalidArgument` error.
+    iopsByCapacity: Automatically provision maximum available IOPS based on
+      the capacity of the instance. Larger instances will be granted more
+      IOPS. If instance capacity is increased or decreased, IOPS will be
+      automatically adjusted upwards or downwards accordingly. The maximum
+      available IOPS for a given capacity is defined in Filestore
+      documentation.
+    iopsPerGb: Provision IOPS dynamically based on the capacity of the
+      instance. Provisioned read IOPS will be calculated by by multiplying the
+      capacity of the instance in GiB by the `iops_per_gb` value, and rounding
+      to the nearest 1000. For example, for a 1 TiB instance with an
+      `iops_per_gb` value of 15, the provisioned read IOPS would be `1024 * 15
+      = 15,360`, rounded to `15,000`. If the calculated value is outside the
+      supported range for the instance's capacity during instance creation,
+      instance creation will fail with an `InvalidArgument` error. Similarly,
+      if an instance capacity update would result in a value outside the
+      supported range, the update will fail with an `InvalidArgument` error.
+  """
+
+  fixedIops = _messages.MessageField('FixedIOPS', 1)
+  iopsByCapacity = _messages.BooleanField(2)
+  iopsPerGb = _messages.MessageField('IOPSPerGB', 3)
+
+
+class PerformanceLimits(_messages.Message):
+  r"""The enforced performance limits, calculated from the instance's
+  performance configuration.
+
+  Fields:
+    maxReadIops: Output only. The max read IOPS.
+    maxReadThroughput: Output only. The max read throughput.
+    maxWriteIops: Output only. The max write IOPS.
+    maxWriteThroughput: Output only. The max write throughput.
+  """
+
+  maxReadIops = _messages.IntegerField(1)
+  maxReadThroughput = _messages.IntegerField(2)
+  maxWriteIops = _messages.IntegerField(3)
+  maxWriteThroughput = _messages.IntegerField(4)
 
 
 class PromoteReplicaRequest(_messages.Message):

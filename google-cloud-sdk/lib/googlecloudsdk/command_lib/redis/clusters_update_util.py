@@ -23,6 +23,14 @@ from googlecloudsdk.command_lib.redis import cluster_util
 from googlecloudsdk.command_lib.redis import util
 
 
+class Error(Exception):
+  """Exceptions for this module."""
+
+
+class InvalidTimeOfDayError(Error):
+  """Error for passing invalid time of day."""
+
+
 def AddFieldToUpdateMask(field, patch_request):
   update_mask = patch_request.updateMask
   if update_mask:
@@ -48,6 +56,24 @@ def UpdateReplicaCount(unused_cluster_ref, args, patch_request):
   if args.IsSpecified('replica_count'):
     patch_request.cluster.replicaCount = args.replica_count
     patch_request = AddFieldToUpdateMask('replica_count', patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceWindowPolicy(unused_cluster_ref, args, patch_request):
+  """Hook to update maintenance window policy to the update mask of the request."""
+  if (
+      args.IsSpecified('maintenance_window_day')
+      or args.IsSpecified('maintenance_window_hour')
+  ):
+    patch_request = AddFieldToUpdateMask('maintenance_window', patch_request)
+  return patch_request
+
+
+def UpdateMaintenanceWindowAny(unused_cluster_ref, args, patch_request):
+  """Hook to remove maintenance policy."""
+  if args.IsSpecified('maintenance_window_any'):
+    patch_request.cluster.maintenancePolicy = None
+    patch_request = AddFieldToUpdateMask('maintenance_window', patch_request)
   return patch_request
 
 
@@ -118,3 +144,11 @@ def UpdatePersistenceConfig(unused_cluster_ref, args, patch_request):
     if not args.IsSpecified('aof_append_fsync'):
       patch_request.cluster.persistenceConfig.aofConfig = None
   return patch_request
+
+
+def CheckMaintenanceWindowStartTimeField(maintenance_window_start_time):
+  if maintenance_window_start_time < 0 or maintenance_window_start_time > 23:
+    raise InvalidTimeOfDayError(
+        'A valid time of day must be specified (0, 23) hours.'
+    )
+  return maintenance_window_start_time

@@ -2364,10 +2364,11 @@ class InstancePartition(_messages.Message):
       target number of processing units allocated to the instance partition.
       This might be zero in API responses for instance partitions that are not
       yet in the `READY` state.
-    referencingBackups: Output only. The names of the backups that reference
-      this instance partition. Referencing backups should share the parent
-      instance. The existence of any referencing backup prevents the instance
-      partition from being deleted.
+    referencingBackups: Output only. Deprecated: This field is not populated.
+      Output only. The names of the backups that reference this instance
+      partition. Referencing backups should share the parent instance. The
+      existence of any referencing backup prevents the instance partition from
+      being deleted.
     referencingDatabases: Output only. The names of the databases that
       reference this instance partition. Referencing databases should share
       the parent instance. The existence of any referencing database prevents

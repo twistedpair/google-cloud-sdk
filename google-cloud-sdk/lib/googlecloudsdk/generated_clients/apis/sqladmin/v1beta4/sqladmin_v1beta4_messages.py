@@ -570,6 +570,8 @@ class ConnectSettings(_messages.Message):
       `SQLSERVER_2017_WEB`, `SQLSERVER_2019_STANDARD`,
       `SQLSERVER_2019_ENTERPRISE`, `SQLSERVER_2019_EXPRESS`, or
       `SQLSERVER_2019_WEB`.
+    ServerCaModeValueValuesEnum: Specify what type of CA is used for the
+      server certificate.
 
   Fields:
     backendType: `SECOND_GEN`: Cloud SQL database instance. `EXTERNAL`: A
@@ -593,6 +595,7 @@ class ConnectSettings(_messages.Message):
     region: The cloud region for the instance. e.g. `us-central1`, `europe-
       west1`. The region cannot be changed after instance creation.
     serverCaCert: SSL configuration.
+    serverCaMode: Specify what type of CA is used for the server certificate.
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
@@ -737,6 +740,20 @@ class ConnectSettings(_messages.Message):
     SQLSERVER_2022_EXPRESS = 42
     SQLSERVER_2022_WEB = 43
 
+  class ServerCaModeValueValuesEnum(_messages.Enum):
+    r"""Specify what type of CA is used for the server certificate.
+
+    Values:
+      CA_MODE_UNSPECIFIED: CA mode is unknown.
+      GOOGLE_MANAGED_INTERNAL_CA: Google-managed self-signed internal CA.
+      GOOGLE_MANAGED_CAS_CA: Google-managed regional CA part of root CA
+        hierarchy hosted on Google Cloud's Certificate Authority Service
+        (CAS).
+    """
+    CA_MODE_UNSPECIFIED = 0
+    GOOGLE_MANAGED_INTERNAL_CA = 1
+    GOOGLE_MANAGED_CAS_CA = 2
+
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
   dnsName = _messages.StringField(3)
@@ -745,6 +762,7 @@ class ConnectSettings(_messages.Message):
   pscEnabled = _messages.BooleanField(6)
   region = _messages.StringField(7)
   serverCaCert = _messages.MessageField('SslCert', 8)
+  serverCaMode = _messages.EnumField('ServerCaModeValueValuesEnum', 9)
 
 
 class DataCacheConfig(_messages.Message):
@@ -2310,6 +2328,17 @@ class InstancesRotateServerCaRequest(_messages.Message):
   rotateServerCaContext = _messages.MessageField('RotateServerCaContext', 1)
 
 
+class InstancesRotateServerCertificateRequest(_messages.Message):
+  r"""Rotate Server Certificate request.
+
+  Fields:
+    rotateServerCertificateContext: Optional. Contains details about the
+      rotate server CA operation.
+  """
+
+  rotateServerCertificateContext = _messages.MessageField('RotateServerCertificateContext', 1)
+
+
 class InstancesTruncateLogRequest(_messages.Message):
   r"""Instance truncate log request.
 
@@ -3170,6 +3199,20 @@ class RotateServerCaContext(_messages.Message):
   nextVersion = _messages.StringField(2)
 
 
+class RotateServerCertificateContext(_messages.Message):
+  r"""Instance rotate server certificate context.
+
+  Fields:
+    kind: Optional. This is always `sql#rotateServerCertificateContext`.
+    nextVersion: Optional. The fingerprint of the next version to be rotated
+      to. If left unspecified, will be rotated to the most recently added
+      server certificate version.
+  """
+
+  kind = _messages.StringField(1)
+  nextVersion = _messages.StringField(2)
+
+
 class Settings(_messages.Message):
   r"""Database instance settings.
 
@@ -3861,6 +3904,9 @@ class SqlExternalSyncSettingError(_messages.Message):
         specified extensions are not enabled on destination instance. For
         example, before you can migrate data to the destination instance, you
         must enable the PGAudit extension on the instance.
+      UNSUPPORTED_COLUMNS: The source database has generated columns that
+        can't be migrated. Please change them to regular columns before
+        migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3911,6 +3957,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     EXTENSIONS_NOT_MIGRATED = 46
     PG_CRON_FLAG_ENABLED_IN_REPLICA = 47
     EXTENSIONS_NOT_ENABLED_IN_REPLICA = 48
+    UNSUPPORTED_COLUMNS = 49
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3964,6 +4011,19 @@ class SqlInstancesAddServerCaRequest(_messages.Message):
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class SqlInstancesAddServerCertificateRequest(_messages.Message):
+  r"""A SqlInstancesAddServerCertificateRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This does not include the
+      project ID.
+    project: Required. Project ID of the project that contains the instance.
   """
 
   instance = _messages.StringField(1, required=True)
@@ -4331,6 +4391,16 @@ class SqlInstancesRotateServerCaRequest(_messages.Message):
   instance = _messages.StringField(1, required=True)
   instancesRotateServerCaRequest = _messages.MessageField('InstancesRotateServerCaRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesRotateServerCertificateRequest(_messages.Message):
+  r"""A SqlInstancesRotateServerCertificateRequest object.
+
+  Fields:
+    body: Required. Rotate server certificate request body.
+  """
+
+  body = _messages.MessageField('InstancesRotateServerCertificateRequest', 1)
 
 
 class SqlInstancesStartExternalSyncRequest(_messages.Message):

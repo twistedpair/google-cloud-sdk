@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -660,6 +660,9 @@ class ExecuteSqlRequest(proto.Message):
             PROFILE (2):
                 This mode returns both the query plan and the
                 execution statistics along with the results.
+                This has a performance overhead compared to the
+                NORMAL mode. It is not recommended to use this
+                mode for production traffic.
         """
         NORMAL = 0
         PLAN = 1
@@ -1029,17 +1032,17 @@ class PartitionQueryRequest(proto.Message):
             transactions are not.
         sql (str):
             Required. The query request to generate partitions for. The
-            request will fail if the query is not root partitionable.
-            For a query to be root partitionable, it needs to satisfy a
-            few conditions. For example, if the query execution plan
+            request fails if the query is not root partitionable. For a
+            query to be root partitionable, it needs to satisfy a few
+            conditions. For example, if the query execution plan
             contains a distributed union operator, then it must be the
             first operator in the plan. For more information about other
             conditions, see `Read data in
             parallel <https://cloud.google.com/spanner/docs/reads#read_data_in_parallel>`__.
 
             The query request must not contain DML commands, such as
-            INSERT, UPDATE, or DELETE. Use
-            [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql]
+            ``INSERT``, ``UPDATE``, or ``DELETE``. Use
+            [``ExecuteStreamingSql``][google.spanner.v1.Spanner.ExecuteStreamingSql]
             with a PartitionedDml transaction for large,
             partition-friendly DML operations.
         params (google.protobuf.struct_pb2.Struct):

@@ -183,3 +183,51 @@ def AddCommitIdFlag(parser):
       ' latest commit are returned.'
   )
   parser.add_argument('--commit-id', help=help_text)
+
+
+def AddSourceDetailsFlag(parser):
+  """Adds the source details to the given parser for application code conversion."""
+
+  source_details_group = parser.add_group(required=True, mutex=True)
+  AddSourceFolderFlag(source_details_group)
+  AddSourceFileFlag(source_details_group)
+
+
+def AddSourceFolderFlag(parser):
+  """Adds a --source-folder flag to the given parser."""
+  help_text = (
+      'A folder path to the source code files which needs to be converted. If'
+      ' the target-path is not specified, the source file is backed up and the'
+      ' original file is overwritten with the converted code.'
+  )
+  parser.add_argument(
+      '--source-folder',
+      help=help_text,
+  )
+
+
+def AddSourceFileFlag(parser):
+  """Adds a --source-file flag to the given parser."""
+  help_text = (
+      'A file path to the source code which needs to be converted. If the'
+      ' target-path is not specified, the source file is backed up and the'
+      ' original file is overwritten with the converted code.'
+  )
+  parser.add_argument(
+      '--source-file',
+      help=help_text,
+  )
+
+
+def AddTargetPathFlag(parser):
+  """Adds a --target-path flag to the given parser."""
+  help_text = (
+      'Path where the converted code should be written. This can be a directory'
+      ' or a file name. In case it is a directory, the file name will be the'
+      ' same as the source file. If it is not provied, source file is backed up'
+      ' and the original file is overwritten with the converted code.'
+  )
+  parser.add_argument(
+      '--target-path',
+      help=help_text,
+  )

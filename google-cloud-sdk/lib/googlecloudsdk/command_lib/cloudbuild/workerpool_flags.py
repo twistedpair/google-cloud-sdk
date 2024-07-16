@@ -74,7 +74,6 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
   )
   parser.add_argument(
       '--region',
-      required=True,
       help=(
           'Cloud region where the worker pool is %sd. See'
           ' https://cloud.google.com/build/docs/locations for available'

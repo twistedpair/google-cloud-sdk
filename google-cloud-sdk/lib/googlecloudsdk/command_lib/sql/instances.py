@@ -128,9 +128,9 @@ def DoesEnterprisePlusReplicaInferTierForDatabaseType(
     PG16+).
   """
   database_type = ParseDatabaseVersion(sql_messages, replica_database_version)
-  return (
-      database_type
-      == sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.POSTGRES_16
+  return database_type in (
+      sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.POSTGRES_16,
+      sql_messages.DatabaseInstance.DatabaseVersionValueValuesEnum.MYSQL_8_4,
   )
 
 
@@ -957,6 +957,10 @@ class _BaseInstances(object):
       if args.IsKnownAndSpecified('switch_transaction_logs_to_cloud_storage'):
         instance_resource.switchTransactionLogsToCloudStorageEnabled = (
             args.switch_transaction_logs_to_cloud_storage
+        )
+      if args.IsKnownAndSpecified('include_replicas_for_major_version_upgrade'):
+        instance_resource.includeReplicasForMajorVersionUpgrade = (
+            args.include_replicas_for_major_version_upgrade
         )
 
     return instance_resource

@@ -248,6 +248,12 @@ class ConsumerPscConfig(_messages.Message):
       attachment with producer specified ip addresses are stored here.
 
   Fields:
+    consumerInstanceProject: Required. The project ID or project number of the
+      consumer project. This project is the one that the consumer uses to
+      interact with the producer instance. From the perspective of a consumer
+      who's created a producer instance, this is the project of the producer
+      instance. Format: 'projects/' Eg. 'projects/consumer-project' or
+      'projects/1234'
     disableGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
     network: The resource path of the consumer network where PSC connections
@@ -314,12 +320,13 @@ class ConsumerPscConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  disableGlobalAccess = _messages.BooleanField(1)
-  network = _messages.StringField(2)
-  producerInstanceId = _messages.StringField(3)
-  project = _messages.StringField(4)
-  serviceAttachmentIpAddressMap = _messages.MessageField('ServiceAttachmentIpAddressMapValue', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  consumerInstanceProject = _messages.StringField(1)
+  disableGlobalAccess = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  producerInstanceId = _messages.StringField(4)
+  project = _messages.StringField(5)
+  serviceAttachmentIpAddressMap = _messages.MessageField('ServiceAttachmentIpAddressMapValue', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class ConsumerPscConnection(_messages.Message):
@@ -3732,15 +3739,60 @@ class PscConfig(_messages.Message):
   r"""Configuration used for Private Service Connect connections. Used when
   Infrastructure is PSC.
 
+  Enums:
+    ProducerInstanceLocationValueValuesEnum: Required.
+      ProducerInstanceLocation is used to specify which authorization
+      mechanism to use to determine which projects the Producer instance can
+      be within.
+
   Fields:
+    allowedGoogleProducersResourceHierarchyLevel: Optional. List of Projects,
+      Folders, or Organizations from where the Producer instance can be
+      within. For example, a network administrator can provide both
+      'organizations/foo' and 'projects/bar' as
+      allowed_google_producers_resource_hierarchy_levels. This allowlists this
+      network to connect with any Producer instance within the 'foo'
+      organization or the 'bar' project. By default,
+      allowed_google_producers_resource_hierarchy_level is empty. The format
+      for each allowed_google_producers_resource_hierarchy_level is / where is
+      one of 'projects', 'folders', or 'organizations' and is either the ID or
+      the number of the resource type. Format for each
+      allowed_google_producers_resource_hierarchy_level value: 'projects/' or
+      'folders/' or 'organizations/' Eg. [projects/my-project-id,
+      projects/567, folders/891, organizations/123]
     limit: Optional. Max number of PSC connections for this policy.
+    producerInstanceLocation: Required. ProducerInstanceLocation is used to
+      specify which authorization mechanism to use to determine which projects
+      the Producer instance can be within.
     subnetworks: The resource paths of subnetworks to use for IP address
       management. Example:
       projects/{projectNumOrId}/regions/{region}/subnetworks/{resourceId}.
   """
 
-  limit = _messages.IntegerField(1)
-  subnetworks = _messages.StringField(2, repeated=True)
+  class ProducerInstanceLocationValueValuesEnum(_messages.Enum):
+    r"""Required. ProducerInstanceLocation is used to specify which
+    authorization mechanism to use to determine which projects the Producer
+    instance can be within.
+
+    Values:
+      PRODUCER_INSTANCE_LOCATION_UNSPECIFIED: Producer instance location is
+        not specified. When this option is chosen, then the PSC connections
+        created by this ServiceConnectionPolicy must be within the same
+        project as the Producer instance. This is the default
+        ProducerInstanceLocation value. To allow for PSC connections from this
+        network to other networks, use the CUSTOM_RESOURCE_HIERARCHY_LEVELS
+        option.
+      CUSTOM_RESOURCE_HIERARCHY_LEVELS: Producer instance must be within one
+        of the values provided in
+        allowed_google_producers_resource_hierarchy_level.
+    """
+    PRODUCER_INSTANCE_LOCATION_UNSPECIFIED = 0
+    CUSTOM_RESOURCE_HIERARCHY_LEVELS = 1
+
+  allowedGoogleProducersResourceHierarchyLevel = _messages.StringField(1, repeated=True)
+  limit = _messages.IntegerField(2)
+  producerInstanceLocation = _messages.EnumField('ProducerInstanceLocationValueValuesEnum', 3)
+  subnetworks = _messages.StringField(4, repeated=True)
 
 
 class PscConnection(_messages.Message):

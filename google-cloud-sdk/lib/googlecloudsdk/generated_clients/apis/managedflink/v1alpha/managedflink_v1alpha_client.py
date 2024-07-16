@@ -42,6 +42,7 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_jobs = self.ProjectsLocationsJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_sessions = self.ProjectsLocationsSessionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -450,6 +451,151 @@ class ManagedflinkV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ManagedflinkProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSessionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sessions resource."""
+
+    _NAME = 'projects_locations_sessions'
+
+    def __init__(self, client):
+      super(ManagedflinkV1alpha.ProjectsLocationsSessionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Session in a given project and location.
+
+      Args:
+        request: (ManagedflinkProjectsLocationsSessionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/sessions',
+        http_method='POST',
+        method_id='managedflink.projects.locations.sessions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sessionId'],
+        relative_path='v1alpha/{+parent}/sessions',
+        request_field='session',
+        request_type_name='ManagedflinkProjectsLocationsSessionsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single Session.
+
+      Args:
+        request: (ManagedflinkProjectsLocationsSessionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}',
+        http_method='DELETE',
+        method_id='managedflink.projects.locations.sessions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ManagedflinkProjectsLocationsSessionsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Session.
+
+      Args:
+        request: (ManagedflinkProjectsLocationsSessionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Session) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}',
+        http_method='GET',
+        method_id='managedflink.projects.locations.sessions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ManagedflinkProjectsLocationsSessionsGetRequest',
+        response_type_name='Session',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Sessions in a given project and location.
+
+      Args:
+        request: (ManagedflinkProjectsLocationsSessionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSessionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/sessions',
+        http_method='GET',
+        method_id='managedflink.projects.locations.sessions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/sessions',
+        request_field='',
+        request_type_name='ManagedflinkProjectsLocationsSessionsListRequest',
+        response_type_name='ListSessionsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single Session.
+
+      Args:
+        request: (ManagedflinkProjectsLocationsSessionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}',
+        http_method='PATCH',
+        method_id='managedflink.projects.locations.sessions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='session',
+        request_type_name='ManagedflinkProjectsLocationsSessionsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

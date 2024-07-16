@@ -39,13 +39,13 @@ class AddDNSPeeringZoneRequest(_messages.Message):
   r"""Request used by the AddDnsPeeringZone method.
 
   Fields:
-    hostname: Required. DNS hostname to add to DNS peering zone.
+    dnsSuffix: Required. DNS suffix to add to DNS peering zone.
     requestId: Optional. An optional request ID to identify requests.
     targetNetwork: Optional. An optional target VPC network override. If not
-      set, it will default to the partner network.
+      set, it will default to the SSE Environment partner network.
   """
 
-  hostname = _messages.StringField(1)
+  dnsSuffix = _messages.StringField(1)
   requestId = _messages.StringField(2)
   targetNetwork = _messages.StringField(3)
 
@@ -349,6 +349,18 @@ class CloneAddressGroupItemsRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   sourceAddressGroup = _messages.StringField(2)
+
+
+class CustomInterceptProfile(_messages.Message):
+  r"""CustomInterceptProfile defines the Packet Intercept Endpoint Group used
+  to intercept traffic to a third-party firewall in a Firewall rule.
+
+  Fields:
+    interceptEndpointGroup: Required. The InterceptEndpointGroup to which
+      traffic associated with the SP should be mirrored.
+  """
+
+  interceptEndpointGroup = _messages.StringField(1)
 
 
 class CustomMirroringProfile(_messages.Message):
@@ -1135,6 +1147,344 @@ class HttpHeaderMatch(_messages.Message):
   regexMatch = _messages.StringField(2)
 
 
+class InterceptDeployment(_messages.Message):
+  r"""Message describing InterceptDeployment object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the deployment.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    forwardingRule: Required. Immutable. The regional load balancer which the
+      intercepted traffic should be forwarded to. Format is:
+      projects/{project}/regions/{region}/forwardingRules/{forwardingRule}
+    interceptDeploymentGroup: Required. Immutable. The Intercept Deployment
+      Group that this resource is part of. Format is: `projects/{project}/loca
+      tions/global/interceptDeploymentGroups/{interceptDeploymentGroup}`
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. The name of the InterceptDeployment.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the deployment.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the deployment.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  forwardingRule = _messages.StringField(2)
+  interceptDeploymentGroup = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class InterceptDeploymentGroup(_messages.Message):
+  r"""Message describing InterceptDeploymentGroup object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the deployment group.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    connectedEndpointGroups: Output only. The list of Intercept Endpoint
+      Groups that are connected to this resource.
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. Then name of the InterceptDeploymentGroup.
+    network: Required. Immutable. The network that is being used for the
+      deployment. Format is: projects/{project}/global/networks/{network}.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the deployment group.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the deployment group.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  connectedEndpointGroups = _messages.MessageField('InterceptDeploymentGroupConnectedEndpointGroup', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
+
+
+class InterceptDeploymentGroupConnectedEndpointGroup(_messages.Message):
+  r"""An endpoint group connected to this deployment group.
+
+  Fields:
+    associations: Output only. The list of Intercept Endpoint Group
+      Associations.
+    name: Output only. A connected intercept endpoint group.
+  """
+
+  associations = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+
+
+class InterceptEndpointGroup(_messages.Message):
+  r"""Message describing InterceptEndpointGroup object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the endpoint group.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    interceptDeploymentGroup: Required. Immutable. The Intercept Deployment
+      Group that this resource is connected to. Format is: `projects/{project}
+      /locations/global/interceptDeploymentGroups/{interceptDeploymentGroup}`
+    labels: Optional. Labels as key value pairs
+    name: Immutable. Identifier. The name of the InterceptEndpointGroup.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the endpoint group.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the endpoint group.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      REJECTED: The deployment group has been deleted and intercept is
+        disabled.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    REJECTED = 2
+    CREATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  interceptDeploymentGroup = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  reconciling = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class InterceptEndpointGroupAssociation(_messages.Message):
+  r"""Message describing InterceptEndpointGroupAssociation object
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the endpoint group
+      association.
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    interceptEndpointGroup: Required. Immutable. The Intercept Endpoint Group
+      that this resource is connected to. Format is: `projects/{project}/locat
+      ions/global/interceptEndpointGroups/{interceptEndpointGroup}`
+    labels: Optional. Labels as key value pairs
+    locationsDetails: Output only. The list of locations that this association
+      is in and its details.
+    name: Immutable. Identifier. The name of the
+      InterceptEndpointGroupAssociation.
+    network: Required. Immutable. The VPC network associated. Format:
+      projects/{project}/global/networks/{network}.
+    reconciling: Output only. Whether reconciling is in progress, recommended
+      per https://google.aip.dev/128.
+    state: Output only. Current state of the endpoint group association.
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the endpoint group association.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      INACTIVE: The resource is partially not ready, some associations might
+        not be in a valid state.
+      CREATING: Being created.
+      DELETING: Being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    CREATING = 3
+    DELETING = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  interceptEndpointGroup = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  locationsDetails = _messages.MessageField('InterceptEndpointGroupAssociationLocationDetails', 4, repeated=True)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
+class InterceptEndpointGroupAssociationLocationDetails(_messages.Message):
+  r"""Details about the association status in a specific location.
+
+  Enums:
+    StateValueValuesEnum: Output only. The association state in this location.
+
+  Fields:
+    location: Output only. The location.
+    reason: Output only. The reason for an invalid state, if one is available.
+    state: Output only. The association state in this location.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The association state in this location.
+
+    Values:
+      STATE_UNSPECIFIED: Not set.
+      ACTIVE: Ready.
+      FAILED: Failed to actuate the association.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    FAILED = 2
+
+  location = _messages.StringField(1)
+  reason = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
 class ListAddressGroupReferencesResponse(_messages.Message):
   r"""Response of the ListAddressGroupReferences method.
 
@@ -1289,6 +1639,61 @@ class ListGatewaySecurityPolicyRulesResponse(_messages.Message):
   gatewaySecurityPolicyRules = _messages.MessageField('GatewaySecurityPolicyRule', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListInterceptDeploymentGroupsResponse(_messages.Message):
+  r"""Message for response to listing InterceptDeploymentGroups
+
+  Fields:
+    interceptDeploymentGroups: The list of InterceptDeploymentGroup
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  interceptDeploymentGroups = _messages.MessageField('InterceptDeploymentGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInterceptDeploymentsResponse(_messages.Message):
+  r"""Message for response to listing InterceptDeployments
+
+  Fields:
+    interceptDeployments: The list of InterceptDeployment
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  interceptDeployments = _messages.MessageField('InterceptDeployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListInterceptEndpointGroupAssociationsResponse(_messages.Message):
+  r"""Message for response to listing InterceptEndpointGroupAssociations
+
+  Fields:
+    interceptEndpointGroupAssociations: The list of
+      InterceptEndpointGroupAssociation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  interceptEndpointGroupAssociations = _messages.MessageField('InterceptEndpointGroupAssociation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListInterceptEndpointGroupsResponse(_messages.Message):
+  r"""Message for response to listing InterceptEndpointGroups
+
+  Fields:
+    interceptEndpointGroups: The list of InterceptEndpointGroup
+    nextPageToken: A token identifying a page of results the server should
+      return.
+  """
+
+  interceptEndpointGroups = _messages.MessageField('InterceptEndpointGroup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -1658,31 +2063,31 @@ class MTLSPolicy(_messages.Message):
     ClientValidationModeValueValuesEnum: When the client presents an invalid
       certificate or no certificate to the load balancer, the
       `client_validation_mode` specifies how the client connection is handled.
-      Required if the policy is to be used with the external HTTPS load
-      balancing. For Traffic Director it must be empty.
+      Required if the policy is to be used with the Application Load
+      Balancers. For Traffic Director it must be empty.
 
   Fields:
     clientValidationCa: Required if the policy is to be used with Traffic
-      Director. For external HTTPS load balancers it must be empty. Defines
-      the mechanism to obtain the Certificate Authority certificate to
-      validate the client certificate.
+      Director. For Application Load Balancers it must be empty. Defines the
+      mechanism to obtain the Certificate Authority certificate to validate
+      the client certificate.
     clientValidationMode: When the client presents an invalid certificate or
       no certificate to the load balancer, the `client_validation_mode`
       specifies how the client connection is handled. Required if the policy
-      is to be used with the external HTTPS load balancing. For Traffic
-      Director it must be empty.
+      is to be used with the Application Load Balancers. For Traffic Director
+      it must be empty.
     clientValidationTrustConfig: Reference to the TrustConfig from
       certificatemanager.googleapis.com namespace. If specified, the chain
       validation will be performed against certificates configured in the
       given TrustConfig. Allowed only if the policy is to be used with
-      external HTTPS load balancers.
+      Application Load Balancers.
   """
 
   class ClientValidationModeValueValuesEnum(_messages.Enum):
     r"""When the client presents an invalid certificate or no certificate to
     the load balancer, the `client_validation_mode` specifies how the client
     connection is handled. Required if the policy is to be used with the
-    external HTTPS load balancing. For Traffic Director it must be empty.
+    Application Load Balancers. For Traffic Director it must be empty.
 
     Values:
       CLIENT_VALIDATION_MODE_UNSPECIFIED: Not allowed.
@@ -3540,10 +3945,16 @@ class NetworksecurityProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest object.
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest
+  object.
 
   Fields:
+    interceptDeploymentGroup: A InterceptDeploymentGroup resource to be passed
+      as the request body.
+    interceptDeploymentGroupId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      intercept_deployment_group_id from the method_signature of Create RPC
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -3556,20 +3967,17 @@ class NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest(_messages.Mes
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    sACRealm: A SACRealm resource to be passed as the request body.
-    sacRealmId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and sac_realm_id from the
-      method_signature of Create RPC
   """
 
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  sACRealm = _messages.MessageField('SACRealm', 3)
-  sacRealmId = _messages.StringField(4)
+  interceptDeploymentGroup = _messages.MessageField('InterceptDeploymentGroup', 1)
+  interceptDeploymentGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
-class NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest object.
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest
+  object.
 
   Fields:
     name: Required. Name of the resource
@@ -3590,8 +3998,9 @@ class NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest(_messages.Mes
   requestId = _messages.StringField(2)
 
 
-class NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest object.
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest
+  object.
 
   Fields:
     name: Required. Name of the resource
@@ -3600,8 +4009,9 @@ class NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
-class NetworksecurityProjectsLocationsGlobalSacRealmsListRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsGlobalSacRealmsListRequest object.
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest
+  object.
 
   Fields:
     filter: Optional. Filtering results
@@ -3610,7 +4020,7 @@ class NetworksecurityProjectsLocationsGlobalSacRealmsListRequest(_messages.Messa
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListSACRealmsRequest
+    parent: Required. Parent value for ListInterceptDeploymentGroupsRequest
   """
 
   filter = _messages.StringField(1)
@@ -3618,6 +4028,393 @@ class NetworksecurityProjectsLocationsGlobalSacRealmsListRequest(_messages.Messa
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest
+  object.
+
+  Fields:
+    interceptDeploymentGroup: A InterceptDeploymentGroup resource to be passed
+      as the request body.
+    name: Immutable. Identifier. Then name of the InterceptDeploymentGroup.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the InterceptDeploymentGroup resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  interceptDeploymentGroup = _messages.MessageField('InterceptDeploymentGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest
+  object.
+
+  Fields:
+    interceptDeployment: A InterceptDeployment resource to be passed as the
+      request body.
+    interceptDeploymentId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and intercept_deployment_id
+      from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interceptDeployment = _messages.MessageField('InterceptDeployment', 1)
+  interceptDeploymentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListInterceptDeploymentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest
+  object.
+
+  Fields:
+    interceptDeployment: A InterceptDeployment resource to be passed as the
+      request body.
+    name: Immutable. Identifier. The name of the InterceptDeployment.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the InterceptDeployment resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  interceptDeployment = _messages.MessageField('InterceptDeployment', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCrea
+  teRequest object.
+
+  Fields:
+    interceptEndpointGroupAssociation: A InterceptEndpointGroupAssociation
+      resource to be passed as the request body.
+    interceptEndpointGroupAssociationId: Optional. Id of the requesting object
+      If auto-generating Id server-side, remove this field and
+      intercept_endpoint_group_association_id from the method_signature of
+      Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interceptEndpointGroupAssociation = _messages.MessageField('InterceptEndpointGroupAssociation', 1)
+  interceptEndpointGroupAssociationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDele
+  teRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest(_messages.Message):
+  r"""A
+  NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsList
+  Request object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for
+      ListInterceptEndpointGroupAssociationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatc
+  hRequest object.
+
+  Fields:
+    interceptEndpointGroupAssociation: A InterceptEndpointGroupAssociation
+      resource to be passed as the request body.
+    name: Immutable. Identifier. The name of the
+      InterceptEndpointGroupAssociation.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the InterceptEndpointGroupAssociation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all fields will be
+      overwritten.
+  """
+
+  interceptEndpointGroupAssociation = _messages.MessageField('InterceptEndpointGroupAssociation', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest
+  object.
+
+  Fields:
+    interceptEndpointGroup: A InterceptEndpointGroup resource to be passed as
+      the request body.
+    interceptEndpointGroupId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and
+      intercept_endpoint_group_id from the method_signature of Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  interceptEndpointGroup = _messages.MessageField('InterceptEndpointGroup', 1)
+  interceptEndpointGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListInterceptEndpointGroupsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest
+  object.
+
+  Fields:
+    interceptEndpointGroup: A InterceptEndpointGroup resource to be passed as
+      the request body.
+    name: Immutable. Identifier. The name of the InterceptEndpointGroup.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the InterceptEndpointGroup resource by the update. The
+      fields specified in the update_mask are relative to the resource, not
+      the full request. A field will be overwritten if it is in the mask. If
+      the user does not provide a mask then all fields will be overwritten.
+  """
+
+  interceptEndpointGroup = _messages.MessageField('InterceptEndpointGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsListRequest(_messages.Message):
@@ -4536,6 +5333,86 @@ class NetworksecurityProjectsLocationsSacAttachmentsListRequest(_messages.Messag
     pageToken: Optional. A token identifying a page of results the server
       should return.
     parent: Required. Parent value for ListSACAttachmentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworksecurityProjectsLocationsSacRealmsCreateRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacRealmsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    sACRealm: A SACRealm resource to be passed as the request body.
+    sacRealmId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and sac_realm_id from the
+      method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  sACRealm = _messages.MessageField('SACRealm', 3)
+  sacRealmId = _messages.StringField(4)
+
+
+class NetworksecurityProjectsLocationsSacRealmsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacRealmsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSacRealmsGetRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacRealmsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityProjectsLocationsSacRealmsListRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSacRealmsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSACRealmsRequest
   """
 
   filter = _messages.StringField(1)
@@ -5479,12 +6356,12 @@ class PartnerSSEEnvironmentDNSPeeringZone(_messages.Message):
   network to a target_network.
 
   Fields:
-    hostname: Required. DNS hostname to add to DNS peering zone.
+    dnsSuffix: Required. DNS dns_suffix to add to DNS peering zone.
     targetNetwork: Optional. Full URI of the target VPC network for the DNS
       peering zone.
   """
 
-  hostname = _messages.StringField(1)
+  dnsSuffix = _messages.StringField(1)
   targetNetwork = _messages.StringField(2)
 
 
@@ -5508,6 +6385,8 @@ class PartnerSSEGateway(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    capacityBps: Output only. Copied from the associated NCC resource in
+      Symantec NCCGW flows. Used by Symantec API.
     country: Output only. ISO-3166 alpha 2 country code used for localization.
       Filled from the customer SSEGateway, and only for PartnerSSEGateways
       associated with Symantec today.
@@ -5515,7 +6394,8 @@ class PartnerSSEGateway(_messages.Message):
     labels: Optional. Labels as key value pairs
     maxBandwidthMbps: Output only. Not an enforced cap. Filled from the
       customer SSEGateway, and only for PartnerSSEGateways associated with
-      Symantec today.
+      Symantec today in TTM flow. This field will be deprecated with TTM. Use
+      capacity_bps for NCCGW.
     name: Immutable. name of resource
     partnerSseEnvironment: Output only. [Output Only] Full URI of the partner
       environment this PartnerSSEGateway is connected to. Filled from the
@@ -5582,28 +6462,29 @@ class PartnerSSEGateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  country = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  maxBandwidthMbps = _messages.IntegerField(4)
-  name = _messages.StringField(5)
-  partnerSseEnvironment = _messages.StringField(6)
-  partnerSseRealm = _messages.StringField(7)
-  partnerSubnetRange = _messages.StringField(8)
-  partnerVpcSubnetRange = _messages.StringField(9)
-  sseBgpAsn = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(11, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(12)
-  sseNetwork = _messages.StringField(13)
-  sseProject = _messages.StringField(14)
-  sseSubnetRange = _messages.StringField(15)
-  sseTargetIp = _messages.StringField(16)
-  sseVpcSubnetRange = _messages.StringField(17)
-  sseVpcTargetIp = _messages.StringField(18)
-  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 19)
-  timezone = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  vni = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  capacityBps = _messages.IntegerField(1)
+  country = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  maxBandwidthMbps = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  partnerSseEnvironment = _messages.StringField(7)
+  partnerSseRealm = _messages.StringField(8)
+  partnerSubnetRange = _messages.StringField(9)
+  partnerVpcSubnetRange = _messages.StringField(10)
+  sseBgpAsn = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(12, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(13)
+  sseNetwork = _messages.StringField(14)
+  sseProject = _messages.StringField(15)
+  sseSubnetRange = _messages.StringField(16)
+  sseTargetIp = _messages.StringField(17)
+  sseVpcSubnetRange = _messages.StringField(18)
+  sseVpcTargetIp = _messages.StringField(19)
+  symantecOptions = _messages.MessageField('PartnerSSEGatewayPartnerSSEGatewaySymantecOptions', 20)
+  timezone = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  vni = _messages.IntegerField(23, variant=_messages.Variant.INT32)
 
 
 class PartnerSSEGatewayPartnerSSEGatewaySymantecOptions(_messages.Message):
@@ -5753,15 +6634,12 @@ class RemoveDNSPeeringZoneRequest(_messages.Message):
   r"""Request used by the RemoveDnsPeeringZone method.
 
   Fields:
-    hostname: Required. DNS hostname to remove from DNS peering zone.
+    dnsSuffix: Required. DNS suffix to remove from DNS peering zones.
     requestId: Optional. An optional request ID to identify requests.
-    targetNetwork: Optional. An optional target VPC network override. If not
-      set, it will default to the partner network.
   """
 
-  hostname = _messages.StringField(1)
+  dnsSuffix = _messages.StringField(1)
   requestId = _messages.StringField(2)
-  targetNetwork = _messages.StringField(3)
 
 
 class Rule(_messages.Message):
@@ -5790,6 +6668,11 @@ class SACAttachment(_messages.Message):
     LabelsValue: Optional. Optional list of labels applied to the resource.
 
   Fields:
+    country: Optional. ISO-3166 alpha 2 country code used for localization.
+      Only used for Symantec's API today, and is optional even for gateways
+      connected to Symantec, since Symantec applies a default if we don't
+      specify it. Not case-sensitive, since it will be upper-cased when
+      sending to Symantec API.
     createTime: Output only. [Output only] Timestamp when the attachment was
       created.
     labels: Optional. Optional list of labels applied to the resource.
@@ -5799,6 +6682,12 @@ class SACAttachment(_messages.Message):
     nccGateway: Required. ID of the NCC Gateway which connects to the
       attachment.
     sacRealm: Required. ID of the SAC Realm which owns the attachment.
+    symantecOptions: Optional. Required iff the associated realm is of type
+      SYMANTEC_CLOUD_SWG.
+    timeZone: Optional. tzinfo identifier used for localization. Only used for
+      Symantec's API today, and is optional even for gateways connected to
+      Symantec, since Symantec applies a default if we don't specify it. Case
+      sensitive.
     updateTime: Output only. [Output only] Timestamp when the attachment was
       last updated.
   """
@@ -5827,12 +6716,32 @@ class SACAttachment(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  nccGateway = _messages.StringField(4)
-  sacRealm = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  country = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  nccGateway = _messages.StringField(5)
+  sacRealm = _messages.StringField(6)
+  symantecOptions = _messages.MessageField('SACAttachmentSACAttachmentSymantecOptions', 7)
+  timeZone = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+
+
+class SACAttachmentSACAttachmentSymantecOptions(_messages.Message):
+  r"""Fields specific to SSEGWs connecting to Symantec Cloud SWG.
+
+  Fields:
+    symantecLocationName: Immutable. Name to be used for when creating a
+      Location on the customer's behalf in Symantec's Location API. Required
+      iff sac_realm uses SYMANTEC_CLOUD_SWG. Not to be confused with GCP
+      locations.
+    symantecSite: Immutable. Symantec data center identifier that this
+      Attachment will connect to. Required iff sac_realm uses
+      SYMANTEC_CLOUD_SWG.
+  """
+
+  symantecLocationName = _messages.StringField(1)
+  symantecSite = _messages.StringField(2)
 
 
 class SACRealm(_messages.Message):
@@ -5849,7 +6758,7 @@ class SACRealm(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Identifier. Resource name. It matches the pattern
-      `projects/{project}/locations/global/sacRealms/{sacRealm}`
+      `projects/{project}/locations/{location}/sacRealms/{sacRealm}`
     pairingKey: Output only. [Output only] Key to be shared with SSE service
       provider to establish global handshake
     partnerEnvironment: Optional. Full URI of environment that this Realm is
@@ -6253,7 +7162,7 @@ class SSERealmSSERealmSymantecOptions(_messages.Message):
 
 class SecurityProfile(_messages.Message):
   r"""SecurityProfile is a resource that defines the behavior for one of many
-  ProfileTypes. Next ID: 10
+  ProfileTypes. Next ID: 11
 
   Enums:
     TypeValueValuesEnum: Immutable. The single ProfileType that the
@@ -6264,6 +7173,8 @@ class SecurityProfile(_messages.Message):
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customInterceptProfile: The custom TPPI configuration for the
+      SecurityProfile.
     customMirroringProfile: The custom Packet Mirroring v2 configuration for
       the SecurityProfile.
     description: Optional. An optional description of the profile. Max length
@@ -6290,10 +7201,12 @@ class SecurityProfile(_messages.Message):
       PROFILE_TYPE_UNSPECIFIED: Profile type not specified.
       THREAT_PREVENTION: Profile type for threat prevention.
       CUSTOM_MIRRORING: Profile type for packet mirroring v2
+      CUSTOM_INTERCEPT: Profile type for TPPI.
     """
     PROFILE_TYPE_UNSPECIFIED = 0
     THREAT_PREVENTION = 1
     CUSTOM_MIRRORING = 2
+    CUSTOM_INTERCEPT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6320,25 +7233,28 @@ class SecurityProfile(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 7)
-  type = _messages.EnumField('TypeValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  customInterceptProfile = _messages.MessageField('CustomInterceptProfile', 2)
+  customMirroringProfile = _messages.MessageField('CustomMirroringProfile', 3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  threatPreventionProfile = _messages.MessageField('ThreatPreventionProfile', 8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class SecurityProfileGroup(_messages.Message):
   r"""SecurityProfileGroup is a resource that defines the behavior for various
-  ProfileTypes. Next ID: 9
+  ProfileTypes. Next ID: 10
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
     createTime: Output only. Resource creation timestamp.
+    customInterceptProfile: Optional. Reference to a SecurityProfile with the
+      CustomIntercept configuration.
     customMirroringProfile: Optional. Reference to a SecurityProfile with the
       CustomMirroring configuration.
     description: Optional. An optional description of the profile group. Max
@@ -6380,55 +7296,56 @@ class SecurityProfileGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  customMirroringProfile = _messages.StringField(2)
-  description = _messages.StringField(3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  threatPreventionProfile = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  customInterceptProfile = _messages.StringField(2)
+  customMirroringProfile = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  threatPreventionProfile = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
   authenticate incoming requests. This resource itself does not affect
   configuration unless it is attached to a target HTTPS proxy or endpoint
-  config selector resource. ServerTlsPolicy in the form accepted by external
-  HTTPS load balancers can be attached only to TargetHttpsProxy with an
-  `EXTERNAL` or `EXTERNAL_MANAGED` load balancing scheme. Traffic Director
-  compatible ServerTlsPolicies can be attached to EndpointPolicy and
-  TargetHttpsProxy with Traffic Director `INTERNAL_SELF_MANAGED` load
-  balancing scheme.
+  config selector resource. ServerTlsPolicy in the form accepted by
+  Application Load Balancers can be attached only to TargetHttpsProxy with an
+  `EXTERNAL`, `EXTERNAL_MANAGED` or `INTERNAL_MANAGED` load balancing scheme.
+  Traffic Director compatible ServerTlsPolicies can be attached to
+  EndpointPolicy and TargetHttpsProxy with Traffic Director
+  `INTERNAL_SELF_MANAGED` load balancing scheme.
 
   Messages:
     LabelsValue: Set of label tags associated with the resource.
 
   Fields:
     allowOpen: This field applies only for Traffic Director policies. It is
-      must be set to false for external HTTPS load balancer policies.
-      Determines if server allows plaintext connections. If set to true,
-      server allows plain text connections. By default, it is set to false.
-      This setting is not exclusive of other encryption modes. For example, if
-      `allow_open` and `mtls_policy` are set, server allows both plain text
-      and mTLS connections. See documentation of other encryption modes to
-      confirm compatibility. Consider using it if you wish to upgrade in place
-      your deployment to TLS while having mixed TLS and non-TLS traffic
-      reaching port :80.
+      must be set to false for Application Load Balancer policies. Determines
+      if server allows plaintext connections. If set to true, server allows
+      plain text connections. By default, it is set to false. This setting is
+      not exclusive of other encryption modes. For example, if `allow_open`
+      and `mtls_policy` are set, server allows both plain text and mTLS
+      connections. See documentation of other encryption modes to confirm
+      compatibility. Consider using it if you wish to upgrade in place your
+      deployment to TLS while having mixed TLS and non-TLS traffic reaching
+      port :80.
     createTime: Output only. The timestamp when the resource was created.
     description: Free-text description of the resource.
     labels: Set of label tags associated with the resource.
-    mtlsPolicy: This field is required if the policy is used with external
-      HTTPS load balancers. This field can be empty for Traffic Director.
-      Defines a mechanism to provision peer validation certificates for peer
-      to peer authentication (Mutual TLS - mTLS). If not specified, client
-      certificate will not be requested. The connection is treated as TLS and
-      not mTLS. If `allow_open` and `mtls_policy` are set, server allows both
-      plain text and mTLS connections.
+    mtlsPolicy: This field is required if the policy is used with Application
+      Load Balancers. This field can be empty for Traffic Director. Defines a
+      mechanism to provision peer validation certificates for peer to peer
+      authentication (Mutual TLS - mTLS). If not specified, client certificate
+      will not be requested. The connection is treated as TLS and not mTLS. If
+      `allow_open` and `mtls_policy` are set, server allows both plain text
+      and mTLS connections.
     name: Required. Name of the ServerTlsPolicy resource. It matches the
       pattern
       `projects/*/locations/{location}/serverTlsPolicies/{server_tls_policy}`
     serverCertificate: Optional if policy is to be used with Traffic Director.
-      For external HTTPS load balancer must be empty. Defines a mechanism to
+      For Application Load Balancers must be empty. Defines a mechanism to
       provision server identity (public and private keys). Cannot be combined
       with `allow_open` as a permissive mode that allows both plain text and
       TLS is not supported.

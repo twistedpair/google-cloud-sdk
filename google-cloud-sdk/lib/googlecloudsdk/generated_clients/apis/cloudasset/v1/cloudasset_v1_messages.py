@@ -63,14 +63,18 @@ class AdditionalInfo(_messages.Message):
   Fields:
     invalidAccount: Optional. The invalid Collector accounts. This field will
       be set only when the connection state is AWS_INVALID_COLLECTOR_ACCOUNTS.
-    summary: Required. The summary of the validation result. When the
+    summary: Required. The summary of the validation result. For AWS, when the
       connection does not pass the Delegated Role validation, including
       Delegated Role assumption and listing accounts when auto-discovery is
       enabled, it will contain the detailed failure reasons. If the Delegated
       Role validation passes, this field will be in the format of
       "$VALIDATED_COLLECTOR_ACCT_CNT out of $TOTAL_COLLECTOR_ACCT_CNT
       Collector accounts were validated. The valid Collector accounts rate is
-      $PERCENTAGE."
+      $PERCENTAGE." For Azure, when the status is
+      AZURE_FAILED_TO_ASSUME_MANAGED_IDENTITY, it will contain the detailed
+      failure reasons. When the status is
+      AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION, it will contain the
+      missing required permissions.
   """
 
   invalidAccount = _messages.MessageField('InvalidCollectorAccount', 1, repeated=True)
@@ -3815,7 +3819,9 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
       must be set to `SOURCE_RESTRICTION_ENABLED`.
     sources: Sources that this EgressPolicy authorizes access from. If this
       field is not empty, then `source_restriction` must be set to
-      `SOURCE_RESTRICTION_ENABLED`.
+      `SOURCE_RESTRICTION_ENABLED`. TODO (b/332744441): annotate this field
+      with custom_org_policy_accessibility when cl/640698580 will be rolled
+      out.
   """
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
@@ -3899,6 +3905,8 @@ class GoogleIdentityAccesscontextmanagerV1EgressSource(_messages.Message):
       origins within the perimeter. Example:
       `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
       specified for `access_level`, then all EgressSources will be allowed.
+      TODO (b/332744441): annotate this field with
+      custom_org_policy_accessibility when cl/640698580 will be rolled out.
   """
 
   accessLevel = _messages.StringField(1)
@@ -4253,7 +4261,9 @@ class GoogleIdentityAccesscontextmanagerV1VpcNetworkSource(_messages.Message):
   r"""The originating network source in Google Cloud.
 
   Fields:
-    vpcSubnetwork: Sub-segment ranges of a VPC network.
+    vpcSubnetwork: Sub-segment ranges of a VPC network. TODO (b/332744441):
+      annotate this field with custom_org_policy_accessibility when
+      cl/640698580 will be rolled out.
   """
 
   vpcSubnetwork = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcSubNetwork', 1)
@@ -4619,15 +4629,21 @@ class IngestAssetResponse(_messages.Message):
 
 
 class InvalidCollectorAccount(_messages.Message):
-  r"""Details about an invalid Collector account.
+  r"""For AWS, this includes the details about an invalid Collector account.
+  For Azure, this includes the details about an missing required role type.
 
   Fields:
-    accountId: Required. The account id of the invalid Collector account.
+    accountId: Required. The account id of the invalid AWS Collector account.
+      This is only used for AWS.
     cause: Optional. The detailed reason for the invalidity.
-    role: Optional. The invalid Collector Role name of the invalid account.
-    status: Optional. The invalidity status, should be either
+    role: Optional. For AWS, this is the invalid Collector Role name of the
+      invalid AWS account. For Azure, this is the missing role types. It will
+      be either "Azure Role" or "Microsoft Entra Role".
+    status: Optional. The invalidity status. For AWS, it should be either
       AWS_FAILED_TO_ASSUME_COLLECTOR_ROLE or
-      AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION.
+      AWS_COLLECTOR_ROLE_POLICY_MISSING_REQUIRED_PERMISSION. For Azure, it
+      should be either AZURE_FAILED_TO_ASSUME_MANAGED_IDENTITY or
+      AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION.
   """
 
   accountId = _messages.StringField(1)
@@ -6634,7 +6650,11 @@ class ValidationResult(_messages.Message):
       AZURE_FAILED_TO_ASSUME_MANAGED_IDENTITY: Failed in assume the Azure
       Managed Identity with OCAI SA.
       AZURE_MANAGED_IDENTITY_MISSING_REQUIRED_PERMISSION: Azure Managed
-      Identity missing required permissions.
+      Identity missing required permissions. AZURE_MANAGED_IDENTITY_ASSUMPTION
+      _FAILED_AND_MISSING_REQUIRED_PERMISSION: Azure Managed Identity
+      assumption failed for one role type and missing required permissions for
+      another role type. Role type can be either "Azure Role" or "Microsoft
+      Entra Role".
     validationTime: Required. The time when the connection was validated.
   """
 

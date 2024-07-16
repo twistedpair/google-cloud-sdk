@@ -21,7 +21,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
+
 from six.moves import queue
+
+
+BUFFER_HEADER = 'Buffer Contents:\n'
+BUFFER_EMPTY_MESSAGE = 'Task Buffer is empty.'
 
 
 class _PriorityWrapper:
@@ -79,3 +85,21 @@ class TaskBuffer:
     priority = 0 if prioritize else 1
     prioritized_item = _PriorityWrapper(task, priority)
     self._queue.put(prioritized_item)
+
+  def size(self) -> int:
+    """Returns the number of items in the buffer."""
+    return self._queue.qsize()  # pylint: disable=protected-access
+
+  def __str__(self):
+    """Returns a string representation of the buffer."""
+    if self.size() == 0:
+      return BUFFER_EMPTY_MESSAGE
+
+    # Use a List comprehension to create the string representation.
+    output_lines = [BUFFER_HEADER]
+    temp_queue = copy.deepcopy(self._queue.queue)
+
+    while temp_queue:
+      priority_wrapper = temp_queue.pop(0)  # Get and remove the first item.
+      output_lines.append(str(priority_wrapper.task))
+    return '\n'.join(output_lines)

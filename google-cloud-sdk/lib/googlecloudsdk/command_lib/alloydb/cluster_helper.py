@@ -520,6 +520,16 @@ def ConstructPatchRequestFromArgsBeta(alloydb_messages, cluster_ref, args):
   )
 
 
+def ConstructUpgradeRequestFromArgsAlpha(alloydb_messages, cluster_ref, args):
+  """Returns the cluster upgrade request for Alpha release track based on args."""
+  upgrade_cluster_request = alloydb_messages.UpgradeClusterRequest()
+  upgrade_cluster_request.version = args.version
+  return alloydb_messages.AlloydbProjectsLocationsClustersUpgradeRequest(
+      name=cluster_ref.RelativeName(),
+      upgradeClusterRequest=upgrade_cluster_request,
+  )
+
+
 def ConstructCreatesecondaryRequestFromArgs(
     alloydb_messages, cluster_ref, args
 ):

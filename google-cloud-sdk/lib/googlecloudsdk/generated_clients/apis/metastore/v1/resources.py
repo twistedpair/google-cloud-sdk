@@ -96,6 +96,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_SERVICES_MIGRATIONEXECUTIONS = (
+      'projects.locations.services.migrationExecutions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/services/'
+              '{servicesId}/migrationExecutions/{migrationExecutionsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

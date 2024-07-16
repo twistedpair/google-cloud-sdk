@@ -22,16 +22,17 @@ class BigQueryOutputConfig(_messages.Message):
   a BigQuery dataset as the output destination.
 
   Enums:
-    VariantValueValuesEnum: Schema variant that should be used when exporting
-      data to BigQuery.
+    VariantValueValuesEnum: Optional. Schema variant that should be used when
+      exporting data to BigQuery.
 
   Fields:
-    variant: Schema variant that should be used when exporting data to
-      BigQuery.
+    variant: Optional. Schema variant that should be used when exporting data
+      to BigQuery.
   """
 
   class VariantValueValuesEnum(_messages.Enum):
-    r"""Schema variant that should be used when exporting data to BigQuery.
+    r"""Optional. Schema variant that should be used when exporting data to
+    BigQuery.
 
     Values:
       SCHEMA_VARIANT_UNSPECIFIED: (Input only) sentinel indicating that the
@@ -190,8 +191,8 @@ class OutputConfig(_messages.Message):
   Fields:
     bigqueryConfig: Optional. Additional options governing the export behavior
       when the selected destination is a BigQuery dataset.
-    destination: The destination for writing trace data. Supported formats
-      include:
+    destination: Required. The destination for writing trace data. Supported
+      formats include:
       "bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]"
     pubsubConfig: Optional. Additional options governing the export behavior
       when the selected destination is a Pub/Sub queue.
@@ -282,7 +283,7 @@ class TraceSink(_messages.Message):
   must be created within a project.
 
   Fields:
-    name: Required. The canonical sink resource name, unique within the
+    name: Identifier. The canonical sink resource name, unique within the
       project. Must be of the form:
       projects/[PROJECT_NUMBER]/traceSinks/[SINK_ID]. E.g.:
       `"projects/12345/traceSinks/my-project-trace-sink"`. Sink identifiers

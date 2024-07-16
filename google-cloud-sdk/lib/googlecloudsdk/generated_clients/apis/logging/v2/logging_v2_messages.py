@@ -3121,6 +3121,10 @@ class LoggingBillingAccountsLocationsRecentQueriesListRequest(_messages.Message)
   r"""A LoggingBillingAccountsLocationsRecentQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") of the
+      recent queries to list. The only valid value for this field is one of
+      the two allowable type function calls, which are the following:
+      type("Logging") type("OpsAnalytics")
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -3138,9 +3142,10 @@ class LoggingBillingAccountsLocationsRecentQueriesListRequest(_messages.Message)
       will return all recent queries.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class LoggingBillingAccountsLocationsSavedQueriesCreateRequest(_messages.Message):
@@ -3185,10 +3190,37 @@ class LoggingBillingAccountsLocationsSavedQueriesDeleteRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class LoggingBillingAccountsLocationsSavedQueriesGetRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsSavedQueriesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the saved query.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingBillingAccountsLocationsSavedQueriesListRequest(_messages.Message):
   r"""A LoggingBillingAccountsLocationsSavedQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") and the
+      visibility (PRIVATE or SHARED) of the saved queries to list. If
+      provided, the filter must contain either the type function or a
+      visibility token, or both. If both are chosen, they can be placed in any
+      order, but they must be joined by the AND operator or the empty
+      character.The two supported type function calls are: type("Logging")
+      type("OpsAnalytics")The two supported visibility tokens are: visibility
+      = PRIVATE visibility = SHAREDFor example:type("Logging") AND visibility
+      = PRIVATE visibility=SHARED type("OpsAnalytics") type("OpsAnalytics)"
+      visibility = PRIVATE visibility = SHARED
     pageSize: Optional. The maximum number of results to return from this
       request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -3207,9 +3239,37 @@ class LoggingBillingAccountsLocationsSavedQueriesListRequest(_messages.Message):
       "projects/my-project/locations/-"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class LoggingBillingAccountsLocationsSavedQueriesPatchRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsSavedQueriesPatchRequest object.
+
+  Fields:
+    name: Output only. Resource name of the saved query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support#bucket-
+      regions)After the saved query is created, the location cannot be
+      changed.If the user doesn't provide a QUERY_ID, the system will generate
+      an alphanumeric ID.
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    updateMask: Required. A non-empty list of fields to change in the existing
+      saved query. Fields are relative to the saved_query and new values for
+      the fields are taken from the corresponding fields in the SavedQuery
+      included in this request. Fields not mentioned in update_mask are not
+      changed and are ignored in the request.To update all mutable fields,
+      specify an update_mask of *.For example, to change the description and
+      query filter text of a saved query, specify an update_mask of
+      "description, query.filter".
+  """
+
+  name = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
@@ -4151,6 +4211,10 @@ class LoggingFoldersLocationsRecentQueriesListRequest(_messages.Message):
   r"""A LoggingFoldersLocationsRecentQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") of the
+      recent queries to list. The only valid value for this field is one of
+      the two allowable type function calls, which are the following:
+      type("Logging") type("OpsAnalytics")
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -4168,9 +4232,10 @@ class LoggingFoldersLocationsRecentQueriesListRequest(_messages.Message):
       will return all recent queries.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class LoggingFoldersLocationsSavedQueriesCreateRequest(_messages.Message):
@@ -4215,10 +4280,37 @@ class LoggingFoldersLocationsSavedQueriesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingFoldersLocationsSavedQueriesGetRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsSavedQueriesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the saved query.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingFoldersLocationsSavedQueriesListRequest(_messages.Message):
   r"""A LoggingFoldersLocationsSavedQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") and the
+      visibility (PRIVATE or SHARED) of the saved queries to list. If
+      provided, the filter must contain either the type function or a
+      visibility token, or both. If both are chosen, they can be placed in any
+      order, but they must be joined by the AND operator or the empty
+      character.The two supported type function calls are: type("Logging")
+      type("OpsAnalytics")The two supported visibility tokens are: visibility
+      = PRIVATE visibility = SHAREDFor example:type("Logging") AND visibility
+      = PRIVATE visibility=SHARED type("OpsAnalytics") type("OpsAnalytics)"
+      visibility = PRIVATE visibility = SHARED
     pageSize: Optional. The maximum number of results to return from this
       request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -4237,9 +4329,37 @@ class LoggingFoldersLocationsSavedQueriesListRequest(_messages.Message):
       "projects/my-project/locations/-"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class LoggingFoldersLocationsSavedQueriesPatchRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsSavedQueriesPatchRequest object.
+
+  Fields:
+    name: Output only. Resource name of the saved query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support#bucket-
+      regions)After the saved query is created, the location cannot be
+      changed.If the user doesn't provide a QUERY_ID, the system will generate
+      an alphanumeric ID.
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    updateMask: Required. A non-empty list of fields to change in the existing
+      saved query. Fields are relative to the saved_query and new values for
+      the fields are taken from the corresponding fields in the SavedQuery
+      included in this request. Fields not mentioned in update_mask are not
+      changed and are ignored in the request.To update all mutable fields,
+      specify an update_mask of *.For example, to change the description and
+      query filter text of a saved query, specify an update_mask of
+      "description, query.filter".
+  """
+
+  name = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
@@ -4484,7 +4604,8 @@ class LoggingFoldersUpdateSettingsRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name for the settings to update.
-      "organizations/[ORGANIZATION_ID]/settings" For
+      "organizations/[ORGANIZATION_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
       example:"organizations/12345/settings"
     settings: A Settings resource to be passed as the request body.
     updateMask: Optional. Field mask identifying which fields from settings
@@ -5663,6 +5784,10 @@ class LoggingOrganizationsLocationsRecentQueriesListRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsRecentQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") of the
+      recent queries to list. The only valid value for this field is one of
+      the two allowable type function calls, which are the following:
+      type("Logging") type("OpsAnalytics")
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -5680,9 +5805,10 @@ class LoggingOrganizationsLocationsRecentQueriesListRequest(_messages.Message):
       will return all recent queries.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class LoggingOrganizationsLocationsSavedQueriesCreateRequest(_messages.Message):
@@ -5727,10 +5853,37 @@ class LoggingOrganizationsLocationsSavedQueriesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingOrganizationsLocationsSavedQueriesGetRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsSavedQueriesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the saved query.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingOrganizationsLocationsSavedQueriesListRequest(_messages.Message):
   r"""A LoggingOrganizationsLocationsSavedQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") and the
+      visibility (PRIVATE or SHARED) of the saved queries to list. If
+      provided, the filter must contain either the type function or a
+      visibility token, or both. If both are chosen, they can be placed in any
+      order, but they must be joined by the AND operator or the empty
+      character.The two supported type function calls are: type("Logging")
+      type("OpsAnalytics")The two supported visibility tokens are: visibility
+      = PRIVATE visibility = SHAREDFor example:type("Logging") AND visibility
+      = PRIVATE visibility=SHARED type("OpsAnalytics") type("OpsAnalytics)"
+      visibility = PRIVATE visibility = SHARED
     pageSize: Optional. The maximum number of results to return from this
       request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -5749,9 +5902,37 @@ class LoggingOrganizationsLocationsSavedQueriesListRequest(_messages.Message):
       "projects/my-project/locations/-"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class LoggingOrganizationsLocationsSavedQueriesPatchRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsSavedQueriesPatchRequest object.
+
+  Fields:
+    name: Output only. Resource name of the saved query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support#bucket-
+      regions)After the saved query is created, the location cannot be
+      changed.If the user doesn't provide a QUERY_ID, the system will generate
+      an alphanumeric ID.
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    updateMask: Required. A non-empty list of fields to change in the existing
+      saved query. Fields are relative to the saved_query and new values for
+      the fields are taken from the corresponding fields in the SavedQuery
+      included in this request. Fields not mentioned in update_mask are not
+      changed and are ignored in the request.To update all mutable fields,
+      specify an update_mask of *.For example, to change the description and
+      query filter text of a saved query, specify an update_mask of
+      "description, query.filter".
+  """
+
+  name = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
@@ -6021,7 +6202,8 @@ class LoggingOrganizationsUpdateSettingsRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name for the settings to update.
-      "organizations/[ORGANIZATION_ID]/settings" For
+      "organizations/[ORGANIZATION_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
       example:"organizations/12345/settings"
     settings: A Settings resource to be passed as the request body.
     updateMask: Optional. Field mask identifying which fields from settings
@@ -6532,6 +6714,17 @@ class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class LoggingProjectsLocationsBucketsViewsReadMetadataRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsBucketsViewsReadMetadataRequest object.
+
+  Fields:
+    name: Required. The name of the view to get metadata for.For example: "pro
+      jects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/views/VIEW_ID"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingProjectsLocationsBucketsViewsSetIamPolicyRequest(_messages.Message):
   r"""A LoggingProjectsLocationsBucketsViewsSetIamPolicyRequest object.
 
@@ -6647,6 +6840,10 @@ class LoggingProjectsLocationsRecentQueriesListRequest(_messages.Message):
   r"""A LoggingProjectsLocationsRecentQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") of the
+      recent queries to list. The only valid value for this field is one of
+      the two allowable type function calls, which are the following:
+      type("Logging") type("OpsAnalytics")
     pageSize: Optional. The maximum number of results to return from this
       request. Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -6664,9 +6861,10 @@ class LoggingProjectsLocationsRecentQueriesListRequest(_messages.Message):
       will return all recent queries.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class LoggingProjectsLocationsSavedQueriesCreateRequest(_messages.Message):
@@ -6711,10 +6909,37 @@ class LoggingProjectsLocationsSavedQueriesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class LoggingProjectsLocationsSavedQueriesGetRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsSavedQueriesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the saved query.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class LoggingProjectsLocationsSavedQueriesListRequest(_messages.Message):
   r"""A LoggingProjectsLocationsSavedQueriesListRequest object.
 
   Fields:
+    filter: Optional. Specifies the type ("Logging" or "OpsAnalytics") and the
+      visibility (PRIVATE or SHARED) of the saved queries to list. If
+      provided, the filter must contain either the type function or a
+      visibility token, or both. If both are chosen, they can be placed in any
+      order, but they must be joined by the AND operator or the empty
+      character.The two supported type function calls are: type("Logging")
+      type("OpsAnalytics")The two supported visibility tokens are: visibility
+      = PRIVATE visibility = SHAREDFor example:type("Logging") AND visibility
+      = PRIVATE visibility=SHARED type("OpsAnalytics") type("OpsAnalytics)"
+      visibility = PRIVATE visibility = SHARED
     pageSize: Optional. The maximum number of results to return from this
       request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
@@ -6733,9 +6958,37 @@ class LoggingProjectsLocationsSavedQueriesListRequest(_messages.Message):
       "projects/my-project/locations/-"
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class LoggingProjectsLocationsSavedQueriesPatchRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsSavedQueriesPatchRequest object.
+
+  Fields:
+    name: Output only. Resource name of the saved query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support#bucket-
+      regions)After the saved query is created, the location cannot be
+      changed.If the user doesn't provide a QUERY_ID, the system will generate
+      an alphanumeric ID.
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    updateMask: Required. A non-empty list of fields to change in the existing
+      saved query. Fields are relative to the saved_query and new values for
+      the fields are taken from the corresponding fields in the SavedQuery
+      included in this request. Fields not mentioned in update_mask are not
+      changed and are ignored in the request.To update all mutable fields,
+      specify an update_mask of *.For example, to change the description and
+      query filter text of a saved query, specify an update_mask of
+      "description, query.filter".
+  """
+
+  name = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  updateMask = _messages.StringField(3)
 
 
 class LoggingProjectsLogsDeleteRequest(_messages.Message):
@@ -7241,7 +7494,8 @@ class LoggingUpdateSettingsRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name for the settings to update.
-      "organizations/[ORGANIZATION_ID]/settings" For
+      "organizations/[ORGANIZATION_ID]/settings"
+      "folders/[FOLDER_ID]/settings" For
       example:"organizations/12345/settings"
     settings: A Settings resource to be passed as the request body.
     updateMask: Optional. Field mask identifying which fields from settings
@@ -8139,13 +8393,19 @@ class QueryDataResponse(_messages.Message):
       request, excluding those for which the output_not_required flag was set.
       These may be passed to ReadQueryResults or used in a HandleQueryStep in
       a subsequent call to QueryData.
+    resourceNames: The Cloud Logging resources that were used while serving
+      the request, e.g. projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/
+      [BUCKET_ID]/views/[VIEW_ID] for any Views read or projects/[PROJECT_ID]/
+      locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID] for any
+      Links for any linked dataset resolved.
     restrictionConflicts: Conflicts between the query and the restrictions
       that were requested. Any restrictions present here were ignored when
       executing the query.
   """
 
   queryStepHandles = _messages.StringField(1, repeated=True)
-  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 2, repeated=True)
+  resourceNames = _messages.StringField(2, repeated=True)
+  restrictionConflicts = _messages.MessageField('QueryRestrictionConflict', 3, repeated=True)
 
 
 class QueryLogEntriesRequest(_messages.Message):
@@ -8279,11 +8539,22 @@ class QueryRestrictionConflict(_messages.Message):
         restriction, meaning the query is using the LIMIT clause.LIMIT
         detection is going to be used for Ops Analytics Alerting hints towards
         the user to steer them away from including LIMIT in their queries.
+      CUSTOMER_PROJECT_SLOT_RESERVATION: This type means that there is no
+        active slot reservation that can be used to execute the query in the
+        "local" mode in the customer's project.
+      BQ_NATIVE_TABLE: This type means that the query's SELECT statement
+        contains at least one native BigQuery table: a BigQuery table that
+        that is not an Observability View. Presence of a native table in a
+        query conflicts with the timepicker in the UI. Native tables' schemas
+        are controlled by the users, and thus we do not know how to properly
+        apply time restrictions to those tables.
     """
     RESTRICTION_TYPE_UNSPECIFIED = 0
     TIME_RANGE = 1
     JOIN = 2
     LIMIT = 3
+    CUSTOMER_PROJECT_SLOT_RESERVATION = 4
+    BQ_NATIVE_TABLE = 5
 
   column = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   confidence = _messages.EnumField('ConfidenceValueValuesEnum', 2)
@@ -8456,6 +8727,16 @@ class ReadQueryResultsRequest(_messages.Message):
   readMetadataOnly = _messages.BooleanField(5)
   resourceNames = _messages.StringField(6, repeated=True)
   timeout = _messages.StringField(7)
+
+
+class ReadViewMetadataResponse(_messages.Message):
+  r"""The response data from ReadViewMetadata.
+
+  Fields:
+    viewMetadata: The metadata for the view.
+  """
+
+  viewMetadata = _messages.MessageField('ViewMetadata', 1)
 
 
 class RecentQuery(_messages.Message):
@@ -9260,6 +9541,50 @@ class ValueThreshold(_messages.Message):
 
   trigger = _messages.MessageField('AlertingTrigger', 1)
   valueColumn = _messages.StringField(2)
+
+
+class ViewMetadata(_messages.Message):
+  r"""A collection of metadata about a view.
+
+  Messages:
+    TableSchemaValue: The view schema in (column name, type) format.
+
+  Fields:
+    creationTime: The creation timestamp of the view.
+    lastModifiedTime: The last-modified timestamp of the view.
+    location: The geographic location of the view's underlying table.
+    tableSchema: The view schema in (column name, type) format.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TableSchemaValue(_messages.Message):
+    r"""The view schema in (column name, type) format.
+
+    Messages:
+      AdditionalProperty: An additional property for a TableSchemaValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TableSchemaValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TableSchemaValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  creationTime = _messages.StringField(1)
+  lastModifiedTime = _messages.StringField(2)
+  location = _messages.StringField(3)
+  tableSchema = _messages.MessageField('TableSchemaValue', 4)
 
 
 class WriteLogEntriesRequest(_messages.Message):

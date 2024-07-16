@@ -49,6 +49,7 @@ class DlpV2(base_api.BaseApiClient):
     self.organizations_locations_deidentifyTemplates = self.OrganizationsLocationsDeidentifyTemplatesService(self)
     self.organizations_locations_discoveryConfigs = self.OrganizationsLocationsDiscoveryConfigsService(self)
     self.organizations_locations_dlpJobs = self.OrganizationsLocationsDlpJobsService(self)
+    self.organizations_locations_fileStoreDataProfiles = self.OrganizationsLocationsFileStoreDataProfilesService(self)
     self.organizations_locations_inspectTemplates = self.OrganizationsLocationsInspectTemplatesService(self)
     self.organizations_locations_jobTriggers = self.OrganizationsLocationsJobTriggersService(self)
     self.organizations_locations_projectDataProfiles = self.OrganizationsLocationsProjectDataProfilesService(self)
@@ -69,6 +70,7 @@ class DlpV2(base_api.BaseApiClient):
     self.projects_locations_deidentifyTemplates = self.ProjectsLocationsDeidentifyTemplatesService(self)
     self.projects_locations_discoveryConfigs = self.ProjectsLocationsDiscoveryConfigsService(self)
     self.projects_locations_dlpJobs = self.ProjectsLocationsDlpJobsService(self)
+    self.projects_locations_fileStoreDataProfiles = self.ProjectsLocationsFileStoreDataProfilesService(self)
     self.projects_locations_image = self.ProjectsLocationsImageService(self)
     self.projects_locations_inspectTemplates = self.ProjectsLocationsInspectTemplatesService(self)
     self.projects_locations_jobTriggers = self.ProjectsLocationsJobTriggersService(self)
@@ -985,6 +987,97 @@ class DlpV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DlpOrganizationsLocationsDlpJobsListRequest',
         response_type_name='GooglePrivacyDlpV2ListDlpJobsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsFileStoreDataProfilesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_fileStoreDataProfiles resource."""
+
+    _NAME = 'organizations_locations_fileStoreDataProfiles'
+
+    def __init__(self, client):
+      super(DlpV2.OrganizationsLocationsFileStoreDataProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a FileStoreDataProfile. Will not prevent the profile from being regenerated if the resource is still included in a discovery configuration.
+
+      Args:
+        request: (DlpOrganizationsLocationsFileStoreDataProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/fileStoreDataProfiles/{fileStoreDataProfilesId}',
+        http_method='DELETE',
+        method_id='dlp.organizations.locations.fileStoreDataProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsFileStoreDataProfilesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a file store data profile.
+
+      Args:
+        request: (DlpOrganizationsLocationsFileStoreDataProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2FileStoreDataProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/fileStoreDataProfiles/{fileStoreDataProfilesId}',
+        http_method='GET',
+        method_id='dlp.organizations.locations.fileStoreDataProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsFileStoreDataProfilesGetRequest',
+        response_type_name='GooglePrivacyDlpV2FileStoreDataProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists file store data profiles for an organization.
+
+      Args:
+        request: (DlpOrganizationsLocationsFileStoreDataProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListFileStoreDataProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/fileStoreDataProfiles',
+        http_method='GET',
+        method_id='dlp.organizations.locations.fileStoreDataProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/fileStoreDataProfiles',
+        request_field='',
+        request_type_name='DlpOrganizationsLocationsFileStoreDataProfilesListRequest',
+        response_type_name='GooglePrivacyDlpV2ListFileStoreDataProfilesResponse',
         supports_download=False,
     )
 
@@ -3291,6 +3384,97 @@ class DlpV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='DlpProjectsLocationsDlpJobsListRequest',
         response_type_name='GooglePrivacyDlpV2ListDlpJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsFileStoreDataProfilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_fileStoreDataProfiles resource."""
+
+    _NAME = 'projects_locations_fileStoreDataProfiles'
+
+    def __init__(self, client):
+      super(DlpV2.ProjectsLocationsFileStoreDataProfilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a FileStoreDataProfile. Will not prevent the profile from being regenerated if the resource is still included in a discovery configuration.
+
+      Args:
+        request: (DlpProjectsLocationsFileStoreDataProfilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/fileStoreDataProfiles/{fileStoreDataProfilesId}',
+        http_method='DELETE',
+        method_id='dlp.projects.locations.fileStoreDataProfiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpProjectsLocationsFileStoreDataProfilesDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a file store data profile.
+
+      Args:
+        request: (DlpProjectsLocationsFileStoreDataProfilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2FileStoreDataProfile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/fileStoreDataProfiles/{fileStoreDataProfilesId}',
+        http_method='GET',
+        method_id='dlp.projects.locations.fileStoreDataProfiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='DlpProjectsLocationsFileStoreDataProfilesGetRequest',
+        response_type_name='GooglePrivacyDlpV2FileStoreDataProfile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists file store data profiles for an organization.
+
+      Args:
+        request: (DlpProjectsLocationsFileStoreDataProfilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GooglePrivacyDlpV2ListFileStoreDataProfilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/fileStoreDataProfiles',
+        http_method='GET',
+        method_id='dlp.projects.locations.fileStoreDataProfiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/fileStoreDataProfiles',
+        request_field='',
+        request_type_name='DlpProjectsLocationsFileStoreDataProfilesListRequest',
+        response_type_name='GooglePrivacyDlpV2ListFileStoreDataProfilesResponse',
         supports_download=False,
     )
 

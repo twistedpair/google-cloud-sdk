@@ -22,6 +22,7 @@ import textwrap
 from typing import Iterator, List
 
 from apitools.base.protorpclite import messages
+from googlecloudsdk.api_lib.container.fleet import types
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
@@ -33,7 +34,6 @@ from googlecloudsdk.command_lib.container.fleet import errors
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import resources
-from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as fleet_messages
 
 # pylint: disable=invalid-name
 # Follow the naming style in calliope library, use snake_case for properties,
@@ -307,7 +307,7 @@ class FleetFlagParser:
       return message
     return None
 
-  def Fleet(self, existing_fleet=None) -> fleet_messages.Fleet:
+  def Fleet(self, existing_fleet=None) -> types.Fleet:
     """Fleet resource."""
     # TODO(b/290398654): Refactor to constructor style.
     fleet = self.messages.Fleet()
@@ -333,7 +333,7 @@ class FleetFlagParser:
     """
     return self.args.async_
 
-  def _SecurityPostureConfig(self) -> fleet_messages.SecurityPostureConfig:
+  def _SecurityPostureConfig(self) -> types.SecurityPostureConfig:
     ret = self.messages.SecurityPostureConfig()
     ret.mode = self._SecurityPostureMode()
     ret.vulnerabilityMode = self._VulnerabilityModeValueValuesEnum()
@@ -341,12 +341,12 @@ class FleetFlagParser:
 
   def _SecurityPostureMode(
       self,
-  ) -> fleet_messages.SecurityPostureConfig.ModeValueValuesEnum:
+  ) -> types.SecurityPostureConfigModeValueValuesEnum:
     """Parses --security-posture."""
     if '--security-posture' not in self.args.GetSpecifiedArgs():
       return None
 
-    enum_type = fleet_messages.SecurityPostureConfig.ModeValueValuesEnum
+    enum_type = self.messages.SecurityPostureConfig.ModeValueValuesEnum
     mapping = {
         'disabled': enum_type.DISABLED,
         'standard': enum_type.BASIC,
@@ -356,13 +356,13 @@ class FleetFlagParser:
 
   def _VulnerabilityModeValueValuesEnum(
       self,
-  ) -> fleet_messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum:
+  ) -> types.SecurityPostureConfigVulnerabilityModeValueValuesEnum:
     """Parses --workload-vulnerability-scanning."""
     if '--workload-vulnerability-scanning' not in self.args.GetSpecifiedArgs():
       return None
 
     enum_type = (
-        fleet_messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum
+        self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum
     )
     mapping = {
         'disabled': enum_type.VULNERABILITY_DISABLED,
@@ -373,7 +373,7 @@ class FleetFlagParser:
 
   def _BinaryAuthorizationConfig(
       self, existing_binauthz=None
-  ) -> fleet_messages.BinaryAuthorizationConfig:
+  ) -> types.BinaryAuthorizationConfig:
     """Construct binauthz config from args."""
     new_binauthz = self.messages.BinaryAuthorizationConfig()
     new_binauthz.evaluationMode = self._EvaluationMode()
@@ -401,14 +401,14 @@ class FleetFlagParser:
 
     # If evaluation mode is set to disabled, clear policy_bindings.
     if ret.evaluationMode == (
-        fleet_messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum.DISABLED
+        self.messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum.DISABLED
     ):
       ret.policyBindings = []
     return self.TrimEmpty(ret)
 
   def _EvaluationMode(
       self,
-  ) -> fleet_messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum:
+  ) -> types.BinaryAuthorizationConfigEvaluationModeValueValuesEnum:
     """Parses --binauthz-evaluation-mode."""
     if '--binauthz-evaluation-mode' not in self.args.GetSpecifiedArgs():
       return None
@@ -422,19 +422,19 @@ class FleetFlagParser:
     }
     return mapping[self.args.binauthz_evaluation_mode]
 
-  def _PolicyBindings(self) -> Iterator[fleet_messages.PolicyBinding]:
+  def _PolicyBindings(self) -> Iterator[types.PolicyBinding]:
     """Parses --binauthz-policy-bindings."""
     policy_bindings = self.args.binauthz_policy_bindings
     if policy_bindings is not None:
       return (
-          fleet_messages.PolicyBinding(name=binding['name'])
+          self.messages.PolicyBinding(name=binding['name'])
           for binding in policy_bindings
       )
     return []
 
   def _CompliancePostureConfig(
-      self, existing_cfg: messages.Message = None
-  ) -> fleet_messages.CompliancePostureConfig:
+      self, existing_cfg: types.CompliancePostureConfig = None
+  ) -> types.CompliancePostureConfig:
     """Construct compliance (posture) config from args."""
     cfg = (
         existing_cfg
@@ -492,7 +492,7 @@ class FleetFlagParser:
   def _DefaultClusterConfig(
       self,
       existing_fleet_cfg=None,
-  ) -> fleet_messages.DefaultClusterConfig:
+  ) -> types.DefaultClusterConfig:
     """Construct default cluster config from args.
 
     Args:
@@ -507,15 +507,13 @@ class FleetFlagParser:
         else None
     )
     ret = self.messages.DefaultClusterConfig()
-    # TODO(b/343764482) Fleet is GA and this check should be removed.
-    if self.release_track == base.ReleaseTrack.ALPHA:
-      ret.securityPostureConfig = self._SecurityPostureConfig()
-      if existing_default_cluster_config is not None:
-        ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig(
-            existing_default_cluster_config.binaryAuthorizationConfig
-        )
-      else:
-        ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
+    ret.securityPostureConfig = self._SecurityPostureConfig()
+    if existing_default_cluster_config is not None:
+      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig(
+          existing_default_cluster_config.binaryAuthorizationConfig
+      )
+    else:
+      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
 
     if existing_default_cluster_config is not None:
       ret.compliancePostureConfig = self._CompliancePostureConfig(

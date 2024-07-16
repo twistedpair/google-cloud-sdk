@@ -1686,21 +1686,24 @@ class Status(_messages.Message):
 
 
 class StatusEvent(_messages.Message):
-  r"""Status event
+  r"""Status event.
 
   Enums:
-    TaskStateValueValuesEnum: Task State
+    TaskStateValueValuesEnum: Task State. This field is only defined for task-
+      level status events.
 
   Fields:
     description: Description of the event.
     eventTime: The time this event occurred.
-    taskExecution: Task Execution
-    taskState: Task State
+    taskExecution: Task Execution. This field is only defined for task-level
+      status events where the task fails.
+    taskState: Task State. This field is only defined for task-level status
+      events.
     type: Type of the event.
   """
 
   class TaskStateValueValuesEnum(_messages.Enum):
-    r"""Task State
+    r"""Task State. This field is only defined for task-level status events.
 
     Values:
       STATE_UNSPECIFIED: Unknown state.
@@ -1947,18 +1950,18 @@ class TaskSpec(_messages.Message):
 
 
 class TaskStatus(_messages.Message):
-  r"""Status of a task
+  r"""Status of a task.
 
   Enums:
-    StateValueValuesEnum: Task state
+    StateValueValuesEnum: Task state.
 
   Fields:
-    state: Task state
+    state: Task state.
     statusEvents: Detailed info about why the state is reached.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Task state
+    r"""Task state.
 
     Values:
       STATE_UNSPECIFIED: Unknown state.

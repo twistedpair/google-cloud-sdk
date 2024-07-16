@@ -1868,7 +1868,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace. A maximum of 50 AttestationRules can be set for each target resource container.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be added.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesAddAttestationRuleRequest) input message
@@ -2030,7 +2030,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def ListAttestationRules(self, request, global_params=None):
-      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesListAttestationRulesRequest) input message
@@ -2084,7 +2084,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def RemoveAttestationRule(self, request, global_params=None):
-      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest) input message
@@ -2106,6 +2106,33 @@ class IamV1(base_api.BaseApiClient):
         relative_path='v1/{+resource}:removeAttestationRule',
         request_field='removeAttestationRuleRequest',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemoveAttestationRuleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetAttestationRule(self, request, global_params=None):
+      r"""Set all AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be set.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRuleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetAttestationRule')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetAttestationRule.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:setAttestationRule',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.setAttestationRule',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setAttestationRule',
+        request_field='setAttestationRulesRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRuleRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2421,7 +2448,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def AddAttestationRule(self, request, global_params=None):
-      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace. A maximum of 50 AttestationRules can be set for each target resource container.
+      r"""Add an AttestationRule on a WorkloadIdentityPoolManagedIdentity. A maximum of 100 AttestationRules can be added.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesAddAttestationRuleRequest) input message
@@ -2583,7 +2610,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def ListAttestationRules(self, request, global_params=None):
-      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
+      r"""List all AttestationRule on a WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesListAttestationRulesRequest) input message
@@ -2637,7 +2664,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def RemoveAttestationRule(self, request, global_params=None):
-      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity or a WorkloadIdentityPoolNamespace.
+      r"""Remove an AttestationRule on a WorkloadIdentityPoolManagedIdentity.
 
       Args:
         request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesRemoveAttestationRuleRequest) input message
@@ -3894,33 +3921,6 @@ class IamV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='IamProjectsServiceAccountsKeysListRequest',
         response_type_name='ListServiceAccountKeysResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Patches a ServiceAccountKey.
-
-      Args:
-        request: (IamProjectsServiceAccountsKeysPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceAccountKey) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:patch',
-        http_method='POST',
-        method_id='iam.projects.serviceAccounts.keys.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:patch',
-        request_field='patchServiceAccountKeyRequest',
-        request_type_name='IamProjectsServiceAccountsKeysPatchRequest',
-        response_type_name='ServiceAccountKey',
         supports_download=False,
     )
 

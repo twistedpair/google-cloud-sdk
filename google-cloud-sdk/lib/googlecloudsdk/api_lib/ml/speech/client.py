@@ -26,6 +26,7 @@ from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.ml.speech import flag_validations
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
@@ -34,18 +35,6 @@ from six.moves import urllib
 
 _API_NAME = 'speech'
 _API_VERSION = 'v2'
-
-PUBLIC_ALLOWED_LOCATIONS = (
-    'us',
-    'eu',
-    'global',
-    'us-central1',
-    'northamerica-northeast1',
-    'australia-southeast1',
-    'europe-west2',
-)
-EXPLICIT_ENCODING_OPTIONS = ('LINEAR16', 'MULAW', 'ALAW')
-ENCODING_OPTIONS = frozenset(EXPLICIT_ENCODING_OPTIONS) | {'AUTO'}
 
 
 @contextlib.contextmanager
@@ -80,6 +69,48 @@ class SpeechV2Client(object):
         'ALAW': messages.ExplicitDecodingConfig.EncodingValueValuesEnum.ALAW,
     }
     self._messages = messages
+    self._flags_to_feature_setter_map = {
+        'profanity_filter': (
+            'defaultRecognitionConfig.features.profanityFilter',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'enable_word_time_offsets': (
+            'defaultRecognitionConfig.features.enableWordTimeOffsets',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'enable_word_confidence': (
+            'defaultRecognitionConfig.features.enableWordConfidence',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'enable_automatic_punctuation': (
+            'defaultRecognitionConfig.features.enableAutomaticPunctuation',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'enable_spoken_punctuation': (
+            'defaultRecognitionConfig.features.enableSpokenPunctuation',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'enable_spoken_emojis': (
+            'defaultRecognitionConfig.features.enableSpokenEmojis',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+        'min_speaker_count': (
+            'defaultRecognitionConfig.features.speakerDiarizationConfig.minSpeakerCount',
+            self._SpeakerDiarizationSetter,
+        ),
+        'max_speaker_count': (
+            'defaultRecognitionConfig.features.speakerDiarizationConfig.maxSpeakerCount',
+            self._SpeakerDiarizationSetter,
+        ),
+        'separate_channel_recognition': (
+            'defaultRecognitionConfig.features.multiChannelMode',
+            self._SeparateChannelRecognitionSetter,
+        ),
+        'max_alternatives': (
+            'defaultRecognitionConfig.features.maxAlternatives',
+            self._DefaultAssignmentFeatureSetter,
+        ),
+    }
 
   def _GetClientForLocation(self, location):
     with _OverrideEndpoint('https://{}-{}/'.format(location, self._net_loc)):
@@ -94,30 +125,27 @@ class SpeechV2Client(object):
   def _LocationsServiceForLocation(self, location):
     return self._GetClientForLocation(location).projects_locations
 
-  def _MatchEncoding(
-      self, recognizer, encoding, update=False, update_mask=None
+  def _CollectFeatures(
+      self,
+      args,
+      record_updates=False,
+      update_mask=None,
   ):
-    """Matches encoding type based on auto or explicit decoding option."""
-    if encoding is not None:
-      if encoding == 'AUTO':
-        recognizer.defaultRecognitionConfig.autoDecodingConfig = (
-            self._messages.AutoDetectDecodingConfig()
+    """Collects features from the provided arguments."""
+    features_config = self._messages.RecognitionFeatures()
+    for (
+        flag_name,
+        (feature_path, feature_setter),
+    ) in self._flags_to_feature_setter_map.items():
+      flag_value = args.__getattribute__(flag_name)
+      if flag_value is not None:
+        *_, feature_name = feature_path.split('.')
+        features_config = feature_setter(
+            features_config, feature_name, flag_value
         )
-      elif encoding in EXPLICIT_ENCODING_OPTIONS:
-        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
-            self._messages.ExplicitDecodingConfig()
-        )
-        recognizer.defaultRecognitionConfig.explicitDecodingConfig.encoding = (
-            self._encoding_to_message[encoding]
-        )
-      if update:
-        if encoding == 'AUTO':
-          update_mask.append('default_recognition_config.auto_decoding_config')
-        else:
-          update_mask.append(
-              'default_recognition_config.explicit_decoding_config'
-          )
-    return recognizer, update_mask
+        if record_updates and update_mask is not None:
+          update_mask.append(feature_path)
+    return features_config, update_mask
 
   def CreateRecognizer(
       self,
@@ -125,74 +153,18 @@ class SpeechV2Client(object):
       display_name,
       model,
       language_codes,
-      profanity_filter=False,
-      enable_word_time_offsets=False,
-      enable_word_confidence=False,
-      enable_automatic_punctuation=False,
-      enable_spoken_punctuation=False,
-      enable_spoken_emojis=False,
-      min_speaker_count=None,
-      max_speaker_count=None,
-      separate_channel_recognition=False,
-      max_alternatives=1,
-      encoding=None,
-      sample_rate=None,
-      audio_channel_count=None,
+      recognition_config,
+      features,
   ):
     """Call API CreateRecognizer method with provided arguments."""
-    recognizer = self._messages.Recognizer(
-        displayName=display_name, model=model, languageCodes=language_codes
-    )
-    recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
-    recognizer.defaultRecognitionConfig.features = (
-        self._messages.RecognitionFeatures()
-    )
-    recognizer.defaultRecognitionConfig.features.profanityFilter = (
-        profanity_filter
-    )
-    recognizer.defaultRecognitionConfig.features.enableWordTimeOffsets = (
-        enable_word_time_offsets
-    )
-    recognizer.defaultRecognitionConfig.features.enableWordConfidence = (
-        enable_word_confidence
-    )
-    recognizer.defaultRecognitionConfig.features.enableAutomaticPunctuation = (
-        enable_automatic_punctuation
-    )
-    recognizer.defaultRecognitionConfig.features.enableSpokenPunctuation = (
-        enable_spoken_punctuation
-    )
-    recognizer.defaultRecognitionConfig.features.enableSpokenEmojis = (
-        enable_spoken_emojis
-    )
-    recognizer.defaultRecognitionConfig.features.maxAlternatives = (
-        max_alternatives
-    )
+    recognizer = self._messages.Recognizer(displayName=display_name)
 
-    if separate_channel_recognition:
-      recognizer.defaultRecognitionConfig.features.multiChannelMode = (
-          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL
-      )
+    recognizer.model = model
+    recognizer.languageCodes = language_codes
 
-    if min_speaker_count is not None and max_speaker_count is not None:
-      recognizer.defaultRecognitionConfig.features.diarizationConfig = (
-          self._messages.SpeakerDiarizationConfig()
-      )
-      recognizer.defaultRecognitionConfig.features.diarizationConfig.minSpeakerCount = (
-          min_speaker_count
-      )
-      recognizer.defaultRecognitionConfig.features.diarizationConfig.maxSpeakerCount = (
-          max_speaker_count
-      )
+    recognizer.defaultRecognitionConfig = recognition_config
+    recognizer.defaultRecognitionConfig.features = features
 
-    recognizer, _ = self._MatchEncoding(recognizer, encoding)
-    if encoding is not None and encoding != 'AUTO':
-      recognizer.defaultRecognitionConfig.explicitDecodingConfig.sampleRateHertz = (
-          sample_rate
-      )
-      recognizer.defaultRecognitionConfig.explicitDecodingConfig.audioChannelCount = (
-          audio_channel_count
-      )
     request = self._messages.SpeechProjectsLocationsRecognizersCreateRequest(
         parent=resource.Parent(
             parent_collection='speech.projects.locations'
@@ -238,141 +210,28 @@ class SpeechV2Client(object):
   def UpdateRecognizer(
       self,
       resource,
-      display_name=None,
-      model=None,
-      language_codes=None,
-      profanity_filter=None,
-      enable_word_time_offsets=None,
-      enable_word_confidence=None,
-      enable_automatic_punctuation=None,
-      enable_spoken_punctuation=None,
-      enable_spoken_emojis=None,
-      min_speaker_count=None,
-      max_speaker_count=None,
-      separate_channel_recognition=False,
-      max_alternatives=1,
-      encoding=None,
-      sample_rate=None,
-      audio_channel_count=None,
+      display_name,
+      model,
+      language_codes,
+      recognition_config,
+      features,
+      update_mask,
   ):
     """Call API UpdateRecognizer method with provided arguments."""
     recognizer = self._messages.Recognizer()
-    update_mask = []
+
     if display_name is not None:
       recognizer.displayName = display_name
       update_mask.append('display_name')
     if model is not None:
-      recognizer.model = model
+      recognizer.model = recognition_config.model
       update_mask.append('model')
     if language_codes is not None:
-      recognizer.languageCodes = language_codes
+      recognizer.languageCodes = recognition_config.languageCodes
       update_mask.append('language_codes')
 
-    if recognizer.defaultRecognitionConfig is None:
-      recognizer.defaultRecognitionConfig = self._messages.RecognitionConfig()
-    if recognizer.defaultRecognitionConfig.features is None:
-      recognizer.defaultRecognitionConfig.features = (
-          self._messages.RecognitionFeatures()
-      )
-    features = recognizer.defaultRecognitionConfig.features
-
-    if profanity_filter is not None:
-      features.profanityFilter = profanity_filter
-      update_mask.append('default_recognition_config.features.profanity_filter')
-
-    if enable_word_time_offsets is not None:
-      features.enableWordTimeOffsets = enable_word_time_offsets
-      update_mask.append(
-          'default_recognition_config.features.enable_word_time_offsets'
-      )
-
-    if enable_word_confidence is not None:
-      features.enableWordConfidence = enable_word_confidence
-      update_mask.append(
-          'default_recognition_config.features.enable_word_confidence'
-      )
-
-    if enable_automatic_punctuation is not None:
-      features.enableAutomaticPunctuation = enable_automatic_punctuation
-      update_mask.append(
-          'default_recognition_config.features.enable_automatic_punctuation'
-      )
-
-    if enable_spoken_punctuation is not None:
-      features.enableSpokenPunctuation = enable_spoken_punctuation
-      update_mask.append(
-          'default_recognition_config.features.enable_spoken_punctuation'
-      )
-
-    if enable_spoken_emojis is not None:
-      features.enableSpokenEmojis = enable_spoken_emojis
-      update_mask.append(
-          'default_recognition_config.features.enable_spoken_emojis'
-      )
-
-    if separate_channel_recognition:
-      features.multiChannelMode = (
-          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL
-      )
-      update_mask.append(
-          'default_recognition_config.features.multi_channel_mode'
-      )
-    else:
-      features.multiChannelMode = (
-          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.MULTI_CHANNEL_MODE_UNSPECIFIED
-      )
-      update_mask.append(
-          'default_recognition_config.features.multi_channel_mode'
-      )
-
-    if max_alternatives is not None:
-      features.maxAlternatives = max_alternatives
-      update_mask.append('default_recognition_config.features.max_alternatives')
-
-    if features.diarizationConfig is None and (
-        min_speaker_count is not None or max_speaker_count is not None
-    ):
-      features.diarizationConfig = self._messages.SpeakerDiarizationConfig()
-
-    if min_speaker_count is not None:
-      features.diarizationConfig.minSpeakerCount = min_speaker_count
-      update_mask.append(
-          'default_recognition_config.features.diarization_config.min_speaker_count'
-      )
-
-    if max_speaker_count is not None:
-      features.diarizationConfig.maxSpeakerCount = max_speaker_count
-      update_mask.append(
-          'default_recognition_config.features.diarization_config.max_speaker_count'
-      )
-
-    recognizer, update_mask = self._MatchEncoding(
-        recognizer, encoding, update=True, update_mask=update_mask
-    )
-
-    if sample_rate is not None:
-      if recognizer.defaultRecognitionConfig.explicitDecodingConfig is None:
-        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
-            self._messages.ExplicitDecodingConfig()
-        )
-      recognizer.defaultRecognitionConfig.explicitDecodingConfig.sampleRateHertz = (
-          sample_rate
-      )
-      update_mask.append(
-          'default_recognition_config.explicit_decoding_config.sample_rate_hertz'
-      )
-
-    if audio_channel_count is not None:
-      if recognizer.defaultRecognitionConfig.explicitDecodingConfig is None:
-        recognizer.defaultRecognitionConfig.explicitDecodingConfig = (
-            self._messages.ExplicitDecodingConfig()
-        )
-      recognizer.defaultRecognitionConfig.explicitDecodingConfig.audioChannelCount = (
-          audio_channel_count
-      )
-      update_mask.append(
-          'default_recognition_config.explicit_decoding_config.audio_channel_count'
-      )
+    recognizer.defaultRecognitionConfig = recognition_config
+    recognizer.defaultRecognitionConfig.features = features
 
     request = self._messages.SpeechProjectsLocationsRecognizersPatchRequest(
         name=resource.RelativeName(),
@@ -383,59 +242,128 @@ class SpeechV2Client(object):
         location=resource.Parent().Name()
     ).Patch(request)
 
-  def SetDecodingConfig(
-      self, recognize_request, encoding, sample_rate, audio_channel_count
+  def _InitializeDecodingConfigRecognizerCommand(
+      self,
+      encoding,
+      sample_rate,
+      audio_channel_count,
+      default_to_auto_decoding_config=False,
+      record_updates=False,
+      update_mask=None,
   ):
-    """Set DecodingConfig attribute in recognize request based on encoding type.
+    """Initializes encoding type based on auto (or explicit decoding option), sample rate and audio channel count.
+
+    Also sets model and language codes.
 
     Args:
-      recognize_request: recognize request (either BatchRecognizeRequest or
-        RecognizeRequest)
-      encoding: encoding type
-      sample_rate: sample rate
-      audio_channel_count: audio channel count
+      encoding: encoding to use for recognition requests
+      sample_rate: sample rate to use for recognition requests
+        audio_channel_count: audio channel count to use for recognition requests
+      default_to_auto_decoding_config: whether to default to auto decoding
+        config
+      record_updates: whether to record updates to the update mask
+      update_mask: update mask to use for updating the recognizer config
+
+    Returns:
+      An initialized RecognitionConfig object.
     """
+    recognition_config = self._messages.RecognitionConfig()
     if encoding is not None:
       if encoding == 'AUTO':
-        recognize_request.config.autoDecodingConfig = (
+        recognition_config.autoDecodingConfig = (
             self._messages.AutoDetectDecodingConfig()
         )
 
-      elif encoding in EXPLICIT_ENCODING_OPTIONS:
-        recognize_request.config.explicitDecodingConfig = (
+      elif encoding in flag_validations.EXPLICIT_ENCODING_OPTIONS:
+        recognition_config.explicitDecodingConfig = (
             self._messages.ExplicitDecodingConfig()
         )
 
-        recognize_request.config.explicitDecodingConfig.encoding = (
+        recognition_config.explicitDecodingConfig.encoding = (
             self._encoding_to_message[encoding]
         )
 
-        recognize_request.config.explicitDecodingConfig.sampleRateHertz = (
-            sample_rate
-        )
+        if sample_rate is not None:
+          recognition_config.explicitDecodingConfig.sampleRateHertz = (
+              sample_rate
+          )
 
-        recognize_request.config.explicitDecodingConfig.audioChannelCount = (
-            audio_channel_count
-        )
+        if audio_channel_count is not None:
+          recognition_config.explicitDecodingConfig.audioChannelCount = (
+              audio_channel_count
+          )
       else:
         raise exceptions.InvalidArgumentException(
             '--encoding',
             '[--encoding] must be set to LINEAR16, MULAW, ALAW, or AUTO.',
         )
-    else:
-      recognize_request.config.autoDecodingConfig = (
+    elif default_to_auto_decoding_config:
+      recognition_config.autoDecodingConfig = (
           self._messages.AutoDetectDecodingConfig()
       )
+
+    if not record_updates or update_mask is None:
+      return recognition_config, update_mask
+
+    if encoding == 'AUTO':
+      update_mask.append('default_recognition_config.auto_decoding_config')
+    elif encoding in flag_validations.EXPLICIT_ENCODING_OPTIONS:
+      update_mask.append('default_recognition_config.explicit_decoding_config')
+    if sample_rate is not None:
+      if recognition_config.explicitDecodingConfig is None:
+        recognition_config.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+      recognition_config.explicitDecodingConfig.sampleRateHertz = sample_rate
+      update_mask.append(
+          'default_recognition_config.explicit_decoding_config.sample_rate_hertz'
+      )
+    if audio_channel_count is not None:
+      if recognition_config.explicitDecodingConfig is None:
+        recognition_config.explicitDecodingConfig = (
+            self._messages.ExplicitDecodingConfig()
+        )
+      recognition_config.explicitDecodingConfig.audioChannelCount = (
+          audio_channel_count
+      )
+      update_mask.append(
+          'default_recognition_config.explicit_decoding_config.audio_channel_count'
+      )
+
+    return recognition_config, update_mask
+
+  def _InitializeAdaptationConfigRecognizeRequest(self, hints):
+    """Initializes PhraseSets based on hints.
+
+    Args:
+      hints: "hints" (or phrases) to be used for speech recognition
+
+    Returns:
+      An initialized SpeechAdaptation object.
+    """
+    if hints is None:
+      return
+
+    inline_phrase_set = self._messages.PhraseSet(
+        phrases=[self._messages.Phrase(value=hint) for hint in hints],
+        boost=5.0,
+    )
+    adaptation_phrase_set = self._messages.AdaptationPhraseSet(
+        inlinePhraseSet=inline_phrase_set
+    )
+    speech_adaptation_config = self._messages.SpeechAdaptation(
+        phraseSets=[adaptation_phrase_set]
+    )
+
+    return speech_adaptation_config
 
   def RunShort(
       self,
       resource,
       audio,
-      model,
-      language_codes,
-      encoding,
-      sample_rate,
-      audio_channel_count,
+      hints,
+      recognition_config,
+      features,
   ):
     """Call API Recognize method with provided arguments."""
     recognize_req = self._messages.RecognizeRequest()
@@ -448,17 +376,13 @@ class SpeechV2Client(object):
         location=resource.Parent().Name()
     )
 
-    recognize_req.config = self._messages.RecognitionConfig()
+    recognize_req.config = recognition_config
 
-    self.SetDecodingConfig(
-        recognize_req, encoding, sample_rate, audio_channel_count
+    recognize_req.config.features = features
+
+    recognize_req.config.adaptation = (
+        self._InitializeAdaptationConfigRecognizeRequest(hints)
     )
-
-    if model is not None:
-      recognize_req.config.model = model
-
-    if language_codes is not None:
-      recognize_req.config.languageCodes = language_codes
 
     request = self._messages.SpeechProjectsLocationsRecognizersRecognizeRequest(
         recognizeRequest=recognize_req,
@@ -466,50 +390,75 @@ class SpeechV2Client(object):
     )
     return recognizer_service.Recognize(request)
 
+  def SeparateArgsForRecognizeCommand(
+      self,
+      args,
+      default_to_auto_decoding_config=False,
+      record_updates=False,
+      update_mask=None,
+  ):
+    """Parses args for recognizer commands."""
+
+    recognition_config, update_mask = (
+        self._InitializeDecodingConfigRecognizerCommand(
+            args.encoding,
+            args.sample_rate,
+            args.audio_channel_count,
+            default_to_auto_decoding_config,
+            record_updates,
+            update_mask,
+        )
+    )
+
+    features, update_mask = self._CollectFeatures(
+        args, record_updates, update_mask
+    )
+
+    return recognition_config, features, update_mask
+
   def RunBatch(
       self,
       resource,
       audio,
-      model,
-      language_codes,
-      encoding,
-      sample_rate,
-      audio_channel_count,
+      hints,
+      recognition_config,
+      features,
   ):
-    """Call API Recognize method with provided arguments in batch mode."""
-    recognize_req = self._messages.BatchRecognizeRequest()
+    """Call API Recognize method with provided arguments in batch mode.
 
-    recognize_req.recognizer = resource.RelativeName()
+    Args:
+      resource: recognizer resource
+      audio: audio file to transcribe (must be a GCS URI)
+      hints: phrases to be used for speech recognition adaptations
+      recognition_config: The recognition config to use for the batch request.
+      features: The features to use for the batch request.
 
-    recognize_req.config = self._messages.RecognitionConfig()
-
-    batch_audio_metadata = self._messages.BatchRecognizeFileMetadata()
-
-    batch_audio_metadata.uri = audio
+    Returns:
+      The batch recognize operation if async is set to true, otherwise the
+      response.
+    """
+    batch_audio_metadata = self._messages.BatchRecognizeFileMetadata(uri=audio)
+    recognize_req = self._messages.BatchRecognizeRequest(
+        recognizer=resource.RelativeName(),
+        files=[batch_audio_metadata],
+    )
 
     recognizer_service = self._RecognizerServiceForLocation(
         location=resource.Parent().Name()
     )
 
-    self.SetDecodingConfig(
-        recognize_req, encoding, sample_rate, audio_channel_count
-    )
-
-    recognize_req.files.append(batch_audio_metadata)
+    recognize_req.config = recognition_config
 
     recognize_req.recognitionOutputConfig = (
-        self._messages.RecognitionOutputConfig()
+        self._messages.RecognitionOutputConfig(
+            inlineResponseConfig=self._messages.InlineOutputConfig()
+        )
     )
 
-    recognize_req.recognitionOutputConfig.inlineResponseConfig = (
-        self._messages.InlineOutputConfig()
+    recognize_req.config.features = features
+    recognize_req.config.adaptation = (
+        self._InitializeAdaptationConfigRecognizeRequest(hints)
     )
-
-    if model is not None:
-      recognize_req.config.model = model
-
-    if language_codes is not None:
-      recognize_req.config.languageCodes = language_codes
 
     return recognizer_service.BatchRecognize(recognize_req)
 
@@ -598,3 +547,38 @@ class SpeechV2Client(object):
         batch_size=page_size,
         field='locations',
     )
+
+  def _DefaultAssignmentFeatureSetter(
+      self, features, feature_name, feature_value
+  ):
+    """Sets the feature specified by feature_name using Reflection."""
+    if feature_value is not None:
+      features.__setattr__(feature_name, feature_value)
+    return features
+
+  def _SpeakerDiarizationSetter(self, features, feature_name, feature_value):
+    """Sets the speaker diarization feature using Reflection."""
+    if feature_value is None:
+      return features
+    if features.diarizationConfig is None:
+      features.diarizationConfig = self._messages.SpeakerDiarizationConfig()
+    features.diarizationConfig.__setattr__(feature_name, feature_value)
+    return features
+
+  def _SeparateChannelRecognitionSetter(
+      self, features, feature_name, feature_value
+  ):
+    """Sets the separate channel recognition feature using Reflection."""
+    if feature_value is None:
+      return features
+    if feature_value:
+      features.__setattr__(
+          feature_name,
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.SEPARATE_RECOGNITION_PER_CHANNEL,
+      )
+    else:
+      features.__setattr__(
+          feature_name,
+          self._messages.RecognitionFeatures.MultiChannelModeValueValuesEnum.MULTI_CHANNEL_MODE_UNSPECIFIED,
+      )
+    return features

@@ -18,13 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
 import os
 
 from googlecloudsdk.api_lib.database_migration import api_util
 from googlecloudsdk.api_lib.database_migration import filter_rewrite
 from googlecloudsdk.calliope import exceptions
+from googlecloudsdk.command_lib.database_migration.conversion_workspaces import api_helper
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.resource import resource_property
 from googlecloudsdk.core.util import files
 import six
@@ -44,6 +47,7 @@ class ConversionWorkspacesClient(object):
     self.client = api_util.GetClientInstance(release_track)
     self.messages = api_util.GetMessagesModule(release_track)
     self._service = self.client.projects_locations_conversionWorkspaces
+    self._location_service = self.client.projects_locations
     self._mapping_rules_service = (
         self.client.projects_locations_conversionWorkspaces_mappingRules
     )
@@ -75,11 +79,6 @@ class ConversionWorkspacesClient(object):
       args.global_settings = {}
     args.global_settings['filter'] = '*'
     args.global_settings['v2'] = 'true'
-    if (
-        args.source_database_engine == 'ORACLE'
-        and args.destination_database_engine == 'POSTGRESQL'
-    ):
-      args.global_settings['cc'] = 'true'
     global_settings = labels_util.ParseCreateArgs(
         args, conversion_workspace_type.GlobalSettingsValue, 'global_settings'
     )
@@ -562,12 +561,29 @@ class ConversionWorkspacesClient(object):
             'entityType': six.text_type(entity.entityType).replace(
                 'DATABASE_ENTITY_TYPE_', ''
             ),
+            'status': self._GetEntityStatus(entity),
         })
       if not response.nextPageToken:
         break
       describe_req.pageToken = response.nextPageToken
 
     return entity_result
+
+  def _GetEntityStatus(self, entity):
+    """Get entity status (Action required/review recommended/ no issues)."""
+    status = 'NO_ISSUES'
+    for issue in entity.issues:
+      if (
+          issue.severity
+          == self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_ERROR
+      ):
+        return 'ACTION_REQUIRED'
+      if (
+          issue.severity
+          == self.messages.EntityIssue.SeverityValueValuesEnum.ISSUE_SEVERITY_WARNING
+      ):
+        status = 'REVIEW_RECOMMENDED'
+    return status
 
   def DescribeDDLs(self, name, args=None):
     """Describe DDLs in a conversion worksapce.
@@ -664,3 +680,122 @@ class ConversionWorkspacesClient(object):
         )
     )
     return entity_issues
+
+  def ConvertApplicationCodeSingleFile(self, name, source_file, target_path):
+    """Converts application code.
+
+    Args:
+      name: str, the name of the location.
+      source_file: str, the path of the source file to be converted.
+      target_path: str, the path of the target file to be written.
+
+    Returns:
+      True if the file was converted, False otherwise.
+    """
+
+    try:
+      source_code = files.ReadFileContents(source_file)
+    except files.MissingFileError:
+      raise exceptions.BadArgumentException(
+          '--source-file',
+          'specified file [{}] does not exist.'.format(source_file),
+      )
+
+    convert_application_code_req = self.messages.DatamigrationProjectsLocationsConvertApplicationCodeRequest(
+        name=name,
+        convertApplicationCodeRequest=self.messages.ConvertApplicationCodeRequest(
+            sourceCode=source_code,
+        ),
+    )
+    log.status.Print('Sending file ' + source_file + ' for conversion')
+    convert_application_code_resp = (
+        self._location_service.ConvertApplicationCode(
+            convert_application_code_req
+        )
+    )
+
+    target_file = api_helper.GetTargetFileNameForApplicationCode(
+        source_file, target_path
+    )
+
+    converted = False
+
+    if convert_application_code_resp.sourceCode:
+      if target_file == source_file:
+        backup_file = (
+            source_file
+            + datetime.datetime.now().strftime('_%Y%m%d_%H%M%S')
+            + '.bak'
+        )
+        files.WriteFileContents(backup_file, source_code)
+        log.status.Print(
+            'The original file content was saved to ' + backup_file
+        )
+      converted = True
+      files.WriteFileContents(
+          target_file, convert_application_code_resp.sourceCode
+      )
+      log.status.Print(
+          'File ' + source_file + ' was converted and saved in ' + target_file
+      )
+    else:
+      log.status.Print('No changes were made to the file' + source_file)
+
+    if convert_application_code_resp.resultMessage:
+      log.status.Print(
+          'Result message: ' + convert_application_code_resp.resultMessage
+      )
+
+    return converted
+
+  def ConvertApplicationCode(self, name, args=None):
+    """Converts application code.
+
+    Args:
+      name: str, the name of the location.
+      args: argparse.Namespace, The arguments that this command was invoked
+        with.
+
+    Returns:
+      None.
+    """
+
+    if args.source_file:
+      self.ConvertApplicationCodeSingleFile(
+          name, args.source_file, args.target_path
+      )
+      return None
+    else:
+      if args.target_path and not os.path.isdir(args.target_path):
+        raise exceptions.BadArgumentException(
+            '--target-path',
+            'specified target path [{}] is not a directory while source folder'
+            ' is specified.'.format(args.target_path),
+        )
+
+      if not args.target_path:
+        args.target_path = args.source_folder
+
+      total_files = 0
+      converted_files = 0
+      for file in os.listdir(args.source_folder):
+        total_files += 1
+        if file.endswith('.java'):
+          if self.ConvertApplicationCodeSingleFile(
+              name, os.path.join(args.source_folder, file), args.target_path
+          ):
+            converted_files += 1
+        else:
+          log.status.Print(
+              'Skipping file ' + file + ' since it is not a java file'
+          )
+
+      log.status.Print(
+          'Sent '
+          + str(total_files)
+          + ' files for conversion, '
+          + str(converted_files)
+          + ' files were actually converted.'
+      )
+
+      return None

@@ -793,8 +793,11 @@ class ConfigSyncDeploymentState(_messages.Message):
     GitSyncValueValuesEnum: Deployment state of the git-sync pod
     ImporterValueValuesEnum: Deployment state of the importer pod
     MonitorValueValuesEnum: Deployment state of the monitor pod
+    OtelCollectorValueValuesEnum: Deployment state of otel-collector
     ReconcilerManagerValueValuesEnum: Deployment state of reconciler-manager
       pod
+    ResourceGroupControllerManagerValueValuesEnum: Deployment state of
+      resource-group-controller-manager
     RootReconcilerValueValuesEnum: Deployment state of root-reconciler
     SyncerValueValuesEnum: Deployment state of the syncer pod
 
@@ -803,7 +806,10 @@ class ConfigSyncDeploymentState(_messages.Message):
     gitSync: Deployment state of the git-sync pod
     importer: Deployment state of the importer pod
     monitor: Deployment state of the monitor pod
+    otelCollector: Deployment state of otel-collector
     reconcilerManager: Deployment state of reconciler-manager pod
+    resourceGroupControllerManager: Deployment state of resource-group-
+      controller-manager
     rootReconciler: Deployment state of root-reconciler
     syncer: Deployment state of the syncer pod
   """
@@ -872,8 +878,40 @@ class ConfigSyncDeploymentState(_messages.Message):
     ERROR = 3
     PENDING = 4
 
+  class OtelCollectorValueValuesEnum(_messages.Enum):
+    r"""Deployment state of otel-collector
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
+  class ResourceGroupControllerManagerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of resource-group-controller-manager
 
     Values:
       DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
@@ -924,9 +962,11 @@ class ConfigSyncDeploymentState(_messages.Message):
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
   importer = _messages.EnumField('ImporterValueValuesEnum', 3)
   monitor = _messages.EnumField('MonitorValueValuesEnum', 4)
-  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 5)
-  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 6)
-  syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
+  otelCollector = _messages.EnumField('OtelCollectorValueValuesEnum', 5)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 6)
+  resourceGroupControllerManager = _messages.EnumField('ResourceGroupControllerManagerValueValuesEnum', 7)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 8)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 9)
 
 
 class ConfigSyncError(_messages.Message):
@@ -1025,11 +1065,14 @@ class ConfigSyncVersion(_messages.Message):
   r"""Specific versioning information pertaining to ConfigSync's Pods
 
   Fields:
-    admissionWebhook: Version of the deployed admission_webhook pod
+    admissionWebhook: Version of the deployed admission-webhook pod
     gitSync: Version of the deployed git-sync pod
     importer: Version of the deployed importer pod
     monitor: Version of the deployed monitor pod
+    otelCollector: Version of the deployed otel-collector pod
     reconcilerManager: Version of the deployed reconciler-manager pod
+    resourceGroupControllerManager: Version of the deployed resource-group-
+      controller-manager pod
     rootReconciler: Version of the deployed reconciler container in root-
       reconciler pod
     syncer: Version of the deployed syncer pod
@@ -1039,9 +1082,11 @@ class ConfigSyncVersion(_messages.Message):
   gitSync = _messages.StringField(2)
   importer = _messages.StringField(3)
   monitor = _messages.StringField(4)
-  reconcilerManager = _messages.StringField(5)
-  rootReconciler = _messages.StringField(6)
-  syncer = _messages.StringField(7)
+  otelCollector = _messages.StringField(5)
+  reconcilerManager = _messages.StringField(6)
+  resourceGroupControllerManager = _messages.StringField(7)
+  rootReconciler = _messages.StringField(8)
+  syncer = _messages.StringField(9)
 
 
 class ControlPlaneManagement(_messages.Message):
@@ -2298,15 +2343,23 @@ class GoogleIamV1Condition(_messages.Message):
         cloud region) - 'self:prod-region' (i.e., allow connections from
         clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
+        glossary#guardian for more information.) - 'cryto_core_guardians'
+        (i.e., allow connections from its crypto core guardian realms. See
+        go/security-realms-glossary#guardian for more information.) Crypto
+        Core coverage is a super-set of Default coverage, containing
+        information about coverage between higher tier data centers (e.g.,
+        YAWNs). Most services should use Default coverage and only use Crypto
+        Core coverage if the service is involved in greenfield turnup of new
+        higher tier data centers (e.g., credential infrastructure, machine/job
+        management systems, etc.). - 'self' [DEPRECATED] (i.e., allow
+        connections from clients that are in the same security realm, which is
+        currently but not guaranteed to be campus-sized) - a realm (e.g.,
+        'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -4567,20 +4620,23 @@ class ServiceMeshMembershipSpec(_messages.Message):
   Enums:
     ConfigApiValueValuesEnum: Optional. Specifies the API that will be used
       for configuring the mesh workloads.
-    ControlPlaneValueValuesEnum: Enables automatic control plane management.
+    ControlPlaneValueValuesEnum: Deprecated: use `management` instead Enables
+      automatic control plane management.
     DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
-    ManagementValueValuesEnum: Enables automatic Service Mesh management.
+    ManagementValueValuesEnum: Optional. Enables automatic Service Mesh
+      management.
 
   Fields:
     configApi: Optional. Specifies the API that will be used for configuring
       the mesh workloads.
-    controlPlane: Enables automatic control plane management.
+    controlPlane: Deprecated: use `management` instead Enables automatic
+      control plane management.
     dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
-    management: Enables automatic Service Mesh management.
+    management: Optional. Enables automatic Service Mesh management.
   """
 
   class ConfigApiValueValuesEnum(_messages.Enum):
@@ -4597,7 +4653,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
     CONFIG_API_GATEWAY = 2
 
   class ControlPlaneValueValuesEnum(_messages.Enum):
-    r"""Enables automatic control plane management.
+    r"""Deprecated: use `management` instead Enables automatic control plane
+    management.
 
     Values:
       CONTROL_PLANE_MANAGEMENT_UNSPECIFIED: Unspecified
@@ -4646,7 +4703,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     STABLE = 3
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Enables automatic Service Mesh management.
+    r"""Optional. Enables automatic Service Mesh management.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified

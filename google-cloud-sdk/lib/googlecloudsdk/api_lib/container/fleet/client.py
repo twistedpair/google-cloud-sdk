@@ -23,11 +23,11 @@ from typing import Generator
 
 from apitools.base.py import encoding
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.container.fleet import types
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
-from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as messages
 
 
 class HubClient(object):
@@ -50,10 +50,12 @@ class HubClient(object):
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
     self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
-        operation_service=self.client.projects_locations_operations)
+        operation_service=self.client.projects_locations_operations
+    )
     self.feature_waiter = waiter.CloudOperationPoller(
         result_service=self.client.projects_locations_features,
-        operation_service=self.client.projects_locations_operations)
+        operation_service=self.client.projects_locations_operations,
+    )
     # TODO(b/181243034): Add a membership_waiter when v1alpha+ is ready.
 
   def CreateFeature(self, parent, feature_id, feature):
@@ -99,7 +101,8 @@ class HubClient(object):
       A list of Features.
     """
     req = self.messages.GkehubProjectsLocationsFeaturesListRequest(
-        parent=parent)
+        parent=parent
+    )
     # We skip the pagination for now, since it will never be hit.
     resp = self.client.projects_locations_features.List(req)
     return resp.resources
@@ -146,10 +149,11 @@ class HubClient(object):
     return self.client.projects_locations_features.Delete(req)
 
   @staticmethod
-  def OperationRef(op: messages.Operation) -> resources.Resource:
+  def OperationRef(op: types.Operation) -> resources.Resource:
     """Parses a gkehub Operation reference from an operation."""
     return resources.REGISTRY.ParseRelativeName(
-        op.name, collection='gkehub.projects.locations.operations')
+        op.name, collection='gkehub.projects.locations.operations'
+    )
 
   @staticmethod
   def ToPyDict(proto_map_value):
@@ -168,7 +172,8 @@ class HubClient(object):
     if proto_map_value is None or proto_map_value.additionalProperties is None:
       return {}
     return collections.OrderedDict(
-        (p.key, p.value) for p in proto_map_value.additionalProperties)
+        (p.key, p.value) for p in proto_map_value.additionalProperties
+    )
 
   @staticmethod
   def ToPyDefaultDict(default_factory, proto_map_value):
@@ -185,15 +190,17 @@ class HubClient(object):
     Returns:
       An defaultdict of the map's keys/values.
     """
-    return collections.defaultdict(default_factory,
-                                   {} if proto_map_value is None else
-                                   HubClient.ToPyDict(proto_map_value))
+    return collections.defaultdict(
+        default_factory,
+        {} if proto_map_value is None else HubClient.ToPyDict(proto_map_value),
+    )
 
   @staticmethod
   def ToProtoMap(map_value_cls, value):
     """encoding.DictToAdditionalPropertyMessage wrapper to match ToPyDict."""
     return encoding.DictToAdditionalPropertyMessage(
-        value, map_value_cls, sort_items=True)
+        value, map_value_cls, sort_items=True
+    )
 
   def ToMembershipSpecs(self, spec_map):
     """Convenience wrapper for ToProtoMap for Feature.membershipSpecs."""
@@ -202,6 +209,119 @@ class HubClient(object):
   def ToScopeSpecs(self, spec_map):
     """Convenience wrapper for ToProtoMap for Feature.scopeSpecs."""
     return self.ToProtoMap(self.messages.Feature.ScopeSpecsValue, spec_map)
+
+
+class HubV2Client(object):
+  """Client for the GKE Hub V2 API with related helper methods.
+
+  If not provided, the default client is for the Alpha (v2alpha) track.
+  This client is a thin wrapper around the base client, and does not handle
+  any exceptions.
+
+  Fields:
+    release_track: The release track of the command [ALPHA].
+    client: The raw GKE Hub API client for the specified release track.
+    messages: The matching messages module for the client.
+    resourceless_waiter: A waiter.CloudOperationPollerNoResources for polling
+      LROs that do not return a resource (like Deletes).
+    membership_feature_waiter: A waiter.CloudOperationPoller for polling
+    Membership Feature LROs.
+  """
+
+  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+    self.release_track = release_track
+    self.client = util.GetV2ClientInstance(release_track)
+    self.messages = util.GetV2MessagesModule(release_track)
+    self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
+        operation_service=self.client.projects_locations_operations
+    )
+    self.membership_feature_waiter = waiter.CloudOperationPoller(
+        result_service=self.client.projects_locations_memberships_features,
+        operation_service=self.client.projects_locations_operations,
+    )
+
+  def CreateMembershipFeature(self, parent, feature_id, membership_feature):
+    """Creates a MembershipFeature and returns the long-running operation message.
+
+    Args:
+      parent: The parent in the form /projects/*/locations/*/memberships/*.
+      feature_id: The short ID for this Feature in the Hub API.
+      membership_feature: A MembershipFeature message specifying the
+        MembershipFeature data to create.
+
+    Returns:
+      The long running operation reference. Use the membership_feature_waiter
+      and OperationRef to watch the operation and get the final status,
+      typically using waiter.WaitFor to present a user-friendly spinner.
+    """
+    req = (
+        self.messages.GkehubProjectsLocationsMembershipsFeaturesCreateRequest(
+            membership_feature=membership_feature,
+            featureId=feature_id,
+            parent=parent,
+        )
+    )
+    return self.client.projects_locations_memberships_features.Create(req)
+
+  def GetMembershipFeature(self, name):
+    """Gets a MembershipFeature from the Hub V2 API.
+
+    Args:
+      name: The full resource name in the form
+        /projects/*/locations/*/memberships/*/features/*.
+
+    Returns:
+      The MembershipFeature message.
+    """
+    req = self.messages.GkehubProjectsLocationsMembershipsFeaturesGetRequest(
+        name=name
+    )
+    return self.client.projects_locations_memberships_features.Get(req)
+
+  def UpdateMembershipFeature(self, name, mask, membership_feature):
+    """Updates a MembershipFeature and returns the long-running operation message.
+
+    Args:
+      name: The full resource name in the form
+        /projects/*/locations/*/memberships/*/features/*.
+      mask: A string list of the field paths to update.
+      membership_feature: A MembershipFeature message containing the Feature
+        data to update using the mask.
+
+    Returns:
+      The long running operation reference. Use the membership_feature_waiter
+      and
+      OperationRef to watch the operation and get the final status, typically
+      using waiter.WaitFor to present a user-friendly spinner.
+    """
+    req = (
+        self.messages.GkehubProjectsLocationsMembershipsFeaturesPatchRequest(
+            name=name,
+            updateMask=','.join(mask),
+            membershipFeature=membership_feature,
+        )
+    )
+    return self.client.projects_locations_memberships_features.Patch(req)
+
+  def DeleteMembershipFeature(self, name):
+    """Deletes a MembershipFeature and returns the long-running operation message.
+
+    Args:
+      name: The full resource name in the form
+        /projects/*/locations/*/memberships/*/features/*.
+
+    Returns:
+      The long running operation. Use the membership_feature_waiter and
+      OperationRef to
+      watch the operation and get the final status, typically using
+      waiter.WaitFor to present a user-friendly spinner.
+    """
+    req = (
+        self.messages.GkehubProjectsLocationsMembershipsFeaturesDeleteRequest(
+            name=name,
+        )
+    )
+    return self.client.projects_locations_memberships_features.Delete(req)
 
 
 class FleetClient(object):
@@ -219,17 +339,19 @@ class FleetClient(object):
     fleet_waiter: A waiter.CloudOperationPoller for polling fleet LROs.
   """
 
-  def __init__(self, release_track=base.ReleaseTrack.ALPHA):
+  def __init__(self, release_track=base.ReleaseTrack.GA):
     self.release_track = release_track
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
     self.resourceless_waiter = waiter.CloudOperationPollerNoResources(
-        operation_service=self.client.projects_locations_operations)
+        operation_service=self.client.projects_locations_operations
+    )
 
     if release_track == base.ReleaseTrack.ALPHA:
       self.fleet_waiter = waiter.CloudOperationPoller(
           result_service=self.client.projects_locations_fleets,
-          operation_service=self.client.projects_locations_operations)
+          operation_service=self.client.projects_locations_operations,
+      )
 
   def GetFleet(self, project):
     """Gets a fleet resource from the Fleet API.
@@ -244,12 +366,13 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsFleetsGetRequest(
-        name=util.FleetResourceName(project))
+        name=util.FleetResourceName(project)
+    )
     return self.client.projects_locations_fleets.Get(req)
 
   def CreateFleet(
-      self, req: messages.GkehubProjectsLocationsFleetsCreateRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsFleetsCreateRequest
+  ):
     """Creates a fleet resource from the Fleet API.
 
     Args:
@@ -265,8 +388,8 @@ class FleetClient(object):
     return self.client.projects_locations_fleets.Create(req)
 
   def DeleteFleet(
-      self, req: messages.GkehubProjectsLocationsFleetsDeleteRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsFleetsDeleteRequest
+  ) -> types.Operation:
     """Deletes a fleet resource from the Fleet API.
 
     Args:
@@ -282,8 +405,8 @@ class FleetClient(object):
     return self.client.projects_locations_fleets.Delete(req)
 
   def UpdateFleet(
-      self, req: messages.GkehubProjectsLocationsFleetsPatchRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsFleetsPatchRequest
+  ) -> types.Operation:
     """Updates a fleet resource from the Fleet API.
 
     Args:
@@ -317,12 +440,14 @@ class FleetClient(object):
       parent = util.FleetParentName(project)
     # Misleading name, parent is usually org, not project
     req = self.messages.GkehubProjectsLocationsFleetsListRequest(
-        pageToken='', parent=parent)
+        pageToken='', parent=parent
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_fleets,
         req,
         field='fleets',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def GetScope(self, scope_path):
     """Gets a scope resource from the GKEHub API.
@@ -336,9 +461,7 @@ class FleetClient(object):
     Raises:
       apitools.base.py.HttpError: If the request returns an HTTP error
     """
-    req = self.messages.GkehubProjectsLocationsScopesGetRequest(
-        name=scope_path
-    )
+    req = self.messages.GkehubProjectsLocationsScopesGetRequest(name=scope_path)
     return self.client.projects_locations_scopes.Get(req)
 
   def GetScopeIamPolicy(self, scope_path):
@@ -394,7 +517,8 @@ class FleetClient(object):
     """
     parent = util.ScopeParentName(project)
     req = self.messages.GkehubProjectsLocationsScopesListRequest(
-        pageToken='', parent=parent)
+        pageToken='', parent=parent
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_scopes,
         req,
@@ -417,7 +541,8 @@ class FleetClient(object):
     """
     parent = util.ScopeParentName(project)
     req = self.messages.GkehubProjectsLocationsScopesListPermittedRequest(
-        pageToken='', parent=parent)
+        pageToken='', parent=parent
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_scopes,
         req,
@@ -439,13 +564,15 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsScopesListMembershipsRequest(
-        pageToken='', scopeName=scope_path)
+        pageToken='', scopeName=scope_path
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_scopes,
         req,
         method='ListMemberships',
         field='memberships',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def UpdateScope(
       self, scope_path, labels=None, namespace_labels=None, mask=''
@@ -622,12 +749,14 @@ class FleetClient(object):
       apitools.base.py.HttpError: If the request returns an HTTP error.
     """
     req = self.messages.GkehubProjectsLocationsScopesNamespacesListRequest(
-        pageToken='', parent=parent)
+        pageToken='', parent=parent
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_scopes_namespaces,
         req,
         field='scopeNamespaces',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def GetNamespace(self, project, name):
     """Gets a namespace resource from the GKEHub API.
@@ -643,7 +772,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesGetRequest(
-        name=util.NamespaceResourceName(project, name))
+        name=util.NamespaceResourceName(project, name)
+    )
     return self.client.projects_locations_namespaces.Get(req)
 
   def CreateNamespace(self, name, scope, project):
@@ -666,7 +796,8 @@ class FleetClient(object):
     req = self.messages.GkehubProjectsLocationsNamespacesCreateRequest(
         namespace=namespace,
         namespaceId=name,
-        parent=util.NamespaceParentName(project))
+        parent=util.NamespaceParentName(project),
+    )
     op = self.client.projects_locations_namespaces.Create(req)
     op_resource = resources.REGISTRY.ParseRelativeName(
         op.name, collection='gkehub.projects.locations.operations'
@@ -694,7 +825,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesDeleteRequest(
-        name=util.NamespaceResourceName(project, name))
+        name=util.NamespaceResourceName(project, name)
+    )
     op = self.client.projects_locations_namespaces.Delete(req)
     op_resource = resources.REGISTRY.ParseRelativeName(
         op.name, collection='gkehub.projects.locations.operations'
@@ -757,12 +889,14 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesListRequest(
-        pageToken='', parent=util.NamespaceParentName(project))
+        pageToken='', parent=util.NamespaceParentName(project)
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_namespaces,
         req,
         field='namespaces',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def GetRBACRoleBinding(self, name):
     """Gets an RBACRoleBinding resource from the GKEHub API.
@@ -777,7 +911,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsGetRequest(
-        name=name)
+        name=name
+    )
     return self.client.projects_locations_namespaces_rbacrolebindings.Get(req)
 
   def CreateRBACRoleBinding(self, name, role, user, group):
@@ -801,20 +936,25 @@ class FleetClient(object):
         name=name,
         role=self.messages.Role(
             predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper())),
+                role.upper()
+            )
+        ),
         user=user,
-        group=group)
+        group=group,
+    )
     resource = resources.REGISTRY.ParseRelativeName(
         name,
         'gkehub.projects.locations.namespaces.rbacrolebindings',
-        api_version='v1alpha')
+        api_version='v1alpha',
+    )
     req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsCreateRequest(
         rBACRoleBinding=rolebinding,
         rbacrolebindingId=resource.Name(),
         parent=resource.Parent().RelativeName(),
     )
     return self.client.projects_locations_namespaces_rbacrolebindings.Create(
-        req)
+        req
+    )
 
   def DeleteRBACRoleBinding(self, name):
     """Deletes an RBACRoleBinding resource from the fleet.
@@ -829,9 +969,11 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsDeleteRequest(
-        name=name)
+        name=name
+    )
     return self.client.projects_locations_namespaces_rbacrolebindings.Delete(
-        req)
+        req
+    )
 
   def UpdateRBACRoleBinding(self, name, user, group, role, mask):
     """Updates an RBACRoleBinding resource in the fleet.
@@ -856,12 +998,13 @@ class FleetClient(object):
         group=group,
         role=self.messages.Role(
             predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper())),
+                role.upper()
+            )
+        ),
     )
     req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(
-        rBACRoleBinding=rolebinding,
-        name=rolebinding.name,
-        updateMask=mask)
+        rBACRoleBinding=rolebinding, name=rolebinding.name, updateMask=mask
+    )
     return self.client.projects_locations_namespaces_rbacrolebindings.Patch(req)
 
   def ListRBACRoleBindings(self, project, namespace):
@@ -878,12 +1021,14 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsNamespacesRbacrolebindingsListRequest(
-        pageToken='', parent=util.RBACRoleBindingParentName(project, namespace))
+        pageToken='', parent=util.RBACRoleBindingParentName(project, namespace)
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_namespaces_rbacrolebindings,
         req,
         field='rbacrolebindings',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def GetScopeRBACRoleBinding(self, name):
     """Gets an ScopeRBACRoleBinding resource from the GKEHub API.
@@ -1067,7 +1212,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsGetRequest(
-        name=name)
+        name=name
+    )
     return self.client.projects_locations_memberships_bindings.Get(req)
 
   def CreateMembershipBinding(self, name, scope, labels=None):
@@ -1087,13 +1233,13 @@ class FleetClient(object):
         missing
     """
     binding = self.messages.MembershipBinding(
-        name=name,
-        scope=scope,
-        labels=labels)
+        name=name, scope=scope, labels=labels
+    )
     resource = resources.REGISTRY.ParseRelativeName(
         name,
         'gkehub.projects.locations.memberships.bindings',
-        api_version='v1alpha')
+        api_version='v1alpha',
+    )
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsCreateRequest(
         membershipBinding=binding,
         membershipBindingId=resource.Name(),
@@ -1128,13 +1274,16 @@ class FleetClient(object):
     """
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsListRequest(
         pageToken='',
-        parent=util.MembershipBindingParentName(project, membership, location,
-                                                self.release_track))
+        parent=util.MembershipBindingParentName(
+            project, membership, location, self.release_track
+        ),
+    )
     return list_pager.YieldFromList(
         self.client.projects_locations_memberships_bindings,
         req,
         field='membershipBindings',
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def UpdateMembershipBinding(self, name, scope, labels, mask):
     """Updates a Membership-Binding resource.
@@ -1158,9 +1307,8 @@ class FleetClient(object):
         labels=labels,
     )
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsPatchRequest(
-        membershipBinding=binding,
-        name=binding.name,
-        updateMask=mask)
+        membershipBinding=binding, name=binding.name, updateMask=mask
+    )
     op = self.client.projects_locations_memberships_bindings.Patch(req)
     op_resource = resources.REGISTRY.ParseRelativeName(
         op.name, collection='gkehub.projects.locations.operations'
@@ -1187,7 +1335,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error
     """
     req = self.messages.GkehubProjectsLocationsMembershipsBindingsDeleteRequest(
-        name=name)
+        name=name
+    )
     op = self.client.projects_locations_memberships_bindings.Delete(req)
     op_resource = resources.REGISTRY.ParseRelativeName(
         op.name, collection='gkehub.projects.locations.operations'
@@ -1213,7 +1362,8 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error.
     """
     req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsGetRequest(
-        name=name)
+        name=name
+    )
     return self.client.projects_locations_memberships_rbacrolebindings.Get(req)
 
   def CreateMembershipRbacRoleBinding(self, name, role, user, group):
@@ -1235,19 +1385,25 @@ class FleetClient(object):
         name=name,
         role=self.messages.Role(
             predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper())),
+                role.upper()
+            )
+        ),
         user=user,
-        group=group)
+        group=group,
+    )
     resource = resources.REGISTRY.ParseRelativeName(
         name,
         'gkehub.projects.locations.memberships.rbacrolebindings',
-        api_version='v1alpha')
+        api_version='v1alpha',
+    )
     req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsCreateRequest(
         rBACRoleBinding=rolebinding,
         rbacrolebindingId=resource.Name(),
-        parent=resource.Parent().RelativeName())
+        parent=resource.Parent().RelativeName(),
+    )
     return self.client.projects_locations_memberships_rbacrolebindings.Create(
-        req)
+        req
+    )
 
   def DeleteMembershipRbacRoleBinding(self, name):
     """Deletes a Membership RBAC RoleBinding resource.
@@ -1262,9 +1418,11 @@ class FleetClient(object):
       apitools.base.py.HttpError: if the request returns an HTTP error.
     """
     req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsDeleteRequest(
-        name=name)
+        name=name
+    )
     return self.client.projects_locations_memberships_rbacrolebindings.Delete(
-        req)
+        req
+    )
 
   def GenerateMembershipRbacRoleBindingYaml(self, name, role, user, group):
     """Gets YAML containing RBAC policies for a membership RBAC role binding.
@@ -1285,23 +1443,29 @@ class FleetClient(object):
         name=name,
         role=self.messages.Role(
             predefinedRole=self.messages.Role.PredefinedRoleValueValuesEnum(
-                role.upper())),
+                role.upper()
+            )
+        ),
         user=user,
-        group=group)
+        group=group,
+    )
     resource = resources.REGISTRY.ParseRelativeName(
         name,
         'gkehub.projects.locations.memberships.rbacrolebindings',
-        api_version='v1alpha')
+        api_version='v1alpha',
+    )
     req = self.messages.GkehubProjectsLocationsMembershipsRbacrolebindingsGenerateMembershipRBACRoleBindingYAMLRequest(
         rBACRoleBinding=rolebinding,
         rbacrolebindingId=resource.Name(),
-        parent=resource.Parent().RelativeName())
+        parent=resource.Parent().RelativeName(),
+    )
     return self.client.projects_locations_memberships_rbacrolebindings.GenerateMembershipRBACRoleBindingYAML(
-        req)
+        req
+    )
 
   def CreateRollout(
-      self, req: messages.GkehubProjectsLocationsRolloutsCreateRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsRolloutsCreateRequest
+  ):
     """Creates a rollout resource from the Fleet rollout API.
 
     Args:
@@ -1316,17 +1480,17 @@ class FleetClient(object):
     return self.client.projects_locations_rollouts.Create(req)
 
   def DescribeRollout(
-      self, req: messages.GkehubProjectsLocationsRolloutsGetRequest
-  ) -> messages.Rollout:
+      self, req: types.GkehubProjectsLocationsRolloutsGetRequest
+  ) -> types.Rollout:
     """Describes a fleet rollout."""
     return self.client.projects_locations_rollouts.Get(req)
 
   def ListRollouts(
       self,
-      req: messages.GkehubProjectsLocationsRolloutsListRequest,
+      req: types.GkehubProjectsLocationsRolloutsListRequest,
       page_size=None,
       limit=None,
-  ) -> Generator[messages.Rollout, None, None]:
+  ) -> types.RolloutGenerator:
     """Lists fleet rollouts."""
     return list_pager.YieldFromList(
         self.client.projects_locations_rollouts,
@@ -1338,20 +1502,20 @@ class FleetClient(object):
     )
 
   def PauseRollout(
-      self, req: messages.GkehubProjectsLocationsRolloutsPauseRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsRolloutsPauseRequest
+  ):
     """Pause a fleet rollout."""
     return self.client.projects_locations_rollouts.Pause(req)
 
   def ResumeRollout(
-      self, req: messages.GkehubProjectsLocationsRolloutsResumeRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsRolloutsResumeRequest
+  ):
     """Resume a fleet rollout."""
     return self.client.projects_locations_rollouts.Resume(req)
 
   def DeleteRollout(
-      self, req: messages.GkehubProjectsLocationsRolloutsDeleteRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsRolloutsDeleteRequest
+  ):
     """Delete a fleet rollout."""
     return self.client.projects_locations_rollouts.Delete(req)
 
@@ -1364,7 +1528,7 @@ class OperationClient:
     self.client = util.GetClientInstance(release_track=release_track)
     self.service = self.client.projects_locations_operations
 
-  def Wait(self, operation_ref: resources.Resource) -> messages.Operation:
+  def Wait(self, operation_ref: resources.Resource):
     """Waits for a long-running operation to complete.
 
     Polling message is printed to the terminal periodically, until the operation
@@ -1387,17 +1551,17 @@ class OperationClient:
     )
 
   def Describe(
-      self, req: messages.GkehubProjectsLocationsOperationsGetRequest
-  ) -> messages.Operation:
+      self, req: types.GkehubProjectsLocationsOperationsGetRequest
+  ):
     """Describes a long-running operation."""
     return self.client.projects_locations_operations.Get(req)
 
   def List(
       self,
-      req: messages.GkehubProjectsLocationsOperationsListRequest,
+      req: types.GkehubProjectsLocationsOperationsListRequest,
       page_size=None,
       limit=None,
-  ) -> Generator[messages.Operation, None, None]:
+  ) -> Generator[types.Operation, None, None]:
     """Lists long-running operations.
 
     Currently gcloud implements client-side filtering and limiting behavior.

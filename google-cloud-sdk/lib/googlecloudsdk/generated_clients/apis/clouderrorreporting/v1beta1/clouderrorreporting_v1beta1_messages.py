@@ -19,10 +19,14 @@ class ClouderrorreportingProjectsDeleteEventsRequest(_messages.Message):
 
   Fields:
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/{projectID}`, where `{projectID}` is the
+      project. Written as `projects/{projectID}` or
+      `projects/{projectID}/locations/{location}`, where `{projectID}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example:
-      `projects/my-project-123`.
+      ID](https://support.google.com/cloud/answer/6158840) and `{location}` is
+      a Cloud region. Examples: `projects/my-project-123`, `projects/my-
+      project-123/locations/global`. For a list of supported locations, see
+      [Supported Regions](https://cloud.google.com/logging/docs/region-
+      support). `global` is the default when unspecified.
   """
 
   projectName = _messages.StringField(1, required=True)
@@ -45,10 +49,14 @@ class ClouderrorreportingProjectsEventsListRequest(_messages.Message):
     pageSize: Optional. The maximum number of results to return per response.
     pageToken: Optional. A `next_page_token` provided by a previous response.
     projectName: Required. The resource name of the Google Cloud Platform
-      project. Written as `projects/{projectID}`, where `{projectID}` is the
+      project. Written as `projects/{projectID}` or
+      `projects/{projectID}/locations/{location}`, where `{projectID}` is the
       [Google Cloud Platform project
-      ID](https://support.google.com/cloud/answer/6158840). Example:
-      `projects/my-project-123`.
+      ID](https://support.google.com/cloud/answer/6158840) and `{location}` is
+      a Cloud region. Examples: `projects/my-project-123`, `projects/my-
+      project-123/locations/global`. For a list of supported locations, see
+      [Supported Regions](https://cloud.google.com/logging/docs/region-
+      support). `global` is the default when unspecified.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
@@ -144,8 +152,15 @@ class ClouderrorreportingProjectsGroupStatsListRequest(_messages.Message):
       project. Written as `projects/{projectID}` or
       `projects/{projectNumber}`, where `{projectID}` and `{projectNumber}`
       can be found in the [Google Cloud
-      console](https://support.google.com/cloud/answer/6158840). Examples:
-      `projects/my-project-123`, `projects/5551234`.
+      console](https://support.google.com/cloud/answer/6158840). It may also
+      include a location, such as `projects/{projectID}/locations/{location}`
+      where `{location}` is a cloud region. Examples: `projects/my-
+      project-123`, `projects/5551234`, `projects/my-project-123/locations/us-
+      central1`, `projects/5551234/locations/us-central1`. For a list of
+      supported locations, see [Supported
+      Regions](https://cloud.google.com/logging/docs/region-support). `global`
+      is the default when unspecified. Use `-` as a wildcard to request group
+      stats from all regions.
     serviceFilter_resourceType: Optional. The exact value to match against
       [`ServiceContext.resource_type`](/error-
       reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
@@ -243,15 +258,266 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
   r"""A ClouderrorreportingProjectsGroupsGetRequest object.
 
   Fields:
-    groupName: Required. The group resource name. Written as
-      `projects/{projectID}/groups/{group_id}`. Call groupStats.list to return
-      a list of groups belonging to this project. Example: `projects/my-
-      project-123/groups/my-group` In the group resource name, the `group_id`
+    groupName: Required. The group resource name. Written as either
+      `projects/{projectID}/groups/{group_id}` or
+      `projects/{projectID}/locations/{location}/groups/{group_id}`. Call
+      groupStats.list to return a list of groups belonging to this project.
+      Examples: `projects/my-project-123/groups/my-group`, `projects/my-
+      project-123/locations/global/groups/my-group` In the group resource
+      name, the `group_id` is a unique identifier for a particular error
+      group. The identifier is derived from key parts of the error-log content
+      and is treated as Service Data. For information about how Service Data
+      is handled, see [Google Cloud Privacy
+      Notice](https://cloud.google.com/terms/cloud-privacy-notice). For a list
+      of supported locations, see [Supported
+      Regions](https://cloud.google.com/logging/docs/region-support). `global`
+      is the default when unspecified.
+  """
+
+  groupName = _messages.StringField(1, required=True)
+
+
+class ClouderrorreportingProjectsLocationsDeleteEventsRequest(_messages.Message):
+  r"""A ClouderrorreportingProjectsLocationsDeleteEventsRequest object.
+
+  Fields:
+    projectName: Required. The resource name of the Google Cloud Platform
+      project. Written as `projects/{projectID}` or
+      `projects/{projectID}/locations/{location}`, where `{projectID}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840) and `{location}` is
+      a Cloud region. Examples: `projects/my-project-123`, `projects/my-
+      project-123/locations/global`. For a list of supported locations, see
+      [Supported Regions](https://cloud.google.com/logging/docs/region-
+      support). `global` is the default when unspecified.
+  """
+
+  projectName = _messages.StringField(1, required=True)
+
+
+class ClouderrorreportingProjectsLocationsEventsListRequest(_messages.Message):
+  r"""A ClouderrorreportingProjectsLocationsEventsListRequest object.
+
+  Enums:
+    TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
+      range.
+
+  Fields:
+    groupId: Required. The group for which events shall be returned. The
+      `group_id` is a unique identifier for a particular error group. The
+      identifier is derived from key parts of the error-log content and is
+      treated as Service Data. For information about how Service Data is
+      handled, see [Google Cloud Privacy
+      Notice](https://cloud.google.com/terms/cloud-privacy-notice).
+    pageSize: Optional. The maximum number of results to return per response.
+    pageToken: Optional. A `next_page_token` provided by a previous response.
+    projectName: Required. The resource name of the Google Cloud Platform
+      project. Written as `projects/{projectID}` or
+      `projects/{projectID}/locations/{location}`, where `{projectID}` is the
+      [Google Cloud Platform project
+      ID](https://support.google.com/cloud/answer/6158840) and `{location}` is
+      a Cloud region. Examples: `projects/my-project-123`, `projects/my-
+      project-123/locations/global`. For a list of supported locations, see
+      [Supported Regions](https://cloud.google.com/logging/docs/region-
+      support). `global` is the default when unspecified.
+    serviceFilter_resourceType: Optional. The exact value to match against
+      [`ServiceContext.resource_type`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
+    serviceFilter_service: Optional. The exact value to match against
+      [`ServiceContext.service`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
+    serviceFilter_version: Optional. The exact value to match against
+      [`ServiceContext.version`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
+    timeRange_period: Restricts the query to the specified time range.
+  """
+
+  class TimeRangePeriodValueValuesEnum(_messages.Enum):
+    r"""Restricts the query to the specified time range.
+
+    Values:
+      PERIOD_UNSPECIFIED: Do not use.
+      PERIOD_1_HOUR: Retrieve data for the last hour. Recommended minimum
+        timed count duration: 1 min.
+      PERIOD_6_HOURS: Retrieve data for the last 6 hours. Recommended minimum
+        timed count duration: 10 min.
+      PERIOD_1_DAY: Retrieve data for the last day. Recommended minimum timed
+        count duration: 1 hour.
+      PERIOD_1_WEEK: Retrieve data for the last week. Recommended minimum
+        timed count duration: 6 hours.
+      PERIOD_30_DAYS: Retrieve data for the last 30 days. Recommended minimum
+        timed count duration: 1 day.
+    """
+    PERIOD_UNSPECIFIED = 0
+    PERIOD_1_HOUR = 1
+    PERIOD_6_HOURS = 2
+    PERIOD_1_DAY = 3
+    PERIOD_1_WEEK = 4
+    PERIOD_30_DAYS = 5
+
+  groupId = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  projectName = _messages.StringField(4, required=True)
+  serviceFilter_resourceType = _messages.StringField(5)
+  serviceFilter_service = _messages.StringField(6)
+  serviceFilter_version = _messages.StringField(7)
+  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 8)
+
+
+class ClouderrorreportingProjectsLocationsGroupStatsListRequest(_messages.Message):
+  r"""A ClouderrorreportingProjectsLocationsGroupStatsListRequest object.
+
+  Enums:
+    AlignmentValueValuesEnum: Optional. The alignment of the timed counts to
+      be returned. Default is `ALIGNMENT_EQUAL_AT_END`.
+    OrderValueValuesEnum: Optional. The sort order in which the results are
+      returned. Default is `COUNT_DESC`.
+    TimeRangePeriodValueValuesEnum: Restricts the query to the specified time
+      range.
+
+  Fields:
+    alignment: Optional. The alignment of the timed counts to be returned.
+      Default is `ALIGNMENT_EQUAL_AT_END`.
+    alignmentTime: Optional. Time where the timed counts shall be aligned if
+      rounded alignment is chosen. Default is 00:00 UTC.
+    groupId: Optional. List all ErrorGroupStats with these IDs. The `group_id`
       is a unique identifier for a particular error group. The identifier is
       derived from key parts of the error-log content and is treated as
       Service Data. For information about how Service Data is handled, see
-      [Google Cloud Privacy Notice](https://cloud.google.com/terms/cloud-
+      [Google Cloud Privacy Notice] (https://cloud.google.com/terms/cloud-
       privacy-notice).
+    order: Optional. The sort order in which the results are returned. Default
+      is `COUNT_DESC`.
+    pageSize: Optional. The maximum number of results to return per response.
+      Default is 20.
+    pageToken: Optional. A next_page_token provided by a previous response. To
+      view additional results, pass this token along with the identical query
+      parameters as the first request.
+    projectName: Required. The resource name of the Google Cloud Platform
+      project. Written as `projects/{projectID}` or
+      `projects/{projectNumber}`, where `{projectID}` and `{projectNumber}`
+      can be found in the [Google Cloud
+      console](https://support.google.com/cloud/answer/6158840). It may also
+      include a location, such as `projects/{projectID}/locations/{location}`
+      where `{location}` is a cloud region. Examples: `projects/my-
+      project-123`, `projects/5551234`, `projects/my-project-123/locations/us-
+      central1`, `projects/5551234/locations/us-central1`. For a list of
+      supported locations, see [Supported
+      Regions](https://cloud.google.com/logging/docs/region-support). `global`
+      is the default when unspecified. Use `-` as a wildcard to request group
+      stats from all regions.
+    serviceFilter_resourceType: Optional. The exact value to match against
+      [`ServiceContext.resource_type`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.resource_type).
+    serviceFilter_service: Optional. The exact value to match against
+      [`ServiceContext.service`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.service).
+    serviceFilter_version: Optional. The exact value to match against
+      [`ServiceContext.version`](/error-
+      reporting/reference/rest/v1beta1/ServiceContext#FIELDS.version).
+    timeRange_period: Restricts the query to the specified time range.
+    timedCountDuration: Optional. The preferred duration for a single returned
+      TimedCount. If not set, no timed counts are returned.
+  """
+
+  class AlignmentValueValuesEnum(_messages.Enum):
+    r"""Optional. The alignment of the timed counts to be returned. Default is
+    `ALIGNMENT_EQUAL_AT_END`.
+
+    Values:
+      ERROR_COUNT_ALIGNMENT_UNSPECIFIED: No alignment specified.
+      ALIGNMENT_EQUAL_ROUNDED: The time periods shall be consecutive, have
+        width equal to the requested duration, and be aligned at the
+        alignment_time provided in the request. The alignment_time does not
+        have to be inside the query period but even if it is outside, only
+        time periods are returned which overlap with the query period. A
+        rounded alignment will typically result in a different size of the
+        first or the last time period.
+      ALIGNMENT_EQUAL_AT_END: The time periods shall be consecutive, have
+        width equal to the requested duration, and be aligned at the end of
+        the requested time period. This can result in a different size of the
+        first time period.
+    """
+    ERROR_COUNT_ALIGNMENT_UNSPECIFIED = 0
+    ALIGNMENT_EQUAL_ROUNDED = 1
+    ALIGNMENT_EQUAL_AT_END = 2
+
+  class OrderValueValuesEnum(_messages.Enum):
+    r"""Optional. The sort order in which the results are returned. Default is
+    `COUNT_DESC`.
+
+    Values:
+      GROUP_ORDER_UNSPECIFIED: No group order specified.
+      COUNT_DESC: Total count of errors in the given time window in descending
+        order.
+      LAST_SEEN_DESC: Timestamp when the group was last seen in the given time
+        window in descending order.
+      CREATED_DESC: Timestamp when the group was created in descending order.
+      AFFECTED_USERS_DESC: Number of affected users in the given time window
+        in descending order.
+    """
+    GROUP_ORDER_UNSPECIFIED = 0
+    COUNT_DESC = 1
+    LAST_SEEN_DESC = 2
+    CREATED_DESC = 3
+    AFFECTED_USERS_DESC = 4
+
+  class TimeRangePeriodValueValuesEnum(_messages.Enum):
+    r"""Restricts the query to the specified time range.
+
+    Values:
+      PERIOD_UNSPECIFIED: Do not use.
+      PERIOD_1_HOUR: Retrieve data for the last hour. Recommended minimum
+        timed count duration: 1 min.
+      PERIOD_6_HOURS: Retrieve data for the last 6 hours. Recommended minimum
+        timed count duration: 10 min.
+      PERIOD_1_DAY: Retrieve data for the last day. Recommended minimum timed
+        count duration: 1 hour.
+      PERIOD_1_WEEK: Retrieve data for the last week. Recommended minimum
+        timed count duration: 6 hours.
+      PERIOD_30_DAYS: Retrieve data for the last 30 days. Recommended minimum
+        timed count duration: 1 day.
+    """
+    PERIOD_UNSPECIFIED = 0
+    PERIOD_1_HOUR = 1
+    PERIOD_6_HOURS = 2
+    PERIOD_1_DAY = 3
+    PERIOD_1_WEEK = 4
+    PERIOD_30_DAYS = 5
+
+  alignment = _messages.EnumField('AlignmentValueValuesEnum', 1)
+  alignmentTime = _messages.StringField(2)
+  groupId = _messages.StringField(3, repeated=True)
+  order = _messages.EnumField('OrderValueValuesEnum', 4)
+  pageSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(6)
+  projectName = _messages.StringField(7, required=True)
+  serviceFilter_resourceType = _messages.StringField(8)
+  serviceFilter_service = _messages.StringField(9)
+  serviceFilter_version = _messages.StringField(10)
+  timeRange_period = _messages.EnumField('TimeRangePeriodValueValuesEnum', 11)
+  timedCountDuration = _messages.StringField(12)
+
+
+class ClouderrorreportingProjectsLocationsGroupsGetRequest(_messages.Message):
+  r"""A ClouderrorreportingProjectsLocationsGroupsGetRequest object.
+
+  Fields:
+    groupName: Required. The group resource name. Written as either
+      `projects/{projectID}/groups/{group_id}` or
+      `projects/{projectID}/locations/{location}/groups/{group_id}`. Call
+      groupStats.list to return a list of groups belonging to this project.
+      Examples: `projects/my-project-123/groups/my-group`, `projects/my-
+      project-123/locations/global/groups/my-group` In the group resource
+      name, the `group_id` is a unique identifier for a particular error
+      group. The identifier is derived from key parts of the error-log content
+      and is treated as Service Data. For information about how Service Data
+      is handled, see [Google Cloud Privacy
+      Notice](https://cloud.google.com/terms/cloud-privacy-notice). For a list
+      of supported locations, see [Supported
+      Regions](https://cloud.google.com/logging/docs/region-support). `global`
+      is the default when unspecified.
   """
 
   groupName = _messages.StringField(1, required=True)
@@ -323,13 +589,18 @@ class ErrorGroup(_messages.Message):
       handled, see [Google Cloud Privacy
       Notice](https://cloud.google.com/terms/cloud-privacy-notice).
     name: The group resource name. Written as
-      `projects/{projectID}/groups/{group_id}`. Example: `projects/my-
-      project-123/groups/my-group` In the group resource name, the `group_id`
-      is a unique identifier for a particular error group. The identifier is
-      derived from key parts of the error-log content and is treated as
-      Service Data. For information about how Service Data is handled, see
-      [Google Cloud Privacy Notice](https://cloud.google.com/terms/cloud-
-      privacy-notice).
+      `projects/{projectID}/groups/{group_id}` or
+      `projects/{projectID}/locations/{location}/groups/{group_id}` Examples:
+      `projects/my-project-123/groups/my-group`, `projects/my-
+      project-123/locations/us-central1/groups/my-group` In the group resource
+      name, the `group_id` is a unique identifier for a particular error
+      group. The identifier is derived from key parts of the error-log content
+      and is treated as Service Data. For information about how Service Data
+      is handled, see [Google Cloud Privacy
+      Notice](https://cloud.google.com/terms/cloud-privacy-notice). For a list
+      of supported locations, see [Supported
+      Regions](https://cloud.google.com/logging/docs/region-support). `global`
+      is the default when unspecified.
     resolutionStatus: Error group's resolution status. An unspecified
       resolution status will be interpreted as OPEN
     trackingIssues: Associated tracking issues.
@@ -513,7 +784,7 @@ class ReportedErrorEvent(_messages.Message):
       with `"PHP (Notice|Parse error|Fatal error|Warning): "` and contain the
       result of [`(string)$exception`](https://php.net/manual/en/exception.tos
       tring.php). * **Go**: Must be the return value of
-      [`runtime.Stack()`](https://golang.org/pkg/runtime/debug/#Stack).
+      [`debug.Stack()`](https://pkg.go.dev/runtime/debug#Stack).
     serviceContext: Required. The service context in which this error has
       occurred.
   """
@@ -696,3 +967,19 @@ encoding.AddCustomJsonFieldMapping(
     ClouderrorreportingProjectsGroupStatsListRequest, 'serviceFilter_version', 'serviceFilter.version')
 encoding.AddCustomJsonFieldMapping(
     ClouderrorreportingProjectsGroupStatsListRequest, 'timeRange_period', 'timeRange.period')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsEventsListRequest, 'serviceFilter_resourceType', 'serviceFilter.resourceType')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsEventsListRequest, 'serviceFilter_service', 'serviceFilter.service')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsEventsListRequest, 'serviceFilter_version', 'serviceFilter.version')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsEventsListRequest, 'timeRange_period', 'timeRange.period')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsGroupStatsListRequest, 'serviceFilter_resourceType', 'serviceFilter.resourceType')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsGroupStatsListRequest, 'serviceFilter_service', 'serviceFilter.service')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsGroupStatsListRequest, 'serviceFilter_version', 'serviceFilter.version')
+encoding.AddCustomJsonFieldMapping(
+    ClouderrorreportingProjectsLocationsGroupStatsListRequest, 'timeRange_period', 'timeRange.period')

@@ -218,22 +218,36 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
   r"""Message describing CustomHardwareLinkAttachment object
 
   Enums:
-    LinkTypeValueValuesEnum: Required. The type of custom hardware link
-      attachment.
+    LinkTypeValueValuesEnum: Required. The link type of
+      CustomHardwareLinkAttachment.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
 
   Fields:
+    asn: Required. ASN for network on the customer side of the
+      CustomHardwareLinkAttachment. CustomHardware BGP supports 16-bit and
+      32-bit ASN.
+    bgpIp: Required. BGP speaker IP address used by the CustomHardwareInstance
+      over this CustomHardwareLinkAttachment.
     createTime: Output only. Time when the CustomHardwareLinkAttachment was
       created.
+    customHardwareLinkConnectPair: Required. The name of the associated
+      CustomHardwareLinkConnectPair resource. For example: `projects/{project}
+      /locations/{location}/customHardwareLinkConnectPairs/{custom_hardware_li
+      nk_connect_pair}`.
     labels: Optional. User-defined labels.
-    linkType: Required. The type of custom hardware link attachment.
+    linkType: Required. The link type of CustomHardwareLinkAttachment.
     name: Identifier. The name of a CustomHardwareLinkAttachment. Format: `pro
       jects/{project}/locations/{location}/customHardwareLinkAttachments/{cust
       om_hardware_link_attachment}`.
     network: The name of the VPC network for this custom hardware link
       attachment. Format: `projects/{project}/global/networks/{network}`
+    peerAsn: Required. ASN for network on the Google side of the
+      CustomHardwareLinkAttachment. CustomHardware BGP supports 16-bit and
+      32-bit ASN.
+    peerBgpIp: Required. BGP speaker IP address used by the Google owned BGP
+      speaker.
     project: The consumer project where custom hardware instance are created.
       Format: `projects/{project}`
     updateTime: Output only. Time when the CustomHardwareLinkAttachment was
@@ -241,7 +255,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
   """
 
   class LinkTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of custom hardware link attachment.
+    r"""Required. The link type of CustomHardwareLinkAttachment.
 
     Values:
       LINK_TYPE_UNSPECIFIED: An invalid type as the default case.
@@ -276,23 +290,28 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  project = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  asn = _messages.IntegerField(1)
+  bgpIp = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  customHardwareLinkConnectPair = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  peerAsn = _messages.IntegerField(9)
+  peerBgpIp = _messages.StringField(10)
+  project = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_messages.Message):
   r"""Message describing CustomHardwareLinkConnectPair object
 
   Enums:
-    LinkSpeedValueValuesEnum: Required. The link speed of custom hardware link
-      connect pair
-    LinkTypeValueValuesEnum: Required. The link type of custom hardware link
-      pair.
+    LinkSpeedValueValuesEnum: Required. The link speed of
+      CustomHardwareLinkConnectPair.
+    LinkTypeValueValuesEnum: Required. The link type of
+      CustomHardwareLinkConnectPair.
 
   Messages:
     LabelsValue: Optional. User-defined labels.
@@ -300,9 +319,12 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
   Fields:
     createTime: Output only. Time when the CustomHardwareLinkConnectPair was
       created.
+    customHardwareInstance: Required. The name of the associated
+      CustomHardwareInstance resource. For example: `projects/{project}/locati
+      ons/{location}/customHardwareInstances/{custom_hardware_instance_id}`.
     labels: Optional. User-defined labels.
-    linkSpeed: Required. The link speed of custom hardware link connect pair
-    linkType: Required. The link type of custom hardware link pair.
+    linkSpeed: Required. The link speed of CustomHardwareLinkConnectPair.
+    linkType: Required. The link type of CustomHardwareLinkConnectPair.
     name: Identifier. The name of a CustomHardwareLinkConnectPair. The name is
       restricted to letters, numbers and with the first character being a
       letter, the last a letter or a number. Format: `projects/{project}/locat
@@ -311,12 +333,12 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
       `^[a-zA-Z0-9-]*[a-zA-Z0-9]$`
     updateTime: Output only. Time when the CustomHardwareLinkConnectPair was
       updated.
-    zone: Required. The zone associated with the custom hardware link pair.
-      Example: us-central1-b
+    zone: Required. The zone associated with the
+      CustomHardwareLinkConnectPair. Example: us-central1-b
   """
 
   class LinkSpeedValueValuesEnum(_messages.Enum):
-    r"""Required. The link speed of custom hardware link connect pair
+    r"""Required. The link speed of CustomHardwareLinkConnectPair.
 
     Values:
       LINK_SPEED_UNSPECIFIED: An invalid type as the default case.
@@ -329,7 +351,7 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
     LINK_SPEED_100_G = 2
 
   class LinkTypeValueValuesEnum(_messages.Enum):
-    r"""Required. The link type of custom hardware link pair.
+    r"""Required. The link type of CustomHardwareLinkConnectPair.
 
     Values:
       LINK_TYPE_UNSPECIFIED: An invalid type as the default case.
@@ -365,12 +387,13 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkConnectPair(_message
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  linkSpeed = _messages.EnumField('LinkSpeedValueValuesEnum', 3)
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
-  zone = _messages.StringField(7)
+  customHardwareInstance = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  linkSpeed = _messages.EnumField('LinkSpeedValueValuesEnum', 4)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+  zone = _messages.StringField(8)
 
 
 class GoogleCloudNetworkconnectivityV1betaFilter(_messages.Message):
@@ -698,6 +721,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
   capable of advertising the same prefixes.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -707,9 +733,10 @@ class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_message
       located.
   """
 
-  siteToSiteDataTransfer = _messages.BooleanField(1)
-  uris = _messages.StringField(2, repeated=True)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(2)
+  uris = _messages.StringField(3, repeated=True)
+  vpcNetwork = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
@@ -719,6 +746,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
   with the same spoke.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     instances: The list of router appliance instances.
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
@@ -728,9 +758,10 @@ class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messag
       instances are located.
   """
 
-  instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 1, repeated=True)
-  siteToSiteDataTransfer = _messages.BooleanField(2)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 2, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(3)
+  vpcNetwork = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
@@ -739,11 +770,14 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
   Fields:
     excludeExportRanges: Optional. IP ranges encompassing the subnets to be
       excluded from peering.
+    includeExportRanges: Optional. IP ranges allowed to be included from
+      peering.
     uri: Required. The URI of the VPC network resource.
   """
 
   excludeExportRanges = _messages.StringField(1, repeated=True)
-  uri = _messages.StringField(2)
+  includeExportRanges = _messages.StringField(2, repeated=True)
+  uri = _messages.StringField(3)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
@@ -753,6 +787,9 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
   be capable of advertising the same prefixes.
 
   Fields:
+    includeImportRanges: Optional. IP ranges allowed to be included during
+      import from hub.(does not control transit connectivity) The only allowed
+      value for now is "ALL_IPV4_RANGES".
     siteToSiteDataTransfer: A value that controls whether site-to-site data
       transfer is enabled for these resources. Data transfer is available only
       in [supported locations](https://cloud.google.com/network-
@@ -762,9 +799,10 @@ class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
       located.
   """
 
-  siteToSiteDataTransfer = _messages.BooleanField(1)
-  uris = _messages.StringField(2, repeated=True)
-  vpcNetwork = _messages.StringField(3)
+  includeImportRanges = _messages.StringField(1, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(2)
+  uris = _messages.StringField(3, repeated=True)
+  vpcNetwork = _messages.StringField(4)
 
 
 class GoogleCloudNetworkconnectivityV1betaListCustomHardwareInstancesResponse(_messages.Message):
@@ -969,6 +1007,59 @@ class GoogleCloudNetworkconnectivityV1betaLocationMetadata(_messages.Message):
     SITE_TO_SITE_SPOKES = 2
 
   locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaNextHopInterconnectAttachment(_messages.Message):
+  r"""A route next hop that leads to an interconnect attachment resource.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this interconnect attachment resource. Data transfer is
+      available only in [supported
+      locations](https://cloud.google.com/network-connectivity/docs/network-
+      connectivity-center/concepts/locations).
+    uri: The URI of the interconnect attachment resource.
+    vpcNetwork: The VPC network where this interconnect attachment is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
+class GoogleCloudNetworkconnectivityV1betaNextHopRouterApplianceInstance(_messages.Message):
+  r"""A route next hop that leads to a Router appliance instance.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this Router appliance instance resource. Data transfer is
+      available only in [supported
+      locations](https://cloud.google.com/network-connectivity/docs/network-
+      connectivity-center/concepts/locations).
+    uri: The URI of the Router appliance instance.
+    vpcNetwork: The VPC network where this VM is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
+class GoogleCloudNetworkconnectivityV1betaNextHopVPNTunnel(_messages.Message):
+  r"""A route next hop that leads to a VPN tunnel resource.
+
+  Fields:
+    siteToSiteDataTransfer: Indicates whether site-to-site data transfer is
+      allowed for this VPN tunnel resource. Data transfer is available only in
+      [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
+    uri: The URI of the VPN tunnel resource.
+    vpcNetwork: The VPC network where this VPN tunnel is located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uri = _messages.StringField(2)
+  vpcNetwork = _messages.StringField(3)
 
 
 class GoogleCloudNetworkconnectivityV1betaNextHopVpcNetwork(_messages.Message):
@@ -1273,8 +1364,17 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
     name: Immutable. The name of the route. Route names must be unique. Route
       names use the following form: `projects/{project_number}/locations/globa
       l/hubs/{hub}/routeTables/{route_table_id}/routes/{route_id}`
+    nextHopInterconnectAttachment: Immutable. The next-hop VLAN attachment for
+      packets on this route.
+    nextHopRouterApplianceInstance: Immutable. The next-hop Router appliance
+      instance for packets on this route.
     nextHopVpcNetwork: Immutable. The destination VPC network for packets on
       this route.
+    nextHopVpnTunnel: Immutable. The next-hop VPN tunnel for packets on this
+      route.
+    priority: Output only. The priority of this route. Priority is used to
+      break ties in cases where a destination matches more than one route. In
+      these cases the route with the lowest-numbered priority value wins.
     spoke: Immutable. The spoke that this route leads to. Example:
       projects/12345/locations/global/spokes/SPOKE
     state: Output only. The current lifecycle state of the route.
@@ -1322,10 +1422,14 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
         address range of the VPC network's subnet.
       VPC_SECONDARY_SUBNET: The route leads to a destination within the
         secondary address range of the VPC network's subnet.
+      DYNAMIC_ROUTE: The route leads to a destination in a dynamic route.
+        Dynamic routes are derived from Border Gateway Protocol (BGP)
+        advertisements received from an NCC hybrid spoke.
     """
     ROUTE_TYPE_UNSPECIFIED = 0
     VPC_PRIMARY_SUBNET = 1
     VPC_SECONDARY_SUBNET = 2
+    DYNAMIC_ROUTE = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1359,12 +1463,16 @@ class GoogleCloudNetworkconnectivityV1betaRoute(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   location = _messages.StringField(5)
   name = _messages.StringField(6)
-  nextHopVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaNextHopVpcNetwork', 7)
-  spoke = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  nextHopInterconnectAttachment = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaNextHopInterconnectAttachment', 7)
+  nextHopRouterApplianceInstance = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaNextHopRouterApplianceInstance', 8)
+  nextHopVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaNextHopVpcNetwork', 9)
+  nextHopVpnTunnel = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaNextHopVPNTunnel', 10)
+  priority = _messages.IntegerField(11)
+  spoke = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  type = _messages.EnumField('TypeValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
 
 
 class GoogleCloudNetworkconnectivityV1betaRouteTable(_messages.Message):

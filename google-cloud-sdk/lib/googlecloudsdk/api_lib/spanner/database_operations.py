@@ -107,7 +107,7 @@ def BuildDatabaseOperationTypeFilter(op_type):
     return base_string + 'UpdateDatabaseDdlMetadata'
 
   if op_type == 'DATABASE_CHANGE_QUORUM':
-    return base_string + 'DatabaseChangeQuorumMetadata'
+    return base_string + 'ChangeQuorumMetadata'
 
 
 def ListDatabaseOperations(instance, database=None, type_filter=None):

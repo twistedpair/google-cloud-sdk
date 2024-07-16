@@ -1290,6 +1290,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Move(self, request, global_params=None):
+      r"""Moves an API proxy to a different space.
+
+      Args:
+        request: (ApigeeOrganizationsApisMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiProxy) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}:move',
+        http_method='POST',
+        method_id='apigee.organizations.apis.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:move',
+        request_field='googleCloudApigeeV1MoveApiProxyRequest',
+        request_type_name='ApigeeOrganizationsApisMoveRequest',
+        response_type_name='GoogleCloudApigeeV1ApiProxy',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates an existing API proxy.
 
@@ -9168,6 +9195,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Move(self, request, global_params=None):
+      r"""Moves an shared flow to a different space.
+
+      Args:
+        request: (ApigeeOrganizationsSharedflowsMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SharedFlow) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sharedflows/{sharedflowsId}:move',
+        http_method='POST',
+        method_id='apigee.organizations.sharedflows.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:move',
+        request_field='googleCloudApigeeV1MoveSharedFlowRequest',
+        request_type_name='ApigeeOrganizationsSharedflowsMoveRequest',
+        response_type_name='GoogleCloudApigeeV1SharedFlow',
+        supports_download=False,
+    )
+
   class OrganizationsSitesApicategoriesService(base_api.BaseApiService):
     """Service class for the organizations_sites_apicategories resource."""
 
@@ -9839,7 +9893,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def GetControlPlaneAccess(self, request, global_params=None):
-      r"""Lists the service accounts with the permissions required to allow Apigee runtime-plane components access to control plane resources. Currently, the permissions required are to: 1. Allow Synchronizer to download environment data from the control plane. 2. Allow the UDCA to upload analytics data. 3. Allow the Logger component to write logs to the control plane. For more information regarding the Synchronizer, see [Configure the Synchronizer](https://cloud.google.com/apigee/docs/hybrid/latest/synchronizer-access). **Note**: Available to Apigee hybrid only.
+      r"""Lists the service accounts with the permissions required to allow Apigee runtime-plane components access to control plane resources. Currently, the permissions required are to: 1. Allow runtime components to publish analytics data to the control plane. **Note**: Available to Apigee hybrid only.
 
       Args:
         request: (ApigeeOrganizationsGetControlPlaneAccessRequest) input message
@@ -10190,7 +10244,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateControlPlaneAccess(self, request, global_params=None):
-      r"""Updates the permissions required to allow Apigee runtime-plane components access to the control plane. Currently, the permissions required are to: 1. Allow Synchronizer to download environment data from the control plane. 2. Allow the UDCA to upload analytics data. 3. Allow the Logger component to write logs to the control plane. You must call this API to enable proper functioning of hybrid. For more information regarding the Synchronizer, see [Configure the Synchronizer](https://cloud.google.com/apigee/docs/hybrid/latest/synchronizer-access). **Note**: Available to Apigee hybrid only.
+      r"""Updates the permissions required to allow Apigee runtime-plane components access to the control plane. Currently, the permissions required are to: 1. Allow runtime components to publish analytics data to the control plane. **Note**: Available to Apigee hybrid only.
 
       Args:
         request: (ApigeeOrganizationsUpdateControlPlaneAccessRequest) input message

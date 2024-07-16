@@ -159,16 +159,24 @@ def TransformResultStatus(resource, undefined=''):
     return record_summary.status
   if 'pipeline_run_status' in record_data or 'task_run_status' in record_data:
     return 'CANCELLED'
-  if 'conditions[0].status' in record_data:
-    condition = record_data.get('conditions[0].status')
-    if condition == 'TRUE':
-      return 'SUCCESS'
-    if condition == 'FALSE':
-      return 'FAILURE'
-    if condition == 'UNKNOWN':
-      return 'WORKING'
-  if 'start_time' in record_data and 'finish_time' not in record_data and 'completion_time' not in record_data:
-    return 'WORKING'
+  # Get the status from conditions if record_summary.status is not set.
+  succeeded_status = ''
+  dequeued_status = ''
+  # There are two types of conditions, 'Succeeded' and 'Dequeued'.
+  for index in (0, 1):
+    condition_type = record_data.get(f'conditions[{index}].type')
+    if condition_type == 'Succeeded':
+      succeeded_status = record_data.get(f'conditions[{index}].status')
+    elif condition_type == 'Dequeued':
+      dequeued_status = record_data.get(f'conditions[{index}].status')
+  if succeeded_status == 'TRUE':
+    return 'SUCCESS'
+  if succeeded_status == 'FALSE':
+    return 'FAILURE'
+  if dequeued_status == 'TRUE':
+    return 'IN_PROGRESS'
+  if dequeued_status == 'FALSE':
+    return 'QUEUED'
   return undefined
 
 

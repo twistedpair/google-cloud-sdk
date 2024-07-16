@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.run import traffic
 ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 
+IAP_ANNOTATION = 'run.googleapis.com/iap-enabled'
 INGRESS_ANNOTATION = 'run.googleapis.com/ingress'
 INGRESS_STATUS_ANNOTATION = 'run.googleapis.com/ingress-status'
 INGRESS_ALL = 'all'

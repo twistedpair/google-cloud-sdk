@@ -32,11 +32,12 @@ def ParseExpireTime(expiration_value):
   """Parse flag value into Datetime format for expireTime."""
   # expiration_value could be in Datetime format or Duration format.
   # backend timezone is UTC.
-  datetime = (times.ParseDuration(expiration_value)
-              .GetRelativeDateTime(times.Now(times.UTC)))
-  parsed_datetime = times.FormatDateTime(datetime,
-                                         '%Y-%m-%dT%H:%M:%S.%6f%Ez',
-                                         tzinfo=times.UTC)
+  datetime = times.ParseDuration(expiration_value).GetRelativeDateTime(
+      times.Now(times.UTC)
+  )
+  parsed_datetime = times.FormatDateTime(
+      datetime, '%Y-%m-%dT%H:%M:%S.%6f%Ez', tzinfo=times.UTC
+  )
   return parsed_datetime
 
 
@@ -51,10 +52,7 @@ def GetExpireTime(args):
 # Create Command Utils
 def ModifyCreateRequest(backup_ref, args, req):
   """Parse argument and construct create backup request."""
-  req.backup.sourceTable = ('projects/{0}/instances/{1}/tables/{2}'
-                            .format(backup_ref.projectsId,
-                                    backup_ref.instancesId,
-                                    args.table))
+  req.backup.sourceTable = f'projects/{backup_ref.projectsId}/instances/{backup_ref.instancesId}/tables/{args.table}'
 
   req.backup.expireTime = GetExpireTime(args)
   req.backupId = args.backup
@@ -78,10 +76,39 @@ def AddFieldToUpdateMask(field, req):
   return req
 
 
-def AddExpireTimeToUpdateReq(unused_backup_ref, args, req):
-  """Add expiration-date or retention-period to updateMask in the patch request."""
-  req.backup.expireTime = GetExpireTime(args)
-  req = AddFieldToUpdateMask('expire_time', req)
+def AddBackupFieldsToUpdateMask(unused_backup_ref, args, req):
+  """Add backup fields to updateMask in the patch request."""
+  expire_time = GetExpireTime(args)
+  if expire_time is not None:
+    req.backup.expireTime = expire_time
+    req = AddFieldToUpdateMask('expire_time', req)
+
+  # TODO: b/337328220 - Remove this try block after GA.
+  #
+  # We need this try block because `hot_to_standard_time` is only present in the
+  # Alpha track.
+  try:
+    hot_to_standard_time = args.hot_to_standard_time
+  except AttributeError:
+    pass
+  else:
+    if hot_to_standard_time is not None:
+      req = AddFieldToUpdateMask('hot_to_standard_time', req)
+      # We don't have to explicitly check if `hot_to_standard_time` is an empty
+      # string because even though it can also be None, we have already checked
+      # that it is not None.
+      #
+      # `hot_to_standard_time` is a string flag, so this means that we can
+      # simply check whether the flag is falsy to determine if it is an empty
+      # string.
+      #
+      # An empty string means that the user wants to clear the
+      # `hot_to_standard_time` field.
+      if not hot_to_standard_time:
+        req.backup.hotToStandardTime = None
+      else:
+        req.backup.hotToStandardTime = hot_to_standard_time
+
   return req
 
 
@@ -91,10 +118,12 @@ def CopyBackup(source_backup_ref, destination_backup_ref, args):
   msgs = util.GetAdminMessages()
   copy_backup_request = msgs.CopyBackupRequest(
       backupId=destination_backup_ref.Name(),
-      sourceBackup=source_backup_ref.RelativeName())
+      sourceBackup=source_backup_ref.RelativeName(),
+  )
   copy_backup_request.expireTime = GetExpireTime(args)
 
   req = msgs.BigtableadminProjectsInstancesClustersBackupsCopyRequest(
       parent=destination_backup_ref.Parent().RelativeName(),
-      copyBackupRequest=copy_backup_request)
+      copyBackupRequest=copy_backup_request,
+  )
   return client.projects_instances_clusters_backups.Copy(req)

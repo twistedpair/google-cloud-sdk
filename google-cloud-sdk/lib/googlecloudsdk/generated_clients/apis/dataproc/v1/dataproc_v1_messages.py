@@ -929,6 +929,19 @@ class BatchOperationMetadata(_messages.Message):
   warnings = _messages.StringField(8, repeated=True)
 
 
+class BigqueryMetastoreConfig(_messages.Message):
+  r"""BigQuery Metastore(Pangea) configuration for the workload.
+
+  Fields:
+    location: Optional. Location where the BigQuery Metastore tables will be
+      created.
+    projectId: Optional. Project ID of the BigQuery Metastore tables.
+  """
+
+  location = _messages.StringField(1)
+  projectId = _messages.StringField(2)
+
+
 class Binding(_messages.Message):
   r"""Associates members, or principals, with a role.
 
@@ -1549,6 +1562,18 @@ class ConsolidatedExecutorSummary(_messages.Message):
   totalShuffleRead = _messages.IntegerField(15)
   totalShuffleWrite = _messages.IntegerField(16)
   totalTasks = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+
+
+class DataprocMetastoreConfig(_messages.Message):
+  r"""Dataproc Metastore configuration for the workload.
+
+  Fields:
+    service: Optional. Resource name of an existing Dataproc Metastore
+      service.Example:
+      projects/[project_id]/locations/[region]/services/[service_id]
+  """
+
+  service = _messages.StringField(1)
 
 
 class DataprocMetricConfig(_messages.Message):
@@ -5693,6 +5718,10 @@ class IdentityConfig(_messages.Message):
   userServiceAccountMapping = _messages.MessageField('UserServiceAccountMappingValue', 1)
 
 
+class InMemoryMetastoreConfig(_messages.Message):
+  r"""Default Metastore configuration for the workload."""
+
+
 class InjectCredentialsRequest(_messages.Message):
   r"""A request to inject credentials into a cluster.
 
@@ -7575,6 +7604,12 @@ class PeripheralsConfig(_messages.Message):
   r"""Auxiliary services configuration for a workload.
 
   Fields:
+    bigqueryMetastoreConfig: Optional. The BigQuery Metastore configuration
+      for the workload.
+    dataprocMetastoreConfig: Optional. The Dataproc Metastore configuration
+      for the workload.
+    inMemoryMetastoreConfig: Optional. The InMemory Metastore configuration
+      for the workload.
     metastoreService: Optional. Resource name of an existing Dataproc
       Metastore service.Example:
       projects/[project_id]/locations/[region]/services/[service_id]
@@ -7582,8 +7617,11 @@ class PeripheralsConfig(_messages.Message):
       for the workload.
   """
 
-  metastoreService = _messages.StringField(1)
-  sparkHistoryServerConfig = _messages.MessageField('SparkHistoryServerConfig', 2)
+  bigqueryMetastoreConfig = _messages.MessageField('BigqueryMetastoreConfig', 1)
+  dataprocMetastoreConfig = _messages.MessageField('DataprocMetastoreConfig', 2)
+  inMemoryMetastoreConfig = _messages.MessageField('InMemoryMetastoreConfig', 3)
+  metastoreService = _messages.StringField(4)
+  sparkHistoryServerConfig = _messages.MessageField('SparkHistoryServerConfig', 5)
 
 
 class PigJob(_messages.Message):

@@ -1772,7 +1772,8 @@ class GoogleFirestoreAdminV1BackupSchedule(_messages.Message):
       assigned. Format is `projects/{project}/databases/{database}/backupSched
       ules/{backup_schedule}`
     retention: At what relative time in the future, compared to its creation
-      time, the backup should be deleted, e.g. keep backups for 7 days.
+      time, the backup should be deleted, e.g. keep backups for 7 days. The
+      maximum supported retention is 14 weeks.
     updateTime: Output only. The timestamp at which this backup schedule was
       most recently updated. When a backup schedule is first created, this is
       the same as create_time.
@@ -1805,7 +1806,7 @@ class GoogleFirestoreAdminV1BulkDeleteDocumentsMetadata(_messages.Message):
     snapshotTime: The timestamp that corresponds to the version of the
       database that is being read to get the list of documents to delete. This
       time can also be used as the timestamp of PITR in case of disaster
-      recovery(subject to PITR window limit).
+      recovery (subject to PITR window limit).
     startTime: The time this operation started.
   """
 
@@ -1899,14 +1900,8 @@ class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
 class GoogleFirestoreAdminV1DailyRecurrence(_messages.Message):
   r"""Represents a recurring schedule that runs every day. The time zone is
   UTC.
-
-  Fields:
-    time: Time of the day. The first run scheduled will be either on the same
-      day if schedule creation time precedes time_of_day or the next day
-      otherwise.
   """
 
-  time = _messages.MessageField('TimeOfDay', 1)
 
 
 class GoogleFirestoreAdminV1Database(_messages.Message):
@@ -2048,8 +2043,7 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     information about how to choose.
 
     Values:
-      DATABASE_TYPE_UNSPECIFIED: The default value. This value is used if the
-        database type is omitted.
+      DATABASE_TYPE_UNSPECIFIED: Not used.
       FIRESTORE_NATIVE: Firestore Native Mode
       DATASTORE_MODE: Firestore in Datastore Mode.
     """
@@ -2074,21 +2068,6 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   uid = _messages.StringField(15)
   updateTime = _messages.StringField(16)
   versionRetentionPeriod = _messages.StringField(17)
-
-
-class GoogleFirestoreAdminV1DatabaseSnapshot(_messages.Message):
-  r"""A consistent snapshot of a database at a specific point in time.
-
-  Fields:
-    database: Required. A name of the form
-      `projects/{project_id}/databases/{database_id}`
-    snapshotTime: Required. The timestamp at which the database snapshot is
-      taken. The requested timestamp must be a whole minute within the PITR
-      window.
-  """
-
-  database = _messages.StringField(1)
-  snapshotTime = _messages.StringField(2)
 
 
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
@@ -2776,7 +2755,8 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
 
   Fields:
     backup: Backup to restore from. Must be from the same project as the
-      parent. Format is:
+      parent. The restored database will be created in the same location as
+      the source backup. Format is:
       `projects/{project_id}/locations/{location}/backups/{backup}`
     databaseId: Required. The ID to use for the database, which will become
       the final component of the database's resource name. This database id
@@ -2785,14 +2765,11 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
       letter and the last a letter or a number. Must not be UUID-like
       /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
       also valid.
-    databaseSnapshot: Database snapshot to restore from. The source database
-      must exist and have enabled PITR. The restored database will be created
-      in the same location as the source database.
     kmsKeyName: Use Customer Managed Encryption Keys (CMEK) for encryption.
-      Only keys in the same location as this database are allowed to be used
-      for encryption. For Firestore's nam5 multi-region, this corresponds to
-      Cloud KMS multi-region us. For Firestore's eur3 multi-region, this
-      corresponds to Cloud KMS multi-region europe. See
+      Only keys in the same location as the restored database are allowed to
+      be used for encryption. For Firestore's nam5 multi-region, this
+      corresponds to Cloud KMS multi-region us. For Firestore's eur3 multi-
+      region, this corresponds to Cloud KMS multi-region europe. See
       https://cloud.google.com/kms/docs/locations. The expected format is `pro
       jects/{project_id}/locations/{kms_location}/keyRings/{key_ring}/cryptoKe
       ys/{crypto_key}`.
@@ -2804,10 +2781,9 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
-  databaseSnapshot = _messages.MessageField('GoogleFirestoreAdminV1DatabaseSnapshot', 3)
-  kmsKeyName = _messages.StringField(4)
-  useBackupEncryption = _messages.MessageField('Empty', 5)
-  useGoogleDefaultEncryption = _messages.MessageField('Empty', 6)
+  kmsKeyName = _messages.StringField(3)
+  useBackupEncryption = _messages.MessageField('Empty', 4)
+  useGoogleDefaultEncryption = _messages.MessageField('Empty', 5)
 
 
 class GoogleFirestoreAdminV1Stats(_messages.Message):
@@ -2920,9 +2896,6 @@ class GoogleFirestoreAdminV1WeeklyRecurrence(_messages.Message):
 
   Fields:
     day: The day of week to run. DAY_OF_WEEK_UNSPECIFIED is not allowed.
-    time: Time of the day. If day is today, the first run will happen today if
-      schedule creation time precedes time_of_day, and the next week
-      otherwise.
   """
 
   class DayValueValuesEnum(_messages.Enum):
@@ -2948,7 +2921,6 @@ class GoogleFirestoreAdminV1WeeklyRecurrence(_messages.Message):
     SUNDAY = 7
 
   day = _messages.EnumField('DayValueValuesEnum', 1)
-  time = _messages.MessageField('TimeOfDay', 2)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -3969,27 +3941,6 @@ class TargetChange(_messages.Message):
   resumeToken = _messages.BytesField(3)
   targetChangeType = _messages.EnumField('TargetChangeTypeValueValuesEnum', 4)
   targetIds = _messages.IntegerField(5, repeated=True, variant=_messages.Variant.INT32)
-
-
-class TimeOfDay(_messages.Message):
-  r"""Represents a time of day. The date and time zone are either not
-  significant or are specified elsewhere. An API may choose to allow leap
-  seconds. Related types are google.type.Date and `google.protobuf.Timestamp`.
-
-  Fields:
-    hours: Hours of day in 24 hour format. Should be from 0 to 23. An API may
-      choose to allow the value "24:00:00" for scenarios like business closing
-      time.
-    minutes: Minutes of hour of day. Must be from 0 to 59.
-    nanos: Fractions of seconds in nanoseconds. Must be from 0 to 999,999,999.
-    seconds: Seconds of minutes of the time. Must normally be from 0 to 59. An
-      API may allow the value 60 if it allows leap-seconds.
-  """
-
-  hours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minutes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  nanos = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  seconds = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class TransactionOptions(_messages.Message):

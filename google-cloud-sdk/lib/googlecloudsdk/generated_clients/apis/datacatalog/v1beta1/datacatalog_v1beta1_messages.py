@@ -3642,7 +3642,8 @@ class GoogleCloudDatacatalogV1beta1TagTemplate(_messages.Message):
         tags are only visible and editable in DataCatalog.
       MIGRATED: TagTemplate and its tags are auto-copied to Dataplex service.
         Visible in both services. Editable in DataCatalog, read-only in
-        Dataplex.
+        Dataplex. Deprecated: Individual TagTemplate migration is deprecated
+        in favor of organization or project wide TagTemplate migration opt-in.
     """
     DATAPLEX_TRANSFER_STATUS_UNSPECIFIED = 0
     MIGRATED = 1

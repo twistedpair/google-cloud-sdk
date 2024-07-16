@@ -195,10 +195,12 @@ def _ServiceAccountTransformPipelineSpec(spec):
   if "taskRunTemplate" in spec:
     if "serviceAccountName" in spec["taskRunTemplate"]:
       sa = spec.pop("taskRunTemplate").pop("serviceAccountName")
-      # TODO(b/321276962): Deprecate this once we move to use security configs.
-      spec["serviceAccount"] = sa
       security = spec.setdefault("security", {})
       security["serviceAccount"] = sa
+      return
+  raise cloudbuild_exceptions.InvalidYamlError(
+      "spec.taskRunTemplate.serviceAccountName is required."
+  )
 
 
 def _ServiceAccountTransformTaskSpec(spec):

@@ -19,17 +19,17 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+
 from typing import Union
 
+from googlecloudsdk.api_lib.container.fleet import types
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
-from googlecloudsdk.generated_clients.apis.gkehub.v1 import gkehub_v1_client as ga_client
-from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_client as alpha_client
 from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_messages as alpha_messages
-from googlecloudsdk.generated_clients.apis.gkehub.v1beta import gkehub_v1beta_client as beta_client
+from googlecloudsdk.generated_clients.apis.gkehub.v2alpha import gkehub_v2alpha_client as v2_alpha_client
 
 
 VERSION_MAP = {
@@ -38,9 +38,18 @@ VERSION_MAP = {
     base.ReleaseTrack.GA: 'v1',
 }
 
+# TODO(b/349197714): Add v2beta and v2 before promote to GA.
+V2_VERSION_MAP = {
+    base.ReleaseTrack.ALPHA: 'v2alpha',
+}
+
 
 def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   return apis.GetMessagesModule('gkehub', VERSION_MAP[release_track])
+
+
+def GetV2MessagesModule(release_track=base.ReleaseTrack.ALPHA):
+  return apis.GetMessagesModule('gkehub', V2_VERSION_MAP[release_track])
 
 
 def FleetMessageModule(release_track: base.ReleaseTrack):
@@ -67,10 +76,16 @@ def FleetMessageModule(release_track: base.ReleaseTrack):
 
 def GetClientInstance(
     release_track=base.ReleaseTrack.GA,
-) -> Union[
-    alpha_client.GkehubV1alpha, beta_client.GkehubV1beta, ga_client.GkehubV1
-]:
+) -> types.TrackClient:
   return apis.GetClientInstance('gkehub', VERSION_MAP[release_track])
+
+
+def GetV2ClientInstance(
+    release_track=base.ReleaseTrack.ALPHA,
+) -> Union[
+    v2_alpha_client.GkehubV2alpha
+]:
+  return apis.GetClientInstance('gkehub', V2_VERSION_MAP[release_track])
 
 
 def GetClientClass(release_track=base.ReleaseTrack.GA):
@@ -102,6 +117,19 @@ def MembershipResourceName(project, membership, location='global'):
       projectsId=project,
       locationsId=location,
       membershipsId=membership,
+  ).RelativeName()
+
+
+def MembershipFeatureResourceName(
+    project, membership, feature, location='global'
+):
+  # See command_lib/container/fleet/resources.yaml
+  return resources.REGISTRY.Create(
+      'gkehub.projects.locations.memberships.features',
+      projectsId=project,
+      locationsId=location,
+      membershipsId=membership,
+      featuresId=feature,
   ).RelativeName()
 
 

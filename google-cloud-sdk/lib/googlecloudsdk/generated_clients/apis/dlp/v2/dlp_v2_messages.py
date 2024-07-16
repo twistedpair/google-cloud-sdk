@@ -113,7 +113,7 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -223,7 +223,7 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -308,7 +308,7 @@ class DlpOrganizationsLocationsColumnDataProfilesListRequest(_messages.Message):
       sensitivity_level = HIGH * project_id = 12345 AND info_type =
       STREET_ADDRESS The length of this field should be no more than 500
       characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id asc` *
@@ -467,7 +467,7 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -566,7 +566,7 @@ class DlpOrganizationsLocationsDiscoveryConfigsListRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsDiscoveryConfigsListRequest object.
 
   Fields:
-    orderBy: Comma separated list of config fields to order by, followed by
+    orderBy: Comma-separated list of config fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
@@ -631,7 +631,7 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, end_time asc, create_time desc` Supported fields are: -
@@ -672,6 +672,73 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   parent = _messages.StringField(6, required=True)
   type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
+class DlpOrganizationsLocationsFileStoreDataProfilesDeleteRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsFileStoreDataProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the file store data profile.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsFileStoreDataProfilesGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsFileStoreDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/fileStoreDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsFileStoreDataProfilesListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsFileStoreDataProfilesListRequest object.
+
+  Fields:
+    filter: Optional. Allows filtering. Supported syntax: * Filter expressions
+      are made up of one or more restrictions. * Restrictions can be combined
+      by `AND` or `OR` logical operators. A sequence of restrictions
+      implicitly uses `AND`. * A restriction has the form of `{field}
+      {operator} {value}`. * Supported fields/values: - `project_id` - The
+      Google Cloud project ID. - `file_store_path` - The path like
+      "gs://bucket". - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
+      = "gs://mybucket"` The length of this field should be no more than 500
+      characters.
+    orderBy: Optional. Comma-separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
+      insignificant. Only one order field at a time is allowed. Examples: *
+      `project_id asc` * `name` * `sensitivity_level desc` Supported fields
+      are: - `project_id`: The Google Cloud project ID. - `sensitivity_level`:
+      How sensitive the data in a table is, at most. - `data_risk_level`: How
+      much risk is associated with this data. - `profile_last_generated`: When
+      the profile was last updated in epoch seconds. - `last_modified`: The
+      last time the resource was modified. - `resource_visibility`: Visibility
+      restriction for this resource. - `name`: The name of the profile. -
+      `create_time`: The time the file store was first created.
+    pageSize: Optional. Size of the page. This value can be limited by the
+      server. If zero, server returns a page of max size 100.
+    pageToken: Optional. Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DlpOrganizationsLocationsInspectTemplatesCreateRequest(_messages.Message):
@@ -732,7 +799,7 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -853,7 +920,7 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of triggeredJob fields to order by, followed
+    orderBy: Comma-separated list of triggeredJob fields to order by, followed
       by `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
@@ -942,7 +1009,7 @@ class DlpOrganizationsLocationsProjectDataProfilesListRequest(_messages.Message)
       `project_id = 12345 AND status_code = 1` * `project_id = 12345 AND
       sensitivity_level = HIGH` The length of this field should be no more
       than 500 characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id` *
@@ -1020,7 +1087,7 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, display_name, create_time desc` Supported fields are: -
@@ -1107,7 +1174,7 @@ class DlpOrganizationsLocationsTableDataProfilesListRequest(_messages.Message):
       status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
       `project_id = 12345 AND resource_visibility = PUBLIC` The length of this
       field should be no more than 500 characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id asc` *
@@ -1191,7 +1258,7 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, display_name, create_time desc` Supported fields are: -
@@ -1366,7 +1433,7 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -1501,7 +1568,7 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, end_time asc, create_time desc` Supported fields are: -
@@ -1625,7 +1692,7 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -1761,7 +1828,7 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of triggeredJob fields to order by, followed
+    orderBy: Comma-separated list of triggeredJob fields to order by, followed
       by `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
@@ -1857,7 +1924,7 @@ class DlpProjectsLocationsColumnDataProfilesListRequest(_messages.Message):
       sensitivity_level = HIGH * project_id = 12345 AND info_type =
       STREET_ADDRESS The length of this field should be no more than 500
       characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id asc` *
@@ -2104,7 +2171,7 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -2203,7 +2270,7 @@ class DlpProjectsLocationsDiscoveryConfigsListRequest(_messages.Message):
   r"""A DlpProjectsLocationsDiscoveryConfigsListRequest object.
 
   Fields:
-    orderBy: Comma separated list of config fields to order by, followed by
+    orderBy: Comma-separated list of config fields to order by, followed by
       `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
@@ -2354,7 +2421,7 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       \"2017-12-12T00:00:00+00:00\" The length of this field should be no more
       than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, end_time asc, create_time desc` Supported fields are: -
@@ -2395,6 +2462,73 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   parent = _messages.StringField(6, required=True)
   type = _messages.EnumField('TypeValueValuesEnum', 7)
+
+
+class DlpProjectsLocationsFileStoreDataProfilesDeleteRequest(_messages.Message):
+  r"""A DlpProjectsLocationsFileStoreDataProfilesDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the file store data profile.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsFileStoreDataProfilesGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsFileStoreDataProfilesGetRequest object.
+
+  Fields:
+    name: Required. Resource name, for example
+      `organizations/12345/locations/us/fileStoreDataProfiles/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsFileStoreDataProfilesListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsFileStoreDataProfilesListRequest object.
+
+  Fields:
+    filter: Optional. Allows filtering. Supported syntax: * Filter expressions
+      are made up of one or more restrictions. * Restrictions can be combined
+      by `AND` or `OR` logical operators. A sequence of restrictions
+      implicitly uses `AND`. * A restriction has the form of `{field}
+      {operator} {value}`. * Supported fields/values: - `project_id` - The
+      Google Cloud project ID. - `file_store_path` - The path like
+      "gs://bucket". - `sensitivity_level` - HIGH|MODERATE|LOW -
+      `data_risk_level` - HIGH|MODERATE|LOW - `resource_visibility`:
+      PUBLIC|RESTRICTED - `status_code` - an RPC status code as defined in htt
+      ps://github.com/googleapis/googleapis/blob/master/google/rpc/code.proto
+      * The operator must be `=` or `!=`. Examples: * `project_id = 12345 AND
+      status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
+      `project_id = 12345 AND resource_visibility = PUBLIC` * `file_store_path
+      = "gs://mybucket"` The length of this field should be no more than 500
+      characters.
+    orderBy: Optional. Comma-separated list of fields to order by, followed by
+      `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
+      insignificant. Only one order field at a time is allowed. Examples: *
+      `project_id asc` * `name` * `sensitivity_level desc` Supported fields
+      are: - `project_id`: The Google Cloud project ID. - `sensitivity_level`:
+      How sensitive the data in a table is, at most. - `data_risk_level`: How
+      much risk is associated with this data. - `profile_last_generated`: When
+      the profile was last updated in epoch seconds. - `last_modified`: The
+      last time the resource was modified. - `resource_visibility`: Visibility
+      restriction for this resource. - `name`: The name of the profile. -
+      `create_time`: The time the file store was first created.
+    pageSize: Optional. Size of the page. This value can be limited by the
+      server. If zero, server returns a page of max size 100.
+    pageToken: Optional. Page token to continue retrieval.
+    parent: Required. Resource name of the organization or project, for
+      example `organizations/433245324/locations/europe` or `projects/project-
+      id/locations/asia`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class DlpProjectsLocationsImageRedactRequest(_messages.Message):
@@ -2478,7 +2612,7 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc,update_time, create_time desc` Supported fields are: -
@@ -2629,7 +2763,7 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       HEALTHY) * last_run_time > \"2017-12-12T00:00:00+00:00\" The length of
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of triggeredJob fields to order by, followed
+    orderBy: Comma-separated list of triggeredJob fields to order by, followed
       by `asc` or `desc` postfix. This list is case insensitive. The default
       sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
@@ -2718,7 +2852,7 @@ class DlpProjectsLocationsProjectDataProfilesListRequest(_messages.Message):
       `project_id = 12345 AND status_code = 1` * `project_id = 12345 AND
       sensitivity_level = HIGH` The length of this field should be no more
       than 500 characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id` *
@@ -2796,7 +2930,7 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, display_name, create_time desc` Supported fields are: -
@@ -2883,7 +3017,7 @@ class DlpProjectsLocationsTableDataProfilesListRequest(_messages.Message):
       status_code = 1` * `project_id = 12345 AND sensitivity_level = HIGH` *
       `project_id = 12345 AND resource_visibility = PUBLIC` The length of this
       field should be no more than 500 characters.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Only one
       order field at a time is allowed. Examples: * `project_id asc` *
@@ -2967,7 +3101,7 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
 
   Fields:
     locationId: Deprecated. This field has no effect.
-    orderBy: Comma separated list of fields to order by, followed by `asc` or
+    orderBy: Comma-separated list of fields to order by, followed by `asc` or
       `desc` postfix. This list is case insensitive. The default sorting order
       is ascending. Redundant space characters are insignificant. Example:
       `name asc, display_name, create_time desc` Supported fields are: -
@@ -3072,6 +3206,10 @@ class GooglePrivacyDlpV2AllOtherBigQueryTables(_messages.Message):
 
 class GooglePrivacyDlpV2AllOtherDatabaseResources(_messages.Message):
   r"""Match database resources not covered by any other filter."""
+
+
+class GooglePrivacyDlpV2AllOtherResources(_messages.Message):
+  r"""Match discovery resources not covered by any other filter."""
 
 
 class GooglePrivacyDlpV2AllText(_messages.Message):
@@ -3398,6 +3536,9 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
       AVRO: avro
       CSV: csv
       TSV: tsv
+      AUDIO: Audio file types. Only used for profiling.
+      VIDEO: Video file types. Only used for profiling.
+      EXECUTABLE: Executable file types. Only used for profiling.
     """
     BYTES_TYPE_UNSPECIFIED = 0
     IMAGE = 1
@@ -3413,6 +3554,9 @@ class GooglePrivacyDlpV2ByteContentItem(_messages.Message):
     AVRO = 11
     CSV = 12
     TSV = 13
+    AUDIO = 14
+    VIDEO = 15
+    EXECUTABLE = 16
 
   data = _messages.BytesField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -3621,6 +3765,26 @@ class GooglePrivacyDlpV2CloudSqlProperties(_messages.Message):
   usernamePassword = _messages.MessageField('GooglePrivacyDlpV2SecretManagerCredential', 5)
 
 
+class GooglePrivacyDlpV2CloudStorageDiscoveryTarget(_messages.Message):
+  r"""Target used to match against for discovery with Cloud Storage buckets.
+
+  Fields:
+    conditions: Optional. In addition to matching the filter, these conditions
+      must be true before a profile is generated.
+    disabled: Optional. Disable profiling for buckets that match this filter.
+    filter: Required. The buckets the generation_cadence applies to. The first
+      target with a matching filter will be the one to apply to a bucket.
+    generationCadence: Optional. How often and when to update profiles. New
+      buckets that match both the filter and conditions are scanned as quickly
+      as possible depending on system capacity.
+  """
+
+  conditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryFileStoreConditions', 1)
+  disabled = _messages.MessageField('GooglePrivacyDlpV2Disabled', 2)
+  filter = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudStorageFilter', 3)
+  generationCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudStorageGenerationCadence', 4)
+
+
 class GooglePrivacyDlpV2CloudStorageFileSet(_messages.Message):
   r"""Message representing a set of files in Cloud Storage.
 
@@ -3754,6 +3918,24 @@ class GooglePrivacyDlpV2CloudStoragePath(_messages.Message):
   path = _messages.StringField(1)
 
 
+class GooglePrivacyDlpV2CloudStorageRegex(_messages.Message):
+  r"""A pattern to match against one or more file stores. At least one pattern
+  must be specified. Regular expressions use RE2
+  [syntax](https://github.com/google/re2/wiki/Syntax); a guide can be found
+  under the google/re2 repository on GitHub.
+
+  Fields:
+    bucketNameRegex: Optional. Regex to test the bucket name against. If
+      empty, all buckets match. Example: "marketing2021" or "(marketing)\d{4}"
+      will both match the bucket gs://marketing2021
+    projectIdRegex: Optional. For organizations, if unset, will match all
+      projects.
+  """
+
+  bucketNameRegex = _messages.StringField(1)
+  projectIdRegex = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2CloudStorageRegexFileSet(_messages.Message):
   r"""Message representing a set of files in a Cloud Storage bucket. Regular
   expressions are used to allow fine-grained control over which files in the
@@ -3796,6 +3978,19 @@ class GooglePrivacyDlpV2CloudStorageRegexFileSet(_messages.Message):
   bucketName = _messages.StringField(1)
   excludeRegex = _messages.StringField(2, repeated=True)
   includeRegex = _messages.StringField(3, repeated=True)
+
+
+class GooglePrivacyDlpV2CloudStorageResourceReference(_messages.Message):
+  r"""Identifies a single Cloud Storage bucket.
+
+  Fields:
+    bucketName: Required. The bucket to scan.
+    projectId: Required. If within a project-level config, then this must
+      match the config's project id.
+  """
+
+  bucketName = _messages.StringField(1)
+  projectId = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2Color(_messages.Message):
@@ -4571,11 +4766,13 @@ class GooglePrivacyDlpV2DataProfileBigQueryRowSchema(_messages.Message):
 
   Fields:
     columnProfile: Column data profile column
+    fileStoreProfile: File store data profile column.
     tableProfile: Table data profile column
   """
 
   columnProfile = _messages.MessageField('GooglePrivacyDlpV2ColumnDataProfile', 1)
-  tableProfile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 2)
+  fileStoreProfile = _messages.MessageField('GooglePrivacyDlpV2FileStoreDataProfile', 2)
+  tableProfile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 3)
 
 
 class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
@@ -4640,7 +4837,7 @@ class GooglePrivacyDlpV2DataProfileLocation(_messages.Message):
   r"""The data that will be profiled.
 
   Fields:
-    folderId: The ID of the Folder within an organization to scan.
+    folderId: The ID of the folder within an organization to scan.
     organizationId: The ID of an organization to scan.
   """
 
@@ -4669,6 +4866,9 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
 
   Fields:
     event: The event that caused the Pub/Sub message to be sent.
+    fileStoreProfile: If `DetailLevel` is `FILE_STORE_PROFILE` this will be
+      fully populated. Otherwise, if `DetailLevel` is `RESOURCE_NAME`, then
+      only `name` and `file_store_path` will be populated.
     profile: If `DetailLevel` is `TABLE_PROFILE` this will be fully populated.
       Otherwise, if `DetailLevel` is `RESOURCE_NAME`, then only `name` and
       `full_resource` will be populated.
@@ -4693,7 +4893,8 @@ class GooglePrivacyDlpV2DataProfilePubSubMessage(_messages.Message):
     ERROR_CHANGED = 4
 
   event = _messages.EnumField('EventValueValuesEnum', 1)
-  profile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 2)
+  fileStoreProfile = _messages.MessageField('GooglePrivacyDlpV2FileStoreDataProfile', 2)
+  profile = _messages.MessageField('GooglePrivacyDlpV2TableDataProfile', 3)
 
 
 class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
@@ -4715,6 +4916,7 @@ class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
       RISK_LOW: Low risk - Lower indication of sensitive data that appears to
         have additional access restrictions in place or no indication of
         sensitive data found.
+      RISK_UNKNOWN: Unable to determine risk.
       RISK_MODERATE: Medium risk - Sensitive data may be present but
         additional access or fine grain access restrictions appear to be
         present. Consider limiting access even further or transform data to
@@ -4726,8 +4928,9 @@ class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
     """
     RISK_SCORE_UNSPECIFIED = 0
     RISK_LOW = 1
-    RISK_MODERATE = 2
-    RISK_HIGH = 3
+    RISK_UNKNOWN = 2
+    RISK_MODERATE = 3
+    RISK_HIGH = 4
 
   score = _messages.EnumField('ScoreValueValuesEnum', 1)
 
@@ -4923,17 +5126,17 @@ class GooglePrivacyDlpV2Deidentify(_messages.Message):
 
   Fields:
     cloudStorageOutput: Required. User settable Cloud Storage bucket and
-      folders to store de-identified files. This field must be set for cloud
-      storage deidentification. The output Cloud Storage bucket must be
+      folders to store de-identified files. This field must be set for Cloud
+      Storage deidentification. The output Cloud Storage bucket must be
       different from the input bucket. De-identified files will overwrite
       files in the output path. Form of: gs://bucket/folder/ or gs://bucket
     fileTypesToTransform: List of user-specified file type groups to
-      transform. If specified, only the files with these filetypes will be
+      transform. If specified, only the files with these file types will be
       transformed. If empty, all supported files will be transformed.
       Supported types may be automatically added over time. If a file type is
       set in this field that isn't supported by the Deidentify action then the
       job will fail and will not be successfully created/started. Currently
-      the only filetypes supported are: IMAGES, TEXT_FILES, CSV, TSV.
+      the only file types supported are: IMAGES, TEXT_FILES, CSV, TSV.
     transformationConfig: User specified deidentify templates and configs for
       structured, unstructured, and image files.
     transformationDetailsStorageConfig: Config for storing transformation
@@ -5432,6 +5635,145 @@ class GooglePrivacyDlpV2DiscoveryCloudSqlGenerationCadence(_messages.Message):
   schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2SchemaModifiedCadence', 2)
 
 
+class GooglePrivacyDlpV2DiscoveryCloudStorageConditions(_messages.Message):
+  r"""Requirements that must be true before a Cloud Storage bucket or object
+  is scanned in discovery for the first time. There is an AND relationship
+  between the top-level attributes.
+
+  Enums:
+    IncludedBucketAttributesValueListEntryValuesEnum:
+    IncludedObjectAttributesValueListEntryValuesEnum:
+
+  Fields:
+    includedBucketAttributes: Required. Only objects with the specified
+      attributes will be scanned. Defaults to [ALL_SUPPORTED_BUCKETS] if
+      unset.
+    includedObjectAttributes: Required. Only objects with the specified
+      attributes will be scanned. If an object has one of the specified
+      attributes but is inside an excluded bucket, it will not be scanned.
+      Defaults to [ALL_SUPPORTED_OBJECTS]. A profile will be created even if
+      no objects match the included_object_attributes.
+  """
+
+  class IncludedBucketAttributesValueListEntryValuesEnum(_messages.Enum):
+    r"""IncludedBucketAttributesValueListEntryValuesEnum enum type.
+
+    Values:
+      CLOUD_STORAGE_BUCKET_ATTRIBUTE_UNSPECIFIED: Unused.
+      ALL_SUPPORTED_BUCKETS: Scan buckets regardless of the attribute.
+      AUTOCLASS_DISABLED: Buckets with autoclass disabled
+        (https://cloud.google.com/storage/docs/autoclass). Only one of
+        AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set.
+      AUTOCLASS_ENABLED: Buckets with autoclass enabled
+        (https://cloud.google.com/storage/docs/autoclass). Only one of
+        AUTOCLASS_DISABLED or AUTOCLASS_ENABLED should be set. Scanning
+        Autoclass-enabled buckets can affect object storage classes.
+    """
+    CLOUD_STORAGE_BUCKET_ATTRIBUTE_UNSPECIFIED = 0
+    ALL_SUPPORTED_BUCKETS = 1
+    AUTOCLASS_DISABLED = 2
+    AUTOCLASS_ENABLED = 3
+
+  class IncludedObjectAttributesValueListEntryValuesEnum(_messages.Enum):
+    r"""IncludedObjectAttributesValueListEntryValuesEnum enum type.
+
+    Values:
+      CLOUD_STORAGE_OBJECT_ATTRIBUTE_UNSPECIFIED: Unused.
+      ALL_SUPPORTED_OBJECTS: Scan objects regardless of the attribute.
+      STANDARD: Scan objects with the standard storage class.
+      NEARLINE: Scan objects with the nearline storage class. This will incur
+        retrieval fees.
+      COLDLINE: Scan objects with the coldline storage class. This will incur
+        retrieval fees.
+      ARCHIVE: Scan objects with the archive storage class. This will incur
+        retrieval fees.
+      REGIONAL: Scan objects with the regional storage class.
+      MULTI_REGIONAL: Scan objects with the multi-regional storage class.
+      DURABLE_REDUCED_AVAILABILITY: Scan objects with the dual-regional
+        storage class. This will incur retrieval fees.
+    """
+    CLOUD_STORAGE_OBJECT_ATTRIBUTE_UNSPECIFIED = 0
+    ALL_SUPPORTED_OBJECTS = 1
+    STANDARD = 2
+    NEARLINE = 3
+    COLDLINE = 4
+    ARCHIVE = 5
+    REGIONAL = 6
+    MULTI_REGIONAL = 7
+    DURABLE_REDUCED_AVAILABILITY = 8
+
+  includedBucketAttributes = _messages.EnumField('IncludedBucketAttributesValueListEntryValuesEnum', 1, repeated=True)
+  includedObjectAttributes = _messages.EnumField('IncludedObjectAttributesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2DiscoveryCloudStorageFilter(_messages.Message):
+  r"""Determines which buckets will have profiles generated within an
+  organization or project. Includes the ability to filter by regular
+  expression patterns on project ID and bucket name.
+
+  Fields:
+    cloudStorageResourceReference: Optional. The bucket to scan. Targets
+      including this can only include one target (the target with this
+      bucket). This enables profiling the contents of a single bucket, while
+      the other options allow for easy profiling of many bucets within a
+      project or an organization.
+    collection: Optional. A specific set of buckets for this filter to apply
+      to.
+    others: Optional. Catch-all. This should always be the last target in the
+      list because anything above it will apply first. Should only appear once
+      in a configuration. If none is specified, a default one will be added
+      automatically.
+  """
+
+  cloudStorageResourceReference = _messages.MessageField('GooglePrivacyDlpV2CloudStorageResourceReference', 1)
+  collection = _messages.MessageField('GooglePrivacyDlpV2FileStoreCollection', 2)
+  others = _messages.MessageField('GooglePrivacyDlpV2AllOtherResources', 3)
+
+
+class GooglePrivacyDlpV2DiscoveryCloudStorageGenerationCadence(_messages.Message):
+  r"""How often existing buckets should have their profiles refreshed. New
+  buckets are scanned as quickly as possible depending on system capacity.
+
+  Enums:
+    RefreshFrequencyValueValuesEnum: Optional. Data changes in Cloud Storage
+      can't trigger reprofiling. If you set this field, profiles are refreshed
+      at this frequency regardless of whether the underlying buckets have
+      changed. Defaults to never.
+
+  Fields:
+    inspectTemplateModifiedCadence: Optional. Governs when to update data
+      profiles when the inspection rules defined by the `InspectTemplate`
+      change. If not set, changing the template will not cause a data profile
+      to update.
+    refreshFrequency: Optional. Data changes in Cloud Storage can't trigger
+      reprofiling. If you set this field, profiles are refreshed at this
+      frequency regardless of whether the underlying buckets have changed.
+      Defaults to never.
+  """
+
+  class RefreshFrequencyValueValuesEnum(_messages.Enum):
+    r"""Optional. Data changes in Cloud Storage can't trigger reprofiling. If
+    you set this field, profiles are refreshed at this frequency regardless of
+    whether the underlying buckets have changed. Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
+  refreshFrequency = _messages.EnumField('RefreshFrequencyValueValuesEnum', 2)
+
+
 class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   r"""Configuration for discovery to scan resources for profile generation.
   Only one discovery configuration may exist per organization, folder, or
@@ -5498,20 +5840,76 @@ class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class GooglePrivacyDlpV2DiscoveryFileStoreConditions(_messages.Message):
+  r"""Requirements that must be true before a file store is scanned in
+  discovery for the first time. There is an AND relationship between the top-
+  level attributes.
+
+  Fields:
+    cloudStorageConditions: Optional. Cloud Storage conditions.
+    createdAfter: Optional. File store must have been created after this date.
+      Used to avoid backfilling.
+    minAge: Optional. Minimum age a file store must have. If set, the value
+      must be 1 hour or greater.
+  """
+
+  cloudStorageConditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryCloudStorageConditions', 1)
+  createdAfter = _messages.StringField(2)
+  minAge = _messages.StringField(3)
+
+
 class GooglePrivacyDlpV2DiscoveryGenerationCadence(_messages.Message):
   r"""What must take place for a profile to be updated and how frequently it
   should occur. New tables are scanned as quickly as possible depending on
   system capacity.
 
   Fields:
+    inspectTemplateModifiedCadence: Governs when to update data profiles when
+      the inspection rules defined by the `InspectTemplate` change. If not
+      set, changing the template will not cause a data profile to update.
     schemaModifiedCadence: Governs when to update data profiles when a schema
       is modified.
     tableModifiedCadence: Governs when to update data profiles when a table is
       modified.
   """
 
-  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoverySchemaModifiedCadence', 1)
-  tableModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTableModifiedCadence', 2)
+  inspectTemplateModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence', 1)
+  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoverySchemaModifiedCadence', 2)
+  tableModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTableModifiedCadence', 3)
+
+
+class GooglePrivacyDlpV2DiscoveryInspectTemplateModifiedCadence(_messages.Message):
+  r"""The cadence at which to update data profiles when the inspection rules
+  defined by the `InspectTemplate` change.
+
+  Enums:
+    FrequencyValueValuesEnum: How frequently data profiles can be updated when
+      the template is modified. Defaults to never.
+
+  Fields:
+    frequency: How frequently data profiles can be updated when the template
+      is modified. Defaults to never.
+  """
+
+  class FrequencyValueValuesEnum(_messages.Enum):
+    r"""How frequently data profiles can be updated when the template is
+    modified. Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  frequency = _messages.EnumField('FrequencyValueValuesEnum', 1)
 
 
 class GooglePrivacyDlpV2DiscoverySchemaModifiedCadence(_messages.Message):
@@ -5571,7 +5969,7 @@ class GooglePrivacyDlpV2DiscoveryStartingLocation(_messages.Message):
   folder ID within an organization.
 
   Fields:
-    folderId: The ID of the Folder within an organization to scan.
+    folderId: The ID of the folder within an organization to scan.
     organizationId: The ID of an organization to scan.
   """
 
@@ -5636,6 +6034,8 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
       table will be the one applied.
     cloudSqlTarget: Cloud SQL target for Discovery. The first target to match
       a table will be the one applied.
+    cloudStorageTarget: Cloud Storage target for Discovery. The first target
+      to match a table will be the one applied.
     secretsTarget: Discovery target that looks for credentials and secrets
       stored in cloud resource metadata and reports them as vulnerabilities to
       Security Command Center. Only one target of this type is allowed.
@@ -5643,7 +6043,8 @@ class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
 
   bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
   cloudSqlTarget = _messages.MessageField('GooglePrivacyDlpV2CloudSqlDiscoveryTarget', 2)
-  secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 3)
+  cloudStorageTarget = _messages.MessageField('GooglePrivacyDlpV2CloudStorageDiscoveryTarget', 3)
+  secretsTarget = _messages.MessageField('GooglePrivacyDlpV2SecretsDiscoveryTarget', 4)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -5750,14 +6151,33 @@ class GooglePrivacyDlpV2Error(_messages.Message):
   r"""Details information about an error encountered during job execution or
   the results of an unsuccessful activation of the JobTrigger.
 
+  Enums:
+    ExtraInfoValueValuesEnum: Additional information about the error.
+
   Fields:
     details: Detailed error codes and messages.
+    extraInfo: Additional information about the error.
     timestamps: The times the error occurred. List includes the oldest
       timestamp and the last 9 timestamps.
   """
 
+  class ExtraInfoValueValuesEnum(_messages.Enum):
+    r"""Additional information about the error.
+
+    Values:
+      ERROR_INFO_UNSPECIFIED: Unused.
+      IMAGE_SCAN_UNAVAILABLE_IN_REGION: Image scan is not available in the
+        region.
+      FILE_STORE_CLUSTER_UNSUPPORTED: File store cluster is not supported for
+        profile generation.
+    """
+    ERROR_INFO_UNSPECIFIED = 0
+    IMAGE_SCAN_UNAVAILABLE_IN_REGION = 1
+    FILE_STORE_CLUSTER_UNSUPPORTED = 2
+
   details = _messages.MessageField('GoogleRpcStatus', 1)
-  timestamps = _messages.StringField(2, repeated=True)
+  extraInfo = _messages.EnumField('ExtraInfoValueValuesEnum', 2)
+  timestamps = _messages.StringField(3, repeated=True)
 
 
 class GooglePrivacyDlpV2ExcludeByHotword(_messages.Message):
@@ -5927,6 +6347,86 @@ class GooglePrivacyDlpV2FieldTransformation(_messages.Message):
   primitiveTransformation = _messages.MessageField('GooglePrivacyDlpV2PrimitiveTransformation', 4)
 
 
+class GooglePrivacyDlpV2FileClusterSummary(_messages.Message):
+  r"""The file cluster summary.
+
+  Fields:
+    dataRiskLevel: The data risk level of this cluster. RISK_LOW if nothing
+      has been scanned.
+    errors: A list of errors detected while scanning this cluster. The list is
+      truncated to 10 per cluster.
+    fileClusterType: The file cluster type.
+    fileExtensionsScanned: A sample of file types scanned in this cluster.
+      Empty if no files were scanned.
+    fileExtensionsSeen: A sample of file types seen in this cluster. Empty if
+      no files were seen.
+    fileStoreInfoTypeSummaries: InfoTypes detected in this cluster.
+    noFilesExist: True if no files exist in this cluster. If the bucket had
+      more files than could be listed, this will be false even if no files for
+      this cluster were seen and file_extensions_seen is empty.
+    sensitivityScore: The sensitivity score of this cluster. The score will be
+      SENSITIVITY_LOW if nothing has been scanned.
+  """
+
+  dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 1)
+  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 2, repeated=True)
+  fileClusterType = _messages.MessageField('GooglePrivacyDlpV2FileClusterType', 3)
+  fileExtensionsScanned = _messages.MessageField('GooglePrivacyDlpV2FileExtensionInfo', 4, repeated=True)
+  fileExtensionsSeen = _messages.MessageField('GooglePrivacyDlpV2FileExtensionInfo', 5, repeated=True)
+  fileStoreInfoTypeSummaries = _messages.MessageField('GooglePrivacyDlpV2FileStoreInfoTypeSummary', 6, repeated=True)
+  noFilesExist = _messages.BooleanField(7)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 8)
+
+
+class GooglePrivacyDlpV2FileClusterType(_messages.Message):
+  r"""Message used to identify file cluster type being profiled.
+
+  Enums:
+    ClusterValueValuesEnum: Cluster type.
+
+  Fields:
+    cluster: Cluster type.
+  """
+
+  class ClusterValueValuesEnum(_messages.Enum):
+    r"""Cluster type.
+
+    Values:
+      CLUSTER_UNSPECIFIED: Unused.
+      CLUSTER_UNKNOWN: Unsupported files.
+      CLUSTER_TEXT: Plain text.
+      CLUSTER_STRUCTURED_DATA: Structured data like CSV, TSV etc.
+      CLUSTER_SOURCE_CODE: Source code.
+      CLUSTER_RICH_DOCUMENT: Rich document like docx, xlsx etc.
+      CLUSTER_IMAGE: Images like jpeg, bmp.
+      CLUSTER_ARCHIVE: Archives and containers like .zip, .tar etc.
+      CLUSTER_MULTIMEDIA: Multimedia like .mp4, .avi etc.
+      CLUSTER_EXECUTABLE: Executable files like .exe, .class, .apk etc.
+    """
+    CLUSTER_UNSPECIFIED = 0
+    CLUSTER_UNKNOWN = 1
+    CLUSTER_TEXT = 2
+    CLUSTER_STRUCTURED_DATA = 3
+    CLUSTER_SOURCE_CODE = 4
+    CLUSTER_RICH_DOCUMENT = 5
+    CLUSTER_IMAGE = 6
+    CLUSTER_ARCHIVE = 7
+    CLUSTER_MULTIMEDIA = 8
+    CLUSTER_EXECUTABLE = 9
+
+  cluster = _messages.EnumField('ClusterValueValuesEnum', 1)
+
+
+class GooglePrivacyDlpV2FileExtensionInfo(_messages.Message):
+  r"""Information regarding the discovered file extension.
+
+  Fields:
+    fileExtension: The file extension if set. (aka .pdf, .jpg, .txt)
+  """
+
+  fileExtension = _messages.StringField(1)
+
+
 class GooglePrivacyDlpV2FileSet(_messages.Message):
   r"""Set of files to scan.
 
@@ -5944,6 +6444,218 @@ class GooglePrivacyDlpV2FileSet(_messages.Message):
 
   regexFileSet = _messages.MessageField('GooglePrivacyDlpV2CloudStorageRegexFileSet', 1)
   url = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2FileStoreCollection(_messages.Message):
+  r"""Match file stores (e.g. buckets) using regex filters.
+
+  Fields:
+    includeRegexes: Optional. A collection of regular expressions to match a
+      file store against.
+  """
+
+  includeRegexes = _messages.MessageField('GooglePrivacyDlpV2FileStoreRegexes', 1)
+
+
+class GooglePrivacyDlpV2FileStoreDataProfile(_messages.Message):
+  r"""The profile for a file store. * Cloud Storage: maps 1:1 with a bucket.
+
+  Enums:
+    ResourceVisibilityValueValuesEnum: How broadly a resource has been shared.
+    StateValueValuesEnum: State of a profile.
+
+  Messages:
+    ResourceAttributesValue: Attributes of the resource being profiled.
+      Currently used attributes: * customer_managed_encryption: boolean -
+      true: the resource is encrypted with a customer-managed key. - false:
+      the resource is encrypted with a provider-managed key.
+    ResourceLabelsValue: The labels applied to the resource at the time the
+      profile was generated.
+
+  Fields:
+    configSnapshot: The snapshot of the configurations used to generate the
+      profile.
+    createTime: The time the file store was first created.
+    dataRiskLevel: The data risk level of this resource.
+    dataSourceType: The resource type that was profiled.
+    dataStorageLocations: For resources that have multiple storage locations,
+      these are those regions. For Cloud Storage this is the list of regions
+      chosen for dual-region storage. `file_store_location` will normally be
+      the corresponding multi-region for the list of individual locations. The
+      first region is always picked as the processing and storage location for
+      the data profile.
+    fileClusterSummaries: FileClusterSummary per each cluster.
+    fileStoreInfoTypeSummaries: InfoTypes detected in this file store.
+    fileStoreIsEmpty: The file store does not have any files.
+    fileStoreLocation: The location of the file store. * Cloud Storage:
+      https://cloud.google.com/storage/docs/locations#available-locations
+    fileStorePath: The file store path. * Cloud Storage: `gs://{bucket}`
+    fullResource: The resource name of the resource profiled.
+      https://cloud.google.com/apis/design/resource_names#full_resource_name
+    lastModifiedTime: The time the file store was last modified.
+    locationType: The location type of the bucket (region, dual-region, multi-
+      region, etc). If dual-region, expect data_storage_locations to be
+      populated.
+    name: The name of the profile.
+    profileLastGenerated: The last time the profile was generated.
+    profileStatus: Success or error status from the most recent profile
+      generation attempt. May be empty if the profile is still being
+      generated.
+    projectDataProfile: The resource name of the project data profile for this
+      file store.
+    projectId: The Google Cloud project ID that owns the resource.
+    resourceAttributes: Attributes of the resource being profiled. Currently
+      used attributes: * customer_managed_encryption: boolean - true: the
+      resource is encrypted with a customer-managed key. - false: the resource
+      is encrypted with a provider-managed key.
+    resourceLabels: The labels applied to the resource at the time the profile
+      was generated.
+    resourceVisibility: How broadly a resource has been shared.
+    sensitivityScore: The sensitivity score of this resource.
+    state: State of a profile.
+  """
+
+  class ResourceVisibilityValueValuesEnum(_messages.Enum):
+    r"""How broadly a resource has been shared.
+
+    Values:
+      RESOURCE_VISIBILITY_UNSPECIFIED: Unused.
+      RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
+      RESOURCE_VISIBILITY_INCONCLUSIVE: May contain public items. For example,
+        if a Cloud Storage bucket has uniform bucket level access disabled,
+        some objects inside it may be public, but none are known yet.
+      RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
+    """
+    RESOURCE_VISIBILITY_UNSPECIFIED = 0
+    RESOURCE_VISIBILITY_PUBLIC = 1
+    RESOURCE_VISIBILITY_INCONCLUSIVE = 2
+    RESOURCE_VISIBILITY_RESTRICTED = 3
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""State of a profile.
+
+    Values:
+      STATE_UNSPECIFIED: Unused.
+      RUNNING: The profile is currently running. Once a profile has finished
+        it will transition to DONE.
+      DONE: The profile is no longer generating. If profile_status.status.code
+        is 0, the profile succeeded, otherwise, it failed.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    DONE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceAttributesValue(_messages.Message):
+    r"""Attributes of the resource being profiled. Currently used attributes:
+    * customer_managed_encryption: boolean - true: the resource is encrypted
+    with a customer-managed key. - false: the resource is encrypted with a
+    provider-managed key.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceAttributesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceAttributesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceAttributesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GooglePrivacyDlpV2Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GooglePrivacyDlpV2Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceLabelsValue(_messages.Message):
+    r"""The labels applied to the resource at the time the profile was
+    generated.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configSnapshot = _messages.MessageField('GooglePrivacyDlpV2DataProfileConfigSnapshot', 1)
+  createTime = _messages.StringField(2)
+  dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 3)
+  dataSourceType = _messages.MessageField('GooglePrivacyDlpV2DataSourceType', 4)
+  dataStorageLocations = _messages.StringField(5, repeated=True)
+  fileClusterSummaries = _messages.MessageField('GooglePrivacyDlpV2FileClusterSummary', 6, repeated=True)
+  fileStoreInfoTypeSummaries = _messages.MessageField('GooglePrivacyDlpV2FileStoreInfoTypeSummary', 7, repeated=True)
+  fileStoreIsEmpty = _messages.BooleanField(8)
+  fileStoreLocation = _messages.StringField(9)
+  fileStorePath = _messages.StringField(10)
+  fullResource = _messages.StringField(11)
+  lastModifiedTime = _messages.StringField(12)
+  locationType = _messages.StringField(13)
+  name = _messages.StringField(14)
+  profileLastGenerated = _messages.StringField(15)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 16)
+  projectDataProfile = _messages.StringField(17)
+  projectId = _messages.StringField(18)
+  resourceAttributes = _messages.MessageField('ResourceAttributesValue', 19)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 20)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 21)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+
+
+class GooglePrivacyDlpV2FileStoreInfoTypeSummary(_messages.Message):
+  r"""Information regarding the discovered InfoType.
+
+  Fields:
+    infoType: The InfoType seen.
+  """
+
+  infoType = _messages.MessageField('GooglePrivacyDlpV2InfoType', 1)
+
+
+class GooglePrivacyDlpV2FileStoreRegex(_messages.Message):
+  r"""A pattern to match against one or more file stores.
+
+  Fields:
+    cloudStorageRegex: Optional. Regex for Cloud Storage.
+  """
+
+  cloudStorageRegex = _messages.MessageField('GooglePrivacyDlpV2CloudStorageRegex', 1)
+
+
+class GooglePrivacyDlpV2FileStoreRegexes(_messages.Message):
+  r"""A collection of regular expressions to determine what file store to
+  match against.
+
+  Fields:
+    patterns: Required. The group of regular expression patterns to match
+      against one or more file stores. Maximum of 100 entries. The sum of all
+      regular expression's length can't exceed 10 KiB.
+  """
+
+  patterns = _messages.MessageField('GooglePrivacyDlpV2FileStoreRegex', 1, repeated=True)
 
 
 class GooglePrivacyDlpV2Finding(_messages.Message):
@@ -6487,6 +7199,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       GLOBAL: The infoType is not issued by or tied to a specific region, but
         is used almost everywhere.
       ARGENTINA: The infoType is typically used in Argentina.
+      ARMENIA: The infoType is typically used in Armenia.
       AUSTRALIA: The infoType is typically used in Australia.
       AZERBAIJAN: The infoType is typically used in Azerbaijan.
       BELARUS: The infoType is typically used in Belarus.
@@ -6538,53 +7251,54 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     LOCATION_UNSPECIFIED = 0
     GLOBAL = 1
     ARGENTINA = 2
-    AUSTRALIA = 3
-    AZERBAIJAN = 4
-    BELARUS = 5
-    BELGIUM = 6
-    BRAZIL = 7
-    CANADA = 8
-    CHILE = 9
-    CHINA = 10
-    COLOMBIA = 11
-    CROATIA = 12
-    DENMARK = 13
-    FRANCE = 14
-    FINLAND = 15
-    GERMANY = 16
-    HONG_KONG = 17
-    INDIA = 18
-    INDONESIA = 19
-    IRELAND = 20
-    ISRAEL = 21
-    ITALY = 22
-    JAPAN = 23
-    KAZAKHSTAN = 24
-    KOREA = 25
-    MEXICO = 26
-    THE_NETHERLANDS = 27
-    NEW_ZEALAND = 28
-    NORWAY = 29
-    PARAGUAY = 30
-    PERU = 31
-    POLAND = 32
-    PORTUGAL = 33
-    RUSSIA = 34
-    SINGAPORE = 35
-    SOUTH_AFRICA = 36
-    SPAIN = 37
-    SWEDEN = 38
-    SWITZERLAND = 39
-    TAIWAN = 40
-    THAILAND = 41
-    TURKEY = 42
-    UKRAINE = 43
-    UNITED_KINGDOM = 44
-    UNITED_STATES = 45
-    URUGUAY = 46
-    UZBEKISTAN = 47
-    VENEZUELA = 48
-    INTERNAL = 49
+    ARMENIA = 3
+    AUSTRALIA = 4
+    AZERBAIJAN = 5
+    BELARUS = 6
+    BELGIUM = 7
+    BRAZIL = 8
+    CANADA = 9
+    CHILE = 10
+    CHINA = 11
+    COLOMBIA = 12
+    CROATIA = 13
+    DENMARK = 14
+    FRANCE = 15
+    FINLAND = 16
+    GERMANY = 17
+    HONG_KONG = 18
+    INDIA = 19
+    INDONESIA = 20
+    IRELAND = 21
+    ISRAEL = 22
+    ITALY = 23
+    JAPAN = 24
+    KAZAKHSTAN = 25
+    KOREA = 26
+    MEXICO = 27
+    THE_NETHERLANDS = 28
+    NEW_ZEALAND = 29
+    NORWAY = 30
+    PARAGUAY = 31
+    PERU = 32
+    POLAND = 33
+    PORTUGAL = 34
+    RUSSIA = 35
+    SINGAPORE = 36
+    SOUTH_AFRICA = 37
+    SPAIN = 38
+    SWEDEN = 39
+    SWITZERLAND = 40
+    TAIWAN = 41
+    THAILAND = 42
+    TURKEY = 43
+    UKRAINE = 44
+    UNITED_KINGDOM = 45
+    UNITED_STATES = 46
+    URUGUAY = 47
+    UZBEKISTAN = 48
+    VENEZUELA = 49
+    INTERNAL = 50
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs
@@ -7487,6 +8201,19 @@ class GooglePrivacyDlpV2ListDlpJobsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GooglePrivacyDlpV2ListFileStoreDataProfilesResponse(_messages.Message):
+  r"""List of file store data profiles generated for a given organization or
+  project.
+
+  Fields:
+    fileStoreDataProfiles: List of data profiles.
+    nextPageToken: The next page token.
+  """
+
+  fileStoreDataProfiles = _messages.MessageField('GooglePrivacyDlpV2FileStoreDataProfile', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GooglePrivacyDlpV2ListInfoTypesResponse(_messages.Message):
   r"""Response to the ListInfoTypes request.
 
@@ -7869,20 +8596,26 @@ class GooglePrivacyDlpV2ProjectDataProfile(_messages.Message):
 
   Fields:
     dataRiskLevel: The data risk level of this project.
+    fileStoreDataProfileCount: The number of file store data profiles
+      generated for this project.
     name: The resource name of the profile.
     profileLastGenerated: The last time the profile was generated.
     profileStatus: Success or error status of the last attempt to profile the
       project.
     projectId: Project ID that was profiled.
     sensitivityScore: The sensitivity score of this project.
+    tableDataProfileCount: The number of table data profiles generated for
+      this project.
   """
 
   dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 1)
-  name = _messages.StringField(2)
-  profileLastGenerated = _messages.StringField(3)
-  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 4)
-  projectId = _messages.StringField(5)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 6)
+  fileStoreDataProfileCount = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  profileLastGenerated = _messages.StringField(4)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 5)
+  projectId = _messages.StringField(6)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 7)
+  tableDataProfileCount = _messages.IntegerField(8)
 
 
 class GooglePrivacyDlpV2Proximity(_messages.Message):
@@ -8009,10 +8742,12 @@ class GooglePrivacyDlpV2PubSubNotification(_messages.Message):
       DETAIL_LEVEL_UNSPECIFIED: Unused.
       TABLE_PROFILE: The full table data profile.
       RESOURCE_NAME: The name of the profiled resource.
+      FILE_STORE_PROFILE: The full file store data profile.
     """
     DETAIL_LEVEL_UNSPECIFIED = 0
     TABLE_PROFILE = 1
     RESOURCE_NAME = 2
+    FILE_STORE_PROFILE = 3
 
   class EventValueValuesEnum(_messages.Enum):
     r"""The type of event that triggers a Pub/Sub. At most one
@@ -8635,6 +9370,7 @@ class GooglePrivacyDlpV2SensitivityScore(_messages.Message):
       SENSITIVITY_SCORE_UNSPECIFIED: Unused.
       SENSITIVITY_LOW: No sensitive information detected. The resource isn't
         publicly accessible.
+      SENSITIVITY_UNKNOWN: Unable to determine sensitivity.
       SENSITIVITY_MODERATE: Medium risk. Contains personally identifiable
         information (PII), potentially sensitive data, or fields with free-
         text data that are at a higher risk of having intermittent sensitive
@@ -8646,8 +9382,9 @@ class GooglePrivacyDlpV2SensitivityScore(_messages.Message):
     """
     SENSITIVITY_SCORE_UNSPECIFIED = 0
     SENSITIVITY_LOW = 1
-    SENSITIVITY_MODERATE = 2
-    SENSITIVITY_HIGH = 3
+    SENSITIVITY_UNKNOWN = 2
+    SENSITIVITY_MODERATE = 3
+    SENSITIVITY_HIGH = 4
 
   score = _messages.EnumField('ScoreValueValuesEnum', 1)
 
@@ -8917,7 +9654,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
     profileStatus: Success or error status from the most recent profile
       generation attempt. May be empty if the profile is still being
       generated.
-    projectDataProfile: The resource name to the project data profile for this
+    projectDataProfile: The resource name of the project data profile for this
       table.
     resourceLabels: The labels applied to the resource at the time the profile
       was generated.
@@ -8952,7 +9689,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
       RESOURCE_VISIBILITY_PUBLIC: Visible to any user.
       RESOURCE_VISIBILITY_INCONCLUSIVE: May contain public items. For example,
         if a Cloud Storage bucket has uniform bucket level access disabled,
-        some objects inside it may be public.
+        some objects inside it may be public, but none are known yet.
       RESOURCE_VISIBILITY_RESTRICTED: Visible only to specific users.
     """
     RESOURCE_VISIBILITY_UNSPECIFIED = 0

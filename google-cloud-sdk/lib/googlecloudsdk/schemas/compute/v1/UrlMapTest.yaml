@@ -25,6 +25,11 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
+  backendServiceWeight:
+    description: |-
+      The weight to use for the supplied host and path when using advanced
+      routing rules that involve traffic splitting.
+    type: integer
   description:
     description: Description of this test case.
     type: string
@@ -51,6 +56,12 @@ properties:
       balancer's redirect response. expectedRedirectResponseCode cannot be set
       when service is set.
     type: integer
+  expectedUrlRedirect:
+    description: |-
+      The expected URL that should be redirected to for the host and path being
+      tested. [Deprecated] This field is deprecated. Use expected_output_url
+      instead.
+    type: string
   headers:
     description: |-
       HTTP headers for this request. If headers contains a host header, then

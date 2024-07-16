@@ -1224,6 +1224,8 @@ class Cluster(_messages.Message):
       time, then a default database version will be used.
     StateValueValuesEnum: Output only. The current serving state of the
       cluster.
+    SubscriptionTypeValueValuesEnum: Optional. Subscription type of the
+      cluster.
 
   Messages:
     AnnotationsValue: Annotations to allow client tools to store small amount
@@ -1301,6 +1303,8 @@ class Cluster(_messages.Message):
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
     state: Output only. The current serving state of the cluster.
+    subscriptionType: Optional. Subscription type of the cluster.
+    trialMetadata: Output only. Metadata for free trial clusters
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
       deleted.
@@ -1374,6 +1378,19 @@ class Cluster(_messages.Message):
     BOOTSTRAPPING = 7
     MAINTENANCE = 8
     PROMOTING = 9
+
+  class SubscriptionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Subscription type of the cluster.
+
+    Values:
+      SUBSCRIPTION_TYPE_UNSPECIFIED: This is an unknown Subscription type (By
+        default, Subscription Type is STANDARD)
+      STANDARD: Standard subscription.
+      TRIAL: Trial subscription.
+    """
+    SUBSCRIPTION_TYPE_UNSPECIFIED = 0
+    STANDARD = 1
+    TRIAL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -1453,8 +1470,10 @@ class Cluster(_messages.Message):
   secondaryConfig = _messages.MessageField('SecondaryConfig', 26)
   sslConfig = _messages.MessageField('SslConfig', 27)
   state = _messages.EnumField('StateValueValuesEnum', 28)
-  uid = _messages.StringField(29)
-  updateTime = _messages.StringField(30)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 29)
+  trialMetadata = _messages.MessageField('TrialMetadata', 30)
+  uid = _messages.StringField(31)
+  updateTime = _messages.StringField(32)
 
 
 class ConnectionInfo(_messages.Message):
@@ -3005,7 +3024,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    observabilityMetricData: More feed data would be added in subsequent CLs
+    observabilityMetricData: A
+      StorageDatabasecenterPartnerapiV1mainObservabilityMetricData attribute.
     recommendationSignalData: A StorageDatabasecenterPartnerapiV1mainDatabaseR
       esourceRecommendationSignalData attribute.
     resourceHealthSignalData: A
@@ -4474,6 +4494,22 @@ class TimeBasedRetention(_messages.Message):
   """
 
   retentionPeriod = _messages.StringField(1)
+
+
+class TrialMetadata(_messages.Message):
+  r"""Contains information and all metadata related to TRIAL clusters.
+
+  Fields:
+    endTime: End time of the trial cluster.
+    graceEndTime: grace end time of the cluster.
+    startTime: start time of the trial cluster.
+    upgradeTime: Upgrade time of trial cluster to Standard cluster.
+  """
+
+  endTime = _messages.StringField(1)
+  graceEndTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  upgradeTime = _messages.StringField(4)
 
 
 class User(_messages.Message):

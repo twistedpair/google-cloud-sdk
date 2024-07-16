@@ -82,6 +82,10 @@ class Bucket(_messages.Message):
     HierarchicalNamespaceValue: The bucket's hierarchical namespace
       configuration.
     IamConfigurationValue: The bucket's IAM configuration.
+    IpFilterValue: The bucket's IP filter configuration. Specifies the network
+      sources that are allowed to access the operations on the bucket, as well
+      as its underlying objects. Only enforced when the mode is set to
+      'Enabled'.
     LabelsValue: User-provided labels, in key/value pairs.
     LifecycleValue: The bucket's lifecycle configuration. See lifecycle
       management for more information.
@@ -136,6 +140,10 @@ class Bucket(_messages.Message):
     iamConfiguration: The bucket's IAM configuration.
     id: The ID of the bucket. For buckets, the id and name properties are the
       same.
+    ipFilter: The bucket's IP filter configuration. Specifies the network
+      sources that are allowed to access the operations on the bucket, as well
+      as its underlying objects. Only enforced when the mode is set to
+      'Enabled'.
     kind: The kind of item this is. For buckets, this is always
       storage#bucket.
     labels: User-provided labels, in key/value pairs.
@@ -329,6 +337,54 @@ class Bucket(_messages.Message):
     bucketPolicyOnly = _messages.MessageField('BucketPolicyOnlyValue', 1)
     publicAccessPrevention = _messages.StringField(2)
     uniformBucketLevelAccess = _messages.MessageField('UniformBucketLevelAccessValue', 3)
+
+  class IpFilterValue(_messages.Message):
+    r"""The bucket's IP filter configuration. Specifies the network sources
+    that are allowed to access the operations on the bucket, as well as its
+    underlying objects. Only enforced when the mode is set to 'Enabled'.
+
+    Messages:
+      PublicNetworkSourceValue: The public network source of the bucket's IP
+        filter.
+      VpcNetworkSourcesValueListEntry: A VpcNetworkSourcesValueListEntry
+        object.
+
+    Fields:
+      mode: The mode of the IP filter. Valid values are 'Enabled' and
+        'Disabled'.
+      publicNetworkSource: The public network source of the bucket's IP
+        filter.
+      vpcNetworkSources: The list of [VPC
+        network](https://cloud.google.com/vpc/docs/vpc) sources of the
+        bucket's IP filter.
+    """
+
+    class PublicNetworkSourceValue(_messages.Message):
+      r"""The public network source of the bucket's IP filter.
+
+      Fields:
+        allowedIpCidrRanges: The list of public IPv4, IPv6 cidr ranges that
+          are allowed to access the bucket.
+      """
+
+      allowedIpCidrRanges = _messages.StringField(1, repeated=True)
+
+    class VpcNetworkSourcesValueListEntry(_messages.Message):
+      r"""A VpcNetworkSourcesValueListEntry object.
+
+      Fields:
+        allowedIpCidrRanges: The list of IPv4, IPv6 cidr ranges subnetworks
+          that are allowed to access the bucket.
+        network: Name of the network. Format:
+          projects/{PROJECT_ID}/global/networks/{NETWORK_NAME}
+      """
+
+      allowedIpCidrRanges = _messages.StringField(1, repeated=True)
+      network = _messages.StringField(2)
+
+    mode = _messages.StringField(1)
+    publicNetworkSource = _messages.MessageField('PublicNetworkSourceValue', 2)
+    vpcNetworkSources = _messages.MessageField('VpcNetworkSourcesValueListEntry', 3, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -577,27 +633,28 @@ class Bucket(_messages.Message):
   hierarchicalNamespace = _messages.MessageField('HierarchicalNamespaceValue', 10)
   iamConfiguration = _messages.MessageField('IamConfigurationValue', 11)
   id = _messages.StringField(12)
-  kind = _messages.StringField(13, default='storage#bucket')
-  labels = _messages.MessageField('LabelsValue', 14)
-  lifecycle = _messages.MessageField('LifecycleValue', 15)
-  location = _messages.StringField(16)
-  locationType = _messages.StringField(17)
-  logging = _messages.MessageField('LoggingValue', 18)
-  metageneration = _messages.IntegerField(19)
-  name = _messages.StringField(20)
-  objectRetention = _messages.MessageField('ObjectRetentionValue', 21)
-  owner = _messages.MessageField('OwnerValue', 22)
-  projectNumber = _messages.IntegerField(23, variant=_messages.Variant.UINT64)
-  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 24)
-  rpo = _messages.StringField(25)
-  satisfiesPZS = _messages.BooleanField(26)
-  selfLink = _messages.StringField(27)
-  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 28)
-  storageClass = _messages.StringField(29)
-  timeCreated = _message_types.DateTimeField(30)
-  updated = _message_types.DateTimeField(31)
-  versioning = _messages.MessageField('VersioningValue', 32)
-  website = _messages.MessageField('WebsiteValue', 33)
+  ipFilter = _messages.MessageField('IpFilterValue', 13)
+  kind = _messages.StringField(14, default='storage#bucket')
+  labels = _messages.MessageField('LabelsValue', 15)
+  lifecycle = _messages.MessageField('LifecycleValue', 16)
+  location = _messages.StringField(17)
+  locationType = _messages.StringField(18)
+  logging = _messages.MessageField('LoggingValue', 19)
+  metageneration = _messages.IntegerField(20)
+  name = _messages.StringField(21)
+  objectRetention = _messages.MessageField('ObjectRetentionValue', 22)
+  owner = _messages.MessageField('OwnerValue', 23)
+  projectNumber = _messages.IntegerField(24, variant=_messages.Variant.UINT64)
+  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 25)
+  rpo = _messages.StringField(26)
+  satisfiesPZS = _messages.BooleanField(27)
+  selfLink = _messages.StringField(28)
+  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 29)
+  storageClass = _messages.StringField(30)
+  timeCreated = _message_types.DateTimeField(31)
+  updated = _message_types.DateTimeField(32)
+  versioning = _messages.MessageField('VersioningValue', 33)
+  website = _messages.MessageField('WebsiteValue', 34)
 
 
 class BucketAccessControl(_messages.Message):
@@ -959,6 +1016,8 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
   r"""The response message for storage.buckets.operations.list.
 
   Fields:
+    kind: The kind of item this is. For lists of operations, this is always
+      storage#operations.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -966,8 +1025,9 @@ class GoogleLongrunningListOperationsResponse(_messages.Message):
       request.
   """
 
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+  kind = _messages.StringField(1, default='storage#operations')
+  nextPageToken = _messages.StringField(2)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 3, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -994,6 +1054,8 @@ class GoogleLongrunningOperation(_messages.Message):
       "response" is available.
     error: The error result of the operation in case of failure or
       cancellation.
+    kind: The kind of item this is. For operations, this is always
+      storage#operation.
     metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
       create time. Some services might not provide such metadata. Any method
@@ -1010,6 +1072,7 @@ class GoogleLongrunningOperation(_messages.Message):
       methods, the response should have the type "XxxResponse", where "Xxx" is
       the original method name. For example, if the original method name is
       "TakeSnapshot()", the inferred response type is "TakeSnapshotResponse".
+    selfLink: The link to this long running operation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1073,9 +1136,11 @@ class GoogleLongrunningOperation(_messages.Message):
 
   done = _messages.BooleanField(1)
   error = _messages.MessageField('GoogleRpcStatus', 2)
-  metadata = _messages.MessageField('MetadataValue', 3)
-  name = _messages.StringField(4)
-  response = _messages.MessageField('ResponseValue', 5)
+  kind = _messages.StringField(3, default='storage#operation')
+  metadata = _messages.MessageField('MetadataValue', 4)
+  name = _messages.StringField(5)
+  response = _messages.MessageField('ResponseValue', 6)
+  selfLink = _messages.StringField(7)
 
 
 class GoogleRpcStatus(_messages.Message):

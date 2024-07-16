@@ -1161,9 +1161,7 @@ def GetOsloginState(
       and oslogin_state.third_party_user
       or oslogin_state.require_certificates
   ):
-    if oslogin_state.third_party_user:
-      # Only escape 3PI usernames; 1P identities must retain the '@' symbol.
-      user_email = quote(user_email, safe=':')
+    user_email = quote(user_email, safe=':@')
     zone = instance.zone.split('/').pop()
     # Inclusively trim suffix from last '-' to convert a zone into a region.
     region = zone[:zone.rindex('-')]
@@ -1185,6 +1183,11 @@ def GetOsloginState(
   # exists associated with the project. If either are not set, import an SSH
   # public key. Otherwise update the expiration time if needed.
   else:
+    if oslogin_state.third_party_user:
+      raise NotImplementedError(
+          'SSH using federated workforce identities is not yet generally '
+          'available (GA). Please use `gcloud beta compute ssh` to SSH using '
+          'a third-party identity.')
     login_profile = oslogin.GetLoginProfile(
         user_email,
         project.name,

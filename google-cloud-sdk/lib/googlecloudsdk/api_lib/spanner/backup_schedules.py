@@ -110,6 +110,8 @@ def Create(
   )
   if args.backup_type[0] == 'full-backup':
     req.backupSchedule.fullBackupSpec = msgs.FullBackupSpec()
+  elif args.backup_type[0] == 'incremental-backup':
+    req.backupSchedule.incrementalBackupSpec = msgs.IncrementalBackupSpec()
   req.backupScheduleId = backup_schedule_ref.Name()
   return client.projects_instances_databases_backupSchedules.Create(req)
 

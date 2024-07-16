@@ -471,6 +471,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   _is_unicode_supported = False
   _release_track = None
   _universe_compatible = None
+  _default_universe_compatible = True
   _valid_release_tracks = None
   _notices = None
   _is_deprecated = False
@@ -504,6 +505,10 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   @classmethod
   def IsUniverseCompatible(cls):
     return cls._universe_compatible
+
+  @classmethod
+  def IsDefaultUniverseCompatible(cls):
+    return cls._default_universe_compatible
 
   @classmethod
   def IsUnicodeSupported(cls):
@@ -861,7 +866,7 @@ def UniverseCompatible(cmd_class):
 
 
 def DefaultUniverseOnly(cmd_class):
-  """Decorator for marking commands and groups unavailable in universes.
+  """Decorator for marking commands & groups available only in default universe.
 
   Decorate a subclass of base.Command or base.Group with this function, and the
   decorated command or group will display help text with disclaimer information
@@ -875,6 +880,25 @@ def DefaultUniverseOnly(cmd_class):
   """
   # pylint: disable=protected-access
   cmd_class._universe_compatible = False
+  return cmd_class
+
+
+def NonDefaultUniverseOnly(cmd_class):
+  """Decorator for marking commands & groups not available in default universe.
+
+  Decorate a subclass of base.Command or base.Group with this function, and the
+  decorated command or group will display help text with disclaimer information
+  about the command or group is supported only outside the default universe.
+
+  Args:
+    cmd_class: base._Common, A calliope command or group.
+
+  Returns:
+    A modified version of the provided class.
+  """
+  # pylint: disable=protected-access
+  cmd_class._universe_compatible = True
+  cmd_class._default_universe_compatible = False
   return cmd_class
 
 

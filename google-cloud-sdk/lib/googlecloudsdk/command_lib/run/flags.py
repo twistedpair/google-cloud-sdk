@@ -311,6 +311,17 @@ def AddEndpointVisibilityEnum(parser):
   )
 
 
+def AddIapFlag(parser):
+  """Adds the --iap flag."""
+  parser.add_argument(
+      '--iap',
+      action=arg_parsers.StoreTrueFalseAction,
+      required=False,
+      hidden=True,
+      help='Whether to enable IAP for the Service.',
+  )
+
+
 def AddIngressFlag(parser):
   """Adds the --ingress flag."""
   parser.add_argument(
@@ -779,6 +790,7 @@ def MapFlagsNoFile(
     value_type=None,
     key_metavar='KEY',
     value_metavar='VALUE',
+    hidden=False,
 ):
   """Create an argument group like map_util.AddUpdateMapFlags but without the file one.
 
@@ -790,6 +802,7 @@ def MapFlagsNoFile(
     value_type: A function to apply to map values.
     key_metavar: Metavariable to list for the key.
     value_metavar: Metavariable to list for the value.
+    hidden: Whether the group should be hidden.
 
   Returns:
     A mutually exclusive group for the map flags.
@@ -797,7 +810,7 @@ def MapFlagsNoFile(
   if not long_name:
     long_name = flag_name
 
-  group = base.ArgumentGroup(mutex=True, help=group_help)
+  group = base.ArgumentGroup(mutex=True, help=group_help, hidden=hidden)
   update_remove_group = base.ArgumentGroup(
       help=(
           'Only --update-{0} and --remove-{0} can be used together. If both '
@@ -906,6 +919,38 @@ def MutexEnvVarsFlags():
           help="""Path to a local YAML file with definitions for all environment
             variables. All existing environment variables will be removed before
             the new environment variables are added. Example YAML content:
+
+              ```
+              KEY_1: "value1"
+              KEY_2: "value 2"
+              ```
+            """,
+      )
+  )
+  return group
+
+
+def MutexBuildEnvVarsFlags():
+  """Return argument group for setting, updating and deleting build env vars."""
+  group = MapFlagsNoFile(
+      'build-env-vars',
+      long_name='build environment variables',
+      key_type=env_vars_util.EnvVarKeyType,
+      value_type=env_vars_util.EnvVarValueType,
+      hidden=True,
+  )
+  group.AddArgument(
+      base.Argument(
+          '--build-env-vars-file',
+          metavar='FILE_PATH',
+          type=map_util.ArgDictFile(
+              key_type=env_vars_util.EnvVarKeyType,
+              value_type=env_vars_util.EnvVarValueType,
+          ),
+          help="""Path to a local YAML file with definitions for all build
+            environment variables. All existing build environment variables will
+            be removed before the new build environment variables are added.
+            Example YAML content:
 
               ```
               KEY_1: "value1"
@@ -1125,7 +1170,8 @@ def AddRevisionSuffixArg(parser):
           'Specify the suffix of the revision name. Revision names always '
           'start with the service name automatically. For example, specifying '
           "[--revision-suffix=v1] for a service named 'helloworld', "
-          "would lead to a revision named 'helloworld-v1'."
+          "would lead to a revision named 'helloworld-v1'. Set empty string to "
+          'clear the suffix and resume server-assigned naming.'
       ),
   )
 
@@ -1432,13 +1478,12 @@ def AddMaxSurgeFlag(parser, resource_kind='service'):
   )
 
 
-def AddScalingModeFlag(parser, resource_kind='service'):
+def AddScalingModeFlag(parser):
   """Add scaling mode flag."""
   parser.add_argument(
       '--scaling-mode',
       choices=_SCALING_MODES,
       help='The scaling mode to use for this resource.',
-      hidden=resource_kind == 'service',
   )
 
 
@@ -2568,6 +2613,8 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ResourceChanges(memory=args.memory))
   if 'gpu' in args and args.gpu:
     changes.append(config_changes.ResourceChanges(gpu=args.gpu))
+    if args.gpu == '0':
+      changes.append(config_changes.GpuTypeChange(gpu_type=''))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -2829,6 +2876,19 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
   return changes
 
 
+def _GetIapChanges(args):
+  """Returns the list of changes for IAP for given args."""
+  if getattr(args, 'iap', None) is None:
+    # flag not specified in the current command, carry over the existing value
+    # on the Service
+    return []
+
+  if args.iap:
+    return [config_changes.SetAnnotationChange(service.IAP_ANNOTATION, 'true')]
+  else:
+    return [config_changes.DeleteAnnotationChange(service.IAP_ANNOTATION)]
+
+
 def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   """Returns a list of changes to the service config, based on the flags set."""
   changes = _GetConfigurationChanges(args, release_track=release_track)
@@ -2846,7 +2906,7 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if 'update_annotations' in args and args.update_annotations:
     for key, value in args.update_annotations.items():
       changes.append(config_changes.SetAnnotationChange(key, value))
-  if 'revision_suffix' in args and args.revision_suffix:
+  if FlagIsExplicitlySet(args, 'revision_suffix'):
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
   if 'connectivity' in args and args.connectivity:
     if args.connectivity == 'internal':
@@ -2932,6 +2992,8 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(
         config_changes.MultiRegionDomainNameChange(domain_name=args.domain)
     )
+
+  changes.extend(_GetIapChanges(args))
   return changes
 
 
@@ -3695,6 +3757,17 @@ def VerifyGKEFlags(args, release_track, product):
         )
     )
 
+  if FlagIsExplicitlySet(args, 'iap'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--iap',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED
+            ],
+        )
+    )
+
 
 def VerifyKubernetesFlags(args, release_track, product):
   """Raise ConfigurationError if args includes OnePlatform or GKE only arguments."""
@@ -3955,6 +4028,17 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--add-volume',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED
+            ],
+        )
+    )
+
+  if FlagIsExplicitlySet(args, 'iap'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--iap',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED
@@ -4242,6 +4326,36 @@ def BaseImageArg():
           hidden=True,
           help='Opts out of use of automatic base image updates.',
       )
+  )
+  return group
+
+
+def BuildWorkerPoolMutexGroup():
+  """Add flags for specifying Cloud Build Custom Build Worker Pool."""
+  group = base.ArgumentGroup(mutex=True, hidden=True)
+  group.AddArgument(
+      base.Argument(
+          '--build-worker-pool',
+          hidden=True,
+          help="""
+          Name of the Cloud Build Custom Worker Pool that should be used to build
+          the function. The format of this field is
+          `projects/${PROJECT}/locations/${LOCATION}/workerPools/${WORKERPOOL}`
+          where ${PROJECT} is the project id and ${LOCATION} is the location where
+          the worker pool is defined and ${WORKERPOOL} is the short name of the
+          worker pool.
+        """,
+      ),
+  )
+  group.AddArgument(
+      base.Argument(
+          '--clear-build-worker-pool',
+          hidden=True,
+          action='store_true',
+          help="""
+          Clears the Cloud Build Custom Worker Pool field.
+        """,
+      ),
   )
   return group
 

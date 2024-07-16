@@ -395,12 +395,12 @@ def AddLabels(parser, help_text=None):
 def AddEffectiveTime(parser):
   """Adds the --effective-time flag to the given parser."""
   help_text = (
-      'The time at which the enforced retention period becomes locked. It'
-      ' should be specified in the format of "YYYY-MM-DD".'
+      'The time at which the enforced retention period becomes locked. This'
+      ' flag is mutually exclusive with --unlock-backup-min-enforced-retention.'
   )
   parser.add_argument(
       '--effective-time',
-      type=arg_parsers.Day.Parse,
+      type=arg_parsers.Datetime.Parse,
       help=help_text,
   )
 
@@ -423,7 +423,8 @@ def AddUnlockBackupMinEnforcedRetention(parser):
   help_text = (
       'Removes the lock on the backup minimum enforced retention period, and'
       ' resets the effective time. When unlocked, the enforced retention period'
-      ' can be changed at any time.'
+      ' can be changed at any time. This flag is mutually exclusive with'
+      ' --effective-time.'
   )
   parser.add_argument(
       '--unlock-backup-min-enforced-retention',

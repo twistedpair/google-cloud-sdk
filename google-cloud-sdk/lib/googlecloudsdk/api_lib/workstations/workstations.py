@@ -292,11 +292,19 @@ class Workstations:
 
   def _AcceptConnection(self, client, _):
     """Opens a WebSocket connection."""
+    cert_reqs = ssl.CERT_REQUIRED
+    ca_certs = certs.where()
+
     custom_ca_certs = properties.VALUES.core.custom_ca_certs_file.Get()
+    no_validate = (
+        properties.VALUES.auth.disable_ssl_validation.GetBool() or False
+    )
+
+    if no_validate:
+      ca_certs = None
+      cert_reqs = ssl.CERT_NONE
     if custom_ca_certs:
       ca_certs = custom_ca_certs
-    else:
-      ca_certs = certs.where()
 
     server = websocket.WebSocketApp(
         'wss://%s/_workstation/tcp/%d' % (self.host, self.port),
@@ -309,7 +317,7 @@ class Workstations:
     def Run():
       server.run_forever(
           sslopt={
-              'cert_reqs': ssl.CERT_REQUIRED,
+              'cert_reqs': cert_reqs,
               'ca_certs': ca_certs,
           }
       )

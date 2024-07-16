@@ -237,6 +237,14 @@ class Collections(enum.Enum):
       ['project', 'zone', 'instance'],
       True
   )
+  INSTANTSNAPSHOTGROUPS = (
+      'instantSnapshotGroups',
+      'projects/{project}/zones/{zone}/instantSnapshotGroups/'
+      '{instantSnapshotGroup}',
+      {},
+      ['project', 'zone', 'instantSnapshotGroup'],
+      True
+  )
   INSTANTSNAPSHOTS = (
       'instantSnapshots',
       'projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}',
@@ -483,6 +491,14 @@ class Collections(enum.Enum):
       ['project', 'region', 'healthCheck'],
       True
   )
+  REGIONINSTANCEGROUPMANAGERRESIZEREQUESTS = (
+      'regionInstanceGroupManagerResizeRequests',
+      'projects/{project}/regions/{region}/instanceGroupManagers/'
+      '{instanceGroupManager}/resizeRequests/{resizeRequest}',
+      {},
+      ['project', 'region', 'instanceGroupManager', 'resizeRequest'],
+      True
+  )
   REGIONINSTANCEGROUPMANAGERS = (
       'regionInstanceGroupManagers',
       'projects/{project}/regions/{region}/instanceGroupManagers/'
@@ -504,6 +520,14 @@ class Collections(enum.Enum):
       '{instanceTemplate}',
       {},
       ['project', 'region', 'instanceTemplate'],
+      True
+  )
+  REGIONINSTANTSNAPSHOTGROUPS = (
+      'regionInstantSnapshotGroups',
+      'projects/{project}/regions/{region}/instantSnapshotGroups/'
+      '{instantSnapshot}',
+      {},
+      ['project', 'region', 'instantSnapshot'],
       True
   )
   REGIONINSTANTSNAPSHOTS = (

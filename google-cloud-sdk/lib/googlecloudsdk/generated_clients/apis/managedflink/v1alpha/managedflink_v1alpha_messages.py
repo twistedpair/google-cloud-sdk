@@ -17,10 +17,11 @@ class AutotuningConfig(_messages.Message):
   r"""The autotuning configuration for the Flink job.
 
   Fields:
-    enableHorizontalAutoscaling: Optional.
+    enableHorizontalAutoscaling: Optional. Whether to enable horizontal
+      autoscaling for the Flink job.
     fixed: Fixed policy to disable autoscaling.
-    maxParallelism: Optional.
-    minParallelism: Optional.
+    maxParallelism: Optional. The maximum task parallelism for the Flink job.
+    minParallelism: Optional. The minimum task parallelism for the Flink job.
     throughputBased: The throughput based autoscaling policy leveraging
       observed throughput, true processing rate (i.e. estimated maximum
       achievable throughput) to autoscale the task parallelism per job vertex.
@@ -111,15 +112,22 @@ class DeploymentSpec(_messages.Message):
   r"""The specification of the Flink deployment.
 
   Fields:
-    maxSlots: Optional. Maximum number of slots for the deployment.
+    limits: Optional. The limit for the deployment.
+    maxSlots: Optional. DEPRECATED FIELD. To be deleted once the clients are
+      regenerated. The maximum number of slots for the deployment.
     networkConfig: Optional. Network configuration for the deployment.
-    workloadIdentity: Optional. Workload identity service account for the
+    secretsPath: Optional. The path to the secret in Secret Manager to be
+      associated with this deployment. Format: projects//secrets//versions/
+    workloadIdentity: Optional. DEPRECATED FIELD. To be deleted once the
+      clients are regenerated. Workload identity service account for the
       deployment.
   """
 
-  maxSlots = _messages.IntegerField(1)
-  networkConfig = _messages.MessageField('NetworkConfig', 2)
-  workloadIdentity = _messages.StringField(3)
+  limits = _messages.MessageField('Limits', 1)
+  maxSlots = _messages.IntegerField(2)
+  networkConfig = _messages.MessageField('NetworkConfig', 3)
+  secretsPath = _messages.StringField(4)
+  workloadIdentity = _messages.StringField(5)
 
 
 class Elastic(_messages.Message):
@@ -249,9 +257,10 @@ class JobSpec(_messages.Message):
       Flink job graph.
     jarUris: Optional. The list of URIs for the job jars in cloud storage.
     jobGraphUri: Required. The flink job graph uri in cloud storage.
+    managedKafkaClusters: Optional. The list of Managed Kafka clusters
+      connected to the job. Expected to be in the format
+      projects//locations//clusters/.
     networkConfig: Optional. Network configuration for the job.
-    workloadIdentityServiceAccount: Optional. Workload identity service
-      account for the job.
   """
 
   artifactUris = _messages.StringField(1, repeated=True)
@@ -259,8 +268,19 @@ class JobSpec(_messages.Message):
   displayName = _messages.StringField(3)
   jarUris = _messages.StringField(4, repeated=True)
   jobGraphUri = _messages.StringField(5)
-  networkConfig = _messages.MessageField('NetworkConfig', 6)
-  workloadIdentityServiceAccount = _messages.StringField(7)
+  managedKafkaClusters = _messages.StringField(6, repeated=True)
+  networkConfig = _messages.MessageField('NetworkConfig', 7)
+
+
+class Limits(_messages.Message):
+  r"""The limit constraints of the deployment. The limits are based on the
+  upper bounds for the different underlying resources.
+
+  Fields:
+    maxSlots: Optional. The maximum number of slots for the deployment.
+  """
+
+  maxSlots = _messages.IntegerField(1)
 
 
 class ListDeploymentsResponse(_messages.Message):
@@ -317,6 +337,23 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSessionsResponse(_messages.Message):
+  r"""Message for response to listing Sessions
+
+  Fields:
+    nextPageToken: The maximum number of sessions to return. The service may
+      return fewer than this value. If unspecified, at most 50 sessions will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    sessions: The list of Session
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessions = _messages.MessageField('Session', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -698,20 +735,133 @@ class ManagedflinkProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ManagedflinkProjectsLocationsSessionsCreateRequest(_messages.Message):
+  r"""A ManagedflinkProjectsLocationsSessionsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent, in this case the location Format:
+      projects/{project}/locations/{location}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    session: A Session resource to be passed as the request body.
+    sessionId: Required. ID to use for the Session
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  session = _messages.MessageField('Session', 3)
+  sessionId = _messages.StringField(4)
+
+
+class ManagedflinkProjectsLocationsSessionsDeleteRequest(_messages.Message):
+  r"""A ManagedflinkProjectsLocationsSessionsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the session Format:
+      projects/{project}/locations/{location}/sessions/{session}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ManagedflinkProjectsLocationsSessionsGetRequest(_messages.Message):
+  r"""A ManagedflinkProjectsLocationsSessionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ManagedflinkProjectsLocationsSessionsListRequest(_messages.Message):
+  r"""A ManagedflinkProjectsLocationsSessionsListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the list of sessions
+      returned. The expression must be in the format of
+      https://cloud.google.com/apis/design/design_patterns#list_filtering and
+      most commonly will used to filter for active sessions.
+    orderBy: Optional. Optional ordering for the list of sessions, such as by
+      time of creation or last change.
+    pageSize: Optional. Requested page size. Service may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListSessionsRequest, in this case it is
+      the location. Format: projects/{project}/locations/{location}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ManagedflinkProjectsLocationsSessionsPatchRequest(_messages.Message):
+  r"""A ManagedflinkProjectsLocationsSessionsPatchRequest object.
+
+  Fields:
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    session: A Session resource to be passed as the request body.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the Session resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If an empty mask is
+      provided then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  session = _messages.MessageField('Session', 3)
+  updateMask = _messages.StringField(4)
+
+
 class NetworkConfig(_messages.Message):
   r"""The VPC, region, subnetwork that can connect to this Flink Cluster.
 
   Fields:
-    region: Optional. The region of the ManagedFlink resource.
     subnetwork: Optional. The subnetwork of the ManagedFlink resource.
     vpc: Optional. The name of the VPC Network to assocaite ManagedFlink
       resources with. Formatted as:
       projects/{project}/global/networks/{network_id}
   """
 
-  region = _messages.StringField(1)
-  subnetwork = _messages.StringField(2)
-  vpc = _messages.StringField(3)
+  subnetwork = _messages.StringField(1)
+  vpc = _messages.StringField(2)
 
 
 class Operation(_messages.Message):
@@ -847,6 +997,49 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Session(_messages.Message):
+  r"""Message describing Session object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

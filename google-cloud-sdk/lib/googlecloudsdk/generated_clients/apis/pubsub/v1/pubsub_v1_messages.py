@@ -25,6 +25,23 @@ class AcknowledgeRequest(_messages.Message):
   ackIds = _messages.StringField(1, repeated=True)
 
 
+class AnalyticsHubSubscriptionInfo(_messages.Message):
+  r"""Information about an associated Analytics Hub subscription
+  (https://cloud.google.com/bigquery/docs/analytics-hub-manage-subscriptions).
+
+  Fields:
+    listing: Optional. The name of the associated Analytics Hub listing
+      resource. Pattern: "projects/{project}/locations/{location}/dataExchange
+      s/{data_exchange}/listings/{listing}"
+    subscription: Optional. The name of the associated Analytics Hub
+      subscription resource. Pattern:
+      "projects/{project}/locations/{location}/subscriptions/{subscription}"
+  """
+
+  listing = _messages.StringField(1)
+  subscription = _messages.StringField(2)
+
+
 class AvroConfig(_messages.Message):
   r"""Configuration for writing message data in Avro format. Message payloads
   and metadata will be written to files as an Avro binary.
@@ -2282,6 +2299,9 @@ class Subscription(_messages.Message):
       delivery, this value is also used to set the request timeout for the
       call to the push endpoint. If the subscriber never acknowledges the
       message, the Pub/Sub system will eventually redeliver the message.
+    analyticsHubSubscriptionInfo: Output only. Information about the
+      associated Analytics Hub subscription. Only set if the subscritpion is
+      created by Analytics Hub.
     bigqueryConfig: Optional. If delivery to BigQuery is used with this
       subscription, this field is used to configure it.
     cloudStorageConfig: Optional. If delivery to Google Cloud Storage is used
@@ -2411,25 +2431,26 @@ class Subscription(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   ackDeadlineSeconds = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  bigqueryConfig = _messages.MessageField('BigQueryConfig', 2)
-  cloudStorageConfig = _messages.MessageField('CloudStorageConfig', 3)
-  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 4)
-  detached = _messages.BooleanField(5)
-  enableExactlyOnceDelivery = _messages.BooleanField(6)
-  enableMessageOrdering = _messages.BooleanField(7)
-  expirationPolicy = _messages.MessageField('ExpirationPolicy', 8)
-  filter = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  messageRetentionDuration = _messages.StringField(11)
-  name = _messages.StringField(12)
-  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 13)
-  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 14)
-  pushConfig = _messages.MessageField('PushConfig', 15)
-  retainAckedMessages = _messages.BooleanField(16)
-  retryPolicy = _messages.MessageField('RetryPolicy', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  topic = _messages.StringField(19)
-  topicMessageRetentionDuration = _messages.StringField(20)
+  analyticsHubSubscriptionInfo = _messages.MessageField('AnalyticsHubSubscriptionInfo', 2)
+  bigqueryConfig = _messages.MessageField('BigQueryConfig', 3)
+  cloudStorageConfig = _messages.MessageField('CloudStorageConfig', 4)
+  deadLetterPolicy = _messages.MessageField('DeadLetterPolicy', 5)
+  detached = _messages.BooleanField(6)
+  enableExactlyOnceDelivery = _messages.BooleanField(7)
+  enableMessageOrdering = _messages.BooleanField(8)
+  expirationPolicy = _messages.MessageField('ExpirationPolicy', 9)
+  filter = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  messageRetentionDuration = _messages.StringField(12)
+  name = _messages.StringField(13)
+  pubsubExportConfig = _messages.MessageField('PubSubExportConfig', 14)
+  pubsubliteExportConfig = _messages.MessageField('PubSubLiteExportConfig', 15)
+  pushConfig = _messages.MessageField('PushConfig', 16)
+  retainAckedMessages = _messages.BooleanField(17)
+  retryPolicy = _messages.MessageField('RetryPolicy', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  topic = _messages.StringField(20)
+  topicMessageRetentionDuration = _messages.StringField(21)
 
 
 class TestIamPermissionsRequest(_messages.Message):

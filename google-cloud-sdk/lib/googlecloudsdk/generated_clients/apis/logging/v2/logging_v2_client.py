@@ -947,7 +947,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.billingAccounts.locations.recentQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/recentQueries',
         request_field='',
         request_type_name='LoggingBillingAccountsLocationsRecentQueriesListRequest',
@@ -1019,6 +1019,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Returns all data associated with the requested query.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsSavedQueriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.savedQueries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsSavedQueriesGetRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the SavedQueries that were created by the user making the request.
 
@@ -1038,11 +1065,38 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.billingAccounts.locations.savedQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/savedQueries',
         request_field='',
         request_type_name='LoggingBillingAccountsLocationsSavedQueriesListRequest',
         response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing SavedQuery.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsSavedQueriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='PATCH',
+        method_id='logging.billingAccounts.locations.savedQueries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='savedQuery',
+        request_type_name='LoggingBillingAccountsLocationsSavedQueriesPatchRequest',
+        response_type_name='SavedQuery',
         supports_download=False,
     )
 
@@ -1420,29 +1474,81 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def CancelQuery(self, request, global_params=None):
-      r"""Cancels a running query. If called on a handle from a multi-step query, the entire query is cancelled.
+    def Query(self, request, global_params=None):
+      r"""Runs a (possibly multi-step) SQL query asynchronously in the tenant project and returns handles that can be used to fetch the results of each step. Raw table references are not permitted; all tables must be referenced in the form of views.
 
       Args:
-        request: (CancelQueryRequest) input message
+        request: (QueryDataRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (CancelQueryResponse) The response message.
+        (QueryDataResponse) The response message.
       """
-      config = self.GetMethodConfig('CancelQuery')
+      config = self.GetMethodConfig('Query')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    CancelQuery.method_config = lambda: base_api.ApiMethodInfo(
+    Query.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',
-        method_id='logging.data.cancelQuery',
+        method_id='logging.data.query',
         ordered_params=[],
         path_params=[],
         query_params=[],
-        relative_path='v2/data:cancelQuery',
+        relative_path='v2/data:query',
         request_field='<request>',
-        request_type_name='CancelQueryRequest',
-        response_type_name='CancelQueryResponse',
+        request_type_name='QueryDataRequest',
+        response_type_name='QueryDataResponse',
+        supports_download=False,
+    )
+
+    def QueryLocal(self, request, global_params=None):
+      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
+
+      Args:
+        request: (QueryDataLocalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryLocal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryLocal.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.data.queryLocal',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/data:queryLocal',
+        request_field='<request>',
+        request_type_name='QueryDataLocalRequest',
+        response_type_name='QueryDataResponse',
+        supports_download=False,
+    )
+
+    def ReadQueryResults(self, request, global_params=None):
+      r"""Retrieves the results from a single step of a previous call to QueryData or QueryDataLocal. If retrieving results from QueryDataLocal, then the same credentials must be used that were provided in the previous call.
+
+      Args:
+        request: (ReadQueryResultsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryResults) The response message.
+      """
+      config = self.GetMethodConfig('ReadQueryResults')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadQueryResults.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.data.readQueryResults',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/data:readQueryResults',
+        request_field='<request>',
+        request_type_name='ReadQueryResultsRequest',
+        response_type_name='QueryResults',
         supports_download=False,
     )
 
@@ -1530,84 +1636,6 @@ class LoggingV2(base_api.BaseApiClient):
         relative_path='v2/entries:query',
         request_field='<request>',
         request_type_name='QueryLogEntriesRequest',
-        response_type_name='QueryResults',
-        supports_download=False,
-    )
-
-    def QueryData(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously in the tenant project and returns handles that can be used to fetch the results of each step. Raw table references are not permitted; all tables must be referenced in the form of views.
-
-      Args:
-        request: (QueryDataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryDataResponse) The response message.
-      """
-      config = self.GetMethodConfig('QueryData')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    QueryData.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='logging.entries.queryData',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v2/entries:queryData',
-        request_field='<request>',
-        request_type_name='QueryDataRequest',
-        response_type_name='QueryDataResponse',
-        supports_download=False,
-    )
-
-    def QueryDataLocal(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
-
-      Args:
-        request: (QueryDataLocalRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryDataResponse) The response message.
-      """
-      config = self.GetMethodConfig('QueryDataLocal')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    QueryDataLocal.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='logging.entries.queryDataLocal',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v2/entries:queryDataLocal',
-        request_field='<request>',
-        request_type_name='QueryDataLocalRequest',
-        response_type_name='QueryDataResponse',
-        supports_download=False,
-    )
-
-    def ReadQueryResults(self, request, global_params=None):
-      r"""Retrieves the results from a single step of a previous call to QueryData or QueryDataLocal. If retrieving results from QueryDataLocal, then the same credentials must be used that were provided in the previous call.
-
-      Args:
-        request: (ReadQueryResultsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryResults) The response message.
-      """
-      config = self.GetMethodConfig('ReadQueryResults')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ReadQueryResults.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='logging.entries.readQueryResults',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v2/entries:readQueryResults',
-        request_field='<request>',
-        request_type_name='ReadQueryResultsRequest',
         response_type_name='QueryResults',
         supports_download=False,
     )
@@ -2761,7 +2789,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.folders.locations.recentQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/recentQueries',
         request_field='',
         request_type_name='LoggingFoldersLocationsRecentQueriesListRequest',
@@ -2833,6 +2861,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Returns all data associated with the requested query.
+
+      Args:
+        request: (LoggingFoldersLocationsSavedQueriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='GET',
+        method_id='logging.folders.locations.savedQueries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsSavedQueriesGetRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the SavedQueries that were created by the user making the request.
 
@@ -2852,11 +2907,38 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.folders.locations.savedQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/savedQueries',
         request_field='',
         request_type_name='LoggingFoldersLocationsSavedQueriesListRequest',
         response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing SavedQuery.
+
+      Args:
+        request: (LoggingFoldersLocationsSavedQueriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='PATCH',
+        method_id='logging.folders.locations.savedQueries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='savedQuery',
+        request_type_name='LoggingFoldersLocationsSavedQueriesPatchRequest',
+        response_type_name='SavedQuery',
         supports_download=False,
     )
 
@@ -5056,7 +5138,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.organizations.locations.recentQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/recentQueries',
         request_field='',
         request_type_name='LoggingOrganizationsLocationsRecentQueriesListRequest',
@@ -5128,6 +5210,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Returns all data associated with the requested query.
+
+      Args:
+        request: (LoggingOrganizationsLocationsSavedQueriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='GET',
+        method_id='logging.organizations.locations.savedQueries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsSavedQueriesGetRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the SavedQueries that were created by the user making the request.
 
@@ -5147,11 +5256,38 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.organizations.locations.savedQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/savedQueries',
         request_field='',
         request_type_name='LoggingOrganizationsLocationsSavedQueriesListRequest',
         response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing SavedQuery.
+
+      Args:
+        request: (LoggingOrganizationsLocationsSavedQueriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='PATCH',
+        method_id='logging.organizations.locations.savedQueries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='savedQuery',
+        request_type_name='LoggingOrganizationsLocationsSavedQueriesPatchRequest',
+        response_type_name='SavedQuery',
         supports_download=False,
     )
 
@@ -6045,6 +6181,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReadMetadata(self, request, global_params=None):
+      r"""Retrieves metadata about a view.
+
+      Args:
+        request: (LoggingProjectsLocationsBucketsViewsReadMetadataRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ReadViewMetadataResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadMetadata')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadMetadata.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/views/{viewsId}:readMetadata',
+        http_method='GET',
+        method_id='logging.projects.locations.buckets.views.readMetadata',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:readMetadata',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsBucketsViewsReadMetadataRequest',
+        response_type_name='ReadViewMetadataResponse',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 
@@ -6499,7 +6662,7 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.projects.locations.recentQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/recentQueries',
         request_field='',
         request_type_name='LoggingProjectsLocationsRecentQueriesListRequest',
@@ -6571,6 +6734,33 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Returns all data associated with the requested query.
+
+      Args:
+        request: (LoggingProjectsLocationsSavedQueriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='GET',
+        method_id='logging.projects.locations.savedQueries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsSavedQueriesGetRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the SavedQueries that were created by the user making the request.
 
@@ -6590,11 +6780,38 @@ class LoggingV2(base_api.BaseApiClient):
         method_id='logging.projects.locations.savedQueries.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/savedQueries',
         request_field='',
         request_type_name='LoggingProjectsLocationsSavedQueriesListRequest',
         response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing SavedQuery.
+
+      Args:
+        request: (LoggingProjectsLocationsSavedQueriesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='PATCH',
+        method_id='logging.projects.locations.savedQueries.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='savedQuery',
+        request_type_name='LoggingProjectsLocationsSavedQueriesPatchRequest',
+        response_type_name='SavedQuery',
         supports_download=False,
     )
 
@@ -7116,6 +7333,32 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.QueryService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a running query. If called on a handle from a multi-step query, the entire query is cancelled.
+
+      Args:
+        request: (CancelQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (CancelQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.query.cancel',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/query:cancel',
+        request_field='<request>',
+        request_type_name='CancelQueryRequest',
+        response_type_name='CancelQueryResponse',
+        supports_download=False,
+    )
 
     def Validate(self, request, global_params=None):
       r"""Validates a query before passing it to QueryData and returns query metadata synchronously.

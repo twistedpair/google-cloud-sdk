@@ -323,11 +323,13 @@ def CreateSchedulingMessage(
     scheduling.locationHint = location_hint
 
   if maintenance_freeze_duration:
-    scheduling.maintenanceFreezeDurationHours = maintenance_freeze_duration // 3600
+    scheduling.maintenanceFreezeDurationHours = (
+        maintenance_freeze_duration // 3600)
 
   if maintenance_interval:
-    scheduling.maintenanceInterval = messages.Scheduling.MaintenanceIntervalValueValuesEnum(
-        maintenance_interval)
+    scheduling.maintenanceInterval = (
+        messages.Scheduling.MaintenanceIntervalValueValuesEnum(
+            maintenance_interval))
 
   if host_error_timeout_seconds:
     scheduling.hostErrorTimeoutSeconds = host_error_timeout_seconds
@@ -406,14 +408,17 @@ def CreateConfidentialInstanceMessage(messages, args,
   return confidential_instance_config_msg
 
 
-def CreateAdvancedMachineFeaturesMessage(messages,
-                                         enable_nested_virtualization=None,
-                                         threads_per_core=None,
-                                         numa_node_count=None,
-                                         visible_core_count=None,
-                                         enable_uefi_networking=None,
-                                         performance_monitoring_unit=None,
-                                         enable_watchdog_timer=None):
+def CreateAdvancedMachineFeaturesMessage(
+    messages,
+    enable_nested_virtualization=None,
+    threads_per_core=None,
+    numa_node_count=None,
+    visible_core_count=None,
+    enable_uefi_networking=None,
+    performance_monitoring_unit=None,
+    enable_watchdog_timer=None,
+    turbo_mode=None,
+):
   """Create AdvancedMachineFeatures message for an Instance."""
   # Start with an empty AdvancedMachineFeatures and optionally add on
   # the features we have like CreateSchedulingMessage does. This lets us
@@ -442,6 +447,9 @@ def CreateAdvancedMachineFeaturesMessage(messages,
 
   if enable_watchdog_timer is not None:
     features.enableWatchdogTimer = enable_watchdog_timer
+
+  if turbo_mode is not None:
+    features.turboMode = turbo_mode
 
   return features
 

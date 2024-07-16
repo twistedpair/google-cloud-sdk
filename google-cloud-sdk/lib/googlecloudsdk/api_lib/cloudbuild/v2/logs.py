@@ -32,7 +32,7 @@ class GCLLogTailer(v1_logs_util.TailerBase):
   ALL_LOGS_VIEW = '_AllLogs'
 
   def __init__(
-      self, project, location, log_filter, has_worker_pool, out=log.status
+      self, project, location, log_filter, has_tipp_pool, out=log.status
   ):
     self.tailer = v1_logs_util.GetGCLLogTailer()
     self.log_filter = log_filter
@@ -46,21 +46,21 @@ class GCLLogTailer(v1_logs_util.TailerBase):
         location=self.location,
         bucket=self.CLOUDBUILD_BUCKET,
         view=self.ALL_LOGS_VIEW)
-    self.has_worker_pool = has_worker_pool
+    self.has_tipp_pool = has_tipp_pool
 
     self.out = out
     self.buffer_window_seconds = 2
 
   @classmethod
   def FromFilter(
-      cls, project, location, log_filter, has_worker_pool, out=log.out
+      cls, project, location, log_filter, has_tipp_pool, out=log.out
   ):
     """Build a GCLLogTailer from a log filter."""
     return cls(
         project=project,
         log_filter=log_filter,
         location=location,
-        has_worker_pool=has_worker_pool,
+        has_tipp_pool=has_tipp_pool,
         out=out,
     )
 
@@ -70,7 +70,7 @@ class GCLLogTailer(v1_logs_util.TailerBase):
     if not self.tailer:
       return
 
-    if self.has_worker_pool:
+    if self.has_tipp_pool:
       resource_names = [self.workerpool_log_view]
     else:
       resource_names = [self.default_log_view]
@@ -100,7 +100,7 @@ class GCLLogTailer(v1_logs_util.TailerBase):
 
   def Print(self):
     """Print GCL logs to the console."""
-    if self.has_worker_pool:
+    if self.has_tipp_pool:
       resource_names = [self.workerpool_log_view]
     else:
       resource_names = [self.default_log_view]
@@ -123,13 +123,12 @@ class GCLLogTailer(v1_logs_util.TailerBase):
 class CloudBuildLogClient(object):
   """Client for interacting with the Cloud Build API (and Cloud Build logs)."""
 
-  def __init__(self):
+  def __init__(self, sleep_time=60):
     self.v2_client = v2_client_util.GetClientInstance()
+    self.sleep_time = sleep_time
 
-  def _GetLogFilter(
-      self, region, run_id, run_type, has_worker_pool, create_time
-  ):
-    if has_worker_pool:
+  def _GetLogFilter(self, region, run_id, run_type, has_tipp_pool, create_time):
+    if has_tipp_pool:
       return self._GetWorkerPoolLogFilter(create_time, run_id, run_type, region)
     else:
       return self._GetNonWorkerPoolLogFilter(create_time, run_id, region)
@@ -158,9 +157,9 @@ class CloudBuildLogClient(object):
       time.sleep(1)
 
     if log_tailer:
-      # wait for another minute since logs can still be coming in after run
+      # wait for some time since logs can still be coming in after run
       # is completed
-      time.sleep(60)
+      time.sleep(self.sleep_time)
       log_tailer.Stop()
 
     return run
@@ -168,12 +167,15 @@ class CloudBuildLogClient(object):
   def Stream(self, project, region, run_id, run_type, out=log.out):
     """Streams the logs for a run if available."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    has_worker_pool = bool(run.workerPool)
+    # TODO: b/327446875 - Remove this check once the TiPP pool is removed.
+    has_tipp_pool = (
+        bool(run.workerPool) and 'workerPoolSecondGen' not in run.workerPool
+    )
     log_filter = self._GetLogFilter(
-        region, run_id, run_type, has_worker_pool, run.createTime
+        region, run_id, run_type, has_tipp_pool, run.createTime
     )
     log_tailer = GCLLogTailer.FromFilter(
-        project, region, log_filter, has_worker_pool, out=out
+        project, region, log_filter, has_tipp_pool, out=out
     )
 
     t = None
@@ -198,12 +200,14 @@ class CloudBuildLogClient(object):
   ):
     """Print the logs for a run."""
     run = v2_client_util.GetRun(project, region, run_id, run_type)
-    has_worker_pool = bool(run.workerPool)
+    has_tipp_pool = (
+        bool(run.workerPool) and 'workerPoolSecondGen' not in run.workerPool
+    )
     log_filter = self._GetLogFilter(
-        region, run_id, run_type, has_worker_pool, run.createTime
+        region, run_id, run_type, has_tipp_pool, run.createTime
     )
     log_tailer = GCLLogTailer.FromFilter(
-        project, region, log_filter, has_worker_pool
+        project, region, log_filter, has_tipp_pool
     )
 
     if log_tailer:

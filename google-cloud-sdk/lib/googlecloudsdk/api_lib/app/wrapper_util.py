@@ -25,7 +25,6 @@ from __future__ import unicode_literals
 import argparse
 import os
 
-from googlecloudsdk.core import log
 from googlecloudsdk.core import yaml
 import six
 
@@ -34,16 +33,10 @@ import six
 # specified in the app.yaml.
 _RUNTIME_COMPONENTS = {
     'java': 'app-engine-java',
-    'php55': 'app-engine-php',
     'go': 'app-engine-go',
     'python27-libs': 'app-engine-python-extras',
 }
 
-
-_WARNING_RUNTIMES = {
-    'php': ('The Cloud SDK no longer ships runtimes for PHP 5.4.  Please set '
-            'your runtime to be "php55".')
-}
 
 _YAML_FILE_EXTENSIONS = ('.yaml', '.yml')
 
@@ -111,8 +104,6 @@ def GetRuntimes(args):
           if runtime == 'python27' and info.get('libraries'):
             runtimes.add('python27-libs')
           runtimes.add(runtime)
-          if runtime in _WARNING_RUNTIMES:
-            log.warning(_WARNING_RUNTIMES[runtime])
     elif os.path.isfile(os.path.join(arg, 'WEB-INF', 'appengine-web.xml')):
       # For unstanged Java App Engine apps, which may not have any yaml files.
       runtimes.add('java')

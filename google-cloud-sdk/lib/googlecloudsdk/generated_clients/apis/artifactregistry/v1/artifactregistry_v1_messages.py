@@ -3401,10 +3401,9 @@ class UploadGenericArtifactRequest(_messages.Message):
       E.g. `example-file.zip` The filename is limited to letters, numbers, and
       url safe characters, i.e. [a-zA-Z0-9-_.~@].
     packageId: The ID of the package of the generic artifact. If the package
-      does not exist, a new package will be created. The `package_id` must
-      start with a letter, end with a letter or number, only contain letters,
-      numbers, hyphens and periods i.e. [a-z0-9-.], and cannot exceed 256
-      characters.
+      does not exist, a new package will be created. The `package_id` should
+      start and end with a letter or number, only contain letters, numbers,
+      hyphens, underscores, and periods, and not exceed 256 characters.
     versionId: The ID of the version of the generic artifact. If the version
       does not exist, a new version will be created. The version_id must start
       and end with a letter or number, can only contain lowercase letters,

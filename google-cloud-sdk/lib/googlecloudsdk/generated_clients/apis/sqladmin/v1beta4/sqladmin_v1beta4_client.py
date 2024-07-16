@@ -585,6 +585,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def RotateServerCertificate(self, request, global_params=None):
+      r"""Rotates the server certificate version to one previously added with the addServerCertificate method. For instances not using Certificate Authority Service (CAS) server CA, please use RotateServerCa instead.
+
+      Args:
+        request: (SqlInstancesRotateServerCertificateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RotateServerCertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RotateServerCertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.RotateServerCertificate',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/rotateServerCertificate',
+        request_field='sqlInstancesRotateServerCertificateRequest',
+        request_type_name='SqlInstancesRotateServerCertificateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AcquireSsrsLease(self, request, global_params=None):
       r"""Acquire a lease for the setup of SQL Server Reporting Services (SSRS).
 
@@ -612,7 +638,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def AddServerCa(self, request, global_params=None):
-      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.
+      r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in. For instances that have enabled Certificate Authority Service (CAS) based server CA, please use AddServerCertificate to add a new server certificate.
 
       Args:
         request: (SqlInstancesAddServerCaRequest) input message
@@ -633,6 +659,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addServerCa',
         request_field='',
         request_type_name='SqlInstancesAddServerCaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def AddServerCertificate(self, request, global_params=None):
+      r"""Add a new trusted server certificate version for the specified instance using Certificate Authority Service (CAS) server CA. Required to prepare for a certificate rotation. If a server certificate version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one certificate version waiting to be rotated in. For instances not using CAS server CA, please use AddServerCa instead.
+
+      Args:
+        request: (SqlInstancesAddServerCertificateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddServerCertificate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddServerCertificate.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.addServerCertificate',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/addServerCertificate',
+        request_field='',
+        request_type_name='SqlInstancesAddServerCertificateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -1106,7 +1158,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def RotateServerCa(self, request, global_params=None):
-      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method.
+      r"""Rotates the server certificate to one signed by the Certificate Authority (CA) version previously added with the addServerCA method. For instances that have enabled Certificate Authority Service (CAS) based server CA, please use RotateServerCertificate to rotate the server certificate.
 
       Args:
         request: (SqlInstancesRotateServerCaRequest) input message

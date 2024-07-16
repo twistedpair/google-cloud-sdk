@@ -878,9 +878,9 @@ class BeyondcorpOrganizationsLocationsInsightsListRequest(_messages.Message):
       * "category = application AND type = count" * "category = application
       AND subCategory = iap" * "type = status" Allowed values: * type: [count,
       latency, status, list] * category: [application, device, request,
-      security] * subCategory: [iap, webprotect] NOTE: Only equality based
-      comparison is allowed. Only `AND` conjunction is allowed. NOTE: The
-      'AND' in the filter field needs to be in capital letters only. NOTE:
+      security] * subCategory: [iap, caa, webprotect] NOTE: Only equality
+      based comparison is allowed. Only `AND` conjunction is allowed. NOTE:
+      The 'AND' in the filter field needs to be in capital letters only. NOTE:
       Just filtering on `subCategory` is not allowed. It should be passed in
       with the parent `category` too. (These expressions are based on the
       filter language described at https://google.aip.dev/160).
@@ -1046,7 +1046,7 @@ class BeyondcorpOrganizationsLocationsSubscriptionsPatchRequest(_messages.Messag
     googleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription: A
       GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription
       resource to be passed as the request body.
-    name: Required. Unique resource name of the Subscription. The name is
+    name: Identifier. Unique resource name of the Subscription. The name is
       ignored when creating a subscription.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2497,9 +2497,9 @@ class BeyondcorpProjectsLocationsInsightsListRequest(_messages.Message):
       * "category = application AND type = count" * "category = application
       AND subCategory = iap" * "type = status" Allowed values: * type: [count,
       latency, status, list] * category: [application, device, request,
-      security] * subCategory: [iap, webprotect] NOTE: Only equality based
-      comparison is allowed. Only `AND` conjunction is allowed. NOTE: The
-      'AND' in the filter field needs to be in capital letters only. NOTE:
+      security] * subCategory: [iap, caa, webprotect] NOTE: Only equality
+      based comparison is allowed. Only `AND` conjunction is allowed. NOTE:
+      The 'AND' in the filter field needs to be in capital letters only. NOTE:
       Just filtering on `subCategory` is not allowed. It should be passed in
       with the parent `category` too. (These expressions are based on the
       filter language described at https://google.aip.dev/160).
@@ -4226,6 +4226,7 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
       ProxyConfig. Cannot exceed 64 characters.
     encryptionInfo: Optional. Information to encrypt JWT for the proxy server.
     name: Output only. ProxyConfig resource name.
+    proxyProtocolConfig: Optional. Protocol config data for the Proxy.
     proxyUri: Required. The URI of the proxy server.
     routingInfo: Required. Routing info to direct traffic to the proxy server.
     transportInfo: Optional. Transport layer information to verify for the
@@ -4237,10 +4238,52 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
   displayName = _messages.StringField(2)
   encryptionInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo', 3)
   name = _messages.StringField(4)
-  proxyUri = _messages.StringField(5)
-  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 6)
-  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 7)
-  updateTime = _messages.StringField(8)
+  proxyProtocolConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig', 5)
+  proxyUri = _messages.StringField(6)
+  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 7)
+  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig(_messages.Message):
+  r"""The protocol data that specifies how to communicate with Partner's
+  Proxy.
+
+  Messages:
+    MetadataValue: Optional. Untyped property bag to be sent back to the proxy
+      using client specific mechanism.
+
+  Fields:
+    metadata: Optional. Untyped property bag to be sent back to the proxy
+      using client specific mechanism.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Untyped property bag to be sent back to the proxy using
+    client specific mechanism.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):
@@ -4599,7 +4642,7 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
       type.
     createTime: Output only. Create time of the subscription.
     endTime: Output only. End time of the subscription.
-    name: Required. Unique resource name of the Subscription. The name is
+    name: Identifier. Unique resource name of the Subscription. The name is
       ignored when creating a subscription.
     seatCount: Optional. Number of seats in the subscription.
     sku: Required. SKU of subscription.

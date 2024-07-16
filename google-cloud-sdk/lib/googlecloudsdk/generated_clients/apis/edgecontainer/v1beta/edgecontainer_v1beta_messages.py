@@ -116,6 +116,7 @@ class Cluster(_messages.Message):
     targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
     upgradeSettings: Optional. Upgrade settings for the cluster.
+    zoneStorageEncryption: Optional. The zone storage encryption configuration
   """
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
@@ -202,6 +203,7 @@ class Cluster(_messages.Message):
   targetVersion = _messages.StringField(25)
   updateTime = _messages.StringField(26)
   upgradeSettings = _messages.MessageField('UpgradeSettings', 27)
+  zoneStorageEncryption = _messages.MessageField('ZoneStorageEncryption', 28)
 
 
 class ClusterNetworking(_messages.Message):
@@ -319,6 +321,8 @@ class ControlPlaneEncryption(_messages.Message):
       CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
       cannot access their local data. This can be caused by a lack of
       permissions to use the key, or if the key is disabled or deleted.
+    ResourceStateValueValuesEnum: Output only. The current resource state
+      associated with the cmek.
 
   Fields:
     kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
@@ -336,6 +340,8 @@ class ControlPlaneEncryption(_messages.Message):
       key. This field may be populated only if `kms_key_state` is not
       `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
       error status reported by Cloud KMS.
+    resourceState: Output only. The current resource state associated with the
+      cmek.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
@@ -355,10 +361,23 @@ class ControlPlaneEncryption(_messages.Message):
     KMS_KEY_STATE_KEY_AVAILABLE = 1
     KMS_KEY_STATE_KEY_UNAVAILABLE = 2
 
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state associated with the cmek.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
   kmsKey = _messages.StringField(1)
   kmsKeyActiveVersion = _messages.StringField(2)
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
   kmsStatus = _messages.MessageField('Status', 4)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
 class Details(_messages.Message):
@@ -1009,6 +1028,8 @@ class LocalDiskEncryption(_messages.Message):
       CryptoKey. If not `KEY_AVAILABLE`, then nodes may go offline as they
       cannot access their local data. This can be caused by a lack of
       permissions to use the key, or if the key is disabled or deleted.
+    ResourceStateValueValuesEnum: Output only. The current resource state
+      associated with the cmek.
 
   Fields:
     kmsKey: Optional. The Cloud KMS CryptoKey e.g. projects/{project}/location
@@ -1026,6 +1047,8 @@ class LocalDiskEncryption(_messages.Message):
       key. This field may be populated only if `kms_key_state` is not
       `KMS_KEY_STATE_KEY_AVAILABLE`. If populated, this field contains the
       error status reported by Cloud KMS.
+    resourceState: Output only. The current resource state associated with the
+      cmek.
   """
 
   class KmsKeyStateValueValuesEnum(_messages.Enum):
@@ -1045,10 +1068,23 @@ class LocalDiskEncryption(_messages.Message):
     KMS_KEY_STATE_KEY_AVAILABLE = 1
     KMS_KEY_STATE_KEY_UNAVAILABLE = 2
 
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state associated with the cmek.
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
   kmsKey = _messages.StringField(1)
   kmsKeyActiveVersion = _messages.StringField(2)
   kmsKeyState = _messages.EnumField('KmsKeyStateValueValuesEnum', 3)
   kmsStatus = _messages.MessageField('Status', 4)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 5)
 
 
 class Location(_messages.Message):
@@ -2080,6 +2116,37 @@ class ZoneMetadata(_messages.Message):
 
   quota = _messages.MessageField('Quota', 1, repeated=True)
   rackTypes = _messages.MessageField('RackTypesValue', 2)
+
+
+class ZoneStorageEncryption(_messages.Message):
+  r"""Configuration for Zone Storage CMEK Support
+
+  Enums:
+    ResourceStateValueValuesEnum: Output only. The current resource state of
+      the CMEK
+
+  Fields:
+    kmsKey: Optional. The Cloud KMS Key
+    kmsKeyActiveVersion: Output only. The Cloud KMS CryptoKeyVersion currently
+      used for encryption/decryption
+    resourceState: Output only. The current resource state of the CMEK
+  """
+
+  class ResourceStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current resource state of the CMEK
+
+    Values:
+      RESOURCE_STATE_UNSPECIFIED: Default value.
+      RESOURCE_STATE_LOCK_DOWN: The resource is in LOCK DOWN state.
+      RESOURCE_STATE_LOCK_DOWN_PENDING: The resource is pending lock down.
+    """
+    RESOURCE_STATE_UNSPECIFIED = 0
+    RESOURCE_STATE_LOCK_DOWN = 1
+    RESOURCE_STATE_LOCK_DOWN_PENDING = 2
+
+  kmsKey = _messages.StringField(1)
+  kmsKeyActiveVersion = _messages.StringField(2)
+  resourceState = _messages.EnumField('ResourceStateValueValuesEnum', 3)
 
 
 encoding.AddCustomJsonFieldMapping(

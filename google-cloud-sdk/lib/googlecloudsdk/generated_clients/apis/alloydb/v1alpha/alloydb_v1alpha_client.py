@@ -886,7 +886,7 @@ class AlloydbV1alpha(base_api.BaseApiClient):
 
     Upgrade.method_config = lambda: base_api.ApiMethodInfo(
         flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:upgrade',
-        http_method='POST',
+        http_method='PATCH',
         method_id='alloydb.projects.locations.clusters.upgrade',
         ordered_params=['name'],
         path_params=['name'],

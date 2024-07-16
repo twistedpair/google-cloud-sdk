@@ -115,24 +115,6 @@ class Connector(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
-class ConnectorRevision(_messages.Message):
-  r"""A revision of a connector.
-
-  Fields:
-    connector: Output only. The snapshot of the connector.
-    createTime: Output only. [Output only] Create time stamp.
-    name: Identifier. The relative resource name of the connector revision, in
-      the format: ``` projects/{project}/locations/{location}/services/{servic
-      e}/connectors/{connector}/revisions/{revision} ```
-    uid: Output only. System-assigned, unique identifier.
-  """
-
-  connector = _messages.MessageField('Connector', 1)
-  createTime = _messages.StringField(2)
-  name = _messages.StringField(3)
-  uid = _messages.StringField(4)
-
-
 class Datasource(_messages.Message):
   r"""A data source that backs Firebase Data Connect services.
 
@@ -592,75 +574,6 @@ class FirebasedataconnectProjectsLocationsServicesConnectorsPatchRequest(_messag
   validateOnly = _messages.BooleanField(7)
 
 
-class FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsDeleteRequest(_messages.Message):
-  r"""A
-  FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsDeleteRequest
-  object.
-
-  Fields:
-    allowMissing: Optional. If true and the ConnectorRevision is not found,
-      the request will succeed but no action will be taken on the server.
-    name: Required. The name of the connector revision to delete, in the
-      format: ``` projects/{project}/locations/{location}/services/{service}/c
-      onnectors/{connector}/revisions/{revision} ```
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validate the request and preview the
-      ConnectorRevision, but do not actually delete it.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
-
-
-class FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsGetRequest(_messages.Message):
-  r"""A
-  FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the connector revision to retrieve, in the
-      format: ``` projects/{project}/locations/{location}/services/{service}/c
-      onnectors/{connector}/revisions/{revision} ```
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsListRequest(_messages.Message):
-  r"""A
-  FirebasedataconnectProjectsLocationsServicesConnectorsRevisionsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A page token, received from a previous
-      `ListConnectorRevisions` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListConnectorRevisions` must match the call that provided the page
-      token.
-    parent: Required. Value of parent.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
 class FirebasedataconnectProjectsLocationsServicesCreateRequest(_messages.Message):
   r"""A FirebasedataconnectProjectsLocationsServicesCreateRequest object.
 
@@ -976,73 +889,6 @@ class FirebasedataconnectProjectsLocationsServicesSchemasPatchRequest(_messages.
   validateOnly = _messages.BooleanField(6)
 
 
-class FirebasedataconnectProjectsLocationsServicesSchemasRevisionsDeleteRequest(_messages.Message):
-  r"""A
-  FirebasedataconnectProjectsLocationsServicesSchemasRevisionsDeleteRequest
-  object.
-
-  Fields:
-    allowMissing: Optional. If true and the SchemaRevision is not found, the
-      request will succeed but no action will be taken on the server.
-    name: Required. The name of the schema revision to delete, in the format:
-      ``` projects/{project}/locations/{location}/services/{service}/schemas/{
-      schema}/revisions/{revision} ```
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validate the request and preview the
-      SchemaRevision, but do not actually delete it.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  validateOnly = _messages.BooleanField(4)
-
-
-class FirebasedataconnectProjectsLocationsServicesSchemasRevisionsGetRequest(_messages.Message):
-  r"""A FirebasedataconnectProjectsLocationsServicesSchemasRevisionsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the schema revision to retrieve, in the
-      format: ``` projects/{project}/locations/{location}/services/{service}/s
-      chemas/{schema}/revisions/{revision} ```
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class FirebasedataconnectProjectsLocationsServicesSchemasRevisionsListRequest(_messages.Message):
-  r"""A
-  FirebasedataconnectProjectsLocationsServicesSchemasRevisionsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A page token, received from a previous
-      `ListSchemaRevisions` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListSchemaRevisions` must match the call that provided the page token.
-    parent: Required. Value of parent.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
 class GraphqlError(_messages.Message):
   r"""GraphqlError conforms to the GraphQL error spec.
   https://spec.graphql.org/draft/#sec-Errors Firebase Data Connect API
@@ -1262,21 +1108,6 @@ class Impersonation(_messages.Message):
   unauthenticated = _messages.BooleanField(2)
 
 
-class ListConnectorRevisionsResponse(_messages.Message):
-  r"""Message for response to listing ConnectorRevisions.
-
-  Fields:
-    connectorRevisions: The list of ConnectorRevisions.
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    unreachable: Locations that could not be reached.
-  """
-
-  connectorRevisions = _messages.MessageField('ConnectorRevision', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
 class ListConnectorsResponse(_messages.Message):
   r"""Message for response to listing Connectors.
 
@@ -1316,21 +1147,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListSchemaRevisionsResponse(_messages.Message):
-  r"""Message for response to listing SchemaRevisions.
-
-  Fields:
-    nextPageToken: A token, which can be sent as `page_token` to retrieve the
-      next page. If this field is omitted, there are no subsequent pages.
-    schemaRevisions: The list of SchemaRevisions.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  schemaRevisions = _messages.MessageField('SchemaRevision', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSchemasResponse(_messages.Message):
@@ -1711,24 +1527,6 @@ class Schema(_messages.Message):
   source = _messages.MessageField('Source', 9)
   uid = _messages.StringField(10)
   updateTime = _messages.StringField(11)
-
-
-class SchemaRevision(_messages.Message):
-  r"""A revision of application schema.
-
-  Fields:
-    createTime: Output only. [Output only] Create time stamp.
-    name: Identifier. The relative resource name of the schema revision, in
-      the format: ``` projects/{project}/locations/{location}/services/{servic
-      e}/schemas/{schema}/revisions/{revision} ```
-    schema: Output only. The snapshot of the application schema.
-    uid: Output only. System-assigned, unique identifier.
-  """
-
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  schema = _messages.MessageField('Schema', 3)
-  uid = _messages.StringField(4)
 
 
 class Service(_messages.Message):

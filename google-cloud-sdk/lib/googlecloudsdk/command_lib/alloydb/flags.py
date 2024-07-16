@@ -33,6 +33,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import re
+
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -49,12 +50,16 @@ def AddAvailabilityType(parser):
     parser: argparse.Parser: Parser object for command line inputs.
   """
   choices_arg = {
-      'REGIONAL': 'Provide high availability instances. Recommended for '
-                  'production instances; instances automatically fail over '
-                  'to another zone within your selected region.',
-      'ZONAL': 'Provide zonal availability instances. Not '
-               'recommended for production instances; instance '
-               'does not automatically fail over to another zone.'
+      'REGIONAL': (
+          'Provide high availability instances. Recommended for '
+          'production instances; instances automatically fail over '
+          'to another zone within your selected region.'
+      ),
+      'ZONAL': (
+          'Provide zonal availability instances. Not '
+          'recommended for production instances; instance '
+          'does not automatically fail over to another zone.'
+      ),
   }
 
   parser.add_argument(
@@ -99,16 +104,11 @@ def AddCluster(parser, positional=True, required=True):
       argument is non-positional.
   """
   if positional:
-    parser.add_argument(
-        'cluster',
-        type=str,
-        help='AlloyDB cluster ID')
+    parser.add_argument('cluster', type=str, help='AlloyDB cluster ID')
   else:
     parser.add_argument(
-        '--cluster',
-        required=required,
-        type=str,
-        help='AlloyDB cluster ID')
+        '--cluster', required=required, type=str, help='AlloyDB cluster ID'
+    )
 
 
 def AddPrimaryCluster(parser, required=True):
@@ -122,7 +122,8 @@ def AddPrimaryCluster(parser, required=True):
       '--primary-cluster',
       required=required,
       type=str,
-      help='AlloyDB primary cluster ID')
+      help='AlloyDB primary cluster ID',
+  )
 
 
 def AddDatabaseFlags(parser, update=False):
@@ -132,22 +133,26 @@ def AddDatabaseFlags(parser, update=False):
     parser: argparse.Parser: Parser object for command line inputs.
     update: Whether or not database flags were provided as part of an update.
   """
-  help_ = ('Comma-separated list of database flags to set on the '
-           'instance. Use an equals sign to separate flag name and value. '
-           'Flags without values, like skip_grant_tables, can be written '
-           'out without a value after, e.g., `skip_grant_tables=`. Use '
-           'on/off for booleans. View the Instance Resource API for allowed '
-           'flags. (e.g., `--database-flags max_allowed_packet=55555,'
-           'skip_grant_tables=,log_output=1`)')
+  help_ = (
+      'Comma-separated list of database flags to set on the '
+      'instance. Use an equals sign to separate flag name and value. '
+      'Flags without values, like skip_grant_tables, can be written '
+      'out without a value after, e.g., `skip_grant_tables=`. Use '
+      'on/off for booleans. View the Instance Resource API for allowed '
+      'flags. (e.g., `--database-flags max_allowed_packet=55555,'
+      'skip_grant_tables=,log_output=1`)'
+  )
   if update:
     help_ += (
-        '\n\nThe value given for this argument *replaces* the existing list.')
+        '\n\nThe value given for this argument *replaces* the existing list.'
+    )
   parser.add_argument(
       '--database-flags',
       type=arg_parsers.ArgDict(min_length=1),
       metavar='FLAG=VALUE',
       required=False,
-      help=help_)
+      help=help_,
+  )
 
 
 def AddInstance(parser):
@@ -156,10 +161,7 @@ def AddInstance(parser):
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
   """
-  parser.add_argument(
-      'instance',
-      type=str,
-      help='AlloyDB instance ID')
+  parser.add_argument('instance', type=str, help='AlloyDB instance ID')
 
 
 def AddInstanceType(parser, required=True):
@@ -175,7 +177,7 @@ def AddInstanceType(parser, required=True):
       required=required,
       choices={
           'PRIMARY': 'PRIMARY instances support read and write operations.',
-          'READ_POOL':
+          'READ_POOL': (
               'READ_POOL instances support read operations only. Each '
               'read pool instance consists of one or more homogeneous '
               'nodes. '
@@ -183,8 +185,10 @@ def AddInstanceType(parser, required=True):
               '  * Read pools with node count of 2 or more can have  '
               '    regional availability (nodes are present in 2 or  '
               '    more zones in a region).'
+          ),
       },
-      help='Specifies instance type.')
+      help='Specifies instance type.',
+  )
 
 
 def AddFaultType(parser, required=True):
@@ -221,10 +225,7 @@ def AddOperation(parser):
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
   """
-  parser.add_argument(
-      'operation',
-      type=str,
-      help='AlloyDB operation ID')
+  parser.add_argument('operation', type=str, help='AlloyDB operation ID')
 
 
 def AddEnablePrivateServiceConnect(parser):
@@ -260,13 +261,16 @@ def AddNetwork(parser):
       '--network',
       required=False,
       type=str,
-      help=('Network in the current project that the instance will be part '
-            'of. To specify using a network with a shared VPC, use the full '
-            'URL of the network. For an example host project, \'testproject\', '
-            'and shared network, \'testsharednetwork\', this would be of the '
-            'form:'
-            '`--network`=`projects/testproject/global/networks/'
-            'testsharednetwork`'))
+      help=(
+          'Network in the current project that the instance will be part '
+          'of. To specify using a network with a shared VPC, use the full '
+          'URL of the network. For an example host project, `testproject`, '
+          'and shared network, `testsharednetwork`, this would be of the '
+          'form:'
+          '`--network=projects/testproject/global/networks/'
+          'testsharednetwork`'
+      ),
+  )
 
 
 def AddAllocatedIPRangeName(parser):
@@ -296,7 +300,8 @@ def AddReadPoolNodeCount(parser):
       '--read-pool-node-count',
       required=False,
       type=int,
-      help='Read capacity, i.e. number of nodes in a read pool instance.')
+      help='Read capacity, i.e. number of nodes in a read pool instance.',
+  )
 
 
 def AddRegion(parser, required=True):
@@ -310,9 +315,12 @@ def AddRegion(parser, required=True):
       '--region',
       required=required,
       type=str,
-      help='Regional location (e.g. asia-east1, us-east1). See the full '
-            'list of regions at '
-            'https://cloud.google.com/sql/docs/instance-locations.')
+      help=(
+          'Regional location (e.g. `asia-east1`, `us-east1`). See the full '
+          'list of regions at '
+          'https://cloud.google.com/sql/docs/instance-locations.'
+      ),
+  )
 
 
 def AddZone(parser):
@@ -325,8 +333,11 @@ def AddZone(parser):
       '--zone',
       required=False,
       type=str,
-      help=('Primary Compute Engine zone '
-            '(e.g. us-central1-a, us-central1-b, etc.'))
+      help=(
+          'Primary Compute Engine zone (e.g. `us-central1-a`, `us-central1-b`,'
+          ' etc.'
+      ),
+  )
 
 
 def AddForce(parser):
@@ -339,11 +350,14 @@ def AddForce(parser):
       '--force',
       required=False,
       action='store_true',
-      help=('Default value is false.'
-            '\n\nIf flag is specified, deletes instances (if any) within this '
-            'cluster, before deleting the cluster.'
-            '\n\nIf flag is not specified, cluster delete will fail if there '
-            'are instances present in the cluster.'))
+      help=(
+          'Default value is false.'
+          '\n\nIf flag is specified, deletes instances (if any) within this '
+          'cluster, before deleting the cluster.'
+          '\n\nIf flag is not specified, cluster delete will fail if there '
+          'are instances present in the cluster.'
+      ),
+  )
 
 
 def AddCPUCount(parser, required=True):
@@ -362,7 +376,9 @@ def AddCPUCount(parser, required=True):
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '
           '(https://cloud.google.com/compute/docs/general-purpose-machines#n2_'
-          'machines).'))
+          'machines).'
+      ),
+  )
 
 
 def AddDBRoles(parser, required=False):
@@ -481,25 +497,32 @@ def AddUserPassword(parser, required=False):
 def _GetDayOfWeekArgList(alloydb_messages):
   """Returns an ArgList accepting days of the week."""
   day_of_week_enum = (
-      alloydb_messages.WeeklySchedule.DaysOfWeekValueListEntryValuesEnum)
+      alloydb_messages.WeeklySchedule.DaysOfWeekValueListEntryValuesEnum
+  )
   choices = [day_of_week_enum.lookup_by_number(i) for i in range(1, 8)]
   visible_choices = [c.name for c in choices]
   visible_choices_set = set(visible_choices)
+
   def _ParseDayOfWeek(value):
     value_upper = value.upper()
     if value_upper not in visible_choices_set:
       raise arg_parsers.ArgumentTypeError(
           '{value} must be one of [{choices}]'.format(
-              value=value, choices=', '.join(visible_choices)))
+              value=value, choices=', '.join(visible_choices)
+          )
+      )
     return day_of_week_enum.lookup_by_name(value_upper)
+
   return arg_parsers.ArgList(
       element_type=_ParseDayOfWeek,
       choices=choices,
-      visible_choices=visible_choices)
+      visible_choices=visible_choices,
+  )
 
 
 def _GetTimeOfDayArgList(alloydb_messages):
   """Returns an ArgList accepting start times of the form `HH:00`."""
+
   def _ParseTimeOfDay(value):
     m = re.match(r'^(\d?\d):00$', value)
     if m:
@@ -508,7 +531,10 @@ def _GetTimeOfDayArgList(alloydb_messages):
         return alloydb_messages.GoogleTypeTimeOfDay(hours=hour)
     raise arg_parsers.ArgumentTypeError(
         'Failed to parse time of day: {0}, expected format: HH:00.'.format(
-            value))
+            value
+        )
+    )
+
   return arg_parsers.ArgList(element_type=_ParseTimeOfDay)
 
 
@@ -557,30 +583,40 @@ def AddAutomatedBackupFlags(
 
   retention_group = policy_group.add_group(
       mutex=True,
-      help=('Retention policy. If no retention policy is provided, '
-            'all automated backups will be retained.'))
+      help=(
+          'Retention policy. If no retention policy is provided, '
+          'all automated backups will be retained.'
+      ),
+  )
   retention_group.add_argument(
       '--automated-backup-retention-period',
       metavar='RETENTION_PERIOD',
       type=arg_parsers.Duration(parsed_unit='s'),
-      help=('Retention period of the backup relative to creation time.  See '
-            '`$ gcloud topic datetimes` for information on duration formats.'))
+      help=(
+          'Retention period of the backup relative to creation time.  See '
+          '`$ gcloud topic datetimes` for information on duration formats.'
+      ),
+  )
   retention_group.add_argument(
       '--automated-backup-retention-count',
       metavar='RETENTION_COUNT',
       type=int,
-      help=('Number of most recent successful backups retained.'))
+      help='Number of most recent successful backups retained.',
+  )
 
   policy_group.add_argument(
       '--automated-backup-window',
       metavar='TIMEOUT_PERIOD',
       type=arg_parsers.Duration(lower_bound='5m', parsed_unit='s'),
-      help=('The length of the time window beginning at start time during '
-            'which a backup can be taken. If a backup does not succeed within '
-            'this time window, it will be canceled and considered failed. '
-            'The backup window must be at least 5 minutes long. '
-            'There is no upper bound on the window. If not set, '
-            'it will default to 1 hour.'))
+      help=(
+          'Length of the time window beginning at start time during '
+          'which a backup can be taken. If a backup does not succeed within '
+          'this time window, it will be canceled and considered failed. '
+          'The backup window must be at least 5 minutes long. '
+          'There is no upper bound on the window. If not set, '
+          'it will default to 1 hour.'
+      ),
+  )
   if (
       release_track == base.ReleaseTrack.ALPHA
       or release_track == base.ReleaseTrack.BETA
@@ -613,13 +649,17 @@ def AddAutomatedBackupFlags(
     group.add_argument(
         '--clear-automated-backup',
         action='store_true',
-        help=('Clears the automated backup policy on the cluster. '
-              'The default automated backup policy will be used.'))
+        help=(
+            'Clears the automated backup policy on the cluster. '
+            'The default automated backup policy will be used.'
+        ),
+    )
 
   group.add_argument(
       '--disable-automated-backup',
       action='store_true',
-      help='Disables automated backups on the cluster.')
+      help='Disables automated backups on the cluster.',
+  )
 
 
 def AddAutomatedBackupFlagsForCreateSecondary(parser, alloydb_messages):
@@ -730,7 +770,8 @@ def AddEncryptionConfigFlags(parser, verb):
       '--kms-key',
       GetKmsKeyResourceSpec(),
       'Cloud KMS key to be used {}.'.format(verb),
-      required=False).AddToParser(parser)
+      required=False,
+  ).AddToParser(parser)
 
 
 def AddRestoreClusterSourceFlags(parser):
@@ -756,7 +797,8 @@ def AddRestoreClusterSourceFlags(parser):
   )
 
   continuous_backup_source_group = group.add_group(
-      help='Restore a cluster from a source cluster at a given point in time.')
+      help='Restore a cluster from a source cluster at a given point in time.'
+  )
   continuous_backup_source_group.add_argument(
       '--source-cluster',
       required=True,
@@ -773,8 +815,11 @@ def AddRestoreClusterSourceFlags(parser):
       '--point-in-time',
       type=arg_parsers.Datetime.Parse,
       required=True,
-      help=('Point in time to restore to, in RFC 3339 format. For example, '
-            '2012-11-15T16:19:00.094Z.'))
+      help=(
+          'Point in time to restore to, in RFC 3339 format. For example, '
+          '2012-11-15T16:19:00.094Z.'
+      ),
+  )
 
 
 def AddContinuousBackupConfigFlags(parser, release_track, update=False):
@@ -794,7 +839,8 @@ def AddContinuousBackupConfigFlags(parser, release_track, update=False):
       '--enable-continuous-backup',
       action='store_true',
       default=None,
-      help='Enables Continuous Backups on the cluster.')
+      help='Enables Continuous Backups on the cluster.',
+  )
   group.add_argument(
       '--continuous-backup-recovery-window-days',
       metavar='RECOVERY_PERIOD',
@@ -1020,17 +1066,20 @@ def KmsKeyAttributeConfig():
 
 def KmsKeyringAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-keyring', help_text='KMS keyring id of the {resource}.')
+      name='kms-keyring', help_text='KMS keyring id of the {resource}.'
+  )
 
 
 def KmsLocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-location', help_text='Cloud location for the {resource}.')
+      name='kms-location', help_text='Cloud location for the {resource}.'
+  )
 
 
 def KmsProjectAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='kms-project', help_text='Cloud project id for the {resource}.')
+      name='kms-project', help_text='Cloud project id for the {resource}.'
+  )
 
 
 def GetKmsKeyResourceSpec():
@@ -1040,7 +1089,8 @@ def GetKmsKeyResourceSpec():
       cryptoKeysId=KmsKeyAttributeConfig(),
       keyRingsId=KmsKeyringAttributeConfig(),
       locationsId=KmsLocationAttributeConfig(),
-      projectsId=KmsProjectAttributeConfig())
+      projectsId=KmsProjectAttributeConfig(),
+  )
 
 
 def GetAndValidateKmsKeyName(args, flag_overrides=None):
@@ -1049,28 +1099,37 @@ def GetAndValidateKmsKeyName(args, flag_overrides=None):
       'kms-key': '--kms-key',
       'kms-keyring': '--kms-keyring',
       'kms-location': '--kms-location',
-      'kms-project': '--kms-project'
+      'kms-project': '--kms-project',
   }
   kms_flags = flag_overrides if flag_overrides else kms_flags
 
-  kms_ref = getattr(args.CONCEPTS,
-                    kms_flags['kms-key'][2:].replace('-', '_')).Parse()
+  kms_ref = getattr(
+      args.CONCEPTS, kms_flags['kms-key'][2:].replace('-', '_')
+  ).Parse()
   if kms_ref:
     return kms_ref.RelativeName()
   else:
     # If parsing failed but args were specified, raise error
     for keyword in kms_flags.values():
       if getattr(args, keyword[2:].replace('-', '_'), None):
-        parameter_name = '{} {} {} {}'.format(kms_flags['kms-project'],
-                                              kms_flags['kms-location'],
-                                              kms_flags['kms-keyring'],
-                                              kms_flags['kms-key'])
-        message = ('Specify fully qualified KMS key ID with {}, or use '
-                   'combination of {}, {}, {} and {} to specify the key ID in '
-                   'pieces.')
-        message = message.format(kms_flags['kms-key'], kms_flags['kms-project'],
-                                 kms_flags['kms-location'],
-                                 kms_flags['kms-keyring'], kms_flags['kms-key'])
+        parameter_name = '{} {} {} {}'.format(
+            kms_flags['kms-project'],
+            kms_flags['kms-location'],
+            kms_flags['kms-keyring'],
+            kms_flags['kms-key'],
+        )
+        message = (
+            'Specify fully qualified KMS key ID with {}, or use '
+            'combination of {}, {}, {} and {} to specify the key ID in '
+            'pieces.'
+        )
+        message = message.format(
+            kms_flags['kms-key'],
+            kms_flags['kms-project'],
+            kms_flags['kms-location'],
+            kms_flags['kms-keyring'],
+            kms_flags['kms-key'],
+        )
         raise exceptions.InvalidArgumentException(parameter_name, message)
     return None  # User didn't specify KMS key
 
@@ -1095,6 +1154,8 @@ def ValidateContinuousBackupFlags(args, update=False):
         '--continuous-backup-encryption-key',
         '--clear-continuous-backup-encryption-key',
     )
+
+
 # LINT.ThenChange()
 
 
@@ -1140,7 +1201,7 @@ def GetAutomatedBackupKmsFlagOverrides():
       'kms-key': '--automated-backup-encryption-key',
       'kms-keyring': '--automated-backup-encryption-key-keyring',
       'kms-location': '--automated-backup-encryption-key-location',
-      'kms-project': '--automated-backup-encryption-key-project'
+      'kms-project': '--automated-backup-encryption-key-project',
   }
 
 
@@ -1149,23 +1210,21 @@ def GetContinuousBackupKmsFlagOverrides():
       'kms-key': '--continuous-backup-encryption-key',
       'kms-keyring': '--continuous-backup-encryption-key-keyring',
       'kms-location': '--continuous-backup-encryption-key-location',
-      'kms-project': '--continuous-backup-encryption-key-project'
+      'kms-project': '--continuous-backup-encryption-key-project',
   }
 
 
 def GetInstanceViewFlagMapper(alloydb_messages):
   return arg_utils.ChoiceEnumMapper(
       '--view',
-      alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest
-      .ViewValueValuesEnum,
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesGetRequest.ViewValueValuesEnum,
       required=False,
       custom_mappings={
-          'INSTANCE_VIEW_BASIC':
-              'basic',
-          'INSTANCE_VIEW_FULL':
-              'full',
+          'INSTANCE_VIEW_BASIC': 'basic',
+          'INSTANCE_VIEW_FULL': 'full',
       },
-      help_str='View of the instance to return.')
+      help_str='View of the instance to return.',
+  )
 
 
 def AddView(parser, alloydb_messages):
@@ -1175,8 +1234,7 @@ def AddView(parser, alloydb_messages):
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module.
   """
-  GetInstanceViewFlagMapper(alloydb_messages).choice_arg.AddToParser(
-      parser)
+  GetInstanceViewFlagMapper(alloydb_messages).choice_arg.AddToParser(parser)
 
 
 def AddUpdateMode(parser):
@@ -1194,8 +1252,10 @@ def AddUpdateMode(parser):
               'This will be fast but may incur a downtime.'
           ),
       },
-      help='Specify the mode for updating the instance. If unspecified, '
-      'the update would follow a least disruptive approach',
+      help=(
+          'Specify the mode for updating the instance. If unspecified, '
+          'the update would follow a least disruptive approach'
+      ),
   )
 
 
@@ -1224,11 +1284,12 @@ def AddSSLMode(parser, default_from_primary=False, update=False):
                 'SSL connections are optional. CA verification is not enforced.'
             ),
         },
-        help=ssl_mode_help
+        help=ssl_mode_help,
     )
   elif default_from_primary:
-    ssl_mode_help += (' Default SSL mode will match what is set on the '
-                      'primary instance.')
+    ssl_mode_help += (
+        ' Default SSL mode will match what is set on the primary instance.'
+    )
     parser.add_argument(
         '--ssl-mode',
         required=False,
@@ -1241,7 +1302,7 @@ def AddSSLMode(parser, default_from_primary=False, update=False):
                 'SSL connections are optional. CA verification is not enforced.'
             ),
         },
-        help=ssl_mode_help
+        help=ssl_mode_help,
     )
   else:
     ssl_mode_help += ' Default SSL mode is ENCRYPTED_ONLY.'
@@ -1258,7 +1319,7 @@ def AddSSLMode(parser, default_from_primary=False, update=False):
             ),
         },
         default='ENCRYPTED_ONLY',
-        help=ssl_mode_help
+        help=ssl_mode_help,
     )
 
 
@@ -1279,6 +1340,7 @@ def AddRequireConnectors(parser):
   )
 
 
+# LINT.IfChange(database_version)
 def AddDatabaseVersion(parser, alloydb_messages, release_track):
   """Adds Database Version flag.
 
@@ -1300,8 +1362,36 @@ def AddDatabaseVersion(parser, alloydb_messages, release_track):
       required=False,
       type=alloydb_messages.Cluster.DatabaseVersionValueValuesEnum,
       choices=choices,
-      help='Database version of the cluster.'
+      help='Database version of the cluster.',
   )
+# LINT.ThenChange(:version)
+
+
+# LINT.IfChange(version)
+def AddVersion(parser, alloydb_messages, release_track):
+  """Adds Version flag.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+    alloydb_messages: Message module.
+    release_track: Release track of the command.
+  """
+  choices = [
+      alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_14,
+      alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_15,
+  ]
+  if release_track == base.ReleaseTrack.ALPHA:
+    choices.append(
+        alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum.POSTGRES_16
+    )
+  parser.add_argument(
+      '--version',
+      required=True,
+      type=alloydb_messages.UpgradeClusterRequest.VersionValueValuesEnum,
+      choices=choices,
+      help='Database version of the cluster.',
+  )
+# LINT.ThenChange(:database_version)
 
 
 def AddSubscriptionType(parser, alloydb_messages):
@@ -1320,7 +1410,7 @@ def AddSubscriptionType(parser, alloydb_messages):
           alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum.STANDARD,
           alloydb_messages.Cluster.SubscriptionTypeValueValuesEnum.TRIAL,
       ],
-      help='Subscription type of the cluster.'
+      help='Subscription type of the cluster.',
   )
 
 
@@ -1334,16 +1424,14 @@ def AddAssignInboundPublicIp(parser):
       '--assign-inbound-public-ip',
       required=False,
       type=str,
-      help=(
-          """Specify to enable or disable public IP on an instance.
+      help=("""Specify to enable or disable public IP on an instance.
           ASSIGN_INBOUND_PUBLIC_IP must be one of:
           * *NO_PUBLIC_IP*
           ** This disables public IP on the instance. Updating an instance to
           disable public IP will clear the list of authorized networks.
           * *ASSIGN_IPV4*
           ** Assign an inbound public IPv4 address for the instance.
-          Public IP is enabled."""
-      ),
+          Public IP is enabled."""),
   )
 
 
@@ -1410,8 +1498,8 @@ def AddMaintenanceWindow(parser, alloydb_messages, update=False):
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module
-    update: If false, only allow user to configure maintenance window
-            day and hour.
+    update: If false, only allow user to configure maintenance window day and
+      hour.
   """
   if update:
     parent_group = parser.add_group(
@@ -1546,13 +1634,12 @@ def AddDenyMaintenancePeriod(parser, alloydb_messages, update=False):
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
     alloydb_messages: Message module
-    update: If false, only allow user to configure deny maintenance
-      period start and end date and time.
+    update: If false, only allow user to configure deny maintenance period start
+      and end date and time.
   """
   if update:
     parent_group = parser.add_group(
-        mutex=True, hidden=True,
-        help='Specify maintenance deny period.'
+        mutex=True, hidden=True, help='Specify maintenance deny period.'
     )
     child_group = parent_group.add_group(
         help='Specify preferred day and time for maintenance deny period.'
@@ -1562,6 +1649,25 @@ def AddDenyMaintenancePeriod(parser, alloydb_messages, update=False):
   else:
     group = parser.add_group(
         hidden=True,
-        help='Specify preferred day and time for maintenance deny period.'
+        help='Specify preferred day and time for maintenance deny period.',
     )
     _AddDenyMaintenancePeriodDateAndTime(group, alloydb_messages)
+
+
+def AddNodeIds(parser):
+  """Adds the `--node-ids` flag to the parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--node-ids',
+      required=False,
+      type=arg_parsers.ArgList(),
+      metavar='NODE_IDS',
+      help=(
+          'Comma-separated list of node IDs. '
+          'Only supported for read pool instances. (e.g.,'
+          ' `--node-ids=node-1,node-2,node-3`)'
+      ),
+  )

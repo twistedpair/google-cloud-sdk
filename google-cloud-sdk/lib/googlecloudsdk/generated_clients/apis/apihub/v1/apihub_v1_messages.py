@@ -2353,10 +2353,7 @@ class GoogleCloudApihubV1ListApisResponse(_messages.Message):
   r"""The ListApis method's response.
 
   Fields:
-    apis: The API resources present in the API hub. Only following fields will
-      be populated in the response: name, display_name,
-      documentation.external_uri, team.enum_values.values.id and
-      business_unit.enum_values.values.id.
+    apis: The API resources present in the API hub.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
   """

@@ -198,6 +198,19 @@ class BatchProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BatchProjectsLocationsJobsCancelRequest(_messages.Message):
+  r"""A BatchProjectsLocationsJobsCancelRequest object.
+
+  Fields:
+    cancelJobRequest: A CancelJobRequest resource to be passed as the request
+      body.
+    name: Required. Job name.
+  """
+
+  cancelJobRequest = _messages.MessageField('CancelJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BatchProjectsLocationsJobsCreateRequest(_messages.Message):
   r"""A BatchProjectsLocationsJobsCreateRequest object.
 
@@ -534,6 +547,26 @@ class BatchProjectsLocationsResourceAllowancesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   resourceAllowance = _messages.MessageField('ResourceAllowance', 3)
   updateMask = _messages.StringField(4)
+
+
+class CancelJobRequest(_messages.Message):
+  r"""CancelJob Request.
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -932,6 +965,19 @@ class InstancePolicyOrTemplate(_messages.Message):
   resources such as GPUs and extra disks.
 
   Fields:
+    blockProjectSshKeys: Optional. Set this field to `true` if you want Batch
+      to block project-level SSH keys from accessing this job's VMs.
+      Alternatively, you can configure the job to specify a VM instance
+      template that blocks project-level SSH keys. In either case, Batch
+      blocks project-level SSH keys while creating the VMs for this job. Batch
+      allows project-level SSH keys for a job's VMs only if all the following
+      are true: + This field is undefined or set to `false`. + The job's VM
+      instance template (if any) doesn't block project-level SSH keys.
+      Notably, you can override this behavior by manually updating a VM to
+      block or allow project-level SSH keys. For more information about
+      blocking project-level SSH keys, see the Compute Engine documentation:
+      https://cloud.google.com/compute/docs/connect/restrict-ssh-keys#block-
+      keys
     installGpuDrivers: Set this field true if you want Batch to help fetch
       drivers from a third party location and install them for GPUs specified
       in `policy.accelerators` or `instance_template` on your behalf. Default
@@ -949,10 +995,11 @@ class InstancePolicyOrTemplate(_messages.Message):
     policy: InstancePolicy.
   """
 
-  installGpuDrivers = _messages.BooleanField(1)
-  installOpsAgent = _messages.BooleanField(2)
-  instanceTemplate = _messages.StringField(3)
-  policy = _messages.MessageField('InstancePolicy', 4)
+  blockProjectSshKeys = _messages.BooleanField(1)
+  installGpuDrivers = _messages.BooleanField(2)
+  installOpsAgent = _messages.BooleanField(3)
+  instanceTemplate = _messages.StringField(4)
+  policy = _messages.MessageField('InstancePolicy', 5)
 
 
 class InstanceStatus(_messages.Message):
@@ -2230,21 +2277,24 @@ class Status(_messages.Message):
 
 
 class StatusEvent(_messages.Message):
-  r"""Status event
+  r"""Status event.
 
   Enums:
-    TaskStateValueValuesEnum: Task State
+    TaskStateValueValuesEnum: Task State. This field is only defined for task-
+      level status events.
 
   Fields:
     description: Description of the event.
     eventTime: The time this event occurred.
-    taskExecution: Task Execution
-    taskState: Task State
+    taskExecution: Task Execution. This field is only defined for task-level
+      status events where the task fails.
+    taskState: Task State. This field is only defined for task-level status
+      events.
     type: Type of the event.
   """
 
   class TaskStateValueValuesEnum(_messages.Enum):
-    r"""Task State
+    r"""Task State. This field is only defined for task-level status events.
 
     Values:
       STATE_UNSPECIFIED: Unknown state.
@@ -2558,19 +2608,19 @@ class TaskSpec(_messages.Message):
 
 
 class TaskStatus(_messages.Message):
-  r"""Status of a task
+  r"""Status of a task.
 
   Enums:
-    StateValueValuesEnum: Task state
+    StateValueValuesEnum: Task state.
 
   Fields:
     resourceUsage: The resource usage of the task.
-    state: Task state
+    state: Task state.
     statusEvents: Detailed info about why the state is reached.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Task state
+    r"""Task state.
 
     Values:
       STATE_UNSPECIFIED: Unknown state.

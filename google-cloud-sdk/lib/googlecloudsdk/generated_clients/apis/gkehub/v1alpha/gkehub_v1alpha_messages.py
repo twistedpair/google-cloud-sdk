@@ -452,12 +452,14 @@ class ClusterStatus(_messages.Message):
       RUNNING: The Rollout is running for the cluster.
       FAILED: The Rollout failed for the cluster.
       SUCCEEDED: The Rollout succeeded for the cluster.
+      PAUSED: The Rollout is paused for the cluster.
     """
     STATE_UNSPECIFIED = 0
     PENDING = 1
     RUNNING = 2
     FAILED = 3
     SUCCEEDED = 4
+    PAUSED = 5
 
   lastUpdateTime = _messages.StringField(1)
   membership = _messages.StringField(2)
@@ -832,6 +834,7 @@ class CommonFeatureSpec(_messages.Message):
     namespaceactuation: Namespace Actuation feature spec
     rbacrolebindingactuation: RBAC Role Binding Actuation feature spec
     workloadcertificate: Workload Certificate spec.
+    workloadidentity: Workload Identity feature spec.
     workloadmigration: The specification for WorkloadMigration feature.
   """
 
@@ -846,7 +849,8 @@ class CommonFeatureSpec(_messages.Message):
   namespaceactuation = _messages.MessageField('NamespaceActuationFeatureSpec', 9)
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureSpec', 10)
   workloadcertificate = _messages.MessageField('FeatureSpec', 11)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 12)
+  workloadidentity = _messages.MessageField('WorkloadIdentityFeatureSpec', 12)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 13)
 
 
 class CommonFeatureState(_messages.Message):
@@ -861,6 +865,7 @@ class CommonFeatureState(_messages.Message):
     rbacrolebindingactuation: RBAC Role Binding Actuation feature state
     servicemesh: Service Mesh-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
+    workloadidentity: WorkloadIdentity fleet-level state.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
@@ -871,6 +876,7 @@ class CommonFeatureState(_messages.Message):
   rbacrolebindingactuation = _messages.MessageField('RBACRoleBindingActuationFeatureState', 6)
   servicemesh = _messages.MessageField('ServiceMeshFeatureState', 7)
   state = _messages.MessageField('FeatureState', 8)
+  workloadidentity = _messages.MessageField('WorkloadIdentityFeatureState', 9)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -966,15 +972,23 @@ class Condition(_messages.Message):
         cloud region) - 'self:prod-region' (i.e., allow connections from
         clients that are in the same prod region) - 'guardians' (i.e., allow
         connections from its guardian realms. See go/security-realms-
-        glossary#guardian for more information.) - 'self' [DEPRECATED] (i.e.,
-        allow connections from clients that are in the same security realm,
-        which is currently but not guaranteed to be campus-sized) - a realm
-        (e.g., 'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx',
-        see: go/realm-groups) A match is determined by a realm group
-        membership check performed by a RealmAclRep object (go/realm-acl-
-        howto). It is not permitted to grant access based on the *absence* of
-        a realm, so realm conditions can only be used in a "positive" context
-        (e.g., ALLOW/IN or DENY/NOT_IN).
+        glossary#guardian for more information.) - 'cryto_core_guardians'
+        (i.e., allow connections from its crypto core guardian realms. See
+        go/security-realms-glossary#guardian for more information.) Crypto
+        Core coverage is a super-set of Default coverage, containing
+        information about coverage between higher tier data centers (e.g.,
+        YAWNs). Most services should use Default coverage and only use Crypto
+        Core coverage if the service is involved in greenfield turnup of new
+        higher tier data centers (e.g., credential infrastructure, machine/job
+        management systems, etc.). - 'self' [DEPRECATED] (i.e., allow
+        connections from clients that are in the same security realm, which is
+        currently but not guaranteed to be campus-sized) - a realm (e.g.,
+        'campus-abc') - a realm group (e.g., 'realms-for-borg-cell-xx', see:
+        go/realm-groups) A match is determined by a realm group membership
+        check performed by a RealmAclRep object (go/realm-acl-howto). It is
+        not permitted to grant access based on the *absence* of a realm, so
+        realm conditions can only be used in a "positive" context (e.g.,
+        ALLOW/IN or DENY/NOT_IN).
       APPROVER: An approver (distinct from the requester) that has authorized
         this request. When used with IN, the condition indicates that one of
         the approvers associated with the request matches the specified
@@ -1279,8 +1293,11 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     GitSyncValueValuesEnum: Deployment state of the git-sync pod
     ImporterValueValuesEnum: Deployment state of the importer pod
     MonitorValueValuesEnum: Deployment state of the monitor pod
+    OtelCollectorValueValuesEnum: Deployment state of otel-collector
     ReconcilerManagerValueValuesEnum: Deployment state of reconciler-manager
       pod
+    ResourceGroupControllerManagerValueValuesEnum: Deployment state of
+      resource-group-controller-manager
     RootReconcilerValueValuesEnum: Deployment state of root-reconciler
     SyncerValueValuesEnum: Deployment state of the syncer pod
 
@@ -1289,7 +1306,10 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     gitSync: Deployment state of the git-sync pod
     importer: Deployment state of the importer pod
     monitor: Deployment state of the monitor pod
+    otelCollector: Deployment state of otel-collector
     reconcilerManager: Deployment state of reconciler-manager pod
+    resourceGroupControllerManager: Deployment state of resource-group-
+      controller-manager
     rootReconciler: Deployment state of root-reconciler
     syncer: Deployment state of the syncer pod
   """
@@ -1358,8 +1378,40 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     ERROR = 3
     PENDING = 4
 
+  class OtelCollectorValueValuesEnum(_messages.Enum):
+    r"""Deployment state of otel-collector
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
+    PENDING = 4
+
+  class ResourceGroupControllerManagerValueValuesEnum(_messages.Enum):
+    r"""Deployment state of resource-group-controller-manager
 
     Values:
       DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
@@ -1410,9 +1462,11 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
   importer = _messages.EnumField('ImporterValueValuesEnum', 3)
   monitor = _messages.EnumField('MonitorValueValuesEnum', 4)
-  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 5)
-  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 6)
-  syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
+  otelCollector = _messages.EnumField('OtelCollectorValueValuesEnum', 5)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 6)
+  resourceGroupControllerManager = _messages.EnumField('ResourceGroupControllerManagerValueValuesEnum', 7)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 8)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 9)
 
 
 class ConfigManagementConfigSyncError(_messages.Message):
@@ -1511,11 +1565,14 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   r"""Specific versioning information pertaining to ConfigSync's Pods
 
   Fields:
-    admissionWebhook: Version of the deployed admission_webhook pod
+    admissionWebhook: Version of the deployed admission-webhook pod
     gitSync: Version of the deployed git-sync pod
     importer: Version of the deployed importer pod
     monitor: Version of the deployed monitor pod
+    otelCollector: Version of the deployed otel-collector pod
     reconcilerManager: Version of the deployed reconciler-manager pod
+    resourceGroupControllerManager: Version of the deployed resource-group-
+      controller-manager pod
     rootReconciler: Version of the deployed reconciler container in root-
       reconciler pod
     syncer: Version of the deployed syncer pod
@@ -1525,9 +1582,11 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   gitSync = _messages.StringField(2)
   importer = _messages.StringField(3)
   monitor = _messages.StringField(4)
-  reconcilerManager = _messages.StringField(5)
-  rootReconciler = _messages.StringField(6)
-  syncer = _messages.StringField(7)
+  otelCollector = _messages.StringField(5)
+  reconcilerManager = _messages.StringField(6)
+  resourceGroupControllerManager = _messages.StringField(7)
+  rootReconciler = _messages.StringField(8)
+  syncer = _messages.StringField(9)
 
 
 class ConfigManagementErrorResource(_messages.Message):
@@ -7354,7 +7413,12 @@ class Rollout(_messages.Message):
     managedRolloutConfig: Optional. The configuration used for the Rollout.
     name: Identifier. The full, unique resource name of this Rollout in the
       format of `projects/{project}/locations/global/rollouts/{rollout}`.
+    scheduledStartTime: Optional. The timestamp at which the Rollout is
+      scheduled to start. If not specified, the Rollout will start immediately
+      and the scheduled_start_time will be same as create_time.
     state: Output only. State specifies various states of the Rollout.
+    stateReason: Output only. A human-readable description explaining the
+      reason for the current state.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all Rollout resources. If a Rollout resource is deleted and
       another resource with the same name is created, it gets a different uid.
@@ -7373,12 +7437,14 @@ class Rollout(_messages.Message):
       PAUSED: The Rollout is paused.
       CANCELLED: The Rollout is in a failure terminal state.
       COMPLETED: The Rollout is in a terminal state.
+      SCHEDULED: The Rollout is scheduled to start.
     """
     STATE_UNSPECIFIED = 0
     RUNNING = 1
     PAUSED = 2
     CANCELLED = 3
     COMPLETED = 4
+    SCHEDULED = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -7440,10 +7506,12 @@ class Rollout(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 10)
   name = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  versionUpgrade = _messages.MessageField('VersionUpgrade', 15)
+  scheduledStartTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateReason = _messages.StringField(14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  versionUpgrade = _messages.MessageField('VersionUpgrade', 17)
 
 
 class Rule(_messages.Message):
@@ -8116,7 +8184,8 @@ class ServiceMeshMembershipSpec(_messages.Message):
     DataPlaneValueValuesEnum: Enables automatic data plane management.
     DefaultChannelValueValuesEnum: Determines which release channel to use for
       default injection and service mesh APIs.
-    ManagementValueValuesEnum: Enables automatic Service Mesh management.
+    ManagementValueValuesEnum: Optional. Enables automatic Service Mesh
+      management.
 
   Fields:
     configApi: Optional. Specifies the API that will be used for configuring
@@ -8126,7 +8195,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     dataPlane: Enables automatic data plane management.
     defaultChannel: Determines which release channel to use for default
       injection and service mesh APIs.
-    management: Enables automatic Service Mesh management.
+    management: Optional. Enables automatic Service Mesh management.
   """
 
   class ConfigApiValueValuesEnum(_messages.Enum):
@@ -8193,7 +8262,7 @@ class ServiceMeshMembershipSpec(_messages.Message):
     STABLE = 3
 
   class ManagementValueValuesEnum(_messages.Enum):
-    r"""Enables automatic Service Mesh management.
+    r"""Optional. Enables automatic Service Mesh management.
 
     Values:
       MANAGEMENT_UNSPECIFIED: Unspecified
@@ -8571,6 +8640,32 @@ class VersionUpgrade(_messages.Message):
 
   desiredVersion = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class WorkloadIdentityFeatureSpec(_messages.Message):
+  r"""**WorkloadIdentity**: Global feature specification.
+
+  Fields:
+    scopeTenancyPool: Pool to be used for Workload Identity. This pool in
+      trust-domain mode is used with Fleet Tenancy, so that sameness can be
+      enforced. ex:
+      projects/example/locations/global/workloadidentitypools/custompool
+  """
+
+  scopeTenancyPool = _messages.StringField(1)
+
+
+class WorkloadIdentityFeatureState(_messages.Message):
+  r"""**WorkloadIdentity**: Global feature state.
+
+  Fields:
+    scopeTenancyWorkloadIdentityPool: The full name of the scope-tenancy pool
+      for the fleet.
+    workloadIdentityPool: The full name of the svc.id.goog pool for the fleet.
+  """
+
+  scopeTenancyWorkloadIdentityPool = _messages.StringField(1)
+  workloadIdentityPool = _messages.StringField(2)
 
 
 class WorkloadMigrationFeatureSpec(_messages.Message):

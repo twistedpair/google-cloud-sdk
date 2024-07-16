@@ -69,6 +69,12 @@ class Execution(_messages.Message):
   Enums:
     CallLogLevelValueValuesEnum: The call logging level associated to this
       execution.
+    ExecutionHistoryLevelValueValuesEnum: Optional. Describes the level of the
+      execution history feature to apply to this execution. If not specified,
+      the level of the execution history feature will be determined by its
+      workflow's execution history level. If the value is different from its
+      workflow's value, it will override the workflow's execution history
+      level for this exeuction.
     StateValueValuesEnum: Output only. Current state of the execution.
 
   Messages:
@@ -96,6 +102,12 @@ class Execution(_messages.Message):
     error: Output only. The error which caused the execution to finish
       prematurely. The value is only present if the execution's state is
       `FAILED` or `CANCELLED`.
+    executionHistoryLevel: Optional. Describes the level of the execution
+      history feature to apply to this execution. If not specified, the level
+      of the execution history feature will be determined by its workflow's
+      execution history level. If the value is different from its workflow's
+      value, it will override the workflow's execution history level for this
+      exeuction.
     labels: Labels associated with this execution. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
       only contain lowercase letters, numeric characters, underscores, and
@@ -132,6 +144,24 @@ class Execution(_messages.Message):
     LOG_ALL_CALLS = 1
     LOG_ERRORS_ONLY = 2
     LOG_NONE = 3
+
+  class ExecutionHistoryLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Describes the level of the execution history feature to
+    apply to this execution. If not specified, the level of the execution
+    history feature will be determined by its workflow's execution history
+    level. If the value is different from its workflow's value, it will
+    override the workflow's execution history level for this exeuction.
+
+    Values:
+      EXECUTION_HISTORY_LEVEL_UNSPECIFIED: The default/unset value.
+      EXECUTION_HISTORY_BASIC: Enable execution history basic feature for this
+        execution.
+      EXECUTION_HISTORY_DETAILED: Enable execution history detailed feature
+        for this execution.
+    """
+    EXECUTION_HISTORY_LEVEL_UNSPECIFIED = 0
+    EXECUTION_HISTORY_BASIC = 1
+    EXECUTION_HISTORY_DETAILED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the execution.
@@ -190,14 +220,15 @@ class Execution(_messages.Message):
   duration = _messages.StringField(5)
   endTime = _messages.StringField(6)
   error = _messages.MessageField('Error', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  result = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateError = _messages.MessageField('StateError', 13)
-  status = _messages.MessageField('Status', 14)
-  workflowRevisionId = _messages.StringField(15)
+  executionHistoryLevel = _messages.EnumField('ExecutionHistoryLevelValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  result = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateError = _messages.MessageField('StateError', 14)
+  status = _messages.MessageField('Status', 15)
+  workflowRevisionId = _messages.StringField(16)
 
 
 class ExportDataResponse(_messages.Message):

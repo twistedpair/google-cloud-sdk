@@ -53,8 +53,10 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     self.projects_locations_firewallEndpointAssociations = self.ProjectsLocationsFirewallEndpointAssociationsService(self)
     self.projects_locations_gatewaySecurityPolicies_rules = self.ProjectsLocationsGatewaySecurityPoliciesRulesService(self)
     self.projects_locations_gatewaySecurityPolicies = self.ProjectsLocationsGatewaySecurityPoliciesService(self)
-    self.projects_locations_global_sacRealms = self.ProjectsLocationsGlobalSacRealmsService(self)
-    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
+    self.projects_locations_interceptDeploymentGroups = self.ProjectsLocationsInterceptDeploymentGroupsService(self)
+    self.projects_locations_interceptDeployments = self.ProjectsLocationsInterceptDeploymentsService(self)
+    self.projects_locations_interceptEndpointGroupAssociations = self.ProjectsLocationsInterceptEndpointGroupAssociationsService(self)
+    self.projects_locations_interceptEndpointGroups = self.ProjectsLocationsInterceptEndpointGroupsService(self)
     self.projects_locations_mirroringDeploymentGroups = self.ProjectsLocationsMirroringDeploymentGroupsService(self)
     self.projects_locations_mirroringDeployments = self.ProjectsLocationsMirroringDeploymentsService(self)
     self.projects_locations_mirroringEndpointGroupAssociations = self.ProjectsLocationsMirroringEndpointGroupAssociationsService(self)
@@ -64,6 +66,7 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
     self.projects_locations_partnerSSEGateways = self.ProjectsLocationsPartnerSSEGatewaysService(self)
     self.projects_locations_partnerSSERealms = self.ProjectsLocationsPartnerSSERealmsService(self)
     self.projects_locations_sacAttachments = self.ProjectsLocationsSacAttachmentsService(self)
+    self.projects_locations_sacRealms = self.ProjectsLocationsSacRealmsService(self)
     self.projects_locations_securityProfileGroups = self.ProjectsLocationsSecurityProfileGroupsService(self)
     self.projects_locations_securityProfiles = self.ProjectsLocationsSecurityProfilesService(self)
     self.projects_locations_serverTlsPolicies = self.ProjectsLocationsServerTlsPoliciesService(self)
@@ -2267,21 +2270,21 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalSacRealmsService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_sacRealms resource."""
+  class ProjectsLocationsInterceptDeploymentGroupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_interceptDeploymentGroups resource."""
 
-    _NAME = 'projects_locations_global_sacRealms'
+    _NAME = 'projects_locations_interceptDeploymentGroups'
 
     def __init__(self, client):
-      super(NetworksecurityV1alpha1.ProjectsLocationsGlobalSacRealmsService, self).__init__(client)
+      super(NetworksecurityV1alpha1.ProjectsLocationsInterceptDeploymentGroupsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new SACRealm in a given project.
+      r"""Creates a new InterceptDeploymentGroup in a given project and location.
 
       Args:
-        request: (NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest) input message
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2291,24 +2294,24 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/global/sacRealms',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeploymentGroups',
         http_method='POST',
-        method_id='networksecurity.projects.locations.global.sacRealms.create',
+        method_id='networksecurity.projects.locations.interceptDeploymentGroups.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['requestId', 'sacRealmId'],
-        relative_path='v1alpha1/{+parent}/sacRealms',
-        request_field='sACRealm',
-        request_type_name='NetworksecurityProjectsLocationsGlobalSacRealmsCreateRequest',
+        query_params=['interceptDeploymentGroupId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/interceptDeploymentGroups',
+        request_field='interceptDeploymentGroup',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentGroupsCreateRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single SACRealm.
+      r"""Deletes a single InterceptDeploymentGroup.
 
       Args:
-        request: (NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest) input message
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -2318,82 +2321,534 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/global/sacRealms/{sacRealmsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeploymentGroups/{interceptDeploymentGroupsId}',
         http_method='DELETE',
-        method_id='networksecurity.projects.locations.global.sacRealms.delete',
+        method_id='networksecurity.projects.locations.interceptDeploymentGroups.delete',
         ordered_params=['name'],
         path_params=['name'],
         query_params=['requestId'],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetworksecurityProjectsLocationsGlobalSacRealmsDeleteRequest',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentGroupsDeleteRequest',
         response_type_name='Operation',
         supports_download=False,
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single SACRealm.
+      r"""Gets details of a single InterceptDeploymentGroup.
 
       Args:
-        request: (NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest) input message
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (SACRealm) The response message.
+        (InterceptDeploymentGroup) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/global/sacRealms/{sacRealmsId}',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeploymentGroups/{interceptDeploymentGroupsId}',
         http_method='GET',
-        method_id='networksecurity.projects.locations.global.sacRealms.get',
+        method_id='networksecurity.projects.locations.interceptDeploymentGroups.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha1/{+name}',
         request_field='',
-        request_type_name='NetworksecurityProjectsLocationsGlobalSacRealmsGetRequest',
-        response_type_name='SACRealm',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentGroupsGetRequest',
+        response_type_name='InterceptDeploymentGroup',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists SACRealms in a given project.
+      r"""Lists InterceptDeploymentGroups in a given project and location.
 
       Args:
-        request: (NetworksecurityProjectsLocationsGlobalSacRealmsListRequest) input message
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListSACRealmsResponse) The response message.
+        (ListInterceptDeploymentGroupsResponse) The response message.
       """
       config = self.GetMethodConfig('List')
       return self._RunMethod(
           config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/global/sacRealms',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeploymentGroups',
         http_method='GET',
-        method_id='networksecurity.projects.locations.global.sacRealms.list',
+        method_id='networksecurity.projects.locations.interceptDeploymentGroups.list',
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/sacRealms',
+        relative_path='v1alpha1/{+parent}/interceptDeploymentGroups',
         request_field='',
-        request_type_name='NetworksecurityProjectsLocationsGlobalSacRealmsListRequest',
-        response_type_name='ListSACRealmsResponse',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentGroupsListRequest',
+        response_type_name='ListInterceptDeploymentGroupsResponse',
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
+    def Patch(self, request, global_params=None):
+      r"""Updates a single InterceptDeploymentGroup.
 
-    _NAME = 'projects_locations_global'
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeploymentGroups/{interceptDeploymentGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.interceptDeploymentGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='interceptDeploymentGroup',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInterceptDeploymentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_interceptDeployments resource."""
+
+    _NAME = 'projects_locations_interceptDeployments'
 
     def __init__(self, client):
-      super(NetworksecurityV1alpha1.ProjectsLocationsGlobalService, self).__init__(client)
+      super(NetworksecurityV1alpha1.ProjectsLocationsInterceptDeploymentsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new InterceptDeployment in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeployments',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.interceptDeployments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['interceptDeploymentId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/interceptDeployments',
+        request_field='interceptDeployment',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single InterceptDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeployments/{interceptDeploymentsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.interceptDeployments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single InterceptDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterceptDeployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeployments/{interceptDeploymentsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptDeployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentsGetRequest',
+        response_type_name='InterceptDeployment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists InterceptDeployments in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInterceptDeploymentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeployments',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptDeployments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/interceptDeployments',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentsListRequest',
+        response_type_name='ListInterceptDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single InterceptDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptDeployments/{interceptDeploymentsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.interceptDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='interceptDeployment',
+        request_type_name='NetworksecurityProjectsLocationsInterceptDeploymentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInterceptEndpointGroupAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_interceptEndpointGroupAssociations resource."""
+
+    _NAME = 'projects_locations_interceptEndpointGroupAssociations'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsInterceptEndpointGroupAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new InterceptEndpointGroupAssociation in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroupAssociations',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.interceptEndpointGroupAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['interceptEndpointGroupAssociationId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/interceptEndpointGroupAssociations',
+        request_field='interceptEndpointGroupAssociation',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single InterceptEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroupAssociations/{interceptEndpointGroupAssociationsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.interceptEndpointGroupAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single InterceptEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterceptEndpointGroupAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroupAssociations/{interceptEndpointGroupAssociationsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptEndpointGroupAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsGetRequest',
+        response_type_name='InterceptEndpointGroupAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists InterceptEndpointGroupAssociations in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInterceptEndpointGroupAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroupAssociations',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptEndpointGroupAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/interceptEndpointGroupAssociations',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsListRequest',
+        response_type_name='ListInterceptEndpointGroupAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single InterceptEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroupAssociations/{interceptEndpointGroupAssociationsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.interceptEndpointGroupAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='interceptEndpointGroupAssociation',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupAssociationsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInterceptEndpointGroupsService(base_api.BaseApiService):
+    """Service class for the projects_locations_interceptEndpointGroups resource."""
+
+    _NAME = 'projects_locations_interceptEndpointGroups'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsInterceptEndpointGroupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new InterceptEndpointGroup in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroups',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.interceptEndpointGroups.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['interceptEndpointGroupId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/interceptEndpointGroups',
+        request_field='interceptEndpointGroup',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single InterceptEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroups/{interceptEndpointGroupsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.interceptEndpointGroups.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single InterceptEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterceptEndpointGroup) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroups/{interceptEndpointGroupsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptEndpointGroups.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupsGetRequest',
+        response_type_name='InterceptEndpointGroup',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists InterceptEndpointGroups in a given project and location.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInterceptEndpointGroupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroups',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.interceptEndpointGroups.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/interceptEndpointGroups',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupsListRequest',
+        response_type_name='ListInterceptEndpointGroupsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single InterceptEndpointGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/interceptEndpointGroups/{interceptEndpointGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.interceptEndpointGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='interceptEndpointGroup',
+        request_type_name='NetworksecurityProjectsLocationsInterceptEndpointGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsMirroringDeploymentGroupsService(base_api.BaseApiService):
     """Service class for the projects_locations_mirroringDeploymentGroups resource."""
@@ -3643,6 +4098,124 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsSacAttachmentsListRequest',
         response_type_name='ListSACAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSacRealmsService(base_api.BaseApiService):
+    """Service class for the projects_locations_sacRealms resource."""
+
+    _NAME = 'projects_locations_sacRealms'
+
+    def __init__(self, client):
+      super(NetworksecurityV1alpha1.ProjectsLocationsSacRealmsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SACRealm in a given project.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sacRealms',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sacRealms.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'sacRealmId'],
+        relative_path='v1alpha1/{+parent}/sacRealms',
+        request_field='sACRealm',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single SACRealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sacRealms/{sacRealmsId}',
+        http_method='DELETE',
+        method_id='networksecurity.projects.locations.sacRealms.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single SACRealm.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SACRealm) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sacRealms/{sacRealmsId}',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacRealms.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsGetRequest',
+        response_type_name='SACRealm',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists SACRealms in a given project.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSacRealmsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSACRealmsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sacRealms',
+        http_method='GET',
+        method_id='networksecurity.projects.locations.sacRealms.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha1/{+parent}/sacRealms',
+        request_field='',
+        request_type_name='NetworksecurityProjectsLocationsSacRealmsListRequest',
+        response_type_name='ListSACRealmsResponse',
         supports_download=False,
     )
 

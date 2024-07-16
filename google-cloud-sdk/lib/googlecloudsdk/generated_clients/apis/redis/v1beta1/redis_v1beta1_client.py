@@ -217,6 +217,33 @@ class RedisV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RescheduleClusterMaintenance(self, request, global_params=None):
+      r"""Reschedules upcoming maintenance event.
+
+      Args:
+        request: (RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RescheduleClusterMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RescheduleClusterMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:rescheduleClusterMaintenance',
+        http_method='POST',
+        method_id='redis.projects.locations.clusters.rescheduleClusterMaintenance',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:rescheduleClusterMaintenance',
+        request_field='rescheduleClusterMaintenanceRequest',
+        request_type_name='RedisProjectsLocationsClustersRescheduleClusterMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances resource."""
 

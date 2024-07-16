@@ -42,6 +42,7 @@ REL_NAME_FORMAT_KEY = '__relative_name__'
 RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
 KEY, VALUE = 'key', 'value'
 ARG_OBJECT, ARG_DICT, ARG_LIST = 'arg_object', 'arg_dict', 'arg_list'
+FILE_TYPE = 'file_type'
 
 
 def FormatResourceAttrStr(format_string, resource_ref, display_name=None,
@@ -247,6 +248,8 @@ def _ParseTypeFromStr(arg_type, data):
     return ArgObject.FromData(data)
   elif arg_type == ARG_LIST:
     return Hook.FromPath('googlecloudsdk.calliope.arg_parsers:ArgList:')
+  elif arg_type == FILE_TYPE:
+    return FileContents.FromData(data)
   elif builtin_type := BUILTIN_TYPES.get(arg_type, None):
     return builtin_type
   else:
@@ -322,13 +325,47 @@ class Choice(object):
     return {c.arg_value: c.enum_value for c in choices}
 
 
+class TypeGenerator(metaclass=abc.ABCMeta):
+  """Interface for generating a type from a field."""
+
+  @abc.abstractmethod
+  def GenerateType(self, field):
+    """Generates a type from a field."""
+
+
+class FileContents(TypeGenerator, arg_utils.FileType):
+  """Holds information about a file content argument."""
+
+  @classmethod
+  def FromData(cls, data):
+    """Creates a FileContents from yaml data."""
+    # Data is not used at the moment but will be used to denote additional
+    # information about the file in the future.
+    del data
+    return cls()
+
+  def GenerateType(self, field):
+    if not field:
+      return arg_parsers.FileContents(binary=False)
+    if field.variant == apitools_messages.Variant.STRING:
+      return arg_parsers.FileContents(binary=False)
+    if field.variant == apitools_messages.Variant.BYTES:
+      return arg_parsers.FileContents(binary=True)
+    else:
+      raise InvalidSchemaError(
+          f'Conflicting types for field: {field.name}.'
+          ' Only string and bytes fields are supported when using file_type.'
+      )
+
+
 @dataclasses.dataclass(frozen=True)
 class _FieldSpec:
   """Holds information about a field and type that is generated from it."""
 
   @classmethod
   def FromUserData(
-      cls, field, api_field=None, arg_name=None, required=None, hidden=False
+      cls, field, api_field=None, field_type=None, arg_name=None,
+      required=None, hidden=False
   ):
     """Creates a _FieldSpec from user input.
 
@@ -339,6 +376,7 @@ class _FieldSpec:
       field: apitools field instance
       api_field: The name of the field under the repeated message that the value
         should be put.
+      field_type: The type of the field if specified by user.
       arg_name: The name of the key in the dict.
       required: True if the key is required.
       hidden: True if the help text should be hidden.
@@ -357,10 +395,16 @@ class _FieldSpec:
           f'Expected to receive field {child_field_name} but '
           f'got {field.name}')
 
+    if isinstance(field_type, TypeGenerator):
+      generated_field_type = field_type.GenerateType(field)
+    else:
+      generated_field_type = field_type
+
     return cls(
         field=field,
         api_field=field_name,
         arg_name=arg_name or child_field_name,
+        field_type=generated_field_type,
         repeated=field.repeated,
         required=required if required is not None else field.required,
         hidden=hidden
@@ -369,6 +413,7 @@ class _FieldSpec:
   field: apitools_messages.Field
   api_field: str
   arg_name: str
+  field_type: Callable[[str], Any] | None
   repeated: bool
   required: bool
   hidden: bool | None
@@ -530,21 +575,27 @@ class ArgObject(arg_utils.ArgObjectType):
     """Creates ArgObject from yaml data."""
 
     spec = data.get('spec')
+    if (data_type := data.get('type')) and data_type != ARG_OBJECT:
+      field_type = ParseType(data)
+    else:
+      field_type = None
     return cls(
         api_field=data['api_field'],
         arg_name=data.get('arg_name'),
         help_text=data.get('help_text'),
         hidden=data.get('hidden'),
+        field_type=field_type,
         spec=[ArgObject.FromData(f) for f in spec] if spec is not None else None
     )
 
   def __init__(self, api_field=None, arg_name=None, help_text=None,
-               hidden=None, spec=None):
+               hidden=None, field_type=None, spec=None):
     # Represents user specified yaml data
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
     self.hidden = hidden
+    self.field_type = field_type
     self.spec = spec
 
   def Action(self, field):
@@ -596,7 +647,14 @@ class ArgObject(arg_utils.ArgObjectType):
     Returns:
       type function that takes string like 'foo=bar' or '{"foo": "bar"}' and
         creates an apitools message additionalProperties field
+    Raises:
+      InvalidSchemaError: if type is specified for a map field
     """
+    if field_type := field_spec.field_type:
+      raise InvalidSchemaError(
+          f'Field type {field_type} is not supported for map field '
+          f'{self.api_field}. Remove the type declaration from spec.'
+      )
     try:
       additional_props_field = arg_utils.GetFieldFromMessage(
           field_spec.field.type, arg_utils.ADDITIONAL_PROPS)
@@ -647,7 +705,16 @@ class ArgObject(arg_utils.ArgObjectType):
     Returns:
       _MessageFieldType that takes string like 'foo=bar' or '{"foo": "bar"}' and
       creates an apitools message like Message(foo=bar) or [Message(foo=bar)]
+
+    Raises:
+      InvalidSchemaError: if type is specified for a message field
     """
+    if field_type := field_spec.field_type:
+      raise InvalidSchemaError(
+          f'Field type {field_type} is not supported for message field '
+          f'{self.api_field}. Remove the type declaration from spec.'
+      )
+
     if self.spec is not None:
       field_names = [f.api_field for f in self.spec]
     else:
@@ -694,7 +761,7 @@ class ArgObject(arg_utils.ArgObjectType):
       value_type = labels_util.VALUE_FORMAT_VALIDATOR
       default_help_text = labels_util.VALUE_FORMAT_HELP
     else:
-      value_type = _GetFieldValueType(field_spec.field)
+      value_type = field_spec.field_type or _GetFieldValueType(field_spec.field)
       default_help_text = None
 
     arg_obj = arg_parsers.ArgObject(
@@ -702,7 +769,9 @@ class ArgObject(arg_utils.ArgObjectType):
         help_text=self.help_text or default_help_text,
         repeated=field_spec.repeated,
         hidden=field_spec.hidden,
-        enable_shorthand=False
+        enable_shorthand=False,
+        enable_file_upload=(
+            not isinstance(value_type, arg_parsers.FileContents))
     )
     return _FieldType(
         arg_type=arg_obj,
@@ -723,13 +792,13 @@ class ArgObject(arg_utils.ArgObjectType):
       instance or list of instances from string value.
     """
     field_spec = _FieldSpec.FromUserData(
-        field, arg_name=self.arg_name, api_field=self.api_field,
-        hidden=self.hidden)
-    field_type = arg_utils.GetFieldType(field)
-    if field_type == arg_utils.FieldType.MAP:
+        field, arg_name=self.arg_name, field_type=self.field_type,
+        api_field=self.api_field, hidden=self.hidden)
+    field_variation = arg_utils.GetFieldType(field)
+    if field_variation == arg_utils.FieldType.MAP:
       return self._GenerateMapType(field_spec, is_root)
     # TODO(b/286379489): add parsing logic for cyclical fields
-    elif field_type == arg_utils.FieldType.MESSAGE:
+    elif field_variation == arg_utils.FieldType.MESSAGE:
       return self._GenerateMessageType(field_spec, is_root)
     else:
       return self._GenerateFieldType(field_spec, is_label_field)
@@ -759,7 +828,7 @@ def _GetArgDictFieldType(message, user_field_spec):
       choices=user_field_spec.ChoiceMap())
 
 
-class ArgDict(arg_utils.RepeatedMessageBindableType):
+class ArgDict(TypeGenerator, arg_utils.RepeatedMessageBindableType):
   """A wrapper to bind an ArgDict argument to a message.
 
   The non-flat mode has one dict per message. When the field is repeated, you
@@ -826,7 +895,7 @@ class ArgDict(arg_utils.RepeatedMessageBindableType):
         field_specs=field_specs)
 
 
-class FlattenedArgDict(arg_utils.RepeatedMessageBindableType):
+class FlattenedArgDict(TypeGenerator, arg_utils.RepeatedMessageBindableType):
   """A wrapper to bind an ArgDict argument to a message with a key/value pair.
 
   The flat mode has one dict corresponding to a repeated field. For example,

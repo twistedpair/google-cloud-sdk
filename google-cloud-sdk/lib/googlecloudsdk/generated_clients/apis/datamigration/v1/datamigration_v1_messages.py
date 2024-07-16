@@ -3829,7 +3829,6 @@ class MigrationJob(_messages.Message):
       PREPARING_THE_DUMP: Only RDS flow - the sources writes stopped, waiting
         for dump to begin
       READY_FOR_PROMOTE: The migration job is ready to be promoted.
-      DIFF_BACKUP: The migration job is in the differential backup phase.
     """
     PHASE_UNSPECIFIED = 0
     FULL_DUMP = 1
@@ -3838,7 +3837,6 @@ class MigrationJob(_messages.Message):
     WAITING_FOR_SOURCE_WRITES_TO_STOP = 4
     PREPARING_THE_DUMP = 5
     READY_FOR_PROMOTE = 6
-    DIFF_BACKUP = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current migration job state.

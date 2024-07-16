@@ -2381,8 +2381,8 @@ class DebugOptions(_messages.Message):
   Fields:
     dataSampling: Configuration options for sampling elements from a running
       pipeline.
-    enableHotKeyLogging: When true, enables the logging of the literal hot key
-      to the user's Cloud Logging.
+    enableHotKeyLogging: Optional. When true, enables the logging of the
+      literal hot key to the user's Cloud Logging.
   """
 
   dataSampling = _messages.MessageField('DataSamplingConfig', 1)
@@ -2707,8 +2707,8 @@ class Environment(_messages.Message):
   r"""Describes the environment in which a Dataflow Job runs.
 
   Enums:
-    FlexResourceSchedulingGoalValueValuesEnum: Which Flexible Resource
-      Scheduling mode to run in.
+    FlexResourceSchedulingGoalValueValuesEnum: Optional. Which Flexible
+      Resource Scheduling mode to run in.
     ShuffleModeValueValuesEnum: Output only. The shuffle mode used for the
       job.
     StreamingModeValueValuesEnum: Optional. Specifies the Streaming Engine
@@ -2734,25 +2734,25 @@ class Environment(_messages.Message):
       unknown or unspecified, the service will attempt to choose a reasonable
       default. This should be in the form of the API service name, e.g.
       "compute.googleapis.com".
-    dataset: The dataset for the current project where various workflow
-      related tables are stored. The supported resource type is: Google
-      BigQuery: bigquery.googleapis.com/{dataset}
-    debugOptions: Any debugging options to be supplied to the job.
+    dataset: Optional. The dataset for the current project where various
+      workflow related tables are stored. The supported resource type is:
+      Google BigQuery: bigquery.googleapis.com/{dataset}
+    debugOptions: Optional. Any debugging options to be supplied to the job.
     experiments: The list of experiments to enable. This field should be used
       for SDK related experiments and not for service related experiments. The
       proper field for service related experiments is service_options.
-    flexResourceSchedulingGoal: Which Flexible Resource Scheduling mode to run
-      in.
+    flexResourceSchedulingGoal: Optional. Which Flexible Resource Scheduling
+      mode to run in.
     internalExperiments: Experimental settings.
     sdkPipelineOptions: The Cloud Dataflow SDK pipeline options specified by
       the user. These options are passed through the service and are used to
       recreate the SDK pipeline options on the worker in a language agnostic
       and platform independent way.
-    serviceAccountEmail: Identity to run virtual machines as. Defaults to the
-      default account.
-    serviceKmsKeyName: If set, contains the Cloud KMS key identifier used to
-      encrypt data at rest, AKA a Customer Managed Encryption Key (CMEK).
-      Format:
+    serviceAccountEmail: Optional. Identity to run virtual machines as.
+      Defaults to the default account.
+    serviceKmsKeyName: Optional. If set, contains the Cloud KMS key identifier
+      used to encrypt data at rest, AKA a Customer Managed Encryption Key
+      (CMEK). Format:
       projects/PROJECT_ID/locations/LOCATION/keyRings/KEY_RING/cryptoKeys/KEY
     serviceOptions: Optional. The list of service options to enable. This
       field should be used for service related experiments only. These
@@ -2782,12 +2782,12 @@ class Environment(_messages.Message):
       service are required in order to run the job.
     workerPools: The worker pools. At least one "harness" worker pool must be
       specified in order for the job to have workers.
-    workerRegion: The Compute Engine region
+    workerRegion: Optional. The Compute Engine region
       (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
       which worker processing should occur, e.g. "us-west1". Mutually
       exclusive with worker_zone. If neither worker_region nor worker_zone is
       specified, default to the control plane's region.
-    workerZone: The Compute Engine zone
+    workerZone: Optional. The Compute Engine zone
       (https://cloud.google.com/compute/docs/regions-zones/regions-zones) in
       which worker processing should occur, e.g. "us-west1-a". Mutually
       exclusive with worker_region. If neither worker_region nor worker_zone
@@ -2796,7 +2796,7 @@ class Environment(_messages.Message):
   """
 
   class FlexResourceSchedulingGoalValueValuesEnum(_messages.Enum):
-    r"""Which Flexible Resource Scheduling mode to run in.
+    r"""Optional. Which Flexible Resource Scheduling mode to run in.
 
     Values:
       FLEXRS_UNSPECIFIED: Run in the default mode.
@@ -3674,8 +3674,9 @@ class Job(_messages.Message):
       \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
-    TransformNameMappingValue: The map of transform name prefixes of the job
-      to be replaced to the corresponding name prefixes of the new job.
+    TransformNameMappingValue: Optional. The map of transform name prefixes of
+      the job to be replaced to the corresponding name prefixes of the new
+      job.
 
   Fields:
     clientRequestId: The client's unique identifier of the job, re-used across
@@ -3709,7 +3710,7 @@ class Job(_messages.Message):
       \p{Ll}\p{Lo}{0,62} * Values must conform to regexp:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} * Both keys and values are additionally
       constrained to be <= 128 bytes in size.
-    location: The [regional endpoint]
+    location: Optional. The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
     name: Optional. The user-specified Dataflow job name. Only one active job
@@ -3745,6 +3746,8 @@ class Job(_messages.Message):
       requests.
     satisfiesPzs: Reserved for future use. This field is set only in responses
       from the server; it is ignored if it is set in any requests.
+    serviceResources: Output only. Resources used by the Dataflow Service to
+      run the job.
     stageStates: This field may be mutated by the Cloud Dataflow service;
       callers cannot mutate it.
     startTime: The timestamp when the job was started (transitioned to
@@ -3763,8 +3766,8 @@ class Job(_messages.Message):
       The supported files are: Google Cloud Storage:
       storage.googleapis.com/{bucket}/{object}
       bucket.storage.googleapis.com/{object}
-    transformNameMapping: The map of transform name prefixes of the job to be
-      replaced to the corresponding name prefixes of the new job.
+    transformNameMapping: Optional. The map of transform name prefixes of the
+      job to be replaced to the corresponding name prefixes of the new job.
     type: Optional. The type of Dataflow job.
   """
 
@@ -3960,8 +3963,8 @@ class Job(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TransformNameMappingValue(_messages.Message):
-    r"""The map of transform name prefixes of the job to be replaced to the
-    corresponding name prefixes of the new job.
+    r"""Optional. The map of transform name prefixes of the job to be replaced
+    to the corresponding name prefixes of the new job.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -4005,13 +4008,14 @@ class Job(_messages.Message):
   runtimeUpdatableParams = _messages.MessageField('RuntimeUpdatableParams', 18)
   satisfiesPzi = _messages.BooleanField(19)
   satisfiesPzs = _messages.BooleanField(20)
-  stageStates = _messages.MessageField('ExecutionStageState', 21, repeated=True)
-  startTime = _messages.StringField(22)
-  steps = _messages.MessageField('Step', 23, repeated=True)
-  stepsLocation = _messages.StringField(24)
-  tempFiles = _messages.StringField(25, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 26)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
+  serviceResources = _messages.MessageField('ServiceResources', 21)
+  stageStates = _messages.MessageField('ExecutionStageState', 22, repeated=True)
+  startTime = _messages.StringField(23)
+  steps = _messages.MessageField('Step', 24, repeated=True)
+  stepsLocation = _messages.StringField(25)
+  tempFiles = _messages.StringField(26, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 27)
+  type = _messages.EnumField('TypeValueValuesEnum', 28)
 
 
 class JobExecutionDetails(_messages.Message):
@@ -6379,6 +6383,17 @@ class SeqMapTaskOutputInfo(_messages.Message):
 
   sink = _messages.MessageField('Sink', 1)
   tag = _messages.StringField(2)
+
+
+class ServiceResources(_messages.Message):
+  r"""Resources used by the Dataflow Service to run the job.
+
+  Fields:
+    zones: Output only. List of Cloud Zones being used by the Dataflow Service
+      for this job. Example: us-central1-c
+  """
+
+  zones = _messages.StringField(1, repeated=True)
 
 
 class ShellTask(_messages.Message):

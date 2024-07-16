@@ -14,8 +14,9 @@
 # limitations under the License.
 """Utilities for Backup and DR commands."""
 
-import datetime
 import uuid
+
+from dateutil import tz
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core.util import iso_duration
@@ -30,32 +31,17 @@ def ConvertIntToStr(duration):
   return str(duration) + 's'
 
 
-def TransformTo12AmUtcTime(effective_time):
-  """Transforms the datetime object to UTC time string fixed at 12AM.
-
-  Args:
-    effective_time: Date to be converted to UTC time string fixed at 12AM.
-
-  Returns:
-    UTC time.
-
-  Raises:
-    ArgumentTypeError: If the date is not in the future.
-  """
+def VerifyDateInFuture(effective_time):
+  """Verify that the effective time is in the future."""
   if effective_time is None:
     return None
-  if effective_time < times.Now().date():
+  if effective_time < times.Now():
     raise exceptions.InvalidArgumentException(
         'Date must be in the future: {0}'.format(effective_time),
         'effective_time',
     )
-  year = effective_time.year
-  month = effective_time.month
-  day = effective_time.day
-  effective_time = datetime.datetime(
-      year, month, day, 0, 0, 0, 0, datetime.timezone.utc
-  ).strftime('%Y-%m-%dT%H:%M:%SZ')
-  return effective_time
+  effective_time = effective_time.astimezone(tz.tzutc())
+  return effective_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
 def ResetEnforcedRetention():

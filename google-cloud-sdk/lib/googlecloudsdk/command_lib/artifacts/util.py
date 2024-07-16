@@ -27,6 +27,7 @@ import json
 import mimetypes
 import os
 import re
+import sys
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -151,12 +152,12 @@ Example of the file contents:
 [
   {
     "id": "test1",
-    "repository": "projects/p1/locations/us-central1/repository/repo1",
+    "repository": "projects/p1/locations/us-central1/repositories/repo1",
     "priority": 1
   },
   {
     "id": "test2",
-    "repository": "projects/p2/locations/us-west2/repository/repo2",
+    "repository": "projects/p2/locations/us-west2/repositories/repo2",
     "priority": 2
   }
 ]
@@ -1402,6 +1403,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
   """Runs the automigrate wizard for the current project."""
   if args.projects:
     projects = args.projects.split(",")
+    base.DisableUserProjectQuota()
   else:
     projects = [args.project or properties.VALUES.core.project.GetOrFail()]
   recent_images = args.recent_images
@@ -1416,68 +1418,71 @@ def MigrateToArtifactRegistry(unused_ref, args):
     log.status.Print(
         "--pkg-dev-location is only used when migrating to pkg.dev repos"
     )
-    return None
+    sys.exit(1)
   if recent_images is not None and (recent_images < 30 or recent_images > 150):
     log.status.Print("--recent-images must be between 30 and 150 inclusive")
-    return None
+    sys.exit(1)
   output_iam_policy_dir = args.output_iam_policy_dir
   input_iam_policy_dir = args.input_iam_policy_dir
   if output_iam_policy_dir and (skip_iam or copy_only):
     log.status.Print(
         "--output-iam-policy-dir is only used when determining iam policy"
     )
+    sys.exit(1)
   if input_iam_policy_dir and (skip_iam or copy_only):
     log.status.Print(
         "--input-iam-policy-dir is only used when determining iam policy"
     )
+    sys.exit(1)
   if input_iam_policy_dir and output_iam_policy_dir:
     log.status.Print(
         "--input-iam-policy-dir and --output-iam-policy-dir should not be"
         " called in the same invocation"
     )
+    sys.exit(1)
   if input_iam_policy_dir:
     if not os.path.isdir(files.ExpandHomeDir(input_iam_policy_dir)):
       log.status.Print("--input-iam-policy-dir must be a directory")
-      return None
+      sys.exit(1)
   if canary_reads is not None and (canary_reads < 1 or canary_reads > 100):
     log.status.Print("--canary-reads must be between 1 and 100 inclusive")
-    return None
+    sys.exit(1)
   if args.projects and (from_gcr or to_pkg_dev):
     log.status.Print(
         "Projects argument may not be used when providing --from-gcr and"
         " --to-pkg-dev"
     )
-    return None
+    sys.exit(1)
 
   if bool(from_gcr) != bool(to_pkg_dev):
     log.status.Print(
         "--from-gcr and --to-pkg-dev-repo should be provided together"
     )
-    return None
+    sys.exit(1)
 
   if last_uploaded_versions and recent_images:
     log.status.Print(
         "Only one of --last-uploaded-versions and --recent-images can be used"
     )
-    return None
+    sys.exit(1)
 
   if to_pkg_dev:
     s = from_gcr.split("/", 2)
     if len(s) != 2:
       log.status.Print("--from-gcr must be of the form {host}/{project}")
-      return None
+      sys.exit(1)
     gcr_host, gcr_project = s
     s = to_pkg_dev.split("/", 2)
     if len(s) != 2:
       log.status.Print("--to-pkg-dev must be of the form {project}/{repo}")
-      return None
+      sys.exit(1)
     ar_project, ar_repo = s
     if "gcr.io" in ar_repo:
       log.status.Print(
           "--to-pkg-dev is only used for pkg.dev repos. Use --projects to"
           " migrate to a gcr.io repo"
       )
-      return None
+      sys.exit(1)
     if gcr_host not in _ALLOWED_GCR_REPO_LOCATION.keys():
       log.status.Print(
           "{gcr_host} is not a valid gcr host. Valid hosts: {hosts}".format(
@@ -1485,7 +1490,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
               hosts=", ".join(_ALLOWED_GCR_REPO_LOCATION.keys()),
           )
       )
-      return None
+      sys.exit(1)
     location = _ALLOWED_GCR_REPO_LOCATION[gcr_host]
     if ar_location:
       location = ar_location
@@ -1563,7 +1568,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
     partial_projects = []
   else:
     if not CheckRedirectionPermission(projects):
-      return None
+      sys.exit(1)
     redirection_state = GetRedirectionStates(projects)
     enabled_projects = []
     disabled_projects = []
@@ -1601,7 +1606,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
         )
     )
     if len(invalid_projects) == len(projects):
-      return None
+      sys.exit(1)
 
   # Exit early if all projects are migrated
   if len(enabled_projects) == len(projects):
@@ -1610,7 +1615,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
         " for the provided projects. If there are images you still need to"
         " copy, use the --copy-only flag."
     )
-    return None
+    sys.exit(1)
 
   if enabled_projects:
     log.status.Print(
@@ -1761,7 +1766,7 @@ def MigrateToArtifactRegistry(unused_ref, args):
       return None
     if input_iam_policy_dir and not diffs_found:
       log.status.Print(f"No IAM policies found at {input_iam_policy_dir}")
-      return None
+      sys.exit(1)
 
   projects_to_redirect.extend(partial_projects)
 
@@ -2211,7 +2216,7 @@ def EnableUpgradeRedirection(unused_ref, args):
 
   log.status.Print("Performing redirection enablement checks...\n")
   if not CheckRedirectionPermission([project]):
-    return None
+    sys.exit(1)
 
   messages = ar_requests.GetMessages()
   settings = ar_requests.GetProjectSettings(project)
@@ -2259,7 +2264,7 @@ def DisableUpgradeRedirection(unused_ref, args):
 
   log.status.Print("Disabling upgrade redirection...\n")
   if not CheckRedirectionPermission([project]):
-    return None
+    sys.exit(1)
 
   # If the current state is finalized, then disabling is not possible
   log.status.Print("Checking current redirection status...\n")

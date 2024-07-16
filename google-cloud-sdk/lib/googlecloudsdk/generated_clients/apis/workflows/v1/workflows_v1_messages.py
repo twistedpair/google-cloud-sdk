@@ -425,7 +425,7 @@ class Status(_messages.Message):
 
 
 class Workflow(_messages.Message):
-  r"""Workflow program to be executed by Workflows.
+  r"""LINT.IfChange Workflow program to be executed by Workflows.
 
   Enums:
     CallLogLevelValueValuesEnum: Optional. Describes the level of platform

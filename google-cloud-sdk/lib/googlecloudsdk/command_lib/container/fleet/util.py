@@ -115,42 +115,16 @@ table(
 )
 """
 
-
-class ScopeLogViewCondition:
-  """Helper class for creating a scope log view iam condition.
-
-  This class defines a `get` object method that can be used by the iam util
-  lib to get the iam condition spec.
-  """
-
-  def __init__(self, project_id, scope_id):
-    self.project_id = project_id
-    self.scope_id = scope_id
-
-  # The condition should be iterable.
-  def __iter__(self):
-    return self
-
-  def __next__(self):
-    # There is only one condition.
-    raise StopIteration
-
-  def IsSpecified(self):
-    return True
-
-  def get(self, condition_spec):  # pylint: disable=invalid-name
-    # This method is called by the iam util lib.
-    if condition_spec == 'title':
-      return 'conditional log view access'
-    if condition_spec == 'description':
-      return 'log view access for scope {}'.format(self.scope_id)
-    if condition_spec == 'expression':
-      return (
-          'resource.name =='
-          f' "projects/{self.project_id}/locations/global/buckets/fleet-o11y-scope-{self.scope_id}/views/fleet-o11y-scope-{self.scope_id}-k8s_container"'
-          ' || resource.name =='
-          f' "projects/{self.project_id}/locations/global/buckets/fleet-o11y-scope-{self.scope_id}/views/fleet-o11y-scope-{self.scope_id}-k8s_pod"'
-      )
+APP_OPERATOR_LIST_FORMAT = """
+    table(
+      principal:sort=1:label=PRINCIPAL,
+      overall_role:label=OVERALL_ROLE,
+      scope_rrb_role:label=SCOPE_RBAC,
+      scope_iam_role:label=SCOPE_IAM,
+      project_iam_role:label=PROJECT_IAM,
+      log_view_access:label=LOG_VIEW_ACCESS
+    )
+"""
 
 
 def DefaultFleetID():
@@ -403,79 +377,6 @@ def LocationFromGKEArgs(args):
           'string like projects/123/locations/us-central1-a/clusters/my-cluster'
       )
   return location
-
-
-def IamMemberFromRbacArgs(user, group):
-  """Returns Iam member for the specified user/group.
-
-  Args:
-    user: user email, principal or None
-    group: group email, principal set or None
-
-  Returns:
-    an Iam member, e.g., "user:person@google.com" or "group:people@google.com"
-
-  Raises:
-    a core.Error, if both user and group are None
-  """
-  if user:
-    if user.startswith('principal://'):
-      return user
-    return 'user:' + user
-  elif group:
-    if group.startswith('principalSet://'):
-      return group
-    return 'group:' + group
-  raise exceptions.Error(
-      'User or group is required in the args.'
-  )
-
-
-def IamScopeLevelScopeRoleFromRbacArgs(role):
-  """Returns Iam scope role (scope-level) based on the specified role.
-
-  Args:
-    role: RBAC role
-
-  Returns:
-    a scope-related Iam role, e.g., "roles/gkehub.scopeEditor"
-
-  Raises:
-    a core.Error, if the role is not admin, edit, or view
-  """
-  if role == 'admin':
-    return 'roles/gkehub.scopeAdmin'
-  elif role == 'edit':
-    return 'roles/gkehub.scopeEditor'
-  elif role == 'view':
-    return 'roles/gkehub.scopeViewer'
-  raise exceptions.Error(
-      'Role is required to be admin, edit, or view.'
-  )
-
-
-def IamProjectLevelScopeRoleFromRbacArgs(role):
-  """Returns Iam scope role (project-level) based on the specified role.
-
-  Args:
-    role: RBAC role
-
-  Returns:
-    a scope-related Iam role, e.g., "roles/gkehub.scopeEditorProjectLevel"
-
-  Raises:
-    a core.Error, if the role is not admin, edit, or view
-  """
-  if role == 'admin':
-    # Admin needs the same project-level permissions as Editor.
-    return 'roles/gkehub.scopeEditorProjectLevel'
-  elif role == 'edit':
-    return 'roles/gkehub.scopeEditorProjectLevel'
-  elif role == 'view':
-    return 'roles/gkehub.scopeViewerProjectLevel'
-  raise exceptions.Error(
-      'Role is required to be admin, edit, or view.'
-  )
 
 
 def ResourceIdFromPath(path):

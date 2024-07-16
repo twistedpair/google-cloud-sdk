@@ -76,7 +76,9 @@ ALLOW_UNAUTH_POLICY_BINDING_ROLE = 'roles/run.invoker'
 
 NEEDED_IAM_PERMISSIONS = ['run.services.setIamPolicy']
 
-FAKE_IMAGE_DIGEST = 'sha256:fd2fdc0ac4a07f8d96ebe538566331e9da0f4bea069fb88de981cd8054b8cabc'
+FAKE_IMAGE_DIGEST = (
+    'sha256:fd2fdc0ac4a07f8d96ebe538566331e9da0f4bea069fb88de981cd8054b8cabc'
+)
 
 
 class UnknownAPIError(exceptions.Error):
@@ -714,6 +716,33 @@ class ServerlessOperations(object):
     )
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
+  def _ReplaceBaseImage(
+      self,
+      config_changes,
+      base_image_from_build,
+      ingress_container_name,
+  ):
+    """Replace the base image in the config changes with the rectified base image returned from build.
+
+    Args:
+      config_changes: list, objects that implement Adjust().
+      base_image_from_build: The base image from build to opt-in automatic build
+        image updates.
+      ingress_container_name: The name of the ingress container that is build
+        from source. This could be empty string.
+    """
+    for i, change in enumerate(config_changes):
+      if isinstance(
+          change, config_changes_mod.IngressContainerBaseImagesAnnotationChange
+      ):
+        config_changes[i] = (
+            config_changes_mod.IngressContainerBaseImagesAnnotationChange(
+                base_image=base_image_from_build
+            )
+        )
+      elif isinstance(change, config_changes_mod.BaseImagesAnnotationChange):
+        change.updates[ingress_container_name] = base_image_from_build
+
   def ReleaseService(
       self,
       service_ref,
@@ -734,6 +763,9 @@ class ServerlessOperations(object):
       delegate_builds=False,
       base_image=None,
       build_service_account=None,
+      build_from_source_container_name='',
+      build_worker_pool=None,
+      build_env_vars=None,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -768,6 +800,11 @@ class ServerlessOperations(object):
       delegate_builds: bool. If true, use the Build API to submit builds.
       base_image: The build base image to opt-in automatic build image updates.
       build_service_account: The service account to use to execute the build.
+      build_from_source_container_name: The name of the ingress container that
+        is build from source. This could be empty string.
+      build_worker_pool:  The name of the Cloud Build custom worker pool that
+        should be used to build the function.
+      build_env_vars: Dictionary of build env vars to send to submit build.
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -786,7 +823,7 @@ class ServerlessOperations(object):
 
     if build_source is not None:
       self._ValidateService(service_ref, config_changes)
-      image_digest = deployer.CreateImage(
+      image_digest, base_image_from_build = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
@@ -799,10 +836,18 @@ class ServerlessOperations(object):
           delegate_builds,
           base_image,
           build_service_account,
+          build_worker_pool,
+          build_env_vars,
       )
       if image_digest is None:
         return
       config_changes.append(_AddDigestToImageChange(image_digest))
+      if base_image_from_build:
+        self._ReplaceBaseImage(
+            config_changes,
+            base_image_from_build,
+            build_from_source_container_name,
+        )
     if prefetch is None:
       serv = None
     elif build_source:
@@ -1312,7 +1357,7 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      image_digest = deployer.CreateImage(
+      image_digest, _ = deployer.CreateImage(
           tracker,
           build_image,
           build_source,

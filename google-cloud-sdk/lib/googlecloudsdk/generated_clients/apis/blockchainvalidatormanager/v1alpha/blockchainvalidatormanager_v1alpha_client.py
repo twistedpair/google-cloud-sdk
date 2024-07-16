@@ -82,7 +82,7 @@ class BlockchainvalidatormanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single BlockchainValidatorConfig.
+      r"""Deletes a single blockchain validator configuration.
 
       Args:
         request: (BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsDeleteRequest) input message

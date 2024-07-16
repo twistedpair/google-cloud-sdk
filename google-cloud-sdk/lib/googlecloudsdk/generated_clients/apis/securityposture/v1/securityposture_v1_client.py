@@ -511,7 +511,7 @@ class SecuritypostureV1(base_api.BaseApiClient):
         method_id='securityposture.organizations.locations.postures.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/postures',
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsPosturesListRequest',

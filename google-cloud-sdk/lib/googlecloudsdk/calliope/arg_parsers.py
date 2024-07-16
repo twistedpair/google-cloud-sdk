@@ -985,7 +985,10 @@ class ArgType(object):
 
 
 class ArgBoolean(ArgType):
-  """Interpret an argument value as a bool."""
+  """Interpret an argument value as a bool.
+
+  This should only be used to define the spec of a key of an ArgDict flag.
+  """
 
   def __init__(self,
                truthy_strings=None,
@@ -1500,7 +1503,7 @@ class ArgObject(ArgDict):
 
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
-               hidden=None, enable_shorthand=True):
+               hidden=None, enable_shorthand=True, enable_file_upload=True):
     # Disable arg_dict syntax for nested values
     if value_type:
       self._DisableShorthand(value_type)
@@ -1516,6 +1519,7 @@ class ArgObject(ArgDict):
     self._keyed_values = key_type is not None or spec is not None
     self._hidden = hidden
     self.enable_shorthand = enable_shorthand
+    self.enable_file_upload = enable_file_upload
 
     if self.required_keys and not self._keyed_values:
       raise InvalidTypeError(
@@ -1592,7 +1596,7 @@ class ArgObject(ArgDict):
     # pylint: enable=g-import-not-at-top
 
     file_path_pattern = r'^\S*\.(yaml|json)$'
-    if re.match(file_path_pattern, arg_value):
+    if re.match(file_path_pattern, arg_value) and self.enable_file_upload:
       arg_value = FileContents()(arg_value)
 
     if self._keyed_values or self.repeated:

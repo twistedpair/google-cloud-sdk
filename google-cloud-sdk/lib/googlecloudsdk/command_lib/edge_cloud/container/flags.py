@@ -485,10 +485,11 @@ def AddOfflineRebootTtL(parser):
       '--offline-reboot-ttl',
       type=arg_parsers.Duration(),
       help="""
-      Limits how long a machine can reboot offline(without connection to google)
-      , specified as a duration relative to the machine's most-recent connection
-      to google. The parameter should be a ISO 8601 duration string, for example
-      , "1dT1h2m3s".
+        Specifies the maximum duration a node can reboot offline (without
+        connection to Google) and then rejoin its cluster to resume its
+        designated workloads. This duration is relative to the machine's most
+        recent connection to Google. The maximum allowed duration is 7 days.
+        To disallow offline reboot, set the duration to "PT0S". The parameter
+        should be an ISO 8601 duration string, for example, "P1DT1H2M3S".
       """,
-      hidden=True,
   )

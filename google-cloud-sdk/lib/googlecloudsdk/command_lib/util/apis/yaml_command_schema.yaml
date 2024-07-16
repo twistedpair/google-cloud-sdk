@@ -56,7 +56,7 @@ definitions:
     # of the argument and returns the converted parsed value.
     - $ref: "#/definitions/python_hook"
     # Support for arg_parsers.arg_list
-    - enum: [arg_list, arg_object]
+    - enum: [arg_list, arg_object, file_type]
 
   choices:
     # A list of valid choices for an argument.
@@ -95,6 +95,7 @@ definitions:
         # resource_pattern is a regex pattern used to verify resource strings.
         # Not available for public use yet.
         resource_pattern: {type: string}
+        type: {$ref: "#/definitions/argparse_type"}
         spec: {$ref: "#/definitions/flag_spec"}
 
   fallthrough:

@@ -2506,15 +2506,14 @@ class ObservabilityInstanceConfig(_messages.Message):
   r"""Observability Instance specific configuration.
 
   Fields:
-    enabled: Observability feature status for an instance. This is a read-only
-      flag and modifiable only by producer API. This flag is turned "off" by
-      default.
+    enabled: Observability feature status for an instance. This flag is turned
+      "off" by default.
     maxQueryStringLength: Query string length. The default value is 10k.
     preserveComments: Preserve comments in query string for an instance. This
       flag is turned "off" by default.
     queryPlansPerMinute: Number of query execution plans captured by Insights
-      per minute for all queries combined. The default value is 5. Any integer
-      between 0 to 20 is considered valid.
+      per minute for all queries combined. The default value is 200. Any
+      integer between 0 to 200 is considered valid.
     recordApplicationTags: Record application tags for an instance. This flag
       is turned "off" by default.
     trackActiveQueries: Track actively running queries on the instance. If not
@@ -3210,7 +3209,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    observabilityMetricData: More feed data would be added in subsequent CLs
+    observabilityMetricData: A
+      StorageDatabasecenterPartnerapiV1mainObservabilityMetricData attribute.
     recommendationSignalData: A StorageDatabasecenterPartnerapiV1mainDatabaseR
       esourceRecommendationSignalData attribute.
     resourceHealthSignalData: A
@@ -4688,13 +4688,15 @@ class TrialMetadata(_messages.Message):
 
   Fields:
     endTime: End time of the trial cluster.
+    graceEndTime: grace end time of the cluster.
     startTime: start time of the trial cluster.
     upgradeTime: Upgrade time of trial cluster to Standard cluster.
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  upgradeTime = _messages.StringField(3)
+  graceEndTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  upgradeTime = _messages.StringField(4)
 
 
 class UpdatePolicy(_messages.Message):

@@ -215,6 +215,15 @@ def _ListPackagesAndFiles(path):
   return importables
 
 
+def _GetFilesList(importer):
+  """Get a list of files from the importer."""
+  if hasattr(importer, '_files'):
+    files_list = importer._files  # pylint:disable=protected-access
+  else:
+    files_list = importer._get_files()  # pylint:disable=protected-access
+  return files_list
+
+
 def ListPackage(path, extra_extensions=None):
   """Returns list of packages and modules in given path.
 
@@ -231,11 +240,10 @@ def ListPackage(path, extra_extensions=None):
     iter_modules = _IterModules(_ListPackagesAndFiles(path), extra_extensions)
   else:
     importer = pkgutil.get_importer(path)
-    if hasattr(importer, '_files'):
-      # pylint:disable=protected-access
-      iter_modules = _IterModules(
-          importer._files, extra_extensions, importer.prefix
-      )
+
+    iter_modules = _IterModules(
+        _GetFilesList(importer), extra_extensions, importer.prefix
+    )
   packages, modules = [], []
   for name, ispkg in iter_modules:
     if ispkg:
@@ -280,8 +288,8 @@ def GetFilesFromDirectory(path_dir, filter_pattern='*.*'):
       raise IOError('Path not found {0}'.format(path_dir))
 
     filtered_files = []
-    # pylint:disable=protected-access
-    for file_path in importer._files:
+
+    for file_path in _GetFilesList(importer):
       if not file_path.startswith(importer.prefix):
         continue
 

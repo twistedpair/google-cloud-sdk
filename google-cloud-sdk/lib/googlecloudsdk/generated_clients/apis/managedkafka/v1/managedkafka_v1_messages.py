@@ -169,8 +169,8 @@ class ConsumerPartitionMetadata(_messages.Message):
   Fields:
     metadata: Optional. The associated metadata for this partition, or empty
       if it does not exist.
-    offset: Required. The offset for this partition, or 0 if no offset has
-      been committed.
+    offset: Required. The current offset for this partition, or 0 if no offset
+      has been committed.
   """
 
   metadata = _messages.StringField(1)

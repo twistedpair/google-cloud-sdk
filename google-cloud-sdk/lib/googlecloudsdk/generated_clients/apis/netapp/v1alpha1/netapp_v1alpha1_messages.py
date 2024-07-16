@@ -496,6 +496,84 @@ class HourlySchedule(_messages.Message):
   snapshotsToKeep = _messages.FloatField(2)
 
 
+class HybridPeeringDetails(_messages.Message):
+  r"""HybridPeeringDetails contains details about the hybrid peering.
+
+  Fields:
+    command: Optional. Copy-paste-able commands to be used on user's ONTAP to
+      accept peering requests.
+    commandExpiryTime: Optional. Expiration time for the peering command to be
+      executed on user's ONTAP.
+    passphrase: Optional. Temporary passphrase generated to accept cluster
+      peering command.
+    subnetIp: Optional. IP address of the subnet.
+  """
+
+  command = _messages.StringField(1)
+  commandExpiryTime = _messages.StringField(2)
+  passphrase = _messages.StringField(3)
+  subnetIp = _messages.StringField(4)
+
+
+class HybridReplicationParameters(_messages.Message):
+  r"""The Hybrid Replication parameters for the volume.
+
+  Messages:
+    LabelsValue: Optional. Labels to be added to the replication as the key
+      value pairs.
+
+  Fields:
+    clusterLocation: Optional. Name of source cluster location associated with
+      the Hybrid replication. This is a free-form field for the display
+      purpose only.
+    description: Optional. Description of the replication.
+    labels: Optional. Labels to be added to the replication as the key value
+      pairs.
+    peerClusterName: Required. Name of the user's local source cluster to be
+      peered with the destination cluster.
+    peerIpAddresses: Required. List of node ip addresses to be peered with.
+    peerSvmName: Required. Name of the user's local source vserver svm to be
+      peered with the destination vserver svm.
+    peerVolumeName: Required. Name of the user's local source volume to be
+      peered with the destination volume.
+    replication: Required. Desired name for the replication of this volume.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels to be added to the replication as the key value
+    pairs.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterLocation = _messages.StringField(1)
+  description = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  peerClusterName = _messages.StringField(4)
+  peerIpAddresses = _messages.StringField(5, repeated=True)
+  peerSvmName = _messages.StringField(6)
+  peerVolumeName = _messages.StringField(7)
+  replication = _messages.StringField(8)
+
+
 class KmsConfig(_messages.Message):
   r"""KmsConfig is the customer managed encryption key(CMEK) configuration.
 
@@ -921,7 +999,10 @@ class NetappProjectsLocationsActiveDirectoriesCreateRequest(_messages.Message):
   Fields:
     activeDirectory: A ActiveDirectory resource to be passed as the request
       body.
-    activeDirectoryId: Required. ID of the active directory to create.
+    activeDirectoryId: Required. ID of the active directory to create. Must be
+      unique within the parent resource. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
     parent: Required. Value for parent.
   """
 
@@ -996,9 +1077,10 @@ class NetappProjectsLocationsBackupPoliciesCreateRequest(_messages.Message):
   Fields:
     backupPolicy: A BackupPolicy resource to be passed as the request body.
     backupPolicyId: Required. The ID to use for the backup policy. The ID must
-      be unique within the specified location. This value must start with a
-      lowercase letter followed by up to 62 lowercase letters, numbers, or
-      hyphens, and cannot end with a hyphen.
+      be unique within the specified location. Must contain only letters,
+      numbers, underscore and hyphen, with the first character a letter or
+      underscore, the last a letter or underscore or a number, and a 63
+      character maximum.
     parent: Required. The location to create the backup policies of, in the
       format `projects/{project_id}/locations/{location}`
   """
@@ -1074,10 +1156,9 @@ class NetappProjectsLocationsBackupVaultsBackupsCreateRequest(_messages.Message)
   Fields:
     backup: A Backup resource to be passed as the request body.
     backupId: Required. The ID to use for the backup. The ID must be unique
-      within the specified backupVault. This value must start with a lowercase
-      letter followed by up to 62 lowercase letters, numbers, or hyphens, and
-      cannot end with a hyphen. Values that do not match this pattern will
-      trigger an INVALID_ARGUMENT error.
+      within the specified backupVault. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
     parent: Required. The NetApp backupVault to create the backups of, in the
       format `projects/*/locations/*/backupVaults/{backup_vault_id}`
   """
@@ -1167,11 +1248,10 @@ class NetappProjectsLocationsBackupVaultsCreateRequest(_messages.Message):
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
     backupVaultId: Required. The ID to use for the backupVault. The ID must be
-      unique within the specified location. The max supported length is 63
-      characters. This value must start with a lowercase letter followed by up
-      to 62 lowercase letters, numbers, or hyphens, and cannot end with a
-      hyphen. Values that do not match this pattern will trigger an
-      INVALID_ARGUMENT error.
+      unique within the specified location. Must contain only letters,
+      numbers, underscore and hyphen, with the first character a letter or
+      underscore, the last a letter or underscore or a number, and a 63
+      character maximum.
     parent: Required. The location to create the backup vaults, in the format
       `projects/{project_id}/locations/{location}`
   """
@@ -1258,9 +1338,10 @@ class NetappProjectsLocationsKmsConfigsCreateRequest(_messages.Message):
 
   Fields:
     kmsConfig: A KmsConfig resource to be passed as the request body.
-    kmsConfigId: Required. Id of the requesting KmsConfig If auto-generating
-      Id server-side, remove this field and id from the method_signature of
-      Create RPC
+    kmsConfigId: Required. Id of the requesting KmsConfig. Must be unique
+      within the parent resource. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
     parent: Required. Value for parent.
   """
 
@@ -1428,9 +1509,10 @@ class NetappProjectsLocationsStoragePoolsCreateRequest(_messages.Message):
   Fields:
     parent: Required. Value for parent.
     storagePool: A StoragePool resource to be passed as the request body.
-    storagePoolId: Required. Id of the requesting storage pool If auto-
-      generating Id server-side, remove this field and id from the
-      method_signature of Create RPC
+    storagePoolId: Required. Id of the requesting storage pool. Must be unique
+      within the parent resource. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1515,9 +1597,10 @@ class NetappProjectsLocationsVolumesCreateRequest(_messages.Message):
   Fields:
     parent: Required. Value for parent.
     volume: A Volume resource to be passed as the request body.
-    volumeId: Required. Id of the requesting volume If auto-generating Id
-      server-side, remove this field and Id from the method_signature of
-      Create RPC
+    volumeId: Required. Id of the requesting volume. Must be unique within the
+      parent resource. Must contain only letters, numbers, underscore and
+      hyphen, with the first character a letter or underscore, the last a
+      letter or underscore or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1593,9 +1676,10 @@ class NetappProjectsLocationsVolumesReplicationsCreateRequest(_messages.Message)
     parent: Required. The NetApp volume to create the replications of, in the
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     replication: A Replication resource to be passed as the request body.
-    replicationId: Required. ID of the replication to create. This value must
-      start with a lowercase letter followed by up to 62 lowercase letters,
-      numbers, or hyphens, and cannot end with a hyphen.
+    replicationId: Required. ID of the replication to create. Must be unique
+      within the parent resource. Must contain only letters, numbers,
+      underscore and hyphen, with the first character a letter or underscore,
+      the last a letter or underscore or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1732,9 +1816,10 @@ class NetappProjectsLocationsVolumesSnapshotsCreateRequest(_messages.Message):
     parent: Required. The NetApp volume to create the snapshots of, in the
       format `projects/{project_id}/locations/{location}/volumes/{volume_id}`
     snapshot: A Snapshot resource to be passed as the request body.
-    snapshotId: Required. ID of the snapshot to create. This value must start
-      with a lowercase letter followed by up to 62 lowercase letters, numbers,
-      or hyphens, and cannot end with a hyphen.
+    snapshotId: Required. ID of the snapshot to create. Must be unique within
+      the parent resource. Must contain only letters, numbers, underscore and
+      hyphen, with the first character a letter or underscore, the last a
+      letter or underscore or a number, and a 63 character maximum.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1965,11 +2050,15 @@ class Replication(_messages.Message):
       missed the most recent scheduled transfer. - false: The replication
       relationship is not healthy. It has missed the most recent scheduled
       transfer.
+    hybridPeeringDetails: Output only. Hybrid peering details.
     labels: Resource labels to represent user provided metadata.
     mirrorState: Output only. Indicates the state of mirroring.
     name: Identifier. The resource name of the Replication. Format: `projects/
       {project_id}/locations/{location}/volumes/{volume_id}/replications/{repl
       ication_id}`.
+    preDeleteSyncEnabled: Optional. Flag to invoke one additional replication
+      sync during the delete to make sure the destination volume gets fully
+      synced with the source volume.
     replicationSchedule: Required. Indicates the schedule for replication.
     role: Output only. Indicates whether this points to source or destination.
     sourceVolume: Output only. Full name of source volume resource. Example :
@@ -2032,6 +2121,10 @@ class Replication(_messages.Message):
       UPDATING: Replication is updating.
       DELETING: Replication is deleting.
       ERROR: Replication is in error state.
+      PENDING_CLUSTER_PEERING: Replication is waiting for cluster peering to
+        be established.
+      PENDING_SVM_PEERING: Replication is waiting for SVM peering to be
+        established.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -2039,6 +2132,8 @@ class Replication(_messages.Message):
     UPDATING = 3
     DELETING = 4
     ERROR = 5
+    PENDING_CLUSTER_PEERING = 6
+    PENDING_SVM_PEERING = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2069,15 +2164,17 @@ class Replication(_messages.Message):
   destinationVolume = _messages.StringField(3)
   destinationVolumeParameters = _messages.MessageField('DestinationVolumeParameters', 4)
   healthy = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 7)
-  name = _messages.StringField(8)
-  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 9)
-  role = _messages.EnumField('RoleValueValuesEnum', 10)
-  sourceVolume = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateDetails = _messages.StringField(13)
-  transferStats = _messages.MessageField('TransferStats', 14)
+  hybridPeeringDetails = _messages.MessageField('HybridPeeringDetails', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  mirrorState = _messages.EnumField('MirrorStateValueValuesEnum', 8)
+  name = _messages.StringField(9)
+  preDeleteSyncEnabled = _messages.BooleanField(10)
+  replicationSchedule = _messages.EnumField('ReplicationScheduleValueValuesEnum', 11)
+  role = _messages.EnumField('RoleValueValuesEnum', 12)
+  sourceVolume = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateDetails = _messages.StringField(15)
+  transferStats = _messages.MessageField('TransferStats', 16)
 
 
 class RestoreParameters(_messages.Message):
@@ -2663,6 +2760,8 @@ class Volume(_messages.Message):
     exportPolicy: Optional. Export policy of the volume
     hasReplication: Output only. Indicates whether the volume is part of a
       replication relationship.
+    hybridReplicationParameters: Optional. The Hybrid Replication parameters
+      for the volume.
     kerberosEnabled: Optional. Flag indicating if the volume is a kerberos
       volume or not, export policy rules control kerberos security modes
       (krb5, krb5i, krb5p).
@@ -2857,34 +2956,35 @@ class Volume(_messages.Message):
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 7)
   exportPolicy = _messages.MessageField('ExportPolicy', 8)
   hasReplication = _messages.BooleanField(9)
-  kerberosEnabled = _messages.BooleanField(10)
-  kmsConfig = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  largeCapacity = _messages.BooleanField(13)
-  ldapEnabled = _messages.BooleanField(14)
-  mountOptions = _messages.MessageField('MountOption', 15, repeated=True)
-  multipleEndpoints = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 19, repeated=True)
-  psaRange = _messages.StringField(20)
-  replicaZone = _messages.StringField(21)
-  restoreParameters = _messages.MessageField('RestoreParameters', 22)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 23, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 24)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 25)
-  shareName = _messages.StringField(26)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 27, repeated=True)
-  snapReserve = _messages.FloatField(28)
-  snapshotDirectory = _messages.BooleanField(29)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  stateDetails = _messages.StringField(32)
-  storagePool = _messages.StringField(33)
-  tieringPolicy = _messages.MessageField('TieringPolicy', 34)
-  unixPermissions = _messages.StringField(35)
-  usedGib = _messages.IntegerField(36)
-  zone = _messages.StringField(37)
+  hybridReplicationParameters = _messages.MessageField('HybridReplicationParameters', 10)
+  kerberosEnabled = _messages.BooleanField(11)
+  kmsConfig = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  largeCapacity = _messages.BooleanField(14)
+  ldapEnabled = _messages.BooleanField(15)
+  mountOptions = _messages.MessageField('MountOption', 16, repeated=True)
+  multipleEndpoints = _messages.BooleanField(17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 20, repeated=True)
+  psaRange = _messages.StringField(21)
+  replicaZone = _messages.StringField(22)
+  restoreParameters = _messages.MessageField('RestoreParameters', 23)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 24, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 25)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 26)
+  shareName = _messages.StringField(27)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 28, repeated=True)
+  snapReserve = _messages.FloatField(29)
+  snapshotDirectory = _messages.BooleanField(30)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 31)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  stateDetails = _messages.StringField(33)
+  storagePool = _messages.StringField(34)
+  tieringPolicy = _messages.MessageField('TieringPolicy', 35)
+  unixPermissions = _messages.StringField(36)
+  usedGib = _messages.IntegerField(37)
+  zone = _messages.StringField(38)
 
 
 class WeeklySchedule(_messages.Message):

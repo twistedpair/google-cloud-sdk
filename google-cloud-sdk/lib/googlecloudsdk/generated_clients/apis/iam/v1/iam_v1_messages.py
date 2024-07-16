@@ -58,6 +58,40 @@ class AdminAuditData(_messages.Message):
   permissionDelta = _messages.MessageField('PermissionDelta', 1)
 
 
+class AppMetadata(_messages.Message):
+  r"""Represents the metadata for an installed app.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the app.
+
+  Fields:
+    disabled: Output only. Whether the app is disabled.
+    name: Immutable. The full resource name of the app to be installed.
+      Format: For OauthClient:
+      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    state: Output only. The state of the app.
+    uuid: Output only. This field represents the system generated UUID for the
+      OauthClient.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the app.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: The app is active.
+      DELETED: The app is deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  disabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  uuid = _messages.StringField(4)
+
+
 class AttestationRule(_messages.Message):
   r"""Defines which workloads can receive an identity within a pool. When an
   AttestationRule is defined under a managed identity, matching workloads may
@@ -2114,6 +2148,21 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesRemove
   resource = _messages.StringField(2, required=True)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetAttestationRuleRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSe
+  tAttestationRuleRequest object.
+
+  Fields:
+    resource: Required. The resource name of the managed identity or namespace
+      resource to add an attestation rule to.
+    setAttestationRulesRequest: A SetAttestationRulesRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setAttestationRulesRequest = _messages.MessageField('SetAttestationRulesRequest', 2)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSe
   tIamPolicyRequest object.
@@ -3329,20 +3378,6 @@ class IamProjectsServiceAccountsKeysListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
-class IamProjectsServiceAccountsKeysPatchRequest(_messages.Message):
-  r"""A IamProjectsServiceAccountsKeysPatchRequest object.
-
-  Fields:
-    name: The resource name of the service account key in the following format
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`.
-    patchServiceAccountKeyRequest: A PatchServiceAccountKeyRequest resource to
-      be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  patchServiceAccountKeyRequest = _messages.MessageField('PatchServiceAccountKeyRequest', 2)
-
-
 class IamProjectsServiceAccountsKeysUploadRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysUploadRequest object.
 
@@ -3745,13 +3780,21 @@ class InlineTrustConfig(_messages.Message):
     AdditionalTrustBundlesValue: Optional. Maps specific trust domains (e.g.,
       "example.com") to their corresponding TrustStore objects, which contain
       the trusted root certificates for that domain. Note that a trust domain
-      automatically trusts itself and don't need to be specified here.
+      automatically trusts itself and don't need to be specified here. If
+      however, this WorkloadIdentityPool's trust domain contains any trust
+      anchors in the additional_trust_bundles map, those trust anchors will be
+      *appended to* the Trust Bundle automatically derived from your
+      InlineCertificateIssuanceConfig's ca_pools.
 
   Fields:
     additionalTrustBundles: Optional. Maps specific trust domains (e.g.,
       "example.com") to their corresponding TrustStore objects, which contain
       the trusted root certificates for that domain. Note that a trust domain
-      automatically trusts itself and don't need to be specified here.
+      automatically trusts itself and don't need to be specified here. If
+      however, this WorkloadIdentityPool's trust domain contains any trust
+      anchors in the additional_trust_bundles map, those trust anchors will be
+      *appended to* the Trust Bundle automatically derived from your
+      InlineCertificateIssuanceConfig's ca_pools.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -3759,7 +3802,11 @@ class InlineTrustConfig(_messages.Message):
     r"""Optional. Maps specific trust domains (e.g., "example.com") to their
     corresponding TrustStore objects, which contain the trusted root
     certificates for that domain. Note that a trust domain automatically
-    trusts itself and don't need to be specified here.
+    trusts itself and don't need to be specified here. If however, this
+    WorkloadIdentityPool's trust domain contains any trust anchors in the
+    additional_trust_bundles map, those trust anchors will be *appended to*
+    the Trust Bundle automatically derived from your
+    InlineCertificateIssuanceConfig's ca_pools.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -4475,20 +4522,6 @@ class OwnerService(_messages.Message):
   principalSubject = _messages.StringField(1)
 
 
-class PatchServiceAccountKeyRequest(_messages.Message):
-  r"""The service account key patch request.
-
-  Fields:
-    serviceAccountKey: Required. The service account key to update.
-    updateMask: Required. The update mask to apply to the service account key.
-      Only the following fields are eligible for patching: - contact -
-      description
-  """
-
-  serviceAccountKey = _messages.MessageField('ServiceAccountKey', 1)
-  updateMask = _messages.StringField(2)
-
-
 class PatchServiceAccountRequest(_messages.Message):
   r"""The service account patch request. You can patch only the `display_name`
   and `description` fields. You must use the `update_mask` field to specify
@@ -5009,14 +5042,6 @@ class ServiceAccountKey(_messages.Message):
       managed private keys.
 
   Fields:
-    contact: Optional. A user provided email address as the point of contact
-      for this service account key. Must be an email address. Limit 64
-      characters.
-    creator: Output only. The cloud identity that created this service account
-      key. Populated automatically when the key is created and not editable by
-      the user.
-    description: Optional. A user provided description of this service account
-      key.
     disableReason: Output only. optional. If the key is disabled, it may have
       a DisableReason describing why it was disabled.
     disabled: The key status.
@@ -5123,21 +5148,18 @@ class ServiceAccountKey(_messages.Message):
     TYPE_PKCS12_FILE = 1
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
-  contact = _messages.StringField(1)
-  creator = _messages.StringField(2)
-  description = _messages.StringField(3)
-  disableReason = _messages.EnumField('DisableReasonValueValuesEnum', 4)
-  disabled = _messages.BooleanField(5)
-  extendedStatus = _messages.MessageField('ExtendedStatus', 6, repeated=True)
-  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 7)
-  keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 8)
-  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  privateKeyData = _messages.BytesField(11)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 12)
-  publicKeyData = _messages.BytesField(13)
-  validAfterTime = _messages.StringField(14)
-  validBeforeTime = _messages.StringField(15)
+  disableReason = _messages.EnumField('DisableReasonValueValuesEnum', 1)
+  disabled = _messages.BooleanField(2)
+  extendedStatus = _messages.MessageField('ExtendedStatus', 3, repeated=True)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 4)
+  keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 5)
+  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  privateKeyData = _messages.BytesField(8)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 9)
+  publicKeyData = _messages.BytesField(10)
+  validAfterTime = _messages.StringField(11)
+  validBeforeTime = _messages.StringField(12)
 
 
 class ServiceConfig(_messages.Message):
@@ -5149,6 +5171,17 @@ class ServiceConfig(_messages.Message):
   """
 
   domain = _messages.StringField(1)
+
+
+class SetAttestationRulesRequest(_messages.Message):
+  r"""Request message for SetAttestationRules.
+
+  Fields:
+    attestationRules: Required. The attestation rules to be set. At most 100
+      attestation rules can be set.
+  """
+
+  attestationRules = _messages.MessageField('AttestationRule', 1, repeated=True)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -5595,9 +5628,8 @@ class WorkforcePoolInstalledApp(_messages.Message):
       installed app.
 
   Fields:
-    appId: Output only. The UUID of the app that is installed. Current only
-      OAuth Client is supported. If the installed app is an OAuth client, this
-      field represents the system generated OAuth client ID.
+    appId: Output only.
+    appMetadata: Immutable. Metadata for the app.
     createTime: Output only. The timestamp when the workforce pool installed
       app was created.
     deleteTime: Output only. The timestamp that the workforce pool installed
@@ -5611,9 +5643,7 @@ class WorkforcePoolInstalledApp(_messages.Message):
     name: Immutable. The resource name of the workforce pool installed app.
       Format: `locations/{location}/workforcePools/{workforce_pool}/installedA
       pps/{installed_app}`
-    oauthClient: Immutable. The resource name of an OAuth client to be
-      installed. Format:
-      `projects/{project}/locations/{location}/oauthClients/{oauth_client}`.
+    oauthClient: Immutable.
     state: Output only. The state of the workforce pool installed app.
     updateTime: Output only. The timestamp for the last update of the
       workforce pool installed app.
@@ -5635,15 +5665,16 @@ class WorkforcePoolInstalledApp(_messages.Message):
     DELETED = 2
 
   appId = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  name = _messages.StringField(7)
-  oauthClient = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  appMetadata = _messages.MessageField('AppMetadata', 2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  expireTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  oauthClient = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class WorkforcePoolProvider(_messages.Message):
@@ -5764,6 +5795,10 @@ class WorkforcePoolProvider(_messages.Message):
       {"google.subject": "assertion.sub"} ```
     description: A user-specified description of the provider. Cannot exceed
       256 characters.
+    detailedAuditLogging: Optional. If true, populates additional debug
+      information in Cloud Audit Logs for this provider. Logged attribute
+      mappings and values can be found in `sts.googleapis.com` data access
+      logs. Default value is false.
     disabled: Disables the workforce pool provider. You cannot use a disabled
       provider to exchange tokens. However, existing tokens still grant
       access.
@@ -5870,14 +5905,15 @@ class WorkforcePoolProvider(_messages.Message):
   attributeCondition = _messages.StringField(1)
   attributeMapping = _messages.MessageField('AttributeMappingValue', 2)
   description = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  displayName = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 7)
-  name = _messages.StringField(8)
-  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 9)
-  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
+  detailedAuditLogging = _messages.BooleanField(4)
+  disabled = _messages.BooleanField(5)
+  displayName = _messages.StringField(6)
+  expireTime = _messages.StringField(7)
+  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 8)
+  name = _messages.StringField(9)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 10)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class WorkforcePoolProviderKey(_messages.Message):

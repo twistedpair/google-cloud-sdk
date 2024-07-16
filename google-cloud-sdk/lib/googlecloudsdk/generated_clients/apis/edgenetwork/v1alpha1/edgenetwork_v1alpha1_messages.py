@@ -1963,8 +1963,8 @@ class Subnet(_messages.Message):
         time of creating the VLAN. This will be treated as mixed bonding where
         the VLAN will have both bonded and non-bonded connectivity to
         machines.
-      BONDED: Single homed.
-      NON_BONDED: Multi homed.
+      BONDED: Multi homed.
+      NON_BONDED: Single homed.
     """
     BONDING_TYPE_UNSPECIFIED = 0
     BONDED = 1

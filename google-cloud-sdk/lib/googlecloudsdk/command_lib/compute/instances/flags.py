@@ -3985,3 +3985,10 @@ def AddAvailabilityDomainAgrs(parser):
           your placement policy.
           """,
   )
+
+
+def AddTurboModeArgs(parser):
+  parser.add_argument(
+      '--turbo-mode',
+      help='Specifies the turbo frequency of the instance.',
+  )

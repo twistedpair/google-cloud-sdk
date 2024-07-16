@@ -3183,7 +3183,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
-    observabilityMetricData: More feed data would be added in subsequent CLs
+    observabilityMetricData: A
+      StorageDatabasecenterPartnerapiV1mainObservabilityMetricData attribute.
     recommendationSignalData: A StorageDatabasecenterPartnerapiV1mainDatabaseR
       esourceRecommendationSignalData attribute.
     resourceHealthSignalData: A
@@ -4661,13 +4662,15 @@ class TrialMetadata(_messages.Message):
 
   Fields:
     endTime: End time of the trial cluster.
+    graceEndTime: grace end time of the cluster.
     startTime: start time of the trial cluster.
     upgradeTime: Upgrade time of trial cluster to Standard cluster.
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
-  upgradeTime = _messages.StringField(3)
+  graceEndTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  upgradeTime = _messages.StringField(4)
 
 
 class UpdatePolicy(_messages.Message):

@@ -22,6 +22,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.container.fleet import client
 from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -39,9 +40,22 @@ class HubCommand(object):
     return self._client
 
   @property
+  def hubclient_v2(self):
+    """The HubClient for the current release track."""
+    # Build the client lazily, but only once.
+    if not hasattr(self, '_client_v2'):
+      self._client_v2 = client.HubV2Client(base.ReleaseTrack.ALPHA)
+    return self._client_v2
+
+  @property
   def messages(self):
     """Convenience property for hubclient.messages."""
     return self.hubclient.messages
+
+  @property
+  def messages_v2(self):
+    """Convenience property for hubclient_v2.messages."""
+    return self.hubclient_v2.messages
 
   @staticmethod
   def Project(number=False):
@@ -77,6 +91,23 @@ class HubCommand(object):
     """Builds a full Membership name, using the core project property."""
     return util.MembershipResourceName(
         HubCommand.Project(use_number), name, location=location)
+
+  @staticmethod
+  def MembershipFeatureResourceName(
+      membership_name,
+      feature_name,
+      project=None,
+      location='global',
+      use_number=False,
+  ):
+    """Builds the full MembershipFeature name, using the core project property if no project is specified.."""
+    project = project or HubCommand.Project(use_number)
+    return util.MembershipFeatureResourceName(
+        project,
+        membership_name,
+        feature_name,
+        location=location,
+    )
 
   @staticmethod
   def WorkspaceResourceName(name, location='global', use_number=False):

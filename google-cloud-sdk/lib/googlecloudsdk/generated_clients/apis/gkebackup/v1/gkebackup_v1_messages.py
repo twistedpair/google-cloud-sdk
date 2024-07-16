@@ -1869,7 +1869,7 @@ class GroupKind(_messages.Message):
   Fields:
     resourceGroup: Optional. API group string of a Kubernetes resource, e.g.
       "apiextensions.k8s.io", "storage.k8s.io", etc. Note: use empty string
-      for core API group
+      for core API group.
     resourceKind: Optional. Kind of a Kubernetes resource, must be in
       UpperCamelCase (PascalCase) and singular form. E.g.
       "CustomResourceDefinition", "StorageClass", etc.
@@ -2099,10 +2099,10 @@ class NamespacedNames(_messages.Message):
 
 
 class Namespaces(_messages.Message):
-  r"""A list of Kubernetes Namespaces
+  r"""A list of Kubernetes Namespaces.
 
   Fields:
-    namespaces: Optional. A list of Kubernetes Namespaces
+    namespaces: Optional. A list of Kubernetes Namespaces.
   """
 
   namespaces = _messages.StringField(1, repeated=True)
@@ -2343,7 +2343,7 @@ class Restore(_messages.Message):
       be applied to the same version of the resource.
     filter: Optional. Immutable. Filters resources for `Restore`. If not
       specified, the scope of the restore will remain the same as defined in
-      the `RestorePlan`. If this is specified, and no resources are matched by
+      the `RestorePlan`. If this is specified and no resources are matched by
       the `inclusion_filters` or everyting is excluded by the
       `exclusion_filters`, nothing will be restored. This filter can only be
       specified if the value of namespaced_resource_restore_mode is set to
