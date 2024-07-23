@@ -299,7 +299,7 @@ ADDITIONAL_SUBNETWORKS_POD_RANG_ENOT_FOUND = """\
 Can not remove pod ipv4 range {range}: not found in additional subnetworks
 """
 
-MAX_NODES_PER_POOL = 2000
+DEFAULT_MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
 MAX_AUTHORIZED_NETWORKS_CIDRS_PUBLIC = 50
@@ -759,6 +759,7 @@ class CreateClusterOptions(object):
       enable_ray_cluster_monitoring=None,
       enable_insecure_binding_system_authenticated=None,
       enable_insecure_binding_system_unauthenticated=None,
+      cp_disk_encryption_key=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -998,6 +999,7 @@ class CreateClusterOptions(object):
     self.enable_insecure_binding_system_unauthenticated = (
         enable_insecure_binding_system_unauthenticated
     )
+    self.cp_disk_encryption_key = cp_disk_encryption_key
 
 
 class UpdateClusterOptions(object):
@@ -2079,7 +2081,14 @@ class APIAdapter(object):
         )
         for binding in options.binauthz_policy_bindings:
           cluster.binaryAuthorization.policyBindings.append(
-              self.messages.PolicyBinding(name=binding['name'])
+              self.messages.PolicyBinding(
+                  name=binding['name'],
+                  enforcementMode=self.messages.PolicyBinding.EnforcementModeValueValuesEnum(  # pylint:disable=g-long-ternary
+                      binding['enforcement-mode']
+                  )
+                  if 'enforcement-mode' in binding
+                  else None,
+              )
           )
       else:
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
@@ -2593,6 +2602,13 @@ class APIAdapter(object):
           options.enable_insecure_binding_system_unauthenticated
       )
 
+    if options.cp_disk_encryption_key is not None:
+      if cluster.userManagedKeysConfig is None:
+        cluster.userManagedKeysConfig = self.messages.UserManagedKeysConfig()
+      cluster.userManagedKeysConfig.cmekControlPlaneDisksCaKey = (
+          options.cp_disk_encryption_key
+      )
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -2731,7 +2747,9 @@ class APIAdapter(object):
     Returns:
       List of node pools.
     """
-    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
+    max_nodes_per_pool = (
+        options.max_nodes_per_pool or DEFAULT_MAX_NODES_PER_POOL
+    )
     pools = (options.num_nodes + max_nodes_per_pool - 1) // max_nodes_per_pool
     if pools == 1:
       pool_names = ['default-pool']  # pool consistency with server default
@@ -5784,15 +5802,26 @@ class APIAdapter(object):
         binary_authorization.policyBindings = []
         for binding in binauthz_policy_bindings:
           binary_authorization.policyBindings.append(
-              self.messages.PolicyBinding(name=binding['name'])
+              self.messages.PolicyBinding(
+                  name=binding['name'],
+                  enforcementMode=self.messages.PolicyBinding.EnforcementModeValueValuesEnum(  # pylint:disable=g-long-ternary
+                      binding['enforcement-mode']
+                  )
+                  if 'enforcement-mode' in binding
+                  else None,
+              )
           )
     update = self.messages.ClusterUpdate(
-        desiredBinaryAuthorization=binary_authorization)
+        desiredBinaryAuthorization=binary_authorization
+    )
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
-            name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
-                                        cluster_ref.clusterId),
-            update=update))
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def ModifyRayClusterLoggingConfig(
@@ -6945,9 +6974,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     Returns:
       List of node pools.
     """
-    max_nodes_per_pool = options.max_nodes_per_pool or MAX_NODES_PER_POOL
-    num_pools = (options.num_nodes + max_nodes_per_pool -
-                 1) // max_nodes_per_pool
+    max_nodes_per_pool = (
+        options.max_nodes_per_pool or DEFAULT_MAX_NODES_PER_POOL
+    )
+    num_pools = (
+        options.num_nodes + max_nodes_per_pool - 1
+    ) // max_nodes_per_pool
     # pool consistency with server default
     node_pool_name = options.node_pool_name or 'default-pool'
 
@@ -7628,19 +7660,19 @@ def SubnetworkNameToPath(subnetwork, project, zone):
   return ProjectLocationSubnetwork(project, region, subnetwork)
 
 
-def NormalizeBinauthzEvaluationMode(evaluation_mode):
-  """Converts an evaluation mode to lowercase format.
+def NormalizeBinauthzMode(mode):
+  """Converts an evaluation or enforcement mode to lowercase format.
 
   e.g. Converts 'PROJECT_SINGLETON_POLICY_ENFORCE' to
   'project-singleton-policy-enforce'
 
   Args:
-    evaluation_mode: An evaluation mode.
+    mode: An evaluation or enforcement mode.
 
   Returns:
-    The evaluation mode in lowercase form.
+    The mode in lowercase form.
   """
-  return evaluation_mode.replace('_', '-').lower()
+  return mode.replace('_', '-').lower()
 
 
 def GetBinauthzEvaluationModeOptions(messages, release_track):
@@ -7667,6 +7699,15 @@ def BinauthzEvaluationModeRequiresPolicy(messages, evaluation_mode):
   ):
     return False
   return True
+
+
+def GetBinauthzEnforcementModeOptions(messages):
+  """Returns all valid options for the enforcement-mode dict key."""
+  options = list(
+      messages.PolicyBinding.EnforcementModeValueValuesEnum.to_dict()
+  )
+  options.remove('ENFORCEMENT_MODE_UNSPECIFIED')
+  return sorted(options)
 
 
 def VariantConfigEnumFromString(messages, variant):

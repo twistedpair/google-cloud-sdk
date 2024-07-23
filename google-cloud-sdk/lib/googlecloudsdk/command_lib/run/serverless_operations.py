@@ -24,6 +24,7 @@ from __future__ import unicode_literals
 import contextlib
 import dataclasses
 import functools
+import json
 import random
 import string
 
@@ -743,6 +744,14 @@ class ServerlessOperations(object):
       elif isinstance(change, config_changes_mod.BaseImagesAnnotationChange):
         change.updates[ingress_container_name] = base_image_from_build
 
+  def _GetFunctionTargetFromBuildPack(self, pack):
+    """Get the function target from the build pack."""
+    if pack:
+      for env_var in pack[0].get('envs', []):
+        if env_var.startswith('GOOGLE_FUNCTION_TARGET='):
+          return env_var.split('=', 1)[1]
+    return None
+
   def ReleaseService(
       self,
       service_ref,
@@ -823,7 +832,12 @@ class ServerlessOperations(object):
 
     if build_source is not None:
       self._ValidateService(service_ref, config_changes)
-      image_digest, base_image_from_build = deployer.CreateImage(
+      (
+          image_digest,
+          base_image_from_build,
+          build_id,
+          uploaded_source
+      ) = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
@@ -841,6 +855,14 @@ class ServerlessOperations(object):
       )
       if image_digest is None:
         return
+      self._AddRunFunctionsAnnotations(
+          config_changes=config_changes,
+          uploaded_source=uploaded_source,
+          service_account=build_service_account,
+          worker_pool=build_worker_pool,
+          build_env_vars=build_env_vars,
+          build_pack=build_pack,
+          build_id=build_id)
       config_changes.append(_AddDigestToImageChange(image_digest))
       if base_image_from_build:
         self._ReplaceBaseImage(
@@ -1357,7 +1379,7 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      image_digest, _ = deployer.CreateImage(
+      image_digest, _, _, _ = deployer.CreateImage(
           tracker,
           build_image,
           build_source,
@@ -1724,6 +1746,32 @@ class ServerlessOperations(object):
         service_ref, config_changes, with_code=True, serv=serv, dry_run=True
     )
     config_changes.pop()
+
+  def _AddRunFunctionsAnnotations(
+      self, config_changes, uploaded_source, service_account, worker_pool,
+      build_env_vars, build_pack, build_id):
+    """Add run functions annotations to the service."""
+    build_env_vars_str = json.dumps(build_env_vars) if build_env_vars else None
+    function_target = self._GetFunctionTargetFromBuildPack(build_pack)
+    source_path = None
+    if uploaded_source:
+      source_path = f'gs://{uploaded_source.bucket}/{uploaded_source.name}'
+      if uploaded_source.generation is not None:
+        source_path += f'#{uploaded_source.generation}'
+
+    annotations_map = {
+        service.RUN_FUNCTIONS_SOURCE_LOCATION_ANNOTATION: source_path,
+        service.RUN_FUNCTIONS_BUILD_SERVICE_ACCOUNT_ANNOTATION: service_account,
+        service.RUN_FUNCTIONS_BUILD_WORKER_POOL_ANNOTATION: worker_pool,
+        service.RUN_FUNCTIONS_BUILD_ENV_VARS_ANNOTATION: build_env_vars_str,
+        service.RUN_FUNCTIONS_FUNCTION_TARGET_ANNOTATION: function_target,
+        service.RUN_FUNCTIONS_BUILD_ID_ANNOTATION: build_id,
+    }
+
+    for annotation, value in annotations_map.items():
+      if value:
+        config_changes.append(
+            config_changes_mod.SetAnnotationChange(annotation, value))
 
   def ValidateConfigOverrides(self, job_ref, config_overrides):
     """Apply config changes to Job resource to validate.

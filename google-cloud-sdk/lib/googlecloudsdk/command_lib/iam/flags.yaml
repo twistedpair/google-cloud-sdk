@@ -142,6 +142,68 @@ workload_identity_pool:
     arg_name: mode
     help_text: |-
       The mode of the pool.
+  inline_certificate_issuance_config_file:
+    api_field: workloadIdentityPool.inlineCertificateIssuanceConfig
+    type: "googlecloudsdk.calliope.arg_parsers:YAMLFileContents:"
+    processor: googlecloudsdk.command_lib.iam.iam_util:ParseYamlOrJsonToInlineCertificateIssuanceConfig
+    arg_name: inline-certificate-issuance-config-file
+    help_text: |-
+      YAML file with configuration for certificate issuance.
+      Example file format:
+      ```
+      inlineCertificateIssuanceConfig:
+        caPools:
+          us-east1: projects/1234/locations/us-east1/caPools/capoolname
+          us-west1: projects/1234/locations/us-west1/caPools/capoolname
+        keyAlgorithm: RSA_4096
+        lifetime: 7200s
+        rotationWindowPercentage: 50
+      ```
+  key_algorithm:
+    api_field: workloadIdentityPool.inlineCertificateIssuanceConfig.keyAlgorithm
+    arg_name: key-algorithm
+    help_text: |-
+      Key algorithm to use when generating the key pair. This key pair will be used to create the
+      certificate.
+  certificate_lifetime:
+    api_field: workloadIdentityPool.inlineCertificateIssuanceConfig.lifetime
+    arg_name: certificate-lifetime
+    help_text: |-
+      Lifetime of the workload certificates issued by the CA pool.
+  rotation_window_percentage:
+    api_field: workloadIdentityPool.inlineCertificateIssuanceConfig.rotationWindowPercentage
+    arg_name: rotation-window-percentage
+    help_text: |-
+      Rotation window percentage indicating when certificate rotation should be initiated based on
+      remaining lifetime.
+  inline_trust_config_file:
+    api_field: workloadIdentityPool.inlineTrustConfig
+    type: "googlecloudsdk.calliope.arg_parsers:YAMLFileContents:"
+    processor: googlecloudsdk.command_lib.iam.iam_util:ParseYamlOrJsonToInlineTrustConfig
+    arg_name: inline-trust-config-file
+    help_text: |-
+      YAML file with configuration for providing additional trust bundles.
+      Example file format:
+      ```
+      inlineTrustConfig:
+        additionalTrustBundles:
+          example.com:
+            trustAnchors:
+            - pemCertificate: "-----BEGIN CERTIFICATE-----
+              <certificate>
+              -----END CERTIFICATE-----"
+            - pemCertificate: "-----BEGIN CERTIFICATE-----
+              <certificate>
+              -----END CERTIFICATE-----"
+          myorg.com:
+            trustAnchors:
+            - pemCertificate: "-----BEGIN CERTIFICATE-----
+              <certificate>
+              -----END CERTIFICATE-----"
+            - pemCertificate: "-----BEGIN CERTIFICATE-----
+              <certificate>
+              -----END CERTIFICATE-----"
+      ```
 
 workload_identity_pool_provider:
   display_name:

@@ -2833,6 +2833,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'oracledatabase': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.oracledatabase.v1alpha',
+                    client_classpath='oracledatabase_v1alpha_client.OracledatabaseV1alpha',
+                    base_url='https://oracledatabase.googleapis.com/',
+                    messages_modulepath='oracledatabase_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'orglifecycle': {
         'v1':
             APIDef(
@@ -3082,6 +3094,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'privilegedaccessmanager': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.privilegedaccessmanager.v1',
+                    client_classpath='privilegedaccessmanager_v1_client.PrivilegedaccessmanagerV1',
+                    base_url='https://privilegedaccessmanager.googleapis.com/',
+                    messages_modulepath='privilegedaccessmanager_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3089,7 +3111,7 @@ MAP = {
                     client_classpath='privilegedaccessmanager_v1alpha_client.PrivilegedaccessmanagerV1alpha',
                     base_url='https://privilegedaccessmanager.googleapis.com/',
                     messages_modulepath='privilegedaccessmanager_v1alpha_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1beta':

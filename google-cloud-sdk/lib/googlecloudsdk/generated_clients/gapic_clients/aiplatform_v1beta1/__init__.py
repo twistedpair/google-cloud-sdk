@@ -21,6 +21,7 @@ __version__ = package_version.__version__
 from .services.prediction_service import PredictionServiceClient
 from .services.prediction_service import PredictionServiceAsyncClient
 
+from .types.api_auth import ApiAuth
 from .types.content import Blob
 from .types.content import Candidate
 from .types.content import Citation
@@ -67,6 +68,8 @@ from .types.io import DirectUploadSource
 from .types.io import GcsDestination
 from .types.io import GcsSource
 from .types.io import GoogleDriveSource
+from .types.io import JiraSource
+from .types.io import SlackSource
 from .types.io import TFRecordDestination
 from .types.openapi import Schema
 from .types.openapi import Type
@@ -81,6 +84,9 @@ from .types.prediction_service import ExplainRequest
 from .types.prediction_service import ExplainResponse
 from .types.prediction_service import GenerateContentRequest
 from .types.prediction_service import GenerateContentResponse
+from .types.prediction_service import GenerateVideoResponse
+from .types.prediction_service import PredictLongRunningMetadata
+from .types.prediction_service import PredictLongRunningResponse
 from .types.prediction_service import PredictRequest
 from .types.prediction_service import PredictResponse
 from .types.prediction_service import RawPredictRequest
@@ -112,6 +118,7 @@ from .types.types import Tensor
 
 __all__ = (
     'PredictionServiceAsyncClient',
+'ApiAuth',
 'Attribution',
 'AvroSource',
 'BigQueryDestination',
@@ -156,6 +163,7 @@ __all__ = (
 'GcsSource',
 'GenerateContentRequest',
 'GenerateContentResponse',
+'GenerateVideoResponse',
 'GenerationConfig',
 'GoogleDriveSource',
 'GoogleSearchRetrieval',
@@ -165,9 +173,12 @@ __all__ = (
 'HarmCategory',
 'Int64Array',
 'IntegratedGradientsAttribution',
+'JiraSource',
 'ModelExplanation',
 'Neighbor',
 'Part',
+'PredictLongRunningMetadata',
+'PredictLongRunningResponse',
 'PredictRequest',
 'PredictResponse',
 'PredictionServiceClient',
@@ -180,6 +191,7 @@ __all__ = (
 'Schema',
 'SearchEntryPoint',
 'Segment',
+'SlackSource',
 'SmoothGradConfig',
 'StreamDirectPredictRequest',
 'StreamDirectPredictResponse',

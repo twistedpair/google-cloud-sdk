@@ -728,7 +728,8 @@ class _BaseInstances(object):
 
     # ALPHA args.
     if _IsAlpha(release_track):
-      pass
+      if args.time_zone is not None:
+        settings.timeZone = args.time_zone
 
     return settings
 

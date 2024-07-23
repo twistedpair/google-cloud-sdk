@@ -1215,9 +1215,11 @@ apis:
   privilegedaccessmanager:
     v1alpha:
       discovery_doc: privilegedaccessmanager_v1alpha.json
-      default: true
     v1beta:
       discovery_doc: privilegedaccessmanager_v1beta.json
+    v1:
+      discovery_doc: privilegedaccessmanager_v1.json
+      default: true
   publicca:
     v1:
       default: true
@@ -1709,6 +1711,10 @@ apis:
     v1alpha:
       discovery_doc: cloudaicompanion_v1alpha.json
       default: true
+  oracledatabase:
+    v1alpha:
+      discovery_doc: oracledatabase_v1alpha.json
+      default: true
 canonical_surfaces:
   accessapproval:
     name: accessapproval
@@ -2055,6 +2061,9 @@ canonical_surfaces:
   ondemandscanning:
     name: ondemandscanning
     hidden: true
+  oracledatabase:
+    name: oracledatabase
+    command: oracle-database
   orglifecycle:
     name: orglifecycle
     command: orglifecycle

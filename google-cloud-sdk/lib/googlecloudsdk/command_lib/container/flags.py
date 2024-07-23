@@ -281,7 +281,7 @@ def AddReleaseChannelFlag(
 ):
   """Adds a --release-channel flag to the given parser."""
   choices = ['rapid', 'regular', 'stable', 'extended']
-  visible_choices = ['rapid', 'regular', 'stable']
+  visible_choices = ['rapid', 'regular', 'extended', 'stable']
 
   short_text = """\
 Release channel a cluster is subscribed to.
@@ -322,6 +322,11 @@ CHANNEL must be one of:
    Clusters subscribed to 'regular' receive versions that are
    considered GA quality. 'regular' is intended for production users
    who want to take advantage of new features.
+
+`extended`
+
+   Clusters subscribed to 'extended' can remain on a minor version for 24 months
+   from when the minor version is made available in the Regular channel.
 
 `stable`
 
@@ -958,8 +963,8 @@ def AddBinauthzFlags(
 
   # Retrieve valid Binauthz evaluation mode options and convert to lowercase
   # to display in the help text per gcloud conventions.
-  options = [
-      api_adapter.NormalizeBinauthzEvaluationMode(option)
+  evaluation_options = [
+      api_adapter.NormalizeBinauthzMode(option)
       for option in api_adapter.GetBinauthzEvaluationModeOptions(
           messages, release_track
       )
@@ -971,10 +976,10 @@ def AddBinauthzFlags(
   if autopilot:
     binauthz_group.add_argument(
         '--binauthz-evaluation-mode',
-        choices=options,
+        choices=evaluation_options,
         # Convert values to lower case before checking against the list of
         # options. This allows users to pass evaluation mode in enum form.
-        type=api_adapter.NormalizeBinauthzEvaluationMode,
+        type=api_adapter.NormalizeBinauthzMode,
         default=None,
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
@@ -998,20 +1003,20 @@ def AddBinauthzFlags(
     )
     binauthz_enablement_group.add_argument(
         '--binauthz-evaluation-mode',
-        choices=options,
+        choices=evaluation_options,
         # Convert values to lower case before checking against the list of
         # options. This allows users to pass evaluation mode in enum form.
-        type=api_adapter.NormalizeBinauthzEvaluationMode,
+        type=api_adapter.NormalizeBinauthzMode,
         default=None,
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
     )
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    platform_policy_type = arg_parsers.RegexpValidator(
-        _BINAUTHZ_GKE_POLICY_REGEX,
-        'GKE policy resource names have the following format: '
-        '`projects/{project_number}/platforms/gke/policies/{policy_id}`',
-    )
+  platform_policy_type = arg_parsers.RegexpValidator(
+      _BINAUTHZ_GKE_POLICY_REGEX,
+      'GKE policy resource names have the following format: '
+      '`projects/{project_number}/platforms/gke/policies/{policy_id}`',
+  )
+  if release_track == base.ReleaseTrack.BETA:
     binauthz_group.add_argument(
         '--binauthz-policy-bindings',
         type=arg_parsers.ArgDict(
@@ -1028,6 +1033,46 @@ def AddBinauthzFlags(
           The relative resource name of the Binary Authorization policy to audit
           and/or enforce. GKE policies have the following format:
           `projects/{project_number}/platforms/gke/policies/{policy_id}`."""),
+        hidden=hidden,
+    )
+    return
+  if release_track == base.ReleaseTrack.ALPHA:
+    # Retrieve valid Binauthz enforcement mode options and convert to lowercase
+    # to display in the help text per gcloud conventions.
+    normalized_enforcement_options = [
+        api_adapter.NormalizeBinauthzMode(option)
+        for option in api_adapter.GetBinauthzEnforcementModeOptions(messages)
+    ]
+    enforcement_validator = arg_parsers.CustomFunctionValidator(
+        lambda arg: api_adapter.NormalizeBinauthzMode(arg)
+        in normalized_enforcement_options,
+        'enforcement-mode should be one of the following: '
+        + ', '.join(normalized_enforcement_options),
+        str,
+    )
+    binauthz_group.add_argument(
+        '--binauthz-policy-bindings',
+        type=arg_parsers.ArgDict(
+            spec={
+                'name': platform_policy_type,
+                'enforcement-mode': enforcement_validator,
+            },
+            required_keys=['name'],
+            max_length=2,
+        ),
+        metavar='name=BINAUTHZ_POLICY,enforcement-mode=ENFORCEMENT_MODE',
+        action='append',
+        default=None,
+        help=textwrap.dedent("""\
+          Binds a Binary Authorization policy to the cluster.
+
+          *name*:: (Required) The relative resource name of the Binary Authorization policy to audit
+          and/or enforce. GKE policies have the following format:
+          `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+
+          *enforcement-mode*:: (Optional) The mode of enforcement for the policy.
+          Must be one of: *audit*, *audit-and-enforce*, *audit-and-dryrun*. Defaults to *audit*, if unset.
+          """),
         hidden=hidden,
     )
 
@@ -1509,7 +1554,7 @@ Examples:
   help_text += """
 New nodes, including ones created by resize or recreate, will have these labels
 on the Kubernetes API node object and can be used in nodeSelectors.
-See [](http://kubernetes.io/docs/user-guide/node-selection/) for examples.
+See [](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/) for examples.
 
 Note that Kubernetes labels, intended to associate cluster components
 and resources with one another and manage resource lifecycles, are different
@@ -5442,14 +5487,14 @@ def AddEnableCloudMonitoring(parser):
 def AddMaxNodesPerPool(parser):
   parser.add_argument(
       '--max-nodes-per-pool',
-      type=arg_parsers.BoundedInt(100, api_adapter.MAX_NODES_PER_POOL),
+      type=arg_parsers.BoundedInt(100, 2000),
       help=(
           'The maximum number of nodes to allocate per default initial node'
           ' pool. Kubernetes Engine will automatically create enough nodes'
           ' pools such that each node pool contains less than'
           ' `--max-nodes-per-pool` nodes. Defaults to {nodes} nodes, but can be'
           ' set as low as 100 nodes per pool on initial create.'.format(
-              nodes=api_adapter.MAX_NODES_PER_POOL
+              nodes=api_adapter.DEFAULT_MAX_NODES_PER_POOL
           )
       ),
   )
@@ -6186,6 +6231,18 @@ def AddEnableDNSEndpoint(parser):
   )
 
 
+def AddCPDiskEncryptionKeyFlag(parser):
+  """Adds a --cp-disk-encryption-key flag to parser."""
+  help_text = ' '
+  parser.add_argument(
+      '--cp-disk-encryption-key',
+      help=help_text,
+      hidden=True,
+      type=str,
+      default=None,
+  )
+
+
 def AddWorkloadPoliciesFlag(parser, hidden=False):
   """Adds workload policies related flags to parser."""
   type_validator = arg_parsers.RegexpValidator(
@@ -6659,4 +6716,3 @@ Remove additional subnetwork named "my-subnet", including all the pod ipv4 range
       action='append',
       help=help_text,
   )
-

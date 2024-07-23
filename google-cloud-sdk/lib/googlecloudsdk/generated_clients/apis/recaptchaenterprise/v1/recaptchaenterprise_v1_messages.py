@@ -367,8 +367,8 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
       should be the same action provided at token generation time on client-
       side platforms already integrated with recaptcha enterprise.
     express: Optional. Flag for a reCAPTCHA express request for an assessment
-      without a token. If enabled, `site_key` must reference a SCORE key with
-      WAF feature set to EXPRESS.
+      without a token. If enabled, `site_key` must reference an Express site
+      key.
     firewallPolicyEvaluation: Optional. Flag for enabling firewall policy
       config assessment. If this flag is enabled, the firewall policy will be
       evaluated and a suggested firewall action will be returned in the
@@ -435,6 +435,10 @@ class GoogleCloudRecaptchaenterpriseV1Event(_messages.Message):
   userInfo = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1UserInfo', 13)
   userIpAddress = _messages.StringField(14)
   wafTokenAssessment = _messages.BooleanField(15)
+
+
+class GoogleCloudRecaptchaenterpriseV1ExpressKeySettings(_messages.Message):
+  r"""Settings specific to keys that can be used for reCAPTCHA Express."""
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
@@ -717,7 +721,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
 
   Messages:
     LabelsValue: Optional. See [Creating and managing labels]
-      (https://cloud.google.com/recaptcha-enterprise/docs/labels).
+      (https://cloud.google.com/recaptcha/docs/labels).
 
   Fields:
     androidSettings: Settings for keys that can be used by Android apps.
@@ -725,9 +729,10 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
       this key.
     displayName: Required. Human-readable display name of this key. Modifiable
       by user.
+    expressSettings: Settings for keys that can be used by reCAPTCHA Express.
     iosSettings: Settings for keys that can be used by iOS apps.
     labels: Optional. See [Creating and managing labels]
-      (https://cloud.google.com/recaptcha-enterprise/docs/labels).
+      (https://cloud.google.com/recaptcha/docs/labels).
     name: Identifier. The resource name for the Key in the format
       `projects/{project}/keys/{key}`.
     testingOptions: Optional. Options for user acceptance testing.
@@ -738,7 +743,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. See [Creating and managing labels]
-    (https://cloud.google.com/recaptcha-enterprise/docs/labels).
+    (https://cloud.google.com/recaptcha/docs/labels).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -763,12 +768,13 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
   androidSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1AndroidKeySettings', 1)
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 7)
-  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 8)
-  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 9)
+  expressSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ExpressKeySettings', 4)
+  iosSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1IOSKeySettings', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  testingOptions = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TestingOptions', 8)
+  wafSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WafSettings', 9)
+  webSettings = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1WebKeySettings', 10)
 
 
 class GoogleCloudRecaptchaenterpriseV1ListFirewallPoliciesResponse(_messages.Message):
@@ -850,11 +856,11 @@ class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):
     skipBillingCheck: Optional. If true, skips the billing check. A reCAPTCHA
       Enterprise key or migrated key behaves differently than a reCAPTCHA
       (non-Enterprise version) key when you reach a quota limit (see
-      https://cloud.google.com/recaptcha-enterprise/quotas#quota_limit). To
-      avoid any disruption of your usage, we check that a billing account is
-      present. If your usage of reCAPTCHA is under the free quota, you can
-      safely skip the billing check and proceed with the migration. See
-      https://cloud.google.com/recaptcha-enterprise/docs/billing-information.
+      https://cloud.google.com/recaptcha/quotas#quota_limit). To avoid any
+      disruption of your usage, we check that a billing account is present. If
+      your usage of reCAPTCHA is under the free quota, you can safely skip the
+      billing check and proceed with the migration. See
+      https://cloud.google.com/recaptcha/docs/billing-information.
   """
 
   skipBillingCheck = _messages.BooleanField(1)

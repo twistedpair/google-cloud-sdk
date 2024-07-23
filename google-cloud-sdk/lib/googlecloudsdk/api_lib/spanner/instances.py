@@ -60,6 +60,7 @@ def Create(
     instance_type=None,
     expire_behavior=None,
     ssd_cache=None,
+    edition=None,
 ):
   """Create a new instance."""
   client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
@@ -106,6 +107,8 @@ def Create(
     instance_obj.ssdCache = (
         config_ref.RelativeName() + '/ssdCaches/' + ssd_cache.strip()
     )
+  if edition is not None:
+    instance_obj.edition = msgs.Instance.EditionValueValuesEnum(edition)
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(

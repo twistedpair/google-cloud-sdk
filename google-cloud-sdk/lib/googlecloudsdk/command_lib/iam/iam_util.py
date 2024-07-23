@@ -919,17 +919,53 @@ def ParseYamlToTrustStore(yaml_dict):
   return config.trustStore
 
 
-def GetDetailedHelpForSetIamPolicy(collection,
-                                   example_id='',
-                                   example_see_more='',
-                                   additional_flags='',
-                                   use_an=False):
+def ParseYamlOrJsonToInlineCertificateIssuanceConfig(yaml_dict):
+  """Construct a InlineCertificateIssuanceConfig protorpc.Message from the content of a Yaml file.
+
+  Args:
+    yaml_dict: YAML file content to parse.
+
+  Returns:
+    a InlineCertificateIssuanceConfig from the parsed YAML file.
+  Raises:
+    DecodeError if the Yaml file content could not be parsed.
+  """
+  config = messages_util.DictToMessageWithErrorCheck(
+      yaml_dict, msgs.WorkloadIdentityPool
+  )
+  return config.inlineCertificateIssuanceConfig
+
+
+def ParseYamlOrJsonToInlineTrustConfig(yaml_dict):
+  """Construct a InlineTrustConfig protorpc.Message from the content of a Yaml file.
+
+  Args:
+    yaml_dict: YAML file content to parse.
+
+  Returns:
+    a InlineTrustConfig from the parsed YAML file.
+  Raises:
+    DecodeError if the Yaml file content could not be parsed.
+  """
+  config = messages_util.DictToMessageWithErrorCheck(
+      yaml_dict, msgs.WorkloadIdentityPool
+  )
+  return config.inlineTrustConfig
+
+
+def GetDetailedHelpForSetIamPolicy(
+    collection,
+    example_id='',
+    example_see_more='',
+    additional_flags='',
+    use_an=False,
+):
   """Returns a detailed_help for a set-iam-policy command.
 
   Args:
     collection: Name of the command collection (ex: "project", "dataset")
-    example_id: Collection identifier to display in a sample command
-        (ex: "my-project", '1234')
+    example_id: Collection identifier to display in a sample command (ex:
+      "my-project", '1234')
     example_see_more: Optional "See ... for details" message. If not specified,
       includes a default reference to IAM managing-policies documentation
     additional_flags: str, additional flags to include in the example command

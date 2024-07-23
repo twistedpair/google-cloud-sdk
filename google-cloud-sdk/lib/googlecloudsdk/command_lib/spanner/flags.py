@@ -374,6 +374,14 @@ def SsdCache(
     )
 
 
+def Edition(
+    required=False,
+    hidden=True,
+    text='Cloud Spanner Edition.',
+):
+  return base.Argument('--edition', required=required, hidden=hidden, help=text)
+
+
 def AddCapacityArgsForInstance(
     require_all_autoscaling_args, hide_autoscaling_args, parser
 ):

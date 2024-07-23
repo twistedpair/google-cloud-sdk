@@ -5,6 +5,75 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 485.0.0 (2024-07-23)
+
+### Breaking Changes
+
+*   **(Security Command Center)** Removed rapid-vulnerability-detection service from "Google Cloud CLI" as it is deprecated.
+
+
+### AlloyDB
+
+* Added flag `--allowed-psc-projects` to `gcloud alloydb instances
+create-secondary`. This flag specifies a list of allowed consumer projects on a
+secondary instance in a cluster with Private Service Connect enabled.
+*   Added `--node-ids` flag to `gcloud alloydb instances restart` command to the
+    beta track. This flag allows users to allow users to specify a
+    comma-separated list of read pool node IDs to perform the restart on.
+    Without specifying, this flag every node in the read pool will be restarted.
+*   Added `--outbound-public-ip` flag to `gcloud alloydb instances create`,
+    `gcloud alloydb instances create-secondary` and`gcloud alloydb instances
+    update` commands in the beta track. This flag allows users to
+    allow users to enable public outbound connections within their primary
+    instance. To disable public outbound IP you can use
+    `--no-outbound-public-ip`.
+
+### Cloud Build
+
+* Promote Cloud Build gen2 commands under `gcloud builds ...` to beta status.
+
+### Cloud Deploy
+
+* Added `gcloud deploy deploy-policies` command group.
+
+### Cloud Functions
+
+* Validated iam permission of default build service account for both 1st gen and 2nd gen function in `gcloud functions deploy`. Warning will be prompted when `roles/cloudbuild.builds.builder` is missing.
+
+### Cloud Storage
+
+* Fixed a bug in ```sign-url``` command.
+
+### Cloud Workstations
+
+* Adding support for enabling unauthenticated CORS preflight
+requests in the `gcloud beta workstations config` commands.
+
+### Compute Engine
+
+* Fix issue with Google Compute Engine list commands that were slow when used with `--limit`.
+
+### Kubernetes Engine
+
+* Revert the default value of `--max-nodes-per-pool` from 2000 to 1000 and
+update the upper bound this value to be 2000.
+
+### Network Connectivity
+
+* Added updating `include-import-ranges` flag support for hybrid spokes.
+
+### Network Services
+
+* Clarify failover-health-threshold usage to remove the notion of an unsupported product.
+
+### Vmware Engine
+
+* Added `--autoscaling-min-cluster-node-count`, `--autoscaling-max-cluster-node-count`, `--autoscaling-cool-down-period`, `--update-autoscaling-policy`, `--autoscaling-settings-from-file` and `--remove-autoscaling-policy` to `gcloud vmware private-clouds clusters update` command to support autoscaling feature on update cluster.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 484.0.0 (2024-07-16)
 
 ### Breaking Changes

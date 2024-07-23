@@ -976,6 +976,16 @@ def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help):
   )
 
 
+def AddOutboundPublicIp(parser, show_negated_in_help):
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--outbound-public-ip',
+      required=False,
+      help="""Add outbound Public IP connectivity to an AlloyDB instance.""",
+      **kwargs
+  )
+
+
 def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(

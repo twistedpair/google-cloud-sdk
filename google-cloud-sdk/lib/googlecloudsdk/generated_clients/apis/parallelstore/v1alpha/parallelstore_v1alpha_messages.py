@@ -113,6 +113,12 @@ class Instance(_messages.Message):
   r"""A Parallelstore instance.
 
   Enums:
+    DirectoryStripeLevelValueValuesEnum: Optional. Stripe level for
+      directories. MIN when directory has a small number of files. MAX when
+      directory has a large number of files.
+    FileStripeLevelValueValuesEnum: Optional. Stripe level for files. MIN
+      better suited for small size files. MAX higher throughput performance
+      for larger files.
     StateValueValuesEnum: Output only. The instance state.
 
   Messages:
@@ -145,11 +151,16 @@ class Instance(_messages.Message):
       instance
     description: Optional. The description of the instance. 2048 characters or
       less.
+    directoryStripeLevel: Optional. Stripe level for directories. MIN when
+      directory has a small number of files. MAX when directory has a large
+      number of files.
     effectiveReservedIpRange: Output only. Immutable. Contains the id of the
       allocated IP address range associated with the private service access
       connection for example, "test-default" associated with IP range
       10.0.0.0/29. This field is populated by the service and and contains the
       value currently used by the service.
+    fileStripeLevel: Optional. Stripe level for files. MIN better suited for
+      small size files. MAX higher throughput performance for larger files.
     labels: Optional. Cloud Labels are a flexible and lightweight mechanism
       for organizing cloud resources into groups that reflect a customer's
       organizational needs and deployment strategies. Cloud Labels can be used
@@ -180,6 +191,36 @@ class Instance(_messages.Message):
     state: Output only. The instance state.
     updateTime: Output only. The time when the instance was updated.
   """
+
+  class DirectoryStripeLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Stripe level for directories. MIN when directory has a small
+    number of files. MAX when directory has a large number of files.
+
+    Values:
+      DIRECTORY_STRIPE_LEVEL_UNSPECIFIED: Default directory striping
+      DIRECTORY_STRIPE_LEVEL_MIN: Minimum directory striping
+      DIRECTORY_STRIPE_LEVEL_BALANCED: Medium directory striping
+      DIRECTORY_STRIPE_LEVEL_MAX: Maximum directory striping
+    """
+    DIRECTORY_STRIPE_LEVEL_UNSPECIFIED = 0
+    DIRECTORY_STRIPE_LEVEL_MIN = 1
+    DIRECTORY_STRIPE_LEVEL_BALANCED = 2
+    DIRECTORY_STRIPE_LEVEL_MAX = 3
+
+  class FileStripeLevelValueValuesEnum(_messages.Enum):
+    r"""Optional. Stripe level for files. MIN better suited for small size
+    files. MAX higher throughput performance for larger files.
+
+    Values:
+      FILE_STRIPE_LEVEL_UNSPECIFIED: Default file striping
+      FILE_STRIPE_LEVEL_MIN: Minimum file striping
+      FILE_STRIPE_LEVEL_BALANCED: Medium file striping
+      FILE_STRIPE_LEVEL_MAX: Maximum file striping
+    """
+    FILE_STRIPE_LEVEL_UNSPECIFIED = 0
+    FILE_STRIPE_LEVEL_MIN = 1
+    FILE_STRIPE_LEVEL_BALANCED = 2
+    FILE_STRIPE_LEVEL_MAX = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The instance state.
@@ -242,13 +283,15 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(3)
   daosVersion = _messages.StringField(4)
   description = _messages.StringField(5)
-  effectiveReservedIpRange = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  network = _messages.StringField(9)
-  reservedIpRange = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  directoryStripeLevel = _messages.EnumField('DirectoryStripeLevelValueValuesEnum', 6)
+  effectiveReservedIpRange = _messages.StringField(7)
+  fileStripeLevel = _messages.EnumField('FileStripeLevelValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  reservedIpRange = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class ListInstancesResponse(_messages.Message):

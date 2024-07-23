@@ -575,6 +575,9 @@ class CloudSqlSettings(_messages.Message):
         version is 35.
       MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
         version is 36.
+      MYSQL_8_0_37: The database major version is MySQL 8.0 and the minor
+        version is 37.
+      MYSQL_8_4: MySQL 8.4.
       POSTGRES_9_6: PostgreSQL 9.6.
       POSTGRES_11: PostgreSQL 11.
       POSTGRES_10: PostgreSQL 10.
@@ -599,14 +602,16 @@ class CloudSqlSettings(_messages.Message):
     MYSQL_8_0_34 = 12
     MYSQL_8_0_35 = 13
     MYSQL_8_0_36 = 14
-    POSTGRES_9_6 = 15
-    POSTGRES_11 = 16
-    POSTGRES_10 = 17
-    POSTGRES_12 = 18
-    POSTGRES_13 = 19
-    POSTGRES_14 = 20
-    POSTGRES_15 = 21
-    POSTGRES_16 = 22
+    MYSQL_8_0_37 = 15
+    MYSQL_8_4 = 16
+    POSTGRES_9_6 = 17
+    POSTGRES_11 = 18
+    POSTGRES_10 = 19
+    POSTGRES_12 = 20
+    POSTGRES_13 = 21
+    POSTGRES_14 = 22
+    POSTGRES_15 = 23
+    POSTGRES_16 = 24
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. The edition of the given Cloud SQL instance.

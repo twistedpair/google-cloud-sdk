@@ -404,6 +404,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NOTEBOOKEXECUTIONJOBS = (
+      'projects.locations.notebookExecutionJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookExecutionJobs/{notebookExecutionJobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NOTEBOOKRUNTIMETEMPLATES = (
       'projects.locations.notebookRuntimeTemplates',
       '{+name}',
@@ -566,6 +577,23 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/tuningJobs/'
               '{tuningJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PUBLISHERS = (
+      'publishers',
+      'publishers/{publishersId}',
+      {},
+      ['publishersId'],
+      True
+  )
+  PUBLISHERS_MODELS = (
+      'publishers.models',
+      '{+name}',
+      {
+          '':
+              'publishers/{publishersId}/models/{modelsId}',
       },
       ['name'],
       True

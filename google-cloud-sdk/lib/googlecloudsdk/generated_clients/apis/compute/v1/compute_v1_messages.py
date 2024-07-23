@@ -38214,6 +38214,17 @@ class HealthCheck(_messages.Message):
     region: [Output Only] Region where the health check resides. Not
       applicable to global health checks.
     selfLink: [Output Only] Server-defined URL for the resource.
+    sourceRegions: The list of cloud regions from which health checks are
+      performed. If any regions are specified, then exactly 3 regions should
+      be specified. The region names must be valid names of Google Cloud
+      regions. This can only be set for global health check. If this list is
+      non-empty, then there are restrictions on what other health check fields
+      are supported and what other resources can use this health check: - SSL,
+      HTTP2, and GRPC protocols are not supported. - The TCP request field is
+      not supported. - The proxyHeader field for HTTP, HTTPS, and TCP is not
+      supported. - The checkIntervalSec field must be at least 30. - The
+      health check cannot be used with BackendService nor with managed
+      instance group auto-healing.
     sslHealthCheck: A SSLHealthCheck attribute.
     tcpHealthCheck: A TCPHealthCheck attribute.
     timeoutSec: How long (in seconds) to wait before claiming failure. The
@@ -38262,11 +38273,12 @@ class HealthCheck(_messages.Message):
   name = _messages.StringField(12)
   region = _messages.StringField(13)
   selfLink = _messages.StringField(14)
-  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 15)
-  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 16)
-  timeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  type = _messages.EnumField('TypeValueValuesEnum', 18)
-  unhealthyThreshold = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  sourceRegions = _messages.StringField(15, repeated=True)
+  sslHealthCheck = _messages.MessageField('SSLHealthCheck', 16)
+  tcpHealthCheck = _messages.MessageField('TCPHealthCheck', 17)
+  timeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  unhealthyThreshold = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class HealthCheckList(_messages.Message):
@@ -41669,7 +41681,7 @@ class InstanceGroupManager(_messages.Message):
       a hyphen followed by one or more hash symbols. The hash symbols indicate
       the number of digits. For example, a base instance name of "vm-###"
       results in "vm-001" as a VM name. @pattern
-      [a-z](([-a-z0-9]{0,57})|([-a-z0-9]{0,52}-#{1,10}(\\[[0-9]{1,10}\\])?))
+      [a-z](([-a-z0-9]{0,57})|([-a-z0-9]{0,51}-#{1,10}(\\[[0-9]{1,10}\\])?))
     creationTimestamp: [Output Only] The creation timestamp for this managed
       instance group in RFC3339 text format.
     currentActions: [Output Only] The list of instance actions and the number
@@ -74863,8 +74875,10 @@ class TargetHttpsProxy(_messages.Message):
       INTERNAL_SELF_MANAGED. Note: This field currently has no impact.
     certificateMap: URL of a certificate map that identifies a certificate map
       associated with the given target proxy. This field can only be set for
-      global target proxies. If set, sslCertificates will be ignored. Accepted
-      format is //certificatemanager.googleapis.com/projects/{project
+      Global external Application Load Balancer or Classic Application Load
+      Balancer. For other products use Certificate Manager Certificates
+      instead. If set, sslCertificates will be ignored. Accepted format is
+      //certificatemanager.googleapis.com/projects/{project
       }/locations/{location}/certificateMaps/{resourceName}.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -74927,9 +74941,20 @@ class TargetHttpsProxy(_messages.Message):
       documentation. If left blank, communications are not encrypted.
     sslCertificates: URLs to SslCertificate resources that are used to
       authenticate connections between users and the load balancer. At least
-      one SSL certificate must be specified. Currently, you may specify up to
-      15 SSL certificates. sslCertificates do not apply when the load
-      balancing scheme is set to INTERNAL_SELF_MANAGED.
+      one SSL certificate must be specified. SslCertificates do not apply when
+      the load balancing scheme is set to INTERNAL_SELF_MANAGED. The URLs
+      should refer to a SSL Certificate resource or Certificate Manager
+      Certificate resource. Mixing Classic Certificates and Certificate
+      Manager Certificates is not allowed. Certificate Manager Certificates
+      must include the certificatemanager API. Certificate Manager
+      Certificates are not supported by Global external Application Load
+      Balancer or Classic Application Load Balancer, use certificate_map
+      instead. Currently, you may specify up to 15 Classic SSL Certificates.
+      Certificate Manager Certificates accepted formats are: -
+      //certificatemanager.googleapis.com/projects/{project}/locations/{
+      location}/certificates/{resourceName}. -
+      https://certificatemanager.googleapis.com/v1alpha1/projects/{project
+      }/locations/{location}/certificates/{resourceName}.
     sslPolicy: URL of SslPolicy resource that will be associated with the
       TargetHttpsProxy resource. If not set, the TargetHttpsProxy resource has
       no SSL policy configured.

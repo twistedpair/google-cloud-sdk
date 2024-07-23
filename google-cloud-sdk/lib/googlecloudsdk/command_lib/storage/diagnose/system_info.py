@@ -15,15 +15,17 @@
 """Utilities for fetching system information."""
 
 from __future__ import annotations
+
 import abc
-from collections.abc import Sequence
+from collections.abc import MutableSequence, Sequence
+import contextlib
 import ctypes
 import dataclasses
 import io
 import os
 import re
-from typing import Callable
-from typing import Tuple
+from typing import Callable, Tuple, TypeVar
+
 from googlecloudsdk.command_lib.storage import metrics_util
 from googlecloudsdk.command_lib.storage.diagnose import diagnostic
 from googlecloudsdk.core import execution_utils
@@ -31,6 +33,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
+
 
 _CPU_COUNT_METRIC_NAME = 'CPU Count'
 _CPU_COUNT_METRIC_DESCRIPTION = 'Number of logical CPUs in the system'
@@ -40,7 +43,9 @@ _FREE_MEMORY_METRIC_NAME = 'Free Memory'
 _FREE_MEMORY_METRIC_DESCRIPTION = 'Free memory in the system'
 _TOTAL_MEMORY_METRIC_NAME = 'Total Memory'
 _TOTAL_MEMORY_METRIC_DESCRIPTION = 'Total memory in the system'
-_DIAGNOSTIC_NAME = 'System Info'
+_SYSTEM_DIAGNOSTIC_NAME = 'System Info'
+_DISK_IO_DIAGNOSTIC_NAME = 'Disk IO Stats Delta'
+_T = TypeVar('_T')
 
 
 @dataclasses.dataclass
@@ -210,7 +215,7 @@ class WindowsSystemInfoProvider(SystemInfoProvider):
     return (meminfo.ullTotalPhys, meminfo.ullAvailPhys)
 
   def get_disk_io_stats(self) -> Sequence[DiskIOStats]:
-    raise NotImplementedError()
+    raise NotImplementedError('Not implemented for Windows.')
 
 
 class OsxSystemInfoProvider(SystemInfoProvider):
@@ -400,8 +405,9 @@ def get_system_info_provider() -> SystemInfoProvider:
 
 
 def _get_metric_or_placeholder(
-    metric_name: str, metric_function: Callable[[], int | Tuple[int, int]]
-):
+    metric_name: str,
+    metric_function: Callable[[], _T],
+) -> _T | str:
   try:
     return metric_function()
   # There may be some OSes where the metric is not available.
@@ -410,18 +416,19 @@ def _get_metric_or_placeholder(
   return diagnostic.PLACEHOLDER_METRIC_VALUE
 
 
-def get_system_info_diagnostic_result() -> diagnostic.DiagnosticResult:
+def get_system_info_diagnostic_result(
+    provider: SystemInfoProvider,
+) -> diagnostic.DiagnosticResult:
   """Returns the system info as diagnostic result."""
-  system_info_provider = get_system_info_provider()
 
   cpu_count = _get_metric_or_placeholder(
-      _CPU_COUNT_METRIC_NAME, system_info_provider.get_cpu_count
+      _CPU_COUNT_METRIC_NAME, provider.get_cpu_count
   )
   cpu_load_avg = _get_metric_or_placeholder(
-      _CPU_LOAD_AVG_METRIC_NAME, system_info_provider.get_cpu_load_avg
+      _CPU_LOAD_AVG_METRIC_NAME, provider.get_cpu_load_avg
   )
   memory_stats = _get_metric_or_placeholder(
-      'Memory Stats', system_info_provider.get_memory_stats
+      'Memory Stats', provider.get_memory_stats
   )
 
   if memory_stats is not diagnostic.PLACEHOLDER_METRIC_VALUE:
@@ -436,7 +443,7 @@ def get_system_info_diagnostic_result() -> diagnostic.DiagnosticResult:
     total_memory = free_memory = diagnostic.PLACEHOLDER_METRIC_VALUE
 
   return diagnostic.DiagnosticResult(
-      name=_DIAGNOSTIC_NAME,
+      name=_SYSTEM_DIAGNOSTIC_NAME,
       operation_results=[
           diagnostic.DiagnosticOperationResult(
               name=_CPU_COUNT_METRIC_NAME,
@@ -459,4 +466,80 @@ def get_system_info_diagnostic_result() -> diagnostic.DiagnosticResult:
               payload_description=_FREE_MEMORY_METRIC_DESCRIPTION,
           ),
       ],
+  )
+
+
+@contextlib.contextmanager
+def get_disk_io_stats_delta_diagnostic_result(
+    provider: SystemInfoProvider,
+    test_result: MutableSequence[diagnostic.DiagnosticResult],
+):
+  """A context manager to get the disk I/O stats delta as diagnostic result.
+
+  The context manager will fetch the disk I/O stats at the beginning and end of
+  the context and calculate the delta for each disk metric. Adds the delta
+  stats as a diagnostic result to the test_result list.
+
+  Args:
+    provider: System info provider.
+    test_result: List to append the diagnostic result.
+
+  Yields:
+    None
+  """
+  disk_io_metric_name = 'Disk IO Stats'
+  initial_disk_stats = _get_metric_or_placeholder(
+      disk_io_metric_name, provider.get_disk_io_stats
+  )
+
+  yield
+
+  if initial_disk_stats is diagnostic.PLACEHOLDER_METRIC_VALUE:
+    return
+
+  final_disk_stats = _get_metric_or_placeholder(
+      disk_io_metric_name, provider.get_disk_io_stats
+  )
+
+  if final_disk_stats is diagnostic.PLACEHOLDER_METRIC_VALUE:
+    return
+
+  diagnostic_operation_results = []
+  for disk_stat in final_disk_stats:
+    matching_initial_disk_stats = [
+        stat for stat in initial_disk_stats if stat.name == disk_stat.name
+    ]
+    if len(matching_initial_disk_stats) != 1:
+      return
+
+    initial_disk_stat = matching_initial_disk_stats[0]
+
+    # Calculating delta for the average metric does not make sense so use the
+    # final value.
+    average_transfer_size = disk_stat.average_transfer_size
+    transfer_count_delta = (
+        disk_stat.transfer_count - initial_disk_stat.transfer_count
+    )
+    total_transfer_size_delta = (
+        disk_stat.total_transfer_size - initial_disk_stat.total_transfer_size
+    )
+
+    disk_stat_delta = DiskIOStats(
+        name=disk_stat.name,
+        average_transfer_size=average_transfer_size,
+        transfer_count=transfer_count_delta,
+        total_transfer_size=total_transfer_size_delta,
+    )
+
+    diagnostic_operation_results.append(
+        diagnostic.DiagnosticOperationResult(
+            name=disk_stat.name, result=disk_stat_delta
+        )
+    )
+
+  test_result.append(
+      diagnostic.DiagnosticResult(
+          name=_DISK_IO_DIAGNOSTIC_NAME,
+          operation_results=diagnostic_operation_results,
+      )
   )

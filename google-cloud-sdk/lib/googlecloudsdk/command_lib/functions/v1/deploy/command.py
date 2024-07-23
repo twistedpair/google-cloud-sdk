@@ -34,6 +34,7 @@ from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.calliope.arg_parsers import ArgumentTypeError
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.functions import service_account_util
 from googlecloudsdk.command_lib.functions.v1.deploy import enum_util
 from googlecloudsdk.command_lib.functions.v1.deploy import labels_util
 from googlecloudsdk.command_lib.functions.v1.deploy import source_util
@@ -46,6 +47,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from six.moves import urllib
+
 
 _BUILD_NAME_REGEX = re.compile(
     r'projects\/(?P<projectnumber>[^\/]+)\/locations'
@@ -712,6 +714,10 @@ def Run(args, track=None):
           default=False,
       )
 
+    service_account_util.ValidateDefaultBuildServiceAccountAndPromptWarning(
+        _GetProject(), function_ref.locationsId, function.buildServiceAccount
+    )
+
     op = api_util.CreateFunction(function, function_ref.Parent().RelativeName())
     if api_util.IsGcrRepository(function):
       api_util.ValidateSecureImageRepositoryOrWarn(
@@ -730,6 +736,9 @@ def Run(args, track=None):
       deny_all_users_invoke = True
 
   elif updated_fields:
+    service_account_util.ValidateDefaultBuildServiceAccountAndPromptWarning(
+        _GetProject(), function_ref.locationsId, function.buildServiceAccount
+    )
     op = api_util.PatchFunction(function, updated_fields)
     if api_util.IsGcrRepository(function):
       api_util.ValidateSecureImageRepositoryOrWarn(

@@ -39,6 +39,7 @@ from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.functions import run_util
 from googlecloudsdk.command_lib.functions import secrets_config
+from googlecloudsdk.command_lib.functions import service_account_util
 from googlecloudsdk.command_lib.functions import source_util
 from googlecloudsdk.command_lib.functions.v2 import deploy_util
 from googlecloudsdk.command_lib.projects import util as projects_util
@@ -1235,7 +1236,7 @@ def Run(
             f'{runtime} is not a supported runtime on GCF 2nd gen. '
             'Use `gcloud functions runtimes list` to get a '
             'list of available runtimes'
-        )
+        ),
     )
   if runtime in gen2_runtimes and gen2_runtimes[runtime]['warnings']:
     for w in gen2_runtimes[runtime]['warnings']:
@@ -1296,6 +1297,11 @@ def Run(
   elif is_new_function and not event_trigger:
     allow_unauthenticated = _PromptToAllowUnauthenticatedInvocations(args.NAME)
 
+  service_account_util.ValidateDefaultBuildServiceAccountAndPromptWarning(
+      api_util.GetProject(),
+      function_ref.locationsId,
+      build_config.serviceAccount,
+  )
   if is_new_function:
     _CreateAndWait(client, function_ref, function)
   else:

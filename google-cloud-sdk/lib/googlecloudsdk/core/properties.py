@@ -1304,6 +1304,8 @@ class _SectionApiEndpointOverrides(_Section):
         'networkservices', command='gcloud network-services')
     self.notebooks = self._Add('notebooks', command='gcloud notebooks')
     self.ondemandscanning = self._Add('ondemandscanning', hidden=True)
+    self.oracledatabase = self._Add(
+        'oracledatabase', command='gcloud oracle-database', hidden=True)
     self.orglifecycle = self._Add(
         'orglifecycle', command='gcloud orglifecycle', hidden=True)
     self.orgpolicy = self._Add('orgpolicy', command='gcloud org-policies')

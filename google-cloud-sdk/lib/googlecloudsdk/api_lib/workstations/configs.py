@@ -134,6 +134,13 @@ class Configs:
           )
       ]
       config.host.gceInstance.accelerators = accelerators
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allow_unauthenticated_cors_preflight_requests
+    ):
+      config.httpOptions = self.messages.HttpOptions(
+          allowedUnauthenticatedCorsPreflightRequests=True
+      )
 
     if (
         self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
@@ -153,8 +160,10 @@ class Configs:
             setattr(desired_boost_config, BOOST_CONFIG_MAP.get(key), value)
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
 
-    if (self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allowed_ports):
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allowed_ports
+    ):
       for port_range in args.allowed_ports:
         desired_allowed_ports = self.messages.PortRange()
         for key, value in port_range.items():
@@ -238,7 +247,8 @@ class Configs:
         tags_val.additionalProperties.append(
             self.messages.GceInstance.VmTagsValue.AdditionalProperty(
                 key=key, value=value
-            ))
+            )
+        )
       config.host.gceInstance.vmTags = tags_val
 
     create_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest(
@@ -308,6 +318,27 @@ class Configs:
           ]
       )
       update_mask.append('labels')
+
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allow_unauthenticated_cors_preflight_requests
+    ):
+      config.httpOptions = self.messages.HttpOptions(
+          allowedUnauthenticatedCorsPreflightRequests=True
+      )
+      update_mask.append(
+          'http_options.allowed_unauthenticated_cors_preflight_requests'
+      )
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.disallow_unauthenticated_cors_preflight_requests
+    ):
+      config.httpOptions = self.messages.HttpOptions(
+          allowedUnauthenticatedCorsPreflightRequests=False
+      )
+      update_mask.append(
+          'http_options.allowed_unauthenticated_cors_preflight_requests'
+      )
 
     # GCE Instance Config
     config.host = self.messages.Host()
@@ -416,10 +447,9 @@ class Configs:
       config.host.gceInstance.accelerators = accelerators
       update_mask.append('host.gce_instance.accelerators')
 
-    if (
-        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.IsSpecified('boost_config')
-    ):
+    if self.api_version != VERSION_MAP.get(
+        base.ReleaseTrack.GA
+    ) and args.IsSpecified('boost_config'):
       for boost_config in args.boost_config:
         desired_boost_config = self.messages.BoostConfig()
         for key, value in boost_config.items():
@@ -435,8 +465,10 @@ class Configs:
         config.host.gceInstance.boostConfigs.append(desired_boost_config)
       update_mask.append('host.gce_instance.boost_configs')
 
-    if (self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
-        and args.allowed_ports):
+    if (
+        self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
+        and args.allowed_ports
+    ):
       for port_range in args.allowed_ports:
         desired_allowed_ports = self.messages.PortRange()
         for key, value in port_range.items():
@@ -487,7 +519,8 @@ class Configs:
         tags_val.additionalProperties.append(
             self.messages.GceInstance.VmTagsValue.AdditionalProperty(
                 key=key, value=value
-            ))
+            )
+        )
       config.host.gceInstance.vmTags = tags_val
       update_mask.append('host.gce_instance.vm_tags')
 

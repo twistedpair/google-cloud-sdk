@@ -175,3 +175,16 @@ posture_template:
     attribute_name: posture_template
     help: Security Posture Template resource
   disable_auto_completers: false
+
+report:
+  name: report
+  collection: securityposture.organizations.locations.reports
+  request_id_field: reportId
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &report
+    parameter_name: reportsId
+    attribute_name: report
+    help: IaC Validation report resource
+  disable_auto_completers: false

@@ -176,14 +176,14 @@ def AddNetworkTier(parser):
       type=lambda x: x.upper(),
       help="""\
       The network tier to assign to the reserved IP addresses. ``NETWORK_TIER''
-      must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
-      The default value is `PREMIUM`.
+      must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
 
       While regional external addresses (`--region` specified, `--subnet`
       omitted) can use either `PREMIUM` or `STANDARD`, global external
       addresses (`--global` specified, `--subnet` omitted) can only use
       `PREMIUM`. Internal addresses can only use `PREMIUM`.
-      """)
+      """,
+  )
 
 
 def AddIPv6EndPointType(parser):

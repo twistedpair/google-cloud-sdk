@@ -33,6 +33,52 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddAllowUnauthenticatedCorsPreflightRequestsFlag(parser):
+  """Adds a --allow-unauthenticated-cors-preflight-requests flag to the given parser."""
+  help_text = """\
+    By default, the workstations service makes sure that all requests to the
+    workstation are authenticated. CORS preflight requests do
+    not include cookies or custom headers, and so are considered
+    unauthenticated and blocked by the workstations service. Enabling this
+    option allows these unauthenticated CORS preflight requests through to
+    the workstation, where it becomes the responsibility of the destination
+    server in the workstation to validate the request
+  """
+  parser.add_argument(
+      '--allow-unauthenticated-cors-preflight-requests',
+      action='store_true',
+      help=help_text,
+  )
+
+
+def AddDisallowUnauthenticatedCorsPreflightRequestsToggleFlag(parser):
+  """Adds a --disallow-unauthenticated-cors-preflight-requests flag to the given parser."""
+  help_text = """\
+    By default, the workstations service makes sure that all requests to the
+    workstation are authenticated. CORS preflight requests do
+    not include cookies or custom headers, and so are considered
+    unauthenticated and blocked by the workstations service. Enabling this
+    option allows these unauthenticated CORS preflight requests through to
+    the workstation, where it becomes the responsibility of the destination
+    server in the workstation to validate the request
+  """
+
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--allow-unauthenticated-cors-preflight-requests',
+      action='store_true',
+      help=help_text,
+  )
+
+  help_text = """\
+  If set, requires that all requests to the workstation are authenticated."""
+  group.add_argument(
+      '--disallow-unauthenticated-cors-preflight-requests',
+      action='store_true',
+      help=help_text,
+  )
+
+
 def AddAllowedPortsFlag(parser):
   """Adds a --allowed-ports flag to the given parser."""
   help_text = """\
@@ -81,9 +127,7 @@ def LocationsAttributeConfig(
     )
   if global_fallthrough:
     fallthroughs.append(
-        deps.Fallthrough(
-            lambda: '-', hint='default is all regions'
-        )
+        deps.Fallthrough(lambda: '-', hint='default is all regions')
     )
   return concepts.ResourceParameterAttributeConfig(
       name='region',
@@ -280,7 +324,8 @@ def AddServiceAccountScopes(parser):
       '--service-account-scopes',
       metavar='SERVICE_ACCOUNT_SCOPES',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddNetworkTags(parser):
@@ -297,7 +342,8 @@ def AddNetworkTags(parser):
       '--network-tags',
       metavar='NETWORK_TAGS',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddPoolSize(parser, use_default=True):
@@ -458,7 +504,8 @@ def AddPdDiskType(parser):
       '--pd-disk-type',
       choices=['pd-standard', 'pd-balanced', 'pd-ssd'],
       default='pd-standard',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddPdDiskSize(parser):
@@ -470,7 +517,8 @@ def AddPdDiskSize(parser):
       choices=[10, 50, 100, 200, 500, 1000],
       default=200,
       type=int,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddPdReclaimPolicy(parser):
@@ -480,13 +528,15 @@ def AddPdReclaimPolicy(parser):
   parser.add_argument(
       '--pd-reclaim-policy',
       choices={
-          'delete':
-              'The persistent disk will be deleted with the Workstation.',
-          'retain':
-              'The persistent disk will be remain after the workstation is deleted and the administrator must manually delete the disk.'
+          'delete': 'The persistent disk will be deleted with the Workstation.',
+          'retain': (
+              'The persistent disk will be remain after the workstation is'
+              ' deleted and the administrator must manually delete the disk.'
+          ),
       },
       default='delete',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddEphemeralDirectory(parser):
@@ -495,7 +545,7 @@ def AddEphemeralDirectory(parser):
       'disk-type': str,
       'source-snapshot': str,
       'source-image': str,
-      'read-only': bool
+      'read-only': bool,
   }
   help_text = """\
   Ephemeral directory which won't persist across workstation sessions."""
@@ -504,13 +554,12 @@ def AddEphemeralDirectory(parser):
       type=arg_parsers.ArgDict(spec=spec),
       action='append',
       metavar='PROPERTY=VALUE',
-      help=help_text
+      help=help_text,
   )
 
 
 def AddContainerImageField(parser, use_default=True):
-  """Adds the --container-predefined-image and --container-custom-image flags to the given parser.
-  """
+  """Adds the --container-predefined-image and --container-custom-image flags to the given parser."""
   predefined_image_help_text = """\
   Code editor on base images."""
   custom_image_help_text = """\
@@ -539,7 +588,8 @@ def AddContainerImageField(parser, use_default=True):
   )
 
   group.add_argument(
-      '--container-custom-image', type=str, help=custom_image_help_text)
+      '--container-custom-image', type=str, help=custom_image_help_text
+  )
 
 
 def AddContainerCommandField(parser):
@@ -554,7 +604,8 @@ def AddContainerCommandField(parser):
       '--container-command',
       metavar='CONTAINER_COMMAND',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddContainerArgsField(parser):
@@ -569,7 +620,8 @@ def AddContainerArgsField(parser):
       '--container-args',
       metavar='CONTAINER_ARGS',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddContainerEnvField(parser):
@@ -584,7 +636,8 @@ def AddContainerEnvField(parser):
       '--container-env',
       metavar='CONTAINER_ENV',
       type=arg_parsers.ArgDict(key_type=str, value_type=str),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddContainerWorkingDirField(parser):
@@ -630,7 +683,8 @@ def AddLocalHostPortField(parser):
       '--local-host-port',
       type=arg_parsers.HostPort.Parse,
       default='localhost:0',
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddCommandField(parser):
@@ -697,9 +751,7 @@ def AddAcceleratorFields(parser):
   The type of accelerator resource to attach to the instance, for example,
   "nvidia-tesla-p100".
   """
-  group.add_argument(
-      '--accelerator-type', type=str, help=help_text
-  )
+  group.add_argument('--accelerator-type', type=str, help=help_text)
 
   help_text = """\
   The number of accelerator cards exposed to the instance.
@@ -770,7 +822,8 @@ def AddReplicaZones(parser):
       '--replica-zones',
       metavar='REPLICA_ZONES',
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddDisableSSHToVM(parser, use_default=True):
@@ -819,4 +872,5 @@ def AddVmTags(parser):
       '--vm-tags',
       metavar='VM_TAGS',
       type=arg_parsers.ArgDict(key_type=str, value_type=str),
-      help=help_text)
+      help=help_text,
+  )

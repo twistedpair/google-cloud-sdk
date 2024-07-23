@@ -174,9 +174,18 @@ class IPAddresses():
     self.internal_address = internal_address
 
 
-def ParseWorkerFlag(worker_flag, network_endpoints, use_internal_ips):
+def ParseWorkerFlag(
+    worker_flag, network_endpoints, use_internal_ips, num_nets=1):
   """Parses the --worker flag into a dict of worker indexes to IP addresses."""
-  n_vms = len(network_endpoints)
+  # Get the primary network endpoints to support multi network TPUs.
+  max_num_nets = max(1, num_nets)
+  primary_network_endpoints = [
+      endpoint
+      for i, endpoint in enumerate(network_endpoints)
+      if i % max_num_nets == 0
+  ]
+
+  n_vms = len(primary_network_endpoints)
   if six.text_type(worker_flag).upper() == 'ALL':
     indexes = list(range(n_vms))
   else:
@@ -218,10 +227,12 @@ def ParseWorkerFlag(worker_flag, network_endpoints, use_internal_ips):
   # Get the VMs' IP addresses.
   worker_ips = {}
   for worker in indexes:
-    internal_address = network_endpoints[worker].ipAddress
-    if (not use_internal_ips and network_endpoints[worker].accessConfig and
-        network_endpoints[worker].accessConfig.externalIp):
-      ip_address = network_endpoints[worker].accessConfig.externalIp
+    internal_address = primary_network_endpoints[worker].ipAddress
+    if (
+        not use_internal_ips
+        and primary_network_endpoints[worker].accessConfig
+        and primary_network_endpoints[worker].accessConfig.externalIp):
+      ip_address = primary_network_endpoints[worker].accessConfig.externalIp
     else:
       ip_address = internal_address
     worker_ips[worker] = IPAddresses(ip_address, internal_address)
@@ -623,8 +634,11 @@ def PrepareNodeForSSH(
 
   ValidateTPUState(node.state, tpu.messages.Node.StateValueValuesEnum, tpu_name)
 
+  n_nets = (
+      1 if not hasattr(node, 'networkConfigs') else len(node.networkConfigs)
+  )
   prepped_node.worker_ips = ParseWorkerFlag(
-      args.worker, node.networkEndpoints, args.internal_ip
+      args.worker, node.networkEndpoints, args.internal_ip, n_nets
   )
 
   if len(prepped_node.worker_ips) > 1 and not args.command:

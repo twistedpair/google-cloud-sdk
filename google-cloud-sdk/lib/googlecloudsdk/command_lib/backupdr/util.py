@@ -14,6 +14,7 @@
 # limitations under the License.
 """Utilities for Backup and DR commands."""
 
+import math
 import uuid
 
 from dateutil import tz
@@ -93,13 +94,23 @@ def TransformEnforcedRetention(backup_vault):
   if not backup_min_enforced_retention:
     return ''
 
+  seconds_in_hour = 3600
+  seconds_in_day = 86400
+  seconds_in_month = 2629744
+  seconds_in_year = 31556926
+
   seconds = times.ParseDuration(backup_min_enforced_retention).total_seconds
-  months = seconds // 2592000  # 60 * 60 * 24 * 30
-  seconds -= months * 2592000
-  days = seconds // 86400  # 60 * 60 * 24
-  seconds -= days * 86400
-  hours = seconds // 3600  # 60 * 60
-  duration = iso_duration.Duration(months=months, days=days, hours=hours)
+
+  year = math.floor(seconds / seconds_in_year)
+  remaining_seconds = seconds % seconds_in_year
+  month = math.floor(remaining_seconds / seconds_in_month)
+  remaining_seconds %= seconds_in_month
+  day = math.floor(remaining_seconds / seconds_in_day)
+  remaining_seconds %= seconds_in_day
+  hour = math.ceil(remaining_seconds / seconds_in_hour)
+  duration = iso_duration.Duration(
+      years=year, months=month, days=day, hours=hour
+  )
   return times.FormatDuration(duration, parts=-1)
 
 

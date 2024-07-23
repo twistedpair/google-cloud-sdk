@@ -96,13 +96,14 @@ class BackupVaultsClient(util.BackupDrClientBase):
       )
     return updated_bv
 
-  def Update(self, resource, backup_vault, update_mask):
+  def Update(self, resource, backup_vault, update_mask, force_update):
     request_id = command_util.GenerateRequestId()
     request = self.messages.BackupdrProjectsLocationsBackupVaultsPatchRequest(
         backupVault=backup_vault,
         name=resource.RelativeName(),
         updateMask=update_mask,
         requestId=request_id,
+        force=force_update,
     )
     return self.service.Patch(request)
 

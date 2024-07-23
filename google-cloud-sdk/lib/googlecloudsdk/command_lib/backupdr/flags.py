@@ -301,6 +301,18 @@ def AddForceDeleteFlag(parser):
   parser.add_argument('--force-delete', action='store_true', help=help_text)
 
 
+def AddForceUpdateFlag(parser):
+  """Adds a --force-update flag to the given parser."""
+  help_text = (
+      'If set, allow update to extend the minimum enforced retention for backup'
+      ' vault. This overrides the restriction against conflicting retention'
+      ' periods. This conflict may occur when the expiration schedule defined'
+      ' by the associated backup plan is shorter than the minimum retention set'
+      ' by the backup vault.'
+  )
+  parser.add_argument('--force-update', action='store_true', help=help_text)
+
+
 def AddBackupPlanResourceArg(parser, help_text):
   """Adds an argument for backup plan to parser."""
   name = 'backup_plan'

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2023 Google LLC
+# Copyright 2024 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -214,10 +214,8 @@ class Retrieval(proto.Message):
 
             This field is a member of `oneof`_ ``source``.
         disable_attribution (bool):
-            Optional. Disable using the result from this
-            tool in detecting grounding attribution. This
-            does not affect how the result is given to the
-            model for generation.
+            Optional. Deprecated. This option is no
+            longer supported.
     """
 
     vertex_ai_search: 'VertexAISearch' = proto.Field(

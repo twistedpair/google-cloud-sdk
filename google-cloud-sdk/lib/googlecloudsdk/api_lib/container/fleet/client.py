@@ -299,6 +299,7 @@ class HubV2Client(object):
             name=name,
             updateMask=','.join(mask),
             membershipFeature=membership_feature,
+            allowMissing=True,
         )
     )
     return self.client.projects_locations_memberships_features.Patch(req)

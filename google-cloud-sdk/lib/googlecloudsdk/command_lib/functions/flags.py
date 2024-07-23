@@ -170,9 +170,10 @@ def AddFunctionMemoryAndCpuFlags(parser):
   and 8192MB.
 
   Allowed values for GCF 2nd gen are in the format: <number><unit> with allowed units
-  of "k", "M", "G", "Ki", "Mi", "Gi". Ending 'b' or 'B' is allowed.
+  of "k", "M", "G", "Ki", "Mi", "Gi". Ending 'b' or 'B' is allowed, but both are
+  interpreted as bytes as opposed to bits.
 
-  Examples: 100000k, 128M, 10Mb, 1024Mi, 750K, 4Gi.
+  Examples: 1000000K, 1000000Ki, 256Mb, 512M, 1024Mi, 2G, 4Gi.
 
   By default, a new function is limited to 256MB of memory. When
   deploying an update to an existing function, the function keeps its old

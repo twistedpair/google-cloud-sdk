@@ -5,17 +5,11 @@ deployment-name:
     deployment name.
 
 max-slots:
-  api_field: deployment.deploymentSpec.maxSlots
+  api_field: deployment.deploymentSpec.limits.maxSlots
   arg_name: max-slots
   type: googlecloudsdk.core.util.scaled_integer:ParseInteger
   help_text: |
     max slots of the Flink deployment.
-
-workload-identity:
-  api_field: deployment.deploymentSpec.workloadIdentity
-  arg_name: workload-identity
-  help_text: |
-    workload identity service account for the Flink deployment.
 
 network-config-vpc:
   api_field: deployment.deploymentSpec.networkConfig.vpc
@@ -29,3 +23,9 @@ network-config-subnetwork:
   arg_name: network-config-subnetwork
   help_text: |
     subnetwork for the Flink deployment network config.
+
+secrets-path:
+  api_field: deployment.deploymentSpec.secretsPath
+  arg_name: secrets-path
+  help_text: |
+    path to the secrets manager for the Flink deployment. (ie. projects/{my-project}/secrets/{my-secret}/versions/{1})

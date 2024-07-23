@@ -33,11 +33,11 @@ _UPDATE_FILE_DESC = (
     ' the worker pool. See %s for options.' % _PWP_CONFIG_LINK
 )
 
-_CREATE_FILE_DESC_ALPHA = (
+_CREATE_FILE_DESC_ALPHA_BETA = (
     'File that contains the configuration for the worker pool to be '
     'created.\n\nPrivate pool options:\n\n %s\n\n' % (_PWP_CONFIG_LINK)
 )
-_UPDATE_FILE_DESC_ALPHA = (
+_UPDATE_FILE_DESC_ALPHA_BETA = (
     'File that contains updates to the configuration for worker pool to be '
     'created.\n\n'
     'Private pool options:\n\n %s\n\n' % (_PWP_CONFIG_LINK)
@@ -82,7 +82,10 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
       % verb,
   )
   file_or_flags = parser.add_mutually_exclusive_group(required=update)
-  if release_track != base.ReleaseTrack.ALPHA:
+  if (
+      release_track != base.ReleaseTrack.ALPHA
+      and release_track != base.ReleaseTrack.BETA
+  ):
     file_or_flags.add_argument(
         '--config-from-file',
         help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
@@ -90,7 +93,11 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
   else:
     file_or_flags.add_argument(
         '--config-from-file',
-        help=(_UPDATE_FILE_DESC_ALPHA if update else _CREATE_FILE_DESC_ALPHA),
+        help=(
+            _UPDATE_FILE_DESC_ALPHA_BETA
+            if update
+            else _CREATE_FILE_DESC_ALPHA_BETA
+        ),
     )
   flags = file_or_flags.add_argument_group(
       'Command-line flags to configure the private pool:'
@@ -125,7 +132,10 @@ IP for the range. If no IP range is specified, Cloud Build uses `/24` as the
 default network IP range.
 """,
     )
-    if release_track == base.ReleaseTrack.ALPHA:
+    if (
+        release_track == base.ReleaseTrack.ALPHA
+        or release_track == base.ReleaseTrack.BETA
+    ):
       private_service_connect_flags = network_flags.add_argument_group(
           'Network configuration for Private Service Connect interface:'
       )

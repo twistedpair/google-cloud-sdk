@@ -38,6 +38,8 @@ class Connection(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     githubConfig: Configuration for connections to github.com.
+    githubEnterpriseConfig: Configuration for connections to an instance of
+      GitHub Enterprise.
     installationState: Output only. Installation state of the Connection.
     labels: Optional. Labels as key value pairs
     name: Identifier. The resource name of the connection, in the format
@@ -104,12 +106,13 @@ class Connection(_messages.Message):
   disabled = _messages.BooleanField(4)
   etag = _messages.StringField(5)
   githubConfig = _messages.MessageField('GitHubConfig', 6)
-  installationState = _messages.MessageField('InstallationState', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  githubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 7)
+  installationState = _messages.MessageField('InstallationState', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class DeveloperconnectProjectsLocationsConnectionsCreateRequest(_messages.Message):
@@ -642,6 +645,45 @@ class GitHubConfig(_messages.Message):
   installationUri = _messages.StringField(4)
 
 
+class GitHubEnterpriseConfig(_messages.Message):
+  r"""Configuration for connections to an instance of GitHub Enterprise.
+
+  Fields:
+    appId: Optional. ID of the GitHub App created from the manifest.
+    appInstallationId: Optional. ID of the installation of the GitHub App.
+    appSlug: Output only. The URL-friendly name of the GitHub App.
+    hostUri: Required. The URI of the GitHub Enterprise host this connection
+      is for.
+    installationUri: Output only. The URI to navigate to in order to manage
+      the installation associated with this GitHubEnterpriseConfig.
+    privateKeySecretVersion: Optional. SecretManager resource containing the
+      private key of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+    serverVersion: Output only. GitHub Enterprise version installed at the
+      host_uri.
+    serviceDirectoryConfig: Optional. Configuration for using Service
+      Directory to privately connect to a GitHub Enterprise server. This
+      should only be set if the GitHub Enterprise server is hosted on-premises
+      and not reachable by public internet. If this field is left empty, calls
+      to the GitHub Enterprise server will be made over the public internet.
+    sslCa: Optional. SSL certificate to use for requests to GitHub Enterprise.
+    webhookSecretSecretVersion: Optional. SecretManager resource containing
+      the webhook secret of the GitHub App, formatted as
+      `projects/*/secrets/*/versions/*`.
+  """
+
+  appId = _messages.IntegerField(1)
+  appInstallationId = _messages.IntegerField(2)
+  appSlug = _messages.StringField(3)
+  hostUri = _messages.StringField(4)
+  installationUri = _messages.StringField(5)
+  privateKeySecretVersion = _messages.StringField(6)
+  serverVersion = _messages.StringField(7)
+  serviceDirectoryConfig = _messages.MessageField('ServiceDirectoryConfig', 8)
+  sslCa = _messages.StringField(9)
+  webhookSecretSecretVersion = _messages.StringField(10)
+
+
 class GitRepositoryLink(_messages.Message):
   r"""Message describing the GitRepositoryLink object
 
@@ -1081,6 +1123,18 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class ServiceDirectoryConfig(_messages.Message):
+  r"""ServiceDirectoryConfig represents Service Directory configuration for a
+  connection.
+
+  Fields:
+    service: Required. The Service Directory service name. Format: projects/{p
+      roject}/locations/{location}/namespaces/{namespace}/services/{service}.
+  """
+
+  service = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):

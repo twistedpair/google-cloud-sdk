@@ -113,21 +113,14 @@ class DeploymentSpec(_messages.Message):
 
   Fields:
     limits: Optional. The limit for the deployment.
-    maxSlots: Optional. DEPRECATED FIELD. To be deleted once the clients are
-      regenerated. The maximum number of slots for the deployment.
     networkConfig: Optional. Network configuration for the deployment.
     secretsPath: Optional. The path to the secret in Secret Manager to be
       associated with this deployment. Format: projects//secrets//versions/
-    workloadIdentity: Optional. DEPRECATED FIELD. To be deleted once the
-      clients are regenerated. Workload identity service account for the
-      deployment.
   """
 
   limits = _messages.MessageField('Limits', 1)
-  maxSlots = _messages.IntegerField(2)
-  networkConfig = _messages.MessageField('NetworkConfig', 3)
-  secretsPath = _messages.StringField(4)
-  workloadIdentity = _messages.StringField(5)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  secretsPath = _messages.StringField(3)
 
 
 class Elastic(_messages.Message):
@@ -257,9 +250,10 @@ class JobSpec(_messages.Message):
       Flink job graph.
     jarUris: Optional. The list of URIs for the job jars in cloud storage.
     jobGraphUri: Required. The flink job graph uri in cloud storage.
-    managedKafkaClusters: Optional. The list of Managed Kafka clusters
-      connected to the job. Expected to be in the format
-      projects//locations//clusters/.
+    managedKafkaClusters: Optional. DEPRECATED FIELD. To be deleted once the
+      clients are regenerated. Use managed_kafka_config instead.
+    managedKafkaConfig: Optional. The configuration for the Managed Kafka
+      clusters to be used by the job.
     networkConfig: Optional. Network configuration for the job.
   """
 
@@ -269,7 +263,8 @@ class JobSpec(_messages.Message):
   jarUris = _messages.StringField(4, repeated=True)
   jobGraphUri = _messages.StringField(5)
   managedKafkaClusters = _messages.StringField(6, repeated=True)
-  networkConfig = _messages.MessageField('NetworkConfig', 7)
+  managedKafkaConfig = _messages.MessageField('ManagedKafkaConfig', 7)
+  networkConfig = _messages.MessageField('NetworkConfig', 8)
 
 
 class Limits(_messages.Message):
@@ -434,6 +429,18 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class ManagedKafkaConfig(_messages.Message):
+  r"""The configuration for the Managed Kafka clusters to be used by the job.
+
+  Fields:
+    managedKafkaClusters: Optional. The list of Managed Kafka clusters
+      connected to the job. Expected to be in the format
+      projects//locations//clusters/.
+  """
+
+  managedKafkaClusters = _messages.StringField(1, repeated=True)
 
 
 class ManagedflinkProjectsLocationsDeploymentsCreateRequest(_messages.Message):

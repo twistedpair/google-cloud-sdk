@@ -1868,6 +1868,7 @@ class Instance(_messages.Message):
       instance. If unspecified, it will default to the first StorageType in
       the list of allowed_storage_types in the InstanceConfig for this
       instance.
+    EditionValueValuesEnum: Optional. The `Edition` of the current instance.
     InstanceTypeValueValuesEnum: The `InstanceType` of the current instance.
     StateValueValuesEnum: Output only. The current instance state. For
       CreateInstance, the state must be either omitted or set to `CREATING`.
@@ -1908,6 +1909,7 @@ class Instance(_messages.Message):
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Must be unique per project and between 4 and 30
       characters in length.
+    edition: Optional. The `Edition` of the current instance.
     endpointUris: Deprecated. This field is not populated.
     freeInstanceMetadata: Free instance metadata. Only populated for free
       instances.
@@ -1979,6 +1981,20 @@ class Instance(_messages.Message):
     STORAGE_TYPE_UNSPECIFIED = 0
     SSD = 1
     HDD = 2
+
+  class EditionValueValuesEnum(_messages.Enum):
+    r"""Optional. The `Edition` of the current instance.
+
+    Values:
+      EDITION_UNSPECIFIED: Edition not specified.
+      STANDARD: Standard edition.
+      ENTERPRISE: Enterprise edition.
+      ENTERPRISE_PLUS: Enterprise plus edition.
+    """
+    EDITION_UNSPECIFIED = 0
+    STANDARD = 1
+    ENTERPRISE = 2
+    ENTERPRISE_PLUS = 3
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The `InstanceType` of the current instance.
@@ -2056,16 +2072,17 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(3)
   defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 4)
   displayName = _messages.StringField(5)
-  endpointUris = _messages.StringField(6, repeated=True)
-  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 7)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  ssdCache = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  edition = _messages.EnumField('EditionValueValuesEnum', 6)
+  endpointUris = _messages.StringField(7, repeated=True)
+  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 8)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  ssdCache = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
 
 
 class InstanceConfig(_messages.Message):

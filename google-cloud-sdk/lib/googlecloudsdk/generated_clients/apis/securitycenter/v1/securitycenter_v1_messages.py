@@ -783,6 +783,12 @@ class BulkMuteFindingsRequest(_messages.Message):
   executed is not defined. 2. Once a bulk operation is started, there is no
   way to stop it.
 
+  Enums:
+    MuteStateValueValuesEnum: Optional. All findings matching the given filter
+      will have their mute state set to this value. The default value is
+      `MUTED`. Setting this to `UNDEFINED` will clear the mute state on all
+      matching findings.
+
   Fields:
     filter: Expression that identifies findings that should be updated. The
       expression is a list of zero or more restrictions combined via logical
@@ -796,10 +802,29 @@ class BulkMuteFindingsRequest(_messages.Message):
       boolean literals `true` and `false` without quotes.
     muteAnnotation: This can be a mute configuration name or any identifier
       for mute/unmute of findings based on the filter.
+    muteState: Optional. All findings matching the given filter will have
+      their mute state set to this value. The default value is `MUTED`.
+      Setting this to `UNDEFINED` will clear the mute state on all matching
+      findings.
   """
+
+  class MuteStateValueValuesEnum(_messages.Enum):
+    r"""Optional. All findings matching the given filter will have their mute
+    state set to this value. The default value is `MUTED`. Setting this to
+    `UNDEFINED` will clear the mute state on all matching findings.
+
+    Values:
+      MUTE_STATE_UNSPECIFIED: Unused.
+      MUTED: Matching findings will be muted (default).
+      UNDEFINED: Matching findings will have their mute state cleared.
+    """
+    MUTE_STATE_UNSPECIFIED = 0
+    MUTED = 1
+    UNDEFINED = 2
 
   filter = _messages.StringField(1)
   muteAnnotation = _messages.StringField(2)
+  muteState = _messages.EnumField('MuteStateValueValuesEnum', 3)
 
 
 class CloudArmor(_messages.Message):
@@ -2463,12 +2488,21 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
   r"""A mute config is a Cloud SCC resource that contains the configuration to
   mute create/update events of findings.
 
+  Enums:
+    TypeValueValuesEnum: Optional. The type of the mute config, which
+      determines what type of mute state the config affects. The static mute
+      state takes precedence over the dynamic mute state. Immutable after
+      creation. STATIC by default if not set during creation.
+
   Fields:
     createTime: Output only. The time at which the mute config was created.
       This field is set by the server and will be ignored if provided on
       config creation.
     description: A description of the mute config.
     displayName: The human readable name to be displayed for the mute config.
+    expiryTime: Optional. The expiry of the mute config. Only applicable for
+      dynamic configs. If the expiry is set, when the config expires, it is
+      removed from all findings.
     filter: Required. An expression that defines the filter to apply across
       create/update events of findings. While creating a filter string, be
       mindful of the scope in which the mute configuration is being created.
@@ -2491,18 +2525,46 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
       ion}/locations/global/muteConfigs/{mute_config}`
       `folders/{folder}/locations/global/muteConfigs/{mute_config}`
       `projects/{project}/locations/global/muteConfigs/{mute_config}`
+    type: Optional. The type of the mute config, which determines what type of
+      mute state the config affects. The static mute state takes precedence
+      over the dynamic mute state. Immutable after creation. STATIC by default
+      if not set during creation.
     updateTime: Output only. The most recent time at which the mute config was
       updated. This field is set by the server and will be ignored if provided
       on config creation or update.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of the mute config, which determines what type of
+    mute state the config affects. The static mute state takes precedence over
+    the dynamic mute state. Immutable after creation. STATIC by default if not
+    set during creation.
+
+    Values:
+      MUTE_CONFIG_TYPE_UNSPECIFIED: Unused.
+      STATIC: A static mute config, which sets the static mute state of future
+        matching findings to muted. Once the static mute state has been set,
+        finding or config modifications will not affect the state.
+      DYNAMIC: A dynamic mute config, which is applied to existing and future
+        matching findings, setting their dynamic mute state to "muted". If the
+        config is updated or deleted, or a matching finding is updated, such
+        that the finding doesn't match the config, the config will be removed
+        from the finding, and the finding's dynamic mute state may become
+        "unmuted" (unless other configs still match).
+    """
+    MUTE_CONFIG_TYPE_UNSPECIFIED = 0
+    STATIC = 1
+    DYNAMIC = 2
+
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  filter = _messages.StringField(4)
-  mostRecentEditor = _messages.StringField(5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  expiryTime = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  mostRecentEditor = _messages.StringField(6)
+  name = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
@@ -5367,6 +5429,9 @@ class GoogleCloudSecuritycenterV2MuteConfig(_messages.Message):
       This field is set by the server and will be ignored if provided on
       config creation.
     description: A description of the mute config.
+    expiryTime: Optional. The expiry of the mute config. Only applicable for
+      dynamic configs. If the expiry is set, when the config expires, it is
+      removed from all findings.
     filter: Required. An expression that defines the filter to apply across
       create/update events of findings. While creating a filter string, be
       mindful of the scope in which the mute configuration is being created.
@@ -5406,17 +5471,25 @@ class GoogleCloudSecuritycenterV2MuteConfig(_messages.Message):
       STATIC: A static mute config, which sets the static mute state of future
         matching findings to muted. Once the static mute state has been set,
         finding or config modifications will not affect the state.
+      DYNAMIC: A dynamic mute config, which is applied to existing and future
+        matching findings, setting their dynamic mute state to "muted". If the
+        config is updated or deleted, or a matching finding is updated, such
+        that the finding doesn't match the config, the config will be removed
+        from the finding, and the finding's dynamic mute state may become
+        "unmuted" (unless other configs still match).
     """
     MUTE_CONFIG_TYPE_UNSPECIFIED = 0
     STATIC = 1
+    DYNAMIC = 2
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  filter = _messages.StringField(3)
-  mostRecentEditor = _messages.StringField(4)
-  name = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  expiryTime = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  mostRecentEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudSecuritycenterV2Node(_messages.Message):

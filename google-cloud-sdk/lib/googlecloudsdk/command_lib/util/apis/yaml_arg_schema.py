@@ -474,7 +474,7 @@ class Argument(YAMLArgument):
 
     if self.clearable:
       value = self._ParseUpdateArgsFromNamespace(namespace, message)
-      if value:
+      if self.IsApiFieldSpecified(namespace):
         arg_utils.SetFieldInMessage(message, self.api_field, value)
       return
 
@@ -1000,7 +1000,10 @@ class YAMLResourceArgument(YAMLConceptArgument):
     else:
       ref = self.ParseResourceArg(namespace, group_required)
 
-    if not self.parse_resource_into_request or (not ref and not self.clearable):
+    # Set resource to None only if the user explicityly specified it.
+    user_specified = (
+        not self.api_fields or self.IsApiFieldSpecified(namespace))
+    if not self.parse_resource_into_request or (not ref and not user_specified):
       return
 
     # For each method path field, get the value from the resource reference.

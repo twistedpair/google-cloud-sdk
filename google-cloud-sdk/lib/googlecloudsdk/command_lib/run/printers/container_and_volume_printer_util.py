@@ -24,6 +24,7 @@ import collections
 from typing import Mapping, Sequence
 
 from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import k8s_object
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
@@ -52,6 +53,7 @@ def _FormatConfigMapVolumeSource(v):
 
 def GetContainer(
     container: container_resource.Container,
+    gpu_type: str,
     labels: Mapping[str, str],
     dependencies: Sequence[str],
     is_primary: bool,
@@ -67,6 +69,8 @@ def GetContainer(
       ),
       ('Memory', limits['memory']),
       ('CPU', limits['cpu']),
+      ('GPU', limits['nvidia.com/gpu']),
+      ('GPU Type', gpu_type if limits['nvidia.com/gpu'] else None),
       (
           'Env vars',
           GetUserEnvironmentVariables(container),
@@ -87,12 +91,16 @@ def GetContainers(record: container_resource.ContainerResource) -> cp.Table:
   """Returns a formatted table of a resource's containers."""
 
   dependencies = collections.defaultdict(list, record.dependencies)
+  gpu_type = None
+  if k8s_object.GPU_TYPE_NODE_SELECTOR in record.node_selector:
+    gpu_type = record.node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR]
 
   def Containers():
     for name, container in k8s_util.OrderByKey(record.containers):
       key = 'Container {name}'.format(name=name)
       value = GetContainer(
           container,
+          gpu_type,
           record.labels,
           dependencies[name],
           len(record.containers) == 1 or container.ports,

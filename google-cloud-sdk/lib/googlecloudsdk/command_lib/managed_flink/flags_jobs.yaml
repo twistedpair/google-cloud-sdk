@@ -1,11 +1,33 @@
 # This is a temporary file until the CRUD API is finalized. Once finalized this file will be
 # merged into flags.yaml.
 
-parallelism:
-  api_field: job.jobSpec.autotuningConfig.minParallelism
-  arg_name: parallelism
+fixed-parallelism:
+  api_field: job.jobSpec.autotuningConfig.fixed.parallelism
+  arg_name: fixed-parallelism
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
   help_text: |
-    parallelism of the Flink job.
+    fixed parallelism of the Flink job.
+
+throughput-based-parallelism:
+  api_field: job.jobSpec.autotuningConfig.throughputBased.parallelism
+  arg_name: throughput-based-parallelism
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
+  help_text: |
+    initial parallelism of the Flink job when using throughput based autoscaling policy.
+
+throughput-based-min-parallelism:
+  api_field: job.jobSpec.autotuningConfig.throughputBased.minParallelism
+  arg_name: throughput-based-min-parallelism
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
+  help_text: |
+    throughput based minimum parallelism of the Flink job.
+
+throughput-based-max-parallelism:
+  api_field: job.jobSpec.autotuningConfig.throughputBased.maxParallelism
+  arg_name: throughput-based-max-parallelism
+  type: googlecloudsdk.core.util.scaled_integer:ParseInteger
+  help_text: |
+    throughput based maximum parallelism of the Flink job.
 
 jar-uris:
   api_field: job.jobSpec.jarUris
@@ -29,6 +51,15 @@ artifact-uris:
   help_text: |
     URI of the artifacts for the Flink job. For example:
     `gs:///opt/flink/examples/streaming/artifact`.
+
+managed-kafka-clusters:
+  api_field: job.jobSpec.managedKafkaConfig.managedKafkaClusters
+  arg_name: managed-kafka-clusters
+  type: "googlecloudsdk.calliope.arg_parsers:ArgList:"
+  # TODO(@joseinigo): Validate location in gcloud
+  help_text: |
+    a list of Managed Kafka clusters for the Flink job to connect to. For example:
+    `projects/123456789/locations/us-central1/clusters/my-cluster`.
 
 deployment:
   api_field: job.deploymentId

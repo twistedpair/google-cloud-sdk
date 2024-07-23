@@ -53,6 +53,9 @@ __protobuf__ = proto.module(
         'GenerateContentRequest',
         'GenerateContentResponse',
         'ChatCompletionsRequest',
+        'PredictLongRunningResponse',
+        'PredictLongRunningMetadata',
+        'GenerateVideoResponse',
     },
 )
 
@@ -1030,6 +1033,65 @@ class ChatCompletionsRequest(proto.Message):
         proto.MESSAGE,
         number=2,
         message=httpbody_pb2.HttpBody,
+    )
+
+
+class PredictLongRunningResponse(proto.Message):
+    r"""Response message for [PredictionService.PredictLongRunning]
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        generate_video_response (googlecloudsdk.generated_clients.gapic_clients.aiplatform_v1beta1.types.GenerateVideoResponse):
+            The response of the video generation
+            prediction.
+
+            This field is a member of `oneof`_ ``response``.
+    """
+
+    generate_video_response: 'GenerateVideoResponse' = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='response',
+        message='GenerateVideoResponse',
+    )
+
+
+class PredictLongRunningMetadata(proto.Message):
+    r"""Metadata for PredictLongRunning long running operations.
+    """
+
+
+class GenerateVideoResponse(proto.Message):
+    r"""Generate video response.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        generated_samples (MutableSequence[str]):
+            The cloud storage uris of the generated
+            videos.
+        rai_media_filtered_count (int):
+            Returns if any videos were filtered due to
+            RAI policies.
+
+            This field is a member of `oneof`_ ``_rai_media_filtered_count``.
+        rai_media_filtered_reasons (MutableSequence[str]):
+            Returns rai failure reasons if any.
+    """
+
+    generated_samples: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=1,
+    )
+    rai_media_filtered_count: int = proto.Field(
+        proto.INT32,
+        number=2,
+        optional=True,
+    )
+    rai_media_filtered_reasons: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
     )
 
 

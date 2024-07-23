@@ -470,7 +470,7 @@ def AddBigQueryConfigFlags(
   )
 
 
-def AddCloudStorageConfigFlags(parser, is_update):
+def AddCloudStorageConfigFlags(parser, is_update, enable_cps_gcs_max_messages):
   """Adds Cloud Storage config flags to parser."""
   current_group = parser
   cloud_storage_config_group_help = """Cloud Storage Config Options. The Cloud
@@ -546,6 +546,17 @@ def AddCloudStorageConfigFlags(parser, is_update):
           file is created. The value must be between 1m and 10m.
           {}""".format(DURATION_HELP_STR),
   )
+  if enable_cps_gcs_max_messages:
+    cloud_storage_config_group.add_argument(
+        '--cloud-storage-max-messages',
+        type=arg_parsers.BoundedInt(lower_bound=1000),
+        default=None,
+        help=(
+            'The maximum number of messages that can be written to a Cloud'
+            ' Storage file before a new file is created. The value must be'
+            ' greater than or equal to 1000.'
+        ),
+    )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-output-format',
       type=arg_parsers.ArgList(
@@ -665,14 +676,17 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
+    enable_cps_gcs_max_messages=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
   Args:
     parser: The argparse parser.
     is_update: Whether or not this is for the update operation (vs. create).
-    enable_push_to_cps: whether or not to enable Pubsub Export config flags
+    enable_push_to_cps: Whether or not to enable Pubsub Export config flags
       support.
+    enable_cps_gcs_max_messages: Whether or not to enable Gcs max messages
+      batching flag support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -682,7 +696,9 @@ def AddSubscriptionSettingsFlags(
 
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
-  AddCloudStorageConfigFlags(mutex_group, is_update)
+  AddCloudStorageConfigFlags(
+      mutex_group, is_update, enable_cps_gcs_max_messages
+  )
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)

@@ -73,6 +73,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations_nasJobs_nasTrialDetails = self.ProjectsLocationsNasJobsNasTrialDetailsService(self)
     self.projects_locations_nasJobs = self.ProjectsLocationsNasJobsService(self)
+    self.projects_locations_notebookExecutionJobs = self.ProjectsLocationsNotebookExecutionJobsService(self)
     self.projects_locations_notebookRuntimeTemplates = self.ProjectsLocationsNotebookRuntimeTemplatesService(self)
     self.projects_locations_notebookRuntimes = self.ProjectsLocationsNotebookRuntimesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -92,6 +93,8 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_tuningJobs = self.ProjectsLocationsTuningJobsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+    self.publishers_models = self.PublishersModelsService(self)
+    self.publishers = self.PublishersService(self)
 
   class ProjectsLocationsBatchPredictionJobsService(base_api.BaseApiService):
     """Service class for the projects_locations_batchPredictionJobs resource."""
@@ -757,6 +760,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a DatasetVersion.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DatasetVersion) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudAiplatformV1DatasetVersion',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1DatasetVersion',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores a dataset version.
 
@@ -1192,6 +1222,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Update a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudAiplatformV1DeploymentResourcePool',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def QueryDeployedModels(self, request, global_params=None):
       r"""List DeployedModels that have been deployed on this DeploymentResourcePool.
 
@@ -1228,6 +1285,60 @@ class AiplatformV1(base_api.BaseApiClient):
       super(AiplatformV1.ProjectsLocationsEndpointsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1ComputeTokensRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1ComputeTokensResponse',
+        supports_download=False,
+    )
+
+    def CountTokens(self, request, global_params=None):
+      r"""Perform a token counting.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsCountTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1CountTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('CountTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:countTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.countTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:countTokens',
+        request_field='googleCloudAiplatformV1CountTokensRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsCountTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1CountTokensResponse',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates an Endpoint.
@@ -5806,6 +5917,124 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsNotebookExecutionJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_notebookExecutionJobs resource."""
+
+    _NAME = 'projects_locations_notebookExecutionJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsNotebookExecutionJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NotebookExecutionJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookExecutionJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookExecutionJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['notebookExecutionJobId'],
+        relative_path='v1/{+parent}/notebookExecutionJobs',
+        request_field='googleCloudAiplatformV1NotebookExecutionJob',
+        request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NotebookExecutionJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookExecutionJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookExecutionJobs/{notebookExecutionJobsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.notebookExecutionJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a NotebookExecutionJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookExecutionJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NotebookExecutionJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookExecutionJobs/{notebookExecutionJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookExecutionJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1NotebookExecutionJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NotebookExecutionJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookExecutionJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListNotebookExecutionJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookExecutionJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookExecutionJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}/notebookExecutionJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookExecutionJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListNotebookExecutionJobsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsNotebookRuntimeTemplatesService(base_api.BaseApiService):
     """Service class for the projects_locations_notebookRuntimeTemplates resource."""
 
@@ -6729,6 +6958,60 @@ class AiplatformV1(base_api.BaseApiClient):
       super(AiplatformV1.ProjectsLocationsPublishersModelsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1ComputeTokensRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1ComputeTokensResponse',
+        supports_download=False,
+    )
+
+    def CountTokens(self, request, global_params=None):
+      r"""Perform a token counting.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsCountTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1CountTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('CountTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CountTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:countTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.countTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:countTokens',
+        request_field='googleCloudAiplatformV1CountTokensRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsCountTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1CountTokensResponse',
+        supports_download=False,
+    )
 
     def GenerateContent(self, request, global_params=None):
       r"""Generate content with multimodal inputs.
@@ -8794,6 +9077,33 @@ class AiplatformV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def EvaluateInstances(self, request, global_params=None):
+      r"""Evaluates instances based on a given metric.
+
+      Args:
+        request: (AiplatformProjectsLocationsEvaluateInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1EvaluateInstancesResponse) The response message.
+      """
+      config = self.GetMethodConfig('EvaluateInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EvaluateInstances.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:evaluateInstances',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.evaluateInstances',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1/{+location}:evaluateInstances',
+        request_field='googleCloudAiplatformV1EvaluateInstancesRequest',
+        request_type_name='AiplatformProjectsLocationsEvaluateInstancesRequest',
+        response_type_name='GoogleCloudAiplatformV1EvaluateInstancesResponse',
+        supports_download=False,
+    )
+
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""
 
@@ -8801,5 +9111,52 @@ class AiplatformV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AiplatformV1.ProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class PublishersModelsService(base_api.BaseApiService):
+    """Service class for the publishers_models resource."""
+
+    _NAME = 'publishers_models'
+
+    def __init__(self, client):
+      super(AiplatformV1.PublishersModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Model Garden publisher model.
+
+      Args:
+        request: (AiplatformPublishersModelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1PublisherModel) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/publishers/{publishersId}/models/{modelsId}',
+        http_method='GET',
+        method_id='aiplatform.publishers.models.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['isHuggingFaceModel', 'languageCode', 'view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformPublishersModelsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1PublisherModel',
+        supports_download=False,
+    )
+
+  class PublishersService(base_api.BaseApiService):
+    """Service class for the publishers resource."""
+
+    _NAME = 'publishers'
+
+    def __init__(self, client):
+      super(AiplatformV1.PublishersService, self).__init__(client)
       self._upload_configs = {
           }

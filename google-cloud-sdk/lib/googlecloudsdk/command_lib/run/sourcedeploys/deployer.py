@@ -55,6 +55,7 @@ def CreateImage(
     tracker.CompleteStage(stages.CREATE_REPO)
 
   base_image_from_build = None
+  source = None
 
   if release_track is base.ReleaseTrack.ALPHA:
     # In the alpha track we separately upload the source code then call the new
@@ -120,12 +121,14 @@ def CreateImage(
             )
         ),
     )
-    return None, None  # Failed to create an image
+    return None, None, None, None  # Failed to create an image
   else:
     tracker.CompleteStage(stages.BUILD_READY)
     return (
         response_dict['results']['images'][0]['digest'],
         base_image_from_build,
+        response_dict['id'],
+        source,
     )
 
 
@@ -325,8 +328,7 @@ def _PrepareSubmitBuildRequest(
             storageSource=storage_source,
             imageUri=build_pack[0].get('image'),
             buildpackBuild=messages.GoogleCloudRunV2BuildpacksBuild(
-                baseImage=base_image, functionTarget=function_target
-            ,
+                baseImage=base_image, functionTarget=function_target,
                 environmentVariables=build_env_vars),
             dockerBuild=None,
             tags=tags,

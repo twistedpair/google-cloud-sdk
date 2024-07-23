@@ -129,6 +129,7 @@ class SubscriptionsClient(object):
       cloud_storage_file_datetime_format=None,
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
+      cloud_storage_max_messages=None,
       cloud_storage_output_format=None,
       cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
@@ -184,6 +185,8 @@ class SubscriptionsClient(object):
         Cloud Storage file before a new file is created.
       cloud_storage_max_duration (str): The maximum duration that can elapse
         before a new Cloud Storage file is created.
+      cloud_storage_max_messages (int): The maximum number of messages that can
+        be written to a Cloud Storage file before a new file is created.
       cloud_storage_output_format (str): The output format for data written to
         Cloud Storage.
       cloud_storage_use_topic_schema (bool): Whether or not to use the topic
@@ -232,6 +235,7 @@ class SubscriptionsClient(object):
             cloud_storage_file_datetime_format,
             cloud_storage_max_bytes,
             cloud_storage_max_duration,
+            cloud_storage_max_messages,
             cloud_storage_output_format,
             cloud_storage_use_topic_schema,
             cloud_storage_write_metadata,
@@ -461,6 +465,7 @@ class SubscriptionsClient(object):
       file_datetime_format,
       max_bytes,
       max_duration,
+      max_messages,
       output_format,
       use_topic_schema,
       write_metadata,
@@ -478,6 +483,8 @@ class SubscriptionsClient(object):
         file before a new file is created.
       max_duration (str): The maximum duration that can elapse before a new
         Cloud Storage file is created.
+      max_messages (int): The maximum number of messages that can be written to
+        a Cloud Storage file before a new file is created.
       output_format (str): The output format for data written to Cloud Storage.
       use_topic_schema (bool): Whether or not to use the topic schema when
         writing to Cloud Storage.
@@ -496,6 +503,7 @@ class SubscriptionsClient(object):
           filenameDatetimeFormat=file_datetime_format,
           maxBytes=max_bytes,
           maxDuration=max_duration,
+          maxMessages=max_messages,
           serviceAccountEmail=service_account_email,
       )
       if output_format == 'text':
@@ -583,6 +591,7 @@ class SubscriptionsClient(object):
       cloud_storage_file_datetime_format=None,
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
+      cloud_storage_max_messages=None,
       cloud_storage_output_format=None,
       cloud_storage_use_topic_schema=None,
       cloud_storage_write_metadata=None,
@@ -642,6 +651,8 @@ class SubscriptionsClient(object):
         Cloud Storage file before a new file is created.
       cloud_storage_max_duration (str): The maximum duration that can elapse
         before a new Cloud Storage file is created.
+      cloud_storage_max_messages (int): The maximum number of messages that can
+        be written to a Cloud Storage file before a new file is created.
       cloud_storage_output_format (str): The output format for data written to
         Cloud Storage.
       cloud_storage_use_topic_schema (bool): Whether or not to use the topic
@@ -652,8 +663,8 @@ class SubscriptionsClient(object):
         writing to Cloud Storage
       clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
         from the subscription.
-      clear_push_no_wrapper_config(bool): If set, clear
-        the Push No Wrapper config from the subscription.
+      clear_push_no_wrapper_config (bool): If set, clear the Push No Wrapper
+        config from the subscription.
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
       pubsub_export_topic_region (str): The Cloud region to which to publish
         messages.
@@ -675,6 +686,7 @@ class SubscriptionsClient(object):
           cloud_storage_file_datetime_format,
           cloud_storage_max_bytes,
           cloud_storage_max_duration,
+          cloud_storage_max_messages,
           cloud_storage_output_format,
           cloud_storage_use_topic_schema,
           cloud_storage_write_metadata,

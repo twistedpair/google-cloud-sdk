@@ -1574,8 +1574,8 @@ def AddAddressArgs(parser,
       instance will get an ephemeral IP.
 
       *network-tier*::: Specifies the network tier of the interface.
-      ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
-      The default value is `PREMIUM`.
+      ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
+      value is `PREMIUM`.
 
       *private-network-ip*::: Assigns the given RFC1918 IP address to the
       interface.
@@ -2303,14 +2303,13 @@ def AddNetworkTierArgs(parser, instance=True, for_update=False):
   if instance:
     network_tier_help = """\
         Specifies the network tier that will be used to configure the instance.
-        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
-        The default value is `PREMIUM`.
+        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
+        value is `PREMIUM`.
         """
   else:
     network_tier_help = """\
         Specifies the network tier of the access configuration. ``NETWORK_TIER''
-        must be one of: `PREMIUM`, `STANDARD`, `FIXED_STANDARD`.
-        The default value is `PREMIUM`.
+        must be one of: `PREMIUM`, `STANDARD`. The default value is `PREMIUM`.
         """
   parser.add_argument(
       '--network-tier', type=lambda x: x.upper(), help=network_tier_help)

@@ -13,6 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from .api_auth import (
+    ApiAuth,
+)
 from .content import (
     Blob,
     Candidate,
@@ -66,6 +69,8 @@ from .io import (
     GcsDestination,
     GcsSource,
     GoogleDriveSource,
+    JiraSource,
+    SlackSource,
     TFRecordDestination,
 )
 from .openapi import (
@@ -84,6 +89,9 @@ from .prediction_service import (
     ExplainResponse,
     GenerateContentRequest,
     GenerateContentResponse,
+    GenerateVideoResponse,
+    PredictLongRunningMetadata,
+    PredictLongRunningResponse,
     PredictRequest,
     PredictResponse,
     RawPredictRequest,
@@ -119,6 +127,7 @@ from .types import (
 )
 
 __all__ = (
+    'ApiAuth',
     'Blob',
     'Candidate',
     'Citation',
@@ -165,6 +174,8 @@ __all__ = (
     'GcsDestination',
     'GcsSource',
     'GoogleDriveSource',
+    'JiraSource',
+    'SlackSource',
     'TFRecordDestination',
     'Schema',
     'Type',
@@ -179,6 +190,9 @@ __all__ = (
     'ExplainResponse',
     'GenerateContentRequest',
     'GenerateContentResponse',
+    'GenerateVideoResponse',
+    'PredictLongRunningMetadata',
+    'PredictLongRunningResponse',
     'PredictRequest',
     'PredictResponse',
     'RawPredictRequest',

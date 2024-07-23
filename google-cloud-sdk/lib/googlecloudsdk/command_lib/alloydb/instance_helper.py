@@ -163,13 +163,13 @@ def _ConstructInstanceFromArgs(client, alloydb_messages, args):
   )
 
   instance_resource.networkConfig = NetworkConfig(
-      alloydb_messages,
-      args.assign_inbound_public_ip,
-      args.authorized_external_networks,
+      alloydb_messages=alloydb_messages,
+      assign_inbound_public_ip=args.assign_inbound_public_ip,
+      authorized_external_networks=args.authorized_external_networks,
   )
 
   if args.allowed_psc_projects:
-    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+    instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages, args.allowed_psc_projects
     )
 
@@ -198,6 +198,12 @@ def _ConstructInstanceFromArgsBeta(client, alloydb_messages, args):
       observability_config_query_plans_per_minute=args.observability_config_query_plans_per_minute,
       observability_config_track_active_queries=args.observability_config_track_active_queries,
   )
+  instance_resource.networkConfig = NetworkConfig(
+      alloydb_messages=alloydb_messages,
+      assign_inbound_public_ip=args.assign_inbound_public_ip,
+      authorized_external_networks=args.authorized_external_networks,
+      outbound_public_ip=args.outbound_public_ip,
+  )
 
   return instance_resource
 
@@ -217,6 +223,75 @@ def _ConstructInstanceFromArgsAlpha(client, alloydb_messages, args):
       client, alloydb_messages, args
   )
   return instance_resource
+
+
+def _ConstructSecondaryInstanceFromArgs(client, alloydb_messages, args):
+  """Validates command line input arguments and passes parent's resources to create an AlloyDB secondary instance."""
+
+  instance_resource = alloydb_messages.Instance()
+  instance_ref = client.resource_parser.Create(
+      'alloydb.projects.locations.clusters.instances',
+      projectsId=properties.VALUES.core.project.GetOrFail,
+      locationsId=args.region,
+      clustersId=args.cluster,
+      instancesId=args.instance,
+  )
+  instance_resource.name = instance_ref.RelativeName()
+  instance_resource.instanceType = (
+      alloydb_messages.Instance.InstanceTypeValueValuesEnum.SECONDARY
+  )
+  instance_resource.availabilityType = ParseAvailabilityType(
+      alloydb_messages, args.availability_type
+  )
+  instance_resource.clientConnectionConfig = ClientConnectionConfig(
+      alloydb_messages, args.ssl_mode, args.require_connectors
+  )
+  instance_resource.networkConfig = NetworkConfig(
+      alloydb_messages=alloydb_messages,
+      assign_inbound_public_ip=args.assign_inbound_public_ip,
+      authorized_external_networks=args.authorized_external_networks,
+  )
+  if args.allowed_psc_projects:
+    instance_resource.pscInstanceConfig = PscInstanceConfig(
+        alloydb_messages, args.allowed_psc_projects
+    )
+  return instance_resource
+
+
+def ConstructSecondaryCreateRequestFromArgsGA(
+    client, alloydb_messages, cluster_ref, args
+):
+  """Validates command line input arguments and passes parent's resources for GA track."""
+
+  instance_resource = _ConstructSecondaryInstanceFromArgs(
+      client, alloydb_messages, args
+  )
+
+  return alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(
+      instance=instance_resource,
+      instanceId=args.instance,
+      parent=cluster_ref.RelativeName(),
+  )
+
+
+def ConstructSecondaryCreateRequestFromArgsAlphaBeta(
+    client, alloydb_messages, cluster_ref, args
+):
+  """Validates command line input arguments and passes parent's resources for alpha/beta track."""
+  instance_resource = _ConstructSecondaryInstanceFromArgs(
+      client, alloydb_messages, args
+  )
+  instance_resource.networkConfig = NetworkConfig(
+      alloydb_messages=alloydb_messages,
+      assign_inbound_public_ip=args.assign_inbound_public_ip,
+      authorized_external_networks=args.authorized_external_networks,
+      outbound_public_ip=args.outbound_public_ip,
+  )
+  return alloydb_messages.AlloydbProjectsLocationsClustersInstancesCreatesecondaryRequest(
+      instance=instance_resource,
+      instanceId=args.instance,
+      parent=cluster_ref.RelativeName(),
+  )
 
 
 def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
@@ -339,9 +414,9 @@ def ConstructInstanceAndUpdatePathsFromArgs(
       or args.authorized_external_networks is not None
   ):
     instance_resource.networkConfig = NetworkConfig(
-        alloydb_messages,
-        args.assign_inbound_public_ip,
-        args.authorized_external_networks,
+        alloydb_messages=alloydb_messages,
+        assign_inbound_public_ip=args.assign_inbound_public_ip,
+        authorized_external_networks=args.authorized_external_networks,
     )
   # If we are disabling public ip then update the whole networkConfig as we
   # also need to clear the list of authorized networks
@@ -358,7 +433,7 @@ def ConstructInstanceAndUpdatePathsFromArgs(
 
   # Empty lists are allowed for consumers to remove all PSC allowed projects.
   if args.allowed_psc_projects is not None:
-    instance_resource.pscInstanceConfig = _PscInstanceConfig(
+    instance_resource.pscInstanceConfig = PscInstanceConfig(
         alloydb_messages, args.allowed_psc_projects
     )
     paths.append('pscInstanceConfig.allowedConsumerProjects')
@@ -561,25 +636,16 @@ def _ParseSSLMode(alloydb_messages, ssl_mode):
   return None
 
 
-def NetworkConfig(
-    alloydb_messages,
-    assign_inbound_public_ip=None,
-    authorized_external_networks=None,
-):
-  """Generates the instance network config for the instance.
-
-  Args:
-    alloydb_messages: module, Message module for the API client.
-    assign_inbound_public_ip: string, whether or not to enable Public-IP.
-    authorized_external_networks: list, list of external networks authorized to
-      access the instance.
-
-  Returns:
-    alloydb_messages.NetworkConfig
-  """
+def NetworkConfig(**kwargs):
+  """Generates the network config for the instance."""
+  assign_inbound_public_ip = kwargs.get('assign_inbound_public_ip')
+  authorized_external_networks = kwargs.get('authorized_external_networks')
+  alloydb_messages = kwargs.get('alloydb_messages')
+  outbound_public_ip = kwargs.get('outbound_public_ip')
 
   should_generate_config = any([
       assign_inbound_public_ip,
+      outbound_public_ip is not None,
       authorized_external_networks is not None,
   ])
   if not should_generate_config:
@@ -592,6 +658,8 @@ def NetworkConfig(
     instance_network_config.enablePublicIp = _ParseAssignInboundPublicIp(
         assign_inbound_public_ip
     )
+  if outbound_public_ip is not None:
+    instance_network_config.enableOutboundPublicIp = outbound_public_ip
   if authorized_external_networks is not None:
     if (
         assign_inbound_public_ip is not None
@@ -614,7 +682,7 @@ def NetworkConfig(
   return instance_network_config
 
 
-def _PscInstanceConfig(alloydb_messages, allowed_consumer_projects=None):
+def PscInstanceConfig(alloydb_messages, allowed_consumer_projects=None):
   """Generates the PSC instance config for the instance."""
   psc_instance_config = alloydb_messages.PscInstanceConfig()
   psc_instance_config.allowedConsumerProjects = allowed_consumer_projects
@@ -761,6 +829,18 @@ def ConstructInstanceAndUpdatePathsFromArgsBeta(
       args.observability_config_track_active_queries,
   )
 
+  instance_resource.networkConfig = NetworkConfig(
+      alloydb_messages=alloydb_messages,
+      assign_inbound_public_ip=args.assign_inbound_public_ip,
+      authorized_external_networks=args.authorized_external_networks,
+      outbound_public_ip=args.outbound_public_ip,
+  )
+  if not (
+      args.assign_inbound_public_ip
+      and not instance_resource.networkConfig.enablePublicIp
+  ):
+    if args.outbound_public_ip is not None:
+      paths.append('networkConfig.enableOutboundPublicIp')
   return instance_resource, paths
 
 
